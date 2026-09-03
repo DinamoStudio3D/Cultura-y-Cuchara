@@ -96,7 +96,7 @@
         </div>
     </header>
 
-    <!-- Barra de Navegación (Sin botón visible de admin) -->
+    <!-- Barra de Navegación -->
     <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3">
@@ -215,7 +215,7 @@
 
             <!-- Tarjeta de Vista Previa -->
             <div id="mapPreviewCard" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col justify-between h-[440px] relative transition-all duration-300">
-                <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 text-gray-400 hover:text-red-500 transition text-xl z-10" title="Añadir a mi ruta">
+                <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-regular fa-heart"></i>
                 </button>
                 <div>
@@ -394,7 +394,7 @@
         </div>
     </section>
 
-    <!-- Pie de Página (Aquí está el acceso ultra discreto para Admin en el punto o enlace final) -->
+    <!-- Pie de Página -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -408,7 +408,6 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026. 
-                <!-- Acceso discreto para administración (tócalo desde móvil o PC) -->
                 <span onclick="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[8px]" title="Admin">.</span>
             </div>
         </div>
@@ -439,7 +438,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE ACCESO PIN ADMIN (Sin mostrar el PIN 1234 en pantalla) -->
+    <!-- MODAL DE ACCESO PIN ADMIN -->
     <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
             <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -457,7 +456,7 @@
         </div>
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN CMS CONECTADO A FIRESTORE -->
+    <!-- PANEL DE ADMINISTRACIÓN CMS -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             
@@ -951,12 +950,12 @@
                 }
 
                 const isFav = favoriteLocations.includes(loc.id);
-                const favHeartClass = isFav ? "fa-solid text-red-500" : "fa-regular text-gray-400";
+                const favHeartClass = isFav ? "fa-solid text-red-500" : "fa-regular text-brandGold";
 
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${index})">
-                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 bg-white/90 backdrop-blur w-9 h-9 rounded-full flex items-center justify-center hover:text-red-500 transition shadow-md">
-                            <i id="cardFav_${loc.id}" class="${favHeartClass} text-lg"></i>
+                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg">
+                            <i id="cardFav_${loc.id}" class="${favHeartClass}"></i>
                         </button>
                         <div class="h-48 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
@@ -1057,7 +1056,7 @@
             const icon = btn.querySelector('i');
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
-                icon.className = "fa-regular fa-heart text-gray-400";
+                icon.className = "fa-regular fa-heart text-brandGold";
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(loc.id);
@@ -1074,7 +1073,7 @@
             const icon = document.getElementById(`cardFav_${localId}`);
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
-                if(icon) icon.className = "fa-regular fa-heart text-gray-400 text-lg";
+                if(icon) icon.className = "fa-regular fa-heart text-brandGold text-lg";
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
@@ -1407,7 +1406,7 @@
             if(favoriteLocations.includes(loc.id)) {
                 favIcon.className = "fa-solid fa-heart text-red-500";
             } else {
-                favIcon.className = "fa-regular fa-heart text-gray-400";
+                favIcon.className = "fa-regular fa-heart text-brandGold";
             }
 
             if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
