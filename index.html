@@ -114,12 +114,12 @@
                 <a href="#inicio" class="hover:text-brandGold transition">Inicio</a>
                 <a href="#mapa" class="hover:text-brandGold transition">El Mapa</a>
                 <a href="#establecimientos" class="hover:text-brandGold transition">La Ruta</a>
+                <a href="#especias" class="hover:text-brandGold transition">Especias ILE</a>
                 <a href="#pasaporte" class="hover:text-brandGold transition relative">
                     <i class="fa-solid fa-qrcode text-brandGold mr-1"></i>Pasaporte
                     <span id="navStampBadge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0/4</span>
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition">Agenda</a>
-                <a href="#aliados" class="hover:text-brandGold transition">Aliados</a>
                 <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/40 px-3 py-1.5 rounded font-bold hover:bg-brandGold hover:text-brandDark transition text-xs flex items-center gap-1.5 relative">
                     <i class="fa-solid fa-mug-hot"></i> Mi Ruta <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1 rounded-full hidden">0</span>
                 </button>
@@ -132,13 +132,13 @@
             <a href="#inicio" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Inicio</a>
             <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">El Mapa</a>
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">La Ruta</a>
+            <a href="#especias" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Especias ILE</a>
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-qrcode text-brandGold mr-1"></i>Mi Pasaporte</a>
-            <a href="#agenda" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Agenda Cultural</a>
             <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> Mi Ruta Guardada</button>
         </div>
     </nav>
 
-    <!-- BANNER MULTI-EVENTO DINÁMICO (ROTATIVO POR TIEMPO) -->
+    <!-- BANNER DINÁMICO DE EVENTO EN VIVO -->
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-yellow-600 to-brandGold text-brandDark py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
         <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">🔴 PRÓXIMO HOY</span>
         <span id="liveEventText">Cargando eventos...</span>
@@ -243,7 +243,7 @@
 
                 <div class="pt-4 border-t border-gray-100 flex flex-col gap-2">
                     <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
-                        <i class="fa-solid fa-camera-retro mr-2"></i> Ver Galería / Habitaciones
+                        <i class="fa-solid fa-camera-retro mr-2"></i> Ver Galería y Comunidad
                     </button>
 
                     <div class="flex gap-2">
@@ -301,6 +301,46 @@
             <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
                 <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
                 No encontramos resultados para esa búsqueda.
+            </div>
+        </div>
+    </section>
+
+    <!-- GUÍA DE ESPECIAS Y MARIDAJE ILE (NUEVO) -->
+    <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> Tradición y Sabor</span>
+                <h2 class="text-3xl font-bold mt-2 mb-3">Secretos de Cocina con ILE</h2>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto">
+                    El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🌿</div>
+                        <h3 class="font-bold text-lg text-brandGold mb-2">El Adobo Lojano</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed">Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.</p>
+                    </div>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold">Ideal para: Cecina y Secos</span>
+                </div>
+                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">☕</div>
+                        <h3 class="font-bold text-lg text-brandGold mb-2">Aromas de Altura</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed">El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.</p>
+                    </div>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold">Ideal para: Cafés y Pasteles</span>
+                </div>
+                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🍲</div>
+                        <h3 class="font-bold text-lg text-brandGold mb-2">El Toque del Repe</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed">El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.</p>
+                    </div>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold">Ideal para: Repe y Sopas</span>
+                </div>
             </div>
         </div>
     </section>
@@ -654,21 +694,60 @@
         </div>
     </div>
 
-    <!-- Modales adicionales -->
+    <!-- MODAL DE GALERÍA Y COMUNIDAD DE TURISTAS (NUEVO) -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[80vh] md:h-[600px]">
+        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[650px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <div>
-                    <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Platos o Habitaciones Estrella</h3>
-                    <p class="text-xs text-gray-400">Recomendación Oficial</p>
+                    <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Platos y Comunidad</h3>
+                    <p class="text-xs text-gray-400">Fotos oficiales y experiencias compartidas por viajeros</p>
                 </div>
                 <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-4 flex-grow overflow-y-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="galleryGrid"></div>
+            <div class="p-6 flex-grow overflow-y-auto space-y-6">
+                <div>
+                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-camera-retro mr-1"></i> Recomendación Oficial</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="galleryGrid"></div>
+                </div>
+                
+                <div class="border-t border-gray-800 pt-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider"><i class="fa-solid fa-users mr-1"></i> Fotos de la Comunidad de Turistas</h4>
+                        <button onclick="openUploadCommunityPhoto()" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Subir mi foto
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="communityPhotosGrid">
+                        <!-- Fotos comunitarias de ejemplo -->
+                        <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
+                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                            <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@carlos_loja</span>
+                        </div>
+                        <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
+                            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                            <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@viajera_gye</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA SUBIR FOTO COMUNITARIA (NUEVO) -->
+    <div id="uploadPhotoModal" class="fixed inset-0 z-[75] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/40 p-6 relative">
+            <button onclick="closeModal('uploadPhotoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-brandGold mb-1">Comparte tu experiencia</h3>
+            <p class="text-xs text-gray-400 mb-4">Sube una foto de tu visita a este local</p>
+            <form onsubmit="handleCommunityPhotoSubmit(event)" class="space-y-3">
+                <input type="text" id="commUser" required placeholder="Tu nombre o @usuario" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                <input type="text" id="commImgUrl" required placeholder="URL de tu foto (ej. https://...)" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2.5 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                    Publicar Foto
+                </button>
+            </form>
         </div>
     </div>
 
@@ -889,7 +968,6 @@
             });
         }
 
-        // CONTROLADOR DE BANNER MULTI-EVENTO EN ROTACIÓN
         let currentEventIndex = 0;
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
@@ -908,7 +986,7 @@
 
             rotateEvent();
             if(eventsList.length > 1) {
-                setInterval(rotateEvent, 5000); // Rota cada 5 segundos si hay más de un evento
+                setInterval(rotateEvent, 5000);
             }
         }
 
@@ -1605,6 +1683,27 @@
                 `;
             });
             openModal('menuGalleryModal');
+        }
+
+        function openUploadCommunityPhoto() {
+            openModal('uploadPhotoModal');
+        }
+
+        function handleCommunityPhotoSubmit(e) {
+            e.preventDefault();
+            const user = document.getElementById('commUser').value;
+            const imgUrl = document.getElementById('commImgUrl').value;
+            const grid = document.getElementById('communityPhotosGrid');
+            
+            grid.innerHTML += `
+                <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
+                    <img src="${imgUrl}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@${user}</span>
+                </div>
+            `;
+            closeModal('uploadPhotoModal');
+            showToast('¡Foto subida con éxito!');
+            e.target.reset();
         }
 
         function initPassport() {
