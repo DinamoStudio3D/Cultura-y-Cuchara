@@ -496,8 +496,8 @@
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">🗺️ Plus Code de Google Maps (Opcional)</label>
-                                    <input type="text" id="admPlusCode" placeholder="Ej. 8Q3X+5G Loja" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Coordenadas o Plus Code</label>
+                                    <input type="text" id="admPlusCode" placeholder="Ej. -4.016811, -79.198642" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">O selecciona Zona Rápida en Loja</label>
@@ -719,7 +719,7 @@
 
     <!-- Script General con Credenciales de Firebase Integradas -->
     <script>
-        // CONFIGURACIÓN DE FIREBASE YA INTEGRADA
+        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
             authDomain: "cultura-y-cuchara.firebaseapp.com",
@@ -817,7 +817,6 @@
                     locations.push({ id: doc.id, ...doc.data() });
                 });
                 
-                // Si la base de datos está totalmente vacía, cargamos los datos por defecto iniciales
                 if(locations.length === 0) {
                     defaultLocations.forEach(loc => db.collection("locales").add(loc));
                 } else {
@@ -1064,12 +1063,28 @@
             showToast('Categoría eliminada');
         }
 
-        function parseCoordinates(plusCodeInput, presetValue) {
-            let code = plusCodeInput ? plusCodeInput.trim().toUpperCase() : "";
+        // FUNCIÓN ACTUALIZADA: Lee coordenadas directas (ej: -4.016811, -79.198642) o Plus Codes
+        function parseCoordinates(inputVal, presetValue) {
+            let input = inputVal ? inputVal.trim() : "";
+            
+            // Si pegas coordenadas directas separadas por coma
+            if (input.includes(",")) {
+                let parts = input.split(",");
+                let lat = parseFloat(parts[0]);
+                let lng = parseFloat(parts[1]);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    return [lat, lng];
+                }
+            }
+            
+            // Si escribes un Plus Code de Loja
+            let code = input.toUpperCase();
             if (code.includes("8Q3X")) { return [-3.9931, -79.2042]; }
             if (code.includes("8Q2X")) { return [-3.9980, -79.2015]; }
+            
+            // Si usas el selector de zona rápida predeterminada
             const coords = presetValue.split(',');
-            return [parseFloat(coords[0]) + (Math.random() * 0.002 - 0.001), parseFloat(coords[1]) + (Math.random() * 0.002 - 0.001)];
+            return [parseFloat(coords[0]), parseFloat(coords[1])];
         }
 
         function handleAddNewLocation(e) {
@@ -1082,16 +1097,16 @@
             const address = document.getElementById('admAddress').value;
             const desc = document.getElementById('admDesc').value;
             const img = document.getElementById('admImg').value;
-            const plusCode = document.getElementById('admPlusCode').value;
+            const plusCodeInput = document.getElementById('admPlusCode').value;
             const preset = document.getElementById('admZonePreset').value;
 
-            const finalCoords = parseCoordinates(plusCode, preset);
+            const finalCoords = parseCoordinates(plusCodeInput, preset);
 
             const newLoc = {
                 tag, title, desc, dish,
                 hours: "Lun - Dom: 09:00 - 22:00", address,
                 lat: finalCoords[0], lng: finalCoords[1],
-                gps: "https://maps.google.com",
+                gps: `https://maps.google.com/?q=${finalCoords[0]},${finalCoords[1]}`,
                 iconClass, category,
                 gallery: [{ img, title: dish }]
             };
