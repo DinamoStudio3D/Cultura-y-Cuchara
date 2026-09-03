@@ -925,11 +925,6 @@
             if(!markersLayer) return;
             markersLayer.clearLayers();
             
-            // Si el marcador GPS del usuario existe, volver a agregarlo al mapa
-            if(userMarkerInstance) {
-                userMarkerInstance.addTo(markersLayer);
-            }
-
             const grid = document.getElementById('localesGrid');
             if(!grid) return;
             grid.innerHTML = '';
@@ -1029,11 +1024,16 @@
                 }
             });
 
+            // Asegurarnos de que el pin azul de la ubicación actual SIEMPRE esté visible si ya fue activado
+            if(userMarkerInstance) {
+                userMarkerInstance.addTo(markersLayer);
+            }
+
             renderAdminLocationsList();
             updatePassportUI();
         }
 
-        // GPS BLINDADO CON RESTAURACIÓN DE PIN AZUL
+        // GPS BLINDADO CON RESTAURACIÓN DE PIN AZUL FIJO
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
@@ -1063,7 +1063,6 @@
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
                         });
                         
-                        if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
                         userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
                           .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
                         
@@ -1095,7 +1094,6 @@
                 iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
             });
             
-            if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
             userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon })
               .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.");
             
