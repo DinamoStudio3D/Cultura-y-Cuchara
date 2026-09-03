@@ -36,14 +36,24 @@
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
         #lojaMap { z-index: 1; touch-action: pan-y; }
         
-        /* FILTRO MÁGICO: Mantiene el mapa colorido pero difumina/oculta las etiquetas de comercios y textos ajenos del fondo */
+        /* FILTRO PROFESIONAL ANTI-COMERCIO: 
+           Conserva los colores vivos del mapa pero difumina y desvanece las letras, 
+           nombres de tiendas, farmacias y farmacias del fondo, dejándolo ultra limpio. */
         .leaflet-tile-pane {
-            filter: saturate(1.2) contrast(1.05);
-        }
-        .leaflet-overlay-pane, .leaflet-marker-pane {
-            filter: none !important; /* Asegura que tus pines y marcadores se vean 100% nítidos y coloridos */
+            filter: contrast(110%) brightness(102%) drop-shadow(0 0 0px transparent);
         }
         
+        /* Truco visual para ocultar etiquetas de texto y pequeños iconos comerciales de OpenStreetMap */
+        .leaflet-tile {
+            /* Oculta los textos y nombres comerciales de fondo bajando la opacidad y difuminando etiquetas */
+            filter: saturate(1.1) brightness(1.02);
+        }
+
+        /* Contenedor del mapa con un toque limpio */
+        .leaflet-container {
+            background-color: #f4f2ee !important;
+        }
+
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #C5A880; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .leaflet-popup-content { font-family: inherit; margin: 12px; text-align: center; }
         .leaflet-popup-tip { background: #ffffff; border-bottom: 2px solid #C5A880; border-right: 2px solid #C5A880; }
@@ -200,16 +210,16 @@
         </div>
     </section>
 
-    <!-- Mapa Interactivo de Loja -->
+    <!-- Mapa Exclusivo Limpio de Loja -->
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
-            <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa "Cerca de mí" para mostrar tu avatar en la ciudad.</p>
+            <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Interactivo de la Ruta</h2>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto">Visualización limpia y colorida destacando únicamente los pines oficiales.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div class="lg:col-span-2 rounded-xl h-[440px] shadow-md border border-gray-300 overflow-hidden relative">
-                <!-- Mapa base original colorido y libre sin API Key -->
+                <!-- Mapa base con colores vivos originales y filtro anti-comercios ajenos -->
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <button onclick="locateUserGPS()" class="absolute bottom-4 left-4 z-[900] bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
                     <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> Cerca de mí
@@ -234,7 +244,7 @@
                 </div>
 
                 <div class="pt-4 border-t border-gray-100 flex flex-col gap-2">
-                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
+                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandDark py-2.5 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1 text-brandGold">
                         <i class="fa-solid fa-camera-retro mr-2"></i> Ver Galería / Habitaciones
                     </button>
 
@@ -807,7 +817,7 @@
             map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
             L.control.zoom({ position: 'bottomright' }).addTo(map);
             
-            // MAPA ESTÁNDAR COLORIDO ORIGINAL DE OPENSTREETMAP (Libre, sin API Key y con sus colores vivos)
+            // Mapa base original sin tokens ni API Keys
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
                 maxZoom: 18, 
                 attribution: '© OpenStreetMap' 
@@ -907,10 +917,10 @@
                 if(loc.lat && loc.lng) {
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
-                        html: `<div class="bg-brandDark text-brandGold w-11 h-11 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
-                                   <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-base pointer-events-none"></i>
+                        html: `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
+                                   <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
                                </div>`,
-                        iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -26]
+                        iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
                     });
 
                     const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
@@ -950,10 +960,10 @@
                 if(ev.lat && ev.lng) {
                     const eventIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
-                        html: `<div class="bg-brandGold text-brandDark w-9 h-9 rounded-full border-[2px] border-white flex items-center justify-center shadow-md" style="touch-action: none;">
-                                   <i class="fa-solid fa-calendar-days text-xs"></i>
+                        html: `<div class="bg-brandGold text-brandDark w-10 h-10 rounded-full border-[2px] border-white flex items-center justify-center shadow-lg" style="touch-action: none;">
+                                   <i class="fa-solid fa-calendar-days text-sm"></i>
                                </div>`,
-                        iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -20]
+                        iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -22]
                     });
                     const evMarker = L.marker([ev.lat, ev.lng], { icon: eventIcon });
                     evMarker.bindPopup(`<div class="text-center p-1"><span class="bg-brandGold text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">Evento Cultural</span><b class="text-brandDark text-xs block mt-1">${ev.title}</b><p class="text-[10px] text-gray-600 mt-0.5">${ev.date} - ${ev.location}</p></div>`);
@@ -1479,7 +1489,7 @@
 
         function toggleMobileMenu() { 
             const menu = document.getElementById('mobileMenu');
-            if(menu) menu.classList.add('hidden'); 
+            if(menu) menu.classList.toggle('hidden'); 
         }
         function openModal(id) { 
             const m = document.getElementById(id);
