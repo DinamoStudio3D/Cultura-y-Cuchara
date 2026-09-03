@@ -112,6 +112,7 @@
             </a>
             <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
                 <a href="#inicio" class="hover:text-brandGold transition">Inicio</a>
+                <a href="#tendencia" class="hover:text-brandGold transition">En Tendencia</a>
                 <a href="#mapa" class="hover:text-brandGold transition">El Mapa</a>
                 <a href="#establecimientos" class="hover:text-brandGold transition">La Ruta</a>
                 <a href="#especias" class="hover:text-brandGold transition">Especias ILE</a>
@@ -130,6 +131,7 @@
         </div>
         <div id="mobileMenu" class="hidden md:hidden pt-4 pb-2 border-t border-gray-800 mt-3 flex flex-col gap-3 text-sm bg-brandDark px-4">
             <a href="#inicio" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Inicio</a>
+            <a href="#tendencia" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">En Tendencia</a>
             <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">El Mapa</a>
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">La Ruta</a>
             <a href="#especias" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Especias ILE</a>
@@ -190,6 +192,21 @@
                 <p class="text-4xl font-black mb-1"><span class="counter" data-target="100">0</span>%</p>
                 <p class="text-xs font-bold uppercase tracking-widest">Identidad Lojana</p>
             </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN EN TENDENCIA: LOS MÁS GUARDADOS (NUEVO) -->
+    <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="bg-red-500/10 text-red-600 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest border border-red-500/20 inline-block mb-2">
+                    <i class="fa-solid fa-fire mr-1 text-red-500"></i> Lo más cotizado por los viajeros
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-brandDark">En Tendencia esta Semana</h2>
+                <p class="text-gray-600 text-xs mt-1">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="trendingGridContainer"></div>
         </div>
     </section>
 
@@ -312,7 +329,7 @@
                 <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> Tradición y Sabor</span>
                 <h2 class="text-3xl font-bold mt-2 mb-3">Secretos de Cocina con ILE</h2>
                 <p class="text-gray-400 text-sm max-w-xl mx-auto">
-                    El alma de la gastronomía lojana reside in sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.
+                    El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.
                 </p>
             </div>
 
@@ -992,6 +1009,7 @@
         function renderEverything() {
             renderCategoriesUI();
             renderMapAndGrid();
+            renderTrendingUI();
             renderAgendaUI();
             updateItineraryUI();
             if(map) {
@@ -1038,6 +1056,36 @@
             renderAdminCategoriesList();
         }
 
+        // RENDERIZAR SECCIÓN "EN TENDENCIA"
+        function renderTrendingUI() {
+            const container = document.getElementById('trendingGridContainer');
+            if(!container) return;
+            container.innerHTML = '';
+
+            // Tomar los primeros 3 locales como tendencia principal (o los más guardados)
+            let trendingList = locations.slice(0, 3);
+
+            trendingList.forEach((loc) => {
+                const realIndex = locations.findIndex(l => l.id === loc.id);
+                const isFav = favoriteLocations.includes(loc.id);
+                const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
+
+                container.innerHTML += `
+                    <div class="bg-brandCream rounded-xl overflow-hidden shadow-md border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
+                        <div class="h-44 overflow-hidden relative">
+                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10"><i class="fa-solid fa-fire mr-1"></i> TOP RUTA</span>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${loc.tag}</span>
+                            <h3 class="text-base font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${loc.title}</h3>
+                            <p class="text-gray-600 text-xs line-clamp-2">${loc.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
             const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -1076,7 +1124,6 @@
                 const uniqueId = loc.id || 'loc_' + index;
                 if(!loc.id) loc.id = uniqueId;
 
-                // Encontrar el índice real de este local en el array principal `locations`
                 const realIndex = locations.findIndex(l => l.id === loc.id);
 
                 if(loc.lat && loc.lng) {
@@ -1168,7 +1215,6 @@
             updatePassportUI();
         }
 
-        // GPS BLINDADO CON SELECCIÓN AUTOMÁTICA DEL MÁS CERCANO
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
@@ -1203,7 +1249,6 @@
                         
                         renderMapAndGrid(); 
 
-                        // Seleccionar automáticamente el local más cercano en la tarjeta de vista previa
                         if(locations.length > 0) {
                             let closestIndex = 0;
                             let minDistance = Infinity;
@@ -1268,6 +1313,7 @@
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             updateItineraryUI();
+            renderTrendingUI();
         }
 
         function toggleFavoriteCard(e, localId) {
@@ -1285,6 +1331,7 @@
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             updateItineraryUI();
+            renderTrendingUI();
         }
 
         function updateItineraryUI() {
@@ -1359,6 +1406,7 @@
             favoriteLocations = favoriteLocations.filter(favId => favId !== id);
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             renderMapAndGrid();
+            renderTrendingUI();
             updateItineraryUI();
             showToast('Lugar eliminado de tu ruta');
         }
