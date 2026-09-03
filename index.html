@@ -74,6 +74,9 @@
 
         .star-rating i { cursor: pointer; transition: color 0.2s; }
         .star-rating i:hover, .star-rating i.active { color: #C5A880; }
+
+        /* Transición suave para las tarjetas al filtrar */
+        .local-item { transition: all 0.3s ease-in-out; }
     </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -267,8 +270,23 @@
                 </div>
             </div>
 
-            <!-- Menú de Filtros dinámico -->
-            <div class="flex overflow-x-auto hide-scrollbar gap-4 pb-4 mb-4" id="categoryScroll"></div>
+            <!-- Filtros por Categoría y Bloque de Tiempo -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-2 border-b border-gray-100">
+                <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full sm:w-auto" id="categoryScroll"></div>
+                
+                <!-- Filtros rápidos por Momento del Día -->
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="filterByTimeBlock('manana')" class="time-filter-btn bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-100 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-sun"></i> Mañana
+                    </button>
+                    <button onclick="filterByTimeBlock('tarde')" class="time-filter-btn bg-brandGold/10 text-brandDark border border-brandGold/40 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-brandGold/20 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-utensils"></i> Tarde
+                    </button>
+                    <button onclick="filterByTimeBlock('noche')" class="time-filter-btn bg-indigo-50 text-indigo-900 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-moon"></i> Noche
+                    </button>
+                </div>
+            </div>
 
             <!-- Grilla Dinámica -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="localesGrid"></div>
@@ -782,7 +800,7 @@
                 tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
                 desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
                 dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
-                address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://maps.google.com/?q=-3.9931,-79.2042",
+                address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-mortar-pestle", category: "hueca",
                 gallery: [{ img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" }]
             },
@@ -790,7 +808,7 @@
                 tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
                 desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
                 dish: "Café filtrado de origen Catamayo", hours: "Mar - Dom: 09:00 - 20:00",
-                address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://maps.google.com/?q=-3.9968,-79.2025",
+                address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
                 iconClass: "fa-mug-hot", category: "cafe",
                 gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)" }]
             },
@@ -798,7 +816,7 @@
                 tag: "Gastronomía Urbana", title: "El Fogón de Lola",
                 desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
                 dish: "Repe ahumado con toque de la casa", hours: "Mié - Lun: 12:00 - 22:00",
-                address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://maps.google.com/?q=-3.9895,-79.2060",
+                address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
                 iconClass: "fa-fire-burner", category: "urbana",
                 gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado" }]
             },
@@ -806,7 +824,7 @@
                 tag: "Hotel Aliado", title: "Gran Hotel Loja",
                 desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
                 dish: "Desayuno tradicional incluido", hours: "Atención 24/7",
-                address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://maps.google.com/?q=-3.9950,-79.2010",
+                address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
                 iconClass: "fa-hotel", category: "hotel",
                 gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva" }]
             }
@@ -988,14 +1006,20 @@
                     cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
                 }
 
+                // Generar enlace inteligente para GPS (desde la ubicación actual si existe)
+                let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
+
                 grid.innerHTML += `
-                    <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClickById('${loc.id}')">
+                    <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClickById('${loc.id}')" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
                         <div class="h-48 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10">${loc.tag}</span>
+                            <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar (Google Maps)">
+                                <i class="fa-solid fa-diamond-turn-right"></i>
+                            </a>
                         </div>
                         <div class="p-5 relative">
                             <div class="flex items-center justify-between mb-1">
@@ -1024,7 +1048,6 @@
                 }
             });
 
-            // Asegurarnos de que el pin azul de la ubicación actual SIEMPRE esté visible si ya fue activado
             if(userMarkerInstance) {
                 userMarkerInstance.addTo(markersLayer);
             }
@@ -1033,7 +1056,7 @@
             updatePassportUI();
         }
 
-        // GPS BLINDADO CON RESTAURACIÓN DE PIN AZUL FIJO
+        // GPS BLINDADO CON TRANSICIÓN SUAVE
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
@@ -1224,6 +1247,35 @@
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
+        // NUEVO: FILTRO RÁPIDO POR MOMENTO DEL DÍA
+        function filterByTimeBlock(block) {
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) searchInput.value = "";
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.add('hidden');
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
+                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+            });
+
+            document.querySelectorAll('.local-item').forEach(item => {
+                let match = false;
+                if (block === 'manana' && item.classList.contains('cafe')) match = true;
+                if (block === 'tarde' && (item.classList.contains('hueca') || item.classList.contains('urbana'))) match = true;
+                if (block === 'noche' && item.classList.contains('hotel')) match = true;
+
+                if (match) {
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item');
+                } else {
+                    item.style.opacity = '0';
+                    setTimeout(() => item.classList.add('hidden-item'), 200);
+                }
+            });
+            showToast(`Mostrando bloque: ${block.toUpperCase()}`);
+        }
+
         function renderAgendaUI() {
             const agendaContainer = document.getElementById('agendaGridContainer');
             if(!agendaContainer) return;
@@ -1350,7 +1402,7 @@
                 tag, title, desc, dish,
                 hours: "Lun - Dom: 09:00 - 22:00", address,
                 lat: finalCoords[0], lng: finalCoords[1],
-                gps: `https://maps.google.com/?q=${finalCoords[0]},${finalCoords[1]}`,
+                gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
                 iconClass, category,
                 gallery: [{ img, title: dish }]
             };
@@ -1475,7 +1527,10 @@
             document.getElementById('previewDish').innerText = (loc.category === 'hotel' ? "Beneficio: " : "Plato: ") + loc.dish;
             document.getElementById('previewHours').innerText = loc.hours;
             document.getElementById('previewAddress').innerText = loc.address;
-            document.getElementById('previewGps').href = loc.gps;
+            
+            // Enlace de GPS inteligente dinámico
+            let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
+            document.getElementById('previewGps').href = previewGpsUrl;
             
             const waBtn = document.getElementById('previewWhatsapp');
             const waText = `¡Hola! Te recomiendo visitar ${loc.title} en la ruta Cultura y Cuchara de Loja. Ubicación: ${loc.address}`;
@@ -1662,8 +1717,13 @@
             let hasResults = false;
             items.forEach(item => {
                 if (item.querySelector('.local-title').innerText.toLowerCase().includes(input) || item.querySelector('.local-desc').innerText.toLowerCase().includes(input)) {
-                    item.classList.remove('hidden-item'); hasResults = true;
-                } else { item.classList.add('hidden-item'); }
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item'); 
+                    hasResults = true;
+                } else { 
+                    item.style.opacity = '0';
+                    item.classList.add('hidden-item'); 
+                }
             });
             const noRes = document.getElementById('noResults');
             if(noRes) noRes.classList.toggle('hidden', hasResults);
@@ -1681,8 +1741,15 @@
             });
             btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
             btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
+
             document.querySelectorAll('.local-item').forEach(item => {
-                if (category === 'all' || item.classList.contains(category)) { item.classList.remove('hidden-item'); } else { item.classList.add('hidden-item'); }
+                if (category === 'all' || item.classList.contains(category)) { 
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item'); 
+                } else { 
+                    item.style.opacity = '0';
+                    item.classList.add('hidden-item'); 
+                }
             });
         }
 
