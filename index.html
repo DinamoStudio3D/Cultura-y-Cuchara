@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cultura y Cuchara - Ruta Gastronómica y Turística de Loja</title>
+    <!-- Favicon del proyecto -->
+    <link rel="icon" type="image/png" href="https://i.imgur.com/TIaEffN.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -198,15 +201,20 @@
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa "Cerca de mí" para ubicarte con precisión en la ciudad.</p>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div class="lg:col-span-2 rounded-xl h-[440px] shadow-md border border-gray-300 overflow-hidden relative">
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
-                <button onclick="locateUserGPS()" class="absolute bottom-4 left-4 z-[900] bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
-                    <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> Cerca de mí
-                </button>
+                <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
+                    <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
+                        <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> Cerca de mí
+                    </button>
+                    <button onclick="centerOnLoja()" class="bg-white text-brandDark px-3 py-2.5 rounded-full shadow-xl hover:bg-gray-100 transition text-xs font-bold flex items-center gap-1.5 border border-gray-300" title="Centrar mapa en Loja">
+                        <i class="fa-solid fa-crosshairs text-brandGold"></i> Centrar Loja
+                    </button>
+                </div>
             </div>
 
             <!-- Tarjeta de Vista Previa -->
@@ -424,9 +432,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto flex-grow space-y-3" id="itineraryListContainer">
-                <!-- Se llena dinámicamente -->
-            </div>
+            <div class="p-6 overflow-y-auto flex-grow space-y-3" id="itineraryListContainer"></div>
             <div class="p-4 bg-white border-t border-gray-200 text-center">
                 <button onclick="shareEntireItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
                     <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Compartir mi Ruta Completa por WhatsApp
@@ -985,14 +991,25 @@
             updatePassportUI();
         }
 
-        // CORRECCIÓN DE GPS ABSOLUTA (Centra en Loja si falla o es denegado)
+        // GPS BLINDADO: Si el navegador bota otra ciudad por IP, se fuerza al centro de Loja
         function locateUserGPS() {
-            showToast('Obteniendo tu ubicación actual...');
+            showToast('Obteniendo tu ubicación...');
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         const lat = pos.coords.latitude;
                         const lng = pos.coords.longitude;
+                        
+                        const lojaLat = -3.9931;
+                        const lojaLng = -79.2042;
+                        const distance = Math.abs(lat - lojaLat) + Math.abs(lng - lojaLng);
+
+                        if (distance > 0.8) {
+                            showToast('⚠️ Tu red indicó otra ciudad. Centrando en Loja.');
+                            centerOnLoja();
+                            return;
+                        }
+
                         if(map) map.setView([lat, lng], 16, { animate: true });
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
@@ -1007,17 +1024,17 @@
                         showToast('¡Ubicación actual encontrada!');
                     },
                     (err) => {
-                        console.warn("GPS denegado o no disponible:", err.message);
-                        fallbackToLojaCenter();
+                        console.warn("GPS denegado:", err.message);
+                        centerOnLoja();
                     },
-                    { timeout: 8000, enableHighAccuracy: true }
+                    { timeout: 6000, enableHighAccuracy: true }
                 );
             } else {
-                fallbackToLojaCenter();
+                centerOnLoja();
             }
         }
 
-        function fallbackToLojaCenter() {
+        function centerOnLoja() {
             const lojaLat = -3.9931;
             const lojaLng = -79.2042;
             if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
@@ -1030,8 +1047,8 @@
             });
             if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
             userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon }).addTo(markersLayer)
-              .bindPopup("<b>Centro de Loja</b><br>GPS predeterminado.").openPopup();
-            showToast('Ubicación centrada en Loja');
+              .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.").openPopup();
+            showToast('Mapa centrado en Loja');
         }
 
         // SISTEMA DE FAVORITOS / MI RUTA
@@ -1384,12 +1401,10 @@
             document.getElementById('previewAddress').innerText = loc.address;
             document.getElementById('previewGps').href = loc.gps;
             
-            // Configurar enlace de WhatsApp para compartir parada individual
             const waBtn = document.getElementById('previewWhatsapp');
             const waText = `¡Hola! Te recomiendo visitar ${loc.title} en la ruta Cultura y Cuchara de Loja. Ubicación: ${loc.address}`;
             waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
 
-            // Sincronizar estado del corazón en la vista previa
             const favIcon = document.getElementById('previewFav');
             if(favoriteLocations.includes(loc.id)) {
                 favIcon.className = "fa-solid fa-heart text-red-500";
