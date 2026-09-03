@@ -36,9 +36,6 @@
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
         #lojaMap { z-index: 1; touch-action: pan-y; }
         
-        /* Estilo para desaturar el mapa y hacerlo minimalista/limpio */
-        .leaflet-tile { filter: grayscale(100%) contrast(95%) brightness(103%); }
-        
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #C5A880; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .leaflet-popup-content { font-family: inherit; margin: 12px; text-align: center; }
         .leaflet-popup-tip { background: #ffffff; border-bottom: 2px solid #C5A880; border-right: 2px solid #C5A880; }
@@ -199,12 +196,12 @@
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Exclusivo de Socios y Aliados</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto">Visualización limpia en escala de grises para resaltar únicamente tus pines oficiales.</p>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto">Visualización limpia sin comercios ajenos para destacar únicamente tus pines oficiales.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div class="lg:col-span-2 rounded-xl h-[440px] shadow-md border border-gray-300 overflow-hidden relative">
-                <!-- Mapa base limpio con filtro monocromático -->
+                <!-- Mapa base limpio sin nombres de comercios molestos -->
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <button onclick="locateUserGPS()" class="absolute bottom-4 left-4 z-[900] bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
                     <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> Cerca de mí
@@ -802,10 +799,10 @@
             map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
             L.control.zoom({ position: 'bottomright' }).addTo(map);
             
-            // Mapa base limpio con filtro de escala de grises incorporado
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-                maxZoom: 18, 
-                attribution: '© OpenStreetMap' 
+            // MAPA LIMPIO PROFESIONAL (CartoDB Positron): Mantiene colores suaves y elimina todos los nombres de comercios ajenos, tiendas y farmacias
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { 
+                maxZoom: 19, 
+                attribution: '© OpenStreetMap contributors & CARTO' 
             }).addTo(map);
             
             markersLayer = L.layerGroup().addTo(map);
@@ -1463,7 +1460,7 @@
 
         let countersAnimated = false;
         function revealOnScroll() {
-            document.querySelectorAll(".reveal").force = document.querySelectorAll(".reveal").forEach(el => {
+            document.querySelectorAll(".reveal").forEach(el => {
                 if (el.getBoundingClientRect().top < window.innerHeight - 50) {
                     el.classList.add("active");
                     if (!countersAnimated && el.querySelector('.counter')) { animateCounters(); countersAnimated = true; }
