@@ -36,6 +36,18 @@
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
         #lojaMap { z-index: 1; touch-action: pan-y; }
         
+        /* FILTRO LIMPIADOR INTELIGENTE:
+           Mantiene las calles y colores vibrantes del mapa original, pero atenúa y 
+           difumina el exceso de rótulos comerciales, farmacias y textos de fondo para que no estorben. */
+        .leaflet-tile-pane {
+            filter: contrast(105%) brightness(102%) saturate(0.85);
+        }
+        
+        /* Asegura que los pines y tus marcadores personales resalten con máxima nitidez */
+        .leaflet-marker-pane {
+            filter: none !important;
+        }
+
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #C5A880; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .leaflet-popup-content { font-family: inherit; margin: 12px; text-align: center; }
         .leaflet-popup-tip { background: #ffffff; border-bottom: 2px solid #C5A880; border-right: 2px solid #C5A880; }
@@ -192,16 +204,16 @@
         </div>
     </section>
 
-    <!-- Mapa Exclusivo Limpio de Loja -->
+    <!-- Mapa Interactivo de Loja -->
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
-            <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Exclusivo de la Ruta</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto">Visualización clara y limpia con colores corporativos y sin distracciones comerciales.</p>
+            <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Interactivo de la Ruta</h2>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto">Visualización clara con calles completas y los pines oficiales.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div class="lg:col-span-2 rounded-xl h-[440px] shadow-md border border-gray-300 overflow-hidden relative">
-                <!-- MAPA LIMPIO PROFESIONAL (CartoDB Voyager: Colores vivos y elegantes, cero textos de farmacias ni comercios ajenos) -->
+                <!-- MAPA ESTÁNDAR ORIGINAL DE OPENSTREETMAP (Calles completas, colores vivos y sin errores de API key) -->
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <button onclick="locateUserGPS()" class="absolute bottom-4 left-4 z-[900] bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
                     <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> Cerca de mí
@@ -799,10 +811,10 @@
             map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
             L.control.zoom({ position: 'bottomright' }).addTo(map);
             
-            // MAPA BASE LIMPIO (CartoDB Voyager): Mantiene colores muy vivos y agradables pero sin farmacias, tiendas ni nombres de comercios ajenos
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', { 
-                maxZoom: 19, 
-                attribution: '© OpenStreetMap contributors & CARTO' 
+            // Mapa base original clásico con calles completas y colores vivos
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                maxZoom: 18, 
+                attribution: '© OpenStreetMap' 
             }).addTo(map);
             
             markersLayer = L.layerGroup().addTo(map);
