@@ -950,7 +950,6 @@
                 }
 
                 const isFav = favoriteLocations.includes(loc.id);
-                // Usamos el icono fa-seedling (grano de café estilizado) combinado con la forma perfecta
                 const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
 
                 grid.innerHTML += `
@@ -970,14 +969,15 @@
                 `;
             });
 
+            // RESTAURACIÓN DE PINES DE EVENTOS CON ANIMACIÓN DE REBOTE (BOUNCE)
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
                     const eventIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
-                        html: `<div class="bg-brandGold text-brandDark w-10 h-10 rounded-full border-[2px] border-white flex items-center justify-center shadow-lg" style="touch-action: none;">
+                        html: `<div class="bg-brandGold text-brandDark w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
                                    <i class="fa-solid fa-calendar-days text-sm"></i>
                                </div>`,
-                        iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -22]
+                        iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
                     });
                     const evMarker = L.marker([ev.lat, ev.lng], { icon: eventIcon });
                     evMarker.bindPopup(`<div class="text-center p-1"><span class="bg-brandGold text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">Evento Cultural</span><b class="text-brandDark text-xs block mt-1">${ev.title}</b><p class="text-[10px] text-gray-600 mt-0.5">${ev.date} - ${ev.location}</p></div>`);
