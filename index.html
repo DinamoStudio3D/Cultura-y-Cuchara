@@ -115,13 +115,15 @@
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition">Agenda</a>
                 <a href="#aliados" class="hover:text-brandGold transition">Aliados</a>
+                <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/40 px-3 py-1.5 rounded font-bold hover:bg-brandGold hover:text-brandDark transition text-xs flex items-center gap-1.5 relative">
+                    <i class="fa-solid fa-heart"></i> Mi Ruta <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1 rounded-full hidden">0</span>
+                </button>
                 <button onclick="requestAdminAccess()" class="bg-gray-800 text-brandGold border border-brandGold/40 px-3 py-1.5 rounded font-bold hover:bg-black transition text-xs flex items-center gap-1.5">
                     <i class="fa-solid fa-lock text-[10px]"></i> Panel Admin
                 </button>
             </div>
             <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl p-2 relative">
                 <i class="fa-solid fa-bars"></i>
-                <span id="mobileStampBadge" class="absolute top-1 right-0 bg-red-500 text-white text-[8px] font-bold px-1 py-0.5 rounded-full hidden">0</span>
             </button>
         </div>
         <div id="mobileMenu" class="hidden md:hidden pt-4 pb-2 border-t border-gray-800 mt-3 flex flex-col gap-3 text-sm bg-brandDark px-4">
@@ -130,7 +132,7 @@
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">La Ruta</a>
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-qrcode text-brandGold mr-1"></i>Mi Pasaporte</a>
             <a href="#agenda" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Agenda Cultural</a>
-            <a href="#aliados" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Aliados</a>
+            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white"><i class="fa-solid fa-heart mr-1"></i> Mi Ruta Guardada</button>
             <button onclick="requestAdminAccess(); toggleMobileMenu()" class="bg-gray-800 text-brandGold border border-brandGold/40 px-4 py-2 rounded font-bold text-center text-xs mb-2 mt-2">Panel de Administración</button>
         </div>
     </nav>
@@ -196,7 +198,7 @@
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa "Cerca de mí" para mostrar tu avatar en la ciudad.</p>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa "Cerca de mí" para ubicarte con precisión en la ciudad.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -209,7 +211,7 @@
 
             <!-- Tarjeta de Vista Previa -->
             <div id="mapPreviewCard" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col justify-between h-[440px] relative transition-all duration-300">
-                <button onclick="toggleFavorite('previewFav', this)" class="absolute top-5 right-5 text-gray-400 hover:text-red-500 transition text-xl z-10" title="Añadir a mi ruta">
+                <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 text-gray-400 hover:text-red-500 transition text-xl z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-regular fa-heart"></i>
                 </button>
                 <div>
@@ -225,21 +227,21 @@
                 </div>
 
                 <div class="pt-4 border-t border-gray-100 flex flex-col gap-2">
-                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
+                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
                         <i class="fa-solid fa-camera-retro mr-2"></i> Ver Galería / Habitaciones
                     </button>
 
                     <div class="flex gap-2">
-                        <button onclick="openModal('videoModal')" class="flex-1 bg-gray-100 text-brandDark py-2 rounded-lg font-bold text-xs hover:bg-gray-200 transition shadow flex items-center justify-center">
-                            <i class="fa-solid fa-play mr-2 text-brandGold"></i> Episodio
-                        </button>
+                        <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-2 rounded-lg font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
+                            <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Compartir
+                        </a>
                         <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-2 rounded-lg font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
                             <i class="fa-solid fa-diamond-turn-right text-brandGold"></i>
                         </a>
                     </div>
                     
-                    <button onclick="openQRDemoModal()" class="w-full bg-brandGold/10 border border-brandGold text-brandDark py-2 rounded-lg font-bold text-[10px] hover:bg-brandGold hover:text-white transition uppercase tracking-widest flex items-center justify-center mt-1">
-                        <i class="fa-solid fa-qrcode mr-2"></i> Simular Escaneo (Sellar)
+                    <button onclick="openQRDemoModal()" class="w-full bg-brandGold/10 border border-brandGold text-brandDark py-1.5 rounded-lg font-bold text-[10px] hover:bg-brandGold hover:text-white transition uppercase tracking-widest flex items-center justify-center mt-1">
+                        <i class="fa-solid fa-qrcode mr-1.5"></i> Simular Escaneo (Sellar)
                     </button>
                 </div>
             </div>
@@ -410,6 +412,29 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <!-- MODAL DE MI RUTA / FAVORITOS -->
+    <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
+            <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-heart text-brandGold text-xl"></i>
+                    <h3 class="text-lg font-black uppercase tracking-wider text-brandGold">Mi Ruta Personalizada</h3>
+                </div>
+                <button onclick="closeModal('itineraryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-grow space-y-3" id="itineraryListContainer">
+                <!-- Se llena dinámicamente -->
+            </div>
+            <div class="p-4 bg-white border-t border-gray-200 text-center">
+                <button onclick="shareEntireItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
+                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Compartir mi Ruta Completa por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE ACCESO PIN ADMIN -->
     <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
@@ -507,6 +532,11 @@
                                         <option value="-3.9895,-79.2060">Av. Universitaria</option>
                                         <option value="-3.9910,-79.2030">Plaza de las Flores</option>
                                         <option value="-3.9980,-79.2015">Zona Sur / Tejar</option>
+                                        <option value="-3.9985,-79.2010">Parque Central</option>
+                                        <option value="-4.0040,-79.2020">San Sebastián</option>
+                                        <option value="-3.9780,-79.2000">Parque Jipiro</option>
+                                        <option value="-4.0150,-79.2100">Universidad Nacional de Loja (UNL)</option>
+                                        <option value="-3.9750,-79.2050">Terminal Terrestre</option>
                                     </select>
                                 </div>
                             </div>
@@ -791,19 +821,14 @@
 
         let currentLocationIndex = 0;
         let visitedLocations = []; 
+        let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
         let passportMode = 'turista';
 
         let map, markersLayer, userMarkerInstance = null;
         try {
             map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
             L.control.zoom({ position: 'bottomright' }).addTo(map);
-            
-            // MAPA CLÁSICO ORIGINAL DE OPENSTREETMAP (Colores de siempre, calles claras, libre y sin errores)
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-                maxZoom: 18, 
-                attribution: '© OpenStreetMap' 
-            }).addTo(map);
-            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
         } catch(e) { console.log('Mapa cargando...'); }
 
@@ -836,6 +861,7 @@
             renderCategoriesUI();
             renderMapAndGrid();
             renderAgendaUI();
+            updateItineraryUI();
             if(map) {
                 setTimeout(() => { map.invalidateSize(); }, 200);
             }
@@ -893,8 +919,10 @@
                 aliadoCountEl.innerText = locations.length;
             }
 
-            // DIBUJAR ÚNICAMENTE LOS PINES DE LOS SOCIOS / ALIADOS REGISTRADOS
             locations.forEach((loc, index) => {
+                const uniqueId = loc.id || 'loc_' + index;
+                if(!loc.id) loc.id = uniqueId;
+
                 if(loc.lat && loc.lng) {
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
@@ -918,11 +946,13 @@
                     markersLayer.addLayer(marker);
                 }
 
-                // Renderizar la tarjeta en la lista de abajo
+                const isFav = favoriteLocations.includes(loc.id);
+                const favHeartClass = isFav ? "fa-solid text-red-500" : "fa-regular text-gray-400";
+
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${index})">
-                        <button onclick="toggleCardFav(event, this)" class="absolute top-3 right-3 z-20 bg-white/90 backdrop-blur w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition shadow-md">
-                            <i class="fa-regular fa-heart text-lg"></i>
+                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 bg-white/90 backdrop-blur w-9 h-9 rounded-full flex items-center justify-center hover:text-red-500 transition shadow-md">
+                            <i id="cardFav_${loc.id}" class="${favHeartClass} text-lg"></i>
                         </button>
                         <div class="h-48 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
@@ -936,7 +966,6 @@
                 `;
             });
 
-            // Eventos destacados limpios
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
                     const eventIcon = L.divIcon({
@@ -954,6 +983,155 @@
 
             renderAdminLocationsList();
             updatePassportUI();
+        }
+
+        // CORRECCIÓN DE GPS ABSOLUTA (Centra en Loja si falla o es denegado)
+        function locateUserGPS() {
+            showToast('Obteniendo tu ubicación actual...');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        if(map) map.setView([lat, lng], 16, { animate: true });
+                        const userAvatarIcon = L.divIcon({
+                            className: 'custom-leaflet-icon',
+                            html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                                       <i class="fa-solid fa-street-view text-2xl"></i>
+                                   </div>`,
+                            iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+                        });
+                        if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
+                        userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon }).addTo(markersLayer)
+                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ubicación GPS actual.").openPopup();
+                        showToast('¡Ubicación actual encontrada!');
+                    },
+                    (err) => {
+                        console.warn("GPS denegado o no disponible:", err.message);
+                        fallbackToLojaCenter();
+                    },
+                    { timeout: 8000, enableHighAccuracy: true }
+                );
+            } else {
+                fallbackToLojaCenter();
+            }
+        }
+
+        function fallbackToLojaCenter() {
+            const lojaLat = -3.9931;
+            const lojaLng = -79.2042;
+            if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
+            const userAvatarIcon = L.divIcon({
+                className: 'custom-leaflet-icon',
+                html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                           <i class="fa-solid fa-street-view text-2xl"></i>
+                       </div>`,
+                iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+            });
+            if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
+            userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon }).addTo(markersLayer)
+              .bindPopup("<b>Centro de Loja</b><br>GPS predeterminado.").openPopup();
+            showToast('Ubicación centrada en Loja');
+        }
+
+        // SISTEMA DE FAVORITOS / MI RUTA
+        function toggleFavoriteCurrent(btn) {
+            const loc = locations[currentLocationIndex];
+            if(!loc) return;
+            const index = favoriteLocations.indexOf(loc.id);
+            const icon = btn.querySelector('i');
+            if (index > -1) {
+                favoriteLocations.splice(index, 1);
+                icon.className = "fa-regular fa-heart text-gray-400";
+                showToast(`Quitado de tu ruta`);
+            } else {
+                favoriteLocations.push(loc.id);
+                icon.className = "fa-solid fa-heart text-red-500";
+                showToast(`¡Añadido a Mi Ruta!`);
+            }
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            updateItineraryUI();
+        }
+
+        function toggleFavoriteCard(e, localId) {
+            e.stopPropagation();
+            const index = favoriteLocations.indexOf(localId);
+            const icon = document.getElementById(`cardFav_${localId}`);
+            if (index > -1) {
+                favoriteLocations.splice(index, 1);
+                if(icon) icon.className = "fa-regular fa-heart text-gray-400 text-lg";
+                showToast(`Quitado de tu ruta`);
+            } else {
+                favoriteLocations.push(localId);
+                if(icon) icon.className = "fa-solid fa-heart text-red-500 text-lg";
+                showToast(`¡Añadido a Mi Ruta!`);
+            }
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            updateItineraryUI();
+        }
+
+        function updateItineraryUI() {
+            const container = document.getElementById('itineraryListContainer');
+            const badge = document.getElementById('itineraryBadge');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(favoriteLocations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 text-gray-400 text-xs">
+                        <i class="fa-regular fa-heart text-3xl mb-2 text-gray-300"></i><br>
+                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el corazón en cualquier tarjeta o pin para agregarlo.
+                    </div>
+                `;
+                if(badge) badge.classList.add('hidden');
+                return;
+            }
+
+            if(badge) {
+                badge.innerText = favoriteLocations.length;
+                badge.classList.remove('hidden');
+            }
+
+            favoriteLocations.forEach(id => {
+                const loc = locations.find(l => l.id === id);
+                if(loc) {
+                    container.innerHTML += `
+                        <div class="bg-gray-50 border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
+                                <div>
+                                    <h4 class="font-bold text-xs text-brandDark">${loc.title}</h4>
+                                    <span class="text-[10px] text-brandGold font-bold">${loc.tag}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Te comparto esta parada de mi ruta en Cultura y Cuchara: ' + loc.title + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                                <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function removeFavorite(id) {
+            favoriteLocations = favoriteLocations.filter(favId => favId !== id);
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            renderMapAndGrid();
+            updateItineraryUI();
+            showToast('Lugar eliminado de tu ruta');
+        }
+
+        function shareEntireItinerary() {
+            if(favoriteLocations.length === 0) { alert('Tu ruta está vacía.'); return; }
+            let text = "¡Hola! Esta es mi ruta turística y gastronómica planeada en *Cultura y Cuchara (Loja)*:\n\n";
+            favoriteLocations.forEach((id, idx) => {
+                const loc = locations.find(l => l.id === id);
+                if(loc) { text += `${idx + 1}. *${loc.title}* (${loc.tag}) - ${loc.address}\n`; }
+            });
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function renderAgendaUI() {
@@ -982,32 +1160,6 @@
                 `;
             });
             renderAdminEventsList();
-        }
-
-        function locateUserGPS() {
-            showToast('Buscando tu ubicación en Loja...');
-            const handlePosition = (lat, lng) => {
-                if(map) map.setView([lat, lng], 16, { animate: true });
-                const userAvatarIcon = L.divIcon({
-                    className: 'custom-leaflet-icon',
-                    html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
-                               <i class="fa-solid fa-street-view text-2xl"></i>
-                           </div>`,
-                    iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
-                });
-                if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
-                userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon }).addTo(markersLayer)
-                  .bindPopup("<b>¡Tú estás aquí!</b><br>Avatar GPS activo.").openPopup();
-                showToast('¡Ubicación encontrada en el mapa!');
-            };
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => { handlePosition(pos.coords.latitude, pos.coords.longitude); },
-                    () => { handlePosition(-3.9931, -79.2042); showToast('¡Ubicación centrada en Loja!'); },
-                    { timeout: 4000 }
-                );
-            } else { handlePosition(-3.9931, -79.2042); }
         }
 
         function focusEventOnMap(lat, lng, title) {
@@ -1231,6 +1383,20 @@
             document.getElementById('previewHours').innerText = loc.hours;
             document.getElementById('previewAddress').innerText = loc.address;
             document.getElementById('previewGps').href = loc.gps;
+            
+            // Configurar enlace de WhatsApp para compartir parada individual
+            const waBtn = document.getElementById('previewWhatsapp');
+            const waText = `¡Hola! Te recomiendo visitar ${loc.title} en la ruta Cultura y Cuchara de Loja. Ubicación: ${loc.address}`;
+            waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+
+            // Sincronizar estado del corazón en la vista previa
+            const favIcon = document.getElementById('previewFav');
+            if(favoriteLocations.includes(loc.id)) {
+                favIcon.className = "fa-solid fa-heart text-red-500";
+            } else {
+                favIcon.className = "fa-regular fa-heart text-gray-400";
+            }
+
             if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
         }
 
@@ -1374,14 +1540,6 @@
                     progressText.innerText = `Llevas ${stampsCount} de ${totalToWin} sellos.`;
                 }
             }
-
-            const badges = [document.getElementById('navStampBadge'), document.getElementById('mobileStampBadge')];
-            badges.forEach(badge => {
-                if(badge) {
-                    if (stampsCount > 0) { badge.innerText = `${stampsCount}/${totalToWin}`; badge.classList.remove('hidden'); }
-                    else { badge.classList.add('hidden'); }
-                }
-            });
         }
 
         function resetPassportProgess() {
