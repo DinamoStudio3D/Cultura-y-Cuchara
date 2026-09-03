@@ -197,7 +197,7 @@
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.</p>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte y ordenar la ruta por cercanía.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -417,22 +417,22 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- MODAL DE MI RUTA / FAVORITOS -->
+    <!-- MODAL DE MI RUTA / FAVORITOS (ESTRUCTURADO POR TIEMPOS) -->
     <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
             <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-mug-hot text-brandGold text-xl"></i>
-                    <h3 class="text-lg font-black uppercase tracking-wider text-brandGold">Mi Ruta Personalizada</h3>
+                    <h3 class="text-lg font-black uppercase tracking-wider text-brandGold">Mi Ruta Organizada</h3>
                 </div>
                 <button onclick="closeModal('itineraryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto flex-grow space-y-3" id="itineraryListContainer"></div>
+            <div class="p-6 overflow-y-auto flex-grow space-y-4" id="itineraryListContainer"></div>
             <div class="p-4 bg-white border-t border-gray-200 text-center">
-                <button onclick="shareEntireItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
-                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Compartir mi Ruta Completa por WhatsApp
+                <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
+                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Compartir mi Ruta Organizada por WhatsApp
                 </button>
             </div>
         </div>
@@ -826,6 +826,7 @@
         let visitedLocations = []; 
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
         let passportMode = 'turista';
+        let userCoords = null; // Almacena la posición GPS del usuario
 
         let map, markersLayer, userMarkerInstance = null;
         try {
@@ -909,6 +910,18 @@
             renderAdminCategoriesList();
         }
 
+        // CÁLCULO DE DISTANCIA (Haversine)
+        function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
         function renderMapAndGrid() {
             if(!markersLayer) return;
             markersLayer.clearLayers();
@@ -922,7 +935,17 @@
                 aliadoCountEl.innerText = locations.length;
             }
 
-            locations.forEach((loc, index) => {
+            // Ordenar por cercanía si el usuario activó su GPS
+            let renderList = [...locations];
+            if (userCoords) {
+                renderList.sort((a, b) => {
+                    let distA = calcularDistanciaKm(userCoords.lat, userCoords.lng, a.lat || -3.9931, a.lng || -79.2042);
+                    let distB = calcularDistanciaKm(userCoords.lat, userCoords.lng, b.lat || -3.9931, b.lng || -79.2042);
+                    return distA - distB;
+                });
+            }
+
+            renderList.forEach((loc, index) => {
                 const uniqueId = loc.id || 'loc_' + index;
                 if(!loc.id) loc.id = uniqueId;
 
@@ -936,11 +959,20 @@
                     });
 
                     const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
+                    
+                    // Calcular distancia en texto para el popup si hay GPS
+                    let distanciaTexto = "";
+                    if (userCoords) {
+                        let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
+                        distanciaTexto = `<span class="text-[10px] text-blue-600 font-bold block mb-1">📍 A ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'} de ti</span>`;
+                    }
+
                     const popupContent = `
                         <div class="text-center p-1">
                             <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${loc.tag}</span>
                             <b class="text-brandDark text-xs block my-1">${loc.title}</b>
-                            <button onclick="window.handlePopupClick(${index})" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
+                            ${distanciaTexto}
+                            <button onclick="window.handlePopupClickByName('${loc.id}')" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
                                 Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i>
                             </button>
                         </div>
@@ -952,8 +984,15 @@
                 const isFav = favoriteLocations.includes(loc.id);
                 const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
 
+                // Calcular etiqueta de distancia para la tarjeta
+                let cardDistHtml = "";
+                if (userCoords) {
+                    let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042);
+                    cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
+                }
+
                 grid.innerHTML += `
-                    <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${index})">
+                    <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClickById('${loc.id}')">
                         <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
@@ -962,14 +1001,17 @@
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10">${loc.tag}</span>
                         </div>
                         <div class="p-5 relative">
-                            <h3 class="text-lg font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors local-title">${loc.title}</h3>
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${loc.title}</h3>
+                                ${cardDistHtml}
+                            </div>
                             <p class="text-gray-600 text-xs local-desc line-clamp-2">${loc.desc}</p>
                         </div>
                     </div>
                 `;
             });
 
-            // RESTAURACIÓN DE PINES DE EVENTOS CON ANIMACIÓN DE REBOTE (BOUNCE)
+            // Pines de eventos con animación de rebote (bounce)
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
                     const eventIcon = L.divIcon({
@@ -989,9 +1031,9 @@
             updatePassportUI();
         }
 
-        // GPS BLINDADO
+        // GPS BLINDADO CON REORDENAMIENTO AUTOMÁTICO
         function locateUserGPS() {
-            showToast('Obteniendo tu ubicación...');
+            showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
@@ -1008,6 +1050,7 @@
                             return;
                         }
 
+                        userCoords = { lat, lng };
                         if(map) map.setView([lat, lng], 16, { animate: true });
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
@@ -1018,8 +1061,10 @@
                         });
                         if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
                         userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon }).addTo(markersLayer)
-                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ubicación GPS actual.").openPopup();
-                        showToast('¡Ubicación actual encontrada!');
+                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.").openPopup();
+                        
+                        renderMapAndGrid(); // Reordena la lista por cercanía
+                        showToast('¡Ubicación encontrada y lista ordenada!');
                     },
                     (err) => {
                         console.warn("GPS denegado:", err.message);
@@ -1035,6 +1080,7 @@
         function centerOnLoja() {
             const lojaLat = -3.9931;
             const lojaLng = -79.2042;
+            userCoords = { lat: lojaLat, lng: lojaLng };
             if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
             const userAvatarIcon = L.divIcon({
                 className: 'custom-leaflet-icon',
@@ -1046,10 +1092,12 @@
             if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
             userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon }).addTo(markersLayer)
               .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.").openPopup();
+            
+            renderMapAndGrid();
             showToast('Mapa centrado en Loja');
         }
 
-        // SISTEMA DE FAVORITOS / MI RUTA
+        // SISTEMA DE FAVORITOS / MI RUTA ESTRUCTURADA POR TIEMPOS
         function toggleFavoriteCurrent(btn) {
             const loc = locations[currentLocationIndex];
             if(!loc) return;
@@ -1107,28 +1155,51 @@
                 badge.classList.remove('hidden');
             }
 
-            favoriteLocations.forEach(id => {
+            // Agrupar por tiempos lógicos: Mañana, Tarde, Noche
+            let mananaHTML = "";
+            let tardeHTML = "";
+            let nocheHTML = "";
+
+            favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
                 if(loc) {
-                    container.innerHTML += `
-                        <div class="bg-gray-50 border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm">
+                    let itemHtml = `
+                        <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
                             <div class="flex items-center gap-3">
                                 <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
                                 <div>
                                     <h4 class="font-bold text-xs text-brandDark">${loc.title}</h4>
-                                    <span class="text-[10px] text-brandGold font-bold">${loc.tag}</span>
+                                    <span class="text-[10px] text-brandGold font-bold">${loc.tag} • ${loc.address}</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Te comparto esta parada de mi ruta en Cultura y Cuchara: ' + loc.title + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
+                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Parada recomendada en mi ruta de Cultura y Cuchara: ' + loc.title + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </a>
                                 <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
                             </div>
                         </div>
                     `;
+
+                    if (loc.category === 'cafe' || idx === 0) {
+                        mananaHTML += itemHtml;
+                    } else if (loc.category === 'hueca' || loc.category === 'urbana') {
+                        tardeHTML += itemHtml;
+                    } else {
+                        nocheHTML += itemHtml;
+                    }
                 }
             });
+
+            if(mananaHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5"><i class="fa-solid fa-sun text-amber-500"></i> Bloque Mañana (Café y Desayuno)</div>` + mananaHTML;
+            }
+            if(tardeHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-utensils text-brandGold"></i> Bloque Tarde (Huecas y Almuerzos)</div>` + tardeHTML;
+            }
+            if(nocheHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-moon text-indigo-900"></i> Bloque Noche (Hospedaje y Cenas)</div>` + nocheHTML;
+            }
         }
 
         function removeFavorite(id) {
@@ -1139,13 +1210,14 @@
             showToast('Lugar eliminado de tu ruta');
         }
 
-        function shareEntireItinerary() {
+        function shareStructuredItinerary() {
             if(favoriteLocations.length === 0) { alert('Tu ruta está vacía.'); return; }
-            let text = "¡Hola! Esta es mi ruta turística y gastronómica planeada en *Cultura y Cuchara (Loja)*:\n\n";
+            let text = "✨ *Mi Itinerario Organizado - Cultura y Cuchara (Loja)* ✨\n\n";
             favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
-                if(loc) { text += `${idx + 1}. *${loc.title}* (${loc.tag}) - ${loc.address}\n`; }
+                if(loc) { text += `• *${loc.title}* (${loc.tag})\n  📍 ${loc.address}\n\n`; }
             });
+            text += "¡Te invito a recorrer Loja conmigo!";
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
@@ -1382,10 +1454,13 @@
             }
         }
 
-        window.handlePopupClick = function(index) {
-            selectLocation(index);
-            const card = document.getElementById('mapPreviewCard');
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.handlePopupClickByName = function(id) {
+            const index = locations.findIndex(l => l.id === id);
+            if(index > -1) {
+                selectLocation(index);
+                const card = document.getElementById('mapPreviewCard');
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         };
 
         function selectLocation(index) {
@@ -1413,9 +1488,12 @@
             if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
         }
 
-        function simulateMapClick(index) {
-            selectLocation(index);
-            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+        function simulateMapClickById(id) {
+            const index = locations.findIndex(l => l.id === id);
+            if(index > -1) {
+                selectLocation(index);
+                document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         function setSuggestedRoute(category) {
