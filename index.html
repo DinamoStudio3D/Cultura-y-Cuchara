@@ -305,14 +305,14 @@
         </div>
     </section>
 
-    <!-- GUÍA DE ESPECIAS Y MARIDAJE ILE (NUEVO) -->
+    <!-- GUÍA DE ESPECIAS Y MARIDAJE ILE -->
     <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
                 <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> Tradición y Sabor</span>
                 <h2 class="text-3xl font-bold mt-2 mb-3">Secretos de Cocina con ILE</h2>
                 <p class="text-gray-400 text-sm max-w-xl mx-auto">
-                    El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.
+                    El alma de la gastronomía lojana reside in sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.
                 </p>
             </div>
 
@@ -694,7 +694,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE GALERÍA Y COMUNIDAD DE TURISTAS (NUEVO) -->
+    <!-- MODAL DE GALERÍA Y COMUNIDAD DE TURISTAS -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[650px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -720,7 +720,6 @@
                         </button>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="communityPhotosGrid">
-                        <!-- Fotos comunitarias de ejemplo -->
                         <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
                             <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
                             <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@carlos_loja</span>
@@ -735,7 +734,7 @@
         </div>
     </div>
 
-    <!-- MODAL PARA SUBIR FOTO COMUNITARIA (NUEVO) -->
+    <!-- MODAL PARA SUBIR FOTO COMUNITARIA -->
     <div id="uploadPhotoModal" class="fixed inset-0 z-[75] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/40 p-6 relative">
             <button onclick="closeModal('uploadPhotoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -1077,6 +1076,9 @@
                 const uniqueId = loc.id || 'loc_' + index;
                 if(!loc.id) loc.id = uniqueId;
 
+                // Encontrar el índice real de este local en el array principal `locations`
+                const realIndex = locations.findIndex(l => l.id === loc.id);
+
                 if(loc.lat && loc.lng) {
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
@@ -1099,7 +1101,7 @@
                             <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${loc.tag}</span>
                             <b class="text-brandDark text-xs block my-1">${loc.title}</b>
                             ${distanciaTexto}
-                            <button onclick="window.handlePopupClickByName('${loc.id}')" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
+                            <button onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
                                 Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i>
                             </button>
                         </div>
@@ -1120,7 +1122,7 @@
                 let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
 
                 grid.innerHTML += `
-                    <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClickById('${loc.id}')" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                    <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
@@ -1166,6 +1168,7 @@
             updatePassportUI();
         }
 
+        // GPS BLINDADO CON SELECCIÓN AUTOMÁTICA DEL MÁS CERCANO
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
@@ -1199,7 +1202,22 @@
                           .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
                         
                         renderMapAndGrid(); 
-                        showToast('¡Ubicación encontrada y lista ordenada!');
+
+                        // Seleccionar automáticamente el local más cercano en la tarjeta de vista previa
+                        if(locations.length > 0) {
+                            let closestIndex = 0;
+                            let minDistance = Infinity;
+                            locations.forEach((loc, idx) => {
+                                let d = calcularDistanciaKm(lat, lng, loc.lat || lojaLat, loc.lng || lojaLng);
+                                if(d < minDistance) {
+                                    minDistance = d;
+                                    closestIndex = idx;
+                                }
+                            });
+                            selectLocation(closestIndex);
+                        }
+
+                        showToast('¡Ubicación encontrada y local más cercano cargado!');
                     },
                     (err) => {
                         console.warn("GPS denegado:", err.message);
@@ -1230,6 +1248,7 @@
               .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.");
             
             renderMapAndGrid();
+            selectLocation(0);
             showToast('Mapa centrado en Loja');
         }
 
@@ -1618,6 +1637,12 @@
             }
         }
 
+        window.handlePopupClick = function(index) {
+            selectLocation(index);
+            const card = document.getElementById('mapPreviewCard');
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
         window.handlePopupClickByName = function(id) {
             const index = locations.findIndex(l => l.id === id);
             if(index > -1) {
@@ -1652,6 +1677,11 @@
             }
 
             if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
+        }
+
+        function simulateMapClick(index) {
+            selectLocation(index);
+            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
         }
 
         function simulateMapClickById(id) {
