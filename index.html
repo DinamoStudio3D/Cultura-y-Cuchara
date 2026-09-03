@@ -75,7 +75,6 @@
         .star-rating i { cursor: pointer; transition: color 0.2s; }
         .star-rating i:hover, .star-rating i.active { color: #C5A880; }
 
-        /* Transición suave para las tarjetas al filtrar */
         .local-item { transition: all 0.3s ease-in-out; }
     </style>
 </head>
@@ -138,6 +137,15 @@
             <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> Mi Ruta Guardada</button>
         </div>
     </nav>
+
+    <!-- BANNER DINÁMICO DE EVENTO EN VIVO -->
+    <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-yellow-600 to-brandGold text-brandDark py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
+        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">🔴 EN VIVO HOY</span>
+        <span id="liveEventText">¡Feria de Café de Altura Loja activa en la Plaza de las Flores!</span>
+        <button id="liveEventBtn" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
+            <i class="fa-solid fa-map-pin mr-1"></i> Ver en el mapa
+        </button>
+    </div>
 
     <!-- Sección Hero Principal -->
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
@@ -274,7 +282,6 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-2 border-b border-gray-100">
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full sm:w-auto" id="categoryScroll"></div>
                 
-                <!-- Filtros rápidos por Momento del Día -->
                 <div class="flex gap-2 flex-shrink-0">
                     <button onclick="filterByTimeBlock('manana')" class="time-filter-btn bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-100 transition flex items-center gap-1.5">
                         <i class="fa-solid fa-sun"></i> Mañana
@@ -858,6 +865,7 @@
             if (!db) {
                 locations = defaultLocations;
                 renderEverything();
+                checkLiveEventsBanner();
                 return;
             }
 
@@ -872,11 +880,27 @@
                 } else {
                     renderEverything();
                 }
+                checkLiveEventsBanner();
             }, (error) => {
                 console.error("Error sincronizando Firestore:", error);
                 locations = defaultLocations;
                 renderEverything();
+                checkLiveEventsBanner();
             });
+        }
+
+        // CONTROLADOR DE BANNER EN VIVO
+        function checkLiveEventsBanner() {
+            const banner = document.getElementById('liveEventBanner');
+            const textEl = document.getElementById('liveEventText');
+            const btnEl = document.getElementById('liveEventBtn');
+            if(!banner || eventsList.length === 0) return;
+
+            // Tomamos el primer evento disponible como evento destacado de hoy
+            const ev = eventsList[0];
+            textEl.innerText = `¡${ev.title} activo hoy en ${ev.location}!`;
+            btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${ev.title}')`);
+            banner.classList.remove('hidden');
         }
 
         function renderEverything() {
@@ -1006,7 +1030,6 @@
                     cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
                 }
 
-                // Generar enlace inteligente para GPS (desde la ubicación actual si existe)
                 let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
 
                 grid.innerHTML += `
@@ -1056,7 +1079,7 @@
             updatePassportUI();
         }
 
-        // GPS BLINDADO CON TRANSICIÓN SUAVE
+        // GPS BLINDADO CON RESTAURACIÓN DE PIN AZUL FIJO
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
@@ -1247,7 +1270,6 @@
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        // NUEVO: FILTRO RÁPIDO POR MOMENTO DEL DÍA
         function filterByTimeBlock(block) {
             const searchInput = document.getElementById('searchInput');
             if(searchInput) searchInput.value = "";
@@ -1528,7 +1550,6 @@
             document.getElementById('previewHours').innerText = loc.hours;
             document.getElementById('previewAddress').innerText = loc.address;
             
-            // Enlace de GPS inteligente dinámico
             let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
             document.getElementById('previewGps').href = previewGpsUrl;
             
