@@ -197,7 +197,7 @@
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte y ordenar la ruta por cercanía.</p>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -417,7 +417,7 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- MODAL DE MI RUTA / FAVORITOS (ESTRUCTURADO POR TIEMPOS) -->
+    <!-- MODAL DE MI RUTA / FAVORITOS -->
     <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
             <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
@@ -826,7 +826,7 @@
         let visitedLocations = []; 
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
         let passportMode = 'turista';
-        let userCoords = null; // Almacena la posición GPS del usuario
+        let userCoords = null;
 
         let map, markersLayer, userMarkerInstance = null;
         try {
@@ -910,7 +910,6 @@
             renderAdminCategoriesList();
         }
 
-        // CÁLCULO DE DISTANCIA (Haversine)
         function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
             const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -925,6 +924,12 @@
         function renderMapAndGrid() {
             if(!markersLayer) return;
             markersLayer.clearLayers();
+            
+            // Si el marcador GPS del usuario existe, volver a agregarlo al mapa
+            if(userMarkerInstance) {
+                userMarkerInstance.addTo(markersLayer);
+            }
+
             const grid = document.getElementById('localesGrid');
             if(!grid) return;
             grid.innerHTML = '';
@@ -935,7 +940,6 @@
                 aliadoCountEl.innerText = locations.length;
             }
 
-            // Ordenar por cercanía si el usuario activó su GPS
             let renderList = [...locations];
             if (userCoords) {
                 renderList.sort((a, b) => {
@@ -960,7 +964,6 @@
 
                     const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
                     
-                    // Calcular distancia en texto para el popup si hay GPS
                     let distanciaTexto = "";
                     if (userCoords) {
                         let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
@@ -984,7 +987,6 @@
                 const isFav = favoriteLocations.includes(loc.id);
                 const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
 
-                // Calcular etiqueta de distancia para la tarjeta
                 let cardDistHtml = "";
                 if (userCoords) {
                     let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042);
@@ -1011,7 +1013,7 @@
                 `;
             });
 
-            // Pines de eventos con animación de rebote (bounce)
+            // Pines de eventos
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
                     const eventIcon = L.divIcon({
@@ -1031,7 +1033,7 @@
             updatePassportUI();
         }
 
-        // GPS BLINDADO CON REORDENAMIENTO AUTOMÁTICO
+        // GPS BLINDADO CON RESTAURACIÓN DE PIN AZUL
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
@@ -1052,6 +1054,7 @@
 
                         userCoords = { lat, lng };
                         if(map) map.setView([lat, lng], 16, { animate: true });
+                        
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
                             html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
@@ -1059,11 +1062,12 @@
                                    </div>`,
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
                         });
-                        if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
-                        userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon }).addTo(markersLayer)
-                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.").openPopup();
                         
-                        renderMapAndGrid(); // Reordena la lista por cercanía
+                        if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
+                        userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
+                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
+                        
+                        renderMapAndGrid(); 
                         showToast('¡Ubicación encontrada y lista ordenada!');
                     },
                     (err) => {
@@ -1082,6 +1086,7 @@
             const lojaLng = -79.2042;
             userCoords = { lat: lojaLat, lng: lojaLng };
             if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
+            
             const userAvatarIcon = L.divIcon({
                 className: 'custom-leaflet-icon',
                 html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
@@ -1089,15 +1094,16 @@
                        </div>`,
                 iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
             });
+            
             if(userMarkerInstance) { markersLayer.removeLayer(userMarkerInstance); }
-            userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon }).addTo(markersLayer)
-              .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.").openPopup();
+            userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon })
+              .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.");
             
             renderMapAndGrid();
             showToast('Mapa centrado en Loja');
         }
 
-        // SISTEMA DE FAVORITOS / MI RUTA ESTRUCTURADA POR TIEMPOS
+        // SISTEMA DE FAVORITOS / MI RUTA ESTRUCTURADA
         function toggleFavoriteCurrent(btn) {
             const loc = locations[currentLocationIndex];
             if(!loc) return;
@@ -1155,7 +1161,6 @@
                 badge.classList.remove('hidden');
             }
 
-            // Agrupar por tiempos lógicos: Mañana, Tarde, Noche
             let mananaHTML = "";
             let tardeHTML = "";
             let nocheHTML = "";
