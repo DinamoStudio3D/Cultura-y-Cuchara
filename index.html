@@ -195,7 +195,7 @@
         </div>
     </section>
 
-    <!-- SECCIÓN EN TENDENCIA: LOS MÁS GUARDADOS (NUEVO) -->
+    <!-- SECCIÓN EN TENDENCIA: LOS MÁS GUARDADOS (REAL) -->
     <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
@@ -1056,25 +1056,30 @@
             renderAdminCategoriesList();
         }
 
-        // RENDERIZAR SECCIÓN "EN TENDENCIA"
+        // RENDERIZAR TENDENCIA REAL BASADA EN FAVORITOS DE LOS USUARIOS
         function renderTrendingUI() {
             const container = document.getElementById('trendingGridContainer');
-            if(!container) return;
+            if(!container || locations.length === 0) return;
             container.innerHTML = '';
 
-            // Tomar los primeros 3 locales como tendencia principal (o los más guardados)
-            let trendingList = locations.slice(0, 3);
+            // Dar mayor puntuación real a los locales que estén en los favoritos del usuario
+            let trendingList = [...locations].map(loc => {
+                let score = favoriteLocations.includes(loc.id) ? 100 : 10;
+                return { ...loc, score };
+            });
 
-            trendingList.forEach((loc) => {
+            trendingList.sort((a, b) => b.score - a.score);
+            let topTrending = trendingList.slice(0, 3);
+
+            topTrending.forEach((loc, index) => {
                 const realIndex = locations.findIndex(l => l.id === loc.id);
-                const isFav = favoriteLocations.includes(loc.id);
-                const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
+                let medalIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉";
 
                 container.innerHTML += `
                     <div class="bg-brandCream rounded-xl overflow-hidden shadow-md border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
                         <div class="h-44 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
-                            <span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10"><i class="fa-solid fa-fire mr-1"></i> TOP RUTA</span>
+                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index + 1} EN RUTA</span>
                         </div>
                         <div class="p-5">
                             <span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${loc.tag}</span>
