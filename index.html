@@ -138,10 +138,10 @@
         </div>
     </nav>
 
-    <!-- BANNER DINÁMICO DE EVENTO EN VIVO -->
+    <!-- BANNER MULTI-EVENTO DINÁMICO (ROTATIVO POR TIEMPO) -->
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-yellow-600 to-brandGold text-brandDark py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
-        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">🔴 EN VIVO HOY</span>
-        <span id="liveEventText">¡Feria de Café de Altura Loja activa en la Plaza de las Flores!</span>
+        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">🔴 PRÓXIMO HOY</span>
+        <span id="liveEventText">Cargando eventos...</span>
         <button id="liveEventBtn" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
             <i class="fa-solid fa-map-pin mr-1"></i> Ver en el mapa
         </button>
@@ -889,18 +889,27 @@
             });
         }
 
-        // CONTROLADOR DE BANNER EN VIVO
+        // CONTROLADOR DE BANNER MULTI-EVENTO EN ROTACIÓN
+        let currentEventIndex = 0;
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
             if(!banner || eventsList.length === 0) return;
 
-            // Tomamos el primer evento disponible como evento destacado de hoy
-            const ev = eventsList[0];
-            textEl.innerText = `¡${ev.title} activo hoy en ${ev.location}!`;
-            btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${ev.title}')`);
             banner.classList.remove('hidden');
+            
+            function rotateEvent() {
+                const ev = eventsList[currentEventIndex];
+                textEl.innerHTML = `🔥 <b>${ev.title}</b> en ${ev.location} (${ev.date})`;
+                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${ev.title}')`);
+                currentEventIndex = (currentEventIndex + 1) % eventsList.length;
+            }
+
+            rotateEvent();
+            if(eventsList.length > 1) {
+                setInterval(rotateEvent, 5000); // Rota cada 5 segundos si hay más de un evento
+            }
         }
 
         function renderEverything() {
@@ -1079,7 +1088,6 @@
             updatePassportUI();
         }
 
-        // GPS BLINDADO CON RESTAURACIÓN DE PIN AZUL FIJO
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
@@ -1147,7 +1155,6 @@
             showToast('Mapa centrado en Loja');
         }
 
-        // SISTEMA DE FAVORITOS / MI RUTA ESTRUCTURADA
         function toggleFavoriteCurrent(btn) {
             const loc = locations[currentLocationIndex];
             if(!loc) return;
@@ -1486,6 +1493,7 @@
             eventsList.push(newEvent);
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
             renderEverything();
+            checkLiveEventsBanner();
             closeModal('adminModal');
             showToast('Evento y pin publicados');
             e.target.reset();
@@ -1509,6 +1517,7 @@
             eventsList = eventsList.filter(e => e.id !== id);
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
             renderEverything();
+            checkLiveEventsBanner();
             showToast('Evento eliminado');
         }
 
