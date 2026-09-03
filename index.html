@@ -201,7 +201,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             <div class="lg:col-span-2 rounded-xl h-[440px] shadow-md border border-gray-300 overflow-hidden relative">
-                <!-- Mapa base limpio con diseño profesional cartográfico -->
+                <!-- Mapa base limpio con OpenStreetMap -->
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <button onclick="locateUserGPS()" class="absolute bottom-4 left-4 z-[900] bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
                     <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> Cerca de mí
@@ -799,10 +799,10 @@
             map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
             L.control.zoom({ position: 'bottomright' }).addTo(map);
             
-            // MAPA LIMPIO: Usando teselas cartográficas claras y elegantes (CartoDB Positron / OpenStreetMap Clean)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { 
+            // CAPA ESTÁNDAR LIMPIA Y GRATUITA (OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
                 maxZoom: 18, 
-                attribution: '© OpenStreetMap contributors & CARTO' 
+                attribution: '© OpenStreetMap' 
             }).addTo(map);
             
             markersLayer = L.layerGroup().addTo(map);
