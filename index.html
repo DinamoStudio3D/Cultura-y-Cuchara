@@ -119,7 +119,7 @@
                 <a href="#agenda" class="hover:text-brandGold transition">Agenda</a>
                 <a href="#aliados" class="hover:text-brandGold transition">Aliados</a>
                 <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/40 px-3 py-1.5 rounded font-bold hover:bg-brandGold hover:text-brandDark transition text-xs flex items-center gap-1.5 relative">
-                    <i class="fa-solid fa-heart"></i> Mi Ruta <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1 rounded-full hidden">0</span>
+                    <i class="fa-solid fa-mug-hot"></i> Mi Ruta <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1 rounded-full hidden">0</span>
                 </button>
             </div>
             <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl p-2 relative">
@@ -132,7 +132,7 @@
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">La Ruta</a>
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-qrcode text-brandGold mr-1"></i>Mi Pasaporte</a>
             <a href="#agenda" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Agenda Cultural</a>
-            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-heart mr-1"></i> Mi Ruta Guardada</button>
+            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> Mi Ruta Guardada</button>
         </div>
     </nav>
 
@@ -216,7 +216,7 @@
             <!-- Tarjeta de Vista Previa -->
             <div id="mapPreviewCard" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col justify-between h-[440px] relative transition-all duration-300">
                 <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
-                    <i id="previewFav" class="fa-regular fa-heart"></i>
+                    <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
                 <div>
                     <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded text-xs uppercase">Hueca Tradicional</span>
@@ -422,7 +422,7 @@
         <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
             <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-heart text-brandGold text-xl"></i>
+                    <i class="fa-solid fa-mug-hot text-brandGold text-xl"></i>
                     <h3 class="text-lg font-black uppercase tracking-wider text-brandGold">Mi Ruta Personalizada</h3>
                 </div>
                 <button onclick="closeModal('itineraryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
@@ -950,12 +950,13 @@
                 }
 
                 const isFav = favoriteLocations.includes(loc.id);
-                const favHeartClass = isFav ? "fa-solid text-red-500" : "fa-regular text-brandGold";
+                // Usamos el icono fa-seedling (grano de café estilizado) combinado con la forma perfecta
+                const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
 
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${index})">
-                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg">
-                            <i id="cardFav_${loc.id}" class="${favHeartClass}"></i>
+                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
+                            <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
                         <div class="h-48 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
@@ -1056,11 +1057,11 @@
             const icon = btn.querySelector('i');
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
-                icon.className = "fa-regular fa-heart text-brandGold";
+                icon.className = "fa-solid fa-seedling text-brandGold";
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(loc.id);
-                icon.className = "fa-solid fa-heart text-red-500";
+                icon.className = "fa-solid fa-seedling text-red-500";
                 showToast(`¡Añadido a Mi Ruta!`);
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
@@ -1073,11 +1074,11 @@
             const icon = document.getElementById(`cardFav_${localId}`);
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
-                if(icon) icon.className = "fa-regular fa-heart text-brandGold text-lg";
+                if(icon) icon.className = "fa-solid fa-seedling text-brandGold text-lg";
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
-                if(icon) icon.className = "fa-solid fa-heart text-red-500 text-lg";
+                if(icon) icon.className = "fa-solid fa-seedling text-red-500 text-lg";
                 showToast(`¡Añadido a Mi Ruta!`);
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
@@ -1093,8 +1094,8 @@
             if(favoriteLocations.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-10 text-gray-400 text-xs">
-                        <i class="fa-regular fa-heart text-3xl mb-2 text-gray-300"></i><br>
-                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el corazón en cualquier tarjeta o pin para agregarlo.
+                        <i class="fa-solid fa-mug-hot text-3xl mb-2 text-gray-300"></i><br>
+                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el icono de grano de café en cualquier tarjeta o pin para agregarlo.
                     </div>
                 `;
                 if(badge) badge.classList.add('hidden');
@@ -1404,9 +1405,9 @@
 
             const favIcon = document.getElementById('previewFav');
             if(favoriteLocations.includes(loc.id)) {
-                favIcon.className = "fa-solid fa-heart text-red-500";
+                favIcon.className = "fa-solid fa-seedling text-red-500";
             } else {
-                favIcon.className = "fa-regular fa-heart text-brandGold";
+                favIcon.className = "fa-solid fa-seedling text-brandGold";
             }
 
             if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
