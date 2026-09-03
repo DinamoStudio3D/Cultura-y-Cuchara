@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cultura y Cuchara - Ruta Gastronómica y Turística de Loja</title>
-    <!-- Favicon del proyecto -->
+    <!-- Favicon oficial del proyecto -->
     <link rel="icon" type="image/png" href="https://i.imgur.com/TIaEffN.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -96,7 +96,7 @@
         </div>
     </header>
 
-    <!-- Barra de Navegación -->
+    <!-- Barra de Navegación (Sin botón visible de admin) -->
     <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3">
@@ -121,9 +121,6 @@
                 <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/40 px-3 py-1.5 rounded font-bold hover:bg-brandGold hover:text-brandDark transition text-xs flex items-center gap-1.5 relative">
                     <i class="fa-solid fa-heart"></i> Mi Ruta <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1 rounded-full hidden">0</span>
                 </button>
-                <button onclick="requestAdminAccess()" class="bg-gray-800 text-brandGold border border-brandGold/40 px-3 py-1.5 rounded font-bold hover:bg-black transition text-xs flex items-center gap-1.5">
-                    <i class="fa-solid fa-lock text-[10px]"></i> Panel Admin
-                </button>
             </div>
             <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl p-2 relative">
                 <i class="fa-solid fa-bars"></i>
@@ -135,8 +132,7 @@
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">La Ruta</a>
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-qrcode text-brandGold mr-1"></i>Mi Pasaporte</a>
             <a href="#agenda" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Agenda Cultural</a>
-            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white"><i class="fa-solid fa-heart mr-1"></i> Mi Ruta Guardada</button>
-            <button onclick="requestAdminAccess(); toggleMobileMenu()" class="bg-gray-800 text-brandGold border border-brandGold/40 px-4 py-2 rounded font-bold text-center text-xs mb-2 mt-2">Panel de Administración</button>
+            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-heart mr-1"></i> Mi Ruta Guardada</button>
         </div>
     </nav>
 
@@ -398,7 +394,7 @@
         </div>
     </section>
 
-    <!-- Pie de Página -->
+    <!-- Pie de Página (Aquí está el acceso ultra discreto para Admin en el punto o enlace final) -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -410,8 +406,10 @@
                     <p class="text-[10px] text-gray-500">Dínamo Studio & Codeproim</p>
                 </div>
             </div>
-            <div class="text-[11px] text-gray-500">
-                Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.
+            <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
+                Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026. 
+                <!-- Acceso discreto para administración (tócalo desde móvil o PC) -->
+                <span onclick="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[8px]" title="Admin">.</span>
             </div>
         </div>
     </footer>
@@ -441,7 +439,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE ACCESO PIN ADMIN -->
+    <!-- MODAL DE ACCESO PIN ADMIN (Sin mostrar el PIN 1234 en pantalla) -->
     <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
             <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -449,7 +447,7 @@
                 <i class="fa-solid fa-lock"></i>
             </div>
             <h3 class="text-lg font-bold text-brandGold mb-1">Acceso Restringido</h3>
-            <p class="text-xs text-gray-400 mb-4">PIN por defecto: <b class="text-white">1234</b></p>
+            <p class="text-xs text-gray-400 mb-4">Ingresa tu PIN de administración</p>
             <form onsubmit="verifyAdminPin(event)" class="space-y-3">
                 <input type="password" id="adminPinInput" required maxlength="6" placeholder="PIN" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-center text-lg tracking-widest text-white outline-none focus:border-brandGold">
                 <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded hover:bg-white transition text-xs uppercase tracking-wider">
@@ -991,7 +989,7 @@
             updatePassportUI();
         }
 
-        // GPS BLINDADO: Si el navegador bota otra ciudad por IP, se fuerza al centro de Loja
+        // GPS BLINDADO
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación...');
             if (navigator.geolocation) {
@@ -1379,7 +1377,7 @@
                 openModal('adminModal');
                 showToast('¡Acceso concedido!');
             } else {
-                showToast('❌ PIN incorrecto (1234)');
+                showToast('❌ PIN incorrecto');
                 document.getElementById('adminPinInput').value = '';
             }
         }
