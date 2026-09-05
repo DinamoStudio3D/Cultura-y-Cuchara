@@ -31,10 +31,6 @@
     <!-- Librería para Confeti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <!-- SDKs de Firebase Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
     <style>
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
         #lojaMap { z-index: 1; touch-action: pan-y; }
@@ -53,7 +49,7 @@
         .fab-whatsapp { position: fixed; bottom: 20px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
         @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        #splash-screen { transition: opacity 0.5s ease-out; z-index: 9999; }
+        #splash-screen { transition: opacity 0.4s ease-out; z-index: 9999; }
         .fade-out { opacity: 0; pointer-events: none; visibility: hidden; }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -65,30 +61,17 @@
             100% { opacity: 1; transform: scale(1) rotate(-15deg); }
         }
         .stamp-earned { animation: stamp-hit 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-
-        .scanner-line {
-            width: 100%; height: 2px; background: #C5A880; position: absolute; top: 0;
-            box-shadow: 0 0 10px #C5A880; animation: scan 2s linear infinite;
-        }
-        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-
-        .star-rating i { cursor: pointer; transition: color 0.2s; }
-        .star-rating i:hover, .star-rating i.active { color: #C5A880; }
-
-        .local-item { transition: all 0.3s ease-in-out; }
     </style>
 </head>
-<body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
+<body class="bg-brandCream text-brandDark font-sans antialiased" id="body-content">
 
-    <!-- Pantalla de Carga -->
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
-        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center">
+        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl flex items-center justify-center">
             <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover">
         </div>
-        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Sincronizando con Firestore...</div>
+        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase">Cultura y Cuchara...</div>
     </div>
 
-    <!-- Barra Superior -->
     <header class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-4 text-center border-b border-brandGold/30 relative z-50">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
             <span data-i18n="topInit"><i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim</span>
@@ -98,7 +81,6 @@
         </div>
     </header>
 
-    <!-- Barra de Navegación -->
     <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3">
@@ -122,7 +104,6 @@
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition" data-i18n="menuAgenda">Agenda</a>
                 
-                <!-- SELECTOR DE IDIOMA -->
                 <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer">
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
@@ -154,7 +135,6 @@
         </div>
     </nav>
 
-    <!-- BANNER DINÁMICO DE EVENTO EN VIVO -->
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-yellow-600 to-brandGold text-brandDark py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
         <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
         <span id="liveEventText">Cargando eventos...</span>
@@ -163,20 +143,19 @@
         </button>
     </div>
 
-    <!-- Sección Hero Principal -->
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
         <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
             <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-lg mb-6 relative flex items-center justify-center p-1">
                 <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full" loading="lazy">
             </div>
-            <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
+            <span class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
                 Loja se conoce, se saborea y se hospeda
             </span>
-            <h1 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heroTitle">
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heroTitle">
                 Gastronomía, <span class="text-brandGold">Hotelería</span> y Destinos
             </h1>
-            <p id="heroSubtitle" class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed" data-i18n="heroSubtitle">
+            <p class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed" data-i18n="heroSubtitle">
                 Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
@@ -187,7 +166,6 @@
         </div>
     </section>
 
-    <!-- Loja en Cifras -->
     <section class="bg-brandGold text-brandDark py-8 border-b-4 border-black z-10 relative">
         <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
@@ -209,7 +187,6 @@
         </div>
     </section>
 
-    <!-- SECCIÓN EN TENDENCIA -->
     <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
@@ -224,7 +201,6 @@
         </div>
     </section>
 
-    <!-- Rutas Sugeridas -->
     <section class="py-10 px-4 bg-brandCream border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
@@ -235,7 +211,6 @@
         </div>
     </section>
 
-    <!-- Mapa Interactivo de Loja -->
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
@@ -294,7 +269,6 @@
         </div>
     </section>
 
-    <!-- Establecimientos y Hoteles -->
     <section id="establecimientos" class="bg-white py-16 px-4 reveal">
         <div class="max-w-7xl mx-auto">
             
@@ -336,7 +310,6 @@
         </div>
     </section>
 
-    <!-- GUÍA DE ESPECIAS Y MARIDAJE ILE -->
     <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -376,7 +349,6 @@
         </div>
     </section>
 
-    <!-- Pasaporte Turístico Dual -->
     <section id="pasaporte" class="py-16 px-4 bg-brandGold text-brandDark reveal">
         <div class="max-w-5xl mx-auto">
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
@@ -412,7 +384,6 @@
         </div>
     </section>
 
-    <!-- Agenda Cultural y Eventos -->
     <section id="agenda" class="py-16 px-4 bg-white border-t border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -427,7 +398,6 @@
         </div>
     </section>
 
-    <!-- Sección Podcast Integrado -->
     <section id="podcast" class="py-16 px-4 bg-brandDark text-white border-t border-gray-800 reveal">
         <div class="max-w-5xl mx-auto">
             <div class="flex flex-col md:flex-row items-center gap-8">
@@ -457,7 +427,6 @@
         </div>
     </section>
 
-    <!-- Aliados Estratégicos -->
     <section id="aliados" class="bg-gray-100 text-brandDark py-16 px-4 border-t border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -490,7 +459,6 @@
         </div>
     </section>
 
-    <!-- Pie de Página -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -503,7 +471,7 @@
                 </div>
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
-                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.</span> 
+                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.</span> 
                 <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-2 py-1 select-none" title="Admin">.</span>
             </div>
         </div>
@@ -608,7 +576,6 @@
         </div>
     </div>
 
-    <!-- Script General y Diccionario de Idiomas -->
     <script>
         const translations = {
             es: {
@@ -787,6 +754,847 @@
 
         let currentLangStored = localStorage.getItem('cyc_lang') || 'es';
 
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
+            authDomain: "cultura-y-cuchara.firebaseapp.com",
+            projectId: "cultura-y-cuchara",
+            storageBucket: "cultura-y-cuchara.firebasestorage.app",
+            messagingSenderId: "974351327730",
+            appId: "1:974351327730:web:08573026a46d1bb6598b6b",
+            measurementId: "G-T3895FPH4N"
+        };
+
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        } catch(e) {
+            console.log("Firebase not initialized:", e);
+        }
+
+        const defaultCategories = [
+            { id: 'hotel', name: 'Hoteles & Hospedaje', icon: '🏨' },
+            { id: 'hueca', name: 'Huecas', icon: '🥘' },
+            { id: 'cafe', name: 'Cafeterías', icon: '☕' },
+            { id: 'urbana', name: 'Urbana', icon: '🍔' }
+        ];
+
+        const defaultLocations = [
+            {
+                tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
+                desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
+                dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
+                address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
+                iconClass: "fa-mortar-pestle", category: "hueca",
+                gallery: [{ img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" }]
+            },
+            {
+                tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
+                desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
+                dish: "Café filtrado de origen Catamayo", hours: "Mar - Dom: 09:00 - 20:00",
+                address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
+                iconClass: "fa-mug-hot", category: "cafe",
+                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)" }]
+            },
+            {
+                tag: "Gastronomía Urbana", title: "El Fogón de Lola",
+                desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
+                dish: "Repe ahumado con toque de la casa", hours: "Mié - Lun: 12:00 - 22:00",
+                address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
+                iconClass: "fa-fire-burner", category: "urbana",
+                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado" }]
+            },
+            {
+                tag: "Hotel Aliado", title: "Gran Hotel Loja",
+                desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
+                dish: "Desayuno tradicional incluido", hours: "Atención 24/7",
+                address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
+                iconClass: "fa-hotel", category: "hotel",
+                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva" }]
+            }
+        ];
+
+        const defaultEvents = [
+            { id: 'ev_1', title: 'Feria de Café de Altura Loja', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', lat: -3.9910, lng: -79.2030 },
+            { id: 'ev_2', title: 'Ruta del Repe Tradicional', date: '25 de Septiembre', type: 'Gastronomía', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', lat: -3.9931, lng: -79.2042 },
+            { id: 'ev_3', title: 'Concierto Sinfónico', date: '02 de Octubre', type: 'Arte & Música', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', lat: -3.9980, lng: -79.2015 }
+        ];
+
+        let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
+        let locations = [];
+        let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
+
+        let currentLocationIndex = 0;
+        let visitedLocations = []; 
+        let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
+        let passportMode = 'turista';
+        let userCoords = null;
+
+        let map, markersLayer, userMarkerInstance = null;
+        try {
+            map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+        } catch(e) { console.log('Mapa cargando...'); }
+
+        function cargarDatosDesdeFirestore() {
+            if (!db) {
+                locations = defaultLocations;
+                loadSettingsFromStorage();
+                renderEverything();
+                checkLiveEventsBanner();
+                return;
+            }
+
+            db.collection("locales").get().then((snapshot) => {
+                locations = [];
+                snapshot.forEach((doc) => {
+                    locations.push({ id: doc.id, ...doc.data() });
+                });
+                
+                if(locations.length === 0) {
+                    defaultLocations.forEach(loc => db.collection("locales").add(loc));
+                    locations = defaultLocations;
+                }
+                renderEverything();
+                checkLiveEventsBanner();
+            }).catch(() => {
+                locations = defaultLocations;
+                renderEverything();
+                checkLiveEventsBanner();
+            });
+
+            db.collection("settings").doc("main").get().then((doc) => {
+                if (doc.exists) {
+                    applySettings(doc.data());
+                } else {
+                    loadSettingsFromStorage();
+                }
+            }).catch(() => loadSettingsFromStorage());
+        }
+
+        function loadSettingsFromStorage() {
+            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
+                badge: "Loja se conoce, se saborea y se hospeda",
+                title: "Gastronomía, Hotelería y Destinos",
+                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
+                stat1: 3, stat3: 25, stat4: 100
+            };
+            applySettings(saved);
+        }
+
+        function applySettings(s) {
+            if(document.getElementById('heroBadge')) document.getElementById('heroBadge').innerText = s.badge || "";
+            if(document.getElementById('heroTitle')) {
+                document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Hotelería", '<span class="text-brandGold">Hotelería</span>') : "";
+            }
+            if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
+        }
+
+        let currentEventIndex = 0;
+        function checkLiveEventsBanner() {
+            const banner = document.getElementById('liveEventBanner');
+            const textEl = document.getElementById('liveEventText');
+            const btnEl = document.getElementById('liveEventBtn');
+            if(!banner || eventsList.length === 0) return;
+
+            banner.classList.remove('hidden');
+            
+            function rotateEvent() {
+                const ev = eventsList[currentEventIndex];
+                textEl.innerHTML = `🔥 <b>${ev.title}</b> en ${ev.location} (${ev.date})`;
+                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${ev.title}')`);
+                currentEventIndex = (currentEventIndex + 1) % eventsList.length;
+            }
+
+            rotateEvent();
+            if(eventsList.length > 1) {
+                setInterval(rotateEvent, 5000);
+            }
+        }
+
+        function renderEverything() {
+            renderCategoriesUI();
+            renderMapAndGrid();
+            renderTrendingUI();
+            renderAgendaUI();
+            updateItineraryUI();
+            if(map) {
+                setTimeout(() => { map.invalidateSize(); }, 200);
+            }
+        }
+
+        function renderCategoriesUI() {
+            const catScroll = document.getElementById('categoryScroll');
+            if(catScroll) {
+                catScroll.innerHTML = `
+                    <button onclick="filterItems('all', this)" class="filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2 flex items-center gap-2 transition-all shadow-md">
+                        <i class="fa-solid fa-border-all"></i> <span class="text-sm font-bold text-white">Todos</span>
+                    </button>
+                `;
+                categories.forEach(cat => {
+                    catScroll.innerHTML += `
+                        <button onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
+                            <span class="text-lg">${cat.icon}</span> <span class="text-sm font-bold">${cat.name}</span>
+                        </button>
+                    `;
+                });
+            }
+
+            const sugContainer = document.getElementById('suggestedRoutesContainer');
+            if(sugContainer) {
+                sugContainer.innerHTML = '';
+                categories.slice(0, 3).forEach(cat => {
+                    sugContainer.innerHTML += `
+                        <button onclick="setSuggestedRoute('${cat.id}')" class="bg-white border border-brandGold text-brandDark px-4 py-2 rounded-xl shadow-sm hover:bg-brandGold hover:text-white transition text-xs font-bold whitespace-nowrap flex items-center">
+                            <span class="mr-2">${cat.icon}</span> ${cat.name}
+                        </button>
+                    `;
+                });
+            }
+        }
+
+        function renderTrendingUI() {
+            const container = document.getElementById('trendingGridContainer');
+            if(!container || locations.length === 0) return;
+            container.innerHTML = '';
+
+            let trendingList = [...locations].map(loc => {
+                let score = favoriteLocations.includes(loc.id) ? 100 : 10;
+                return { ...loc, score };
+            });
+
+            trendingList.sort((a, b) => b.score - a.score);
+            let topTrending = trendingList.slice(0, 3);
+
+            topTrending.forEach((loc, index) => {
+                const realIndex = locations.findIndex(l => l.id === loc.id);
+                let medalIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉";
+
+                container.innerHTML += `
+                    <div class="bg-brandCream rounded-xl overflow-hidden shadow-md border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
+                        <div class="h-44 overflow-hidden relative">
+                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index + 1} EN RUTA</span>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${loc.tag}</span>
+                            <h3 class="text-base font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${loc.title}</h3>
+                            <p class="text-gray-600 text-xs line-clamp-2">${loc.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function renderMapAndGrid() {
+            if(!markersLayer) return;
+            markersLayer.clearLayers();
+            
+            const grid = document.getElementById('localesGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            const aliadoCountEl = document.getElementById('totalAliadosCount');
+            if(aliadoCountEl) {
+                aliadoCountEl.setAttribute('data-target', locations.length);
+                aliadoCountEl.innerText = locations.length;
+            }
+
+            let renderList = [...locations];
+            if (userCoords) {
+                renderList.sort((a, b) => {
+                    let distA = calcularDistanciaKm(userCoords.lat, userCoords.lng, a.lat || -3.9931, a.lng || -79.2042);
+                    let distB = calcularDistanciaKm(userCoords.lat, userCoords.lng, b.lat || -3.9931, b.lng || -79.2042);
+                    return distA - distB;
+                });
+            }
+
+            renderList.forEach((loc, index) => {
+                const uniqueId = loc.id || 'loc_' + index;
+                if(!loc.id) loc.id = uniqueId;
+
+                const realIndex = locations.findIndex(l => l.id === loc.id);
+
+                if(loc.lat && loc.lng) {
+                    const customIcon = L.divIcon({
+                        className: 'custom-leaflet-icon',
+                        html: `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
+                                   <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
+                               </div>`,
+                        iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
+                    });
+
+                    const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
+                    
+                    let distanciaTexto = "";
+                    if (userCoords) {
+                        let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
+                        distanciaTexto = `<span class="text-[10px] text-blue-600 font-bold block mb-1">📍 A ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'} de ti</span>`;
+                    }
+
+                    const popupContent = `
+                        <div class="text-center p-1">
+                            <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${loc.tag}</span>
+                            <b class="text-brandDark text-xs block my-1">${loc.title}</b>
+                            ${distanciaTexto}
+                            <button onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
+                                Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i>
+                            </button>
+                        </div>
+                    `;
+                    marker.bindPopup(popupContent);
+                    markersLayer.addLayer(marker);
+                }
+
+                const isFav = favoriteLocations.includes(loc.id);
+                const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
+
+                let cardDistHtml = "";
+                if (userCoords) {
+                    let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042);
+                    cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
+                }
+
+                let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
+
+                grid.innerHTML += `
+                    <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
+                            <i id="cardFav_${loc.id}" class="${favClass}"></i>
+                        </button>
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10">${loc.tag}</span>
+                            <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar (Google Maps)">
+                                <i class="fa-solid fa-diamond-turn-right"></i>
+                            </a>
+                        </div>
+                        <div class="p-5 relative">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${loc.title}</h3>
+                                ${cardDistHtml}
+                            </div>
+                            <p class="text-gray-600 text-xs local-desc line-clamp-2">${loc.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Pines de eventos
+            eventsList.forEach((ev) => {
+                if(ev.lat && ev.lng) {
+                    const eventIcon = L.divIcon({
+                        className: 'custom-leaflet-icon',
+                        html: `<div class="bg-brandGold text-brandDark w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
+                                   <i class="fa-solid fa-calendar-days text-sm"></i>
+                               </div>`,
+                        iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
+                    });
+                    const evMarker = L.marker([ev.lat, ev.lng], { icon: eventIcon });
+                    evMarker.bindPopup(`<div class="text-center p-1"><span class="bg-brandGold text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">Evento Cultural</span><b class="text-brandDark text-xs block mt-1">${ev.title}</b><p class="text-[10px] text-gray-600 mt-0.5">${ev.date} - ${ev.location}</p></div>`);
+                    markersLayer.addLayer(evMarker);
+                }
+            });
+
+            if(userMarkerInstance) {
+                userMarkerInstance.addTo(markersLayer);
+            }
+
+            updatePassportUI();
+        }
+
+        function locateUserGPS() {
+            showToast('Obteniendo tu ubicación exacta...');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        
+                        const lojaLat = -3.9931;
+                        const lojaLng = -79.2042;
+                        const distance = Math.abs(lat - lojaLat) + Math.abs(lng - lojaLng);
+
+                        if (distance > 0.8) {
+                            showToast('⚠️ Tu red indicó otra ciudad. Centrando en Loja.');
+                            centerOnLoja();
+                            return;
+                        }
+
+                        userCoords = { lat, lng };
+                        if(map) map.setView([lat, lng], 16, { animate: true });
+                        
+                        const userAvatarIcon = L.divIcon({
+                            className: 'custom-leaflet-icon',
+                            html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                                       <i class="fa-solid fa-street-view text-2xl"></i>
+                                   </div>`,
+                            iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+                        });
+                        
+                        userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
+                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
+                        
+                        renderMapAndGrid(); 
+
+                        if(locations.length > 0) {
+                            let closestIndex = 0;
+                            let minDistance = Infinity;
+                            locations.forEach((loc, idx) => {
+                                let d = calcularDistanciaKm(lat, lng, loc.lat || lojaLat, loc.lng || lojaLng);
+                                if(d < minDistance) {
+                                    minDistance = d;
+                                    closestIndex = idx;
+                                }
+                            });
+                            selectLocation(closestIndex);
+                        }
+
+                        showToast('¡Ubicación encontrada y local más cercano cargado!');
+                    },
+                    (err) => {
+                        console.warn("GPS denegado:", err.message);
+                        centerOnLoja();
+                    },
+                    { timeout: 6000, enableHighAccuracy: true }
+                );
+            } else {
+                centerOnLoja();
+            }
+        }
+
+        function centerOnLoja() {
+            const lojaLat = -3.9931;
+            const lojaLng = -79.2042;
+            userCoords = { lat: lojaLat, lng: lojaLng };
+            if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
+            
+            const userAvatarIcon = L.divIcon({
+                className: 'custom-leaflet-icon',
+                html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                           <i class="fa-solid fa-street-view text-2xl"></i>
+                       </div>`,
+                iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+            });
+            
+            userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon })
+              .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.");
+            
+            renderMapAndGrid();
+            selectLocation(0);
+            showToast('Mapa centrado en Loja');
+        }
+
+        function toggleFavoriteCurrent(btn) {
+            const loc = locations[currentLocationIndex];
+            if(!loc) return;
+            const index = favoriteLocations.indexOf(loc.id);
+            const icon = btn.querySelector('i');
+            if (index > -1) {
+                favoriteLocations.splice(index, 1);
+                icon.className = "fa-solid fa-seedling text-brandGold";
+                showToast(`Quitado de tu ruta`);
+            } else {
+                favoriteLocations.push(loc.id);
+                icon.className = "fa-solid fa-seedling text-red-500";
+                showToast(`¡Añadido a Mi Ruta!`);
+            }
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            updateItineraryUI();
+            renderTrendingUI();
+        }
+
+        function toggleFavoriteCard(e, localId) {
+            e.stopPropagation();
+            const index = favoriteLocations.indexOf(localId);
+            const icon = document.getElementById(`cardFav_${localId}`);
+            if (index > -1) {
+                favoriteLocations.splice(index, 1);
+                if(icon) icon.className = "fa-solid fa-seedling text-brandGold text-lg";
+                showToast(`Quitado de tu ruta`);
+            } else {
+                favoriteLocations.push(localId);
+                if(icon) icon.className = "fa-solid fa-seedling text-red-500 text-lg";
+                showToast(`¡Añadido a Mi Ruta!`);
+            }
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            updateItineraryUI();
+            renderTrendingUI();
+        }
+
+        function updateItineraryUI() {
+            const container = document.getElementById('itineraryListContainer');
+            const badge = document.getElementById('itineraryBadge');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(favoriteLocations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 text-gray-400 text-xs">
+                        <i class="fa-solid fa-mug-hot text-3xl mb-2 text-gray-300"></i><br>
+                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el icono de grano de café en cualquier tarjeta o pin para agregarlo.
+                    </div>
+                `;
+                if(badge) badge.classList.add('hidden');
+                return;
+            }
+
+            if(badge) {
+                badge.innerText = favoriteLocations.length;
+                badge.classList.remove('hidden');
+            }
+
+            let mananaHTML = "";
+            let tardeHTML = "";
+            let nocheHTML = "";
+
+            favoriteLocations.forEach((id, idx) => {
+                const loc = locations.find(l => l.id === id);
+                if(loc) {
+                    let itemHtml = `
+                        <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
+                            <div class="flex items-center gap-3">
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
+                                <div>
+                                    <h4 class="font-bold text-xs text-brandDark">${loc.title}</h4>
+                                    <span class="text-[10px] text-brandGold font-bold">${loc.tag} • ${loc.address}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Parada recomendada en mi ruta de Cultura y Cuchara: ' + loc.title + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                                <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
+                        </div>
+                    `;
+
+                    if (loc.category === 'cafe' || idx === 0) {
+                        mananaHTML += itemHtml;
+                    } else if (loc.category === 'hueca' || loc.category === 'urbana') {
+                        tardeHTML += itemHtml;
+                    } else {
+                        nocheHTML += itemHtml;
+                    }
+                }
+            });
+
+            if(mananaHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5"><i class="fa-solid fa-sun text-amber-500"></i> Bloque Mañana (Café y Desayuno)</div>` + mananaHTML;
+            }
+            if(tardeHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-utensils text-brandGold"></i> Bloque Tarde (Huecas y Almuerzos)</div>` + tardeHTML;
+            }
+            if(nocheHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-moon text-indigo-900"></i> Bloque Noche (Hospedaje y Cenas)</div>` + nocheHTML;
+            }
+        }
+
+        function removeFavorite(id) {
+            favoriteLocations = favoriteLocations.filter(favId => favId !== id);
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            renderMapAndGrid();
+            renderTrendingUI();
+            updateItineraryUI();
+            showToast('Lugar eliminado de tu ruta');
+        }
+
+        function shareStructuredItinerary() {
+            if(favoriteLocations.length === 0) { alert('Tu ruta está vacía.'); return; }
+            let text = "✨ *Mi Itinerario Organizado - Cultura y Cuchara (Loja)* ✨\n\n";
+            favoriteLocations.forEach((id, idx) => {
+                const loc = locations.find(l => l.id === id);
+                if(loc) { text += `• *${loc.title}* (${loc.tag})\n  📍 ${loc.address}\n\n`; }
+            });
+            text += "¡Te invito a recorrer Loja conmigo!";
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function filterByTimeBlock(block) {
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) searchInput.value = "";
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.add('hidden');
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
+                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+            });
+
+            document.querySelectorAll('.local-item').forEach(item => {
+                let match = false;
+                if (block === 'manana' && item.classList.contains('cafe')) match = true;
+                if (block === 'tarde' && (item.classList.contains('hueca') || item.classList.contains('urbana'))) match = true;
+                if (block === 'noche' && item.classList.contains('hotel')) match = true;
+
+                if (match) {
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item');
+                } else {
+                    item.style.opacity = '0';
+                    setTimeout(() => item.classList.add('hidden-item'), 200);
+                }
+            });
+            showToast(`Mostrando bloque: ${block.toUpperCase()}`);
+        }
+
+        function renderAgendaUI() {
+            const agendaContainer = document.getElementById('agendaGridContainer');
+            if(!agendaContainer) return;
+            agendaContainer.innerHTML = '';
+
+            eventsList.forEach((ev) => {
+                agendaContainer.innerHTML += `
+                    <div class="bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="bg-brandGold text-brandDark font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider">${ev.type}</span>
+                                <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date}</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-brandDark mb-2">${ev.title}</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed mb-4">${ev.desc}</p>
+                        </div>
+                        <div class="px-6 pb-6 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-4 text-xs">
+                            <span class="text-gray-500"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
+                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${ev.title}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition">
+                                <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function focusEventOnMap(lat, lng, title) {
+            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+            if(map) map.setView([lat, lng], 17, { animate: true });
+            showToast(`Ubicando: ${title}`);
+        }
+
+        window.handlePopupClick = function(index) {
+            selectLocation(index);
+            const card = document.getElementById('mapPreviewCard');
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        function selectLocation(index) {
+            currentLocationIndex = index;
+            const loc = locations[index];
+            document.getElementById('previewTag').innerText = loc.tag;
+            document.getElementById('previewTitle').innerText = loc.title;
+            document.getElementById('previewDesc').innerText = loc.desc;
+            document.getElementById('previewDish').innerText = (loc.category === 'hotel' ? "Beneficio: " : "Plato: ") + loc.dish;
+            document.getElementById('previewHours').innerText = loc.hours;
+            document.getElementById('previewAddress').innerText = loc.address;
+            
+            let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
+            document.getElementById('previewGps').href = previewGpsUrl;
+            
+            const waBtn = document.getElementById('previewWhatsapp');
+            const waText = `¡Hola! Te recomiendo visitar ${loc.title} en la ruta Cultura y Cuchara de Loja. Ubicación: ${loc.address}`;
+            waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+
+            const favIcon = document.getElementById('previewFav');
+            if(favoriteLocations.includes(loc.id)) {
+                favIcon.className = "fa-solid fa-seedling text-red-500";
+            } else {
+                favIcon.className = "fa-solid fa-seedling text-brandGold";
+            }
+
+            if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
+        }
+
+        function simulateMapClick(index) {
+            selectLocation(index);
+            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setSuggestedRoute(category) {
+            filterItems(category, document.querySelector(`.filter-btn[onclick*="${category}"]`));
+            document.getElementById('establecimientos').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openMenuGallery() {
+            const loc = locations[currentLocationIndex];
+            document.getElementById('galleryTitle').innerText = loc.title;
+            
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            if (loc.gallery && loc.gallery.length > 0) {
+                loc.gallery.forEach(item => {
+                    grid.innerHTML += `
+                        <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48">
+                            <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <span class="text-white font-bold text-xs">${item.title}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            openModal('menuGalleryModal');
+        }
+
+        function openUploadCommunityPhoto() {
+            openModal('uploadPhotoModal');
+        }
+
+        function handleCommunityPhotoSubmit(e) {
+            e.preventDefault();
+            const user = document.getElementById('commUser').value;
+            const imgUrl = document.getElementById('commImgUrl').value;
+            const grid = document.getElementById('communityPhotosGrid');
+            
+            grid.innerHTML += `
+                <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
+                    <img src="${imgUrl}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@${user}</span>
+                </div>
+            `;
+            closeModal('uploadPhotoModal');
+            showToast('¡Foto subida con éxito!');
+            e.target.reset();
+        }
+
+        function initPassport() {
+            const storedVisits = localStorage.getItem('cyc_visited_locations');
+            if (storedVisits) { visitedLocations = JSON.parse(storedVisits); }
+            const storedMode = localStorage.getItem('cyc_passport_mode');
+            if (storedMode) { passportMode = storedMode; }
+            updatePassportUI();
+        }
+
+        function switchPassportMode(mode) {
+            passportMode = mode;
+            localStorage.setItem('cyc_passport_mode', mode);
+            const btnT = document.getElementById('btnTurista');
+            const btnL = document.getElementById('btnLojano');
+            if (mode === 'turista') {
+                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition";
+                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+            } else {
+                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition";
+                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+            }
+            updatePassportUI();
+        }
+
+        function openQRDemoModal() {
+            document.getElementById('qrStep1').classList.remove('hidden');
+            document.getElementById('qrStep2').classList.add('hidden');
+            openModal('qrDemoModal');
+        }
+
+        function triggerSimulatedScan() {
+            closeModal('qrDemoModal');
+            const loc = locations[currentLocationIndex];
+            registerVisit(loc.id);
+        }
+
+        function registerVisit(localId) {
+            const localObj = locations.find(l => l.id === localId);
+            if (!localObj) return;
+            if (visitedLocations.includes(localId)) {
+                showToast(`⚠️ Ya tienes el sello de ${localObj.title}`);
+                return;
+            }
+            visitedLocations.push(localId);
+            localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
+            triggerStampAnimation();
+            updatePassportUI();
+            setTimeout(() => {
+                document.getElementById('qrStep1').classList.add('hidden');
+                document.getElementById('qrStep2').classList.remove('hidden');
+                openModal('qrDemoModal');
+            }, 2600);
+        }
+
+        function rateExperience(value) {
+            setTimeout(() => { finishRating(); }, 600);
+        }
+
+        function finishRating() {
+            closeModal('qrDemoModal');
+            showToast('¡Gracias por tu reseña y tu sello!');
+        }
+
+        function triggerStampAnimation() {
+            const overlay = document.getElementById('stampOverlay');
+            overlay.classList.remove('hidden');
+            const stampIcon = overlay.querySelector('.fa-stamp');
+            stampIcon.classList.remove('stamp-earned');
+            void stampIcon.offsetWidth;
+            stampIcon.classList.add('stamp-earned');
+            overlay.style.opacity = '1';
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#C5A880', '#ffffff', '#121212'] });
+            }
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+            }, 2500);
+        }
+
+        function updatePassportUI() {
+            const grid = document.getElementById('passportStampsGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            const totalToWin = passportMode === 'turista' ? 4 : 5;
+            const ruleDesc = document.getElementById('passportRuleDesc');
+            if(ruleDesc) ruleDesc.innerText = passportMode === 'turista' ? 'Meta: 1 Hotel + 3 Gastronomía' : 'Meta: 5 Paradas Gastronómicas (Libre)';
+
+            let stampsCount = visitedLocations.length;
+            for (let i = 0; i < totalToWin; i++) {
+                const loc = locations[i];
+                const isVisited = loc && visitedLocations.includes(loc.id);
+                let html = '';
+                if (isVisited) {
+                    html = `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${loc.title}</span></div>`;
+                } else {
+                    html = `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i + 1}</span></div>`;
+                }
+                grid.innerHTML += html;
+            }
+
+            const percentage = Math.min((stampsCount / totalToWin) * 100, 100);
+            const progressBar = document.getElementById('passportProgressBar');
+            if(progressBar) progressBar.style.width = `${percentage}%`;
+
+            const progressText = document.getElementById('passportProgressText');
+            if(progressText) {
+                if (stampsCount >= totalToWin) {
+                    progressText.innerHTML = '<span class="text-green-600 font-bold">¡Pasaporte Completado! Reclama tu premio ILE.</span>';
+                } else {
+                    progressText.innerText = `Llevas ${stampsCount} de ${totalToWin} sellos.`;
+                }
+            }
+        }
+
+        function resetPassportProgess() {
+            localStorage.removeItem('cyc_visited_locations'); visitedLocations = [];
+            updatePassportUI(); showToast('Pasaporte reiniciado');
+        }
+
+        function forceRemoveSplash() {
+            const splash = document.getElementById('splash-screen');
+            if(splash) splash.classList.add('fade-out');
+            const body = document.getElementById('body-content');
+            if(body) body.classList.remove('overflow-hidden');
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
             cargarDatosDesdeFirestore();
             initPassport();
@@ -795,6 +1603,96 @@
         });
 
         setTimeout(forceRemoveSplash, 1200);
+
+        function searchItems() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let items = document.querySelectorAll('.local-item');
+            let hasResults = false;
+            items.forEach(item => {
+                if (item.querySelector('.local-title').innerText.toLowerCase().includes(input) || item.querySelector('.local-desc').innerText.toLowerCase().includes(input)) {
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item'); 
+                    hasResults = true;
+                } else { 
+                    item.style.opacity = '0';
+                    item.classList.add('hidden-item'); 
+                }
+            });
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.toggle('hidden', hasResults);
+        }
+
+        function filterItems(category, btnElement) {
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) searchInput.value = ""; 
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.add('hidden');
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
+                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+            });
+            btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+            btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
+
+            document.querySelectorAll('.local-item').forEach(item => {
+                if (category === 'all' || item.classList.contains(category)) { 
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item'); 
+                } else { 
+                    item.style.opacity = '0';
+                    item.classList.add('hidden-item'); 
+                }
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toastMessage');
+            const toastText = document.getElementById('toastText');
+            if(!toast || !toastText) return;
+            toastText.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const updateCount = () => {
+                    const count = +counter.innerText;
+                    const inc = target / 100;
+                    if (count < target) { counter.innerText = Math.ceil(count + inc); setTimeout(updateCount, 20); }
+                    else { counter.innerText = target; }
+                };
+                updateCount();
+            });
+        }
+
+        let countersAnimated = false;
+        function revealOnScroll() {
+            document.querySelectorAll(".reveal").forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) {
+                    el.classList.add("active");
+                    if (!countersAnimated && el.querySelector('.counter')) { animateCounters(); countersAnimated = true; }
+                }
+            });
+        }
+        window.addEventListener("scroll", revealOnScroll);
+
+        function toggleMobileMenu() { 
+            const menu = document.getElementById('mobileMenu');
+            if(menu) menu.classList.toggle('hidden'); 
+        }
+        function openModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.remove('hidden'); 
+        }
+        function closeModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.add('hidden'); 
+        }
+        function handleFormSubmit(e) { e.preventDefault(); alert('¡Solicitud enviada!'); closeModal('contactoModal'); }
     </script>
 </body>
 </html>
