@@ -117,7 +117,7 @@
                 <a href="#tendencia" class="hover:text-brandGold transition" data-i18n="menuTrending">En Tendencia</a>
                 <a href="#mapa" class="hover:text-brandGold transition" data-i18n="menuMap">El Mapa</a>
                 <a href="#establecimientos" class="hover:text-brandGold transition" data-i18n="menuRoute">La Ruta</a>
-                <a href="#glosario" class="hover:text-brandGold transition" data-i18n="menuGlossary">Glosario Lojano</a>
+                <a href="#emprendedores" class="hover:text-brandGold transition" data-i18n="menuEntrepreneurs">Emprendedores</a>
                 <a href="#pasaporte" class="hover:text-brandGold transition relative">
                     <i class="fa-solid fa-qrcode text-brandGold mr-1"></i><span data-i18n="menuPassport">Pasaporte</span>
                     <span id="navStampBadge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0/4</span>
@@ -142,7 +142,7 @@
             <a href="#tendencia" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuTrending">En Tendencia</a>
             <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuMap">El Mapa</a>
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuRoute">La Ruta</a>
-            <a href="#glosario" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuGlossary">Glosario Lojano</a>
+            <a href="#emprendedores" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuEntrepreneurs">Emprendedores</a>
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-qrcode text-brandGold mr-1"></i><span data-i18n="menuPassport">Mi Pasaporte</span></a>
             <div class="flex items-center justify-between py-1 border-t border-gray-800">
                 <span class="text-xs text-gray-400">Idioma / Language:</span>
@@ -305,18 +305,6 @@
 
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-2 border-b border-gray-100">
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full sm:w-auto" id="categoryScroll"></div>
-                
-                <div class="flex gap-2 flex-shrink-0">
-                    <button onclick="filterByTimeBlock('manana')" class="time-filter-btn bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-100 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-sun"></i> <span data-i18n="filterMorning">Mañana</span>
-                    </button>
-                    <button onclick="filterByTimeBlock('tarde')" class="time-filter-btn bg-brandGold/10 text-brandDark border border-brandGold/40 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-brandGold/20 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-utensils"></i> <span data-i18n="filterAfternoon">Tarde</span>
-                    </button>
-                    <button onclick="filterByTimeBlock('noche')" class="time-filter-btn bg-indigo-50 text-indigo-900 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-moon"></i> <span data-i18n="filterNight">Noche</span>
-                    </button>
-                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="localesGrid"></div>
@@ -328,17 +316,16 @@
         </div>
     </section>
 
-    <section id="glosario" class="py-16 px-4 bg-brandCream border-t border-b border-gray-200 reveal">
+    <section id="emprendedores" class="py-16 px-4 bg-brandCream border-t border-b border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
-                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-book-bookmark mr-1"></i> <span data-i18n="glossarySub">Diccionario Culinario</span></span>
-                <h2 class="text-3xl font-bold text-brandDark mt-2 mb-3" data-i18n="glossaryTitle">Glosario Gastronómico Lojano</h2>
-                <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="glossaryDesc">
-                    ¿No sabes qué es el repe o el quesillo? Descubre los términos tradicionales antes de probarlos.
+                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-store mr-1"></i> Nuevos Talentos</span>
+                <h2 class="text-3xl font-bold text-brandDark mt-2 mb-3">Emprendedores Lojanos</h2>
+                <p class="text-gray-600 text-sm max-w-xl mx-auto">
+                    Apoya el talento local, la repostería artesanal, el café de autor y los productos emergentes de nuestra provincia.
                 </p>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="glossaryGridContainer"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="emprendedoresGridContainer"></div>
         </div>
     </section>
 
@@ -348,7 +335,7 @@
                 <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> <span data-i18n="ileSub">Tradición y Sabor</span></span>
                 <h2 class="text-3xl font-bold mt-2 mb-3" data-i18n="ileTitle">Secretos de Cocina con ILE</h2>
                 <p class="text-gray-400 text-sm max-w-xl mx-auto" data-i18n="ileDesc">
-                    El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.
+                    El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.
                 </p>
             </div>
 
@@ -459,6 +446,22 @@
         </div>
     </section>
 
+    <section class="py-12 px-4 bg-[#181818] text-white border-t border-brandGold/20 text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="inline-block p-3 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4">
+                <i class="fa-solid fa-landmark"></i>
+            </div>
+            <h3 class="text-lg font-bold text-brandGold uppercase tracking-wider mb-2">Apoyo Institucional y Patrocinio Oficial</h3>
+            <p class="text-xs text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
+                Proyecto avalado y respaldado oficialmente por la <b>Mesa Turística de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
+            </p>
+            <div class="flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> Mesa Turística de Loja</span>
+                <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-leaf text-brandGold mr-1.5"></i> Patrocina: ILE</span>
+            </div>
+        </div>
+    </section>
+
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -477,6 +480,7 @@
         </div>
     </footer>
 
+    <!-- Floating WhatsApp Button -->
     <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:bg-green-600 transition" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
@@ -501,6 +505,7 @@
         </div>
     </div>
 
+    <!-- Admin PIN Modal -->
     <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
             <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -518,6 +523,7 @@
         </div>
     </div>
 
+    <!-- Admin Dashboard Modal -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -527,7 +533,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control bilingüe con Horarios, PINs y Firestore</p>
+                        <p class="text-xs text-brandGold">Control bilingüe con Horarios, PINs, Emprendedores y Eventos</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -537,9 +543,9 @@
 
             <div class="flex border-b border-gray-800 bg-black/30 px-4 sm:px-6 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto hide-scrollbar">
                 <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos y PINs</button>
-                <button onclick="switchAdminTab('glossary')" id="tabBtnGlossary" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Glosario Culinario</button>
+                <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Emprendedores</button>
+                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda Cultural</button>
                 <button onclick="switchAdminTab('hero')" id="tabBtnHero" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Textos y Cifras</button>
-                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda</button>
             </div>
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
@@ -574,8 +580,6 @@
                                         <option value="fa-mug-hot">☕ Cafetería</option>
                                         <option value="fa-hotel">🏨 Hotel / Hospedaje</option>
                                         <option value="fa-fire-burner">🔥 Comida Urbana</option>
-                                        <option value="fa-wine-glass">🍷 Bar / Coctel</option>
-                                        <option value="fa-landmark">🏛️ Sitio Cultural / Museo</option>
                                     </select>
                                 </div>
                                 <div>
@@ -633,8 +637,6 @@
                                         <option value="-3.9968,-79.2025">Calle Bernardo Valdivieso</option>
                                         <option value="-3.9895,-79.2060">Av. Universitaria</option>
                                         <option value="-3.9910,-79.2030">Plaza de las Flores</option>
-                                        <option value="-3.9980,-79.2015">Zona Sur / Tejar</option>
-                                        <option value="-4.0040,-79.2020">San Sebastián</option>
                                     </select>
                                 </div>
                             </div>
@@ -683,50 +685,94 @@
                     </div>
                 </div>
 
-                <!-- Glossary Tab -->
-                <div id="adminTabGlossary" class="space-y-6 hidden">
+                <!-- Emprendedores Tab -->
+                <div id="adminTabEmprendedores" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-book-bookmark mr-1"></i> Agregar Palabra al Glosario (Bilingüe)</h4>
-                        <form onsubmit="handleAddNewGlossaryItem(event)" class="space-y-4">
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor Lojano</h4>
+                        <form onsubmit="handleAddNewEmprendedor(event)" class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Término (Español)</label>
-                                    <input type="text" id="glosTerm" required placeholder="Ej. Repe" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre del Emprendimiento</label>
+                                    <input type="text" id="empName" required placeholder="Ej. Chocolate Artesanal Yacu" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Term (English)</label>
-                                    <input type="text" id="glosTermEn" placeholder="Ej. Repe Soup" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría / Producto</label>
+                                    <input type="text" id="empCategory" required placeholder="Ej. Cacao Fino de Aroma" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría / Tipo (Español)</label>
-                                    <input type="text" id="glosType" required placeholder="Ej. Sopa Tradicional" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">WhatsApp de Contacto (con 593...)</label>
+                                    <input type="text" id="empPhone" required placeholder="Ej. 593999999999" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Category / Type (English)</label>
-                                    <input type="text" id="glosTypeEn" placeholder="Ej. Traditional Soup" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de Imagen / Foto</label>
+                                    <input type="text" id="empImg" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Definición (Español)</label>
-                                    <textarea id="glosDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Definition (English)</label>
-                                    <textarea id="glosDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                                </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción / Historia</label>
+                                <textarea id="empDesc" required placeholder="Breve historia del emprendimiento..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                             </div>
                             <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Guardar Término en el Glosario
+                                Guardar Emprendedor
                             </button>
                         </form>
                     </div>
 
                     <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Términos Actuales del Glosario</h4>
-                        <div class="space-y-2" id="adminGlossaryList"></div>
+                        <h4 class="font-bold text-sm text-white mb-3">Emprendedores Registrados</h4>
+                        <div class="space-y-2" id="adminEmprendedoresList"></div>
+                    </div>
+                </div>
+
+                <!-- Agenda Tab -->
+                <div id="adminTabAgenda" class="space-y-6 hidden">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Español & English, con Imagen)</h4>
+                        <form onsubmit="handleAddNewEvent(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título del evento (Español)</label>
+                                    <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Event Title (English)</label>
+                                    <input type="text" id="evTitleEn" placeholder="Title in English" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <input type="text" id="evDate" required placeholder="Fecha (ej. 15 - 18 Sep)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <input type="text" id="evType" required placeholder="Tipo (ej. Festival)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <input type="text" id="evImg" placeholder="URL de Imagen del Evento" class="bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input type="text" id="evLocation" required placeholder="Lugar (ej. Plaza de las Flores)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <select id="evZonePreset" class="bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <option value="-3.9910,-79.2030">Plaza de las Flores</option>
+                                    <option value="-3.9980,-79.2015">Teatro Bolívar</option>
+                                    <option value="-3.9931,-79.2042">Mercado Central</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción (Español)</label>
+                                    <textarea id="evDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Description (English)</label>
+                                    <textarea id="evDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                                Publicar Evento y Crear Pin
+                            </button>
+                        </form>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-sm text-white mb-3">Eventos Programados</h4>
+                        <div class="space-y-2" id="adminEventsList"></div>
                     </div>
                 </div>
 
@@ -754,60 +800,11 @@
                     </div>
                 </div>
 
-                <!-- Agenda Tab -->
-                <div id="adminTabAgenda" class="space-y-6 hidden">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Español & English)</h4>
-                        <form onsubmit="handleAddNewEvent(event)" class="space-y-4">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título del evento (Español)</label>
-                                    <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Event Title (English)</label>
-                                    <input type="text" id="evTitleEn" placeholder="Title in English" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="text" id="evDate" required placeholder="Fecha (ej. 15 - 18 Sep)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <input type="text" id="evType" required placeholder="Tipo (ej. Festival)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="text" id="evLocation" required placeholder="Lugar (ej. Plaza de las Flores)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <select id="evZonePreset" class="bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                    <option value="-3.9910,-79.2030">Plaza de las Flores</option>
-                                    <option value="-3.9980,-79.2015">Teatro Bolívar</option>
-                                    <option value="-3.9931,-79.2042">Mercado Central</option>
-                                    <option value="-3.9850,-79.2010">Parque Jairo Mora</option>
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción (Español)</label>
-                                    <textarea id="evDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Description (English)</label>
-                                    <textarea id="evDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                                </div>
-                            </div>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Publicar Evento y Crear Pin
-                            </button>
-                        </form>
-                    </div>
-
-                    <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Eventos Programados</h4>
-                        <div class="space-y-2" id="adminEventsList"></div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 
+    <!-- Gallery Modal -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[720px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -835,13 +832,13 @@
         </div>
     </div>
 
+    <!-- QR Demo & PIN Validation Modal -->
     <div id="qrDemoModal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative">
             <button onclick="closeModal('qrDemoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-xl z-10 w-8 h-8 flex items-center justify-center bg-black/50 rounded-full">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             
-            <!-- Paso 1: Escaneo inicial del QR -->
             <div class="p-6 text-center" id="qrStep1">
                 <h3 class="text-xl font-bold text-brandGold mb-2" id="qrModalTitle">Simulador de Visita / Check-in</h3>
                 <p class="text-gray-400 text-xs mb-6">Apunta la cámara al código QR de la mesa o recepción del establecimiento.</p>
@@ -855,7 +852,6 @@
                 </button>
             </div>
 
-            <!-- Paso 2: Solicitud del PIN de Validación del Local -->
             <div class="p-6 text-center hidden" id="qrStepPin">
                 <div class="w-12 h-12 bg-brandGold/20 text-brandGold border border-brandGold/40 rounded-full flex items-center justify-center text-xl mx-auto mb-3 shadow">
                     <i class="fa-solid fa-key"></i>
@@ -870,7 +866,6 @@
                 </form>
             </div>
             
-            <!-- Paso 3: Sello Conquistado -->
             <div class="p-6 text-center hidden" id="qrStep2">
                 <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-green-500/30">
                     <i class="fa-solid fa-check"></i>
@@ -892,6 +887,7 @@
         </div>
     </div>
 
+    <!-- Passport Modal -->
     <div id="pasaporteModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative">
             <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50">
@@ -919,10 +915,12 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
     <div id="toastMessage" class="fixed bottom-24 right-4 bg-brandGold text-brandDark font-bold px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
 
+    <!-- Stamp Overlay Animation -->
     <div id="stampOverlay" class="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center opacity-0 hidden">
         <div class="text-center">
             <i class="fa-solid fa-stamp text-9xl text-brandGold drop-shadow-[0_0_15px_rgba(197,168,128,0.8)] transform -rotate-12"></i>
@@ -941,7 +939,7 @@
                 menuTrending: "En Tendencia",
                 menuMap: "El Mapa",
                 menuRoute: "La Ruta",
-                menuGlossary: "Glosario Lojano",
+                menuEntrepreneurs: "Emprendedores",
                 menuPassport: "Pasaporte",
                 menuAgenda: "Agenda",
                 menuItinerary: "Mi Ruta",
@@ -970,16 +968,10 @@
                 secTourism: "Turismo y Estadía",
                 secAlliesTitle: "Nuestros Aliados y Hoteles",
                 searchPlaceholder: "Buscar hotel, café, plato...",
-                filterMorning: "Mañana",
-                filterAfternoon: "Tarde",
-                filterNight: "Noche",
                 noResults: "No encontramos resultados para esa búsqueda.",
-                glossarySub: "Diccionario Culinario",
-                glossaryTitle: "Glosario Gastronómico Lojano",
-                glossaryDesc: "¿No sabes qué es el repe o el quesillo? Descubre los términos tradicionales antes de probarlos.",
                 ileSub: "Tradición y Sabor",
                 ileTitle: "Secretos de Cocina con ILE",
-                ileDesc: "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.",
+                ileDesc: "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.",
                 ileCard1Title: "El Adobo Lojano",
                 ileCard1Desc: "Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.",
                 ileCard1Tag: "Ideal para: Cecina y Secos",
@@ -1021,7 +1013,7 @@
                 menuTrending: "Trending",
                 menuMap: "The Map",
                 menuRoute: "The Route",
-                menuGlossary: "Loja Glossary",
+                menuEntrepreneurs: "Entrepreneurs",
                 menuPassport: "Passport",
                 menuAgenda: "Agenda",
                 menuItinerary: "My Route",
@@ -1050,16 +1042,10 @@
                 secTourism: "Tourism & Stay",
                 secAlliesTitle: "Our Allies & Hotels",
                 searchPlaceholder: "Search hotel, cafe, dish...",
-                filterMorning: "Morning",
-                filterAfternoon: "Afternoon",
-                filterNight: "Night",
                 noResults: "No results found for that search.",
-                glossarySub: "Culinary Dictionary",
-                glossaryTitle: "Loja Gastronomic Glossary",
-                glossaryDesc: "Don't know what repe or quesillo is? Discover traditional terms before tasting them.",
                 ileSub: "Tradition & Flavor",
                 ileTitle: "Kitchen Secrets with ILE",
-                ileDesc: "The soul of Loja gastronomy lies in its marinades, aromatic herbs and the unmistakable touch of Industria Lojana de Especerías.",
+                ileDesc: "The soul of Loja gastronomy lies in its marinades, aromatic herbs and the unmistakable touch of Industria Lojana de Especerías, endorsed by the Tourism Board.",
                 ileCard1Title: "Loja Marinade",
                 ileCard1Desc: "Masterful blend of cumin, achiote and garlic that infuses cecina before being grilled over firewood coals.",
                 ileCard1Tag: "Ideal for: Cecina & Stews",
@@ -1191,19 +1177,28 @@
             }
         ];
 
-        const defaultGlossary = [
-            { id: 'glos_1', term: 'Repe', termEn: 'Repe Soup', type: 'Sopa Tradicional', typeEn: 'Traditional Soup', desc: 'Sopa cremosa hecha a base de banano verde (guineo), leche, mantequilla y quesillo fresco desmenuzado.', descEn: 'Creamy soup made from green plantain (guineo), milk, butter, and crumbled fresh quesillo.' },
-            { id: 'glos_2', term: 'Cecina', termEn: 'Cecina Pork', type: 'Carne Asada', typeEn: 'Grilled Meat', desc: 'Finas láminas de carne de cerdo adobadas con achiote, ajo y comino, secadas al sol y asadas al carbón.', descEn: 'Thin slices of pork marinated with achiote, garlic, and cumin, sun-dried and charcoal-grilled.' }
-        ];
-
         const defaultEvents = [
-            { id: 'ev_1', title: 'Feria de Café de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', descEn: 'Open tastings for the public and barista shows.', lat: -3.9910, lng: -79.2030 }
+            { 
+                id: 'ev_1', 
+                title: 'Feria de Café de Altura Loja', 
+                titleEn: 'Loja High-Altitude Coffee Fair', 
+                date: '15 - 18 Sep', 
+                type: 'Festival', 
+                location: 'Plaza de las Flores', 
+                desc: 'Catas abiertas al público y barismo.', 
+                descEn: 'Open tastings for the public and barista shows.', 
+                img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80',
+                lat: -3.9910, 
+                lng: -79.2030 
+            }
         ];
 
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
         let locations = [];
-        let glossaryList = JSON.parse(localStorage.getItem('cyc_dynamic_glossary')) || defaultGlossary;
         let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
+        let emprendedoresList = JSON.parse(localStorage.getItem('cyc_dynamic_emprendedores')) || [
+            { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
+        ];
 
         let currentLocationIndex = 0;
         let visitedLocations = []; 
@@ -1311,8 +1306,8 @@
             renderCategoriesUI();
             renderMapAndGrid();
             renderTrendingUI();
-            renderGlossaryUI();
             renderAgendaUI();
+            renderEmprendedoresUI();
             updateItineraryUI();
             if(map) {
                 setTimeout(() => { map.invalidateSize(); }, 200);
@@ -1359,29 +1354,6 @@
                     `;
                 });
             }
-        }
-
-        function renderGlossaryUI() {
-            const container = document.getElementById('glossaryGridContainer');
-            if(!container) return;
-            container.innerHTML = '';
-
-            glossaryList.forEach((item) => {
-                const termText = (currentLang === 'en' && item.termEn) ? item.termEn : item.term;
-                const typeText = (currentLang === 'en' && item.typeEn) ? item.typeEn : item.type;
-                const descText = (currentLang === 'en' && item.descEn) ? item.descEn : item.desc;
-
-                container.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-between">
-                        <div>
-                            <span class="text-brandGold font-black text-lg block mb-1">${termText}</span>
-                            <span class="text-[10px] bg-brandGold/20 text-brandDark px-2 py-0.5 rounded font-bold uppercase tracking-wider">${typeText}</span>
-                            <p class="text-xs text-gray-600 mt-3 leading-relaxed">${descText}</p>
-                        </div>
-                    </div>
-                `;
-            });
-            renderAdminGlossaryList();
         }
 
         function renderTrendingUI() {
@@ -1706,17 +1678,13 @@
                 badge.classList.remove('hidden');
             }
 
-            let mananaHTML = "";
-            let tardeHTML = "";
-            let nocheHTML = "";
-
-            favoriteLocations.forEach((id, idx) => {
+            favoriteLocations.forEach((id) => {
                 const loc = locations.find(l => l.id === id);
                 if(loc) {
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                     const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
 
-                    let itemHtml = `
+                    container.innerHTML += `
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
                             <div class="flex items-center gap-3">
                                 <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
@@ -1733,26 +1701,8 @@
                             </div>
                         </div>
                     `;
-
-                    if (loc.category === 'cafe' || idx === 0) {
-                        mananaHTML += itemHtml;
-                    } else if (loc.category === 'hueca' || loc.category === 'urbana') {
-                        tardeHTML += itemHtml;
-                    } else {
-                        nocheHTML += itemHtml;
-                    }
                 }
             });
-
-            if(mananaHTML) {
-                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5"><i class="fa-solid fa-sun text-amber-500"></i> Bloque Mañana (Café y Desayuno)</div>` + mananaHTML;
-            }
-            if(tardeHTML) {
-                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-utensils text-brandGold"></i> Bloque Tarde (Huecas y Almuerzos)</div>` + tardeHTML;
-            }
-            if(nocheHTML) {
-                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-moon text-indigo-900"></i> Bloque Noche (Hospedaje y Cenas)</div>` + nocheHTML;
-            }
         }
 
         function removeFavorite(id) {
@@ -1767,7 +1717,7 @@
         function shareStructuredItinerary() {
             if(favoriteLocations.length === 0) { showToast('Tu ruta está vacía.'); return; }
             let text = "✨ *Mi Itinerario Organizado - Cultura y Cuchara (Loja)* ✨\n\n";
-            favoriteLocations.forEach((id, idx) => {
+            favoriteLocations.forEach((id) => {
                 const loc = locations.find(l => l.id === id);
                 if(loc) { 
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
@@ -1779,34 +1729,6 @@
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        function filterByTimeBlock(block) {
-            const searchInput = document.getElementById('searchInput');
-            if(searchInput) searchInput.value = "";
-            const noRes = document.getElementById('noResults');
-            if(noRes) noRes.classList.add('hidden');
-
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
-                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
-            });
-
-            document.querySelectorAll('.local-item').forEach(item => {
-                let match = false;
-                if (block === 'manana' && item.classList.contains('cafe')) match = true;
-                if (block === 'tarde' && (item.classList.contains('hueca') || item.classList.contains('urbana'))) match = true;
-                if (block === 'noche' && item.classList.contains('hotel')) match = true;
-
-                if (match) {
-                    item.style.opacity = '1';
-                    item.classList.remove('hidden-item');
-                } else {
-                    item.style.opacity = '0';
-                    setTimeout(() => item.classList.add('hidden-item'), 200);
-                }
-            });
-            showToast(`Mostrando bloque: ${block.toUpperCase()}`);
-        }
-
         function renderAgendaUI() {
             const agendaContainer = document.getElementById('agendaGridContainer');
             if(!agendaContainer) return;
@@ -1815,20 +1737,24 @@
             eventsList.forEach((ev) => {
                 const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
                 const evDesc = (currentLang === 'en' && ev.descEn) ? ev.descEn : ev.desc;
+                const evImg = ev.img || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80';
 
                 agendaContainer.innerHTML += `
                     <div class="bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-3">
-                                <span class="bg-brandGold text-brandDark font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider">${ev.type}</span>
+                        <div class="h-40 overflow-hidden relative">
+                            <img src="${evImg}" alt="" class="w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${ev.type}</span>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date}</span>
                             </div>
-                            <h3 class="font-bold text-lg text-brandDark mb-2">${evTitle}</h3>
-                            <p class="text-xs text-gray-600 leading-relaxed mb-4">${evDesc}</p>
+                            <h3 class="font-bold text-base text-brandDark mb-2">${evTitle}</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed mb-4 line-clamp-2">${evDesc}</p>
                         </div>
-                        <div class="px-6 pb-6 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-4 text-xs">
-                            <span class="text-gray-500"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
-                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition">
+                        <div class="px-5 pb-5 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-3 text-xs">
+                            <span class="text-gray-500 truncate max-w-[160px]"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
+                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition flex-shrink-0">
                                 <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
                             </button>
                         </div>
@@ -1838,29 +1764,94 @@
             renderAdminEventsList();
         }
 
-        function focusEventOnMap(lat, lng, title) {
+        function focusEventOnMap(lat, lng, eventTitle) {
+            if(map) {
+                map.setView([lat, lng], 17, { animate: true });
+                showToast(`Ubicando evento: ${eventTitle}`);
+            }
             document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
-            if(map) map.setView([lat, lng], 17, { animate: true });
-            showToast(`Ubicando: ${title}`);
+        }
+
+        function renderEmprendedoresUI() {
+            const container = document.getElementById('emprendedoresGridContainer');
+            if(!container) return;
+            container.innerHTML = '';
+
+            emprendedoresList.forEach(emp => {
+                container.innerHTML += `
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
+                        <div class="h-44 overflow-hidden relative">
+                            <img src="${emp.img}" alt="" class="w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow">${emp.category}</span>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-base text-brandDark mb-1">${emp.name}</h3>
+                            <p class="text-xs text-gray-600 line-clamp-2 mb-4">${emp.desc}</p>
+                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent('¡Hola! Vi su emprendimiento ' + emp.name + ' en la web de Cultura y Cuchara y deseo más información.')}" target="_blank" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
+                                <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Contactar por WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+            renderAdminEmprendedoresList();
+        }
+
+        function handleAddNewEmprendedor(e) {
+            e.preventDefault();
+            const name = document.getElementById('empName').value;
+            const category = document.getElementById('empCategory').value;
+            const phone = document.getElementById('empPhone').value;
+            const img = document.getElementById('empImg').value;
+            const desc = document.getElementById('empDesc').value;
+
+            const newEmp = { id: 'emp_' + Date.now(), name, category, phone, img, desc };
+            emprendedoresList.push(newEmp);
+            localStorage.setItem('cyc_dynamic_emprendedores', JSON.stringify(emprendedoresList));
+            renderEverything();
+            closeModal('adminModal');
+            showToast('¡Emprendedor registrado con éxito!');
+            e.target.reset();
+        }
+
+        function renderAdminEmprendedoresList() {
+            const list = document.getElementById('adminEmprendedoresList');
+            if(!list) return;
+            list.innerHTML = '';
+            emprendedoresList.forEach(emp => {
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-brandGold font-bold">${emp.name} (${emp.category})</span>
+                        <button onclick="deleteEmprendedor('${emp.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteEmprendedor(id) {
+            emprendedoresList = emprendedoresList.filter(e => e.id !== id);
+            localStorage.setItem('cyc_dynamic_emprendedores', JSON.stringify(emprendedoresList));
+            renderEverything();
+            showToast('Emprendedor eliminado');
         }
 
         function switchAdminTab(tab) {
             document.getElementById('adminTabLocales').classList.add('hidden');
-            document.getElementById('adminTabGlossary').classList.add('hidden');
+            document.getElementById('adminTabEmprendedores').classList.add('hidden');
             document.getElementById('adminTabHero').classList.add('hidden');
             document.getElementById('adminTabAgenda').classList.add('hidden');
 
             document.getElementById('tabBtnLocales').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
-            document.getElementById('tabBtnGlossary').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnEmprendedores').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
             document.getElementById('tabBtnHero').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
             document.getElementById('tabBtnAgenda').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
 
             if(tab === 'locales') {
                 document.getElementById('adminTabLocales').classList.remove('hidden');
                 document.getElementById('tabBtnLocales').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
-            } else if(tab === 'glossary') {
-                document.getElementById('adminTabGlossary').classList.remove('hidden');
-                document.getElementById('tabBtnGlossary').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            } else if(tab === 'emprendedores') {
+                document.getElementById('adminTabEmprendedores').classList.remove('hidden');
+                document.getElementById('tabBtnEmprendedores').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
             } else if(tab === 'hero') {
                 document.getElementById('adminTabHero').classList.remove('hidden');
                 document.getElementById('tabBtnHero').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
@@ -1884,45 +1875,6 @@
             applySettings(settingsData);
             closeModal('adminModal');
             showToast('¡Cabecera actualizada!');
-        }
-
-        function handleAddNewGlossaryItem(e) {
-            e.preventDefault();
-            const term = document.getElementById('glosTerm').value;
-            const termEn = document.getElementById('glosTermEn').value;
-            const type = document.getElementById('glosType').value;
-            const typeEn = document.getElementById('glosTypeEn').value;
-            const desc = document.getElementById('glosDesc').value;
-            const descEn = document.getElementById('glosDescEn').value;
-
-            const newItem = { id: 'glos_' + Date.now(), term, termEn, type, typeEn, desc, descEn };
-            glossaryList.push(newItem);
-            localStorage.setItem('cyc_dynamic_glossary', JSON.stringify(glossaryList));
-            renderEverything();
-            closeModal('adminModal');
-            showToast('Palabra agregada al glosario');
-            e.target.reset();
-        }
-
-        function renderAdminGlossaryList() {
-            const list = document.getElementById('adminGlossaryList');
-            if(!list) return;
-            list.innerHTML = '';
-            glossaryList.forEach(item => {
-                list.innerHTML += `
-                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
-                        <span class="text-brandGold font-bold">${item.term} / ${item.termEn || ''}</span>
-                        <button onclick="deleteGlossaryItem('${item.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-            });
-        }
-
-        function deleteGlossaryItem(id) {
-            glossaryList = glossaryList.filter(i => i.id !== id);
-            localStorage.setItem('cyc_dynamic_glossary', JSON.stringify(glossaryList));
-            renderEverything();
-            showToast('Término eliminado del glosario');
         }
 
         function parseCoordinates(inputVal, presetValue) {
@@ -2100,6 +2052,7 @@
             const date = document.getElementById('evDate').value;
             const type = document.getElementById('evType').value;
             const location = document.getElementById('evLocation').value;
+            const img = document.getElementById('evImg').value;
             const desc = document.getElementById('evDesc').value;
             const descEn = document.getElementById('evDescEn').value;
             const zoneCoords = document.getElementById('evZonePreset').value.split(',');
@@ -2107,7 +2060,7 @@
             const lat = parseFloat(zoneCoords[0]);
             const lng = parseFloat(zoneCoords[1]);
 
-            const newEvent = { id: 'ev_' + Date.now(), title, titleEn, date, type, location, desc, descEn, lat, lng };
+            const newEvent = { id: 'ev_' + Date.now(), title, titleEn, date, type, location, img, desc, descEn, lat, lng };
             eventsList.push(newEvent);
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
             renderEverything();
