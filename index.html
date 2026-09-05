@@ -80,7 +80,6 @@
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
 
-    <!-- Pantalla de Carga -->
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
         <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center">
             <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover">
@@ -88,7 +87,6 @@
         <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Sincronizando con Firestore...</div>
     </div>
 
-    <!-- Barra Superior -->
     <header class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-4 text-center border-b border-brandGold/30 relative z-50">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
             <span data-i18n="topInit"><i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim</span>
@@ -98,7 +96,6 @@
         </div>
     </header>
 
-    <!-- Barra de Navegación -->
     <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3">
@@ -122,7 +119,6 @@
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition" data-i18n="menuAgenda">Agenda</a>
                 
-                <!-- SELECTOR DE IDIOMA -->
                 <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer">
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
@@ -154,7 +150,6 @@
         </div>
     </nav>
 
-    <!-- BANNER DINÁMICO DE EVENTO EN VIVO -->
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-yellow-600 to-brandGold text-brandDark py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
         <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
         <span id="liveEventText">Cargando eventos...</span>
@@ -163,7 +158,6 @@
         </button>
     </div>
 
-    <!-- Sección Hero Principal -->
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
         <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
@@ -187,7 +181,6 @@
         </div>
     </section>
 
-    <!-- Loja en Cifras -->
     <section class="bg-brandGold text-brandDark py-8 border-b-4 border-black z-10 relative">
         <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
@@ -209,7 +202,6 @@
         </div>
     </section>
 
-    <!-- SECCIÓN EN TENDENCIA -->
     <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
@@ -223,7 +215,6 @@
         </div>
     </section>
 
-    <!-- Rutas Sugeridas -->
     <section class="py-10 px-4 bg-brandCream border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
@@ -234,7 +225,6 @@
         </div>
     </section>
 
-    <!-- Mapa Interactivo de Loja -->
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
@@ -254,7 +244,6 @@
                 </div>
             </div>
 
-            <!-- Tarjeta de Vista Previa -->
             <div id="mapPreviewCard" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col justify-between h-[440px] relative transition-all duration-300">
                 <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
@@ -293,7 +282,6 @@
         </div>
     </section>
 
-    <!-- Establecimientos y Hoteles -->
     <section id="establecimientos" class="bg-white py-16 px-4 reveal">
         <div class="max-w-7xl mx-auto">
             
@@ -308,7 +296,6 @@
                 </div>
             </div>
 
-            <!-- Filtros por Categoría y Bloque de Tiempo -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-2 border-b border-gray-100">
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full sm:w-auto" id="categoryScroll"></div>
                 
@@ -325,7 +312,6 @@
                 </div>
             </div>
 
-            <!-- Grilla Dinámica -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="localesGrid"></div>
             
             <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
@@ -335,7 +321,6 @@
         </div>
     </section>
 
-    <!-- GUÍA DE ESPECIAS Y MARIDAJE ILE -->
     <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -375,7 +360,6 @@
         </div>
     </section>
 
-    <!-- Pasaporte Turístico Dual -->
     <section id="pasaporte" class="py-16 px-4 bg-brandGold text-brandDark reveal">
         <div class="max-w-5xl mx-auto">
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
@@ -411,7 +395,6 @@
         </div>
     </section>
 
-    <!-- Agenda Cultural y Eventos -->
     <section id="agenda" class="py-16 px-4 bg-white border-t border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -426,7 +409,6 @@
         </div>
     </section>
 
-    <!-- Sección Podcast Integrado -->
     <section id="podcast" class="py-16 px-4 bg-brandDark text-white border-t border-gray-800 reveal">
         <div class="max-w-5xl mx-auto">
             <div class="flex flex-col md:flex-row items-center gap-8">
@@ -456,7 +438,6 @@
         </div>
     </section>
 
-    <!-- Aliados Estratégicos -->
     <section id="aliados" class="bg-gray-100 text-brandDark py-16 px-4 border-t border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -489,7 +470,6 @@
         </div>
     </section>
 
-    <!-- Pie de Página -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -508,12 +488,10 @@
         </div>
     </footer>
 
-    <!-- Botón WhatsApp ajustado más arriba para no estorbar el punto de admin -->
     <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:bg-green-600 transition" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- MODAL DE MI RUTA / FAVORITOS -->
     <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
             <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
@@ -534,7 +512,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE ACCESO PIN ADMIN -->
     <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
             <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -552,7 +529,6 @@
         </div>
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN CMS CON CAMPOS BILINGÜES -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             
@@ -580,14 +556,12 @@
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
                 
-                <!-- PESTAÑA 1: LOCALES (BILINGÜE) -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (Español & English)</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
                             
-                            <!-- BILINGÜE: TÍTULO -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre (Español)</label>
@@ -618,7 +592,6 @@
                                 </div>
                             </div>
                             
-                            <!-- BILINGÜE: ETIQUETA -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Visible (Español)</label>
@@ -630,7 +603,6 @@
                                 </div>
                             </div>
 
-                            <!-- BILINGÜE: PLATO ESTRELLA -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Plato Estrella / Beneficio (Español)</label>
@@ -667,7 +639,6 @@
                                 <input type="text" id="admAddress" required placeholder="Ej. Sucre y Rocafuerte" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
 
-                            <!-- BILINGÜE: DESCRIPCIÓN -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción (Español)</label>
@@ -707,7 +678,6 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA 2: TEXTOS Y CIFRAS -->
                 <div id="adminTabHero" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-pen-nib mr-1"></i> Personalizar Cabecera y Cifras de la Web</h4>
@@ -747,7 +717,6 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA 3: ALIADOS -->
                 <div id="adminTabAliados" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-handshake mr-1"></i> Administrar Aliados Estratégicos</h4>
@@ -769,7 +738,6 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA 4: AGENDA (BILINGÜE) -->
                 <div id="adminTabAgenda" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Español & English)</h4>
@@ -823,7 +791,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE GALERÍA -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[720px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -870,7 +837,6 @@
         </div>
     </div>
 
-    <!-- MODAL PARA SUBIR FOTO COMUNITARIA -->
     <div id="uploadPhotoModal" class="fixed inset-0 z-[75] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/40 p-6 relative">
             <button onclick="closeModal('uploadPhotoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -963,7 +929,6 @@
         </div>
     </div>
 
-    <!-- Script General y Diccionario de Idiomas -->
     <script>
         const translations = {
             es: {
@@ -1213,6 +1178,7 @@
                 ]
             },
             {
+                id: "cafe_zorzal",
                 tag: "Cafetería de Especialidad", tagEn: "Specialty Coffee Shop", title: "Café Zorzal & Altura", titleEn: "Zorzal & Altura Coffee",
                 desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
                 descEn: "High-altitude coffee beans grown on Loja farms, artisanally roasted and served as pour-overs.",
@@ -1222,6 +1188,7 @@
                 gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)", titleEn: "V60 Pour-Over (Catamayo)" }]
             },
             {
+                id: "fogon_lola",
                 tag: "Gastronomía Urbana", tagEn: "Urban Gastronomy", title: "El Fogón de Lola", titleEn: "El Fogón de Lola",
                 desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
                 descEn: "Innovative fusion between traditional Loja cuisine and contemporary techniques.",
@@ -1231,6 +1198,7 @@
                 gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado", titleEn: "Smoked White Repe Soup" }]
             },
             {
+                id: "gran_hotel",
                 tag: "Hotel Aliado", tagEn: "Partner Hotel", title: "Gran Hotel Loja", titleEn: "Gran Hotel Loja",
                 desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
                 descEn: "Top-tier lodging in the cultural heart of the city, with traditional Loja breakfast included.",
@@ -1243,8 +1211,8 @@
 
         const defaultEvents = [
             { id: 'ev_1', title: 'Feria de Café de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', descEn: 'Open tastings for the public and barista shows.', lat: -3.9910, lng: -79.2030 },
-            { id: 'ev_2', title: 'Ruta del Repe Tradicional', titleEn: 'Traditional Repe Soup Route', date: '25 de Septiembre', dateEn: 'September 25th', type: 'Gastronomía', typeEn: 'Gastronomy', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', descEn: 'Live demonstrations of heritage cuisine.', lat: -3.9931, lng: -79.2042 },
-            { id: 'ev_3', title: 'Concierto Sinfónico', titleEn: 'Symphonic Concert', date: '02 de Octubre', dateEn: 'October 2nd', type: 'Arte & Música', typeEn: 'Art & Music', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', descEn: 'Special gala interpreting traditional pasillo music.', lat: -3.9980, lng: -79.2015 }
+            { id: 'ev_2', title: 'Ruta del Repe Tradicional', titleEn: 'Traditional Repe Soup Route', date: '25 de Septiembre', type: 'Gastronomía', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', descEn: 'Live demonstrations of heritage cuisine.', lat: -3.9931, lng: -79.2042 },
+            { id: 'ev_3', title: 'Concierto Sinfónico', titleEn: 'Symphonic Concert', date: '02 de Octubre', type: 'Arte & Música', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', descEn: 'Special gala interpreting traditional pasillo music.', lat: -3.9980, lng: -79.2015 }
         ];
 
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
@@ -1282,10 +1250,10 @@
                 });
                 
                 if(locations.length === 0) {
-                    defaultLocations.forEach(loc => db.collection("locales").add(loc));
-                } else {
-                    renderEverything();
+                    defaultLocations.forEach(loc => db.collection("locales").doc(loc.id).set(loc));
+                    locations = defaultLocations;
                 }
+                renderEverything();
                 checkLiveEventsBanner();
                 checkUrlCheckinParam();
             }, (error) => {
@@ -1556,7 +1524,6 @@
                 `;
             });
 
-            // Pines de eventos
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
                     const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
@@ -2035,7 +2002,8 @@
                       })
                       .catch(err => showToast("Error al actualizar: " + err.message));
                 } else {
-                    db.collection("locales").add(locationData)
+                    const newId = 'loc_' + Date.now();
+                    db.collection("locales").doc(newId).set(locationData)
                       .then(() => {
                           closeModal('adminModal');
                           showToast(`¡${title} guardado en Firestore!`);
@@ -2104,7 +2072,7 @@
                     <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
                         <div>
                             <span class="text-brandGold font-bold"><i class="fa-solid ${loc.iconClass} mr-1"></i> ${loc.title}</span>
-                            <span class="text-gray-400 text-[10px] block">(${loc.category})</span>
+                            <span class="text-gray-400 text-[10px] block">(${loc.category} - ID: ${loc.id})</span>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
@@ -2336,11 +2304,13 @@
         }
 
         function registerVisit(localId) {
-            const localObj = locations.find(l => l.id === localId);
-            if (!localObj) return;
-            const locTitle = (currentLang === 'en' && localObj.titleEn) ? localObj.titleEn : localObj.title;
+            const localObj = locations.find(l => l.id === localId) || defaultLocations.find(l => l.id === localId);
+            if (!localObj) {
+                showToast("⚠️ Código QR de local no reconocido en la ruta.");
+                return;
+            }
             if (visitedLocations.includes(localId)) {
-                showToast(`⚠️ Ya tienes el sello de ${locTitle}`);
+                showToast(`⚠️ Ya tienes el sello de ${localObj.title}`);
                 return;
             }
             visitedLocations.push(localId);
@@ -2390,7 +2360,7 @@
 
             let stampsCount = visitedLocations.length;
             for (let i = 0; i < totalToWin; i++) {
-                const loc = locations[i];
+                const loc = locations[i] || defaultLocations[i];
                 const isVisited = loc && visitedLocations.includes(loc.id);
                 let html = '';
                 if (isVisited) {
@@ -2432,15 +2402,8 @@
             const urlParams = new URLSearchParams(window.location.search);
             const checkinId = urlParams.get('checkin');
             if (checkinId) {
-                setTimeout(() => {
-                    const foundLoc = locations.find(l => l.id === checkinId);
-                    if (foundLoc) {
-                        registerVisit(checkinId);
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    } else {
-                        showToast("⚠️ Código QR de local no reconocido en la ruta.");
-                    }
-                }, 800);
+                registerVisit(checkinId);
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
 
