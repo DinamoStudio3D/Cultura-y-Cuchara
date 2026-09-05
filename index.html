@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cultura y Cuchara - Ruta Gastronómica y Turística de Loja</title>
-    <!-- Favicon oficial del proyecto -->
     <link rel="icon" type="image/png" href="https://i.imgur.com/TIaEffN.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -411,7 +410,7 @@
                             <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>5 Paradas Gastronómicas</b> (Libre elección).</p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: No se puede repetir el mismo establecimiento. Cada local otorga un único sello por temporada.</p>
+                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.</p>
                 </div>
             </div>
         </div>
@@ -528,7 +527,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control bilingüe con Horarios y Firestore</p>
+                        <p class="text-xs text-brandGold">Control bilingüe con Horarios, PINs y Firestore</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -537,7 +536,7 @@
             </div>
 
             <div class="flex border-b border-gray-800 bg-black/30 px-4 sm:px-6 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto hide-scrollbar">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos</button>
+                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos y PINs</button>
                 <button onclick="switchAdminTab('glossary')" id="tabBtnGlossary" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Glosario Culinario</button>
                 <button onclick="switchAdminTab('hero')" id="tabBtnHero" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Textos y Cifras</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda</button>
@@ -547,7 +546,7 @@
                 <!-- Locales Tab -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Horarios)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con PIN y Horarios)</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
                             
@@ -562,7 +561,7 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría</label>
                                     <select id="admCategory" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></select>
@@ -578,6 +577,10 @@
                                         <option value="fa-wine-glass">🍷 Bar / Coctel</option>
                                         <option value="fa-landmark">🏛️ Sitio Cultural / Museo</option>
                                     </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-key"></i> PIN de Validación</label>
+                                    <input type="text" id="admPin" required maxlength="6" value="1234" placeholder="Ej. 4589" class="w-full bg-[#121212] border border-brandGold/60 rounded p-2.5 text-xs text-white outline-none text-center font-bold tracking-widest">
                                 </div>
                             </div>
                             
@@ -837,24 +840,42 @@
             <button onclick="closeModal('qrDemoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-xl z-10 w-8 h-8 flex items-center justify-center bg-black/50 rounded-full">
                 <i class="fa-solid fa-xmark"></i>
             </button>
+            
+            <!-- Paso 1: Escaneo inicial del QR -->
             <div class="p-6 text-center" id="qrStep1">
-                <h3 class="text-xl font-bold text-brandGold mb-2">Simulador de Visita / Check-in</h3>
-                <p class="text-gray-400 text-xs mb-6">Apunta la cámara al QR de la mesa o recepción para registrar tu sello.</p>
+                <h3 class="text-xl font-bold text-brandGold mb-2" id="qrModalTitle">Simulador de Visita / Check-in</h3>
+                <p class="text-gray-400 text-xs mb-6">Apunta la cámara al código QR de la mesa o recepción del establecimiento.</p>
                 <div class="w-48 h-48 mx-auto bg-white p-2 rounded-xl mb-6 relative overflow-hidden border-2 border-dashed border-gray-500">
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=culturaycuchara.com" alt="" class="w-full h-full opacity-30 grayscale" loading="lazy">
                     <div class="absolute inset-0 border-4 border-brandGold rounded-xl m-2"></div>
                     <div class="scanner-line"></div>
                 </div>
-                <button onclick="triggerSimulatedScan()" class="w-full bg-brandGold text-brandDark py-3 rounded-lg font-bold hover:bg-white transition flex items-center justify-center">
-                    <i class="fa-solid fa-camera mr-2"></i> Simular lectura de QR
+                <button onclick="proceedToPinValidation()" class="w-full bg-brandGold text-brandDark py-3 rounded-lg font-bold hover:bg-white transition flex items-center justify-center text-xs uppercase tracking-wider">
+                    <i class="fa-solid fa-camera mr-2"></i> Escanear Código QR
                 </button>
             </div>
+
+            <!-- Paso 2: Solicitud del PIN de Validación del Local -->
+            <div class="p-6 text-center hidden" id="qrStepPin">
+                <div class="w-12 h-12 bg-brandGold/20 text-brandGold border border-brandGold/40 rounded-full flex items-center justify-center text-xl mx-auto mb-3 shadow">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h3 class="text-lg font-bold text-brandGold mb-1">PIN de Validación Requerido</h3>
+                <p class="text-xs text-gray-400 mb-4" id="pinBusinessNamePrompt">Solicita al mesero o cajero del local que ingrese el PIN de 4 dígitos para autorizar tu sello.</p>
+                <form onsubmit="verifyBusinessPin(event)" class="space-y-3">
+                    <input type="password" id="inputBusinessPin" required maxlength="6" placeholder="PIN del Local" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-center text-xl tracking-widest text-white outline-none focus:border-brandGold">
+                    <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2.5 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                        Validar Sello y Ganar
+                    </button>
+                </form>
+            </div>
             
+            <!-- Paso 3: Sello Conquistado -->
             <div class="p-6 text-center hidden" id="qrStep2">
                 <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-green-500/30">
                     <i class="fa-solid fa-check"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-1">¡Visita Registrada!</h3>
+                <h3 class="text-2xl font-bold text-white mb-1">¡Visita Validada!</h3>
                 <p class="text-brandGold text-sm font-bold mb-6">Ganaste 1 sello en tu pasaporte</p>
                 <div class="border-t border-gray-800 pt-6">
                     <p class="text-sm font-bold mb-3">¿Qué te pareció la experiencia?</p>
@@ -945,7 +966,7 @@
                 btnCenter: "Centrar Loja",
                 btnMedia: "Ver Vídeo y Galería de Fotos",
                 btnShare: "Compartir",
-                btnScan: "Simular Escaneo (Sellar)",
+                btnScan: "Escanear QR y Validar Sello",
                 secTourism: "Turismo y Estadía",
                 secAlliesTitle: "Nuestros Aliados y Hoteles",
                 searchPlaceholder: "Buscar hotel, café, plato...",
@@ -977,18 +998,13 @@
                 passTouristDesc: "Requiere: <b>1 Hotel + 3 Gastronomía</b> (Ideal para visitantes).",
                 passLocalMode: "Modo Lojano",
                 passLocalDesc: "Requiere: <b>5 Paradas Gastronómicas</b> (Libre elección).",
-                passRules: "* Reglas de seguridad: No se puede repetir el mismo establecimiento. Cada local otorga un único sello por temporada.",
+                passRules: "* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.",
                 agendaSub: "Loja en Movimiento",
                 agendaTitle: "Agenda Cultural y Eventos",
                 agendaDesc: "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
                 podSub: "Episodios Completos",
                 podTitle: "El Podcast de Loja",
                 podDesc: "Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.",
-                alliesSub: "Apoyo y Respaldo",
-                alliesTitle: "Aliados Estratégicos",
-                alliesDesc: "Este proyecto es posible gracias a la unión del sector público, hotelero y la empresa privada para potenciar el turismo y la gastronomía de nuestra ciudad.",
-                ally1Badge: "Respaldo Institucional",
-                ally2Badge: "Patrocinador Principal",
                 footerText: "Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.",
                 modalItineraryTitle: "Mi Ruta Organizada",
                 btnShareItinerary: "Compartir mi Ruta Organizada por WhatsApp",
@@ -1030,7 +1046,7 @@
                 btnCenter: "Center Loja",
                 btnMedia: "View Video & Photo Gallery",
                 btnShare: "Share",
-                btnScan: "Simulate Scan (Stamp)",
+                btnScan: "Scan QR & Validate Stamp",
                 secTourism: "Tourism & Stay",
                 secAlliesTitle: "Our Allies & Hotels",
                 searchPlaceholder: "Search hotel, cafe, dish...",
@@ -1062,18 +1078,13 @@
                 passTouristDesc: "Requires: <b>1 Hotel + 3 Gastronomy</b> (Ideal for visitors).",
                 passLocalMode: "Local Mode",
                 passLocalDesc: "Requires: <b>5 Gastronomic Stops</b> (Free choice).",
-                passRules: "* Security rules: You cannot repeat the same establishment. Each location grants a single stamp per season.",
+                passRules: "* Security rules: To get your stamp by scanning the QR, the cashier or waiter must enter the authorized validation PIN.",
                 agendaSub: "Loja in Motion",
                 agendaTitle: "Cultural Agenda & Events",
                 agendaDesc: "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
                 podSub: "Full Episodes",
                 podTitle: "The Loja Podcast",
                 podDesc: "Get to know the stories of sacrifice, secret recipes and cultural heritage behind each eatery, hotel and coffee shop in our province.",
-                alliesSub: "Support & Backing",
-                alliesTitle: "Strategic Allies",
-                alliesDesc: "This project is made possible thanks to the union of the public, hotel, and private sectors to boost tourism and gastronomy in our city.",
-                ally1Badge: "Institutional Backing",
-                ally2Badge: "Main Sponsor",
                 footerText: "Loja is experienced, tasted and hosted. Endorsed by the Tourism Board. © 2026.",
                 modalItineraryTitle: "My Organized Route",
                 btnShareItinerary: "Share my Organized Route via WhatsApp",
@@ -1149,6 +1160,7 @@
         const defaultLocations = [
             {
                 id: "dinamo_studio",
+                pin: "1234",
                 tag: "Institucional / Merchandising", tagEn: "Institutional / Merchandising",
                 title: "Dínamo Studio", titleEn: "Dínamo Studio",
                 desc: "Estudio creativo y desarrollo tecnológico oficial del proyecto.",
@@ -1164,6 +1176,7 @@
             },
             {
                 id: "dona_rosita",
+                pin: "5678",
                 tag: "Hueca Tradicional", tagEn: "Traditional Local Eatery", title: "Picantería Doña Rosita", titleEn: "Doña Rosita Picantería",
                 desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
                 descEn: "The authentic taste of Loja's charcoal-grilled cecina served with cassava and pickled onion.",
@@ -1197,6 +1210,7 @@
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
         let passportMode = 'turista';
         let userCoords = null;
+        let pendingCheckinId = null;
 
         let map, markersLayer, userMarkerInstance = null;
         try {
@@ -1932,6 +1946,7 @@
             const titleEn = document.getElementById('admTitleEn').value;
             const category = document.getElementById('admCategory').value;
             const iconClass = document.getElementById('admIconClass').value;
+            const pin = document.getElementById('admPin').value || "1234";
             const tag = document.getElementById('admTag').value;
             const tagEn = document.getElementById('admTagEn').value;
             const dish = document.getElementById('admDish').value;
@@ -1961,7 +1976,7 @@
             }
 
             const locationData = {
-                tag, tagEn, title, titleEn, desc, descEn, dish, dishEn,
+                pin, tag, tagEn, title, titleEn, desc, descEn, dish, dishEn,
                 hours, openHour, closeHour, address,
                 lat: finalCoords[0], lng: finalCoords[1],
                 gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
@@ -2002,6 +2017,7 @@
             document.getElementById('admTitleEn').value = loc.titleEn || '';
             document.getElementById('admCategory').value = loc.category;
             document.getElementById('admIconClass').value = loc.iconClass;
+            document.getElementById('admPin').value = loc.pin || '1234';
             document.getElementById('admTag').value = loc.tag || '';
             document.getElementById('admTagEn').value = loc.tagEn || '';
             document.getElementById('admDish').value = loc.dish || '';
@@ -2028,7 +2044,7 @@
 
         function resetLocationForm() {
             document.getElementById('admEditId').value = '';
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Horarios)`;
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con PIN y Horarios)`;
             document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
             document.getElementById('admTitle').value = '';
             document.getElementById('admTitleEn').value = '';
@@ -2037,6 +2053,7 @@
             document.getElementById('admDescEn').value = '';
             document.getElementById('admDish').value = '';
             document.getElementById('admDishEn').value = '';
+            document.getElementById('admPin').value = '1234';
             document.getElementById('admTag').value = '';
             document.getElementById('admTagEn').value = '';
             document.getElementById('admHours').value = '';
@@ -2056,7 +2073,7 @@
                     <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
                         <div>
                             <span class="text-brandGold font-bold"><i class="fa-solid ${loc.iconClass} mr-1"></i> ${loc.title}</span>
-                            <span class="text-gray-400 text-[10px] block">(ID: ${loc.id})</span>
+                            <span class="text-gray-400 text-[10px] block">PIN: <b class="text-white">${loc.pin || '1234'}</b> | QR Link: ?checkin=${loc.id}</span>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
@@ -2266,33 +2283,61 @@
         }
 
         function openQRDemoModal() {
+            pendingCheckinId = locations[currentLocationIndex] ? locations[currentLocationIndex].id : 'dinamo_studio';
+            document.getElementById('qrModalTitle').innerText = "Simulador de Escaneo QR";
             document.getElementById('qrStep1').classList.remove('hidden');
+            document.getElementById('qrStepPin').classList.add('hidden');
             document.getElementById('qrStep2').classList.add('hidden');
             openModal('qrDemoModal');
         }
 
-        function triggerSimulatedScan() {
-            closeModal('qrDemoModal');
-            const loc = locations[currentLocationIndex];
-            registerVisit(loc.id);
+        function proceedToPinValidation() {
+            const targetLoc = locations.find(l => l.id === pendingCheckinId) || locations[currentLocationIndex];
+            if (!targetLoc) return;
+
+            document.getElementById('qrStep1').classList.add('hidden');
+            document.getElementById('qrStepPin').classList.remove('hidden');
+            document.getElementById('pinBusinessNamePrompt').innerHTML = `El establecimiento <b>${targetLoc.title}</b> requiere el PIN autorizado del local para liberar tu sello.`;
+            document.getElementById('inputBusinessPin').value = '';
+            document.getElementById('inputBusinessPin').focus();
         }
 
-        function registerVisit(localId) {
-            const localObj = locations.find(l => l.id === localId) || defaultLocations.find(l => l.id === localId);
-            if (!localObj) {
-                showToast("⚠️ Código QR de local no reconocido en la ruta.");
+        function verifyBusinessPin(e) {
+            e.preventDefault();
+            const enteredPin = document.getElementById('inputBusinessPin').value.trim();
+            const targetLoc = locations.find(l => l.id === pendingCheckinId) || locations[currentLocationIndex];
+            
+            if (!targetLoc) {
+                showToast('❌ Establecimiento no encontrado.');
                 return;
             }
+
+            const correctPin = targetLoc.pin || "1234";
+            if (enteredPin === correctPin) {
+                document.getElementById('qrStepPin').classList.add('hidden');
+                registerValidVisit(targetLoc.id);
+            } else {
+                showToast('❌ PIN incorrecto. Consulta con el cajero.');
+                document.getElementById('inputBusinessPin').value = '';
+            }
+        }
+
+        function registerValidVisit(localId) {
+            const localObj = locations.find(l => l.id === localId);
+            if (!localObj) return;
+
             if (visitedLocations.includes(localId)) {
                 showToast(`⚠️ Ya tienes el sello de ${localObj.title}`);
+                closeModal('qrDemoModal');
                 return;
             }
+
             visitedLocations.push(localId);
             localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
             triggerStampAnimation();
             updatePassportUI();
+            
             setTimeout(() => {
-                document.getElementById('qrStep1').classList.add('hidden');
                 document.getElementById('qrStep2').classList.remove('hidden');
                 openModal('qrDemoModal');
             }, 2600);
@@ -2376,13 +2421,15 @@
             const urlParams = new URLSearchParams(window.location.search);
             const checkinId = urlParams.get('checkin');
             if (checkinId) {
+                pendingCheckinId = checkinId;
                 let attempts = 0;
                 const checkInterval = setInterval(() => {
-                    let found = locations.find(l => l.id === checkinId) || defaultLocations.find(l => l.id === checkinId);
-                    if (found || attempts > 20) {
+                    let found = locations.find(l => l.id === checkinId);
+                    if (found || attempts > 25) {
                         clearInterval(checkInterval);
-                        registerVisit(checkinId);
                         window.history.replaceState({}, document.title, window.location.pathname);
+                        proceedToPinValidation();
+                        openModal('qrDemoModal');
                     }
                     attempts++;
                 }, 150);
