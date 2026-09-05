@@ -508,6 +508,7 @@
         </div>
     </footer>
 
+    <!-- Botón WhatsApp ajustado más arriba para no estorbar el punto de admin -->
     <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:bg-green-600 transition" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
@@ -551,7 +552,7 @@
         </div>
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN CMS -->
+    <!-- PANEL DE ADMINISTRACIÓN CMS CON CAMPOS BILINGÜES -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             
@@ -562,7 +563,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control total sincronizado con Firestore</p>
+                        <p class="text-xs text-brandGold">Control bilingüe sincronizado con Firestore</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -579,10 +580,10 @@
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
                 
-                <!-- PESTAÑA 1: LOCALES -->
+                <!-- PESTAÑA 1: LOCALES (BILINGÜE) -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel (Español / English)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (Español & English)</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
                             
@@ -617,7 +618,7 @@
                                 </div>
                             </div>
                             
-                            <!-- BILINGÜE: ETIQUETA Y PLATO -->
+                            <!-- BILINGÜE: ETIQUETA -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Visible (Español)</label>
@@ -629,6 +630,7 @@
                                 </div>
                             </div>
 
+                            <!-- BILINGÜE: PLATO ESTRELLA -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Plato Estrella / Beneficio (Español)</label>
@@ -767,10 +769,10 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA 4: AGENDA -->
+                <!-- PESTAÑA 4: AGENDA (BILINGÜE) -->
                 <div id="adminTabAgenda" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Español / English)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Español & English)</h4>
                         <form onsubmit="handleAddNewEvent(event)" class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -784,7 +786,7 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input type="text" id="evDate" required placeholder="Fecha (ej. 15 - 18 Sep)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <input type="text" id="evType" required placeholder="Tipo (ej. Festival / Festival)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <input type="text" id="evType" required placeholder="Tipo (ej. Festival)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input type="text" id="evLocation" required placeholder="Lugar (ej. Plaza de las Flores)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
@@ -801,7 +803,7 @@
                                     <textarea id="evDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Description (English)</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Description (English)</label>
                                     <textarea id="evDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                                 </div>
                             </div>
@@ -963,7 +965,6 @@
 
     <!-- Script General y Diccionario de Idiomas -->
     <script>
-        // DICCIONARIO DE IDIOMAS (ESPAÑOL E INGLÉS)
         const translations = {
             es: {
                 topInit: "Una iniciativa de Dínamo Studio & Codeproim",
@@ -1184,6 +1185,21 @@
 
         const defaultLocations = [
             {
+                id: "dinamo_studio",
+                tag: "Institucional / Merchandising", tagEn: "Institutional / Merchandising",
+                title: "Dínamo Studio", titleEn: "Dínamo Studio",
+                desc: "Estudio creativo y desarrollo tecnológico oficial del proyecto.",
+                descEn: "Official creative studio and tech development of the project.",
+                dish: "Kit de bienvenida institucional", dishEn: "Institutional welcome kit", hours: "Lun - Vie: 09:00 - 18:00",
+                address: "Loja, Ecuador", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
+                iconClass: "fa-seedling", category: "urbana",
+                youtubeUrl: "",
+                gallery: [
+                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Dínamo Studio", titleEn: "Dínamo Studio" }
+                ]
+            },
+            {
+                id: "dona_rosita",
                 tag: "Hueca Tradicional", tagEn: "Traditional Local Eatery", title: "Picantería Doña Rosita", titleEn: "Doña Rosita Picantería",
                 desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
                 descEn: "The authentic taste of Loja's charcoal-grilled cecina served with cassava and pickled onion.",
@@ -1255,6 +1271,7 @@
                 loadSettingsFromStorage();
                 renderEverything();
                 checkLiveEventsBanner();
+                checkUrlCheckinParam();
                 return;
             }
 
@@ -1270,11 +1287,13 @@
                     renderEverything();
                 }
                 checkLiveEventsBanner();
+                checkUrlCheckinParam();
             }, (error) => {
                 console.error("Error sincronizando Firestore:", error);
                 locations = defaultLocations;
                 renderEverything();
                 checkLiveEventsBanner();
+                checkUrlCheckinParam();
             });
 
             db.collection("settings").doc("main").get().then((doc) => {
@@ -2060,7 +2079,7 @@
 
         function resetLocationForm() {
             document.getElementById('admEditId').value = '';
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel (Español / English)`;
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Local / Hotel (Español & English)`;
             document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
             document.getElementById('admTitle').value = '';
             document.getElementById('admTitleEn').value = '';
@@ -2407,6 +2426,22 @@
             if(splash) splash.classList.add('fade-out');
             const body = document.getElementById('body-content');
             if(body) body.classList.remove('overflow-hidden');
+        }
+
+        function checkUrlCheckinParam() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkinId = urlParams.get('checkin');
+            if (checkinId) {
+                setTimeout(() => {
+                    const foundLoc = locations.find(l => l.id === checkinId);
+                    if (foundLoc) {
+                        registerVisit(checkinId);
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else {
+                        showToast("⚠️ Código QR de local no reconocido en la ruta.");
+                    }
+                }, 800);
+            }
         }
 
         window.addEventListener('DOMContentLoaded', function() {
