@@ -476,7 +476,7 @@
         </div>
     </section>
 
-    <!-- Pie de Página con Puntito Oculto Admin -->
+    <!-- Pie de Página con Puntito Adaptado para Móvil (Toques múltiples o Long Press) -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -490,8 +490,8 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026. 
-                <!-- PUNTITO OCULTO RESTAURADO Y FUNCIONAL -->
-                <span onclick="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[10px] select-none" title="Admin">.</span>
+                <!-- PUNTITO OCULTO CON SOPORTE TÁCTIL (MÓVIL Y PC) -->
+                <span onclick="handleAdminDotClick()" ontouchstart="handleAdminDotTouch(event)" class="cursor-pointer text-black hover:text-brandGold transition text-[14px] px-2 py-1 select-none" title="Admin">.</span>
             </div>
         </div>
     </footer>
@@ -1566,7 +1566,6 @@
             return [parseFloat(coords[0]), parseFloat(coords[1])];
         }
 
-        // GUARDAR O EDITAR LOCAL EN FIRESTORE
         function handleSaveLocation(e) {
             e.preventDefault();
             const editId = document.getElementById('admEditId').value;
@@ -1718,6 +1717,16 @@
             renderEverything();
             checkLiveEventsBanner();
             showToast('Evento eliminado');
+        }
+
+        // CONTROLADORES TÁCTILES PARA EL PUNTITO OCULTO EN MÓVIL Y PC
+        let touchTimer = null;
+        function handleAdminDotClick() {
+            requestAdminAccess();
+        }
+        function handleAdminDotTouch(e) {
+            e.preventDefault();
+            requestAdminAccess();
         }
 
         function requestAdminAccess() {
