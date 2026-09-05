@@ -31,6 +31,10 @@
     <!-- Librería para Confeti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+    <!-- SDKs de Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
         #lojaMap { z-index: 1; touch-action: pan-y; }
@@ -38,6 +42,7 @@
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #C5A880; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .leaflet-popup-content { font-family: inherit; margin: 12px; text-align: center; }
         .leaflet-popup-tip { background: #ffffff; border-bottom: 2px solid #C5A880; border-right: 2px solid #C5A880; }
+        .leaflet-container a.leaflet-popup-close-button { color: #121212; font-weight: bold; }
         
         .hidden-item { display: none !important; }
         .custom-leaflet-icon { background: transparent; border: none; }
@@ -48,7 +53,7 @@
         .fab-whatsapp { position: fixed; bottom: 20px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
         @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        #splash-screen { transition: opacity 0.3s ease-out; z-index: 9999; }
+        #splash-screen { transition: opacity 0.5s ease-out; z-index: 9999; }
         .fade-out { opacity: 0; pointer-events: none; visibility: hidden; }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -60,16 +65,27 @@
             100% { opacity: 1; transform: scale(1) rotate(-15deg); }
         }
         .stamp-earned { animation: stamp-hit 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+        .scanner-line {
+            width: 100%; height: 2px; background: #C5A880; position: absolute; top: 0;
+            box-shadow: 0 0 10px #C5A880; animation: scan 2s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+
+        .star-rating i { cursor: pointer; transition: color 0.2s; }
+        .star-rating i:hover, .star-rating i.active { color: #C5A880; }
+
+        .local-item { transition: all 0.3s ease-in-out; }
     </style>
 </head>
-<body class="bg-brandCream text-brandDark font-sans antialiased" id="body-content">
+<body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
 
-    <!-- Pantalla de Carga Instantánea -->
+    <!-- Pantalla de Carga -->
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
-        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl flex items-center justify-center">
+        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center">
             <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover">
         </div>
-        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase">Cultura y Cuchara...</div>
+        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Sincronizando con Firestore...</div>
     </div>
 
     <!-- Barra Superior -->
@@ -85,9 +101,9 @@
     <!-- Barra de Navegación -->
     <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="#" onclick="handleLogoClick(event)" class="flex items-center gap-3 select-none" title="Admin Atajo">
+            <a href="#" class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full border-2 border-brandGold overflow-hidden bg-black shadow-sm flex items-center justify-center p-0.5">
-                    <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full pointer-events-none">
+                    <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full">
                 </div>
                 <div>
                     <span class="text-white font-bold text-sm tracking-wide block leading-none">CULTURA Y CUCHARA</span>
@@ -106,6 +122,7 @@
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition" data-i18n="menuAgenda">Agenda</a>
                 
+                <!-- SELECTOR DE IDIOMA -->
                 <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer">
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
@@ -134,7 +151,6 @@
                 </select>
             </div>
             <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span></button>
-            <button onclick="requestAdminAccess(); toggleMobileMenu()" class="text-brandGold font-bold text-left pt-2 border-t border-gray-800"><i class="fa-solid fa-lock mr-1"></i> Panel Administrador</button>
         </div>
     </nav>
 
@@ -486,11 +502,9 @@
                     <p class="text-[10px] text-gray-500">Dínamo Studio & Codeproim</p>
                 </div>
             </div>
-            <div class="text-[11px] text-gray-500 flex items-center justify-center gap-2">
+            <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.</span> 
-                <button onclick="requestAdminAccess()" class="bg-gray-900 hover:bg-brandGold hover:text-brandDark text-brandGold border border-brandGold/40 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition">
-                    <i class="fa-solid fa-lock mr-1"></i> Admin
-                </button>
+                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-2 py-1 select-none" title="Admin">.</span>
             </div>
         </div>
     </footer>
@@ -549,7 +563,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control local instantáneo</p>
+                        <p class="text-xs text-brandGold">Control total sincronizado con Firestore</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -648,7 +662,7 @@
 
                             <div class="flex gap-2">
                                 <button type="submit" id="saveBtnText" class="flex-1 bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                    Guardar
+                                    Guardar en la Nube
                                 </button>
                                 <button type="button" onclick="resetLocationForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
                                     Cancelar / Nuevo
@@ -930,8 +944,9 @@
         </div>
     </div>
 
-    <!-- Script General -->
+    <!-- Script General y Diccionario de Idiomas -->
     <script>
+        // DICCIONARIO DE IDIOMAS (ESPAÑOL E INGLÉS)
         const translations = {
             es: {
                 topInit: "Una iniciativa de Dínamo Studio & Codeproim",
@@ -1103,11 +1118,13 @@
             currentLang = lang;
             localStorage.setItem('cyc_lang', lang);
             
+            // Actualizar selectores visuales
             const selDesktop = document.getElementById('langSelector');
             const selMobile = document.getElementById('langSelectorMobile');
             if(selDesktop) selDesktop.value = lang;
             if(selMobile) selMobile.value = lang;
 
+            // Traducir elementos estáticos
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang][key]) {
@@ -1122,7 +1139,26 @@
                 }
             });
 
+            // Re-renderizar dinámicos
             renderEverything();
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
+            authDomain: "cultura-y-cuchara.firebaseapp.com",
+            projectId: "cultura-y-cuchara",
+            storageBucket: "cultura-y-cuchara.firebasestorage.app",
+            messagingSenderId: "974351327730",
+            appId: "1:974351327730:web:08573026a46d1bb6598b6b",
+            measurementId: "G-T3895FPH4N"
+        };
+
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        } catch(e) {
+            console.log("Error al iniciar Firebase:", e);
         }
 
         const defaultCategories = [
@@ -1134,7 +1170,7 @@
 
         const defaultLocations = [
             {
-                id: 'loc_1', tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
+                tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
                 desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
                 dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
                 address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
@@ -1146,7 +1182,7 @@
                 ]
             },
             {
-                id: 'loc_2', tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
+                tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
                 desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
                 dish: "Café filtrado de origen Catamayo", hours: "Mar - Dom: 09:00 - 20:00",
                 address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
@@ -1154,7 +1190,7 @@
                 gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)" }]
             },
             {
-                id: 'loc_3', tag: "Gastronomía Urbana", title: "El Fogón de Lola",
+                tag: "Gastronomía Urbana", title: "El Fogón de Lola",
                 desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
                 dish: "Repe ahumado con toque de la casa", hours: "Mié - Lun: 12:00 - 22:00",
                 address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
@@ -1162,7 +1198,7 @@
                 gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado" }]
             },
             {
-                id: 'loc_4', tag: "Hotel Aliado", title: "Gran Hotel Loja",
+                tag: "Hotel Aliado", title: "Gran Hotel Loja",
                 desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
                 dish: "Desayuno tradicional incluido", hours: "Atención 24/7",
                 address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
@@ -1178,7 +1214,7 @@
         ];
 
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
-        let locations = JSON.parse(localStorage.getItem('cyc_dynamic_locales')) || defaultLocations;
+        let locations = [];
         let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
 
         let currentLocationIndex = 0;
@@ -1193,20 +1229,44 @@
             L.control.zoom({ position: 'bottomright' }).addTo(map);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
-        } catch(e) {}
+        } catch(e) { console.log('Mapa cargando...'); }
 
-        // INICIALIZACIÓN INMEDIATA Y SEGURA (CERO BLOQUEOS)
-        window.addEventListener('DOMContentLoaded', () => { 
-            loadSettingsFromStorage();
-            renderEverything();
-            checkLiveEventsBanner();
-            initPassport(); 
-            changeLanguage(currentLang); 
-            
-            // Ocultar pantalla de carga de inmediato
-            const splash = document.getElementById('splash-screen');
-            if(splash) splash.classList.add('fade-out');
-        });
+        function cargarDatosDesdeFirestore() {
+            if (!db) {
+                locations = defaultLocations;
+                loadSettingsFromStorage();
+                renderEverything();
+                checkLiveEventsBanner();
+                return;
+            }
+
+            db.collection("locales").onSnapshot((snapshot) => {
+                locations = [];
+                snapshot.forEach((doc) => {
+                    locations.push({ id: doc.id, ...doc.data() });
+                });
+                
+                if(locations.length === 0) {
+                    defaultLocations.forEach(loc => db.collection("locales").add(loc));
+                } else {
+                    renderEverything();
+                }
+                checkLiveEventsBanner();
+            }, (error) => {
+                console.error("Error sincronizando Firestore:", error);
+                locations = defaultLocations;
+                renderEverything();
+                checkLiveEventsBanner();
+            });
+
+            db.collection("settings").doc("main").get().then((doc) => {
+                if (doc.exists) {
+                    applySettings(doc.data());
+                } else {
+                    loadSettingsFromStorage();
+                }
+            }).catch(() => loadSettingsFromStorage());
+        }
 
         function loadSettingsFromStorage() {
             let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
@@ -1242,15 +1302,20 @@
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
             if(!banner || eventsList.length === 0) return;
+
             banner.classList.remove('hidden');
+            
             function rotateEvent() {
                 const ev = eventsList[currentEventIndex];
                 textEl.innerHTML = `🔥 <b>${ev.title}</b> en ${ev.location} (${ev.date})`;
                 btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${ev.title}')`);
                 currentEventIndex = (currentEventIndex + 1) % eventsList.length;
             }
+
             rotateEvent();
-            if(eventsList.length > 1) setInterval(rotateEvent, 5000);
+            if(eventsList.length > 1) {
+                setInterval(rotateEvent, 5000);
+            }
         }
 
         function renderEverything() {
@@ -1259,7 +1324,9 @@
             renderTrendingUI();
             renderAgendaUI();
             updateItineraryUI();
-            if(map) setTimeout(() => map.invalidateSize(), 200);
+            if(map) {
+                setTimeout(() => { map.invalidateSize(); }, 200);
+            }
         }
 
         function renderCategoriesUI() {
@@ -1282,7 +1349,9 @@
             const admCategorySelect = document.getElementById('admCategory');
             if(admCategorySelect) {
                 admCategorySelect.innerHTML = '';
-                categories.forEach(cat => { admCategorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`; });
+                categories.forEach(cat => {
+                    admCategorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
             }
 
             const sugContainer = document.getElementById('suggestedRoutesContainer');
@@ -1303,17 +1372,23 @@
             const container = document.getElementById('trendingGridContainer');
             if(!container || locations.length === 0) return;
             container.innerHTML = '';
-            let trendingList = [...locations].map(loc => ({ ...loc, score: favoriteLocations.includes(loc.id) ? 100 : 10 }));
+
+            let trendingList = [...locations].map(loc => {
+                let score = favoriteLocations.includes(loc.id) ? 100 : 10;
+                return { ...loc, score };
+            });
+
             trendingList.sort((a, b) => b.score - a.score);
             let topTrending = trendingList.slice(0, 3);
 
             topTrending.forEach((loc, index) => {
                 const realIndex = locations.findIndex(l => l.id === loc.id);
                 let medalIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉";
+
                 container.innerHTML += `
                     <div class="bg-brandCream rounded-xl overflow-hidden shadow-md border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
                         <div class="h-44 overflow-hidden relative">
-                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index + 1} EN RUTA</span>
                         </div>
                         <div class="p-5">
@@ -1326,48 +1401,87 @@
             });
         }
 
+        function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
         function renderMapAndGrid() {
             if(!markersLayer) return;
             markersLayer.clearLayers();
+            
             const grid = document.getElementById('localesGrid');
-            if(!grid) return; grid.innerHTML = '';
+            if(!grid) return;
+            grid.innerHTML = '';
 
             const aliadoCountEl = document.getElementById('totalAliadosCount');
-            if(aliadoCountEl) { aliadoCountEl.setAttribute('data-target', locations.length); aliadoCountEl.innerText = locations.length; }
+            if(aliadoCountEl) {
+                aliadoCountEl.setAttribute('data-target', locations.length);
+                aliadoCountEl.innerText = locations.length;
+            }
 
             let renderList = [...locations];
             if (userCoords) {
-                renderList.sort((a, b) => calcularDistanciaKm(userCoords.lat, userCoords.lng, a.lat || -3.9931, a.lng || -79.2042) - calcularDistanciaKm(userCoords.lat, userCoords.lng, b.lat || -3.9931, b.lng || -79.2042));
+                renderList.sort((a, b) => {
+                    let distA = calcularDistanciaKm(userCoords.lat, userCoords.lng, a.lat || -3.9931, a.lng || -79.2042);
+                    let distB = calcularDistanciaKm(userCoords.lat, userCoords.lng, b.lat || -3.9931, b.lng || -79.2042);
+                    return distA - distB;
+                });
             }
 
             renderList.forEach((loc, index) => {
                 const uniqueId = loc.id || 'loc_' + index;
                 if(!loc.id) loc.id = uniqueId;
+
                 const realIndex = locations.findIndex(l => l.id === loc.id);
 
                 if(loc.lat && loc.lng) {
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
-                        html: `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;"><i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i></div>`,
+                        html: `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
+                                   <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
+                               </div>`,
                         iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
                     });
+
                     const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
-                    let distanciaTexto = userCoords ? `<span class="text-[10px] text-blue-600 font-bold block mb-1">📍 A ${calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng) < 1 ? Math.round(calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng) * 1000) + ' m' : calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng).toFixed(1) + ' km'} de ti</span>` : "";
                     
-                    marker.bindPopup(`
+                    let distanciaTexto = "";
+                    if (userCoords) {
+                        let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
+                        distanciaTexto = `<span class="text-[10px] text-blue-600 font-bold block mb-1">📍 A ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'} de ti</span>`;
+                    }
+
+                    const popupContent = `
                         <div class="text-center p-1">
                             <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${loc.tag}</span>
                             <b class="text-brandDark text-xs block my-1">${loc.title}</b>
                             ${distanciaTexto}
-                            <button onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i></button>
+                            <button onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
+                                Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i>
+                            </button>
                         </div>
-                    `);
+                    `;
+                    marker.bindPopup(popupContent);
                     markersLayer.addLayer(marker);
                 }
 
                 const isFav = favoriteLocations.includes(loc.id);
                 const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
-                let cardDistHtml = userCoords ? `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042) < 1 ? Math.round(calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042) * 1000) + ' m' : calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042).toFixed(1) + ' km'}</span>` : "";
+
+                let cardDistHtml = "";
+                if (userCoords) {
+                    let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042);
+                    cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
+                }
+
+                let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
 
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
@@ -1375,9 +1489,9 @@
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
                         <div class="h-48 overflow-hidden relative">
-                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10">${loc.tag}</span>
-                            <a href="${userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || '#')}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar">
+                            <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar (Google Maps)">
                                 <i class="fa-solid fa-diamond-turn-right"></i>
                             </a>
                         </div>
@@ -1392,11 +1506,14 @@
                 `;
             });
 
+            // Pines de eventos
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
                     const eventIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
-                        html: `<div class="bg-brandGold text-brandDark w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;"><i class="fa-solid fa-calendar-days text-sm"></i></div>`,
+                        html: `<div class="bg-brandGold text-brandDark w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
+                                   <i class="fa-solid fa-calendar-days text-sm"></i>
+                               </div>`,
                         iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
                     });
                     const evMarker = L.marker([ev.lat, ev.lng], { icon: eventIcon });
@@ -1405,61 +1522,300 @@
                 }
             });
 
-            if(userMarkerInstance) userMarkerInstance.addTo(markersLayer);
+            if(userMarkerInstance) {
+                userMarkerInstance.addTo(markersLayer);
+            }
+
             renderAdminLocationsList();
             updatePassportUI();
-        }
-
-        function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
-            const R = 6371;
-            let dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
-            let a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
         }
 
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    const lat = pos.coords.latitude, lng = pos.coords.longitude;
-                    if (Math.abs(lat - (-3.9931)) + Math.abs(lng - (-79.2042)) > 0.8) { centerOnLoja(); return; }
-                    userCoords = { lat, lng };
-                    if(map) map.setView([lat, lng], 16, { animate: true });
-                    userMarkerInstance = L.marker([lat, lng], { icon: L.divIcon({ className: 'custom-leaflet-icon', html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce"><i class="fa-solid fa-street-view text-2xl"></i></div>`, iconSize: [48, 48], iconAnchor: [24, 24] }) }).bindPopup("<b>¡Tú estás aquí!</b>");
-                    renderMapAndGrid();
-                    if(locations.length > 0) {
-                        let closest = 0, minDist = Infinity;
-                        locations.forEach((l, idx) => { let d = calcularDistanciaKm(lat, lng, l.lat, l.lng); if(d < minDist) { minDist = d; closest = idx; } });
-                        selectLocation(closest);
-                    }
-                    showToast('¡Ubicación encontrada!');
-                }, () => centerOnLoja(), { timeout: 6000, enableHighAccuracy: true });
-            } else { centerOnLoja(); }
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        
+                        const lojaLat = -3.9931;
+                        const lojaLng = -79.2042;
+                        const distance = Math.abs(lat - lojaLat) + Math.abs(lng - lojaLng);
+
+                        if (distance > 0.8) {
+                            showToast('⚠️ Tu red indicó otra ciudad. Centrando en Loja.');
+                            centerOnLoja();
+                            return;
+                        }
+
+                        userCoords = { lat, lng };
+                        if(map) map.setView([lat, lng], 16, { animate: true });
+                        
+                        const userAvatarIcon = L.divIcon({
+                            className: 'custom-leaflet-icon',
+                            html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                                       <i class="fa-solid fa-street-view text-2xl"></i>
+                                   </div>`,
+                            iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+                        });
+                        
+                        userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
+                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
+                        
+                        renderMapAndGrid(); 
+
+                        if(locations.length > 0) {
+                            let closestIndex = 0;
+                            let minDistance = Infinity;
+                            locations.forEach((loc, idx) => {
+                                let d = calcularDistanciaKm(lat, lng, loc.lat || lojaLat, loc.lng || lojaLng);
+                                if(d < minDistance) {
+                                    minDistance = d;
+                                    closestIndex = idx;
+                                }
+                            });
+                            selectLocation(closestIndex);
+                        }
+
+                        showToast('¡Ubicación encontrada y local más cercano cargado!');
+                    },
+                    (err) => {
+                        console.warn("GPS denegado:", err.message);
+                        centerOnLoja();
+                    },
+                    { timeout: 6000, enableHighAccuracy: true }
+                );
+            } else {
+                centerOnLoja();
+            }
         }
 
         function centerOnLoja() {
-            userCoords = { lat: -3.9931, lng: -79.2042 };
-            if(map) map.setView([-3.9931, -79.2042], 15, { animate: true });
-            userMarkerInstance = L.marker([-3.9931, -79.2042], { icon: L.divIcon({ className: 'custom-leaflet-icon', html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce"><i class="fa-solid fa-street-view text-2xl"></i></div>`, iconSize: [48, 48], iconAnchor: [24, 24] }) }).bindPopup("<b>Centro de Loja</b>");
-            renderMapAndGrid(); selectLocation(0); showToast('Mapa centrado en Loja');
+            const lojaLat = -3.9931;
+            const lojaLng = -79.2042;
+            userCoords = { lat: lojaLat, lng: lojaLng };
+            if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
+            
+            const userAvatarIcon = L.divIcon({
+                className: 'custom-leaflet-icon',
+                html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                           <i class="fa-solid fa-street-view text-2xl"></i>
+                       </div>`,
+                iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+            });
+            
+            userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon })
+              .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.");
+            
+            renderMapAndGrid();
+            selectLocation(0);
+            showToast('Mapa centrado en Loja');
         }
 
-        function handleLogoClick(e) {
-            e.preventDefault();
-            window.logoClicks = (window.logoClicks || 0) + 1;
-            if (window.logoClicks === 3) { window.logoClicks = 0; requestAdminAccess(); }
-            setTimeout(() => { window.logoClicks = 0; }, 600);
+        function toggleFavoriteCurrent(btn) {
+            const loc = locations[currentLocationIndex];
+            if(!loc) return;
+            const index = favoriteLocations.indexOf(loc.id);
+            const icon = btn.querySelector('i');
+            if (index > -1) {
+                favoriteLocations.splice(index, 1);
+                icon.className = "fa-solid fa-seedling text-brandGold";
+                showToast(`Quitado de tu ruta`);
+            } else {
+                favoriteLocations.push(loc.id);
+                icon.className = "fa-solid fa-seedling text-red-500";
+                showToast(`¡Añadido a Mi Ruta!`);
+            }
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            updateItineraryUI();
+            renderTrendingUI();
+        }
+
+        function toggleFavoriteCard(e, localId) {
+            e.stopPropagation();
+            const index = favoriteLocations.indexOf(localId);
+            const icon = document.getElementById(`cardFav_${localId}`);
+            if (index > -1) {
+                favoriteLocations.splice(index, 1);
+                if(icon) icon.className = "fa-solid fa-seedling text-brandGold text-lg";
+                showToast(`Quitado de tu ruta`);
+            } else {
+                favoriteLocations.push(localId);
+                if(icon) icon.className = "fa-solid fa-seedling text-red-500 text-lg";
+                showToast(`¡Añadido a Mi Ruta!`);
+            }
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            updateItineraryUI();
+            renderTrendingUI();
+        }
+
+        function updateItineraryUI() {
+            const container = document.getElementById('itineraryListContainer');
+            const badge = document.getElementById('itineraryBadge');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(favoriteLocations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 text-gray-400 text-xs">
+                        <i class="fa-solid fa-mug-hot text-3xl mb-2 text-gray-300"></i><br>
+                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el icono de grano de café en cualquier tarjeta o pin para agregarlo.
+                    </div>
+                `;
+                if(badge) badge.classList.add('hidden');
+                return;
+            }
+
+            if(badge) {
+                badge.innerText = favoriteLocations.length;
+                badge.classList.remove('hidden');
+            }
+
+            let mananaHTML = "";
+            let tardeHTML = "";
+            let nocheHTML = "";
+
+            favoriteLocations.forEach((id, idx) => {
+                const loc = locations.find(l => l.id === id);
+                if(loc) {
+                    let itemHtml = `
+                        <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
+                            <div class="flex items-center gap-3">
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
+                                <div>
+                                    <h4 class="font-bold text-xs text-brandDark">${loc.title}</h4>
+                                    <span class="text-[10px] text-brandGold font-bold">${loc.tag} • ${loc.address}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Parada recomendada en mi ruta de Cultura y Cuchara: ' + loc.title + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                                <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
+                        </div>
+                    `;
+
+                    if (loc.category === 'cafe' || idx === 0) {
+                        mananaHTML += itemHtml;
+                    } else if (loc.category === 'hueca' || loc.category === 'urbana') {
+                        tardeHTML += itemHtml;
+                    } else {
+                        nocheHTML += itemHtml;
+                    }
+                }
+            });
+
+            if(mananaHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5"><i class="fa-solid fa-sun text-amber-500"></i> Bloque Mañana (Café y Desayuno)</div>` + mananaHTML;
+            }
+            if(tardeHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-utensils text-brandGold"></i> Bloque Tarde (Huecas y Almuerzos)</div>` + tardeHTML;
+            }
+            if(nocheHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-moon text-indigo-900"></i> Bloque Noche (Hospedaje y Cenas)</div>` + nocheHTML;
+            }
+        }
+
+        function removeFavorite(id) {
+            favoriteLocations = favoriteLocations.filter(favId => favId !== id);
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            renderMapAndGrid();
+            renderTrendingUI();
+            updateItineraryUI();
+            showToast('Lugar eliminado de tu ruta');
+        }
+
+        function shareStructuredItinerary() {
+            if(favoriteLocations.length === 0) { alert('Tu ruta está vacía.'); return; }
+            let text = "✨ *Mi Itinerario Organizado - Cultura y Cuchara (Loja)* ✨\n\n";
+            favoriteLocations.forEach((id, idx) => {
+                const loc = locations.find(l => l.id === id);
+                if(loc) { text += `• *${loc.title}* (${loc.tag})\n  📍 ${loc.address}\n\n`; }
+            });
+            text += "¡Te invito a recorrer Loja conmigo!";
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function filterByTimeBlock(block) {
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) searchInput.value = "";
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.add('hidden');
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
+                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+            });
+
+            document.querySelectorAll('.local-item').forEach(item => {
+                let match = false;
+                if (block === 'manana' && item.classList.contains('cafe')) match = true;
+                if (block === 'tarde' && (item.classList.contains('hueca') || item.classList.contains('urbana'))) match = true;
+                if (block === 'noche' && item.classList.contains('hotel')) match = true;
+
+                if (match) {
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item');
+                } else {
+                    item.style.opacity = '0';
+                    setTimeout(() => item.classList.add('hidden-item'), 200);
+                }
+            });
+            showToast(`Mostrando bloque: ${block.toUpperCase()}`);
+        }
+
+        function renderAgendaUI() {
+            const agendaContainer = document.getElementById('agendaGridContainer');
+            if(!agendaContainer) return;
+            agendaContainer.innerHTML = '';
+
+            eventsList.forEach((ev) => {
+                agendaContainer.innerHTML += `
+                    <div class="bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="bg-brandGold text-brandDark font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider">${ev.type}</span>
+                                <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date}</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-brandDark mb-2">${ev.title}</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed mb-4">${ev.desc}</p>
+                        </div>
+                        <div class="px-6 pb-6 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-4 text-xs">
+                            <span class="text-gray-500"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
+                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${ev.title}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition">
+                                <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            renderAdminEventsList();
+        }
+
+        function focusEventOnMap(lat, lng, title) {
+            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+            if(map) map.setView([lat, lng], 17, { animate: true });
+            showToast(`Ubicando: ${title}`);
         }
 
         function switchAdminTab(tab) {
-            ['locales', 'hero', 'aliados', 'agenda'].forEach(t => {
-                document.getElementById('adminTab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden');
-                document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1)).className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
-            });
-            document.getElementById('adminTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
-            document.getElementById('tabBtn' + tab.charAt(0).toUpperCase() + tab.slice(1)).className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
-            
-            if(tab === 'hero') {
+            document.getElementById('adminTabLocales').classList.add('hidden');
+            document.getElementById('adminTabHero').classList.add('hidden');
+            document.getElementById('adminTabAliados').classList.add('hidden');
+            document.getElementById('adminTabAgenda').classList.add('hidden');
+
+            document.getElementById('tabBtnLocales').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnHero').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnAliados').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnAgenda').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+
+            if(tab === 'locales') {
+                document.getElementById('adminTabLocales').classList.remove('hidden');
+                document.getElementById('tabBtnLocales').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            } else if(tab === 'hero') {
+                document.getElementById('adminTabHero').classList.remove('hidden');
+                document.getElementById('tabBtnHero').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
                 document.getElementById('setHeroBadge').value = document.getElementById('heroBadge').innerText;
                 document.getElementById('setHeroTitle').value = "Gastronomía, Hotelería y Destinos";
                 document.getElementById('setHeroSubtitle').value = document.getElementById('heroSubtitle').innerText;
@@ -1467,10 +1823,15 @@
                 document.getElementById('setStat3').value = document.getElementById('stat3Val').getAttribute('data-target');
                 document.getElementById('setStat4').value = document.getElementById('stat4Val').getAttribute('data-target');
             } else if(tab === 'aliados') {
+                document.getElementById('adminTabAliados').classList.remove('hidden');
+                document.getElementById('tabBtnAliados').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
                 document.getElementById('setAliado1Title').value = document.getElementById('aliado1Title').innerText;
                 document.getElementById('setAliado1Desc').value = document.getElementById('aliado1Desc').innerText;
                 document.getElementById('setAliado2Title').value = document.getElementById('aliado2Title').innerText;
                 document.getElementById('setAliado2Desc').value = document.getElementById('aliado2Desc').innerText;
+            } else if(tab === 'agenda') {
+                document.getElementById('adminTabAgenda').classList.remove('hidden');
+                document.getElementById('tabBtnAgenda').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
             }
         }
 
@@ -1488,8 +1849,19 @@
                 aliado2Title: document.getElementById('setAliado2Title').value,
                 aliado2Desc: document.getElementById('setAliado2Desc').value
             };
+
             localStorage.setItem('cyc_settings', JSON.stringify(settingsData));
-            applySettings(settingsData); closeModal('adminModal'); showToast('¡Actualizado!');
+            if (db) {
+                db.collection("settings").doc("main").set(settingsData).then(() => {
+                    applySettings(settingsData);
+                    closeModal('adminModal');
+                    showToast('¡Cabecera y cifras actualizadas!');
+                });
+            } else {
+                applySettings(settingsData);
+                closeModal('adminModal');
+                showToast('¡Cabecera y cifras actualizadas!');
+            }
         }
 
         function handleSaveAliadosSettings(e) {
@@ -1499,8 +1871,19 @@
             saved.aliado1Desc = document.getElementById('setAliado1Desc').value;
             saved.aliado2Title = document.getElementById('setAliado2Title').value;
             saved.aliado2Desc = document.getElementById('setAliado2Desc').value;
+
             localStorage.setItem('cyc_settings', JSON.stringify(saved));
-            applySettings(saved); closeModal('adminModal'); showToast('¡Aliados actualizados!');
+            if (db) {
+                db.collection("settings").doc("main").set(saved, { merge: true }).then(() => {
+                    applySettings(saved);
+                    closeModal('adminModal');
+                    showToast('¡Aliados actualizados!');
+                });
+            } else {
+                applySettings(saved);
+                closeModal('adminModal');
+                showToast('¡Aliados actualizados!');
+            }
         }
 
         function handleAddNewCategory(e) {
@@ -1508,24 +1891,51 @@
             const id = document.getElementById('catId').value.trim().toLowerCase();
             const name = document.getElementById('catName').value.trim();
             const icon = document.getElementById('catIcon').value.trim();
+            if(categories.some(c => c.id === id)) { alert('Ese ID ya existe.'); return; }
             categories.push({ id, name, icon });
             localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
-            renderEverything(); showToast('Categoría añadida'); e.target.reset();
+            renderEverything();
+            showToast(`Categoría "${name}" añadida`);
+            e.target.reset();
         }
 
         function renderAdminCategoriesList() {
             const list = document.getElementById('adminCategoriesList');
-            if(!list) return; list.innerHTML = '';
+            if(!list) return;
+            list.innerHTML = '';
             categories.forEach(cat => {
-                list.innerHTML += `<div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800"><span class="text-white font-bold">${cat.icon} ${cat.name}</span><button onclick="deleteCategory('${cat.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button></div>`;
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-white font-bold">${cat.icon} ${cat.name}</span>
+                        <button onclick="deleteCategory('${cat.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
             });
         }
 
         function deleteCategory(id) {
-            if(categories.length <= 1) return;
+            if(categories.length <= 1) { alert('Mínimo una categoría.'); return; }
             categories = categories.filter(c => c.id !== id);
             localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
-            renderEverything(); showToast('Categoría eliminada');
+            renderEverything();
+            showToast('Categoría eliminada');
+        }
+
+        function parseCoordinates(inputVal, presetValue) {
+            let input = inputVal ? inputVal.trim() : "";
+            if (input.includes(",")) {
+                let parts = input.split(",");
+                let lat = parseFloat(parts[0]);
+                let lng = parseFloat(parts[1]);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    return [lat, lng];
+                }
+            }
+            let code = input.toUpperCase();
+            if (code.includes("8Q3X")) { return [-3.9931, -79.2042]; }
+            if (code.includes("8Q2X")) { return [-3.9980, -79.2015]; }
+            const coords = presetValue.split(',');
+            return [parseFloat(coords[0]), parseFloat(coords[1])];
         }
 
         function handleSaveLocation(e) {
@@ -1540,28 +1950,52 @@
             const desc = document.getElementById('admDesc').value;
             const imgsListInput = document.getElementById('admImgsList').value;
             const youtubeUrl = document.getElementById('admYoutubeUrl').value.trim();
-            const coords = document.getElementById('admPlusCode').value.split(',');
-            const preset = document.getElementById('admZonePreset').value.split(',');
+            const plusCodeInput = document.getElementById('admPlusCode').value;
+            const preset = document.getElementById('admZonePreset').value;
 
-            let lat = coords.length === 2 && !isNaN(coords[0]) ? parseFloat(coords[0]) : parseFloat(preset[0]);
-            let lng = coords.length === 2 && !isNaN(coords[1]) ? parseFloat(coords[1]) : parseFloat(preset[1]);
+            const finalCoords = parseCoordinates(plusCodeInput, preset);
 
-            let galleryArray = imgsListInput.trim() ? imgsListInput.split(',').map((url, i) => ({ img: url.trim(), title: `${title} - Foto ${i + 1}` })) : [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
-
-            const locationData = { id: editId || 'loc_' + Date.now(), tag, title, desc, dish, hours: "Lun - Dom: 09:00 - 22:00", address, lat, lng, gps: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, iconClass, category, youtubeUrl, gallery: galleryArray };
-
-            if (editId) {
-                let index = locations.findIndex(l => l.id === editId);
-                if (index > -1) locations[index] = locationData;
-                showToast('¡Actualizado!');
+            let galleryArray = [];
+            if (imgsListInput.trim()) {
+                galleryArray = imgsListInput.split(',').map((url, i) => ({
+                    img: url.trim(),
+                    title: `${title} - Foto ${i + 1}`
+                }));
             } else {
-                locations.push(locationData);
-                showToast('¡Guardado!');
+                galleryArray = [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
             }
-            localStorage.setItem('cyc_dynamic_locales', JSON.stringify(locations));
-            renderEverything();
-            closeModal('adminModal');
-            resetLocationForm();
+
+            const locationData = {
+                tag, title, desc, dish,
+                hours: "Lun - Dom: 09:00 - 22:00", address,
+                lat: finalCoords[0], lng: finalCoords[1],
+                gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
+                iconClass, category,
+                youtubeUrl,
+                gallery: galleryArray
+            };
+
+            if (db) {
+                if (editId) {
+                    db.collection("locales").doc(editId).update(locationData)
+                      .then(() => {
+                          closeModal('adminModal');
+                          showToast(`¡${title} actualizado con éxito!`);
+                          resetLocationForm();
+                      })
+                      .catch(err => alert("Error al actualizar: " + err.message));
+                } else {
+                    db.collection("locales").add(locationData)
+                      .then(() => {
+                          closeModal('adminModal');
+                          showToast(`¡${title} guardado en Firestore!`);
+                          resetLocationForm();
+                      })
+                      .catch(err => alert("Error al guardar: " + err.message));
+                }
+            } else {
+                alert("Base de datos no conectada.");
+            }
         }
 
         function editLocation(id) {
@@ -1577,63 +2011,138 @@
             document.getElementById('admDesc').value = loc.desc;
             document.getElementById('admPlusCode').value = `${loc.lat}, ${loc.lng}`;
             document.getElementById('admYoutubeUrl').value = loc.youtubeUrl || '';
-            document.getElementById('admImgsList').value = loc.gallery ? loc.gallery.map(g => g.img).join(', ') : '';
+            
+            if(loc.gallery && loc.gallery.length > 0) {
+                document.getElementById('admImgsList').value = loc.gallery.map(g => g.img).join(', ');
+            } else {
+                document.getElementById('admImgsList').value = '';
+            }
+
             document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editando: ${loc.title}`;
-            document.getElementById('saveBtnText').innerText = "Actualizar Cambios";
+            document.getElementById('saveBtnText').innerText = "Actualizar Cambios en la Nube";
+            document.getElementById('admTitle').focus();
         }
 
         function resetLocationForm() {
             document.getElementById('admEditId').value = '';
             document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel`;
-            document.getElementById('saveBtnText').innerText = "Guardar";
-            document.getElementById('admTitle').value = ''; document.getElementById('admAddress').value = ''; document.getElementById('admDesc').value = ''; document.getElementById('admDish').value = ''; document.getElementById('admImgsList').value = ''; document.getElementById('admYoutubeUrl').value = ''; document.getElementById('admPlusCode').value = '';
+            document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
+            document.getElementById('admTitle').value = '';
+            document.getElementById('admAddress').value = '';
+            document.getElementById('admDesc').value = '';
+            document.getElementById('admDish').value = '';
+            document.getElementById('admImgsList').value = '';
+            document.getElementById('admYoutubeUrl').value = '';
+            document.getElementById('admPlusCode').value = '';
         }
 
         function renderAdminLocationsList() {
             const list = document.getElementById('adminLocationsList');
-            if(!list) return; list.innerHTML = '';
+            if(!list) return;
+            list.innerHTML = '';
             locations.forEach(loc => {
-                list.innerHTML += `<div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800"><div><span class="text-brandGold font-bold">${loc.title}</span></div><div class="flex gap-2"><button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded"><i class="fa-solid fa-pen"></i></button><button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded"><i class="fa-solid fa-trash"></i></button></div></div>`;
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                        <div>
+                            <span class="text-brandGold font-bold"><i class="fa-solid ${loc.iconClass} mr-1"></i> ${loc.title}</span>
+                            <span class="text-gray-400 text-[10px] block">(${loc.category})</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded hover:bg-red-700 transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
             });
         }
 
         function deleteLocation(id) {
-            if(locations.length <= 1) return;
-            if(confirm("¿Eliminar?")) {
-                locations = locations.filter(l => l.id !== id);
-                localStorage.setItem('cyc_dynamic_locales', JSON.stringify(locations));
-                renderEverything();
-                showToast('Eliminado');
+            if (locations.length <= 1) { alert('Mínimo un local.'); return; }
+            if (confirm("¿Estás seguro de eliminar este establecimiento?") && db && id) {
+                db.collection("locales").doc(id).delete().then(() => {
+                    showToast('Local eliminado de Firestore');
+                });
             }
         }
 
         function handleAddNewEvent(e) {
             e.preventDefault();
-            const title = document.getElementById('evTitle').value, date = document.getElementById('evDate').value, type = document.getElementById('evType').value, location = document.getElementById('evLocation').value, desc = document.getElementById('evDesc').value, zoneCoords = document.getElementById('evZonePreset').value.split(',');
-            eventsList.push({ id: 'ev_' + Date.now(), title, date, type, location, desc, lat: parseFloat(zoneCoords[0]), lng: parseFloat(zoneCoords[1]) });
+            const title = document.getElementById('evTitle').value;
+            const date = document.getElementById('evDate').value;
+            const type = document.getElementById('evType').value;
+            const location = document.getElementById('evLocation').value;
+            const desc = document.getElementById('evDesc').value;
+            const zoneCoords = document.getElementById('evZonePreset').value.split(',');
+
+            const lat = parseFloat(zoneCoords[0]);
+            const lng = parseFloat(zoneCoords[1]);
+
+            const newEvent = { id: 'ev_' + Date.now(), title, date, type, location, desc, lat, lng };
+            eventsList.push(newEvent);
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
-            renderEverything(); checkLiveEventsBanner(); closeModal('adminModal'); showToast('Evento publicado'); e.target.reset();
+            renderEverything();
+            checkLiveEventsBanner();
+            closeModal('adminModal');
+            showToast('Evento y pin publicados');
+            e.target.reset();
         }
 
         function renderAdminEventsList() {
             const list = document.getElementById('adminEventsList');
-            if(!list) return; list.innerHTML = '';
+            if(!list) return;
+            list.innerHTML = '';
             eventsList.forEach(ev => {
-                list.innerHTML += `<div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800"><span class="text-brandGold font-bold">${ev.title}</span><button onclick="deleteEvent('${ev.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button></div>`;
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-brandGold font-bold">${ev.title}</span>
+                        <button onclick="deleteEvent('${ev.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
             });
         }
 
         function deleteEvent(id) {
             eventsList = eventsList.filter(e => e.id !== id);
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
-            renderEverything(); checkLiveEventsBanner(); showToast('Evento eliminado');
+            renderEverything();
+            checkLiveEventsBanner();
+            showToast('Evento eliminado');
         }
 
-        function requestAdminAccess() { openModal('adminPinModal'); document.getElementById('adminPinInput').value = ''; document.getElementById('adminPinInput').focus(); }
-        function verifyAdminPin(e) { e.preventDefault(); if (document.getElementById('adminPinInput').value === '1234') { closeModal('adminPinModal'); openModal('adminModal'); showToast('¡Acceso concedido!'); } else { showToast('❌ PIN incorrecto'); } }
+        function requestAdminAccess() {
+            openModal('adminPinModal');
+            document.getElementById('adminPinInput').value = '';
+            document.getElementById('adminPinInput').focus();
+        }
 
-        window.handlePopupClick = function(index) { selectLocation(index); document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
-        
+        function verifyAdminPin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === '1234') {
+                closeModal('adminPinModal');
+                openModal('adminModal');
+                showToast('¡Acceso concedido!');
+            } else {
+                showToast('❌ PIN incorrecto');
+                document.getElementById('adminPinInput').value = '';
+            }
+        }
+
+        window.handlePopupClick = function(index) {
+            selectLocation(index);
+            const card = document.getElementById('mapPreviewCard');
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        window.handlePopupClickByName = function(id) {
+            const index = locations.findIndex(l => l.id === id);
+            if(index > -1) {
+                selectLocation(index);
+                const card = document.getElementById('mapPreviewCard');
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        };
+
         function selectLocation(index) {
             currentLocationIndex = index;
             const loc = locations[index];
@@ -1643,115 +2152,325 @@
             document.getElementById('previewDish').innerText = (loc.category === 'hotel' ? "Beneficio: " : "Plato: ") + loc.dish;
             document.getElementById('previewHours').innerText = loc.hours;
             document.getElementById('previewAddress').innerText = loc.address;
-            document.getElementById('previewWhatsapp').href = `https://wa.me/?text=${encodeURIComponent('¡Hola! Te recomiendo visitar ' + loc.title)}`;
-            if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true });
+            
+            let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
+            document.getElementById('previewGps').href = previewGpsUrl;
+            
+            const waBtn = document.getElementById('previewWhatsapp');
+            const waText = `¡Hola! Te recomiendo visitar ${loc.title} en la ruta Cultura y Cuchara de Loja. Ubicación: ${loc.address}`;
+            waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+
+            const favIcon = document.getElementById('previewFav');
+            if(favoriteLocations.includes(loc.id)) {
+                favIcon.className = "fa-solid fa-seedling text-red-500";
+            } else {
+                favIcon.className = "fa-solid fa-seedling text-brandGold";
+            }
+
+            if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
         }
 
-        function simulateMapClick(index) { selectLocation(index); document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' }); }
-        function setSuggestedRoute(cat) { filterItems(cat, document.querySelector(`.filter-btn[onclick*="${cat}"]`)); document.getElementById('establecimientos').scrollIntoView({ behavior: 'smooth' }); }
+        function simulateMapClick(index) {
+            selectLocation(index);
+            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function simulateMapClickById(id) {
+            const index = locations.findIndex(l => l.id === id);
+            if(index > -1) {
+                selectLocation(index);
+                document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function setSuggestedRoute(category) {
+            filterItems(category, document.querySelector(`.filter-btn[onclick*="${category}"]`));
+            document.getElementById('establecimientos').scrollIntoView({ behavior: 'smooth' });
+        }
 
         function getYouTubeEmbedUrl(url) {
             if (!url) return '';
-            let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+            let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            let match = url.match(regExp);
             return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
         }
 
         function openMenuGallery() {
             const loc = locations[currentLocationIndex];
             document.getElementById('galleryTitle').innerText = loc.title;
+            
             const ytContainer = document.getElementById('youtubeVideoContainer');
             const ytIframe = document.getElementById('youtubeIframe');
             if (loc.youtubeUrl && loc.youtubeUrl.trim() !== "") {
-                ytIframe.src = getYouTubeEmbedUrl(loc.youtubeUrl); ytContainer.classList.remove('hidden');
-            } else { ytIframe.src = ''; ytContainer.classList.add('hidden'); }
+                ytIframe.src = getYouTubeEmbedUrl(loc.youtubeUrl);
+                ytContainer.classList.remove('hidden');
+            } else {
+                ytIframe.src = '';
+                ytContainer.classList.add('hidden');
+            }
 
-            const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
-            if (loc.gallery) {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            if (loc.gallery && loc.gallery.length > 0) {
                 loc.gallery.forEach(item => {
-                    grid.innerHTML += `<div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48"><img src="${item.img}" class="w-full h-full object-cover opacity-90" loading="lazy"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3"><span class="text-white font-bold text-xs">${item.title}</span></div></div>`;
+                    grid.innerHTML += `
+                        <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48">
+                            <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <span class="text-white font-bold text-xs">${item.title}</span>
+                            </div>
+                        </div>
+                    `;
                 });
             }
+
             openModal('menuGalleryModal');
         }
 
-        function openUploadCommunityPhoto() { openModal('uploadPhotoModal'); }
+        function openUploadCommunityPhoto() {
+            openModal('uploadPhotoModal');
+        }
+
         function handleCommunityPhotoSubmit(e) {
             e.preventDefault();
-            document.getElementById('communityPhotosGrid').innerHTML += `<div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32"><img src="${document.getElementById('commImgUrl').value}" class="w-full h-full object-cover"><span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@${document.getElementById('commUser').value}</span></div>`;
-            closeModal('uploadPhotoModal'); showToast('¡Foto subida!'); e.target.reset();
+            const user = document.getElementById('commUser').value;
+            const imgUrl = document.getElementById('commImgUrl').value;
+            const grid = document.getElementById('communityPhotosGrid');
+            
+            grid.innerHTML += `
+                <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
+                    <img src="${imgUrl}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@${user}</span>
+                </div>
+            `;
+            closeModal('uploadPhotoModal');
+            showToast('¡Foto subida con éxito!');
+            e.target.reset();
         }
 
         function initPassport() {
-            visitedLocations = JSON.parse(localStorage.getItem('cyc_visited_locations')) || [];
-            passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
+            const storedVisits = localStorage.getItem('cyc_visited_locations');
+            if (storedVisits) { visitedLocations = JSON.parse(storedVisits); }
+            const storedMode = localStorage.getItem('cyc_passport_mode');
+            if (storedMode) { passportMode = storedMode; }
             updatePassportUI();
         }
 
         function switchPassportMode(mode) {
-            passportMode = mode; localStorage.setItem('cyc_passport_mode', mode);
-            document.getElementById('btnTurista').className = mode === 'turista' ? "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition" : "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
-            document.getElementById('btnLojano').className = mode === 'lojano' ? "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition" : "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+            passportMode = mode;
+            localStorage.setItem('cyc_passport_mode', mode);
+            const btnT = document.getElementById('btnTurista');
+            const btnL = document.getElementById('btnLojano');
+            if (mode === 'turista') {
+                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition";
+                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+            } else {
+                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition";
+                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+            }
             updatePassportUI();
         }
 
-        function openQRDemoModal() { document.getElementById('qrStep1').classList.remove('hidden'); document.getElementById('qrStep2').classList.add('hidden'); openModal('qrDemoModal'); }
-        function triggerSimulatedScan() { closeModal('qrDemoModal'); registerVisit(locations[currentLocationIndex].id); }
-        function registerVisit(id) {
-            if (!visitedLocations.includes(id)) { visitedLocations.push(id); localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations)); }
-            triggerStampAnimation(); updatePassportUI();
-            setTimeout(() => { document.getElementById('qrStep1').classList.add('hidden'); document.getElementById('qrStep2').classList.remove('hidden'); openModal('qrDemoModal'); }, 2600);
+        function openQRDemoModal() {
+            document.getElementById('qrStep1').classList.remove('hidden');
+            document.getElementById('qrStep2').classList.add('hidden');
+            openModal('qrDemoModal');
         }
-        function finishRating() { closeModal('qrDemoModal'); showToast('¡Sello registrado con éxito!'); }
+
+        function triggerSimulatedScan() {
+            closeModal('qrDemoModal');
+            const loc = locations[currentLocationIndex];
+            registerVisit(loc.id);
+        }
+
+        function registerVisit(localId) {
+            const localObj = locations.find(l => l.id === localId);
+            if (!localObj) return;
+            if (visitedLocations.includes(localId)) {
+                showToast(`⚠️ Ya tienes el sello de ${localObj.title}`);
+                return;
+            }
+            visitedLocations.push(localId);
+            localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
+            triggerStampAnimation();
+            updatePassportUI();
+            setTimeout(() => {
+                document.getElementById('qrStep1').classList.add('hidden');
+                document.getElementById('qrStep2').classList.remove('hidden');
+                openModal('qrDemoModal');
+            }, 2600);
+        }
+
+        function rateExperience(value) {
+            setTimeout(() => { finishRating(); }, 600);
+        }
+
+        function finishRating() {
+            closeModal('qrDemoModal');
+            showToast('¡Gracias por tu reseña y tu sello!');
+        }
 
         function triggerStampAnimation() {
-            const overlay = document.getElementById('stampOverlay'); overlay.classList.remove('hidden'); overlay.style.opacity = '1';
-            if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            setTimeout(() => { overlay.style.opacity = '0'; setTimeout(() => overlay.classList.add('hidden'), 500); }, 2500);
+            const overlay = document.getElementById('stampOverlay');
+            overlay.classList.remove('hidden');
+            const stampIcon = overlay.querySelector('.fa-stamp');
+            stampIcon.classList.remove('stamp-earned');
+            void stampIcon.offsetWidth;
+            stampIcon.classList.add('stamp-earned');
+            overlay.style.opacity = '1';
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#C5A880', '#ffffff', '#121212'] });
+            }
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+            }, 2500);
         }
 
         function updatePassportUI() {
-            const grid = document.getElementById('passportStampsGrid'); if(!grid) return; grid.innerHTML = '';
-            const total = passportMode === 'turista' ? 4 : 5;
-            document.getElementById('passportRuleDesc').innerText = passportMode === 'turista' ? 'Meta: 1 Hotel + 3 Gastronomía' : 'Meta: 5 Paradas Gastronómicas';
-            for (let i = 0; i < total; i++) {
-                let vis = locations[i] && visitedLocations.includes(locations[i].id);
-                grid.innerHTML += vis ? `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${locations[i].title}</span></div>` : `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i+1}</span></div>`;
+            const grid = document.getElementById('passportStampsGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            const totalToWin = passportMode === 'turista' ? 4 : 5;
+            const ruleDesc = document.getElementById('passportRuleDesc');
+            if(ruleDesc) ruleDesc.innerText = passportMode === 'turista' ? 'Meta: 1 Hotel + 3 Gastronomía' : 'Meta: 5 Paradas Gastronómicas (Libre)';
+
+            let stampsCount = visitedLocations.length;
+            for (let i = 0; i < totalToWin; i++) {
+                const loc = locations[i];
+                const isVisited = loc && visitedLocations.includes(loc.id);
+                let html = '';
+                if (isVisited) {
+                    html = `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${loc.title}</span></div>`;
+                } else {
+                    html = `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i + 1}</span></div>`;
+                }
+                grid.innerHTML += html;
             }
-            document.getElementById('passportProgressBar').style.width = `${Math.min((visitedLocations.length / total) * 100, 100)}%`;
-            document.getElementById('passportProgressText').innerText = `Llevas ${visitedLocations.length} de ${total} sellos.`;
+
+            const percentage = Math.min((stampsCount / totalToWin) * 100, 100);
+            const progressBar = document.getElementById('passportProgressBar');
+            if(progressBar) progressBar.style.width = `${percentage}%`;
+
+            const progressText = document.getElementById('passportProgressText');
+            if(progressText) {
+                if (stampsCount >= totalToWin) {
+                    progressText.innerHTML = '<span class="text-green-600 font-bold">¡Pasaporte Completado! Reclama tu premio ILE.</span>';
+                } else {
+                    progressText.innerText = `Llevas ${stampsCount} de ${totalToWin} sellos.`;
+                }
+            }
         }
 
-        function resetPassportProgess() { localStorage.removeItem('cyc_visited_locations'); visitedLocations = []; updatePassportUI(); showToast('Pasaporte reiniciado'); }
+        function resetPassportProgess() {
+            localStorage.removeItem('cyc_visited_locations'); visitedLocations = [];
+            updatePassportUI(); showToast('Pasaporte reiniciado');
+        }
+
+        function forceRemoveSplash() {
+            const splash = document.getElementById('splash-screen');
+            if(splash) splash.classList.add('fade-out');
+            const body = document.getElementById('body-content');
+            if(body) body.classList.remove('overflow-hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            cargarDatosDesdeFirestore();
+            initPassport();
+            changeLanguage(currentLang);
+            setTimeout(forceRemoveSplash, 600);
+        });
+
+        setTimeout(forceRemoveSplash, 1500);
 
         function searchItems() {
             let input = document.getElementById('searchInput').value.toLowerCase();
+            let items = document.querySelectorAll('.local-item');
+            let hasResults = false;
+            items.forEach(item => {
+                if (item.querySelector('.local-title').innerText.toLowerCase().includes(input) || item.querySelector('.local-desc').innerText.toLowerCase().includes(input)) {
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item'); 
+                    hasResults = true;
+                } else { 
+                    item.style.opacity = '0';
+                    item.classList.add('hidden-item'); 
+                }
+            });
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.toggle('hidden', hasResults);
+        }
+
+        function filterItems(category, btnElement) {
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) searchInput.value = ""; 
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.add('hidden');
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
+                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+            });
+            btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+            btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
+
             document.querySelectorAll('.local-item').forEach(item => {
-                let match = item.querySelector('.local-title').innerText.toLowerCase().includes(input) || item.querySelector('.local-desc').innerText.toLowerCase().includes(input);
-                item.style.opacity = match ? '1' : '0'; item.classList.toggle('hidden-item', !match);
+                if (category === 'all' || item.classList.contains(category)) { 
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item'); 
+                } else { 
+                    item.style.opacity = '0';
+                    item.classList.add('hidden-item'); 
+                }
             });
         }
 
-        function filterItems(category, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => { b.className = "filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2 flex items-center gap-2 transition-all shadow-sm"; });
-            btn.className = "filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2 flex items-center gap-2 transition-all shadow-md";
-            document.querySelectorAll('.local-item').forEach(item => {
-                let match = category === 'all' || item.classList.contains(category);
-                item.style.opacity = match ? '1' : '0'; item.classList.toggle('hidden-item', !match);
+        function showToast(message) {
+            const toast = document.getElementById('toastMessage');
+            const toastText = document.getElementById('toastText');
+            if(!toast || !toastText) return;
+            toastText.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const updateCount = () => {
+                    const count = +counter.innerText;
+                    const inc = target / 100;
+                    if (count < target) { counter.innerText = Math.ceil(count + inc); setTimeout(updateCount, 20); }
+                    else { counter.innerText = target; }
+                };
+                updateCount();
             });
         }
 
-        function showToast(msg) {
-            const t = document.getElementById('toastMessage'); document.getElementById('toastText').innerText = msg;
-            t.classList.remove('translate-y-20', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+        let countersAnimated = false;
+        function revealOnScroll() {
+            document.querySelectorAll(".reveal").forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) {
+                    el.classList.add("active");
+                    if (!countersAnimated && el.querySelector('.counter')) { animateCounters(); countersAnimated = true; }
+                }
+            });
         }
+        window.addEventListener("scroll", revealOnScroll);
 
-        window.addEventListener("scroll", () => {
-            document.querySelectorAll(".reveal").forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add("active"); });
-        });
-
-        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function toggleMobileMenu() { 
+            const menu = document.getElementById('mobileMenu');
+            if(menu) menu.classList.toggle('hidden'); 
+        }
+        function openModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.remove('hidden'); 
+        }
+        function closeModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.add('hidden'); 
+        }
         function handleFormSubmit(e) { e.preventDefault(); alert('¡Solicitud enviada!'); closeModal('contactoModal'); }
     </script>
 </body>
