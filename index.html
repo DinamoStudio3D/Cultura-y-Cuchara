@@ -50,7 +50,7 @@
         .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        .fab-whatsapp { position: fixed; bottom: 20px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
+        .fab-whatsapp { position: fixed; bottom: 28px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
         @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
         #splash-screen { transition: opacity 0.5s ease-out; z-index: 9999; }
@@ -508,7 +508,7 @@
         </div>
     </footer>
 
-    <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:bg-green-600 transition bottom-28" title="Contáctanos por WhatsApp">
+    <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:bg-green-600 transition" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
@@ -582,21 +582,27 @@
                 <!-- PESTAÑA 1: LOCALES -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel (Español / English)</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
+                            
+                            <!-- BILINGÜE: TÍTULO -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre del Establecimiento</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre (Español)</label>
                                     <input type="text" id="admTitle" required placeholder="Ej. Picantería Central" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Name (English)</label>
+                                    <input type="text" id="admTitleEn" placeholder="Ej. Central Picantería" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría</label>
                                     <select id="admCategory" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></select>
                                 </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono del Pin</label>
                                     <select id="admIconClass" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
@@ -609,13 +615,28 @@
                                         <option value="fa-landmark">🏛️ Sitio Cultural / Museo</option>
                                     </select>
                                 </div>
+                            </div>
+                            
+                            <!-- BILINGÜE: ETIQUETA Y PLATO -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Visible</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Visible (Español)</label>
                                     <input type="text" id="admTag" required placeholder="Ej. Sabor Típico" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Plato Estrella / Beneficio</label>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Visible Tag (English)</label>
+                                    <input type="text" id="admTagEn" placeholder="Ej. Traditional Flavor" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Plato Estrella / Beneficio (Español)</label>
                                     <input type="text" id="admDish" required placeholder="Ej. Seco de chivo" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Star Dish / Benefit (English)</label>
+                                    <input type="text" id="admDishEn" placeholder="Ej. Goat stew" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
                             
@@ -643,9 +664,17 @@
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Dirección Escrita</label>
                                 <input type="text" id="admAddress" required placeholder="Ej. Sucre y Rocafuerte" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción</label>
-                                <textarea id="admDesc" required placeholder="Breve descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+
+                            <!-- BILINGÜE: DESCRIPCIÓN -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción (Español)</label>
+                                    <textarea id="admDesc" required placeholder="Breve descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Description (English)</label>
+                                    <textarea id="admDescEn" placeholder="Short description..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandDark/50 p-4 rounded-xl border border-brandGold/30">
@@ -741,26 +770,41 @@
                 <!-- PESTAÑA 4: AGENDA -->
                 <div id="adminTabAgenda" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Con Pin en Mapa)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Español / English)</h4>
                         <form onsubmit="handleAddNewEvent(event)" class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="text" id="evTitle" required placeholder="Título del evento" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <input type="text" id="evDate" required placeholder="Fecha (ej. 15 - 18 Sep)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título del evento (Español)</label>
+                                    <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Event Title (English)</label>
+                                    <input type="text" id="evTitleEn" placeholder="Title in English" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="text" id="evType" required placeholder="Tipo (ej. Festival)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <input type="text" id="evLocation" required placeholder="Lugar (ej. Plaza de las Flores)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <input type="text" id="evDate" required placeholder="Fecha (ej. 15 - 18 Sep)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <input type="text" id="evType" required placeholder="Tipo (ej. Festival / Festival)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
-                            <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Zona del Evento en Loja</label>
-                                <select id="evZonePreset" class="w-full bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input type="text" id="evLocation" required placeholder="Lugar (ej. Plaza de las Flores)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <select id="evZonePreset" class="bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                     <option value="-3.9910,-79.2030">Plaza de las Flores</option>
                                     <option value="-3.9980,-79.2015">Teatro Bolívar</option>
                                     <option value="-3.9931,-79.2042">Mercado Central</option>
                                     <option value="-3.9850,-79.2010">Parque Jairo Mora</option>
                                 </select>
                             </div>
-                            <textarea id="evDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción (Español)</label>
+                                    <textarea id="evDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Description (English)</label>
+                                    <textarea id="evDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                            </div>
                             <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
                                 Publicar Evento y Crear Pin
                             </button>
@@ -1140,47 +1184,51 @@
 
         const defaultLocations = [
             {
-                tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
+                tag: "Hueca Tradicional", tagEn: "Traditional Local Eatery", title: "Picantería Doña Rosita", titleEn: "Doña Rosita Picantería",
                 desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
-                dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
+                descEn: "The authentic taste of Loja's charcoal-grilled cecina served with cassava and pickled onion.",
+                dish: "Cecina tradicional asada al carbón", dishEn: "Traditional charcoal-grilled cecina", hours: "Lun - Sáb: 08:00 - 16:00",
                 address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-mortar-pestle", category: "hueca",
                 youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 gallery: [
-                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" },
-                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Ambiente Familiar" }
+                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón", titleEn: "Charcoal Grilled Cecina" },
+                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Ambiente Familiar", titleEn: "Family Atmosphere" }
                 ]
             },
             {
-                tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
+                tag: "Cafetería de Especialidad", tagEn: "Specialty Coffee Shop", title: "Café Zorzal & Altura", titleEn: "Zorzal & Altura Coffee",
                 desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
-                dish: "Café filtrado de origen Catamayo", hours: "Mar - Dom: 09:00 - 20:00",
+                descEn: "High-altitude coffee beans grown on Loja farms, artisanally roasted and served as pour-overs.",
+                dish: "Café filtrado de origen Catamayo", dishEn: "Catamayo single-origin pour-over coffee", hours: "Mar - Dom: 09:00 - 20:00",
                 address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
                 iconClass: "fa-mug-hot", category: "cafe",
-                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)" }]
+                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)", titleEn: "V60 Pour-Over (Catamayo)" }]
             },
             {
-                tag: "Gastronomía Urbana", title: "El Fogón de Lola",
+                tag: "Gastronomía Urbana", tagEn: "Urban Gastronomy", title: "El Fogón de Lola", titleEn: "El Fogón de Lola",
                 desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
-                dish: "Repe ahumado con toque de la casa", hours: "Mié - Lun: 12:00 - 22:00",
+                descEn: "Innovative fusion between traditional Loja cuisine and contemporary techniques.",
+                dish: "Repe ahumado con toque de la casa", dishEn: "Smoked Repe with house special touch", hours: "Mié - Lun: 12:00 - 22:00",
                 address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
                 iconClass: "fa-fire-burner", category: "urbana",
-                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado" }]
+                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado", titleEn: "Smoked White Repe Soup" }]
             },
             {
-                tag: "Hotel Aliado", title: "Gran Hotel Loja",
+                tag: "Hotel Aliado", tagEn: "Partner Hotel", title: "Gran Hotel Loja", titleEn: "Gran Hotel Loja",
                 desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
-                dish: "Desayuno tradicional incluido", hours: "Atención 24/7",
+                descEn: "Top-tier lodging in the cultural heart of the city, with traditional Loja breakfast included.",
+                dish: "Desayuno tradicional incluido", dishEn: "Traditional breakfast included", hours: "Atención 24/7",
                 address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
                 iconClass: "fa-hotel", category: "hotel",
-                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva" }]
+                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva", titleEn: "Executive Suite" }]
             }
         ];
 
         const defaultEvents = [
-            { id: 'ev_1', title: 'Feria de Café de Altura Loja', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', lat: -3.9910, lng: -79.2030 },
-            { id: 'ev_2', title: 'Ruta del Repe Tradicional', date: '25 de Septiembre', type: 'Gastronomía', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', lat: -3.9931, lng: -79.2042 },
-            { id: 'ev_3', title: 'Concierto Sinfónico', date: '02 de Octubre', type: 'Arte & Música', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', lat: -3.9980, lng: -79.2015 }
+            { id: 'ev_1', title: 'Feria de Café de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', descEn: 'Open tastings for the public and barista shows.', lat: -3.9910, lng: -79.2030 },
+            { id: 'ev_2', title: 'Ruta del Repe Tradicional', titleEn: 'Traditional Repe Soup Route', date: '25 de Septiembre', dateEn: 'September 25th', type: 'Gastronomía', typeEn: 'Gastronomy', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', descEn: 'Live demonstrations of heritage cuisine.', lat: -3.9931, lng: -79.2042 },
+            { id: 'ev_3', title: 'Concierto Sinfónico', titleEn: 'Symphonic Concert', date: '02 de Octubre', dateEn: 'October 2nd', type: 'Arte & Música', typeEn: 'Art & Music', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', descEn: 'Special gala interpreting traditional pasillo music.', lat: -3.9980, lng: -79.2015 }
         ];
 
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
@@ -1277,8 +1325,9 @@
             
             function rotateEvent() {
                 const ev = eventsList[currentEventIndex];
-                textEl.innerHTML = `🔥 <b>${ev.title}</b> en ${ev.location} (${ev.date})`;
-                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${ev.title}')`);
+                const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
+                textEl.innerHTML = `🔥 <b>${evTitle}</b> en ${ev.location} (${ev.date})`;
+                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${evTitle}')`);
                 currentEventIndex = (currentEventIndex + 1) % eventsList.length;
             }
 
@@ -1355,6 +1404,10 @@
                 const realIndex = locations.findIndex(l => l.id === loc.id);
                 let medalIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉";
 
+                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
+                const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
+
                 container.innerHTML += `
                     <div class="bg-brandCream rounded-xl overflow-hidden shadow-md border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
                         <div class="h-44 overflow-hidden relative">
@@ -1362,9 +1415,9 @@
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index + 1} EN RUTA</span>
                         </div>
                         <div class="p-5">
-                            <span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${loc.tag}</span>
-                            <h3 class="text-base font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${loc.title}</h3>
-                            <p class="text-gray-600 text-xs line-clamp-2">${loc.desc}</p>
+                            <span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${locTag}</span>
+                            <h3 class="text-base font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${locTitle}</h3>
+                            <p class="text-gray-600 text-xs line-clamp-2">${locDesc}</p>
                         </div>
                     </div>
                 `;
@@ -1411,6 +1464,10 @@
 
                 const realIndex = locations.findIndex(l => l.id === loc.id);
 
+                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
+                const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
+
                 if(loc.lat && loc.lng) {
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
@@ -1430,8 +1487,8 @@
 
                     const popupContent = `
                         <div class="text-center p-1">
-                            <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${loc.tag}</span>
-                            <b class="text-brandDark text-xs block my-1">${loc.title}</b>
+                            <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${locTag}</span>
+                            <b class="text-brandDark text-xs block my-1">${locTitle}</b>
                             ${distanciaTexto}
                             <button onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
                                 Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i>
@@ -1460,17 +1517,17 @@
                         </button>
                         <div class="h-48 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
-                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10">${loc.tag}</span>
+                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10">${locTag}</span>
                             <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar (Google Maps)">
                                 <i class="fa-solid fa-diamond-turn-right"></i>
                             </a>
                         </div>
                         <div class="p-5 relative">
                             <div class="flex items-center justify-between mb-1">
-                                <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${loc.title}</h3>
+                                <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${locTitle}</h3>
                                 ${cardDistHtml}
                             </div>
-                            <p class="text-gray-600 text-xs local-desc line-clamp-2">${loc.desc}</p>
+                            <p class="text-gray-600 text-xs local-desc line-clamp-2">${locDesc}</p>
                         </div>
                     </div>
                 `;
@@ -1479,6 +1536,7 @@
             // Pines de eventos
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
+                    const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
                     const eventIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: `<div class="bg-brandGold text-brandDark w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
@@ -1487,7 +1545,7 @@
                         iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
                     });
                     const evMarker = L.marker([ev.lat, ev.lng], { icon: eventIcon });
-                    evMarker.bindPopup(`<div class="text-center p-1"><span class="bg-brandGold text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">Evento Cultural</span><b class="text-brandDark text-xs block mt-1">${ev.title}</b><p class="text-[10px] text-gray-600 mt-0.5">${ev.date} - ${ev.location}</p></div>`);
+                    evMarker.bindPopup(`<div class="text-center p-1"><span class="bg-brandGold text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">Evento Cultural</span><b class="text-brandDark text-xs block mt-1">${evTitle}</b><p class="text-[10px] text-gray-600 mt-0.5">${ev.date} - ${ev.location}</p></div>`);
                     markersLayer.addLayer(evMarker);
                 }
             });
@@ -1648,17 +1706,20 @@
             favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
                 if(loc) {
+                    const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                    const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
+
                     let itemHtml = `
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
                             <div class="flex items-center gap-3">
                                 <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
                                 <div>
-                                    <h4 class="font-bold text-xs text-brandDark">${loc.title}</h4>
-                                    <span class="text-[10px] text-brandGold font-bold">${loc.tag} • ${loc.address}</span>
+                                    <h4 class="font-bold text-xs text-brandDark">${locTitle}</h4>
+                                    <span class="text-[10px] text-brandGold font-bold">${locTag} • ${loc.address}</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Parada recomendada en mi ruta de Cultura y Cuchara: ' + loc.title + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
+                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Parada recomendada en mi ruta de Cultura y Cuchara: ' + locTitle + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </a>
                                 <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
@@ -1701,7 +1762,11 @@
             let text = "✨ *Mi Itinerario Organizado - Cultura y Cuchara (Loja)* ✨\n\n";
             favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
-                if(loc) { text += `• *${loc.title}* (${loc.tag})\n  📍 ${loc.address}\n\n`; }
+                if(loc) { 
+                    const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                    const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
+                    text += `• *${locTitle}* (${locTag})\n  📍 ${loc.address}\n\n`; 
+                }
             });
             text += "¡Te invito a recorrer Loja conmigo!";
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
@@ -1741,6 +1806,9 @@
             agendaContainer.innerHTML = '';
 
             eventsList.forEach((ev) => {
+                const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
+                const evDesc = (currentLang === 'en' && ev.descEn) ? ev.descEn : ev.desc;
+
                 agendaContainer.innerHTML += `
                     <div class="bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
                         <div class="p-6">
@@ -1748,12 +1816,12 @@
                                 <span class="bg-brandGold text-brandDark font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider">${ev.type}</span>
                                 <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date}</span>
                             </div>
-                            <h3 class="font-bold text-lg text-brandDark mb-2">${ev.title}</h3>
-                            <p class="text-xs text-gray-600 leading-relaxed mb-4">${ev.desc}</p>
+                            <h3 class="font-bold text-lg text-brandDark mb-2">${evTitle}</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed mb-4">${evDesc}</p>
                         </div>
                         <div class="px-6 pb-6 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-4 text-xs">
                             <span class="text-gray-500"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
-                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${ev.title}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition">
+                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition">
                                 <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
                             </button>
                         </div>
@@ -1896,12 +1964,16 @@
             e.preventDefault();
             const editId = document.getElementById('admEditId').value;
             const title = document.getElementById('admTitle').value;
+            const titleEn = document.getElementById('admTitleEn').value;
             const category = document.getElementById('admCategory').value;
             const iconClass = document.getElementById('admIconClass').value;
             const tag = document.getElementById('admTag').value;
+            const tagEn = document.getElementById('admTagEn').value;
             const dish = document.getElementById('admDish').value;
+            const dishEn = document.getElementById('admDishEn').value;
             const address = document.getElementById('admAddress').value;
             const desc = document.getElementById('admDesc').value;
+            const descEn = document.getElementById('admDescEn').value;
             const imgsListInput = document.getElementById('admImgsList').value;
             const youtubeUrl = document.getElementById('admYoutubeUrl').value.trim();
             const plusCodeInput = document.getElementById('admPlusCode').value;
@@ -1913,14 +1985,15 @@
             if (imgsListInput.trim()) {
                 galleryArray = imgsListInput.split(',').map((url, i) => ({
                     img: url.trim(),
-                    title: `${title} - Foto ${i + 1}`
+                    title: `${title} - Foto ${i + 1}`,
+                    titleEn: `${titleEn || title} - Photo ${i + 1}`
                 }));
             } else {
-                galleryArray = [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
+                galleryArray = [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title, titleEn: titleEn || title }];
             }
 
             const locationData = {
-                tag, title, desc, dish,
+                tag, tagEn, title, titleEn, desc, descEn, dish, dishEn,
                 hours: "Lun - Dom: 09:00 - 22:00", address,
                 lat: finalCoords[0], lng: finalCoords[1],
                 gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
@@ -1956,13 +2029,17 @@
             const loc = locations.find(l => l.id === id);
             if(!loc) return;
             document.getElementById('admEditId').value = loc.id;
-            document.getElementById('admTitle').value = loc.title;
+            document.getElementById('admTitle').value = loc.title || '';
+            document.getElementById('admTitleEn').value = loc.titleEn || '';
             document.getElementById('admCategory').value = loc.category;
             document.getElementById('admIconClass').value = loc.iconClass;
-            document.getElementById('admTag').value = loc.tag;
-            document.getElementById('admDish').value = loc.dish;
+            document.getElementById('admTag').value = loc.tag || '';
+            document.getElementById('admTagEn').value = loc.tagEn || '';
+            document.getElementById('admDish').value = loc.dish || '';
+            document.getElementById('admDishEn').value = loc.dishEn || '';
             document.getElementById('admAddress').value = loc.address;
-            document.getElementById('admDesc').value = loc.desc;
+            document.getElementById('admDesc').value = loc.desc || '';
+            document.getElementById('admDescEn').value = loc.descEn || '';
             document.getElementById('admPlusCode').value = `${loc.lat}, ${loc.lng}`;
             document.getElementById('admYoutubeUrl').value = loc.youtubeUrl || '';
             
@@ -1979,12 +2056,17 @@
 
         function resetLocationForm() {
             document.getElementById('admEditId').value = '';
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel`;
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel (Español / English)`;
             document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
             document.getElementById('admTitle').value = '';
+            document.getElementById('admTitleEn').value = '';
             document.getElementById('admAddress').value = '';
             document.getElementById('admDesc').value = '';
+            document.getElementById('admDescEn').value = '';
             document.getElementById('admDish').value = '';
+            document.getElementById('admDishEn').value = '';
+            document.getElementById('admTag').value = '';
+            document.getElementById('admTagEn').value = '';
             document.getElementById('admImgsList').value = '';
             document.getElementById('admYoutubeUrl').value = '';
             document.getElementById('admPlusCode').value = '';
@@ -2022,16 +2104,18 @@
         function handleAddNewEvent(e) {
             e.preventDefault();
             const title = document.getElementById('evTitle').value;
+            const titleEn = document.getElementById('evTitleEn').value;
             const date = document.getElementById('evDate').value;
             const type = document.getElementById('evType').value;
             const location = document.getElementById('evLocation').value;
             const desc = document.getElementById('evDesc').value;
+            const descEn = document.getElementById('evDescEn').value;
             const zoneCoords = document.getElementById('evZonePreset').value.split(',');
 
             const lat = parseFloat(zoneCoords[0]);
             const lng = parseFloat(zoneCoords[1]);
 
-            const newEvent = { id: 'ev_' + Date.now(), title, date, type, location, desc, lat, lng };
+            const newEvent = { id: 'ev_' + Date.now(), title, titleEn, date, type, location, desc, descEn, lat, lng };
             eventsList.push(newEvent);
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
             renderEverything();
@@ -2091,10 +2175,16 @@
         function selectLocation(index) {
             currentLocationIndex = index;
             const loc = locations[index];
-            document.getElementById('previewTag').innerText = loc.tag;
-            document.getElementById('previewTitle').innerText = loc.title;
-            document.getElementById('previewDesc').innerText = loc.desc;
-            document.getElementById('previewDish').innerText = (loc.category === 'hotel' ? "Beneficio: " : "Plato: ") + loc.dish;
+            
+            const tagText = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
+            const titleText = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+            const descText = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
+            const dishText = (currentLang === 'en' && loc.dishEn) ? loc.dishEn : loc.dish;
+
+            document.getElementById('previewTag').innerText = tagText || '';
+            document.getElementById('previewTitle').innerText = titleText || '';
+            document.getElementById('previewDesc').innerText = descText || '';
+            document.getElementById('previewDish').innerText = (loc.category === 'hotel' ? (currentLang === 'en' ? "Benefit: " : "Beneficio: ") : (currentLang === 'en' ? "Dish: " : "Plato: ")) + (dishText || '');
             document.getElementById('previewHours').innerText = loc.hours;
             document.getElementById('previewAddress').innerText = loc.address;
             
@@ -2102,7 +2192,7 @@
             document.getElementById('previewGps').href = previewGpsUrl;
             
             const waBtn = document.getElementById('previewWhatsapp');
-            const waText = `¡Hola! Te recomiendo visitar ${loc.title} en la ruta Cultura y Cuchara de Loja. Ubicación: ${loc.address}`;
+            const waText = currentLang === 'en' ? `Hello! I recommend visiting ${titleText} on the Cultura y Cuchara route in Loja. Address: ${loc.address}` : `¡Hola! Te recomiendo visitar ${titleText} en la ruta Cultura y Cuchara de Loja. Ubicación: ${loc.address}`;
             waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
 
             const favIcon = document.getElementById('previewFav');
@@ -2134,7 +2224,8 @@
 
         function openMenuGallery() {
             const loc = locations[currentLocationIndex];
-            document.getElementById('galleryTitle').innerText = loc.title;
+            const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+            document.getElementById('galleryTitle').innerText = locTitle;
             
             const ytContainer = document.getElementById('youtubeVideoContainer');
             const ytIframe = document.getElementById('youtubeIframe');
@@ -2150,11 +2241,12 @@
             grid.innerHTML = '';
             if (loc.gallery && loc.gallery.length > 0) {
                 loc.gallery.forEach(item => {
+                    const itemTitle = (currentLang === 'en' && item.titleEn) ? item.titleEn : item.title;
                     grid.innerHTML += `
                         <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48">
                             <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy">
                             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <span class="text-white font-bold text-xs">${item.title}</span>
+                                <span class="text-white font-bold text-xs">${itemTitle || ''}</span>
                             </div>
                         </div>
                     `;
@@ -2223,8 +2315,9 @@
         function registerVisit(localId) {
             const localObj = locations.find(l => l.id === localId);
             if (!localObj) return;
+            const locTitle = (currentLang === 'en' && localObj.titleEn) ? localObj.titleEn : localObj.title;
             if (visitedLocations.includes(localId)) {
-                showToast(`⚠️ Ya tienes el sello de ${localObj.title}`);
+                showToast(`⚠️ Ya tienes el sello de ${locTitle}`);
                 return;
             }
             visitedLocations.push(localId);
@@ -2278,7 +2371,8 @@
                 const isVisited = loc && visitedLocations.includes(loc.id);
                 let html = '';
                 if (isVisited) {
-                    html = `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${loc.title}</span></div>`;
+                    const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                    html = `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${locTitle}</span></div>`;
                 } else {
                     html = `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i + 1}</span></div>`;
                 }
