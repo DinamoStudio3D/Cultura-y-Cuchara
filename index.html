@@ -85,7 +85,7 @@
         <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center">
             <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover">
         </div>
-        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Sincronizando ruta...</div>
+        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Sincronizando con Firestore...</div>
     </div>
 
     <!-- Barra Superior -->
@@ -552,233 +552,63 @@
         </div>
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN CMS -->
-    <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
-        <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
-            <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-brandGold/10 border border-brandGold/40 flex items-center justify-center text-brandGold text-lg">
-                        <i class="fa-solid fa-sliders"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control total sincronizado con Firestore</p>
-                    </div>
-                </div>
-                <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="flex border-b border-gray-800 bg-black/30 px-4 sm:px-6 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto hide-scrollbar">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos</button>
-                <button onclick="switchAdminTab('hero')" id="tabBtnHero" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Textos y Cifras</button>
-                <button onclick="switchAdminTab('aliados')" id="tabBtnAliados" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Aliados</button>
-                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda</button>
-            </div>
-            <div class="p-6 overflow-y-auto flex-grow space-y-6">
-                <div id="adminTabLocales" class="space-y-6">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel</h4>
-                        <form onsubmit="handleSaveLocation(event)" class="space-y-4">
-                            <input type="hidden" id="admEditId">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre del Establecimiento</label>
-                                    <input type="text" id="admTitle" required placeholder="Ej. Picantería Central" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría</label>
-                                    <select id="admCategory" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></select>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono del Pin</label>
-                                    <select id="admIconClass" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                        <option value="fa-utensils">🍴 Restaurante / Plato</option>
-                                        <option value="fa-mortar-pestle">🥘 Hueca Tradicional</option>
-                                        <option value="fa-mug-hot">☕ Cafetería</option>
-                                        <option value="fa-hotel">🏨 Hotel / Hospedaje</option>
-                                        <option value="fa-fire-burner">🔥 Comida Urbana</option>
-                                        <option value="fa-wine-glass">🍷 Bar / Coctel</option>
-                                        <option value="fa-landmark">🏛️ Sitio Cultural / Museo</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Visible</label>
-                                    <input type="text" id="admTag" required placeholder="Ej. Sabor Típico" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Plato Estrella / Beneficio</label>
-                                    <input type="text" id="admDish" required placeholder="Ej. Seco de chivo" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Coordenadas exactas</label>
-                                    <input type="text" id="admPlusCode" placeholder="Ej. -3.9931, -79.2042" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">O selecciona Zona Rápida en Loja</label>
-                                    <select id="admZonePreset" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white outline-none focus:border-brandGold">
-                                        <option value="-3.9931,-79.2042">Centro / Mercado Central</option>
-                                        <option value="-3.9968,-79.2025">Calle Bernardo Valdivieso</option>
-                                        <option value="-3.9895,-79.2060">Av. Universitaria</option>
-                                        <option value="-3.9910,-79.2030">Plaza de las Flores</option>
-                                        <option value="-3.9980,-79.2015">Zona Sur / Tejar</option>
-                                        <option value="-3.9985,-79.2010">Parque Central</option>
-                                        <option value="-4.0040,-79.2020">San Sebastián</option>
-                                        <option value="-3.9780,-79.2000">Parque Jipiro</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Dirección Escrita</label>
-                                <input type="text" id="admAddress" required placeholder="Ej. Sucre y Rocafuerte" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción</label>
-                                <textarea id="admDesc" required placeholder="Breve descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandDark/50 p-4 rounded-xl border border-brandGold/30">
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace de Vídeo YouTube</label>
-                                    <input type="text" id="admYoutubeUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-images mr-1"></i> URLs de Galería (Separadas por comas)</label>
-                                    <input type="text" id="admImgsList" placeholder="https://img1.jpg, https://img2.jpg" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button type="submit" id="saveBtnText" class="flex-1 bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">Guardar en la Nube</button>
-                                <button type="button" onclick="resetLocationForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">Cancelar / Nuevo</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados</h4>
-                        <div class="space-y-2" id="adminLocationsList"></div>
-                    </div>
-                </div>
-                <div id="adminTabHero" class="space-y-6 hidden">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4">Personalizar Cabecera</h4>
-                        <form onsubmit="handleSaveHeroSettings(event)" class="space-y-4">
-                            <input type="text" id="setHeroBadge" required class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
-                            <input type="text" id="setHeroTitle" required class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
-                            <textarea id="setHeroSubtitle" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white"></textarea>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded text-xs">Guardar Cambios</button>
-                        </form>
-                    </div>
-                </div>
-                <div id="adminTabAliados" class="space-y-6 hidden">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4">Aliados Estratégicos</h4>
-                        <form onsubmit="handleSaveAliadosSettings(event)" class="space-y-4">
-                            <input type="text" id="setAliado1Title" required class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
-                            <textarea id="setAliado1Desc" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white"></textarea>
-                            <input type="text" id="setAliado2Title" required class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
-                            <textarea id="setAliado2Desc" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white"></textarea>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded text-xs">Actualizar Aliados</button>
-                        </form>
-                    </div>
-                </div>
-                <div id="adminTabAgenda" class="space-y-6 hidden">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4">Programar Evento</h4>
-                        <form onsubmit="handleAddNewEvent(event)" class="space-y-4">
-                            <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
-                            <input type="text" id="evDate" required placeholder="Fecha" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
-                            <input type="text" id="evType" required placeholder="Tipo" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
-                            <input type="text" id="evLocation" required placeholder="Lugar" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
-                            <textarea id="evDesc" required placeholder="Descripción" rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white"></textarea>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded text-xs">Publicar Evento</button>
-                        </form>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Eventos</h4>
-                        <div class="space-y-2" id="adminEventsList"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE GALERÍA -->
+    <!-- MODAL DE GALERÍA Y COMUNIDAD -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[650px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <div>
                     <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Platos y Comunidad</h3>
-                    <p class="text-xs text-gray-400">Fotos oficiales y experiencias compartidas</p>
+                    <p class="text-xs text-gray-400">Fotos oficiales y experiencias compartidas por viajeros</p>
                 </div>
-                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             <div class="p-6 flex-grow overflow-y-auto space-y-6">
-                <div id="youtubeVideoContainer" class="hidden">
-                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-2"><i class="fa-brands fa-youtube mr-1"></i> Vídeo Principal</h4>
-                    <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30">
-                        <iframe id="youtubeIframe" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
                 <div>
                     <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-camera-retro mr-1"></i> Recomendación Oficial</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="galleryGrid"></div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE QR -->
-    <div id="qrDemoModal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative">
-            <button onclick="closeModal('qrDemoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-xl z-10"><i class="fa-solid fa-xmark"></i></button>
-            <div class="p-6 text-center" id="qrStep1">
-                <h3 class="text-xl font-bold text-brandGold mb-2">Simulador de Visita / Check-in</h3>
-                <p class="text-gray-400 text-xs mb-6">Apunta la cámara al QR para registrar tu sello.</p>
-                <button onclick="triggerSimulatedScan()" class="w-full bg-brandGold text-brandDark py-3 rounded-lg font-bold hover:bg-white transition">Simular lectura de QR</button>
-            </div>
-            <div class="p-6 text-center hidden" id="qrStep2">
-                <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fa-solid fa-check"></i></div>
-                <h3 class="text-2xl font-bold text-white mb-1">¡Visita Registrada!</h3>
-                <button onclick="closeModal('qrDemoModal')" class="w-full bg-brandGold text-brandDark py-2 rounded font-bold text-xs mt-4">Continuar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE PASAPORTE -->
-    <div id="pasaporteModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandCream text-brandDark w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative">
-            <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10"><i class="fa-solid fa-xmark"></i></button>
-            <div class="bg-brandDark text-center py-6 border-b-2 border-brandGold">
-                <h3 class="text-2xl font-black text-brandGold uppercase tracking-widest" data-i18n="passTitleModal">Mi Pasaporte</h3>
-                <div class="flex justify-center gap-2 mt-3">
-                    <button onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark">Modo Turista</button>
-                    <button onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300">Modo Lojano</button>
+                
+                <div class="border-t border-gray-800 pt-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider"><i class="fa-solid fa-users mr-1"></i> Fotos de la Comunidad de Turistas</h4>
+                        <button onclick="openUploadCommunityPhoto()" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Subir mi foto
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="communityPhotosGrid">
+                        <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
+                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                            <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@carlos_loja</span>
+                        </div>
+                        <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
+                            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                            <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@viajera_gye</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="p-6">
-                <p class="text-xs text-gray-600 mb-4 text-center font-bold" id="passportRuleDesc">Meta: 1 Hotel + 3 Gastronomía</p>
-                <div class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto p-1" id="passportStampsGrid"></div>
-            </div>
         </div>
     </div>
 
-    <!-- Toast Notificación -->
-    <div id="toastMessage" class="fixed bottom-24 right-4 bg-brandGold text-brandDark font-bold px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
-        <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
-    </div>
-
-    <!-- Overlay Sello Ganado -->
-    <div id="stampOverlay" class="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center opacity-0 hidden">
-        <div class="text-center">
-            <i class="fa-solid fa-stamp text-9xl text-brandGold drop-shadow-[0_0_15px_rgba(197,168,128,0.8)] transform -rotate-12"></i>
-            <h2 class="text-3xl font-black text-brandGold uppercase mt-4 bg-black/50 px-4 py-1 rounded">¡Sello Ganado!</h2>
+    <!-- MODAL PARA SUBIR FOTO COMUNITARIA -->
+    <div id="uploadPhotoModal" class="fixed inset-0 z-[75] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/40 p-6 relative">
+            <button onclick="closeModal('uploadPhotoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-lg font-bold text-brandGold mb-1">Comparte tu experiencia</h3>
+            <p class="text-xs text-gray-400 mb-4">Sube una foto de tu visita a este local</p>
+            <form onsubmit="handleCommunityPhotoSubmit(event)" class="space-y-3">
+                <input type="text" id="commUser" required placeholder="Tu nombre o @usuario" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                <input type="text" id="commImgUrl" required placeholder="URL de tu foto (ej. https://...)" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2.5 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                    Publicar Foto
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- Script General y Funcionalidad 100% Estable -->
+    <!-- Script General y Diccionario de Idiomas -->
     <script>
         const translations = {
             es: {
@@ -969,7 +799,9 @@
         try {
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
-        } catch(e) {}
+        } catch(e) {
+            console.log("Error al iniciar Firebase:", e);
+        }
 
         const defaultCategories = [
             { id: 'hotel', name: 'Hoteles & Hospedaje', icon: '🏨' },
@@ -980,36 +812,44 @@
 
         const defaultLocations = [
             {
-                id: 'loc_1', tag: "Hueca Tradicional", title: "Picantería Doña Rosita", titleEn: "Doña Rosita Eatery",
-                desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.", descEn: "The authentic taste of grilled Loja cecina with cassava and pickled salad.",
-                dish: "Cecina tradicional asada al carbón", dishEn: "Traditional grilled cecina", hours: "Lun - Sáb: 08:00 - 16:00",
+                id: 'loc_1',
+                tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
+                desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
+                dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
                 address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-mortar-pestle", category: "hueca",
-                gallery: [{ img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina" }]
+                youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                gallery: [
+                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" },
+                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Ambiente Familiar" }
+                ]
             },
             {
-                id: 'loc_2', tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura", titleEn: "Zorzal & Altura Coffee",
-                desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.", descEn: "Highland coffee beans grown in Loja farms, artisan-roasted and served as pour-overs.",
-                dish: "Café filtrado de origen Catamayo", dishEn: "Catamayo origin pour-over coffee", hours: "Mar - Dom: 09:00 - 20:00",
+                id: 'loc_2',
+                tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
+                desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
+                dish: "Café filtrado de origen Catamayo", hours: "Mar - Dom: 09:00 - 20:00",
                 address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
                 iconClass: "fa-mug-hot", category: "cafe",
-                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Coffee" }]
+                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)" }]
             },
             {
-                id: 'loc_3', tag: "Gastronomía Urbana", title: "El Fogón de Lola", titleEn: "El Fogón de Lola",
-                desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.", descEn: "Innovative fusion between traditional Loja cuisine and contemporary techniques.",
-                dish: "Repe ahumado con toque de la casa", dishEn: "Smoked repe with house touch", hours: "Mié - Lun: 12:00 - 22:00",
+                id: 'loc_3',
+                tag: "Gastronomía Urbana", title: "El Fogón de Lola",
+                desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
+                dish: "Repe ahumado con toque de la casa", hours: "Mié - Lun: 12:00 - 22:00",
                 address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
                 iconClass: "fa-fire-burner", category: "urbana",
-                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe" }]
+                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado" }]
             },
             {
-                id: 'loc_4', tag: "Hotel Aliado", title: "Gran Hotel Loja", titleEn: "Gran Hotel Loja",
-                desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.", descEn: "First-class lodging in the cultural heart of the city, including a traditional Loja breakfast.",
-                dish: "Desayuno tradicional incluido", dishEn: "Traditional breakfast included", hours: "Atención 24/7",
+                id: 'loc_4',
+                tag: "Hotel Aliado", title: "Gran Hotel Loja",
+                desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
+                dish: "Desayuno tradicional incluido", hours: "Atención 24/7",
                 address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
                 iconClass: "fa-hotel", category: "hotel",
-                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Hotel" }]
+                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva" }]
             }
         ];
 
@@ -1020,7 +860,7 @@
         ];
 
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
-        let locations = JSON.parse(localStorage.getItem('cyc_dynamic_locales')) || defaultLocations;
+        let locations = defaultLocations; // Inicializamos con datos por defecto inmediatamente para que el mapa pinte al cargar
         let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
 
         let currentLocationIndex = 0;
@@ -1030,26 +870,21 @@
         let userCoords = null;
 
         let map, markersLayer, userMarkerInstance = null;
-        try {
-            map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
-            L.control.zoom({ position: 'bottomright' }).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
-            markersLayer = L.layerGroup().addTo(map);
-        } catch(e) {}
+
+        function initMap() {
+            if (map) return;
+            try {
+                map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+                markersLayer = L.layerGroup().addTo(map);
+            } catch(e) {
+                console.log('Mapa iniciando...', e);
+            }
+        }
 
         function cargarDatosDesdeFirestore() {
-            let loaded = false;
-            const fallbackTimer = setTimeout(() => {
-                if (!loaded) {
-                    renderEverything();
-                    checkLiveEventsBanner();
-                    forceRemoveSplash();
-                    loaded = true;
-                }
-            }, 800);
-
             if (!db) {
-                clearTimeout(fallbackTimer);
                 renderEverything();
                 checkLiveEventsBanner();
                 forceRemoveSplash();
@@ -1057,34 +892,31 @@
             }
 
             db.collection("locales").get().then((snapshot) => {
-                let cloudLocales = [];
-                snapshot.forEach((doc) => { cloudLocales.push({ id: doc.id, ...doc.data() }); });
-                if(cloudLocales.length > 0) {
-                    locations = cloudLocales;
-                    localStorage.setItem('cyc_dynamic_locales', JSON.stringify(locations));
+                if (!snapshot.empty) {
+                    let cloudLocales = [];
+                    snapshot.forEach((doc) => {
+                        cloudLocales.push({ id: doc.id, ...doc.data() });
+                    });
+                    if (cloudLocales.length > 0) {
+                        locations = cloudLocales;
+                    }
                 }
-                if(!loaded) {
-                    clearTimeout(fallbackTimer);
-                    loadSettingsFromStorage();
-                    renderEverything();
-                    checkLiveEventsBanner();
-                    forceRemoveSplash();
-                    loaded = true;
-                }
+                renderEverything();
+                checkLiveEventsBanner();
+                forceRemoveSplash();
             }).catch(() => {
-                if(!loaded) {
-                    clearTimeout(fallbackTimer);
-                    loadSettingsFromStorage();
-                    renderEverything();
-                    checkLiveEventsBanner();
-                    forceRemoveSplash();
-                    loaded = true;
-                }
+                renderEverything();
+                checkLiveEventsBanner();
+                forceRemoveSplash();
             });
 
             db.collection("settings").doc("main").get().then((doc) => {
-                if (doc.exists) applySettings(doc.data());
-            }).catch(() => {});
+                if (doc.exists) {
+                    applySettings(doc.data());
+                } else {
+                    loadSettingsFromStorage();
+                }
+            }).catch(() => loadSettingsFromStorage());
         }
 
         function loadSettingsFromStorage() {
@@ -1092,7 +924,9 @@
                 badge: "Loja se conoce, se saborea y se hospeda",
                 title: "Gastronomía, Hotelería y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
-                stat1: 3, stat3: 25, stat4: 100
+                stat1: 3, stat3: 25, stat4: 100,
+                aliado1Title: "Mesa Turística de Loja", aliado1Desc: "Impulsando el desarrollo hotelero y turístico...",
+                aliado2Title: "ILE", aliado2Desc: "Industria Lojana de Especerías..."
             };
             applySettings(saved);
         }
@@ -1103,6 +937,9 @@
                 document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Hotelería", '<span class="text-brandGold">Hotelería</span>') : "";
             }
             if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
+            if(document.getElementById('stat1Val')) document.getElementById('stat1Val').setAttribute('data-target', s.stat1 || 3);
+            if(document.getElementById('stat3Val')) document.getElementById('stat3Val').setAttribute('data-target', s.stat3 || 25);
+            if(document.getElementById('stat4Val')) document.getElementById('stat4Val').setAttribute('data-target', s.stat4 || 100);
         }
 
         let currentEventIndex = 0;
@@ -1120,7 +957,9 @@
                 currentEventIndex = (currentEventIndex + 1) % eventsList.length;
             }
             rotateEvent();
-            if(eventsList.length > 1) setInterval(rotateEvent, 5000);
+            if(eventsList.length > 1) {
+                setInterval(rotateEvent, 5000);
+            }
         }
 
         function renderEverything() {
@@ -1129,7 +968,11 @@
             renderTrendingUI();
             renderAgendaUI();
             updateItineraryUI();
-            if(map) setTimeout(() => map.invalidateSize(), 200);
+            if(map) {
+                setTimeout(() => { 
+                    map.invalidateSize(); 
+                }, 150);
+            }
         }
 
         function renderCategoriesUI() {
@@ -1152,7 +995,9 @@
             const admCategorySelect = document.getElementById('admCategory');
             if(admCategorySelect) {
                 admCategorySelect.innerHTML = '';
-                categories.forEach(cat => { admCategorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`; });
+                categories.forEach(cat => {
+                    admCategorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
             }
 
             const sugContainer = document.getElementById('suggestedRoutesContainer');
@@ -1174,15 +1019,17 @@
             if(!container || locations.length === 0) return;
             container.innerHTML = '';
 
-            let trendingList = [...locations].map(loc => ({ ...loc, score: favoriteLocations.includes(loc.id) ? 100 : 10 }));
+            let trendingList = [...locations].map(loc => {
+                let score = favoriteLocations.includes(loc.id) ? 100 : 10;
+                return { ...loc, score };
+            });
+
             trendingList.sort((a, b) => b.score - a.score);
             let topTrending = trendingList.slice(0, 3);
 
             topTrending.forEach((loc, index) => {
                 const realIndex = locations.findIndex(l => l.id === loc.id);
                 let medalIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉";
-                let tTitle = currentLang === 'en' && loc.titleEn ? loc.titleEn : loc.title;
-                let tDesc = currentLang === 'en' && loc.descEn ? loc.descEn : loc.desc;
 
                 container.innerHTML += `
                     <div class="bg-brandCream rounded-xl overflow-hidden shadow-md border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
@@ -1192,8 +1039,8 @@
                         </div>
                         <div class="p-5">
                             <span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${loc.tag}</span>
-                            <h3 class="text-base font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${tTitle}</h3>
-                            <p class="text-gray-600 text-xs line-clamp-2">${tDesc}</p>
+                            <h3 class="text-base font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${loc.title}</h3>
+                            <p class="text-gray-600 text-xs line-clamp-2">${loc.desc}</p>
                         </div>
                     </div>
                 `;
@@ -1204,8 +1051,11 @@
             const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
         }
 
         function renderMapAndGrid() {
@@ -1224,16 +1074,18 @@
 
             let renderList = [...locations];
             if (userCoords) {
-                renderList.sort((a, b) => calcularDistanciaKm(userCoords.lat, userCoords.lng, a.lat || -3.9931, a.lng || -79.2042) - calcularDistanciaKm(userCoords.lat, userCoords.lng, b.lat || -3.9931, b.lng || -79.2042));
+                renderList.sort((a, b) => {
+                    let distA = calcularDistanciaKm(userCoords.lat, userCoords.lng, a.lat || -3.9931, a.lng || -79.2042);
+                    let distB = calcularDistanciaKm(userCoords.lat, userCoords.lng, b.lat || -3.9931, b.lng || -79.2042);
+                    return distA - distB;
+                });
             }
 
             renderList.forEach((loc, index) => {
                 const uniqueId = loc.id || 'loc_' + index;
                 if(!loc.id) loc.id = uniqueId;
-                const realIndex = locations.findIndex(l => l.id === loc.id);
 
-                let tTitle = currentLang === 'en' && loc.titleEn ? loc.titleEn : loc.title;
-                let tDesc = currentLang === 'en' && loc.descEn ? loc.descEn : loc.desc;
+                const realIndex = locations.findIndex(l => l.id === loc.id);
 
                 if(loc.lat && loc.lng) {
                     const customIcon = L.divIcon({
@@ -1245,24 +1097,36 @@
                     });
 
                     const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
-                    let distanciaTexto = userCoords ? `<span class="text-[10px] text-blue-600 font-bold block mb-1">📍 A ${calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng) < 1 ? Math.round(calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng) * 1000) + ' m' : calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng).toFixed(1) + ' km'} de ti</span>` : "";
+                    
+                    let distanciaTexto = "";
+                    if (userCoords) {
+                        let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
+                        distanciaTexto = `<span class="text-[10px] text-blue-600 font-bold block mb-1">📍 A ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'} de ti</span>`;
+                    }
 
-                    marker.bindPopup(`
+                    const popupContent = `
                         <div class="text-center p-1">
                             <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${loc.tag}</span>
-                            <b class="text-brandDark text-xs block my-1">${tTitle}</b>
+                            <b class="text-brandDark text-xs block my-1">${loc.title}</b>
                             ${distanciaTexto}
                             <button onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
                                 Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i>
                             </button>
                         </div>
-                    `);
+                    `;
+                    marker.bindPopup(popupContent);
                     markersLayer.addLayer(marker);
                 }
 
                 const isFav = favoriteLocations.includes(loc.id);
                 const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
-                let cardDistHtml = userCoords ? `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042) < 1 ? Math.round(calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042) * 1000) + ' m' : calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042).toFixed(1) + ' km'}</span>` : "";
+
+                let cardDistHtml = "";
+                if (userCoords) {
+                    let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042);
+                    cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
+                }
+
                 let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
 
                 grid.innerHTML += `
@@ -1273,21 +1137,22 @@
                         <div class="h-48 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10">${loc.tag}</span>
-                            <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar">
+                            <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar (Google Maps)">
                                 <i class="fa-solid fa-diamond-turn-right"></i>
                             </a>
                         </div>
                         <div class="p-5 relative">
                             <div class="flex items-center justify-between mb-1">
-                                <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${tTitle}</h3>
+                                <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${loc.title}</h3>
                                 ${cardDistHtml}
                             </div>
-                            <p class="text-gray-600 text-xs local-desc line-clamp-2">${tDesc}</p>
+                            <p class="text-gray-600 text-xs local-desc line-clamp-2">${loc.desc}</p>
                         </div>
                     </div>
                 `;
             });
 
+            // Pines de eventos
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
                     const eventIcon = L.divIcon({
@@ -1303,7 +1168,10 @@
                 }
             });
 
-            if(userMarkerInstance) userMarkerInstance.addTo(markersLayer);
+            if(userMarkerInstance) {
+                userMarkerInstance.addTo(markersLayer);
+            }
+
             renderAdminLocationsList();
             updatePassportUI();
         }
@@ -1313,28 +1181,81 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
-                        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        
+                        const lojaLat = -3.9931;
+                        const lojaLng = -79.2042;
+                        const distance = Math.abs(lat - lojaLat) + Math.abs(lng - lojaLng);
+
+                        if (distance > 0.8) {
+                            showToast('⚠️ Tu red indicó otra ciudad. Centrando en Loja.');
+                            centerOnLoja();
+                            return;
+                        }
+
                         userCoords = { lat, lng };
                         if(map) map.setView([lat, lng], 16, { animate: true });
-                        userMarkerInstance = L.marker([lat, lng], {
-                            icon: L.divIcon({ className: 'custom-leaflet-icon', html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce"><i class="fa-solid fa-street-view text-2xl"></i></div>`, iconSize: [48, 48], iconAnchor: [24, 24] })
-                        }).bindPopup("<b>¡Tú estás aquí!</b>");
-                        renderMapAndGrid();
-                        showToast('¡Ubicación encontrada!');
+                        
+                        const userAvatarIcon = L.divIcon({
+                            className: 'custom-leaflet-icon',
+                            html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                                       <i class="fa-solid fa-street-view text-2xl"></i>
+                                   </div>`,
+                            iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+                        });
+                        
+                        userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
+                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
+                        
+                        renderMapAndGrid(); 
+
+                        if(locations.length > 0) {
+                            let closestIndex = 0;
+                            let minDistance = Infinity;
+                            locations.forEach((loc, idx) => {
+                                let d = calcularDistanciaKm(lat, lng, loc.lat || lojaLat, loc.lng || lojaLng);
+                                if(d < minDistance) {
+                                    minDistance = d;
+                                    closestIndex = idx;
+                                }
+                            });
+                            selectLocation(closestIndex);
+                        }
+
+                        showToast('¡Ubicación encontrada y local más cercano cargado!');
                     },
-                    () => centerOnLoja(),
+                    (err) => {
+                        console.warn("GPS denegado:", err.message);
+                        centerOnLoja();
+                    },
                     { timeout: 6000, enableHighAccuracy: true }
                 );
-            } else { centerOnLoja(); }
+            } else {
+                centerOnLoja();
+            }
         }
 
         function centerOnLoja() {
-            userCoords = { lat: -3.9931, lng: -79.2042 };
-            if(map) map.setView([-3.9931, -79.2042], 15, { animate: true });
-            userMarkerInstance = L.marker([-3.9931, -79.2042], {
-                icon: L.divIcon({ className: 'custom-leaflet-icon', html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce"><i class="fa-solid fa-street-view text-2xl"></i></div>`, iconSize: [48, 48], iconAnchor: [24, 24] })
-            }).bindPopup("<b>Centro de Loja</b>");
-            renderMapAndGrid(); selectLocation(0); showToast('Mapa centrado en Loja');
+            const lojaLat = -3.9931;
+            const lojaLng = -79.2042;
+            userCoords = { lat: lojaLat, lng: lojaLng };
+            if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
+            
+            const userAvatarIcon = L.divIcon({
+                className: 'custom-leaflet-icon',
+                html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                           <i class="fa-solid fa-street-view text-2xl"></i>
+                       </div>`,
+                iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+            });
+            
+            userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon })
+              .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.");
+            
+            renderMapAndGrid();
+            selectLocation(0);
+            showToast('Mapa centrado en Loja');
         }
 
         function toggleFavoriteCurrent(btn) {
@@ -1345,14 +1266,15 @@
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
                 icon.className = "fa-solid fa-seedling text-brandGold";
-                showToast('Quitado de tu ruta');
+                showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(loc.id);
                 icon.className = "fa-solid fa-seedling text-red-500";
-                showToast('¡Añadido a Mi Ruta!');
+                showToast(`¡Añadido a Mi Ruta!`);
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
-            updateItineraryUI(); renderTrendingUI();
+            updateItineraryUI();
+            renderTrendingUI();
         }
 
         function toggleFavoriteCard(e, localId) {
@@ -1362,14 +1284,15 @@
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
                 if(icon) icon.className = "fa-solid fa-seedling text-brandGold text-lg";
-                showToast('Quitado de tu ruta');
+                showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
                 if(icon) icon.className = "fa-solid fa-seedling text-red-500 text-lg";
-                showToast('¡Añadido a Mi Ruta!');
+                showToast(`¡Añadido a Mi Ruta!`);
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
-            updateItineraryUI(); renderTrendingUI();
+            updateItineraryUI();
+            renderTrendingUI();
         }
 
         function updateItineraryUI() {
@@ -1379,71 +1302,136 @@
             container.innerHTML = '';
 
             if(favoriteLocations.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-gray-400 text-xs"><i class="fa-solid fa-mug-hot text-3xl mb-2 text-gray-300"></i><br>Aún no has guardado ningún lugar en tu ruta.</div>`;
+                container.innerHTML = `
+                    <div class="text-center py-10 text-gray-400 text-xs">
+                        <i class="fa-solid fa-mug-hot text-3xl mb-2 text-gray-300"></i><br>
+                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el icono de grano de café en cualquier tarjeta o pin para agregarlo.
+                    </div>
+                `;
                 if(badge) badge.classList.add('hidden');
                 return;
             }
-            if(badge) { badge.innerText = favoriteLocations.length; badge.classList.remove('hidden'); }
 
-            favoriteLocations.forEach(id => {
+            if(badge) {
+                badge.innerText = favoriteLocations.length;
+                badge.classList.remove('hidden');
+            }
+
+            let mananaHTML = "";
+            let tardeHTML = "";
+            let nocheHTML = "";
+
+            favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
                 if(loc) {
-                    let tTitle = currentLang === 'en' && loc.titleEn ? loc.titleEn : loc.title;
-                    container.innerHTML += `
+                    let itemHtml = `
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
                             <div class="flex items-center gap-3">
                                 <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
-                                <div><h4 class="font-bold text-xs text-brandDark">${tTitle}</h4><span class="text-[10px] text-brandGold font-bold">${loc.tag} • ${loc.address}</span></div>
+                                <div>
+                                    <h4 class="font-bold text-xs text-brandDark">${loc.title}</h4>
+                                    <span class="text-[10px] text-brandGold font-bold">${loc.tag} • ${loc.address}</span>
+                                </div>
                             </div>
-                            <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
+                            <div class="flex items-center gap-2">
+                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Parada recomendada en mi ruta de Cultura y Cuchara: ' + loc.title + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                                <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
+                            </div>
                         </div>
                     `;
+
+                    if (loc.category === 'cafe' || idx === 0) {
+                        mananaHTML += itemHtml;
+                    } else if (loc.category === 'hueca' || loc.category === 'urbana') {
+                        tardeHTML += itemHtml;
+                    } else {
+                        nocheHTML += itemHtml;
+                    }
                 }
             });
+
+            if(mananaHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5"><i class="fa-solid fa-sun text-amber-500"></i> Bloque Mañana (Café y Desayuno)</div>` + mananaHTML;
+            }
+            if(tardeHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-utensils text-brandGold"></i> Bloque Tarde (Huecas y Almuerzos)</div>` + tardeHTML;
+            }
+            if(nocheHTML) {
+                container.innerHTML += `<div class="text-xs font-black text-brandDark uppercase tracking-wider bg-brandGold/20 p-2 rounded flex items-center gap-1.5 mt-3"><i class="fa-solid fa-moon text-indigo-900"></i> Bloque Noche (Hospedaje y Cenas)</div>` + nocheHTML;
+            }
         }
 
         function removeFavorite(id) {
             favoriteLocations = favoriteLocations.filter(favId => favId !== id);
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
-            renderMapAndGrid(); renderTrendingUI(); updateItineraryUI(); showToast('Lugar eliminado');
+            renderMapAndGrid();
+            renderTrendingUI();
+            updateItineraryUI();
+            showToast('Lugar eliminado de tu ruta');
         }
 
         function shareStructuredItinerary() {
-            if(favoriteLocations.length === 0) return;
-            let text = "✨ *Mi Itinerario - Cultura y Cuchara (Loja)* ✨\n\n";
-            favoriteLocations.forEach(id => { 
-                const loc = locations.find(l => l.id === id); 
-                if(loc) {
-                    let tTitle = currentLang === 'en' && loc.titleEn ? loc.titleEn : loc.title;
-                    text += `• *${tTitle}* (${loc.address})\n`; 
-                }
+            if(favoriteLocations.length === 0) { alert('Tu ruta está vacía.'); return; }
+            let text = "✨ *Mi Itinerario Organizado - Cultura y Cuchara (Loja)* ✨\n\n";
+            favoriteLocations.forEach((id) => {
+                const loc = locations.find(l => l.id === id);
+                if(loc) { text += `• *${loc.title}* (${loc.tag})\n  📍 ${loc.address}\n\n`; }
             });
+            text += "¡Te invito a recorrer Loja conmigo!";
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function filterByTimeBlock(block) {
-            document.querySelectorAll('.local-item').forEach(item => {
-                let match = (block === 'manana' && item.classList.contains('cafe')) || (block === 'tarde' && (item.classList.contains('hueca') || item.classList.contains('urbana'))) || (block === 'noche' && item.classList.contains('hotel'));
-                item.style.opacity = match ? '1' : '0';
-                item.classList.toggle('hidden-item', !match);
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) searchInput.value = "";
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.add('hidden');
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
+                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
             });
-            showToast(`Bloque: ${block.toUpperCase()}`);
+
+            document.querySelectorAll('.local-item').forEach(item => {
+                let match = false;
+                if (block === 'manana' && item.classList.contains('cafe')) match = true;
+                if (block === 'tarde' && (item.classList.contains('hueca') || item.classList.contains('urbana'))) match = true;
+                if (block === 'noche' && item.classList.contains('hotel')) match = true;
+
+                if (match) {
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item');
+                } else {
+                    item.style.opacity = '0';
+                    setTimeout(() => item.classList.add('hidden-item'), 200);
+                }
+            });
+            showToast(`Mostrando bloque: ${block.toUpperCase()}`);
         }
 
         function renderAgendaUI() {
             const agendaContainer = document.getElementById('agendaGridContainer');
             if(!agendaContainer) return;
             agendaContainer.innerHTML = '';
-            eventsList.forEach(ev => {
+
+            eventsList.forEach((ev) => {
                 agendaContainer.innerHTML += `
                     <div class="bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
                         <div class="p-6">
-                            <div class="flex justify-between items-center mb-3"><span class="bg-brandGold text-brandDark font-bold text-[10px] px-2.5 py-1 rounded uppercase">${ev.type}</span><span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date}</span></div>
-                            <h3 class="font-bold text-lg text-brandDark mb-2">${ev.title}</h3><p class="text-xs text-gray-600 mb-4">${ev.desc}</p>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="bg-brandGold text-brandDark font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider">${ev.type}</span>
+                                <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date}</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-brandDark mb-2">${ev.title}</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed mb-4">${ev.desc}</p>
                         </div>
-                        <div class="px-6 pb-6 border-t border-gray-200/60 pt-4 text-xs flex justify-between items-center">
+                        <div class="px-6 pb-6 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-4 text-xs">
                             <span class="text-gray-500"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
-                            <button onclick="focusEventOnMap(${ev.lat}, ${ev.lng}, '${ev.title}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition"><i class="fa-solid fa-map-pin mr-1"></i> Ver</button>
+                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${ev.title}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition">
+                                <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1458,12 +1446,35 @@
         }
 
         function switchAdminTab(tab) {
-            ['locales', 'hero', 'aliados', 'agenda'].forEach(t => {
-                document.getElementById('adminTab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden');
-                document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1)).className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
-            });
-            document.getElementById('adminTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
-            document.getElementById('tabBtn' + tab.charAt(0).toUpperCase() + tab.slice(1)).className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            document.getElementById('adminTabLocales').classList.add('hidden');
+            document.getElementById('adminTabHero').classList.add('hidden');
+            document.getElementById('adminTabAliados').classList.add('hidden');
+            document.getElementById('adminTabAgenda').classList.add('hidden');
+
+            document.getElementById('tabBtnLocales').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnHero').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnAliados').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnAgenda').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+
+            if(tab === 'locales') {
+                document.getElementById('adminTabLocales').classList.remove('hidden');
+                document.getElementById('tabBtnLocales').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            } else if(tab === 'hero') {
+                document.getElementById('adminTabHero').classList.remove('hidden');
+                document.getElementById('tabBtnHero').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+                document.getElementById('setHeroBadge').value = document.getElementById('heroBadge').innerText;
+                document.getElementById('setHeroTitle').value = "Gastronomía, Hotelería y Destinos";
+                document.getElementById('setHeroSubtitle').value = document.getElementById('heroSubtitle').innerText;
+                document.getElementById('setStat1').value = document.getElementById('stat1Val').getAttribute('data-target');
+                document.getElementById('setStat3').value = document.getElementById('stat3Val').getAttribute('data-target');
+                document.getElementById('setStat4').value = document.getElementById('stat4Val').getAttribute('data-target');
+            } else if(tab === 'aliados') {
+                document.getElementById('adminTabAliados').classList.remove('hidden');
+                document.getElementById('tabBtnAliados').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            } else if(tab === 'agenda') {
+                document.getElementById('adminTabAgenda').classList.remove('hidden');
+                document.getElementById('tabBtnAgenda').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            }
         }
 
         function handleSaveHeroSettings(e) {
@@ -1471,45 +1482,108 @@
             let settingsData = {
                 badge: document.getElementById('setHeroBadge').value,
                 title: document.getElementById('setHeroTitle').value,
-                subtitle: document.getElementById('setHeroSubtitle').value
+                subtitle: document.getElementById('setHeroSubtitle').value,
+                stat1: parseInt(document.getElementById('setStat1').value),
+                stat3: parseInt(document.getElementById('setStat3').value),
+                stat4: parseInt(document.getElementById('setStat4').value)
             };
+
             localStorage.setItem('cyc_settings', JSON.stringify(settingsData));
-            applySettings(settingsData); closeModal('adminModal'); showToast('¡Actualizado!');
+            if (db) {
+                db.collection("settings").doc("main").set(settingsData).then(() => {
+                    applySettings(settingsData);
+                    closeModal('adminModal');
+                    showToast('¡Cabecera y cifras actualizadas!');
+                });
+            } else {
+                applySettings(settingsData);
+                closeModal('adminModal');
+                showToast('¡Cabecera y cifras actualizadas!');
+            }
         }
 
         function handleSaveAliadosSettings(e) {
             e.preventDefault();
-            closeModal('adminModal'); showToast('¡Aliados actualizados!');
+            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            localStorage.setItem('cyc_settings', JSON.stringify(saved));
+            closeModal('adminModal');
+            showToast('¡Aliados actualizados!');
+        }
+
+        function parseCoordinates(inputVal, presetValue) {
+            let input = inputVal ? inputVal.trim() : "";
+            if (input.includes(",")) {
+                let parts = input.split(",");
+                let lat = parseFloat(parts[0]);
+                let lng = parseFloat(parts[1]);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    return [lat, lng];
+                }
+            }
+            const coords = presetValue.split(',');
+            return [parseFloat(coords[0]), parseFloat(coords[1])];
         }
 
         function handleSaveLocation(e) {
             e.preventDefault();
             const editId = document.getElementById('admEditId').value;
             const title = document.getElementById('admTitle').value;
-            const titleEn = prompt("Ingresa el Título en Inglés (English Title):", title) || title;
             const category = document.getElementById('admCategory').value;
             const iconClass = document.getElementById('admIconClass').value;
             const tag = document.getElementById('admTag').value;
             const dish = document.getElementById('admDish').value;
             const address = document.getElementById('admAddress').value;
             const desc = document.getElementById('admDesc').value;
-            const descEn = prompt("Ingresa la Descripción en Inglés (English Description):", desc) || desc;
             const imgsListInput = document.getElementById('admImgsList').value;
-            const preset = document.getElementById('admZonePreset').value.split(',');
+            const youtubeUrl = document.getElementById('admYoutubeUrl').value.trim();
+            const plusCodeInput = document.getElementById('admPlusCode').value;
+            const preset = document.getElementById('admZonePreset').value;
 
-            let lat = parseFloat(preset[0]), lng = parseFloat(preset[1]);
-            let galleryArray = imgsListInput.trim() ? imgsListInput.split(',').map((url, i) => ({ img: url.trim(), title: `${title} - Foto ${i + 1}` })) : [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
+            const finalCoords = parseCoordinates(plusCodeInput, preset);
 
-            const locationData = { tag, title, titleEn, desc, descEn, dish, hours: "Lun - Dom: 09:00 - 22:00", address, lat, lng, gps: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, iconClass, category, gallery: galleryArray };
-
-            if (editId) {
-                let index = locations.findIndex(l => l.id === editId);
-                if(index > -1) locations[index] = { id: editId, ...locationData };
+            let galleryArray = [];
+            if (imgsListInput.trim()) {
+                galleryArray = imgsListInput.split(',').map((url, i) => ({
+                    img: url.trim(),
+                    title: `${title} - Foto ${i + 1}`
+                }));
             } else {
-                locations.push({ id: 'loc_' + Date.now(), ...locationData });
+                galleryArray = [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
             }
-            localStorage.setItem('cyc_dynamic_locales', JSON.stringify(locations));
-            closeModal('adminModal'); showToast('¡Guardado con soporte Bilingüe!'); resetLocationForm(); renderEverything();
+
+            const locationData = {
+                tag, title, desc, dish,
+                hours: "Lun - Dom: 09:00 - 22:00", address,
+                lat: finalCoords[0], lng: finalCoords[1],
+                gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
+                iconClass, category,
+                youtubeUrl,
+                gallery: galleryArray
+            };
+
+            if (db) {
+                if (editId) {
+                    db.collection("locales").doc(editId).update(locationData)
+                      .then(() => {
+                          closeModal('adminModal');
+                          showToast(`¡${title} actualizado!`);
+                          resetLocationForm();
+                          cargarDatosDesdeFirestore();
+                      })
+                      .catch(err => alert("Error al actualizar: " + err.message));
+                } else {
+                    db.collection("locales").add(locationData)
+                      .then(() => {
+                          closeModal('adminModal');
+                          showToast(`¡${title} guardado!`);
+                          resetLocationForm();
+                          cargarDatosDesdeFirestore();
+                      })
+                      .catch(err => alert("Error al guardar: " + err.message));
+                }
+            } else {
+                alert("Base de datos no conectada.");
+            }
         }
 
         function editLocation(id) {
@@ -1523,27 +1597,47 @@
             document.getElementById('admDish').value = loc.dish;
             document.getElementById('admAddress').value = loc.address;
             document.getElementById('admDesc').value = loc.desc;
+            document.getElementById('admPlusCode').value = `${loc.lat}, ${loc.lng}`;
+            document.getElementById('admYoutubeUrl').value = loc.youtubeUrl || '';
+            
+            if(loc.gallery && loc.gallery.length > 0) {
+                document.getElementById('admImgsList').value = loc.gallery.map(g => g.img).join(', ');
+            } else {
+                document.getElementById('admImgsList').value = '';
+            }
+
             document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editando: ${loc.title}`;
-            document.getElementById('saveBtnText').innerText = "Actualizar Cambios";
+            document.getElementById('saveBtnText').innerText = "Actualizar Cambios en la Nube";
+            document.getElementById('admTitle').focus();
         }
 
         function resetLocationForm() {
             document.getElementById('admEditId').value = '';
             document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel`;
             document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
-            document.getElementById('admTitle').value = ''; document.getElementById('admAddress').value = ''; document.getElementById('admDesc').value = ''; document.getElementById('admDish').value = ''; document.getElementById('admImgsList').value = '';
+            document.getElementById('admTitle').value = '';
+            document.getElementById('admAddress').value = '';
+            document.getElementById('admDesc').value = '';
+            document.getElementById('admDish').value = '';
+            document.getElementById('admImgsList').value = '';
+            document.getElementById('admYoutubeUrl').value = '';
+            document.getElementById('admPlusCode').value = '';
         }
 
         function renderAdminLocationsList() {
             const list = document.getElementById('adminLocationsList');
-            if(!list) return; list.innerHTML = '';
+            if(!list) return;
+            list.innerHTML = '';
             locations.forEach(loc => {
                 list.innerHTML += `
                     <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
-                        <span class="text-brandGold font-bold">${loc.title}</span>
+                        <div>
+                            <span class="text-brandGold font-bold"><i class="fa-solid ${loc.iconClass} mr-1"></i> ${loc.title}</span>
+                            <span class="text-gray-400 text-[10px] block">(${loc.category})</span>
+                        </div>
                         <div class="flex gap-2">
-                            <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded hover:bg-red-700 transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -1551,119 +1645,287 @@
         }
 
         function deleteLocation(id) {
-            if(locations.length <= 1) return;
-            if(confirm("¿Eliminar?")) {
-                locations = locations.filter(l => l.id !== id);
-                localStorage.setItem('cyc_dynamic_locales', JSON.stringify(locations));
-                renderEverything();
-                showToast('Eliminado');
+            if (locations.length <= 1) { alert('Mínimo un local.'); return; }
+            if (confirm("¿Estás seguro de eliminar este establecimiento?") && db && id) {
+                db.collection("locales").doc(id).delete().then(() => {
+                    showToast('Local eliminado');
+                    cargarDatosDesdeFirestore();
+                });
             }
         }
 
         function handleAddNewEvent(e) {
             e.preventDefault();
-            const title = document.getElementById('evTitle').value, date = document.getElementById('evDate').value, type = document.getElementById('evType').value, location = document.getElementById('evLocation').value, desc = document.getElementById('evDesc').value, zoneCoords = document.getElementById('evZonePreset').value.split(',');
-            eventsList.push({ id: 'ev_' + Date.now(), title, date, type, location, desc, lat: parseFloat(zoneCoords[0]), lng: parseFloat(zoneCoords[1]) });
+            const title = document.getElementById('evTitle').value;
+            const date = document.getElementById('evDate').value;
+            const type = document.getElementById('evType').value;
+            const location = document.getElementById('evLocation').value;
+            const desc = document.getElementById('evDesc').value;
+            const zoneCoords = document.getElementById('evZonePreset').value.split(',');
+
+            const lat = parseFloat(zoneCoords[0]);
+            const lng = parseFloat(zoneCoords[1]);
+
+            const newEvent = { id: 'ev_' + Date.now(), title, date, type, location, desc, lat, lng };
+            eventsList.push(newEvent);
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
-            renderEverything(); checkLiveEventsBanner(); closeModal('adminModal'); showToast('Evento publicado'); e.target.reset();
+            renderEverything();
+            checkLiveEventsBanner();
+            closeModal('adminModal');
+            showToast('Evento y pin publicados');
+            e.target.reset();
         }
 
         function renderAdminEventsList() {
             const list = document.getElementById('adminEventsList');
-            if(!list) return; list.innerHTML = '';
+            if(!list) return;
+            list.innerHTML = '';
             eventsList.forEach(ev => {
-                list.innerHTML += `<div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800"><span class="text-brandGold font-bold">${ev.title}</span><button onclick="deleteEvent('${ev.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button></div>`;
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-brandGold font-bold">${ev.title}</span>
+                        <button onclick="deleteEvent('${ev.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
             });
         }
 
         function deleteEvent(id) {
             eventsList = eventsList.filter(e => e.id !== id);
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
-            renderEverything(); checkLiveEventsBanner(); showToast('Evento eliminado');
+            renderEverything();
+            checkLiveEventsBanner();
+            showToast('Evento eliminado');
         }
 
-        function requestAdminAccess() { openModal('adminPinModal'); document.getElementById('adminPinInput').value = ''; document.getElementById('adminPinInput').focus(); }
-        function verifyAdminPin(e) { e.preventDefault(); if (document.getElementById('adminPinInput').value === '1234') { closeModal('adminPinModal'); openModal('adminModal'); showToast('¡Acceso concedido!'); } else { showToast('❌ PIN incorrecto'); } }
+        function requestAdminAccess() {
+            openModal('adminPinModal');
+            document.getElementById('adminPinInput').value = '';
+            document.getElementById('adminPinInput').focus();
+        }
 
-        window.handlePopupClick = function(index) { selectLocation(index); document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+        function verifyAdminPin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === '1234') {
+                closeModal('adminPinModal');
+                openModal('adminModal');
+                showToast('¡Acceso concedido!');
+            } else {
+                showToast('❌ PIN incorrecto');
+                document.getElementById('adminPinInput').value = '';
+            }
+        }
+
+        window.handlePopupClick = function(index) {
+            selectLocation(index);
+            const card = document.getElementById('mapPreviewCard');
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
 
         function selectLocation(index) {
             currentLocationIndex = index;
             const loc = locations[index];
-            let tTitle = currentLang === 'en' && loc.titleEn ? loc.titleEn : loc.title;
-            let tDesc = currentLang === 'en' && loc.descEn ? loc.descEn : loc.desc;
-
+            if(!loc) return;
             document.getElementById('previewTag').innerText = loc.tag;
-            document.getElementById('previewTitle').innerText = tTitle;
-            document.getElementById('previewDesc').innerText = tDesc;
+            document.getElementById('previewTitle').innerText = loc.title;
+            document.getElementById('previewDesc').innerText = loc.desc;
             document.getElementById('previewDish').innerText = (loc.category === 'hotel' ? "Beneficio: " : "Plato: ") + loc.dish;
             document.getElementById('previewHours').innerText = loc.hours;
             document.getElementById('previewAddress').innerText = loc.address;
-            document.getElementById('previewWhatsapp').href = `https://wa.me/?text=${encodeURIComponent('¡Hola! Te recomiendo visitar ' + tTitle)}`;
-            if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true });
+            
+            let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
+            document.getElementById('previewGps').href = previewGpsUrl;
+            
+            const waBtn = document.getElementById('previewWhatsapp');
+            const waText = `¡Hola! Te recomiendo visitar ${loc.title} en la ruta Cultura y Cuchara de Loja. Ubicación: ${loc.address}`;
+            waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+
+            const favIcon = document.getElementById('previewFav');
+            if(favoriteLocations.includes(loc.id)) {
+                favIcon.className = "fa-solid fa-seedling text-red-500";
+            } else {
+                favIcon.className = "fa-solid fa-seedling text-brandGold";
+            }
+
+            if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
         }
 
-        function simulateMapClick(index) { selectLocation(index); document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' }); }
-        function setSuggestedRoute(cat) { filterItems(cat, document.querySelector(`.filter-btn[onclick*="${cat}"]`)); document.getElementById('establecimientos').scrollIntoView({ behavior: 'smooth' }); }
+        function simulateMapClick(index) {
+            selectLocation(index);
+            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setSuggestedRoute(category) {
+            filterItems(category, document.querySelector(`.filter-btn[onclick*="${category}"]`));
+            document.getElementById('establecimientos').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            let match = url.match(regExp);
+            return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
+        }
 
         function openMenuGallery() {
             const loc = locations[currentLocationIndex];
-            document.getElementById('galleryTitle').innerText = currentLang === 'en' && loc.titleEn ? loc.titleEn : loc.title;
-            const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
-            if (loc.gallery) {
+            if(!loc) return;
+            document.getElementById('galleryTitle').innerText = loc.title;
+
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            if (loc.gallery && loc.gallery.length > 0) {
                 loc.gallery.forEach(item => {
-                    grid.innerHTML += `<div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48"><img src="${item.img}" class="w-full h-full object-cover opacity-90" loading="lazy"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3"><span class="text-white font-bold text-xs">${item.title}</span></div></div>`;
+                    grid.innerHTML += `
+                        <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48">
+                            <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <span class="text-white font-bold text-xs">${item.title}</span>
+                            </div>
+                        </div>
+                    `;
                 });
             }
+
             openModal('menuGalleryModal');
         }
 
-        function openUploadCommunityPhoto() { openModal('uploadPhotoModal'); }
+        function openUploadCommunityPhoto() {
+            openModal('uploadPhotoModal');
+        }
+
         function handleCommunityPhotoSubmit(e) {
             e.preventDefault();
-            document.getElementById('communityPhotosGrid').innerHTML += `<div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32"><img src="${document.getElementById('commImgUrl').value}" class="w-full h-full object-cover"><span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@${document.getElementById('commUser').value}</span></div>`;
-            closeModal('uploadPhotoModal'); showToast('¡Foto subida!'); e.target.reset();
+            const user = document.getElementById('commUser').value;
+            const imgUrl = document.getElementById('commImgUrl').value;
+            const grid = document.getElementById('communityPhotosGrid');
+            
+            grid.innerHTML += `
+                <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
+                    <img src="${imgUrl}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@${user}</span>
+                </div>
+            `;
+            closeModal('uploadPhotoModal');
+            showToast('¡Foto subida con éxito!');
+            e.target.reset();
         }
 
         function initPassport() {
-            visitedLocations = JSON.parse(localStorage.getItem('cyc_visited_locations')) || [];
-            passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
+            const storedVisits = localStorage.getItem('cyc_visited_locations');
+            if (storedVisits) { visitedLocations = JSON.parse(storedVisits); }
+            const storedMode = localStorage.getItem('cyc_passport_mode');
+            if (storedMode) { passportMode = storedMode; }
             updatePassportUI();
         }
 
         function switchPassportMode(mode) {
-            passportMode = mode; localStorage.setItem('cyc_passport_mode', mode);
-            document.getElementById('btnTurista').className = mode === 'turista' ? "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark" : "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300";
-            document.getElementById('btnLojano').className = mode === 'lojano' ? "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark" : "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300";
+            passportMode = mode;
+            localStorage.setItem('cyc_passport_mode', mode);
+            const btnT = document.getElementById('btnTurista');
+            const btnL = document.getElementById('btnLojano');
+            if (mode === 'turista') {
+                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition";
+                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+            } else {
+                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition";
+                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+            }
             updatePassportUI();
         }
 
-        function openQRDemoModal() { openModal('qrDemoModal'); }
-        function triggerSimulatedScan() { closeModal('qrDemoModal'); registerVisit(locations[currentLocationIndex].id); }
-        function registerVisit(id) {
-            if (!visitedLocations.includes(id)) { visitedLocations.push(id); localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations)); }
-            triggerStampAnimation(); updatePassportUI();
-            setTimeout(() => { document.getElementById('qrStep1').classList.add('hidden'); document.getElementById('qrStep2').classList.remove('hidden'); openModal('qrDemoModal'); }, 2600);
+        function openQRDemoModal() {
+            document.getElementById('qrStep1').classList.remove('hidden');
+            document.getElementById('qrStep2').classList.add('hidden');
+            openModal('qrDemoModal');
+        }
+
+        function triggerSimulatedScan() {
+            closeModal('qrDemoModal');
+            const loc = locations[currentLocationIndex];
+            if(loc) registerVisit(loc.id);
+        }
+
+        function registerVisit(localId) {
+            const localObj = locations.find(l => l.id === localId);
+            if (!localObj) return;
+            if (visitedLocations.includes(localId)) {
+                showToast(`⚠️ Ya tienes el sello de ${localObj.title}`);
+                return;
+            }
+            visitedLocations.push(localId);
+            localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
+            triggerStampAnimation();
+            updatePassportUI();
+            setTimeout(() => {
+                document.getElementById('qrStep1').classList.add('hidden');
+                document.getElementById('qrStep2').classList.remove('hidden');
+                openModal('qrDemoModal');
+            }, 2600);
+        }
+
+        function finishRating() {
+            closeModal('qrDemoModal');
+            showToast('¡Gracias por tu reseña y tu sello!');
         }
 
         function triggerStampAnimation() {
-            const overlay = document.getElementById('stampOverlay'); overlay.classList.remove('hidden'); overlay.style.opacity = '1';
-            if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            setTimeout(() => { overlay.style.opacity = '0'; setTimeout(() => overlay.classList.add('hidden'), 500); }, 2500);
+            const overlay = document.getElementById('stampOverlay');
+            overlay.classList.remove('hidden');
+            const stampIcon = overlay.querySelector('.fa-stamp');
+            stampIcon.classList.remove('stamp-earned');
+            void stampIcon.offsetWidth;
+            stampIcon.classList.add('stamp-earned');
+            overlay.style.opacity = '1';
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#C5A880', '#ffffff', '#121212'] });
+            }
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+            }, 2500);
         }
 
         function updatePassportUI() {
-            const grid = document.getElementById('passportStampsGrid'); if(!grid) return; grid.innerHTML = '';
-            const total = passportMode === 'turista' ? 4 : 5;
-            document.getElementById('passportRuleDesc').innerText = passportMode === 'turista' ? 'Meta: 1 Hotel + 3 Gastronomía' : 'Meta: 5 Paradas Gastronómicas';
-            for (let i = 0; i < total; i++) {
-                let vis = locations[i] && visitedLocations.includes(locations[i].id);
-                let tTitle = locations[i] ? (currentLang === 'en' && locations[i].titleEn ? locations[i].titleEn : locations[i].title) : '';
-                grid.innerHTML += vis ? `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${tTitle}</span></div>` : `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i+1}</span></div>`;
+            const grid = document.getElementById('passportStampsGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            const totalToWin = passportMode === 'turista' ? 4 : 5;
+            const ruleDesc = document.getElementById('passportRuleDesc');
+            if(ruleDesc) ruleDesc.innerText = passportMode === 'turista' ? 'Meta: 1 Hotel + 3 Gastronomía' : 'Meta: 5 Paradas Gastronómicas (Libre)';
+
+            let stampsCount = visitedLocations.length;
+            for (let i = 0; i < totalToWin; i++) {
+                const loc = locations[i];
+                const isVisited = loc && visitedLocations.includes(loc.id);
+                let html = '';
+                if (isVisited) {
+                    html = `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${loc.title}</span></div>`;
+                } else {
+                    html = `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i + 1}</span></div>`;
+                }
+                grid.innerHTML += html;
+            }
+
+            const percentage = Math.min((stampsCount / totalToWin) * 100, 100);
+            const progressBar = document.getElementById('passportProgressBar');
+            if(progressBar) progressBar.style.width = `${percentage}%`;
+
+            const progressText = document.getElementById('passportProgressText');
+            if(progressText) {
+                if (stampsCount >= totalToWin) {
+                    progressText.innerHTML = '<span class="text-green-600 font-bold">¡Pasaporte Completado! Reclama tu premio ILE.</span>';
+                } else {
+                    progressText.innerText = `Llevas ${stampsCount} de ${totalToWin} sellos.`;
+                }
             }
         }
 
-        function resetPassportProgess() { localStorage.removeItem('cyc_visited_locations'); visitedLocations = []; updatePassportUI(); showToast('Pasaporte reiniciado'); }
+        function resetPassportProgess() {
+            localStorage.removeItem('cyc_visited_locations'); visitedLocations = [];
+            updatePassportUI(); showToast('Pasaporte reiniciado');
+        }
 
         function forceRemoveSplash() {
             const splash = document.getElementById('splash-screen');
@@ -1673,6 +1935,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', function() {
+            initMap();
             cargarDatosDesdeFirestore();
             initPassport();
             changeLanguage(currentLang);
@@ -1683,33 +1946,92 @@
 
         function searchItems() {
             let input = document.getElementById('searchInput').value.toLowerCase();
+            let items = document.querySelectorAll('.local-item');
+            let hasResults = false;
+            items.forEach(item => {
+                if (item.querySelector('.local-title').innerText.toLowerCase().includes(input) || item.querySelector('.local-desc').innerText.toLowerCase().includes(input)) {
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item'); 
+                    hasResults = true;
+                } else { 
+                    item.style.opacity = '0';
+                    item.classList.add('hidden-item'); 
+                }
+            });
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.toggle('hidden', hasResults);
+        }
+
+        function filterItems(category, btnElement) {
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) searchInput.value = ""; 
+            const noRes = document.getElementById('noResults');
+            if(noRes) noRes.classList.add('hidden');
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
+                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+            });
+            btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+            btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
+
             document.querySelectorAll('.local-item').forEach(item => {
-                let match = item.querySelector('.local-title').innerText.toLowerCase().includes(input) || item.querySelector('.local-desc').innerText.toLowerCase().includes(input);
-                item.style.opacity = match ? '1' : '0'; item.classList.toggle('hidden-item', !match);
+                if (category === 'all' || item.classList.contains(category)) { 
+                    item.style.opacity = '1';
+                    item.classList.remove('hidden-item'); 
+                } else { 
+                    item.style.opacity = '0';
+                    item.classList.add('hidden-item'); 
+                }
             });
         }
 
-        function filterItems(category, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => { b.className = "filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2 flex items-center gap-2 transition-all shadow-sm"; });
-            btn.className = "filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2 flex items-center gap-2 transition-all shadow-md";
-            document.querySelectorAll('.local-item').forEach(item => {
-                let match = category === 'all' || item.classList.contains(category);
-                item.style.opacity = match ? '1' : '0'; item.classList.toggle('hidden-item', !match);
+        function showToast(message) {
+            const toast = document.getElementById('toastMessage');
+            const toastText = document.getElementById('toastText');
+            if(!toast || !toastText) return;
+            toastText.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const updateCount = () => {
+                    const count = +counter.innerText;
+                    const inc = target / 100;
+                    if (count < target) { counter.innerText = Math.ceil(count + inc); setTimeout(updateCount, 20); }
+                    else { counter.innerText = target; }
+                };
+                updateCount();
             });
         }
 
-        function showToast(msg) {
-            const t = document.getElementById('toastMessage'); document.getElementById('toastText').innerText = msg;
-            t.classList.remove('translate-y-20', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+        let countersAnimated = false;
+        function revealOnScroll() {
+            document.querySelectorAll(".reveal").forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) {
+                    el.classList.add("active");
+                    if (!countersAnimated && el.querySelector('.counter')) { animateCounters(); countersAnimated = true; }
+                }
+            });
         }
+        window.addEventListener("scroll", revealOnScroll);
 
-        window.addEventListener("scroll", () => {
-            document.querySelectorAll(".reveal").forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add("active"); });
-        });
-
-        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function toggleMobileMenu() { 
+            const menu = document.getElementById('mobileMenu');
+            if(menu) menu.classList.toggle('hidden'); 
+        }
+        function openModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.remove('hidden'); 
+        }
+        function closeModal(id) { 
+            const m = document.getElementById(id);
+            if(m) m.classList.add('hidden'); 
+        }
         function handleFormSubmit(e) { e.preventDefault(); alert('¡Solicitud enviada!'); closeModal('contactoModal'); }
     </script>
 </body>
