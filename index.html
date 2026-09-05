@@ -85,7 +85,7 @@
         <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center">
             <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover">
         </div>
-        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Cargando Cultura y Cuchara...</div>
+        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Sincronizando con Firestore...</div>
     </div>
 
     <!-- Barra Superior -->
@@ -151,7 +151,6 @@
                 </select>
             </div>
             <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span></button>
-            <button onclick="requestAdminAccess(); toggleMobileMenu()" class="text-brandGold font-bold text-left pt-2 border-t border-gray-800"><i class="fa-solid fa-lock mr-1"></i> Panel Administrador</button>
         </div>
     </nav>
 
@@ -491,7 +490,7 @@
         </div>
     </section>
 
-    <!-- Pie de Página con Botón Admin Visible y Funcional -->
+    <!-- Pie de Página con el Puntito Invisible Corregido y Operativo -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -503,11 +502,9 @@
                     <p class="text-[10px] text-gray-500">Dínamo Studio & Codeproim</p>
                 </div>
             </div>
-            <div class="text-[11px] text-gray-500 flex items-center justify-center gap-3">
-                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.</span> 
-                <button onclick="requestAdminAccess()" class="bg-gray-900 hover:bg-brandGold hover:text-brandDark text-brandGold border border-brandGold/40 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition shadow">
-                    <i class="fa-solid fa-lock mr-1"></i> Admin
-                </button>
+            <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
+                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.</span> 
+                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-gray-700 hover:text-brandGold transition text-[18px] px-2 py-1 select-none font-bold" title="Admin">.</span>
             </div>
         </div>
     </footer>
@@ -558,7 +555,6 @@
     <!-- PANEL DE ADMINISTRACIÓN CMS -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
-            
             <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-brandGold/10 border border-brandGold/40 flex items-center justify-center text-brandGold text-lg">
@@ -573,17 +569,14 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-
             <div class="flex border-b border-gray-800 bg-black/30 px-4 sm:px-6 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto hide-scrollbar">
                 <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos</button>
                 <button onclick="switchAdminTab('hero')" id="tabBtnHero" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Textos y Cifras</button>
                 <button onclick="switchAdminTab('aliados')" id="tabBtnAliados" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Aliados</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda</button>
             </div>
-
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
-                
-                <!-- PESTAÑA 1: LOCALES -->
+                <!-- Pestaña Locales -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel</h4>
@@ -599,7 +592,6 @@
                                     <select id="admCategory" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></select>
                                 </div>
                             </div>
-                            
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono del Pin</label>
@@ -622,7 +614,6 @@
                                     <input type="text" id="admDish" required placeholder="Ej. Seco de chivo" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
-                            
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
                                 <div>
                                     <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Coordenadas exactas</label>
@@ -642,7 +633,6 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Dirección Escrita</label>
                                 <input type="text" id="admAddress" required placeholder="Ej. Sucre y Rocafuerte" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
@@ -651,228 +641,96 @@
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción</label>
                                 <textarea id="admDesc" required placeholder="Breve descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                             </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandDark/50 p-4 rounded-xl border border-brandGold/30">
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace de Vídeo YouTube</label>
-                                    <input type="text" id="admYoutubeUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-images mr-1"></i> URLs de Galería (Separadas por comas)</label>
-                                    <input type="text" id="admImgsList" placeholder="https://img1.jpg, https://img2.jpg" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-
                             <div class="flex gap-2">
-                                <button type="submit" id="saveBtnText" class="flex-1 bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                    Guardar en la Nube
-                                </button>
-                                <button type="button" onclick="resetLocationForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
-                                    Cancelar / Nuevo
-                                </button>
+                                <button type="submit" id="saveBtnText" class="flex-1 bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">Guardar en la Nube</button>
+                                <button type="button" onclick="resetLocationForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">Cancelar</button>
                             </div>
                         </form>
                     </div>
-
                     <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados (Clic para Editar)</h4>
+                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados</h4>
                         <div class="space-y-2" id="adminLocationsList"></div>
                     </div>
                 </div>
-
-                <!-- PESTAÑA 2: TEXTOS Y CIFRAS -->
+                <!-- Pestaña Hero -->
                 <div id="adminTabHero" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-pen-nib mr-1"></i> Personalizar Cabecera y Cifras de la Web</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4">Personalizar Cabecera</h4>
                         <form onsubmit="handleSaveHeroSettings(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Texto de la Etiqueta Superior (Badge)</label>
-                                <input type="text" id="setHeroBadge" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título Principal</label>
-                                <input type="text" id="setHeroTitle" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Subtítulo Descriptivo</label>
-                                <textarea id="setHeroSubtitle" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
-                                <div>
-                                    <label class="block text-[9px] text-brandGold mb-1 font-bold">Temporadas (Valor)</label>
-                                    <input type="number" id="setStat1" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white text-center">
-                                </div>
-                                <div>
-                                    <label class="block text-[9px] text-brandGold mb-1 font-bold">Turistas (K)</label>
-                                    <input type="number" id="setStat3" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white text-center">
-                                </div>
-                                <div>
-                                    <label class="block text-[9px] text-brandGold mb-1 font-bold">Identidad (%)</label>
-                                    <input type="number" id="setStat4" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white text-center">
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Guardar Cambios de Cabecera
-                            </button>
+                            <input type="text" id="setHeroBadge" required class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
+                            <input type="text" id="setHeroTitle" required class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
+                            <textarea id="setHeroSubtitle" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white"></textarea>
+                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded text-xs">Guardar Cambios</button>
                         </form>
                     </div>
                 </div>
-
-                <!-- PESTAÑA 3: ALIADOS -->
+                <!-- Pestaña Aliados -->
                 <div id="adminTabAliados" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-handshake mr-1"></i> Administrar Aliados Estratégicos</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4">Aliados Estratégicos</h4>
                         <form onsubmit="handleSaveAliadosSettings(event)" class="space-y-4">
-                            <div class="border-b border-gray-800 pb-4 space-y-3">
-                                <h5 class="text-xs font-bold text-white">Aliado 1 (Institucional)</h5>
-                                <input type="text" id="setAliado1Title" required placeholder="Nombre" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none">
-                                <textarea id="setAliado1Desc" required placeholder="Descripción" rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none"></textarea>
-                            </div>
-                            <div class="space-y-3 pt-2">
-                                <h5 class="text-xs font-bold text-white">Aliado 2 (Patrocinador Principal)</h5>
-                                <input type="text" id="setAliado2Title" required placeholder="Nombre" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none">
-                                <textarea id="setAliado2Desc" required placeholder="Descripción" rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Actualizar Aliados
-                            </button>
+                            <input type="text" id="setAliado1Title" required class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
+                            <textarea id="setAliado1Desc" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white"></textarea>
+                            <input type="text" id="setAliado2Title" required class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
+                            <textarea id="setAliado2Desc" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white"></textarea>
+                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded text-xs">Actualizar Aliados</button>
                         </form>
                     </div>
                 </div>
-
-                <!-- PESTAÑA 4: AGENDA -->
+                <!-- Pestaña Agenda -->
                 <div id="adminTabAgenda" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Con Pin en Mapa)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4">Programar Evento</h4>
                         <form onsubmit="handleAddNewEvent(event)" class="space-y-4">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="text" id="evTitle" required placeholder="Título del evento" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <input type="text" id="evDate" required placeholder="Fecha (ej. 15 - 18 Sep)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="text" id="evType" required placeholder="Tipo (ej. Festival)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <input type="text" id="evLocation" required placeholder="Lugar (ej. Plaza de las Flores)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Zona del Evento en Loja</label>
-                                <select id="evZonePreset" class="w-full bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                    <option value="-3.9910,-79.2030">Plaza de las Flores</option>
-                                    <option value="-3.9980,-79.2015">Teatro Bolívar</option>
-                                    <option value="-3.9931,-79.2042">Mercado Central</option>
-                                    <option value="-3.9850,-79.2010">Parque Jairo Mora</option>
-                                </select>
-                            </div>
-                            <textarea id="evDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Publicar Evento y Crear Pin
-                            </button>
+                            <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
+                            <input type="text" id="evDate" required placeholder="Fecha" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
+                            <input type="text" id="evType" required placeholder="Tipo" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
+                            <input type="text" id="evLocation" required placeholder="Lugar" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white">
+                            <textarea id="evDesc" required placeholder="Descripción" rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white"></textarea>
+                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded text-xs">Publicar Evento</button>
                         </form>
                     </div>
-
                     <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Eventos Programados</h4>
+                        <h4 class="font-bold text-sm text-white mb-3">Eventos</h4>
                         <div class="space-y-2" id="adminEventsList"></div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE GALERÍA Y COMUNIDAD -->
+    <!-- MODAL DE GALERÍA -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[650px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <div>
                     <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Platos y Comunidad</h3>
-                    <p class="text-xs text-gray-400">Fotos oficiales y experiencias compartidas por viajeros</p>
+                    <p class="text-xs text-gray-400">Fotos oficiales y experiencias compartidas</p>
                 </div>
-                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 flex-grow overflow-y-auto space-y-6">
                 <div>
                     <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-camera-retro mr-1"></i> Recomendación Oficial</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="galleryGrid"></div>
                 </div>
-                
-                <div class="border-t border-gray-800 pt-6">
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider"><i class="fa-solid fa-users mr-1"></i> Fotos de la Comunidad de Turistas</h4>
-                        <button onclick="openUploadCommunityPhoto()" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white transition">
-                            <i class="fa-solid fa-plus mr-1"></i> Subir mi foto
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="communityPhotosGrid">
-                        <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
-                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
-                            <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@carlos_loja</span>
-                        </div>
-                        <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
-                            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
-                            <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@viajera_gye</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL PARA SUBIR FOTO COMUNITARIA -->
-    <div id="uploadPhotoModal" class="fixed inset-0 z-[75] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/40 p-6 relative">
-            <button onclick="closeModal('uploadPhotoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-brandGold mb-1">Comparte tu experiencia</h3>
-            <p class="text-xs text-gray-400 mb-4">Sube una foto de tu visita a este local</p>
-            <form onsubmit="handleCommunityPhotoSubmit(event)" class="space-y-3">
-                <input type="text" id="commUser" required placeholder="Tu nombre o @usuario" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                <input type="text" id="commImgUrl" required placeholder="URL de tu foto (ej. https://...)" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2.5 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                    Publicar Foto
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL DE QR / SIMULACIÓN -->
+    <!-- MODAL DE QR -->
     <div id="qrDemoModal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative">
-            <button onclick="closeModal('qrDemoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-xl z-10 w-8 h-8 flex items-center justify-center bg-black/50 rounded-full">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <button onclick="closeModal('qrDemoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-xl z-10"><i class="fa-solid fa-xmark"></i></button>
             <div class="p-6 text-center" id="qrStep1">
                 <h3 class="text-xl font-bold text-brandGold mb-2">Simulador de Visita / Check-in</h3>
-                <p class="text-gray-400 text-xs mb-6">Apunta la cámara al QR de la mesa o recepción para registrar tu sello.</p>
-                <div class="w-48 h-48 mx-auto bg-white p-2 rounded-xl mb-6 relative overflow-hidden border-2 border-dashed border-gray-500">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=culturaycuchara.com" alt="" class="w-full h-full opacity-30 grayscale" loading="lazy">
-                    <div class="absolute inset-0 border-4 border-brandGold rounded-xl m-2"></div>
-                    <div class="scanner-line"></div>
-                </div>
-                <button onclick="triggerSimulatedScan()" class="w-full bg-brandGold text-brandDark py-3 rounded-lg font-bold hover:bg-white transition flex items-center justify-center">
-                    <i class="fa-solid fa-camera mr-2"></i> Simular lectura de QR
-                </button>
+                <p class="text-gray-400 text-xs mb-6">Apunta la cámara al QR para registrar tu sello.</p>
+                <button onclick="triggerSimulatedScan()" class="w-full bg-brandGold text-brandDark py-3 rounded-lg font-bold hover:bg-white transition">Simular lectura de QR</button>
             </div>
-            
             <div class="p-6 text-center hidden" id="qrStep2">
-                <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-green-500/30">
-                    <i class="fa-solid fa-check"></i>
-                </div>
+                <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fa-solid fa-check"></i></div>
                 <h3 class="text-2xl font-bold text-white mb-1">¡Visita Registrada!</h3>
-                <p class="text-brandGold text-sm font-bold mb-6">Ganaste 1 sello en tu pasaporte</p>
-                <div class="border-t border-gray-800 pt-6">
-                    <p class="text-sm font-bold mb-3">¿Qué te pareció la experiencia?</p>
-                    <div class="flex justify-center gap-2 text-2xl text-gray-600 mb-4 star-rating" id="ratingStars">
-                        <i class="fa-solid fa-star" onclick="rateExperience(1)"></i>
-                        <i class="fa-solid fa-star" onclick="rateExperience(2)"></i>
-                        <i class="fa-solid fa-star" onclick="rateExperience(3)"></i>
-                        <i class="fa-solid fa-star" onclick="rateExperience(4)"></i>
-                        <i class="fa-solid fa-star" onclick="rateExperience(5)"></i>
-                    </div>
-                    <button onclick="finishRating()" class="text-xs text-gray-400 hover:text-white underline">Saltar este paso</button>
-                </div>
+                <button onclick="closeModal('qrDemoModal')" class="w-full bg-brandGold text-brandDark py-2 rounded font-bold text-xs mt-4">Continuar</button>
             </div>
         </div>
     </div>
@@ -880,45 +738,35 @@
     <!-- MODAL DE PASAPORTE -->
     <div id="pasaporteModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative">
-            <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="bg-brandDark text-center py-6 border-b-2 border-brandGold relative overflow-hidden">
-                <i class="fa-solid fa-passport absolute -left-4 -bottom-4 text-6xl text-white/5"></i>
+            <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10"><i class="fa-solid fa-xmark"></i></button>
+            <div class="bg-brandDark text-center py-6 border-b-2 border-brandGold">
                 <h3 class="text-2xl font-black text-brandGold uppercase tracking-widest" data-i18n="passTitleModal">Mi Pasaporte</h3>
                 <div class="flex justify-center gap-2 mt-3">
-                    <button onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition" data-i18n="passTouristMode">Modo Turista</button>
-                    <button onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition" data-i18n="passLocalMode">Modo Lojano</button>
+                    <button onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark">Modo Turista</button>
+                    <button onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300">Modo Lojano</button>
                 </div>
             </div>
             <div class="p-6">
                 <p class="text-xs text-gray-600 mb-4 text-center font-bold" id="passportRuleDesc">Meta: 1 Hotel + 3 Gastronomía</p>
                 <div class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto p-1" id="passportStampsGrid"></div>
-                <div class="bg-gray-100 rounded-lg p-4 text-center border border-gray-200">
-                    <p class="text-sm font-bold text-brandDark mb-1"><i class="fa-solid fa-gift text-brandGold mr-1"></i> <span data-i18n="passRewardTitle">Progreso de Recompensa</span></p>
-                    <p class="text-[10px] text-gray-600" id="passportProgressText">Completa tu meta para reclamar tu kit ILE.</p>
-                    <div class="w-full bg-gray-300 h-3 rounded-full mt-3 overflow-hidden shadow-inner">
-                        <div id="passportProgressBar" class="bg-gradient-to-r from-brandGold to-yellow-600 h-3 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- TOAST NOTIFICACIÓN -->
+    <!-- Toast Notificación -->
     <div id="toastMessage" class="fixed bottom-24 right-4 bg-brandGold text-brandDark font-bold px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
 
-    <!-- OVERLAY SELLO GANADO -->
+    <!-- Overlay Sello Ganado -->
     <div id="stampOverlay" class="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center opacity-0 hidden">
         <div class="text-center">
             <i class="fa-solid fa-stamp text-9xl text-brandGold drop-shadow-[0_0_15px_rgba(197,168,128,0.8)] transform -rotate-12"></i>
-            <h2 class="text-3xl font-black text-brandGold uppercase mt-4 drop-shadow-md bg-black/50 px-4 py-1 rounded">¡Sello Ganado!</h2>
+            <h2 class="text-3xl font-black text-brandGold uppercase mt-4 bg-black/50 px-4 py-1 rounded">¡Sello Ganado!</h2>
         </div>
     </div>
 
-    <!-- Script General y Diccionario de Idiomas -->
+    <!-- Script General -->
     <script>
         const translations = {
             es: {
@@ -1095,8 +943,6 @@
             renderEverything();
         }
 
-        let currentLangStored = localStorage.getItem('cyc_lang') || 'es';
-
         const firebaseConfig = {
             apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
             authDomain: "cultura-y-cuchara.firebaseapp.com",
@@ -1112,7 +958,7 @@
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
         } catch(e) {
-            console.log("Firebase not initialized:", e);
+            console.log("Error al iniciar Firebase:", e);
         }
 
         const defaultCategories = [
@@ -1129,7 +975,11 @@
                 dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
                 address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-mortar-pestle", category: "hueca",
-                gallery: [{ img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" }]
+                youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                gallery: [
+                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" },
+                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Ambiente Familiar" }
+                ]
             },
             {
                 tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
@@ -1182,21 +1032,20 @@
         } catch(e) { console.log('Mapa cargando...'); }
 
         function cargarDatosDesdeFirestore() {
-            // Temporizador de seguridad infalible para asegurar que la web cargue al instante siempre
-            let loadCompleted = false;
-            const safetyFallback = setTimeout(() => {
-                if (!loadCompleted) {
+            let loaded = false;
+            const fallbackTimer = setTimeout(() => {
+                if (!loaded) {
                     locations = defaultLocations;
                     loadSettingsFromStorage();
                     renderEverything();
                     checkLiveEventsBanner();
                     forceRemoveSplash();
-                    loadCompleted = true;
+                    loaded = true;
                 }
-            }, 1000);
+            }, 800);
 
             if (!db) {
-                clearTimeout(safetyFallback);
+                clearTimeout(fallbackTimer);
                 locations = defaultLocations;
                 loadSettingsFromStorage();
                 renderEverything();
@@ -1211,24 +1060,24 @@
                     locations.push({ id: doc.id, ...doc.data() });
                 });
                 if(locations.length === 0) locations = defaultLocations;
-
-                if (!loadCompleted) {
-                    clearTimeout(safetyFallback);
+                
+                if(!loaded) {
+                    clearTimeout(fallbackTimer);
                     loadSettingsFromStorage();
                     renderEverything();
                     checkLiveEventsBanner();
                     forceRemoveSplash();
-                    loadCompleted = true;
+                    loaded = true;
                 }
             }).catch(() => {
-                if (!loadCompleted) {
-                    clearTimeout(safetyFallback);
+                if(!loaded) {
+                    clearTimeout(fallbackTimer);
                     locations = defaultLocations;
                     loadSettingsFromStorage();
                     renderEverything();
                     checkLiveEventsBanner();
                     forceRemoveSplash();
-                    loadCompleted = true;
+                    loaded = true;
                 }
             });
 
@@ -1242,7 +1091,9 @@
                 badge: "Loja se conoce, se saborea y se hospeda",
                 title: "Gastronomía, Hotelería y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
-                stat1: 3, stat3: 25, stat4: 100
+                stat1: 3, stat3: 25, stat4: 100,
+                aliado1Title: "Mesa Turística de Loja", aliado1Desc: "Impulsando el desarrollo hotelero y turístico...",
+                aliado2Title: "ILE", aliado2Desc: "Industria Lojana de Especerías..."
             };
             applySettings(saved);
         }
@@ -1253,6 +1104,9 @@
                 document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Hotelería", '<span class="text-brandGold">Hotelería</span>') : "";
             }
             if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
+            if(document.getElementById('stat1Val')) document.getElementById('stat1Val').setAttribute('data-target', s.stat1 || 3);
+            if(document.getElementById('stat3Val')) document.getElementById('stat3Val').setAttribute('data-target', s.stat3 || 25);
+            if(document.getElementById('stat4Val')) document.getElementById('stat4Val').setAttribute('data-target', s.stat4 || 100);
         }
 
         let currentEventIndex = 0;
@@ -1305,6 +1159,14 @@
                 });
             }
 
+            const admCategorySelect = document.getElementById('admCategory');
+            if(admCategorySelect) {
+                admCategorySelect.innerHTML = '';
+                categories.forEach(cat => {
+                    admCategorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+            }
+
             const sugContainer = document.getElementById('suggestedRoutesContainer');
             if(sugContainer) {
                 sugContainer.innerHTML = '';
@@ -1316,6 +1178,7 @@
                     `;
                 });
             }
+            renderAdminCategoriesList();
         }
 
         function renderTrendingUI() {
@@ -1475,6 +1338,7 @@
                 userMarkerInstance.addTo(markersLayer);
             }
 
+            renderAdminLocationsList();
             updatePassportUI();
         }
 
@@ -1738,6 +1602,7 @@
                     </div>
                 `;
             });
+            renderAdminEventsList();
         }
 
         function focusEventOnMap(lat, lng, title) {
@@ -1746,10 +1611,319 @@
             showToast(`Ubicando: ${title}`);
         }
 
+        function switchAdminTab(tab) {
+            document.getElementById('adminTabLocales').classList.add('hidden');
+            document.getElementById('adminTabHero').classList.add('hidden');
+            document.getElementById('adminTabAliados').classList.add('hidden');
+            document.getElementById('adminTabAgenda').classList.add('hidden');
+
+            document.getElementById('tabBtnLocales').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnHero').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnAliados').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnAgenda').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+
+            if(tab === 'locales') {
+                document.getElementById('adminTabLocales').classList.remove('hidden');
+                document.getElementById('tabBtnLocales').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            } else if(tab === 'hero') {
+                document.getElementById('adminTabHero').classList.remove('hidden');
+                document.getElementById('tabBtnHero').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+                document.getElementById('setHeroBadge').value = document.getElementById('heroBadge').innerText;
+                document.getElementById('setHeroTitle').value = "Gastronomía, Hotelería y Destinos";
+                document.getElementById('setHeroSubtitle').value = document.getElementById('heroSubtitle').innerText;
+                document.getElementById('setStat1').value = document.getElementById('stat1Val').getAttribute('data-target');
+                document.getElementById('setStat3').value = document.getElementById('stat3Val').getAttribute('data-target');
+                document.getElementById('setStat4').value = document.getElementById('stat4Val').getAttribute('data-target');
+            } else if(tab === 'aliados') {
+                document.getElementById('adminTabAliados').classList.remove('hidden');
+                document.getElementById('tabBtnAliados').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+                document.getElementById('setAliado1Title').value = document.getElementById('aliado1Title').innerText;
+                document.getElementById('setAliado1Desc').value = document.getElementById('aliado1Desc').innerText;
+                document.getElementById('setAliado2Title').value = document.getElementById('aliado2Title').innerText;
+                document.getElementById('setAliado2Desc').value = document.getElementById('aliado2Desc').innerText;
+            } else if(tab === 'agenda') {
+                document.getElementById('adminTabAgenda').classList.remove('hidden');
+                document.getElementById('tabBtnAgenda').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            }
+        }
+
+        function handleSaveHeroSettings(e) {
+            e.preventDefault();
+            let settingsData = {
+                badge: document.getElementById('setHeroBadge').value,
+                title: document.getElementById('setHeroTitle').value,
+                subtitle: document.getElementById('setHeroSubtitle').value,
+                stat1: parseInt(document.getElementById('setStat1').value),
+                stat3: parseInt(document.getElementById('setStat3').value),
+                stat4: parseInt(document.getElementById('setStat4').value)
+            };
+
+            localStorage.setItem('cyc_settings', JSON.stringify(settingsData));
+            if (db) {
+                db.collection("settings").doc("main").set(settingsData).then(() => {
+                    applySettings(settingsData);
+                    closeModal('adminModal');
+                    showToast('¡Cabecera y cifras actualizadas!');
+                });
+            } else {
+                applySettings(settingsData);
+                closeModal('adminModal');
+                showToast('¡Cabecera y cifras actualizadas!');
+            }
+        }
+
+        function handleSaveAliadosSettings(e) {
+            e.preventDefault();
+            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            saved.aliado1Title = document.getElementById('setAliado1Title').value;
+            saved.aliado1Desc = document.getElementById('setAliado1Desc').value;
+            saved.aliado2Title = document.getElementById('setAliado2Title').value;
+            saved.aliado2Desc = document.getElementById('setAliado2Desc').value;
+
+            localStorage.setItem('cyc_settings', JSON.stringify(saved));
+            if (db) {
+                db.collection("settings").doc("main").set(saved, { merge: true }).then(() => {
+                    applySettings(saved);
+                    closeModal('adminModal');
+                    showToast('¡Aliados actualizados!');
+                });
+            } else {
+                applySettings(saved);
+                closeModal('adminModal');
+                showToast('¡Aliados actualizados!');
+            }
+        }
+
+        function renderAdminCategoriesList() {
+            const list = document.getElementById('adminCategoriesList');
+            if(!list) return;
+            list.innerHTML = '';
+            categories.forEach(cat => {
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-white font-bold">${cat.icon} ${cat.name}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function parseCoordinates(inputVal, presetValue) {
+            let input = inputVal ? inputVal.trim() : "";
+            if (input.includes(",")) {
+                let parts = input.split(",");
+                let lat = parseFloat(parts[0]);
+                let lng = parseFloat(parts[1]);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    return [lat, lng];
+                }
+            }
+            const coords = presetValue.split(',');
+            return [parseFloat(coords[0]), parseFloat(coords[1])];
+        }
+
+        function handleSaveLocation(e) {
+            e.preventDefault();
+            const editId = document.getElementById('admEditId').value;
+            const title = document.getElementById('admTitle').value;
+            const category = document.getElementById('admCategory').value;
+            const iconClass = document.getElementById('admIconClass').value;
+            const tag = document.getElementById('admTag').value;
+            const dish = document.getElementById('admDish').value;
+            const address = document.getElementById('admAddress').value;
+            const desc = document.getElementById('admDesc').value;
+            const imgsListInput = document.getElementById('admImgsList').value;
+            const youtubeUrl = document.getElementById('admYoutubeUrl').value.trim();
+            const plusCodeInput = document.getElementById('admPlusCode').value;
+            const preset = document.getElementById('admZonePreset').value;
+
+            const finalCoords = parseCoordinates(plusCodeInput, preset);
+
+            let galleryArray = [];
+            if (imgsListInput.trim()) {
+                galleryArray = imgsListInput.split(',').map((url, i) => ({
+                    img: url.trim(),
+                    title: `${title} - Foto ${i + 1}`
+                }));
+            } else {
+                galleryArray = [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
+            }
+
+            const locationData = {
+                tag, title, desc, dish,
+                hours: "Lun - Dom: 09:00 - 22:00", address,
+                lat: finalCoords[0], lng: finalCoords[1],
+                gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
+                iconClass, category,
+                youtubeUrl,
+                gallery: galleryArray
+            };
+
+            if (db) {
+                if (editId) {
+                    db.collection("locales").doc(editId).update(locationData)
+                      .then(() => {
+                          closeModal('adminModal');
+                          showToast(`¡${title} actualizado con éxito!`);
+                          resetLocationForm();
+                      })
+                      .catch(err => alert("Error al actualizar: " + err.message));
+                } else {
+                    db.collection("locales").add(locationData)
+                      .then(() => {
+                          closeModal('adminModal');
+                          showToast(`¡${title} guardado en Firestore!`);
+                          resetLocationForm();
+                      })
+                      .catch(err => alert("Error al guardar: " + err.message));
+                }
+            } else {
+                alert("Base de datos no conectada.");
+            }
+        }
+
+        function editLocation(id) {
+            const loc = locations.find(l => l.id === id);
+            if(!loc) return;
+            document.getElementById('admEditId').value = loc.id;
+            document.getElementById('admTitle').value = loc.title;
+            document.getElementById('admCategory').value = loc.category;
+            document.getElementById('admIconClass').value = loc.iconClass;
+            document.getElementById('admTag').value = loc.tag;
+            document.getElementById('admDish').value = loc.dish;
+            document.getElementById('admAddress').value = loc.address;
+            document.getElementById('admDesc').value = loc.desc;
+            document.getElementById('admPlusCode').value = `${loc.lat}, ${loc.lng}`;
+            document.getElementById('admYoutubeUrl').value = loc.youtubeUrl || '';
+            
+            if(loc.gallery && loc.gallery.length > 0) {
+                document.getElementById('admImgsList').value = loc.gallery.map(g => g.img).join(', ');
+            } else {
+                document.getElementById('admImgsList').value = '';
+            }
+
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editando: ${loc.title}`;
+            document.getElementById('saveBtnText').innerText = "Actualizar Cambios en la Nube";
+            document.getElementById('admTitle').focus();
+        }
+
+        function resetLocationForm() {
+            document.getElementById('admEditId').value = '';
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel`;
+            document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
+            document.getElementById('admTitle').value = '';
+            document.getElementById('admAddress').value = '';
+            document.getElementById('admDesc').value = '';
+            document.getElementById('admDish').value = '';
+            document.getElementById('admImgsList').value = '';
+            document.getElementById('admYoutubeUrl').value = '';
+            document.getElementById('admPlusCode').value = '';
+        }
+
+        function renderAdminLocationsList() {
+            const list = document.getElementById('adminLocationsList');
+            if(!list) return;
+            list.innerHTML = '';
+            locations.forEach(loc => {
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                        <div>
+                            <span class="text-brandGold font-bold"><i class="fa-solid ${loc.iconClass} mr-1"></i> ${loc.title}</span>
+                            <span class="text-gray-400 text-[10px] block">(${loc.category})</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded hover:bg-red-700 transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteLocation(id) {
+            if (locations.length <= 1) { alert('Mínimo un local.'); return; }
+            if (confirm("¿Estás seguro de eliminar este establecimiento?") && db && id) {
+                db.collection("locales").doc(id).delete().then(() => {
+                    showToast('Local eliminado de Firestore');
+                });
+            }
+        }
+
+        function handleAddNewEvent(e) {
+            e.preventDefault();
+            const title = document.getElementById('evTitle').value;
+            const date = document.getElementById('evDate').value;
+            const type = document.getElementById('evType').value;
+            const location = document.getElementById('evLocation').value;
+            const desc = document.getElementById('evDesc').value;
+            const zoneCoords = document.getElementById('evZonePreset').value.split(',');
+
+            const lat = parseFloat(zoneCoords[0]);
+            const lng = parseFloat(zoneCoords[1]);
+
+            const newEvent = { id: 'ev_' + Date.now(), title, date, type, location, desc, lat, lng };
+            eventsList.push(newEvent);
+            localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
+            renderEverything();
+            checkLiveEventsBanner();
+            closeModal('adminModal');
+            showToast('Evento y pin publicados');
+            e.target.reset();
+        }
+
+        function renderAdminEventsList() {
+            const list = document.getElementById('adminEventsList');
+            if(!list) return;
+            list.innerHTML = '';
+            eventsList.forEach(ev => {
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-brandGold font-bold">${ev.title}</span>
+                        <button onclick="deleteEvent('${ev.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteEvent(id) {
+            eventsList = eventsList.filter(e => e.id !== id);
+            localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
+            renderEverything();
+            checkLiveEventsBanner();
+            showToast('Evento eliminado');
+        }
+
+        function requestAdminAccess() {
+            openModal('adminPinModal');
+            document.getElementById('adminPinInput').value = '';
+            document.getElementById('adminPinInput').focus();
+        }
+
+        function verifyAdminPin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === '1234') {
+                closeModal('adminPinModal');
+                openModal('adminModal');
+                showToast('¡Acceso concedido!');
+            } else {
+                showToast('❌ PIN incorrecto');
+                document.getElementById('adminPinInput').value = '';
+            }
+        }
+
         window.handlePopupClick = function(index) {
             selectLocation(index);
             const card = document.getElementById('mapPreviewCard');
             card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        window.handlePopupClickByName = function(id) {
+            const index = locations.findIndex(l => l.id === id);
+            if(index > -1) {
+                selectLocation(index);
+                const card = document.getElementById('mapPreviewCard');
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         };
 
         function selectLocation(index) {
@@ -1839,124 +2013,6 @@
             updatePassportUI();
         }
 
-        function switchPassportMode(mode) {
-            passportMode = mode;
-            localStorage.setItem('cyc_passport_mode', mode);
-            const btnT = document.getElementById('btnTurista');
-            const btnL = document.getElementById('btnLojano');
-            if (mode === 'turista') {
-                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition";
-                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
-            } else {
-                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition";
-                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
-            }
-            updatePassportUI();
-        }
-
-        function openQRDemoModal() {
-            document.getElementById('qrStep1').classList.remove('hidden');
-            document.getElementById('qrStep2').classList.add('hidden');
-            openModal('qrDemoModal');
-        }
-
-        function triggerSimulatedScan() {
-            closeModal('qrDemoModal');
-            const loc = locations[currentLocationIndex];
-            registerVisit(loc.id);
-        }
-
-        function registerVisit(localId) {
-            const localObj = locations.find(l => l.id === localId);
-            if (!localObj) return;
-            if (visitedLocations.includes(localId)) {
-                showToast(`⚠️ Ya tienes el sello de ${localObj.title}`);
-                return;
-            }
-            visitedLocations.push(localId);
-            localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
-            triggerStampAnimation();
-            updatePassportUI();
-            setTimeout(() => {
-                document.getElementById('qrStep1').classList.add('hidden');
-                document.getElementById('qrStep2').classList.remove('hidden');
-                openModal('qrDemoModal');
-            }, 2600);
-        }
-
-        function rateExperience(value) {
-            setTimeout(() => { finishRating(); }, 600);
-        }
-
-        function finishRating() {
-            closeModal('qrDemoModal');
-            showToast('¡Gracias por tu reseña y tu sello!');
-        }
-
-        function triggerStampAnimation() {
-            const overlay = document.getElementById('stampOverlay');
-            overlay.classList.remove('hidden');
-            const stampIcon = overlay.querySelector('.fa-stamp');
-            stampIcon.classList.remove('stamp-earned');
-            void stampIcon.offsetWidth;
-            stampIcon.classList.add('stamp-earned');
-            overlay.style.opacity = '1';
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#C5A880', '#ffffff', '#121212'] });
-            }
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-                setTimeout(() => overlay.classList.add('hidden'), 500);
-            }, 2500);
-        }
-
-        function updatePassportUI() {
-            const grid = document.getElementById('passportStampsGrid');
-            if(!grid) return;
-            grid.innerHTML = '';
-            const totalToWin = passportMode === 'turista' ? 4 : 5;
-            const ruleDesc = document.getElementById('passportRuleDesc');
-            if(ruleDesc) ruleDesc.innerText = passportMode === 'turista' ? 'Meta: 1 Hotel + 3 Gastronomía' : 'Meta: 5 Paradas Gastronómicas (Libre)';
-
-            let stampsCount = visitedLocations.length;
-            for (let i = 0; i < totalToWin; i++) {
-                const loc = locations[i];
-                const isVisited = loc && visitedLocations.includes(loc.id);
-                let html = '';
-                if (isVisited) {
-                    html = `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${loc.title}</span></div>`;
-                } else {
-                    html = `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i + 1}</span></div>`;
-                }
-                grid.innerHTML += html;
-            }
-
-            const percentage = Math.min((stampsCount / totalToWin) * 100, 100);
-            const progressBar = document.getElementById('passportProgressBar');
-            if(progressBar) progressBar.style.width = `${percentage}%`;
-
-            const progressText = document.getElementById('passportProgressText');
-            if(progressText) {
-                if (stampsCount >= totalToWin) {
-                    progressText.innerHTML = '<span class="text-green-600 font-bold">¡Pasaporte Completado! Reclama tu premio ILE.</span>';
-                } else {
-                    progressText.innerText = `Llevas ${stampsCount} de ${totalToWin} sellos.`;
-                }
-            }
-        }
-
-        function resetPassportProgess() {
-            localStorage.removeItem('cyc_visited_locations'); visitedLocations = [];
-            updatePassportUI(); showToast('Pasaporte reiniciado');
-        }
-
-        function forceRemoveSplash() {
-            const splash = document.getElementById('splash-screen');
-            if(splash) splash.classList.add('fade-out');
-            const body = document.getElementById('body-content');
-            if(body) body.classList.remove('overflow-hidden');
-        }
-
         window.addEventListener('DOMContentLoaded', function() {
             cargarDatosDesdeFirestore();
             initPassport();
@@ -1965,96 +2021,6 @@
         });
 
         setTimeout(forceRemoveSplash, 1200);
-
-        function searchItems() {
-            let input = document.getElementById('searchInput').value.toLowerCase();
-            let items = document.querySelectorAll('.local-item');
-            let hasResults = false;
-            items.forEach(item => {
-                if (item.querySelector('.local-title').innerText.toLowerCase().includes(input) || item.querySelector('.local-desc').innerText.toLowerCase().includes(input)) {
-                    item.style.opacity = '1';
-                    item.classList.remove('hidden-item'); 
-                    hasResults = true;
-                } else { 
-                    item.style.opacity = '0';
-                    item.classList.add('hidden-item'); 
-                }
-            });
-            const noRes = document.getElementById('noResults');
-            if(noRes) noRes.classList.toggle('hidden', hasResults);
-        }
-
-        function filterItems(category, btnElement) {
-            const searchInput = document.getElementById('searchInput');
-            if(searchInput) searchInput.value = ""; 
-            const noRes = document.getElementById('noResults');
-            if(noRes) noRes.classList.add('hidden');
-
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
-                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
-            });
-            btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-            btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
-
-            document.querySelectorAll('.local-item').forEach(item => {
-                if (category === 'all' || item.classList.contains(category)) { 
-                    item.style.opacity = '1';
-                    item.classList.remove('hidden-item'); 
-                } else { 
-                    item.style.opacity = '0';
-                    item.classList.add('hidden-item'); 
-                }
-            });
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toastMessage');
-            const toastText = document.getElementById('toastText');
-            if(!toast || !toastText) return;
-            toastText.innerText = message;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
-        }
-
-        function animateCounters() {
-            const counters = document.querySelectorAll('.counter');
-            counters.forEach(counter => {
-                const target = +counter.getAttribute('data-target');
-                const updateCount = () => {
-                    const count = +counter.innerText;
-                    const inc = target / 100;
-                    if (count < target) { counter.innerText = Math.ceil(count + inc); setTimeout(updateCount, 20); }
-                    else { counter.innerText = target; }
-                };
-                updateCount();
-            });
-        }
-
-        let countersAnimated = false;
-        function revealOnScroll() {
-            document.querySelectorAll(".reveal").forEach(el => {
-                if (el.getBoundingClientRect().top < window.innerHeight - 50) {
-                    el.classList.add("active");
-                    if (!countersAnimated && el.querySelector('.counter')) { animateCounters(); countersAnimated = true; }
-                }
-            });
-        }
-        window.addEventListener("scroll", revealOnScroll);
-
-        function toggleMobileMenu() { 
-            const menu = document.getElementById('mobileMenu');
-            if(menu) menu.classList.toggle('hidden'); 
-        }
-        function openModal(id) { 
-            const m = document.getElementById(id);
-            if(m) m.classList.remove('hidden'); 
-        }
-        function closeModal(id) { 
-            const m = document.getElementById(id);
-            if(m) m.classList.add('hidden'); 
-        }
-        function handleFormSubmit(e) { e.preventDefault(); alert('¡Solicitud enviada!'); closeModal('contactoModal'); }
     </script>
 </body>
 </html>
