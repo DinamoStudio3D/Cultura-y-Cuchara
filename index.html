@@ -84,12 +84,18 @@
         <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center p-1">
             <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full">
         </div>
-        <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">Preparando la mejor experiencia de Loja...</div>
+        <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">✨ Preparando los mejores sabores de Loja para ti...</div>
     </div>
 
-    <header class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-4 text-center border-b border-brandGold/30 relative z-50">
+    <header class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-4 border-b border-brandGold/30 relative z-50">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span data-i18n="topInit"><i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim</span>
+            <div class="flex items-center gap-3">
+                <span data-i18n="topInit"><i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim</span>
+                <span class="hidden md:inline text-gray-500">|</span>
+                <span id="weatherWidget" class="text-brandGold font-semibold flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded border border-brandGold/20">
+                    <i class="fa-solid fa-cloud-sun text-sm"></i> Loja: <span id="tempDisplay">15°C</span> (Nublado)
+                </span>
+            </div>
             <span class="text-brandGold font-semibold">
                 <i class="fa-solid fa-landmark-flag mr-1"></i> <span data-i18n="topMesa">Avalado por la Mesa Turística de Loja</span> | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocina: ILE
             </span>
@@ -112,7 +118,7 @@
                 <a href="#tendencia" class="hover:text-brandGold transition" data-i18n="menuTrending">En Tendencia</a>
                 <a href="#mapa" class="hover:text-brandGold transition" data-i18n="menuMap">El Mapa</a>
                 <a href="#establecimientos" class="hover:text-brandGold transition" data-i18n="menuRoute">La Ruta</a>
-                <a href="#especias" class="hover:text-brandGold transition" data-i18n="menuSpices">Especias ILE</a>
+                <a href="#glosario" class="hover:text-brandGold transition" data-i18n="menuGlossary">Glosario Lojano</a>
                 <a href="#pasaporte" class="hover:text-brandGold transition relative">
                     <i class="fa-solid fa-qrcode text-brandGold mr-1"></i><span data-i18n="menuPassport">Pasaporte</span>
                     <span id="navStampBadge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0/4</span>
@@ -137,7 +143,7 @@
             <a href="#tendencia" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuTrending">En Tendencia</a>
             <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuMap">El Mapa</a>
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuRoute">La Ruta</a>
-            <a href="#especias" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuSpices">Especias ILE</a>
+            <a href="#glosario" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuGlossary">Glosario Lojano</a>
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-qrcode text-brandGold mr-1"></i><span data-i18n="menuPassport">Mi Pasaporte</span></a>
             <div class="flex items-center justify-between py-1 border-t border-gray-800">
                 <span class="text-xs text-gray-400">Idioma / Language:</span>
@@ -249,18 +255,21 @@
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
                 <div>
-                    <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded text-xs uppercase">Hueca Tradicional</span>
-                    <h3 id="previewTitle" class="text-xl font-bold mt-3 mb-1 pr-8 text-brandDark">El Rincón Lojano</h3>
-                    <p id="previewDesc" class="text-gray-600 text-xs mb-4 h-10 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded text-xs uppercase">Hueca Tradicional</span>
+                        <span id="previewOpenStatus" class="bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded text-[10px]">Abierto ahora</span>
+                    </div>
+                    <h3 id="previewTitle" class="text-xl font-bold mb-1 pr-8 text-brandDark">El Rincón Lojano</h3>
+                    <p id="previewDesc" class="text-gray-600 text-xs mb-3 h-10 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
                     
-                    <div class="space-y-2 text-xs text-gray-700 border-t border-gray-100 pt-4">
+                    <div class="space-y-1.5 text-xs text-gray-700 border-t border-gray-100 pt-3">
                         <div class="flex items-center gap-2"><i class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours">Lun - Sáb: 08:00 - 16:00</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress">Mercado Central / Local 14</span></div>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-gray-100 flex flex-col gap-2">
+                <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
                     <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
                         <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
                     </button>
@@ -284,7 +293,6 @@
 
     <section id="establecimientos" class="bg-white py-16 px-4 reveal">
         <div class="max-w-7xl mx-auto">
-            
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
                 <div>
                     <span class="text-brandGold font-bold uppercase tracking-widest text-xs" data-i18n="secTourism">Turismo y Estadía</span>
@@ -318,6 +326,20 @@
                 <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
                 <span data-i18n="noResults">No encontramos resultados para esa búsqueda.</span>
             </div>
+        </div>
+    </section>
+
+    <section id="glosario" class="py-16 px-4 bg-brandCream border-t border-b border-gray-200 reveal">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-book-bookmark mr-1"></i> <span data-i18n="glossarySub">Diccionario Culinario</span></span>
+                <h2 class="text-3xl font-bold text-brandDark mt-2 mb-3" data-i18n="glossaryTitle">Glosario Gastronómico Lojano</h2>
+                <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="glossaryDesc">
+                    ¿No sabes qué es el repe o el quesillo? Descubre los términos tradicionales antes de probarlos.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="glossaryGridContainer"></div>
         </div>
     </section>
 
@@ -438,38 +460,6 @@
         </div>
     </section>
 
-    <section id="aliados" class="bg-gray-100 text-brandDark py-16 px-4 border-t border-gray-200 reveal">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs" data-i18n="alliesSub">Apoyo y Respaldo</span>
-                <h2 class="text-3xl font-bold mt-2 mb-4" data-i18n="alliesTitle">Aliados Estratégicos</h2>
-                <p class="text-gray-600 text-sm max-w-2xl mx-auto leading-relaxed" data-i18n="alliesDesc">
-                    Este proyecto es posible gracias a la unión del sector público, hotelero y la empresa privada para potenciar el turismo y la gastronomía de nuestra ciudad.
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center" id="aliadosGridContainer">
-                <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-200 flex flex-col items-center text-center group hover:border-brandGold transition-colors">
-                    <div class="w-20 h-20 bg-brandDark text-brandGold rounded-full flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fa-solid fa-landmark-flag"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-brandDark mb-2" id="aliado1Title">Mesa Turística de Loja</h3>
-                    <span class="bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4" data-i18n="ally1Badge">Respaldo Institucional</span>
-                    <p class="text-gray-600 text-xs leading-relaxed" id="aliado1Desc">Impulsando el desarrollo hotelero y turístico, visibilizando a nuestros emprendedores y poniendo a Loja en el mapa internacional.</p>
-                </div>
-
-                <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-200 flex flex-col items-center text-center group hover:border-brandGold transition-colors">
-                    <div class="w-20 h-20 bg-brandDark text-brandGold rounded-full flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fa-solid fa-leaf"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-brandDark mb-2" id="aliado2Title">ILE</h3>
-                    <span class="bg-brandGold/20 text-brandGold text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4" data-i18n="ally2Badge">Patrocinador Principal</span>
-                    <p class="text-gray-600 text-xs leading-relaxed" id="aliado2Desc">Industria Lojana de Especerías. El sabor que acompaña las historias de nuestra cocina, apoyando el producto local y las tradiciones de nuestra tierra.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -531,7 +521,6 @@
 
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
-            
             <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-brandGold/10 border border-brandGold/40 flex items-center justify-center text-brandGold text-lg">
@@ -539,7 +528,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control bilingüe sincronizado con Firestore</p>
+                        <p class="text-xs text-brandGold">Control bilingüe con Horarios y Firestore</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -549,16 +538,16 @@
 
             <div class="flex border-b border-gray-800 bg-black/30 px-4 sm:px-6 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto hide-scrollbar">
                 <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos</button>
+                <button onclick="switchAdminTab('glossary')" id="tabBtnGlossary" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Glosario Culinario</button>
                 <button onclick="switchAdminTab('hero')" id="tabBtnHero" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Textos y Cifras</button>
-                <button onclick="switchAdminTab('aliados')" id="tabBtnAliados" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Aliados</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda</button>
             </div>
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
-                
+                <!-- Locales Tab -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (Español & English)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Horarios)</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
                             
@@ -613,23 +602,36 @@
                                     <input type="text" id="admDishEn" placeholder="Ej. Goat stew" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">⏰ Horario Texto</label>
+                                    <input type="text" id="admHours" placeholder="Lun - Sáb: 08:00 - 16:00" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Abre (Hora 24h)</label>
+                                    <input type="number" id="admOpenHour" min="0" max="23" value="8" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Cierra (Hora 24h)</label>
+                                    <input type="number" id="admCloseHour" min="0" max="23" value="20" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none">
+                                </div>
+                            </div>
                             
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Coordenadas exactas</label>
-                                    <input type="text" id="admPlusCode" placeholder="Ej. -3.9931, -79.2042" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none focus:border-brandGold">
+                                    <input type="text" id="admPlusCode" placeholder="Ej. -3.9931, -79.2042" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">O selecciona Zona Rápida en Loja</label>
-                                    <select id="admZonePreset" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white outline-none focus:border-brandGold">
+                                    <select id="admZonePreset" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                         <option value="-3.9931,-79.2042">Centro / Mercado Central</option>
                                         <option value="-3.9968,-79.2025">Calle Bernardo Valdivieso</option>
                                         <option value="-3.9895,-79.2060">Av. Universitaria</option>
                                         <option value="-3.9910,-79.2030">Plaza de las Flores</option>
                                         <option value="-3.9980,-79.2015">Zona Sur / Tejar</option>
-                                        <option value="-3.9985,-79.2010">Parque Central</option>
                                         <option value="-4.0040,-79.2020">San Sebastián</option>
-                                        <option value="-3.9780,-79.2000">Parque Jipiro</option>
                                     </select>
                                 </div>
                             </div>
@@ -673,11 +675,59 @@
                     </div>
 
                     <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados (Clic para Editar)</h4>
+                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados</h4>
                         <div class="space-y-2" id="adminLocationsList"></div>
                     </div>
                 </div>
 
+                <!-- Glossary Tab -->
+                <div id="adminTabGlossary" class="space-y-6 hidden">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-book-bookmark mr-1"></i> Agregar Palabra al Glosario (Bilingüe)</h4>
+                        <form onsubmit="handleAddNewGlossaryItem(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Término (Español)</label>
+                                    <input type="text" id="glosTerm" required placeholder="Ej. Repe" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Term (English)</label>
+                                    <input type="text" id="glosTermEn" placeholder="Ej. Repe Soup" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría / Tipo (Español)</label>
+                                    <input type="text" id="glosType" required placeholder="Ej. Sopa Tradicional" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Category / Type (English)</label>
+                                    <input type="text" id="glosTypeEn" placeholder="Ej. Traditional Soup" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Definición (Español)</label>
+                                    <textarea id="glosDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Definition (English)</label>
+                                    <textarea id="glosDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                                Guardar Término en el Glosario
+                            </button>
+                        </form>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-sm text-white mb-3">Términos Actuales del Glosario</h4>
+                        <div class="space-y-2" id="adminGlossaryList"></div>
+                    </div>
+                </div>
+
+                <!-- Hero Tab -->
                 <div id="adminTabHero" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-pen-nib mr-1"></i> Personalizar Cabecera y Cifras de la Web</h4>
@@ -694,22 +744,6 @@
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Subtítulo Descriptivo</label>
                                 <textarea id="setHeroSubtitle" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                             </div>
-                            
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
-                                <div>
-                                    <label class="block text-[9px] text-brandGold mb-1 font-bold">Temporadas (Valor)</label>
-                                    <input type="number" id="setStat1" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white text-center">
-                                </div>
-                                <div>
-                                    <label class="block text-[9px] text-brandGold mb-1 font-bold">Turistas (K)</label>
-                                    <input type="number" id="setStat3" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white text-center">
-                                </div>
-                                <div>
-                                    <label class="block text-[9px] text-brandGold mb-1 font-bold">Identidad (%)</label>
-                                    <input type="number" id="setStat4" class="w-full bg-[#121212] border border-gray-700 rounded p-2 text-xs text-white text-center">
-                                </div>
-                            </div>
-                            
                             <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
                                 Guardar Cambios de Cabecera
                             </button>
@@ -717,27 +751,7 @@
                     </div>
                 </div>
 
-                <div id="adminTabAliados" class="space-y-6 hidden">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-handshake mr-1"></i> Administrar Aliados Estratégicos</h4>
-                        <form onsubmit="handleSaveAliadosSettings(event)" class="space-y-4">
-                            <div class="border-b border-gray-800 pb-4 space-y-3">
-                                <h5 class="text-xs font-bold text-white">Aliado 1 (Institucional)</h5>
-                                <input type="text" id="setAliado1Title" required placeholder="Nombre" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none">
-                                <textarea id="setAliado1Desc" required placeholder="Descripción" rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none"></textarea>
-                            </div>
-                            <div class="space-y-3 pt-2">
-                                <h5 class="text-xs font-bold text-white">Aliado 2 (Patrocinador Principal)</h5>
-                                <input type="text" id="setAliado2Title" required placeholder="Nombre" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none">
-                                <textarea id="setAliado2Desc" required placeholder="Descripción" rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Actualizar Aliados
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
+                <!-- Agenda Tab -->
                 <div id="adminTabAgenda" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Español & English)</h4>
@@ -814,41 +828,7 @@
                     <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-images mr-1"></i> Galería de Fotos</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="galleryGrid"></div>
                 </div>
-                
-                <div class="border-t border-gray-800 pt-6">
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider"><i class="fa-solid fa-users mr-1"></i> Fotos de la Comunidad de Turistas</h4>
-                        <button onclick="openUploadCommunityPhoto()" class="bg-brandGold text-brandDark px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white transition">
-                            <i class="fa-solid fa-plus mr-1"></i> Subir mi foto
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="communityPhotosGrid">
-                        <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
-                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
-                            <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@carlos_loja</span>
-                        </div>
-                        <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
-                            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
-                            <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@viajera_gye</span>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
-    </div>
-
-    <div id="uploadPhotoModal" class="fixed inset-0 z-[75] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/40 p-6 relative">
-            <button onclick="closeModal('uploadPhotoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg font-bold text-brandGold mb-1">Comparte tu experiencia</h3>
-            <p class="text-xs text-gray-400 mb-4">Sube una foto de tu visita a este local</p>
-            <form onsubmit="handleCommunityPhotoSubmit(event)" class="space-y-3">
-                <input type="text" id="commUser" required placeholder="Tu nombre o @usuario" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                <input type="text" id="commImgUrl" required placeholder="URL de tu foto (ej. https://...)" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2.5 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                    Publicar Foto
-                </button>
-            </form>
         </div>
     </div>
 
@@ -940,7 +920,7 @@
                 menuTrending: "En Tendencia",
                 menuMap: "El Mapa",
                 menuRoute: "La Ruta",
-                menuSpices: "Especias ILE",
+                menuGlossary: "Glosario Lojano",
                 menuPassport: "Pasaporte",
                 menuAgenda: "Agenda",
                 menuItinerary: "Mi Ruta",
@@ -973,6 +953,9 @@
                 filterAfternoon: "Tarde",
                 filterNight: "Noche",
                 noResults: "No encontramos resultados para esa búsqueda.",
+                glossarySub: "Diccionario Culinario",
+                glossaryTitle: "Glosario Gastronómico Lojano",
+                glossaryDesc: "¿No sabes qué es el repe o el quesillo? Descubre los términos tradicionales antes de probarlos.",
                 ileSub: "Tradición y Sabor",
                 ileTitle: "Secretos de Cocina con ILE",
                 ileDesc: "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.",
@@ -1022,7 +1005,7 @@
                 menuTrending: "Trending",
                 menuMap: "The Map",
                 menuRoute: "The Route",
-                menuSpices: "ILE Spices",
+                menuGlossary: "Loja Glossary",
                 menuPassport: "Passport",
                 menuAgenda: "Agenda",
                 menuItinerary: "My Route",
@@ -1055,6 +1038,9 @@
                 filterAfternoon: "Afternoon",
                 filterNight: "Night",
                 noResults: "No results found for that search.",
+                glossarySub: "Culinary Dictionary",
+                glossaryTitle: "Loja Gastronomic Glossary",
+                glossaryDesc: "Don't know what repe or quesillo is? Discover traditional terms before tasting them.",
                 ileSub: "Tradition & Flavor",
                 ileTitle: "Kitchen Secrets with ILE",
                 ileDesc: "The soul of Loja gastronomy lies in its marinades, aromatic herbs and the unmistakable touch of Industria Lojana de Especerías.",
@@ -1097,7 +1083,17 @@
             }
         };
 
-        let currentLang = localStorage.getItem('cyc_lang') || 'es';
+        function getInitialLanguage() {
+            let saved = localStorage.getItem('cyc_lang');
+            if (saved) return saved;
+            let browserLang = navigator.language || navigator.userLanguage || 'es';
+            if (browserLang.toLowerCase().startsWith('en')) {
+                return 'en';
+            }
+            return 'es';
+        }
+
+        let currentLang = getInitialLanguage();
 
         function changeLanguage(lang) {
             currentLang = lang;
@@ -1110,14 +1106,14 @@
 
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (translations[currentLang][key]) {
+                if (translations[currentLang] && translations[currentLang][key]) {
                     el.innerHTML = translations[currentLang][key];
                 }
             });
 
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
-                if (translations[currentLang][key]) {
+                if (translations[currentLang] && translations[currentLang][key]) {
                     el.setAttribute('placeholder', translations[currentLang][key]);
                 }
             });
@@ -1140,7 +1136,7 @@
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
         } catch(e) {
-            console.log("Error al iniciar Firebase:", e);
+            console.log("Firebase status:", e);
         }
 
         const defaultCategories = [
@@ -1157,7 +1153,8 @@
                 title: "Dínamo Studio", titleEn: "Dínamo Studio",
                 desc: "Estudio creativo y desarrollo tecnológico oficial del proyecto.",
                 descEn: "Official creative studio and tech development of the project.",
-                dish: "Kit de bienvenida institucional", dishEn: "Institutional welcome kit", hours: "Lun - Vie: 09:00 - 18:00",
+                dish: "Kit de bienvenida institucional", dishEn: "Institutional welcome kit", 
+                hours: "Lun - Vie: 09:00 - 18:00", openHour: 9, closeHour: 18,
                 address: "Loja, Ecuador", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-seedling", category: "urbana",
                 youtubeUrl: "",
@@ -1170,55 +1167,29 @@
                 tag: "Hueca Tradicional", tagEn: "Traditional Local Eatery", title: "Picantería Doña Rosita", titleEn: "Doña Rosita Picantería",
                 desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
                 descEn: "The authentic taste of Loja's charcoal-grilled cecina served with cassava and pickled onion.",
-                dish: "Cecina tradicional asada al carbón", dishEn: "Traditional charcoal-grilled cecina", hours: "Lun - Sáb: 08:00 - 16:00",
+                dish: "Cecina tradicional asada al carbón", dishEn: "Traditional charcoal-grilled cecina", 
+                hours: "Lun - Sáb: 08:00 - 16:00", openHour: 8, closeHour: 16,
                 address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-mortar-pestle", category: "hueca",
                 youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 gallery: [
-                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón", titleEn: "Charcoal Grilled Cecina" },
-                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Ambiente Familiar", titleEn: "Family Atmosphere" }
+                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón", titleEn: "Charcoal Grilled Cecina" }
                 ]
-            },
-            {
-                id: "cafe_zorzal",
-                tag: "Cafetería de Especialidad", tagEn: "Specialty Coffee Shop", title: "Café Zorzal & Altura", titleEn: "Zorzal & Altura Coffee",
-                desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
-                descEn: "High-altitude coffee beans grown on Loja farms, artisanally roasted and served as pour-overs.",
-                dish: "Café filtrado de origen Catamayo", dishEn: "Catamayo single-origin pour-over coffee", hours: "Mar - Dom: 09:00 - 20:00",
-                address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
-                iconClass: "fa-mug-hot", category: "cafe",
-                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)", titleEn: "V60 Pour-Over (Catamayo)" }]
-            },
-            {
-                id: "fogon_lola",
-                tag: "Gastronomía Urbana", tagEn: "Urban Gastronomy", title: "El Fogón de Lola", titleEn: "El Fogón de Lola",
-                desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
-                descEn: "Innovative fusion between traditional Loja cuisine and contemporary techniques.",
-                dish: "Repe ahumado con toque de la casa", dishEn: "Smoked Repe with house special touch", hours: "Mié - Lun: 12:00 - 22:00",
-                address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
-                iconClass: "fa-fire-burner", category: "urbana",
-                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado", titleEn: "Smoked White Repe Soup" }]
-            },
-            {
-                id: "gran_hotel",
-                tag: "Hotel Aliado", tagEn: "Partner Hotel", title: "Gran Hotel Loja", titleEn: "Gran Hotel Loja",
-                desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
-                descEn: "Top-tier lodging in the cultural heart of the city, with traditional Loja breakfast included.",
-                dish: "Desayuno tradicional incluido", dishEn: "Traditional breakfast included", hours: "Atención 24/7",
-                address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
-                iconClass: "fa-hotel", category: "hotel",
-                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva", titleEn: "Executive Suite" }]
             }
         ];
 
+        const defaultGlossary = [
+            { id: 'glos_1', term: 'Repe', termEn: 'Repe Soup', type: 'Sopa Tradicional', typeEn: 'Traditional Soup', desc: 'Sopa cremosa hecha a base de banano verde (guineo), leche, mantequilla y quesillo fresco desmenuzado.', descEn: 'Creamy soup made from green plantain (guineo), milk, butter, and crumbled fresh quesillo.' },
+            { id: 'glos_2', term: 'Cecina', termEn: 'Cecina Pork', type: 'Carne Asada', typeEn: 'Grilled Meat', desc: 'Finas láminas de carne de cerdo adobadas con achiote, ajo y comino, secadas al sol y asadas al carbón.', descEn: 'Thin slices of pork marinated with achiote, garlic, and cumin, sun-dried and charcoal-grilled.' }
+        ];
+
         const defaultEvents = [
-            { id: 'ev_1', title: 'Feria de Café de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', descEn: 'Open tastings for the public and barista shows.', lat: -3.9910, lng: -79.2030 },
-            { id: 'ev_2', title: 'Ruta del Repe Tradicional', titleEn: 'Traditional Repe Soup Route', date: '25 de Septiembre', type: 'Gastronomía', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', descEn: 'Live demonstrations of heritage cuisine.', lat: -3.9931, lng: -79.2042 },
-            { id: 'ev_3', title: 'Concierto Sinfónico', titleEn: 'Symphonic Concert', date: '02 de Octubre', type: 'Arte & Música', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', descEn: 'Special gala interpreting traditional pasillo music.', lat: -3.9980, lng: -79.2015 }
+            { id: 'ev_1', title: 'Feria de Café de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', descEn: 'Open tastings for the public and barista shows.', lat: -3.9910, lng: -79.2030 }
         ];
 
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
         let locations = [];
+        let glossaryList = JSON.parse(localStorage.getItem('cyc_dynamic_glossary')) || defaultGlossary;
         let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
 
         let currentLocationIndex = 0;
@@ -1233,7 +1204,14 @@
             L.control.zoom({ position: 'bottomright' }).addTo(map);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
-        } catch(e) { console.log('Mapa cargando...'); }
+        } catch(e) { console.log('Map loading...'); }
+
+        function isLocOpenNow(loc) {
+            if (loc.openHour === undefined || loc.closeHour === undefined) return true;
+            const now = new Date();
+            const currentHour = now.getHours();
+            return currentHour >= loc.openHour && currentHour < loc.closeHour;
+        }
 
         function cargarDatosDesdeFirestore() {
             if (!db) {
@@ -1259,7 +1237,7 @@
                 checkLiveEventsBanner();
                 checkUrlCheckinParam();
             }, (error) => {
-                console.error("Error sincronizando Firestore:", error);
+                console.error("Firestore error:", error);
                 locations = defaultLocations;
                 renderEverything();
                 checkLiveEventsBanner();
@@ -1279,10 +1257,7 @@
             let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
                 badge: "Loja se conoce, se saborea y se hospeda",
                 title: "Gastronomía, Hotelería y Destinos",
-                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
-                stat1: 3, stat3: 25, stat4: 100,
-                aliado1Title: "Mesa Turística de Loja", aliado1Desc: "Impulsando el desarrollo hotelero y turístico...",
-                aliado2Title: "ILE", aliado2Desc: "Industria Lojana de Especerías..."
+                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva."
             };
             applySettings(saved);
         }
@@ -1293,14 +1268,6 @@
                 document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Hotelería", '<span class="text-brandGold">Hotelería</span>') : "";
             }
             if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
-            if(document.getElementById('stat1Val')) document.getElementById('stat1Val').setAttribute('data-target', s.stat1 || 3);
-            if(document.getElementById('stat3Val')) document.getElementById('stat3Val').setAttribute('data-target', s.stat3 || 25);
-            if(document.getElementById('stat4Val')) document.getElementById('stat4Val').setAttribute('data-target', s.stat4 || 100);
-
-            if(document.getElementById('aliado1Title')) document.getElementById('aliado1Title').innerText = s.aliado1Title || "";
-            if(document.getElementById('aliado1Desc')) document.getElementById('aliado1Desc').innerText = s.aliado1Desc || "";
-            if(document.getElementById('aliado2Title')) document.getElementById('aliado2Title').innerText = s.aliado2Title || "";
-            if(document.getElementById('aliado2Desc')) document.getElementById('aliado2Desc').innerText = s.aliado2Desc || "";
         }
 
         let currentEventIndex = 0;
@@ -1330,6 +1297,7 @@
             renderCategoriesUI();
             renderMapAndGrid();
             renderTrendingUI();
+            renderGlossaryUI();
             renderAgendaUI();
             updateItineraryUI();
             if(map) {
@@ -1377,7 +1345,29 @@
                     `;
                 });
             }
-            renderAdminCategoriesList();
+        }
+
+        function renderGlossaryUI() {
+            const container = document.getElementById('glossaryGridContainer');
+            if(!container) return;
+            container.innerHTML = '';
+
+            glossaryList.forEach((item) => {
+                const termText = (currentLang === 'en' && item.termEn) ? item.termEn : item.term;
+                const typeText = (currentLang === 'en' && item.typeEn) ? item.typeEn : item.type;
+                const descText = (currentLang === 'en' && item.descEn) ? item.descEn : item.desc;
+
+                container.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-between">
+                        <div>
+                            <span class="text-brandGold font-black text-lg block mb-1">${termText}</span>
+                            <span class="text-[10px] bg-brandGold/20 text-brandDark px-2 py-0.5 rounded font-bold uppercase tracking-wider">${typeText}</span>
+                            <p class="text-xs text-gray-600 mt-3 leading-relaxed">${descText}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            renderAdminGlossaryList();
         }
 
         function renderTrendingUI() {
@@ -1460,6 +1450,7 @@
                 const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                 const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
                 const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
+                const isOpen = isLocOpenNow(loc);
 
                 if(loc.lat && loc.lng) {
                     const customIcon = L.divIcon({
@@ -1503,6 +1494,10 @@
 
                 let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
 
+                const openBadge = isOpen 
+                    ? `<span class="bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> Abierto</span>`
+                    : `<span class="bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
+
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
@@ -1510,7 +1505,10 @@
                         </button>
                         <div class="h-48 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
-                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow z-10">${locTag}</span>
+                            <div class="absolute top-3 left-3 flex gap-1.5 z-10">
+                                <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>
+                                ${openBadge}
+                            </div>
                             <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar (Google Maps)">
                                 <i class="fa-solid fa-diamond-turn-right"></i>
                             </a>
@@ -1521,6 +1519,9 @@
                                 ${cardDistHtml}
                             </div>
                             <p class="text-gray-600 text-xs local-desc line-clamp-2">${locDesc}</p>
+                            <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
+                                <i class="fa-solid fa-clock text-brandGold"></i> <span>${loc.hours || 'Lun - Dom: 08:00 - 20:00'}</span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1600,7 +1601,7 @@
                         showToast('¡Ubicación encontrada y local más cercano cargado!');
                     },
                     (err) => {
-                        console.warn("GPS denegado:", err.message);
+                        console.warn("GPS denied:", err.message);
                         centerOnLoja();
                     },
                     { timeout: 6000, enableHighAccuracy: true }
@@ -1831,34 +1832,27 @@
 
         function switchAdminTab(tab) {
             document.getElementById('adminTabLocales').classList.add('hidden');
+            document.getElementById('adminTabGlossary').classList.add('hidden');
             document.getElementById('adminTabHero').classList.add('hidden');
-            document.getElementById('adminTabAliados').classList.add('hidden');
             document.getElementById('adminTabAgenda').classList.add('hidden');
 
             document.getElementById('tabBtnLocales').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            document.getElementById('tabBtnGlossary').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
             document.getElementById('tabBtnHero').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
-            document.getElementById('tabBtnAliados').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
             document.getElementById('tabBtnAgenda').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
 
             if(tab === 'locales') {
                 document.getElementById('adminTabLocales').classList.remove('hidden');
                 document.getElementById('tabBtnLocales').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+            } else if(tab === 'glossary') {
+                document.getElementById('adminTabGlossary').classList.remove('hidden');
+                document.getElementById('tabBtnGlossary').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
             } else if(tab === 'hero') {
                 document.getElementById('adminTabHero').classList.remove('hidden');
                 document.getElementById('tabBtnHero').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
                 document.getElementById('setHeroBadge').value = document.getElementById('heroBadge').innerText;
                 document.getElementById('setHeroTitle').value = "Gastronomía, Hotelería y Destinos";
                 document.getElementById('setHeroSubtitle').value = document.getElementById('heroSubtitle').innerText;
-                document.getElementById('setStat1').value = document.getElementById('stat1Val').getAttribute('data-target');
-                document.getElementById('setStat3').value = document.getElementById('stat3Val').getAttribute('data-target');
-                document.getElementById('setStat4').value = document.getElementById('stat4Val').getAttribute('data-target');
-            } else if(tab === 'aliados') {
-                document.getElementById('adminTabAliados').classList.remove('hidden');
-                document.getElementById('tabBtnAliados').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
-                document.getElementById('setAliado1Title').value = document.getElementById('aliado1Title').innerText;
-                document.getElementById('setAliado1Desc').value = document.getElementById('aliado1Desc').innerText;
-                document.getElementById('setAliado2Title').value = document.getElementById('aliado2Title').innerText;
-                document.getElementById('setAliado2Desc').value = document.getElementById('aliado2Desc').innerText;
             } else if(tab === 'agenda') {
                 document.getElementById('adminTabAgenda').classList.remove('hidden');
                 document.getElementById('tabBtnAgenda').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
@@ -1870,72 +1864,51 @@
             let settingsData = {
                 badge: document.getElementById('setHeroBadge').value,
                 title: document.getElementById('setHeroTitle').value,
-                subtitle: document.getElementById('setHeroSubtitle').value,
-                stat1: parseInt(document.getElementById('setStat1').value),
-                stat3: parseInt(document.getElementById('setStat3').value),
-                stat4: parseInt(document.getElementById('setStat4').value),
-                aliado1Title: document.getElementById('setAliado1Title').value,
-                aliado1Desc: document.getElementById('setAliado1Desc').value,
-                aliado2Title: document.getElementById('setAliado2Title').value,
-                aliado2Desc: document.getElementById('setAliado2Desc').value
+                subtitle: document.getElementById('setHeroSubtitle').value
             };
-
             localStorage.setItem('cyc_settings', JSON.stringify(settingsData));
-            if (db) {
-                db.collection("settings").doc("main").set(settingsData).then(() => {
-                    applySettings(settingsData);
-                    closeModal('adminModal');
-                    showToast('¡Cabecera y cifras actualizadas!');
-                });
-            } else {
-                applySettings(settingsData);
-                closeModal('adminModal');
-                showToast('¡Cabecera y cifras actualizadas!');
-            }
+            applySettings(settingsData);
+            closeModal('adminModal');
+            showToast('¡Cabecera actualizada!');
         }
 
-        function handleSaveAliadosSettings(e) {
+        function handleAddNewGlossaryItem(e) {
             e.preventDefault();
-            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {};
-            saved.aliado1Title = document.getElementById('setAliado1Title').value;
-            saved.aliado1Desc = document.getElementById('setAliado1Desc').value;
-            saved.aliado2Title = document.getElementById('setAliado2Title').value;
-            saved.aliado2Desc = document.getElementById('setAliado2Desc').value;
+            const term = document.getElementById('glosTerm').value;
+            const termEn = document.getElementById('glosTermEn').value;
+            const type = document.getElementById('glosType').value;
+            const typeEn = document.getElementById('glosTypeEn').value;
+            const desc = document.getElementById('glosDesc').value;
+            const descEn = document.getElementById('glosDescEn').value;
 
-            localStorage.setItem('cyc_settings', JSON.stringify(saved));
-            if (db) {
-                db.collection("settings").doc("main").set(saved, { merge: true }).then(() => {
-                    applySettings(saved);
-                    closeModal('adminModal');
-                    showToast('¡Aliados actualizados!');
-                });
-            } else {
-                applySettings(saved);
-                closeModal('adminModal');
-                showToast('¡Aliados actualizados!');
-            }
+            const newItem = { id: 'glos_' + Date.now(), term, termEn, type, typeEn, desc, descEn };
+            glossaryList.push(newItem);
+            localStorage.setItem('cyc_dynamic_glossary', JSON.stringify(glossaryList));
+            renderEverything();
+            closeModal('adminModal');
+            showToast('Palabra agregada al glosario');
+            e.target.reset();
         }
 
-        function renderAdminCategoriesList() {
-            const list = document.getElementById('adminCategoriesList');
+        function renderAdminGlossaryList() {
+            const list = document.getElementById('adminGlossaryList');
             if(!list) return;
             list.innerHTML = '';
-            categories.forEach(cat => {
+            glossaryList.forEach(item => {
                 list.innerHTML += `
                     <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
-                        <span class="text-white font-bold">${cat.icon} ${cat.name}</span>
-                        <button onclick="deleteCategory('${cat.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                        <span class="text-brandGold font-bold">${item.term} / ${item.termEn || ''}</span>
+                        <button onclick="deleteGlossaryItem('${item.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
             });
         }
 
-        function deleteCategory(id) {
-            if(categories.length <= 1) { showToast('Mínimo una categoría.'); return; }
-            categories = categories.filter(c => c.id !== id);
-            localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
+        function deleteGlossaryItem(id) {
+            glossaryList = glossaryList.filter(i => i.id !== id);
+            localStorage.setItem('cyc_dynamic_glossary', JSON.stringify(glossaryList));
             renderEverything();
-            showToast('Categoría eliminada');
+            showToast('Término eliminado del glosario');
         }
 
         function parseCoordinates(inputVal, presetValue) {
@@ -1966,6 +1939,9 @@
             const address = document.getElementById('admAddress').value;
             const desc = document.getElementById('admDesc').value;
             const descEn = document.getElementById('admDescEn').value;
+            const hours = document.getElementById('admHours').value || "Lun - Dom: 08:00 - 20:00";
+            const openHour = parseInt(document.getElementById('admOpenHour').value) || 8;
+            const closeHour = parseInt(document.getElementById('admCloseHour').value) || 20;
             const imgsListInput = document.getElementById('admImgsList').value;
             const youtubeUrl = document.getElementById('admYoutubeUrl').value.trim();
             const plusCodeInput = document.getElementById('admPlusCode').value;
@@ -1986,7 +1962,7 @@
 
             const locationData = {
                 tag, tagEn, title, titleEn, desc, descEn, dish, dishEn,
-                hours: "Lun - Dom: 09:00 - 22:00", address,
+                hours, openHour, closeHour, address,
                 lat: finalCoords[0], lng: finalCoords[1],
                 gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
                 iconClass, category,
@@ -2002,7 +1978,7 @@
                           showToast(`¡${title} actualizado con éxito!`);
                           resetLocationForm();
                       })
-                      .catch(err => showToast("Error al actualizar: " + err.message));
+                      .catch(err => showToast("Error: " + err.message));
                 } else {
                     const newId = 'loc_' + Date.now();
                     db.collection("locales").doc(newId).set(locationData)
@@ -2011,7 +1987,7 @@
                           showToast(`¡${title} guardado en Firestore!`);
                           resetLocationForm();
                       })
-                      .catch(err => showToast("Error al guardar: " + err.message));
+                      .catch(err => showToast("Error: " + err.message));
                 }
             } else {
                 showToast("Base de datos no conectada.");
@@ -2030,6 +2006,9 @@
             document.getElementById('admTagEn').value = loc.tagEn || '';
             document.getElementById('admDish').value = loc.dish || '';
             document.getElementById('admDishEn').value = loc.dishEn || '';
+            document.getElementById('admHours').value = loc.hours || '';
+            document.getElementById('admOpenHour').value = loc.openHour !== undefined ? loc.openHour : 8;
+            document.getElementById('admCloseHour').value = loc.closeHour !== undefined ? loc.closeHour : 20;
             document.getElementById('admAddress').value = loc.address;
             document.getElementById('admDesc').value = loc.desc || '';
             document.getElementById('admDescEn').value = loc.descEn || '';
@@ -2049,7 +2028,7 @@
 
         function resetLocationForm() {
             document.getElementById('admEditId').value = '';
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Local / Hotel (Español & English)`;
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Horarios)`;
             document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
             document.getElementById('admTitle').value = '';
             document.getElementById('admTitleEn').value = '';
@@ -2060,6 +2039,9 @@
             document.getElementById('admDishEn').value = '';
             document.getElementById('admTag').value = '';
             document.getElementById('admTagEn').value = '';
+            document.getElementById('admHours').value = '';
+            document.getElementById('admOpenHour').value = 8;
+            document.getElementById('admCloseHour').value = 20;
             document.getElementById('admImgsList').value = '';
             document.getElementById('admYoutubeUrl').value = '';
             document.getElementById('admPlusCode').value = '';
@@ -2074,7 +2056,7 @@
                     <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
                         <div>
                             <span class="text-brandGold font-bold"><i class="fa-solid ${loc.iconClass} mr-1"></i> ${loc.title}</span>
-                            <span class="text-gray-400 text-[10px] block">(${loc.category} - ID: ${loc.id})</span>
+                            <span class="text-gray-400 text-[10px] block">(ID: ${loc.id})</span>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
@@ -2173,12 +2155,23 @@
             const titleText = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
             const descText = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
             const dishText = (currentLang === 'en' && loc.dishEn) ? loc.dishEn : loc.dish;
+            const isOpen = isLocOpenNow(loc);
 
             document.getElementById('previewTag').innerText = tagText || '';
+            
+            const statusEl = document.getElementById('previewOpenStatus');
+            if(isOpen) {
+                statusEl.className = "bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded text-[10px]";
+                statusEl.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> ' + (currentLang === 'en' ? 'Open now' : 'Abierto ahora');
+            } else {
+                statusEl.className = "bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded text-[10px]";
+                statusEl.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> ' + (currentLang === 'en' ? 'Closed' : 'Cerrado');
+            }
+
             document.getElementById('previewTitle').innerText = titleText || '';
             document.getElementById('previewDesc').innerText = descText || '';
             document.getElementById('previewDish').innerText = (loc.category === 'hotel' ? (currentLang === 'en' ? "Benefit: " : "Beneficio: ") : (currentLang === 'en' ? "Dish: " : "Plato: ")) + (dishText || '');
-            document.getElementById('previewHours').innerText = loc.hours;
+            document.getElementById('previewHours').innerText = loc.hours || "Lun - Dom: 08:00 - 20:00";
             document.getElementById('previewAddress').innerText = loc.address;
             
             let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
@@ -2247,27 +2240,6 @@
             }
 
             openModal('menuGalleryModal');
-        }
-
-        function openUploadCommunityPhoto() {
-            openModal('uploadPhotoModal');
-        }
-
-        function handleCommunityPhotoSubmit(e) {
-            e.preventDefault();
-            const user = document.getElementById('commUser').value;
-            const imgUrl = document.getElementById('commImgUrl').value;
-            const grid = document.getElementById('communityPhotosGrid');
-            
-            grid.innerHTML += `
-                <div class="rounded-xl overflow-hidden bg-black/50 border border-gray-800 relative group h-32">
-                    <img src="${imgUrl}" class="w-full h-full object-cover">
-                    <span class="absolute bottom-1 left-1 bg-black/70 text-[9px] text-brandGold px-2 py-0.5 rounded">@${user}</span>
-                </div>
-            `;
-            closeModal('uploadPhotoModal');
-            showToast('¡Foto subida con éxito!');
-            e.target.reset();
         }
 
         function initPassport() {
@@ -2407,13 +2379,13 @@
                 let attempts = 0;
                 const checkInterval = setInterval(() => {
                     let found = locations.find(l => l.id === checkinId) || defaultLocations.find(l => l.id === checkinId);
-                    if (found || attempts > 15) {
+                    if (found || attempts > 20) {
                         clearInterval(checkInterval);
                         registerVisit(checkinId);
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
                     attempts++;
-                }, 200);
+                }, 150);
             }
         }
 
