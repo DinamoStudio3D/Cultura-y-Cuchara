@@ -219,7 +219,6 @@
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-brandDark" data-i18n="trendingTitle">En Tendencia esta Semana</h2>
                 <p class="text-gray-600 text-xs mt-1" data-i18n="trendingDesc">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="trendingGridContainer"></div>
         </div>
     </section>
@@ -509,7 +508,7 @@
         </div>
     </footer>
 
-    <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:bg-green-600 transition" title="Contáctanos por WhatsApp">
+    <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:bg-green-600 transition bottom-28" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
@@ -907,32 +906,6 @@
         </div>
     </div>
 
-    <div id="videoModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-2xl rounded-xl overflow-hidden shadow-xl border border-brandGold/30 relative">
-            <button onclick="closeModal('videoModal')" class="absolute top-3 right-3 text-white text-lg bg-black/50 w-8 h-8 rounded-full flex items-center justify-center hover:bg-black transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            <div class="aspect-video bg-black flex items-center justify-center relative">
-                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=70" alt="" class="w-full h-full object-cover opacity-60" loading="lazy">
-                <div class="absolute inset-0 flex items-center justify-center"><div class="w-12 h-12 bg-brandGold text-brandDark rounded-full flex items-center justify-center text-base shadow"><i class="fa-solid fa-play ml-0.5"></i></div></div>
-            </div>
-            <div class="p-5">
-                <h3 class="text-lg font-bold mb-1">Episodio Especial</h3>
-                <p class="text-gray-400 text-xs">Entrevista completa con los creadores de esta parada.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="contactoModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-white text-brandDark w-full max-w-sm rounded-xl overflow-hidden shadow-xl p-6 relative">
-            <button onclick="closeModal('contactoModal')" class="absolute top-3 right-3 text-gray-500 text-base hover:text-black transition"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-bold mb-1">Suma tu establecimiento u hotel</h3>
-            <form onsubmit="handleFormSubmit(event)" class="space-y-3 mt-4">
-                <div><input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-brandGold outline-none" placeholder="Nombre del Local u Hotel"></div>
-                <div><input type="tel" required class="w-full border border-gray-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-brandGold outline-none" placeholder="WhatsApp"></div>
-                <button type="submit" class="w-full bg-brandDark text-brandDark font-bold py-2.5 rounded-lg hover:bg-black transition text-xs">Enviar Solicitud</button>
-            </form>
-        </div>
-    </div>
-
     <div id="toastMessage" class="fixed bottom-24 right-4 bg-brandGold text-brandDark font-bold px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
@@ -1118,13 +1091,11 @@
             currentLang = lang;
             localStorage.setItem('cyc_lang', lang);
             
-            // Actualizar selectores visuales
             const selDesktop = document.getElementById('langSelector');
             const selMobile = document.getElementById('langSelectorMobile');
             if(selDesktop) selDesktop.value = lang;
             if(selMobile) selMobile.value = lang;
 
-            // Traducir elementos estáticos
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang][key]) {
@@ -1139,7 +1110,6 @@
                 }
             });
 
-            // Re-renderizar dinámicos
             renderEverything();
         }
 
@@ -1727,7 +1697,7 @@
         }
 
         function shareStructuredItinerary() {
-            if(favoriteLocations.length === 0) { alert('Tu ruta está vacía.'); return; }
+            if(favoriteLocations.length === 0) { showToast('Tu ruta está vacía.'); return; }
             let text = "✨ *Mi Itinerario Organizado - Cultura y Cuchara (Loja)* ✨\n\n";
             favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
@@ -1886,19 +1856,6 @@
             }
         }
 
-        function handleAddNewCategory(e) {
-            e.preventDefault();
-            const id = document.getElementById('catId').value.trim().toLowerCase();
-            const name = document.getElementById('catName').value.trim();
-            const icon = document.getElementById('catIcon').value.trim();
-            if(categories.some(c => c.id === id)) { alert('Ese ID ya existe.'); return; }
-            categories.push({ id, name, icon });
-            localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
-            renderEverything();
-            showToast(`Categoría "${name}" añadida`);
-            e.target.reset();
-        }
-
         function renderAdminCategoriesList() {
             const list = document.getElementById('adminCategoriesList');
             if(!list) return;
@@ -1914,7 +1871,7 @@
         }
 
         function deleteCategory(id) {
-            if(categories.length <= 1) { alert('Mínimo una categoría.'); return; }
+            if(categories.length <= 1) { showToast('Mínimo una categoría.'); return; }
             categories = categories.filter(c => c.id !== id);
             localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
             renderEverything();
@@ -1931,9 +1888,6 @@
                     return [lat, lng];
                 }
             }
-            let code = input.toUpperCase();
-            if (code.includes("8Q3X")) { return [-3.9931, -79.2042]; }
-            if (code.includes("8Q2X")) { return [-3.9980, -79.2015]; }
             const coords = presetValue.split(',');
             return [parseFloat(coords[0]), parseFloat(coords[1])];
         }
@@ -1983,7 +1937,7 @@
                           showToast(`¡${title} actualizado con éxito!`);
                           resetLocationForm();
                       })
-                      .catch(err => alert("Error al actualizar: " + err.message));
+                      .catch(err => showToast("Error al actualizar: " + err.message));
                 } else {
                     db.collection("locales").add(locationData)
                       .then(() => {
@@ -1991,10 +1945,10 @@
                           showToast(`¡${title} guardado en Firestore!`);
                           resetLocationForm();
                       })
-                      .catch(err => alert("Error al guardar: " + err.message));
+                      .catch(err => showToast("Error al guardar: " + err.message));
                 }
             } else {
-                alert("Base de datos no conectada.");
+                showToast("Base de datos no conectada.");
             }
         }
 
@@ -2057,8 +2011,8 @@
         }
 
         function deleteLocation(id) {
-            if (locations.length <= 1) { alert('Mínimo un local.'); return; }
-            if (confirm("¿Estás seguro de eliminar este establecimiento?") && db && id) {
+            if (locations.length <= 1) { showToast('Mínimo un local.'); return; }
+            if (db && id) {
                 db.collection("locales").doc(id).delete().then(() => {
                     showToast('Local eliminado de Firestore');
                 });
@@ -2134,15 +2088,6 @@
             card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
-        window.handlePopupClickByName = function(id) {
-            const index = locations.findIndex(l => l.id === id);
-            if(index > -1) {
-                selectLocation(index);
-                const card = document.getElementById('mapPreviewCard');
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        };
-
         function selectLocation(index) {
             currentLocationIndex = index;
             const loc = locations[index];
@@ -2173,14 +2118,6 @@
         function simulateMapClick(index) {
             selectLocation(index);
             document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function simulateMapClickById(id) {
-            const index = locations.findIndex(l => l.id === id);
-            if(index > -1) {
-                selectLocation(index);
-                document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
-            }
         }
 
         function setSuggestedRoute(category) {
@@ -2471,7 +2408,6 @@
             const m = document.getElementById(id);
             if(m) m.classList.add('hidden'); 
         }
-        function handleFormSubmit(e) { e.preventDefault(); alert('¡Solicitud enviada!'); closeModal('contactoModal'); }
     </script>
 </body>
 </html>
