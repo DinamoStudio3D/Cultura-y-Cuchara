@@ -260,7 +260,7 @@
 
                 <div class="pt-4 border-t border-gray-100 flex flex-col gap-2">
                     <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
-                        <i class="fa-solid fa-camera-retro mr-2"></i> Ver Galería y Comunidad
+                        <i class="fa-solid fa-camera-retro mr-2"></i> Ver Galería, Videos y Comunidad
                     </button>
 
                     <div class="flex gap-2">
@@ -476,7 +476,7 @@
         </div>
     </section>
 
-    <!-- Pie de Página con Puntito Adaptado para Móvil (Toques múltiples o Long Press) -->
+    <!-- Pie de Página con Puntito Táctil Optimizado -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -490,8 +490,7 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026. 
-                <!-- PUNTITO OCULTO CON SOPORTE TÁCTIL (MÓVIL Y PC) -->
-                <span onclick="handleAdminDotClick()" ontouchstart="handleAdminDotTouch(event)" class="cursor-pointer text-black hover:text-brandGold transition text-[14px] px-2 py-1 select-none" title="Admin">.</span>
+                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-2 py-1 select-none" title="Admin">.</span>
             </div>
         </div>
     </footer>
@@ -539,7 +538,7 @@
         </div>
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN CMS CON EDICIÓN DE NEGOCIOS -->
+    <!-- PANEL DE ADMINISTRACIÓN CMS CON SOPORTE DE MÚLTIPLES FOTOS Y REELS DE INSTAGRAM -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             
@@ -566,7 +565,7 @@
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
                 
-                <!-- PESTAÑA 1: LOCALES (CREAR Y EDITAR) -->
+                <!-- PESTAÑA 1: LOCALES (CREAR, EDITAR, FOTOS MÚLTIPLES Y INSTAGRAM) -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel</h4>
@@ -634,9 +633,17 @@
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción</label>
                                 <textarea id="admDesc" required placeholder="Breve descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                             </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de la Imagen</label>
-                                <input type="text" id="admImg" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+
+                            <!-- CAMPOS NUEVOS: MÚLTIPLES FOTOS Y REELS DE INSTAGRAM -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandDark/50 p-4 rounded-xl border border-brandGold/30">
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-images mr-1"></i> URLs de Fotos (Separadas por comas)</label>
+                                    <input type="text" id="admImgsList" placeholder="https://img1.jpg, https://img2.jpg" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-instagram mr-1"></i> Enlace de Reel / Video Instagram</label>
+                                    <input type="text" id="admInstagramUrl" placeholder="https://www.instagram.com/reel/..." class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
                             </div>
 
                             <div class="flex gap-2">
@@ -717,22 +724,28 @@
         </div>
     </div>
 
-    <!-- MODAL DE GALERÍA Y COMUNIDAD DE TURISTAS -->
+    <!-- MODAL DE GALERÍA, VIDEOS DE INSTAGRAM Y COMUNIDAD -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[650px]">
+        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[700px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <div>
-                    <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Platos y Comunidad</h3>
-                    <p class="text-xs text-gray-400">Fotos oficiales y experiencias compartidas por viajeros</p>
+                    <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Platos, Videos y Comunidad</h3>
+                    <p class="text-xs text-gray-400">Galería multimedia del establecimiento</p>
                 </div>
                 <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="p-6 flex-grow overflow-y-auto space-y-6">
+                <!-- VÍDEO DE INSTAGRAM SI ESTÁ DISPONIBLE -->
+                <div id="instagramVideoContainer" class="hidden">
+                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-brands fa-instagram mr-1"></i> Reel / Video Destacado</h4>
+                    <div id="instagramEmbedWrapper" class="w-full bg-black rounded-xl overflow-hidden flex justify-center border border-brandGold/30 p-2"></div>
+                </div>
+
                 <div>
-                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-camera-retro mr-1"></i> Recomendación Oficial</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="galleryGrid"></div>
+                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-camera-retro mr-1"></i> Galería de Fotos del Establecimiento</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="galleryGrid"></div>
                 </div>
                 
                 <div class="border-t border-gray-800 pt-6">
@@ -910,7 +923,11 @@
                 dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
                 address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-mortar-pestle", category: "hueca",
-                gallery: [{ img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" }]
+                instagramUrl: "https://www.instagram.com/reel/C8_example/",
+                gallery: [
+                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" },
+                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Ambiente Familiar" }
+                ]
             },
             {
                 tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
@@ -1576,11 +1593,23 @@
             const dish = document.getElementById('admDish').value;
             const address = document.getElementById('admAddress').value;
             const desc = document.getElementById('admDesc').value;
-            const img = document.getElementById('admImg').value;
+            const imgsListInput = document.getElementById('admImgsList').value;
+            const instagramUrl = document.getElementById('admInstagramUrl').value.trim();
             const plusCodeInput = document.getElementById('admPlusCode').value;
             const preset = document.getElementById('admZonePreset').value;
 
             const finalCoords = parseCoordinates(plusCodeInput, preset);
+
+            // Convertir las URLs separadas por comas en un array de objetos para la galería
+            let galleryArray = [];
+            if (imgsListInput.trim()) {
+                galleryArray = imgsListInput.split(',').map((url, i) => ({
+                    img: url.trim(),
+                    title: `${title} - Foto ${i + 1}`
+                }));
+            } else {
+                galleryArray = [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
+            }
 
             const locationData = {
                 tag, title, desc, dish,
@@ -1588,7 +1617,8 @@
                 lat: finalCoords[0], lng: finalCoords[1],
                 gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
                 iconClass, category,
-                gallery: [{ img, title: dish }]
+                instagramUrl,
+                gallery: galleryArray
             };
 
             if (db) {
@@ -1626,9 +1656,14 @@
             document.getElementById('admAddress').value = loc.address;
             document.getElementById('admDesc').value = loc.desc;
             document.getElementById('admPlusCode').value = `${loc.lat}, ${loc.lng}`;
-            if(loc.gallery && loc.gallery[0]) {
-                document.getElementById('admImg').value = loc.gallery[0].img;
+            document.getElementById('admInstagramUrl').value = loc.instagramUrl || '';
+            
+            if(loc.gallery && loc.gallery.length > 0) {
+                document.getElementById('admImgsList').value = loc.gallery.map(g => g.img).join(', ');
+            } else {
+                document.getElementById('admImgsList').value = '';
             }
+
             document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editando: ${loc.title}`;
             document.getElementById('saveBtnText').innerText = "Actualizar Cambios en la Nube";
             document.getElementById('admTitle').focus();
@@ -1642,7 +1677,8 @@
             document.getElementById('admAddress').value = '';
             document.getElementById('admDesc').value = '';
             document.getElementById('admDish').value = '';
-            document.getElementById('admImg').value = '';
+            document.getElementById('admImgsList').value = '';
+            document.getElementById('admInstagramUrl').value = '';
             document.getElementById('admPlusCode').value = '';
         }
 
@@ -1717,16 +1753,6 @@
             renderEverything();
             checkLiveEventsBanner();
             showToast('Evento eliminado');
-        }
-
-        // CONTROLADORES TÁCTILES PARA EL PUNTITO OCULTO EN MÓVIL Y PC
-        let touchTimer = null;
-        function handleAdminDotClick() {
-            requestAdminAccess();
-        }
-        function handleAdminDotTouch(e) {
-            e.preventDefault();
-            requestAdminAccess();
         }
 
         function requestAdminAccess() {
@@ -1811,18 +1837,39 @@
         function openMenuGallery() {
             const loc = locations[currentLocationIndex];
             document.getElementById('galleryTitle').innerText = loc.title;
+            
+            // Renderizar galería de fotos múltiples
             const grid = document.getElementById('galleryGrid');
             grid.innerHTML = '';
-            loc.gallery.forEach(item => {
-                grid.innerHTML += `
-                    <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group">
-                        <img src="${item.img}" alt="" class="w-full h-48 object-cover opacity-80" loading="lazy">
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                            <span class="text-white font-bold text-sm">${item.title}</span>
+            if (loc.gallery && loc.gallery.length > 0) {
+                loc.gallery.forEach(item => {
+                    grid.innerHTML += `
+                        <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48">
+                            <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <span class="text-white font-bold text-xs">${item.title}</span>
+                            </div>
                         </div>
-                    </div>
+                    `;
+                });
+            }
+
+            // Renderizar video de Instagram si existe
+            const igContainer = document.getElementById('instagramVideoContainer');
+            const igWrapper = document.getElementById('instagramEmbedWrapper');
+            if (loc.instagramUrl && loc.instagramUrl.trim() !== "") {
+                igContainer.classList.remove('hidden');
+                // Extraer el código del reel/post de Instagram o incrustarlo de manera limpia
+                let cleanIgUrl = loc.instagramUrl.split('?')[0];
+                if (!cleanIgUrl.endsWith('/')) cleanIgUrl += '/';
+                igWrapper.innerHTML = `
+                    <iframe src="${cleanIgUrl}embed" class="w-full max-w-sm h-96 rounded-lg border-0" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
                 `;
-            });
+            } else {
+                igContainer.classList.add('hidden');
+                igWrapper.innerHTML = '';
+            }
+
             openModal('menuGalleryModal');
         }
 
