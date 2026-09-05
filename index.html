@@ -154,16 +154,13 @@
         </div>
     </nav>
 
-    <!-- WIDGET DE CLIMA EN VIVO Y BANNER DE EVENTO -->
-    <div class="bg-gradient-to-r from-brandDark via-gray-900 to-brandDark text-white py-2 px-4 text-center text-xs sticky top-[65px] z-30 shadow-md flex flex-wrap items-center justify-center gap-4 border-b border-brandGold/30">
-        <div class="flex items-center gap-2 text-brandGold font-bold">
-            <i class="fa-solid fa-cloud-rain text-blue-400"></i> Loja: <span id="weatherWidgetTemp" class="text-white">18°C</span> • <span id="weatherWidgetDesc" class="text-gray-300">Lluvia ligera (Ideal para un café)</span>
-        </div>
-        <div id="liveEventBanner" class="hidden flex items-center gap-2">
-            <span class="bg-brandGold text-brandDark text-[9px] px-2 py-0.5 rounded-full uppercase font-bold animate-pulse">🔴 HOY</span>
-            <span id="liveEventText" class="text-gray-200"></span>
-            <button id="liveEventBtn" class="bg-brandGold text-brandDark px-2.5 py-0.5 rounded text-[10px] font-bold hover:bg-white transition">Ver</button>
-        </div>
+    <!-- BANNER DINÁMICO DE EVENTO EN VIVO -->
+    <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-yellow-600 to-brandGold text-brandDark py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
+        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
+        <span id="liveEventText">Cargando eventos...</span>
+        <button id="liveEventBtn" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
+            <i class="fa-solid fa-map-pin mr-1"></i> <span data-i18n="btnViewMap">Ver en el mapa</span>
+        </button>
     </div>
 
     <!-- Sección Hero Principal -->
@@ -173,13 +170,13 @@
             <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-lg mb-6 relative flex items-center justify-center p-1">
                 <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full" loading="lazy">
             </div>
-            <span class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
+            <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
                 Loja se conoce, se saborea y se hospeda
             </span>
-            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heroTitle">
+            <h1 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heroTitle">
                 Gastronomía, <span class="text-brandGold">Hotelería</span> y Destinos
             </h1>
-            <p class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed" data-i18n="heroSubtitle">
+            <p id="heroSubtitle" class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed" data-i18n="heroSubtitle">
                 Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
@@ -312,29 +309,20 @@
                 </div>
             </div>
 
-            <!-- Filtros por Categoría, Bloque de Tiempo y Ambiente / Vibe -->
+            <!-- Filtros por Categoría y Bloque de Tiempo -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-2 border-b border-gray-100">
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full sm:w-auto" id="categoryScroll"></div>
                 
-                <div class="flex gap-2 flex-wrap items-center">
-                    <select id="vibeFilter" onchange="filterByVibe(this.value)" class="bg-gray-100 text-brandDark border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-bold outline-none cursor-pointer">
-                        <option value="all">✨ Todos los Ambientes</option>
-                        <option value="pet">🐾 Pet-Friendly</option>
-                        <option value="view">🌅 Vista Panorámica</option>
-                        <option value="family">👨‍👩‍👧‍👦 Ideal Familias</option>
-                    </select>
-
-                    <div class="flex gap-1.5">
-                        <button onclick="filterByTimeBlock('manana')" class="time-filter-btn bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-100 transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-sun"></i> <span data-i18n="filterMorning">Mañana</span>
-                        </button>
-                        <button onclick="filterByTimeBlock('tarde')" class="time-filter-btn bg-brandGold/10 text-brandDark border border-brandGold/40 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-brandGold/20 transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-utensils"></i> <span data-i18n="filterAfternoon">Tarde</span>
-                        </button>
-                        <button onclick="filterByTimeBlock('noche')" class="time-filter-btn bg-indigo-50 text-indigo-900 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100 transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-moon"></i> <span data-i18n="filterNight">Noche</span>
-                        </button>
-                    </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button onclick="filterByTimeBlock('manana')" class="time-filter-btn bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-100 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-sun"></i> <span data-i18n="filterMorning">Mañana</span>
+                    </button>
+                    <button onclick="filterByTimeBlock('tarde')" class="time-filter-btn bg-brandGold/10 text-brandDark border border-brandGold/40 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-brandGold/20 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-utensils"></i> <span data-i18n="filterAfternoon">Tarde</span>
+                    </button>
+                    <button onclick="filterByTimeBlock('noche')" class="time-filter-btn bg-indigo-50 text-indigo-900 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-moon"></i> <span data-i18n="filterNight">Noche</span>
+                    </button>
                 </div>
             </div>
 
@@ -620,7 +608,7 @@
         </div>
     </div>
 
-    <!-- Script General -->
+    <!-- Script General y Diccionario de Idiomas -->
     <script>
         const translations = {
             es: {
@@ -797,169 +785,16 @@
             renderEverything();
         }
 
-        const defaultCategories = [
-            { id: 'hotel', name: 'Hoteles & Hospedaje', icon: '🏨' },
-            { id: 'hueca', name: 'Huecas', icon: '🥘' },
-            { id: 'cafe', name: 'Cafeterías', icon: '☕' },
-            { id: 'urbana', name: 'Urbana', icon: '🍔' }
-        ];
-
-        const defaultLocations = [
-            {
-                tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
-                desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
-                dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
-                address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
-                iconClass: "fa-mortar-pestle", category: "hueca", vibe: "family",
-                gallery: [{ img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" }]
-            },
-            {
-                tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
-                desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
-                dish: "Café filtrado de origen Catamayo", hours: "Mar - Dom: 09:00 - 20:00",
-                address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
-                iconClass: "fa-mug-hot", category: "cafe", vibe: "view",
-                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)" }]
-            },
-            {
-                tag: "Gastronomía Urbana", title: "El Fogón de Lola",
-                desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
-                dish: "Repe ahumado con toque de la casa", hours: "Mié - Lun: 12:00 - 22:00",
-                address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
-                iconClass: "fa-fire-burner", category: "urbana", vibe: "pet",
-                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado" }]
-            },
-            {
-                tag: "Hotel Aliado", title: "Gran Hotel Loja",
-                desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
-                dish: "Desayuno tradicional incluido", hours: "Atención 24/7",
-                address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
-                iconClass: "fa-hotel", category: "hotel", vibe: "view",
-                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva" }]
-            }
-        ];
-
-        const defaultEvents = [
-            { id: 'ev_1', title: 'Feria de Café de Altura Loja', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', lat: -3.9910, lng: -79.2030 },
-            { id: 'ev_2', title: 'Ruta del Repe Tradicional', date: '25 de Septiembre', type: 'Gastronomía', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', lat: -3.9931, lng: -79.2042 },
-            { id: 'ev_3', title: 'Concierto Sinfónico', date: '02 de Octubre', type: 'Arte & Música', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', lat: -3.9980, lng: -79.2015 }
-        ];
-
-        let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
-        let locations = [];
-        let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
-
-        let currentLocationIndex = 0;
-        let visitedLocations = []; 
-        let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
-        let passportMode = 'turista';
-        let userCoords = null;
-
-        let map, markersLayer, userMarkerInstance = null;
-        try {
-            map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
-            L.control.zoom({ position: 'bottomright' }).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
-            markersLayer = L.layerGroup().addTo(map);
-        } catch(e) { console.log('Mapa cargando...'); }
-
-        function cargarDatosDesdeFirestore() {
-            // TEMPORIZADOR DE SEGURIDAD BLINDADO (0.8s) para asegurar que NUNCA se quede pegado el Splash
-            let loaded = false;
-            const fallbackTimer = setTimeout(() => {
-                if (!loaded) {
-                    locations = defaultLocations;
-                    loadSettingsFromStorage();
-                    renderEverything();
-                    checkLiveEventsBanner();
-                    forceRemoveSplash();
-                    loaded = true;
-                }
-            }, 800);
-
-            if (!db) {
-                clearTimeout(fallbackTimer);
-                locations = defaultLocations;
-                loadSettingsFromStorage();
-                renderEverything();
-                checkLiveEventsBanner();
-                forceRemoveSplash();
-                return;
-            }
-
-            db.collection("locales").get().then((snapshot) => {
-                locations = [];
-                snapshot.forEach((doc) => {
-                    locations.push({ id: doc.id, ...doc.data() });
-                });
-                if(locations.length === 0) locations = defaultLocations;
-                
-                if(!loaded) {
-                    clearTimeout(fallbackTimer);
-                    loadSettingsFromStorage();
-                    renderEverything();
-                    checkLiveEventsBanner();
-                    forceRemoveSplash();
-                    loaded = true;
-                }
-            }).catch(() => {
-                if(!loaded) {
-                    clearTimeout(fallbackTimer);
-                    locations = defaultLocations;
-                    loadSettingsFromStorage();
-                    renderEverything();
-                    checkLiveEventsBanner();
-                    forceRemoveSplash();
-                    loaded = true;
-                }
-            });
-
-            db.collection("settings").doc("main").get().then((doc) => {
-                if (doc.exists) applySettings(doc.data());
-            }).catch(() => {});
-        }
-
-        function loadSettingsFromStorage() {
-            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
-                badge: "Loja se conoce, se saborea y se hospeda",
-                title: "Gastronomía, Hotelería y Destinos",
-                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
-                stat1: 3, stat3: 25, stat4: 100,
-                aliado1Title: "Mesa Turística de Loja", aliado1Desc: "Impulsando el desarrollo hotelero y turístico...",
-                aliado2Title: "ILE", aliado2Desc: "Industria Lojana de Especerías..."
-            };
-            applySettings(saved);
-        }
-
-        function applySettings(s) {
-            if(document.getElementById('heroBadge')) document.getElementById('heroBadge').innerText = s.badge || "";
-            if(document.getElementById('heroTitle')) {
-                document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Hotelería", '<span class="text-brandGold">Hotelería</span>') : "";
-            }
-            if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
-            if(document.getElementById('stat1Val')) document.getElementById('stat1Val').setAttribute('data-target', s.stat1 || 3);
-            if(document.getElementById('stat3Val')) document.getElementById('stat3Val').setAttribute('data-target', s.stat3 || 25);
-            if(document.getElementById('stat4Val')) document.getElementById('stat4Val').setAttribute('data-target', s.stat4 || 100);
-        }
-
-        function filterByVibe(vibe) {
-            document.querySelectorAll('.local-item').forEach(item => {
-                if (vibe === 'all' || item.dataset.vibe === vibe) {
-                    item.style.opacity = '1';
-                    item.classList.remove('hidden-item');
-                } else {
-                    item.style.opacity = '0';
-                    item.classList.add('hidden-item');
-                }
-            });
-            showToast(`Filtrando ambiente: ${vibe.toUpperCase()}`);
-        }
+        let currentLangStored = localStorage.getItem('cyc_lang') || 'es';
 
         window.addEventListener('DOMContentLoaded', function() {
             cargarDatosDesdeFirestore();
             initPassport();
-            changeLanguage(currentLang);
+            changeLanguage(currentLangStored);
+            setTimeout(forceRemoveSplash, 400);
         });
+
+        setTimeout(forceRemoveSplash, 1200);
     </script>
 </body>
 </html>
