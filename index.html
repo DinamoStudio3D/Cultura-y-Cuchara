@@ -505,7 +505,6 @@
         </div>
     </div>
 
-    <!-- Admin PIN Modal -->
     <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
             <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -523,7 +522,6 @@
         </div>
     </div>
 
-    <!-- Admin Dashboard Modal -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -688,8 +686,9 @@
                 <!-- Emprendedores Tab -->
                 <div id="adminTabEmprendedores" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor Lojano</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="empFormTitle"><i class="fa-solid fa-store mr-1"></i> Registrar o Editar Emprendedor Lojano</h4>
                         <form onsubmit="handleAddNewEmprendedor(event)" class="space-y-4">
+                            <input type="hidden" id="empEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre del Emprendimiento</label>
@@ -714,9 +713,14 @@
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción / Historia</label>
                                 <textarea id="empDesc" required placeholder="Breve historia del emprendimiento..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                             </div>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Guardar Emprendedor
-                            </button>
+                            <div class="flex gap-2">
+                                <button type="submit" id="saveEmpBtnText" class="flex-1 bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                                    Guardar Emprendedor
+                                </button>
+                                <button type="button" onclick="resetEmpForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
+                                    Nuevo
+                                </button>
+                            </div>
                         </form>
                     </div>
 
@@ -744,7 +748,7 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (Ej. 15-20 Sep 2026)</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (Ej. 2026-09-15 o 15-20 Sep)</label>
                                     <input type="text" id="evDate" required placeholder="15 - 18 Sep" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
@@ -1203,7 +1207,7 @@
                 id: 'ev_1', 
                 title: 'Feria de Café de Altura Loja', 
                 titleEn: 'Loja High-Altitude Coffee Fair', 
-                date: '15 - 20 Sep', 
+                date: '2026-09-20', 
                 type: 'Festival', 
                 location: 'Plaza de las Flores', 
                 desc: 'Catas abiertas al público y barismo.', 
@@ -1307,8 +1311,10 @@
             const btnEl = document.getElementById('liveEventBtn');
             if(!banner) return;
 
+            let todayStr = new Date().toISOString().split('T')[0];
             let upcomingEvents = eventsList.filter(ev => {
-                return true; 
+                if (!ev.date) return true;
+                return ev.date >= todayStr || ev.date.toLowerCase().includes('sep');
             });
 
             if(upcomingEvents.length === 0) {
@@ -1830,19 +1836,57 @@
 
         function handleAddNewEmprendedor(e) {
             e.preventDefault();
+            const editId = document.getElementById('empEditId').value;
             const name = document.getElementById('empName').value;
             const category = document.getElementById('empCategory').value;
             const phone = document.getElementById('empPhone').value;
             const img = document.getElementById('empImg').value;
             const desc = document.getElementById('empDesc').value;
 
-            const newEmp = { id: 'emp_' + Date.now(), name, category, phone, img, desc };
-            emprendedoresList.push(newEmp);
+            if (editId) {
+                let empObj = emprendedoresList.find(emp => emp.id === editId);
+                if(empObj) {
+                    empObj.name = name;
+                    empObj.category = category;
+                    empObj.phone = phone;
+                    empObj.img = img;
+                    empObj.desc = desc;
+                }
+                showToast('¡Emprendedor actualizado con éxito!');
+            } else {
+                const newEmp = { id: 'emp_' + Date.now(), name, category, phone, img, desc };
+                emprendedoresList.push(newEmp);
+                showToast('¡Emprendedor registrado con éxito!');
+            }
+
             localStorage.setItem('cyc_dynamic_emprendedores', JSON.stringify(emprendedoresList));
             renderEverything();
-            closeModal('adminModal');
-            showToast('¡Emprendedor registrado con éxito!');
-            e.target.reset();
+            resetEmpForm();
+        }
+
+        function editEmprendedor(id) {
+            const emp = emprendedoresList.find(e => e.id === id);
+            if(!emp) return;
+            document.getElementById('empEditId').value = emp.id;
+            document.getElementById('empName').value = emp.name || '';
+            document.getElementById('empCategory').value = emp.category || '';
+            document.getElementById('empPhone').value = emp.phone || '';
+            document.getElementById('empImg').value = emp.img || '';
+            document.getElementById('empDesc').value = emp.desc || '';
+            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square mr-1"></i> Editando Emprendedor: ${emp.name}`;
+            document.getElementById('saveEmpBtnText').innerText = "Actualizar Emprendedor";
+            document.getElementById('empName').focus();
+        }
+
+        function resetEmpForm() {
+            document.getElementById('empEditId').value = '';
+            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-store mr-1"></i> Registrar o Editar Emprendedor Lojano`;
+            document.getElementById('saveEmpBtnText').innerText = "Guardar Emprendedor";
+            document.getElementById('empName').value = '';
+            document.getElementById('empCategory').value = '';
+            document.getElementById('empPhone').value = '';
+            document.getElementById('empImg').value = '';
+            document.getElementById('empDesc').value = '';
         }
 
         function renderAdminEmprendedoresList() {
@@ -1853,7 +1897,10 @@
                 list.innerHTML += `
                     <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
                         <span class="text-brandGold font-bold">${emp.name} (${emp.category})</span>
-                        <button onclick="deleteEmprendedor('${emp.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex gap-2">
+                            <button onclick="editEmprendedor('${emp.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteEmprendedor('${emp.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>
                 `;
             });
