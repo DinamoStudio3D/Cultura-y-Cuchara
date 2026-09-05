@@ -91,9 +91,9 @@
     <!-- Barra Superior -->
     <header class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-4 text-center border-b border-brandGold/30 relative z-50">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span><i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim</span>
+            <span data-i18n="topInit"><i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim</span>
             <span class="text-brandGold font-semibold">
-                <i class="fa-solid fa-landmark-flag mr-1"></i> Avalado por la Mesa Turística de Loja | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocina: ILE
+                <i class="fa-solid fa-landmark-flag mr-1"></i> <span data-i18n="topMesa">Avalado por la Mesa Turística de Loja</span> | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocina: ILE
             </span>
         </div>
     </header>
@@ -107,22 +107,29 @@
                 </div>
                 <div>
                     <span class="text-white font-bold text-sm tracking-wide block leading-none">CULTURA Y CUCHARA</span>
-                    <span class="text-brandGold text-[9px] uppercase tracking-widest">Sabores • Hotelería • Destinos</span>
+                    <span class="text-brandGold text-[9px] uppercase tracking-widest" data-i18n="navSub">Sabores • Hotelería • Destinos</span>
                 </div>
             </a>
-            <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
-                <a href="#inicio" class="hover:text-brandGold transition">Inicio</a>
-                <a href="#tendencia" class="hover:text-brandGold transition">En Tendencia</a>
-                <a href="#mapa" class="hover:text-brandGold transition">El Mapa</a>
-                <a href="#establecimientos" class="hover:text-brandGold transition">La Ruta</a>
-                <a href="#especias" class="hover:text-brandGold transition">Especias ILE</a>
+            <div class="hidden md:flex items-center gap-5 text-sm font-medium text-gray-300">
+                <a href="#inicio" class="hover:text-brandGold transition" data-i18n="menuHome">Inicio</a>
+                <a href="#tendencia" class="hover:text-brandGold transition" data-i18n="menuTrending">En Tendencia</a>
+                <a href="#mapa" class="hover:text-brandGold transition" data-i18n="menuMap">El Mapa</a>
+                <a href="#establecimientos" class="hover:text-brandGold transition" data-i18n="menuRoute">La Ruta</a>
+                <a href="#especias" class="hover:text-brandGold transition" data-i18n="menuSpices">Especias ILE</a>
                 <a href="#pasaporte" class="hover:text-brandGold transition relative">
-                    <i class="fa-solid fa-qrcode text-brandGold mr-1"></i>Pasaporte
+                    <i class="fa-solid fa-qrcode text-brandGold mr-1"></i><span data-i18n="menuPassport">Pasaporte</span>
                     <span id="navStampBadge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0/4</span>
                 </a>
-                <a href="#agenda" class="hover:text-brandGold transition">Agenda</a>
+                <a href="#agenda" class="hover:text-brandGold transition" data-i18n="menuAgenda">Agenda</a>
+                
+                <!-- SELECTOR DE IDIOMA -->
+                <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer">
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="en">🇺🇸 EN</option>
+                </select>
+
                 <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/40 px-3 py-1.5 rounded font-bold hover:bg-brandGold hover:text-brandDark transition text-xs flex items-center gap-1.5 relative">
-                    <i class="fa-solid fa-mug-hot"></i> Mi Ruta <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1 rounded-full hidden">0</span>
+                    <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta</span> <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1 rounded-full hidden">0</span>
                 </button>
             </div>
             <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl p-2 relative">
@@ -130,67 +137,74 @@
             </button>
         </div>
         <div id="mobileMenu" class="hidden md:hidden pt-4 pb-2 border-t border-gray-800 mt-3 flex flex-col gap-3 text-sm bg-brandDark px-4">
-            <a href="#inicio" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Inicio</a>
-            <a href="#tendencia" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">En Tendencia</a>
-            <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">El Mapa</a>
-            <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">La Ruta</a>
-            <a href="#especias" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()">Especias ILE</a>
-            <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-qrcode text-brandGold mr-1"></i>Mi Pasaporte</a>
-            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> Mi Ruta Guardada</button>
+            <a href="#inicio" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuHome">Inicio</a>
+            <a href="#tendencia" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuTrending">En Tendencia</a>
+            <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuMap">El Mapa</a>
+            <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuRoute">La Ruta</a>
+            <a href="#especias" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuSpices">Especias ILE</a>
+            <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-qrcode text-brandGold mr-1"></i><span data-i18n="menuPassport">Mi Pasaporte</span></a>
+            <div class="flex items-center justify-between py-1 border-t border-gray-800">
+                <span class="text-xs text-gray-400">Idioma / Language:</span>
+                <select id="langSelectorMobile" onchange="changeLanguage(this.value); toggleMobileMenu()" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none">
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="en">🇺🇸 English</option>
+                </select>
+            </div>
+            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span></button>
         </div>
     </nav>
 
     <!-- BANNER DINÁMICO DE EVENTO EN VIVO -->
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-yellow-600 to-brandGold text-brandDark py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
-        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">🔴 PRÓXIMO HOY</span>
+        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
         <span id="liveEventText">Cargando eventos...</span>
         <button id="liveEventBtn" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
-            <i class="fa-solid fa-map-pin mr-1"></i> Ver en el mapa
+            <i class="fa-solid fa-map-pin mr-1"></i> <span data-i18n="btnViewMap">Ver en el mapa</span>
         </button>
     </div>
 
-    <!-- Sección Hero Principal (Administrable) -->
+    <!-- Sección Hero Principal -->
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
         <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
             <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-lg mb-6 relative flex items-center justify-center p-1">
                 <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full" loading="lazy">
             </div>
-            <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4">
+            <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
                 Loja se conoce, se saborea y se hospeda
             </span>
-            <h1 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+            <h1 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heroTitle">
                 Gastronomía, <span class="text-brandGold">Hotelería</span> y Destinos
             </h1>
-            <p id="heroSubtitle" class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+            <p id="heroSubtitle" class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed" data-i18n="heroSubtitle">
                 Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
                 <a href="#mapa" class="bg-brandGold text-brandDark font-bold px-6 py-3 rounded-lg shadow hover:bg-brandGoldHover transition text-sm text-center">
-                    <i class="fa-solid fa-map-location-dot mr-2"></i> Iniciar la Ruta
+                    <i class="fa-solid fa-map-location-dot mr-2"></i> <span data-i18n="btnStartRoute">Iniciar la Ruta</span>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Loja en Cifras (Administrable) -->
+    <!-- Loja en Cifras -->
     <section class="bg-brandGold text-brandDark py-8 border-b-4 border-black z-10 relative">
         <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
                 <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="3">3</span></p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label">Temporadas</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporadas</p>
             </div>
             <div class="reveal">
                 <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="4">4</span>+</p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat2Label">Aliados y Hoteles</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat2Label" data-i18n="statAllies">Aliados y Hoteles</p>
             </div>
             <div class="reveal">
                 <p class="text-4xl font-black mb-1"><span class="counter" id="stat3Val" data-target="25">25</span>K</p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat3Label">Turistas Activos</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat3Label" data-i18n="statTourists">Turistas Activos</p>
             </div>
             <div class="reveal">
                 <p class="text-4xl font-black mb-1"><span class="counter" id="stat4Val" data-target="100">100</span>%</p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat4Label">Identidad Lojana</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat4Label" data-i18n="statIdentity">Identidad Lojana</p>
             </div>
         </div>
     </section>
@@ -200,10 +214,10 @@
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
                 <span class="bg-red-500/10 text-red-600 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest border border-red-500/20 inline-block mb-2">
-                    <i class="fa-solid fa-fire mr-1 text-red-500"></i> Lo más cotizado por los viajeros
+                    <i class="fa-solid fa-fire mr-1 text-red-500"></i> <span data-i18n="trendingBadge">Lo más cotizado por los viajeros</span>
                 </span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-brandDark">En Tendencia esta Semana</h2>
-                <p class="text-gray-600 text-xs mt-1">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-brandDark" data-i18n="trendingTitle">En Tendencia esta Semana</h2>
+                <p class="text-gray-600 text-xs mt-1" data-i18n="trendingDesc">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="trendingGridContainer"></div>
@@ -214,8 +228,8 @@
     <section class="py-10 px-4 bg-brandCream border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
-                <h3 class="font-bold text-brandDark text-lg"><i class="fa-solid fa-route text-brandGold mr-2"></i> Experiencias Sugeridas</h3>
-                <p class="text-xs text-gray-500">Elige un recorrido especializado para tu viaje.</p>
+                <h3 class="font-bold text-brandDark text-lg"><i class="fa-solid fa-route text-brandGold mr-2"></i> <span data-i18n="sugTitle">Experiencias Sugeridas</span></h3>
+                <p class="text-xs text-gray-500" data-i18n="sugDesc">Elige un recorrido especializado para tu viaje.</p>
             </div>
             <div class="flex gap-3 overflow-x-auto hide-scrollbar w-full md:w-auto pb-2 md:pb-0" id="suggestedRoutesContainer"></div>
         </div>
@@ -224,8 +238,8 @@
     <!-- Mapa Interactivo de Loja -->
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
-            <h2 class="text-2xl font-extrabold text-brandDark mb-2">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.</p>
+            <h2 class="text-2xl font-extrabold text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -233,10 +247,10 @@
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
                     <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
-                        <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> Cerca de mí
+                        <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> <span data-i18n="btnGps">Cerca de mí</span>
                     </button>
                     <button onclick="centerOnLoja()" class="bg-white text-brandDark px-3 py-2.5 rounded-full shadow-xl hover:bg-gray-100 transition text-xs font-bold flex items-center gap-1.5 border border-gray-300" title="Centrar mapa en Loja">
-                        <i class="fa-solid fa-crosshairs text-brandGold"></i> Centrar Loja
+                        <i class="fa-solid fa-crosshairs text-brandGold"></i> <span data-i18n="btnCenter">Centrar Loja</span>
                     </button>
                 </div>
             </div>
@@ -260,12 +274,12 @@
 
                 <div class="pt-4 border-t border-gray-100 flex flex-col gap-2">
                     <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
-                        <i class="fa-solid fa-film mr-2"></i> Ver Vídeo y Galería de Fotos
+                        <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
                     </button>
 
                     <div class="flex gap-2">
                         <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-2 rounded-lg font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
-                            <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Compartir
+                            <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShare">Compartir</span>
                         </a>
                         <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-2 rounded-lg font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
                             <i class="fa-solid fa-diamond-turn-right text-brandGold"></i>
@@ -273,7 +287,7 @@
                     </div>
                     
                     <button onclick="openQRDemoModal()" class="w-full bg-brandGold/10 border border-brandGold text-brandDark py-1.5 rounded-lg font-bold text-[10px] hover:bg-brandGold hover:text-white transition uppercase tracking-widest flex items-center justify-center mt-1">
-                        <i class="fa-solid fa-qrcode mr-1.5"></i> Simular Escaneo (Sellar)
+                        <i class="fa-solid fa-qrcode mr-1.5"></i> <span data-i18n="btnScan">Simular Escaneo (Sellar)</span>
                     </button>
                 </div>
             </div>
@@ -286,11 +300,11 @@
             
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
                 <div>
-                    <span class="text-brandGold font-bold uppercase tracking-widest text-xs">Turismo y Estadía</span>
-                    <h2 class="text-2xl font-extrabold text-brandDark mt-1">Nuestros Aliados y Hoteles</h2>
+                    <span class="text-brandGold font-bold uppercase tracking-widest text-xs" data-i18n="secTourism">Turismo y Estadía</span>
+                    <h2 class="text-2xl font-extrabold text-brandDark mt-1" data-i18n="secAlliesTitle">Nuestros Aliados y Hoteles</h2>
                 </div>
                 <div class="relative w-full sm:w-64">
-                    <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="Buscar hotel, café, plato..." class="w-full bg-gray-100 border border-gray-200 rounded-full py-2 px-4 pl-10 text-xs focus:ring-2 focus:ring-brandGold outline-none transition">
+                    <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="Buscar hotel, café, plato..." class="w-full bg-gray-100 border border-gray-200 rounded-full py-2 px-4 pl-10 text-xs focus:ring-2 focus:ring-brandGold outline-none transition" data-i18n-placeholder="searchPlaceholder">
                     <i class="fa-solid fa-search absolute left-4 top-2.5 text-gray-400 text-xs"></i>
                 </div>
             </div>
@@ -301,13 +315,13 @@
                 
                 <div class="flex gap-2 flex-shrink-0">
                     <button onclick="filterByTimeBlock('manana')" class="time-filter-btn bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-100 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-sun"></i> Mañana
+                        <i class="fa-solid fa-sun"></i> <span data-i18n="filterMorning">Mañana</span>
                     </button>
                     <button onclick="filterByTimeBlock('tarde')" class="time-filter-btn bg-brandGold/10 text-brandDark border border-brandGold/40 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-brandGold/20 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-utensils"></i> Tarde
+                        <i class="fa-solid fa-utensils"></i> <span data-i18n="filterAfternoon">Tarde</span>
                     </button>
                     <button onclick="filterByTimeBlock('noche')" class="time-filter-btn bg-indigo-50 text-indigo-900 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-moon"></i> Noche
+                        <i class="fa-solid fa-moon"></i> <span data-i18n="filterNight">Noche</span>
                     </button>
                 </div>
             </div>
@@ -317,7 +331,7 @@
             
             <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
                 <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
-                No encontramos resultados para esa búsqueda.
+                <span data-i18n="noResults">No encontramos resultados para esa búsqueda.</span>
             </div>
         </div>
     </section>
@@ -326,9 +340,9 @@
     <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
-                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> Tradición y Sabor</span>
-                <h2 class="text-3xl font-bold mt-2 mb-3">Secretos de Cocina con ILE</h2>
-                <p class="text-gray-400 text-sm max-w-xl mx-auto">
+                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> <span data-i18n="ileSub">Tradición y Sabor</span></span>
+                <h2 class="text-3xl font-bold mt-2 mb-3" data-i18n="ileTitle">Secretos de Cocina con ILE</h2>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto" data-i18n="ileDesc">
                     El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.
                 </p>
             </div>
@@ -337,26 +351,26 @@
                 <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
                     <div>
                         <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🌿</div>
-                        <h3 class="font-bold text-lg text-brandGold mb-2">El Adobo Lojano</h3>
-                        <p class="text-xs text-gray-300 leading-relaxed">Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.</p>
+                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard1Title">El Adobo Lojano</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard1Desc">Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.</p>
                     </div>
-                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold">Ideal para: Cecina y Secos</span>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard1Tag">Ideal para: Cecina y Secos</span>
                 </div>
                 <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
                     <div>
                         <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">☕</div>
-                        <h3 class="font-bold text-lg text-brandGold mb-2">Aromas de Altura</h3>
-                        <p class="text-xs text-gray-300 leading-relaxed">El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.</p>
+                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard2Title">Aromas de Altura</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard2Desc">El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.</p>
                     </div>
-                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold">Ideal para: Cafés y Pasteles</span>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard2Tag">Ideal para: Cafés y Pasteles</span>
                 </div>
                 <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
                     <div>
                         <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🍲</div>
-                        <h3 class="font-bold text-lg text-brandGold mb-2">El Toque del Repe</h3>
-                        <p class="text-xs text-gray-300 leading-relaxed">El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.</p>
+                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard3Title">El Toque del Repe</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard3Desc">El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.</p>
                     </div>
-                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold">Ideal para: Repe y Sopas</span>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard3Tag">Ideal para: Repe y Sopas</span>
                 </div>
             </div>
         </div>
@@ -370,29 +384,29 @@
                     <i class="fa-solid fa-stamp absolute -right-4 -bottom-4 text-8xl text-white/5 transform -rotate-12"></i>
                     <div class="relative z-10 w-full">
                         <i class="fa-solid fa-qrcode text-6xl text-brandGold mb-4 animate-pulse"></i>
-                        <h2 class="text-2xl font-black text-white uppercase tracking-wider mb-2">Pasaporte<br>Inteligente</h2>
-                        <p class="text-gray-400 text-xs mb-4">Elige tu modo de exploración y reclama tu premio.</p>
+                        <h2 class="text-2xl font-black text-white uppercase tracking-wider mb-2" data-i18n="passTitle">Pasaporte<br>Inteligente</h2>
+                        <p class="text-gray-400 text-xs mb-4" data-i18n="passDesc">Elige tu modo de exploración y reclama tu premio.</p>
                         
                         <button onclick="openModal('pasaporteModal')" class="w-full bg-brandGold text-brandDark px-5 py-3 rounded-full font-bold text-sm hover:bg-white transition shadow-lg flex items-center justify-center mx-auto">
-                            <i class="fa-solid fa-book-open mr-2"></i> Abrir mi Pasaporte
+                            <i class="fa-solid fa-book-open mr-2"></i> <span data-i18n="passBtnOpen">Abrir mi Pasaporte</span>
                         </button>
                         
-                        <button onclick="resetPassportProgess()" class="mt-4 text-[10px] text-gray-500 hover:text-white underline">Borrar progreso guardado</button>
+                        <button onclick="resetPassportProgess()" class="mt-4 text-[10px] text-gray-500 hover:text-white underline" data-i18n="passReset">Borrar progreso guardado</button>
                     </div>
                 </div>
                 <div class="md:w-2/3 p-8 flex flex-col justify-center">
-                    <h3 class="text-xl font-bold mb-4">¿Cómo funciona el reto?</h3>
+                    <h3 class="text-xl font-bold mb-4" data-i18n="passHowTitle">¿Cómo funciona el reto?</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
-                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-suitcase-rolling text-brandGold mr-1"></i> Modo Turista</h4>
-                            <p class="text-[11px] text-gray-600">Requiere: <b>1 Hotel + 3 Gastronomía</b> (Ideal para visitantes).</p>
+                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-suitcase-rolling text-brandGold mr-1"></i> <span data-i18n="passTouristMode">Modo Turista</span></h4>
+                            <p class="text-[11px] text-gray-600" data-i18n="passTouristDesc">Requiere: <b>1 Hotel + 3 Gastronomía</b> (Ideal para visitantes).</p>
                         </div>
                         <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
-                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-house-user text-brandGold mr-1"></i> Modo Lojano</h4>
-                            <p class="text-[11px] text-gray-600">Requiere: <b>5 Paradas Gastronómicas</b> (Libre elección).</p>
+                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-house-user text-brandGold mr-1"></i> <span data-i18n="passLocalMode">Modo Lojano</span></h4>
+                            <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>5 Paradas Gastronómicas</b> (Libre elección).</p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-gray-500 italic">* Reglas de seguridad: No se puede repetir el mismo establecimiento. Cada local otorga un único sello por temporada.</p>
+                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: No se puede repetir el mismo establecimiento. Cada local otorga un único sello por temporada.</p>
                 </div>
             </div>
         </div>
@@ -402,9 +416,9 @@
     <section id="agenda" class="py-16 px-4 bg-white border-t border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
-                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-calendar-days mr-1"></i> Loja en Movimiento</span>
-                <h2 class="text-3xl font-bold text-brandDark mt-2 mb-3">Agenda Cultural y Eventos</h2>
-                <p class="text-gray-600 text-sm max-w-xl mx-auto">
+                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-calendar-days mr-1"></i> <span data-i18n="agendaSub">Loja en Movimiento</span></span>
+                <h2 class="text-3xl font-bold text-brandDark mt-2 mb-3" data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
+                <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="agendaDesc">
                     Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.
                 </p>
             </div>
@@ -421,9 +435,9 @@
                     <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full max-w-[250px] mx-auto rounded-xl border-4 border-brandGold shadow-2xl shadow-brandGold/20" loading="lazy">
                 </div>
                 <div class="w-full md:w-2/3 text-center md:text-left">
-                    <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-microphone mr-1"></i> Episodios Completos</span>
-                    <h2 class="text-3xl font-extrabold mt-2 mb-4">El Podcast de Loja</h2>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed">Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.</p>
+                    <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-microphone mr-1"></i> <span data-i18n="podSub">Episodios Completos</span></span>
+                    <h2 class="text-3xl font-extrabold mt-2 mb-4" data-i18n="podTitle">El Podcast de Loja</h2>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed" data-i18n="podDesc">Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.</p>
                     
                     <div class="bg-black/50 border border-brandGold/30 p-4 rounded-xl flex items-center gap-4">
                         <button class="w-12 h-12 flex-shrink-0 bg-brandGold text-brandDark rounded-full flex items-center justify-center text-lg hover:scale-105 transition">
@@ -443,13 +457,13 @@
         </div>
     </section>
 
-    <!-- Aliados Estratégicos (Administrables) -->
+    <!-- Aliados Estratégicos -->
     <section id="aliados" class="bg-gray-100 text-brandDark py-16 px-4 border-t border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
-                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs">Apoyo y Respaldo</span>
-                <h2 class="text-3xl font-bold mt-2 mb-4">Aliados Estratégicos</h2>
-                <p class="text-gray-600 text-sm max-w-2xl mx-auto leading-relaxed">
+                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs" data-i18n="alliesSub">Apoyo y Respaldo</span>
+                <h2 class="text-3xl font-bold mt-2 mb-4" data-i18n="alliesTitle">Aliados Estratégicos</h2>
+                <p class="text-gray-600 text-sm max-w-2xl mx-auto leading-relaxed" data-i18n="alliesDesc">
                     Este proyecto es posible gracias a la unión del sector público, hotelero y la empresa privada para potenciar el turismo y la gastronomía de nuestra ciudad.
                 </p>
             </div>
@@ -460,7 +474,7 @@
                         <i class="fa-solid fa-landmark-flag"></i>
                     </div>
                     <h3 class="text-xl font-bold text-brandDark mb-2" id="aliado1Title">Mesa Turística de Loja</h3>
-                    <span class="bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">Respaldo Institucional</span>
+                    <span class="bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4" data-i18n="ally1Badge">Respaldo Institucional</span>
                     <p class="text-gray-600 text-xs leading-relaxed" id="aliado1Desc">Impulsando el desarrollo hotelero y turístico, visibilizando a nuestros emprendedores y poniendo a Loja en el mapa internacional.</p>
                 </div>
 
@@ -469,14 +483,14 @@
                         <i class="fa-solid fa-leaf"></i>
                     </div>
                     <h3 class="text-xl font-bold text-brandDark mb-2" id="aliado2Title">ILE</h3>
-                    <span class="bg-brandGold/20 text-brandGold text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">Patrocinador Principal</span>
+                    <span class="bg-brandGold/20 text-brandGold text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4" data-i18n="ally2Badge">Patrocinador Principal</span>
                     <p class="text-gray-600 text-xs leading-relaxed" id="aliado2Desc">Industria Lojana de Especerías. El sabor que acompaña las historias de nuestra cocina, apoyando el producto local y las tradiciones de nuestra tierra.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Pie de Página con Puntito Táctil Optimizado -->
+    <!-- Pie de Página -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -489,7 +503,7 @@
                 </div>
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
-                Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026. 
+                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.</span> 
                 <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-2 py-1 select-none" title="Admin">.</span>
             </div>
         </div>
@@ -505,7 +519,7 @@
             <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-mug-hot text-brandGold text-xl"></i>
-                    <h3 class="text-lg font-black uppercase tracking-wider text-brandGold">Mi Ruta Organizada</h3>
+                    <h3 class="text-lg font-black uppercase tracking-wider text-brandGold" data-i18n="modalItineraryTitle">Mi Ruta Organizada</h3>
                 </div>
                 <button onclick="closeModal('itineraryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
                     <i class="fa-solid fa-xmark"></i>
@@ -514,7 +528,7 @@
             <div class="p-6 overflow-y-auto flex-grow space-y-4" id="itineraryListContainer"></div>
             <div class="p-4 bg-white border-t border-gray-200 text-center">
                 <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
-                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Compartir mi Ruta Organizada por WhatsApp
+                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
                 </button>
             </div>
         </div>
@@ -527,18 +541,18 @@
             <div class="w-12 h-12 bg-brandGold text-brandDark rounded-full flex items-center justify-center text-xl mx-auto mb-3 shadow">
                 <i class="fa-solid fa-lock"></i>
             </div>
-            <h3 class="text-lg font-bold text-brandGold mb-1">Acceso Restringido</h3>
-            <p class="text-xs text-gray-400 mb-4">Ingresa tu PIN de administración</p>
+            <h3 class="text-lg font-bold text-brandGold mb-1" data-i18n="adminPinTitle">Acceso Restringido</h3>
+            <p class="text-xs text-gray-400 mb-4" data-i18n="adminPinDesc">Ingresa tu PIN de administración</p>
             <form onsubmit="verifyAdminPin(event)" class="space-y-3">
                 <input type="password" id="adminPinInput" required maxlength="6" placeholder="PIN" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-center text-lg tracking-widest text-white outline-none focus:border-brandGold">
-                <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-2 rounded hover:bg-white transition text-xs uppercase tracking-wider" data-i18n="adminPinBtn">
                     Ingresar al Panel
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN CMS TOTAL (LOCALES, HERO, CIFRAS, ALIADOS Y AGENDA) -->
+    <!-- PANEL DE ADMINISTRACIÓN CMS -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             
@@ -663,7 +677,7 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA 2: TEXTOS Y CIFRAS (HERO Y ESTADÍSTICAS) -->
+                <!-- PESTAÑA 2: TEXTOS Y CIFRAS -->
                 <div id="adminTabHero" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-pen-nib mr-1"></i> Personalizar Cabecera y Cifras de la Web</h4>
@@ -703,7 +717,7 @@
                     </div>
                 </div>
 
-                <!-- PESTAÑA 3: ALIADOS Y PATROCINADORES -->
+                <!-- PESTAÑA 3: ALIADOS -->
                 <div id="adminTabAliados" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-handshake mr-1"></i> Administrar Aliados Estratégicos</h4>
@@ -873,17 +887,17 @@
             </button>
             <div class="bg-brandDark text-center py-6 border-b-2 border-brandGold relative overflow-hidden">
                 <i class="fa-solid fa-passport absolute -left-4 -bottom-4 text-6xl text-white/5"></i>
-                <h3 class="text-2xl font-black text-brandGold uppercase tracking-widest">Mi Pasaporte</h3>
+                <h3 class="text-2xl font-black text-brandGold uppercase tracking-widest" data-i18n="passTitleModal">Mi Pasaporte</h3>
                 <div class="flex justify-center gap-2 mt-3">
-                    <button onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition">Modo Turista</button>
-                    <button onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition">Modo Lojano</button>
+                    <button onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded text-xs font-bold bg-brandGold text-brandDark transition" data-i18n="passTouristMode">Modo Turista</button>
+                    <button onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition" data-i18n="passLocalMode">Modo Lojano</button>
                 </div>
             </div>
             <div class="p-6">
                 <p class="text-xs text-gray-600 mb-4 text-center font-bold" id="passportRuleDesc">Meta: 1 Hotel + 3 Gastronomía</p>
                 <div class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto p-1" id="passportStampsGrid"></div>
                 <div class="bg-gray-100 rounded-lg p-4 text-center border border-gray-200">
-                    <p class="text-sm font-bold text-brandDark mb-1"><i class="fa-solid fa-gift text-brandGold mr-1"></i> Progreso de Recompensa</p>
+                    <p class="text-sm font-bold text-brandDark mb-1"><i class="fa-solid fa-gift text-brandGold mr-1"></i> <span data-i18n="passRewardTitle">Progreso de Recompensa</span></p>
                     <p class="text-[10px] text-gray-600" id="passportProgressText">Completa tu meta para reclamar tu kit ILE.</p>
                     <div class="w-full bg-gray-300 h-3 rounded-full mt-3 overflow-hidden shadow-inner">
                         <div id="passportProgressBar" class="bg-gradient-to-r from-brandGold to-yellow-600 h-3 rounded-full transition-all duration-1000" style="width: 0%"></div>
@@ -930,8 +944,205 @@
         </div>
     </div>
 
-    <!-- Script General -->
+    <!-- Script General y Diccionario de Idiomas -->
     <script>
+        // DICCIONARIO DE IDIOMAS (ESPAÑOL E INGLÉS)
+        const translations = {
+            es: {
+                topInit: "Una iniciativa de Dínamo Studio & Codeproim",
+                topMesa: "Avalado por la Mesa Turística de Loja",
+                navSub: "Sabores • Hotelería • Destinos",
+                menuHome: "Inicio",
+                menuTrending: "En Tendencia",
+                menuMap: "El Mapa",
+                menuRoute: "La Ruta",
+                menuSpices: "Especias ILE",
+                menuPassport: "Pasaporte",
+                menuAgenda: "Agenda",
+                menuItinerary: "Mi Ruta",
+                bannerLive: "🔴 PRÓXIMO HOY",
+                btnViewMap: "Ver en el mapa",
+                heroBadge: "Loja se conoce, se saborea y se hospeda",
+                heroTitle: 'Gastronomía, <span class="text-brandGold">Hotelería</span> y Destinos',
+                heroSubtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
+                btnStartRoute: "Iniciar la Ruta",
+                statSeasons: "Temporadas",
+                statAllies: "Aliados y Hoteles",
+                statTourists: "Turistas Activos",
+                statIdentity: "Identidad Lojana",
+                trendingBadge: "Lo más cotizado por los viajeros",
+                trendingTitle: "En Tendencia esta Semana",
+                trendingDesc: "Los establecimientos favoritos que los turistas están guardando más en sus rutas.",
+                sugTitle: "Experiencias Sugeridas",
+                sugDesc: "Elige un recorrido especializado para tu viaje.",
+                mapTitle: "Mapa Interactivo de Loja",
+                mapDesc: "Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.",
+                btnGps: "Cerca de mí",
+                btnCenter: "Centrar Loja",
+                btnMedia: "Ver Vídeo y Galería de Fotos",
+                btnShare: "Compartir",
+                btnScan: "Simular Escaneo (Sellar)",
+                secTourism: "Turismo y Estadía",
+                secAlliesTitle: "Nuestros Aliados y Hoteles",
+                searchPlaceholder: "Buscar hotel, café, plato...",
+                filterMorning: "Mañana",
+                filterAfternoon: "Tarde",
+                filterNight: "Noche",
+                noResults: "No encontramos resultados para esa búsqueda.",
+                ileSub: "Tradición y Sabor",
+                ileTitle: "Secretos de Cocina con ILE",
+                ileDesc: "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías.",
+                ileCard1Title: "El Adobo Lojano",
+                ileCard1Desc: "Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.",
+                ileCard1Tag: "Ideal para: Cecina y Secos",
+                ileCard2Title: "Aromas de Altura",
+                ileCard2Desc: "El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.",
+                ileCard2Tag: "Ideal para: Cafés y Pasteles",
+                ileCard3Title: "El Toque del Repe",
+                ileCard3Desc: "El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.",
+                ileCard3Tag: "Ideal para: Repe y Sopas",
+                passTitle: "Pasaporte<br>Inteligente",
+                passDesc: "Elige tu modo de exploración y reclama tu premio.",
+                passBtnOpen: "Abrir mi Pasaporte",
+                passReset: "Borrar progreso guardado",
+                passHowTitle: "¿Cómo funciona el reto?",
+                passTouristMode: "Modo Turista",
+                passTouristDesc: "Requiere: <b>1 Hotel + 3 Gastronomía</b> (Ideal para visitantes).",
+                passLocalMode: "Modo Lojano",
+                passLocalDesc: "Requiere: <b>5 Paradas Gastronómicas</b> (Libre elección).",
+                passRules: "* Reglas de seguridad: No se puede repetir el mismo establecimiento. Cada local otorga un único sello por temporada.",
+                agendaSub: "Loja en Movimiento",
+                agendaTitle: "Agenda Cultural y Eventos",
+                agendaDesc: "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
+                podSub: "Episodios Completos",
+                podTitle: "El Podcast de Loja",
+                podDesc: "Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.",
+                alliesSub: "Apoyo y Respaldo",
+                alliesTitle: "Aliados Estratégicos",
+                alliesDesc: "Este proyecto es posible gracias a la unión del sector público, hotelero y la empresa privada para potenciar el turismo y la gastronomía de nuestra ciudad.",
+                ally1Badge: "Respaldo Institucional",
+                ally2Badge: "Patrocinador Principal",
+                footerText: "Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.",
+                modalItineraryTitle: "Mi Ruta Organizada",
+                btnShareItinerary: "Compartir mi Ruta Organizada por WhatsApp",
+                adminPinTitle: "Acceso Restringido",
+                adminPinDesc: "Ingresa tu PIN de administración",
+                adminPinBtn: "Ingresar al Panel"
+            },
+            en: {
+                topInit: "An initiative by Dínamo Studio & Codeproim",
+                topMesa: "Endorsed by the Loja Tourism Board",
+                navSub: "Flavors • Hospitality • Destinations",
+                menuHome: "Home",
+                menuTrending: "Trending",
+                menuMap: "The Map",
+                menuRoute: "The Route",
+                menuSpices: "ILE Spices",
+                menuPassport: "Passport",
+                menuAgenda: "Agenda",
+                menuItinerary: "My Route",
+                bannerLive: "🔴 LIVE TODAY",
+                btnViewMap: "View on map",
+                heroBadge: "Loja is experienced, tasted and hosted",
+                heroTitle: 'Gastronomy, <span class="text-brandGold">Hospitality</span> & Destinations',
+                heroSubtitle: "Discover traditional local eateries, specialty coffee shops, hotels and must-see tourist spots through our interactive route.",
+                btnStartRoute: "Start the Route",
+                statSeasons: "Seasons",
+                statAllies: "Allies & Hotels",
+                statTourists: "Active Tourists",
+                statIdentity: "Loja Identity",
+                trendingBadge: "Most saved by travelers",
+                trendingTitle: "Trending This Week",
+                trendingDesc: "Favorite establishments travelers are saving most in their itineraries.",
+                sugTitle: "Suggested Experiences",
+                sugDesc: "Choose a specialized tour for your trip.",
+                mapTitle: "Interactive Map of Loja",
+                mapDesc: "Tap the <b>Map Pins</b> or press the GPS button to locate yourself in the city.",
+                btnGps: "Near me",
+                btnCenter: "Center Loja",
+                btnMedia: "View Video & Photo Gallery",
+                btnShare: "Share",
+                btnScan: "Simulate Scan (Stamp)",
+                secTourism: "Tourism & Stay",
+                secAlliesTitle: "Our Allies & Hotels",
+                searchPlaceholder: "Search hotel, cafe, dish...",
+                filterMorning: "Morning",
+                filterAfternoon: "Afternoon",
+                filterNight: "Night",
+                noResults: "No results found for that search.",
+                ileSub: "Tradition & Flavor",
+                ileTitle: "Kitchen Secrets with ILE",
+                ileDesc: "The soul of Loja gastronomy lies in its marinades, aromatic herbs and the unmistakable touch of Industria Lojana de Especerías.",
+                ileCard1Title: "Loja Marinade",
+                ileCard1Desc: "Masterful blend of cumin, achiote and garlic that infuses cecina before being grilled over firewood coals.",
+                ileCard1Tag: "Ideal for: Cecina & Stews",
+                ileCard2Title: "Highland Aromas",
+                ileCard2Desc: "Coffee from Catamayo and Olmedo pairs perfectly with subtle notes of cinnamon and cloves in pastry.",
+                ileCard2Tag: "Ideal for: Coffees & Pastries",
+                ileCard3Title: "The Repe Touch",
+                ileCard3Desc: "Fresh cilantro and a touch of white pepper enhance the creaminess of green plantain and traditional quesillo.",
+                ileCard3Tag: "Ideal for: Repe & Soups",
+                passTitle: "Smart<br>Passport",
+                passDesc: "Choose your exploration mode and claim your reward.",
+                passBtnOpen: "Open my Passport",
+                passReset: "Reset saved progress",
+                passHowTitle: "How does the challenge work?",
+                passTouristMode: "Tourist Mode",
+                passTouristDesc: "Requires: <b>1 Hotel + 3 Gastronomy</b> (Ideal for visitors).",
+                passLocalMode: "Local Mode",
+                passLocalDesc: "Requires: <b>5 Gastronomic Stops</b> (Free choice).",
+                passRules: "* Security rules: You cannot repeat the same establishment. Each location grants a single stamp per season.",
+                agendaSub: "Loja in Motion",
+                agendaTitle: "Cultural Agenda & Events",
+                agendaDesc: "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
+                podSub: "Full Episodes",
+                podTitle: "The Loja Podcast",
+                podDesc: "Get to know the stories of sacrifice, secret recipes and cultural heritage behind each eatery, hotel and coffee shop in our province.",
+                alliesSub: "Support & Backing",
+                alliesTitle: "Strategic Allies",
+                alliesDesc: "This project is made possible thanks to the union of the public, hotel, and private sectors to boost tourism and gastronomy in our city.",
+                ally1Badge: "Institutional Backing",
+                ally2Badge: "Main Sponsor",
+                footerText: "Loja is experienced, tasted and hosted. Endorsed by the Tourism Board. © 2026.",
+                modalItineraryTitle: "My Organized Route",
+                btnShareItinerary: "Share my Organized Route via WhatsApp",
+                adminPinTitle: "Restricted Access",
+                adminPinDesc: "Enter your administration PIN",
+                adminPinBtn: "Log in to Panel"
+            }
+        };
+
+        let currentLang = localStorage.getItem('cyc_lang') || 'es';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('cyc_lang', lang);
+            
+            // Actualizar selectores visuales
+            const selDesktop = document.getElementById('langSelector');
+            const selMobile = document.getElementById('langSelectorMobile');
+            if(selDesktop) selDesktop.value = lang;
+            if(selMobile) selMobile.value = lang;
+
+            // Traducir elementos estáticos
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[currentLang][key]) {
+                    el.setAttribute('placeholder', translations[currentLang][key]);
+                }
+            });
+
+            // Re-renderizar dinámicos
+            renderEverything();
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
             authDomain: "cultura-y-cuchara.firebaseapp.com",
@@ -1048,7 +1259,6 @@
                 checkLiveEventsBanner();
             });
 
-            // Cargar textos generales guardados
             db.collection("settings").doc("main").get().then((doc) => {
                 if (doc.exists) {
                     applySettings(doc.data());
@@ -1606,7 +1816,6 @@
             } else if(tab === 'hero') {
                 document.getElementById('adminTabHero').classList.remove('hidden');
                 document.getElementById('tabBtnHero').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
-                // Llenar inputs actuales de hero
                 document.getElementById('setHeroBadge').value = document.getElementById('heroBadge').innerText;
                 document.getElementById('setHeroTitle').value = "Gastronomía, Hotelería y Destinos";
                 document.getElementById('setHeroSubtitle').value = document.getElementById('heroSubtitle').innerText;
@@ -1626,7 +1835,6 @@
             }
         }
 
-        // GUARDAR CONFIGURACIÓN DE HERO Y CIFRAS
         function handleSaveHeroSettings(e) {
             e.preventDefault();
             let settingsData = {
@@ -2169,6 +2377,7 @@
         window.addEventListener('DOMContentLoaded', function() {
             cargarDatosDesdeFirestore();
             initPassport();
+            changeLanguage(currentLang);
             setTimeout(forceRemoveSplash, 600);
         });
 
