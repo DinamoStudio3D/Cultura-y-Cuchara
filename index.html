@@ -98,7 +98,7 @@
         </div>
     </header>
 
-    <!-- Barra de Navegación (Doble toque en el logo superior izquierdo abre Admin en móviles) -->
+    <!-- Barra de Navegación -->
     <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" ondblclick="requestAdminAccess()" onclick="handleLogoClick(event)" class="flex items-center gap-3 select-none" title="Admin Atajo">
@@ -151,7 +151,6 @@
                 </select>
             </div>
             <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span></button>
-            <!-- ACCESO DIRECTO MÓVIL AL PANEL ADMIN -->
             <button onclick="requestAdminAccess(); toggleMobileMenu()" class="text-brandGold font-bold text-left pt-2 border-t border-gray-800"><i class="fa-solid fa-lock mr-1"></i> Panel Administrador</button>
         </div>
     </nav>
@@ -492,7 +491,7 @@
         </div>
     </section>
 
-    <!-- Pie de Página con Enlace Admin Visible y Funcional -->
+    <!-- Pie de Página -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -506,7 +505,6 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-2">
                 <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.</span> 
-                <!-- BOTÓN ADMIN TEXTUAL CLARO Y ACCESIBLE -->
                 <button onclick="requestAdminAccess()" class="bg-gray-900 hover:bg-brandGold hover:text-brandDark text-brandGold border border-brandGold/40 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition">
                     <i class="fa-solid fa-lock mr-1"></i> Admin
                 </button>
@@ -949,7 +947,7 @@
         </div>
     </div>
 
-    <!-- Script General y Traducciones Bilingües -->
+    <!-- Script General y Blindaje de Carga -->
     <script>
         const translations = {
             es: {
@@ -1229,11 +1227,28 @@
         } catch(e) {}
 
         function cargarDatosDesdeFirestore() {
+            let dataLoaded = false;
+
+            // FALLBACK DE SEGURIDAD: Si Firestore tarda más de 2 segundos en responder, se libera la pantalla de carga automáticamente
+            const safetyTimer = setTimeout(() => {
+                if (!dataLoaded) {
+                    console.warn("Firestore tardó en responder. Usando datos locales de respaldo.");
+                    if(locations.length === 0) locations = defaultLocations;
+                    loadSettingsFromStorage();
+                    renderEverything();
+                    checkLiveEventsBanner();
+                    forceRemoveSplash();
+                    dataLoaded = true;
+                }
+            }, 2000);
+
             if (!db) {
+                clearTimeout(safetyTimer);
                 locations = defaultLocations;
                 loadSettingsFromStorage();
                 renderEverything();
                 checkLiveEventsBanner();
+                forceRemoveSplash();
                 return;
             }
 
@@ -1241,18 +1256,32 @@
                 locations = [];
                 snapshot.forEach((doc) => { locations.push({ id: doc.id, ...doc.data() }); });
                 if(locations.length === 0) { defaultLocations.forEach(loc => db.collection("locales").add(loc)); }
-                else { renderEverything(); }
-                checkLiveEventsBanner();
+                
+                if (!dataLoaded) {
+                    clearTimeout(safetyTimer);
+                    loadSettingsFromStorage();
+                    renderEverything();
+                    checkLiveEventsBanner();
+                    forceRemoveSplash();
+                    dataLoaded = true;
+                } else {
+                    renderEverything();
+                }
             }, () => {
-                locations = defaultLocations;
-                renderEverything();
-                checkLiveEventsBanner();
+                if (!dataLoaded) {
+                    clearTimeout(safetyTimer);
+                    locations = defaultLocations;
+                    loadSettingsFromStorage();
+                    renderEverything();
+                    checkLiveEventsBanner();
+                    forceRemoveSplash();
+                    dataLoaded = true;
+                }
             });
 
             db.collection("settings").doc("main").get().then((doc) => {
                 if (doc.exists) applySettings(doc.data());
-                else loadSettingsFromStorage();
-            }).catch(() => loadSettingsFromStorage());
+            }).catch(() => {});
         }
 
         function loadSettingsFromStorage() {
@@ -1488,7 +1517,6 @@
 
         function handleLogoClick(e) {
             e.preventDefault();
-            // Permite acceso rápido administrador con triple toque en el logo de la barra de navegación
             window.logoClicks = (window.logoClicks || 0) + 1;
             if (window.logoClicks === 3) {
                 window.logoClicks = 0;
@@ -1758,7 +1786,18 @@
 
         function resetPassportProgess() { localStorage.removeItem('cyc_visited_locations'); visitedLocations = []; updatePassportUI(); showToast('Pasaporte reiniciado'); }
 
-        window.addEventListener('DOMContentLoaded', () => { cargarDatosDesdeFirestore(); initPassport(); changeLanguage(currentLang); setTimeout(() => document.getElementById('splash-screen').classList.add('fade-out'), 800); });
+        function forceRemoveSplash() {
+            const splash = document.getElementById('splash-screen');
+            if(splash) splash.classList.add('fade-out');
+            const body = document.getElementById('body-content');
+            if(body) body.classList.remove('overflow-hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { 
+            cargarDatosDesdeFirestore(); 
+            initPassport(); 
+            changeLanguage(currentLang); 
+        });
 
         function searchItems() {
             let input = document.getElementById('searchInput').value.toLowerCase();
