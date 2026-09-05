@@ -1101,7 +1101,7 @@
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
         } catch(e) {
-            console.log("Error al iniciar Firebase:", e);
+            console.log("Firebase iniciando...");
         }
 
         const defaultCategories = [
@@ -1778,8 +1778,11 @@
                 const splash = document.getElementById('splash-screen');
                 if(splash) splash.classList.add('fade-out');
                 document.getElementById('body-content').classList.remove('overflow-hidden');
-                if(map) map.invalidateSize();
-            }, 300);
+                if(map) {
+                    map.invalidateSize();
+                    selectLocation(0); // Esto selecciona por defecto el primer local para que el mapa dibuje los pines de inmediato
+                }
+            }, 400);
         });
     </script>
 </body>
