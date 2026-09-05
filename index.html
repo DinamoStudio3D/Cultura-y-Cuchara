@@ -195,7 +195,7 @@
         </div>
     </section>
 
-    <!-- SECCIÓN EN TENDENCIA: LOS MÁS GUARDADOS (REAL) -->
+    <!-- SECCIÓN EN TENDENCIA -->
     <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
@@ -476,7 +476,7 @@
         </div>
     </section>
 
-    <!-- Pie de Página -->
+    <!-- Pie de Página con Puntito Oculto Admin -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -490,7 +490,8 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026. 
-                <span onclick="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[8px]" title="Admin">.</span>
+                <!-- PUNTITO OCULTO RESTAURADO Y FUNCIONAL -->
+                <span onclick="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[10px] select-none" title="Admin">.</span>
             </div>
         </div>
     </footer>
@@ -538,7 +539,7 @@
         </div>
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN CMS -->
+    <!-- PANEL DE ADMINISTRACIÓN CMS CON EDICIÓN DE NEGOCIOS -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             
@@ -565,11 +566,12 @@
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
                 
-                <!-- PESTAÑA 1: LOCALES -->
+                <!-- PESTAÑA 1: LOCALES (CREAR Y EDITAR) -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2"><i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel (Firestore)</h4>
-                        <form onsubmit="handleAddNewLocation(event)" class="space-y-4">
+                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel</h4>
+                        <form onsubmit="handleSaveLocation(event)" class="space-y-4">
+                            <input type="hidden" id="admEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre del Establecimiento</label>
@@ -607,7 +609,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
                                 <div>
                                     <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Coordenadas exactas</label>
-                                    <input type="text" id="admPlusCode" placeholder="Ej. -4.016811, -79.198642" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none focus:border-brandGold">
+                                    <input type="text" id="admPlusCode" placeholder="Ej. -3.9931, -79.2042" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">O selecciona Zona Rápida en Loja</label>
@@ -620,8 +622,6 @@
                                         <option value="-3.9985,-79.2010">Parque Central</option>
                                         <option value="-4.0040,-79.2020">San Sebastián</option>
                                         <option value="-3.9780,-79.2000">Parque Jipiro</option>
-                                        <option value="-4.0150,-79.2100">Universidad Nacional de Loja (UNL)</option>
-                                        <option value="-3.9750,-79.2050">Terminal Terrestre</option>
                                     </select>
                                 </div>
                             </div>
@@ -638,14 +638,20 @@
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de la Imagen</label>
                                 <input type="text" id="admImg" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Guardar y Publicar en la Nube (Firestore)
-                            </button>
+
+                            <div class="flex gap-2">
+                                <button type="submit" id="saveBtnText" class="flex-1 bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                                    Guardar en la Nube
+                                </button>
+                                <button type="button" onclick="resetLocationForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
+                                    Cancelar / Nuevo
+                                </button>
+                            </div>
                         </form>
                     </div>
 
                     <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados en Firestore</h4>
+                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados (Clic para Editar)</h4>
                         <div class="space-y-2" id="adminLocationsList"></div>
                     </div>
                 </div>
@@ -1056,13 +1062,11 @@
             renderAdminCategoriesList();
         }
 
-        // RENDERIZAR TENDENCIA REAL BASADA EN FAVORITOS DE LOS USUARIOS
         function renderTrendingUI() {
             const container = document.getElementById('trendingGridContainer');
             if(!container || locations.length === 0) return;
             container.innerHTML = '';
 
-            // Dar mayor puntuación real a los locales que estén en los favoritos del usuario
             let trendingList = [...locations].map(loc => {
                 let score = favoriteLocations.includes(loc.id) ? 100 : 10;
                 return { ...loc, score };
@@ -1562,8 +1566,10 @@
             return [parseFloat(coords[0]), parseFloat(coords[1])];
         }
 
-        function handleAddNewLocation(e) {
+        // GUARDAR O EDITAR LOCAL EN FIRESTORE
+        function handleSaveLocation(e) {
             e.preventDefault();
+            const editId = document.getElementById('admEditId').value;
             const title = document.getElementById('admTitle').value;
             const category = document.getElementById('admCategory').value;
             const iconClass = document.getElementById('admIconClass').value;
@@ -1577,7 +1583,7 @@
 
             const finalCoords = parseCoordinates(plusCodeInput, preset);
 
-            const newLoc = {
+            const locationData = {
                 tag, title, desc, dish,
                 hours: "Lun - Dom: 09:00 - 22:00", address,
                 lat: finalCoords[0], lng: finalCoords[1],
@@ -1587,18 +1593,58 @@
             };
 
             if (db) {
-                db.collection("locales").add(newLoc)
-                  .then(() => {
-                      closeModal('adminModal');
-                      showToast(`¡${title} guardado en Firestore!`);
-                      e.target.reset();
-                  })
-                  .catch((err) => {
-                      alert("Error al guardar: " + err.message);
-                  });
+                if (editId) {
+                    db.collection("locales").doc(editId).update(locationData)
+                      .then(() => {
+                          closeModal('adminModal');
+                          showToast(`¡${title} actualizado con éxito!`);
+                          resetLocationForm();
+                      })
+                      .catch(err => alert("Error al actualizar: " + err.message));
+                } else {
+                    db.collection("locales").add(locationData)
+                      .then(() => {
+                          closeModal('adminModal');
+                          showToast(`¡${title} guardado en Firestore!`);
+                          resetLocationForm();
+                      })
+                      .catch(err => alert("Error al guardar: " + err.message));
+                }
             } else {
                 alert("Base de datos no conectada.");
             }
+        }
+
+        function editLocation(id) {
+            const loc = locations.find(l => l.id === id);
+            if(!loc) return;
+            document.getElementById('admEditId').value = loc.id;
+            document.getElementById('admTitle').value = loc.title;
+            document.getElementById('admCategory').value = loc.category;
+            document.getElementById('admIconClass').value = loc.iconClass;
+            document.getElementById('admTag').value = loc.tag;
+            document.getElementById('admDish').value = loc.dish;
+            document.getElementById('admAddress').value = loc.address;
+            document.getElementById('admDesc').value = loc.desc;
+            document.getElementById('admPlusCode').value = `${loc.lat}, ${loc.lng}`;
+            if(loc.gallery && loc.gallery[0]) {
+                document.getElementById('admImg').value = loc.gallery[0].img;
+            }
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editando: ${loc.title}`;
+            document.getElementById('saveBtnText').innerText = "Actualizar Cambios en la Nube";
+            document.getElementById('admTitle').focus();
+        }
+
+        function resetLocationForm() {
+            document.getElementById('admEditId').value = '';
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Nuevo Local o Hotel`;
+            document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
+            document.getElementById('admTitle').value = '';
+            document.getElementById('admAddress').value = '';
+            document.getElementById('admDesc').value = '';
+            document.getElementById('admDish').value = '';
+            document.getElementById('admImg').value = '';
+            document.getElementById('admPlusCode').value = '';
         }
 
         function renderAdminLocationsList() {
@@ -1612,7 +1658,10 @@
                             <span class="text-brandGold font-bold"><i class="fa-solid ${loc.iconClass} mr-1"></i> ${loc.title}</span>
                             <span class="text-gray-400 text-[10px] block">(${loc.category})</span>
                         </div>
-                        <button onclick="deleteLocation('${loc.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex gap-2">
+                            <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded hover:bg-red-700 transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>
                 `;
             });
@@ -1620,7 +1669,7 @@
 
         function deleteLocation(id) {
             if (locations.length <= 1) { alert('Mínimo un local.'); return; }
-            if (db && id) {
+            if (confirm("¿Estás seguro de eliminar este establecimiento?") && db && id) {
                 db.collection("locales").doc(id).delete().then(() => {
                     showToast('Local eliminado de Firestore');
                 });
