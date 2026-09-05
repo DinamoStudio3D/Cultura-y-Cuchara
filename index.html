@@ -49,7 +49,7 @@
         .fab-whatsapp { position: fixed; bottom: 20px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
         @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        #splash-screen { transition: opacity 0.4s ease-out; z-index: 9999; }
+        #splash-screen { transition: opacity 0.5s ease-out; z-index: 9999; }
         .fade-out { opacity: 0; pointer-events: none; visibility: hidden; }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -65,13 +65,15 @@
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased" id="body-content">
 
+    <!-- Pantalla de Carga -->
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
-        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl flex items-center justify-center">
+        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center">
             <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover">
         </div>
-        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase">Cultura y Cuchara...</div>
+        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Cargando Cultura y Cuchara...</div>
     </div>
 
+    <!-- Barra Superior -->
     <header class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-4 text-center border-b border-brandGold/30 relative z-50">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
             <span data-i18n="topInit"><i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim</span>
@@ -81,6 +83,7 @@
         </div>
     </header>
 
+    <!-- Barra de Navegación -->
     <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3">
@@ -104,6 +107,7 @@
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition" data-i18n="menuAgenda">Agenda</a>
                 
+                <!-- SELECTOR DE IDIOMA -->
                 <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer">
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
@@ -132,9 +136,11 @@
                 </select>
             </div>
             <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span></button>
+            <button onclick="requestAdminAccess(); toggleMobileMenu()" class="text-brandGold hover:text-white text-left pt-2 border-t border-gray-800 font-bold"><i class="fa-solid fa-lock mr-1"></i> Panel Administrador</button>
         </div>
     </nav>
 
+    <!-- BANNER DINÁMICO DE EVENTO EN VIVO -->
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-yellow-600 to-brandGold text-brandDark py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
         <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
         <span id="liveEventText">Cargando eventos...</span>
@@ -143,19 +149,20 @@
         </button>
     </div>
 
+    <!-- Sección Hero Principal -->
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
         <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
             <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-lg mb-6 relative flex items-center justify-center p-1">
                 <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full" loading="lazy">
             </div>
-            <span class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
+            <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
                 Loja se conoce, se saborea y se hospeda
             </span>
-            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heroTitle">
+            <h1 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heroTitle">
                 Gastronomía, <span class="text-brandGold">Hotelería</span> y Destinos
             </h1>
-            <p class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed" data-i18n="heroSubtitle">
+            <p id="heroSubtitle" class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed" data-i18n="heroSubtitle">
                 Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
@@ -166,6 +173,7 @@
         </div>
     </section>
 
+    <!-- Loja en Cifras -->
     <section class="bg-brandGold text-brandDark py-8 border-b-4 border-black z-10 relative">
         <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
@@ -187,6 +195,7 @@
         </div>
     </section>
 
+    <!-- SECCIÓN EN TENDENCIA -->
     <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
@@ -201,6 +210,7 @@
         </div>
     </section>
 
+    <!-- Rutas Sugeridas -->
     <section class="py-10 px-4 bg-brandCream border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
@@ -211,6 +221,7 @@
         </div>
     </section>
 
+    <!-- Mapa Interactivo de Loja -->
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-extrabold text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
@@ -269,6 +280,7 @@
         </div>
     </section>
 
+    <!-- Establecimientos y Hoteles -->
     <section id="establecimientos" class="bg-white py-16 px-4 reveal">
         <div class="max-w-7xl mx-auto">
             
@@ -310,6 +322,7 @@
         </div>
     </section>
 
+    <!-- GUÍA DE ESPECIAS Y MARIDAJE ILE -->
     <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -349,6 +362,7 @@
         </div>
     </section>
 
+    <!-- Pasaporte Turístico Dual -->
     <section id="pasaporte" class="py-16 px-4 bg-brandGold text-brandDark reveal">
         <div class="max-w-5xl mx-auto">
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
@@ -384,6 +398,7 @@
         </div>
     </section>
 
+    <!-- Agenda Cultural y Eventos -->
     <section id="agenda" class="py-16 px-4 bg-white border-t border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -398,6 +413,7 @@
         </div>
     </section>
 
+    <!-- Sección Podcast Integrado -->
     <section id="podcast" class="py-16 px-4 bg-brandDark text-white border-t border-gray-800 reveal">
         <div class="max-w-5xl mx-auto">
             <div class="flex flex-col md:flex-row items-center gap-8">
@@ -427,6 +443,7 @@
         </div>
     </section>
 
+    <!-- Aliados Estratégicos -->
     <section id="aliados" class="bg-gray-100 text-brandDark py-16 px-4 border-t border-gray-200 reveal">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
@@ -459,6 +476,7 @@
         </div>
     </section>
 
+    <!-- Pie de Página -->
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -576,6 +594,7 @@
         </div>
     </div>
 
+    <!-- Script General y Diccionario de Idiomas -->
     <script>
         const translations = {
             es: {
@@ -1093,7 +1112,6 @@
                 `;
             });
 
-            // Pines de eventos
             eventsList.forEach((ev) => {
                 if(ev.lat && ev.lng) {
                     const eventIcon = L.divIcon({
