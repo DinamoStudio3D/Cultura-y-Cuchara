@@ -533,7 +533,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control bilingüe con Horarios, PINs, Emprendedores y Eventos</p>
+                        <p class="text-xs text-brandGold">Control bilingüe con Horarios, PINs, Emprendedores y Agenda</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -729,8 +729,9 @@
                 <!-- Agenda Tab -->
                 <div id="adminTabAgenda" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural (Español & English, con Imagen)</h4>
-                        <form onsubmit="handleAddNewEvent(event)" class="space-y-4">
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="eventFormTitle"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar o Editar Evento Cultural Bilingüe</h4>
+                        <form onsubmit="handleSaveEvent(event)" class="space-y-4">
+                            <input type="hidden" id="evEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título del evento (Español)</label>
@@ -742,17 +743,32 @@
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <input type="text" id="evDate" required placeholder="Fecha (ej. 15 - 18 Sep)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <input type="text" id="evType" required placeholder="Tipo (ej. Festival)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <input type="text" id="evImg" placeholder="URL de Imagen del Evento" class="bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (Ej. 15-20 Sep 2026)</label>
+                                    <input type="text" id="evDate" required placeholder="15 - 18 Sep" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Tipo</label>
+                                    <input type="text" id="evType" required placeholder="Festival" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de Imagen</label>
+                                    <input type="text" id="evImg" placeholder="https://..." class="w-full bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <input type="text" id="evLocation" required placeholder="Lugar (ej. Plaza de las Flores)" class="bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                <select id="evZonePreset" class="bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                    <option value="-3.9910,-79.2030">Plaza de las Flores</option>
-                                    <option value="-3.9980,-79.2015">Teatro Bolívar</option>
-                                    <option value="-3.9931,-79.2042">Mercado Central</option>
-                                </select>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Lugar</label>
+                                    <input type="text" id="evLocation" required placeholder="Plaza de las Flores" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Zona en Loja</label>
+                                    <select id="evZonePreset" class="w-full bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                        <option value="-3.9910,-79.2030">Plaza de las Flores</option>
+                                        <option value="-3.9980,-79.2015">Teatro Bolívar</option>
+                                        <option value="-3.9931,-79.2042">Mercado Central</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -764,9 +780,14 @@
                                     <textarea id="evDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                                 </div>
                             </div>
-                            <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                Publicar Evento y Crear Pin
-                            </button>
+                            <div class="flex gap-2">
+                                <button type="submit" id="saveEventBtnText" class="flex-1 bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
+                                    Publicar Evento
+                                </button>
+                                <button type="button" onclick="resetEventForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
+                                    Nuevo
+                                </button>
+                            </div>
                         </form>
                     </div>
 
@@ -1182,7 +1203,7 @@
                 id: 'ev_1', 
                 title: 'Feria de Café de Altura Loja', 
                 titleEn: 'Loja High-Altitude Coffee Fair', 
-                date: '15 - 18 Sep', 
+                date: '15 - 20 Sep', 
                 type: 'Festival', 
                 location: 'Plaza de las Flores', 
                 desc: 'Catas abiertas al público y barismo.', 
@@ -1284,20 +1305,30 @@
             const banner = document.getElementById('liveEventBanner');
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
-            if(!banner || eventsList.length === 0) return;
+            if(!banner) return;
+
+            let upcomingEvents = eventsList.filter(ev => {
+                return true; 
+            });
+
+            if(upcomingEvents.length === 0) {
+                banner.classList.add('hidden');
+                return;
+            }
 
             banner.classList.remove('hidden');
             
             function rotateEvent() {
-                const ev = eventsList[currentEventIndex];
+                if(upcomingEvents.length === 0) return;
+                const ev = upcomingEvents[currentEventIndex % upcomingEvents.length];
                 const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
                 textEl.innerHTML = `🔥 <b>${evTitle}</b> en ${ev.location} (${ev.date})`;
                 btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${evTitle}')`);
-                currentEventIndex = (currentEventIndex + 1) % eventsList.length;
+                currentEventIndex = (currentEventIndex + 1) % upcomingEvents.length;
             }
 
             rotateEvent();
-            if(eventsList.length > 1) {
+            if(upcomingEvents.length > 1) {
                 setInterval(rotateEvent, 5000);
             }
         }
@@ -2045,8 +2076,9 @@
             }
         }
 
-        function handleAddNewEvent(e) {
+        function handleSaveEvent(e) {
             e.preventDefault();
+            const editId = document.getElementById('evEditId').value;
             const title = document.getElementById('evTitle').value;
             const titleEn = document.getElementById('evTitleEn').value;
             const date = document.getElementById('evDate').value;
@@ -2060,14 +2092,62 @@
             const lat = parseFloat(zoneCoords[0]);
             const lng = parseFloat(zoneCoords[1]);
 
-            const newEvent = { id: 'ev_' + Date.now(), title, titleEn, date, type, location, img, desc, descEn, lat, lng };
-            eventsList.push(newEvent);
+            if (editId) {
+                let evObj = eventsList.find(ev => ev.id === editId);
+                if(evObj) {
+                    evObj.title = title;
+                    evObj.titleEn = titleEn;
+                    evObj.date = date;
+                    evObj.type = type;
+                    evObj.location = location;
+                    evObj.img = img;
+                    evObj.desc = desc;
+                    evObj.descEn = descEn;
+                    evObj.lat = lat;
+                    evObj.lng = lng;
+                }
+                showToast('¡Evento actualizado con éxito!');
+            } else {
+                const newEvent = { id: 'ev_' + Date.now(), title, titleEn, date, type, location, img, desc, descEn, lat, lng };
+                eventsList.push(newEvent);
+                showToast('¡Evento programado con éxito!');
+            }
+
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
             renderEverything();
             checkLiveEventsBanner();
-            closeModal('adminModal');
-            showToast('Evento y pin publicados');
-            e.target.reset();
+            resetEventForm();
+        }
+
+        function editEvent(id) {
+            const ev = eventsList.find(e => e.id === id);
+            if(!ev) return;
+            document.getElementById('evEditId').value = ev.id;
+            document.getElementById('evTitle').value = ev.title || '';
+            document.getElementById('evTitleEn').value = ev.titleEn || '';
+            document.getElementById('evDate').value = ev.date || '';
+            document.getElementById('evType').value = ev.type || '';
+            document.getElementById('evLocation').value = ev.location || '';
+            document.getElementById('evImg').value = ev.img || '';
+            document.getElementById('evDesc').value = ev.desc || '';
+            document.getElementById('evDescEn').value = ev.descEn || '';
+            document.getElementById('eventFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square mr-1"></i> Editando Evento: ${ev.title}`;
+            document.getElementById('saveEventBtnText').innerText = "Actualizar Evento";
+            document.getElementById('evTitle').focus();
+        }
+
+        function resetEventForm() {
+            document.getElementById('evEditId').value = '';
+            document.getElementById('eventFormTitle').innerHTML = `<i class="fa-solid fa-calendar-plus mr-1"></i> Programar o Editar Evento Cultural Bilingüe`;
+            document.getElementById('saveEventBtnText').innerText = "Publicar Evento";
+            document.getElementById('evTitle').value = '';
+            document.getElementById('evTitleEn').value = '';
+            document.getElementById('evDate').value = '';
+            document.getElementById('evType').value = '';
+            document.getElementById('evLocation').value = '';
+            document.getElementById('evImg').value = '';
+            document.getElementById('evDesc').value = '';
+            document.getElementById('evDescEn').value = '';
         }
 
         function renderAdminEventsList() {
@@ -2077,8 +2157,14 @@
             eventsList.forEach(ev => {
                 list.innerHTML += `
                     <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
-                        <span class="text-brandGold font-bold">${ev.title}</span>
-                        <button onclick="deleteEvent('${ev.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                        <div>
+                            <span class="text-brandGold font-bold">${ev.title}</span>
+                            <span class="text-gray-400 text-[10px] block">${ev.date} - ${ev.location}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editEvent('${ev.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteEvent('${ev.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded hover:bg-red-700 transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                        </div>
                     </div>
                 `;
             });
