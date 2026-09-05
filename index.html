@@ -1176,10 +1176,10 @@
         }
 
         const defaultCategories = [
-            { id: 'hotel', name: 'Hoteles & Hospedaje', icon: '🏨' },
-            { id: 'hueca', name: 'Huecas', icon: '🥘' },
-            { id: 'cafe', name: 'Cafeterías', icon: '☕' },
-            { id: 'urbana', name: 'Urbana', icon: '🍔' }
+            { id: 'hotel', name: 'Hoteles & Hospedaje', nameEn: 'Hotels & Lodging', icon: '🏨' },
+            { id: 'hueca', name: 'Huecas', nameEn: 'Local Eateries', icon: '🥘' },
+            { id: 'cafe', name: 'Cafeterías', nameEn: 'Coffee Shops', icon: '☕' },
+            { id: 'urbana', name: 'Urbana', nameEn: 'Urban', icon: '🍔' }
         ];
 
         const defaultLocations = [
@@ -1351,15 +1351,17 @@
         function renderCategoriesUI() {
             const catScroll = document.getElementById('categoryScroll');
             if(catScroll) {
+                const todosLabel = currentLang === 'en' ? 'All' : 'Todos';
                 catScroll.innerHTML = `
                     <button onclick="filterItems('all', this)" class="filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2 flex items-center gap-2 transition-all shadow-md">
-                        <i class="fa-solid fa-border-all"></i> <span class="text-sm font-bold text-white">Todos</span>
+                        <i class="fa-solid fa-border-all"></i> <span class="text-sm font-bold text-white">${todosLabel}</span>
                     </button>
                 `;
                 categories.forEach(cat => {
+                    const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
                     catScroll.innerHTML += `
                         <button onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
-                            <span class="text-lg">${cat.icon}</span> <span class="text-sm font-bold">${cat.name}</span>
+                            <span class="text-lg">${cat.icon}</span> <span class="text-sm font-bold">${catName}</span>
                         </button>
                     `;
                 });
@@ -1369,7 +1371,8 @@
             if(admCategorySelect) {
                 admCategorySelect.innerHTML = '';
                 categories.forEach(cat => {
-                    admCategorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
+                    admCategorySelect.innerHTML += `<option value="${cat.id}">${catName}</option>`;
                 });
             }
 
@@ -1377,9 +1380,10 @@
             if(sugContainer) {
                 sugContainer.innerHTML = '';
                 categories.slice(0, 3).forEach(cat => {
+                    const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
                     sugContainer.innerHTML += `
                         <button onclick="setSuggestedRoute('${cat.id}')" class="bg-white border border-brandGold text-brandDark px-4 py-2 rounded-xl shadow-sm hover:bg-brandGold hover:text-white transition text-xs font-bold whitespace-nowrap flex items-center">
-                            <span class="mr-2">${cat.icon}</span> ${cat.name}
+                            <span class="mr-2">${cat.icon}</span> ${catName}
                         </button>
                     `;
                 });
