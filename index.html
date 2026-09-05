@@ -48,7 +48,7 @@
         .fab-whatsapp { position: fixed; bottom: 20px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
         @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        #splash-screen { transition: opacity 0.4s ease-out; z-index: 9999; }
+        #splash-screen { transition: opacity 0.3s ease-out; z-index: 9999; }
         .fade-out { opacity: 0; pointer-events: none; visibility: hidden; }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -549,7 +549,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control total local</p>
+                        <p class="text-xs text-brandGold">Control local instantáneo</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -1123,6 +1123,117 @@
             });
 
             renderEverything();
+        }
+
+        const defaultCategories = [
+            { id: 'hotel', name: 'Hoteles & Hospedaje', icon: '🏨' },
+            { id: 'hueca', name: 'Huecas', icon: '🥘' },
+            { id: 'cafe', name: 'Cafeterías', icon: '☕' },
+            { id: 'urbana', name: 'Urbana', icon: '🍔' }
+        ];
+
+        const defaultLocations = [
+            {
+                id: 'loc_1', tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
+                desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
+                dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
+                address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
+                iconClass: "fa-mortar-pestle", category: "hueca",
+                youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                gallery: [
+                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" },
+                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Ambiente Familiar" }
+                ]
+            },
+            {
+                id: 'loc_2', tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
+                desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
+                dish: "Café filtrado de origen Catamayo", hours: "Mar - Dom: 09:00 - 20:00",
+                address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
+                iconClass: "fa-mug-hot", category: "cafe",
+                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)" }]
+            },
+            {
+                id: 'loc_3', tag: "Gastronomía Urbana", title: "El Fogón de Lola",
+                desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
+                dish: "Repe ahumado con toque de la casa", hours: "Mié - Lun: 12:00 - 22:00",
+                address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
+                iconClass: "fa-fire-burner", category: "urbana",
+                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado" }]
+            },
+            {
+                id: 'loc_4', tag: "Hotel Aliado", title: "Gran Hotel Loja",
+                desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
+                dish: "Desayuno tradicional incluido", hours: "Atención 24/7",
+                address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
+                iconClass: "fa-hotel", category: "hotel",
+                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva" }]
+            }
+        ];
+
+        const defaultEvents = [
+            { id: 'ev_1', title: 'Feria de Café de Altura Loja', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', lat: -3.9910, lng: -79.2030 },
+            { id: 'ev_2', title: 'Ruta del Repe Tradicional', date: '25 de Septiembre', type: 'Gastronomía', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', lat: -3.9931, lng: -79.2042 },
+            { id: 'ev_3', title: 'Concierto Sinfónico', date: '02 de Octubre', type: 'Arte & Música', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', lat: -3.9980, lng: -79.2015 }
+        ];
+
+        let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
+        let locations = JSON.parse(localStorage.getItem('cyc_dynamic_locales')) || defaultLocations;
+        let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
+
+        let currentLocationIndex = 0;
+        let visitedLocations = []; 
+        let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
+        let passportMode = 'turista';
+        let userCoords = null;
+
+        let map, markersLayer, userMarkerInstance = null;
+        try {
+            map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+        } catch(e) {}
+
+        // INICIALIZACIÓN INMEDIATA Y SEGURA (CERO BLOQUEOS)
+        window.addEventListener('DOMContentLoaded', () => { 
+            loadSettingsFromStorage();
+            renderEverything();
+            checkLiveEventsBanner();
+            initPassport(); 
+            changeLanguage(currentLang); 
+            
+            // Ocultar pantalla de carga de inmediato
+            const splash = document.getElementById('splash-screen');
+            if(splash) splash.classList.add('fade-out');
+        });
+
+        function loadSettingsFromStorage() {
+            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
+                badge: "Loja se conoce, se saborea y se hospeda",
+                title: "Gastronomía, Hotelería y Destinos",
+                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
+                stat1: 3, stat3: 25, stat4: 100,
+                aliado1Title: "Mesa Turística de Loja", aliado1Desc: "Impulsando el desarrollo hotelero y turístico...",
+                aliado2Title: "ILE", aliado2Desc: "Industria Lojana de Especerías..."
+            };
+            applySettings(saved);
+        }
+
+        function applySettings(s) {
+            if(document.getElementById('heroBadge')) document.getElementById('heroBadge').innerText = s.badge || "";
+            if(document.getElementById('heroTitle')) {
+                document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Hotelería", '<span class="text-brandGold">Hotelería</span>') : "";
+            }
+            if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
+            if(document.getElementById('stat1Val')) document.getElementById('stat1Val').setAttribute('data-target', s.stat1 || 3);
+            if(document.getElementById('stat3Val')) document.getElementById('stat3Val').setAttribute('data-target', s.stat3 || 25);
+            if(document.getElementById('stat4Val')) document.getElementById('stat4Val').setAttribute('data-target', s.stat4 || 100);
+
+            if(document.getElementById('aliado1Title')) document.getElementById('aliado1Title').innerText = s.aliado1Title || "";
+            if(document.getElementById('aliado1Desc')) document.getElementById('aliado1Desc').innerText = s.aliado1Desc || "";
+            if(document.getElementById('aliado2Title')) document.getElementById('aliado2Title').innerText = s.aliado2Title || "";
+            if(document.getElementById('aliado2Desc')) document.getElementById('aliado2Desc').innerText = s.aliado2Desc || "";
         }
 
         let currentEventIndex = 0;
