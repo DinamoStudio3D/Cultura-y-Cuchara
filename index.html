@@ -38,7 +38,6 @@
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #C5A880; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .leaflet-popup-content { font-family: inherit; margin: 12px; text-align: center; }
         .leaflet-popup-tip { background: #ffffff; border-bottom: 2px solid #C5A880; border-right: 2px solid #C5A880; }
-        .leaflet-container a.leaflet-popup-close-button { color: #121212; font-weight: bold; }
         
         .hidden-item { display: none !important; }
         .custom-leaflet-icon { background: transparent; border: none; }
@@ -61,27 +60,16 @@
             100% { opacity: 1; transform: scale(1) rotate(-15deg); }
         }
         .stamp-earned { animation: stamp-hit 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-
-        .scanner-line {
-            width: 100%; height: 2px; background: #C5A880; position: absolute; top: 0;
-            box-shadow: 0 0 10px #C5A880; animation: scan 2s linear infinite;
-        }
-        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-
-        .star-rating i { cursor: pointer; transition: color 0.2s; }
-        .star-rating i:hover, .star-rating i.active { color: #C5A880; }
-
-        .local-item { transition: all 0.3s ease-in-out; }
     </style>
 </head>
-<body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
+<body class="bg-brandCream text-brandDark font-sans antialiased" id="body-content">
 
-    <!-- Pantalla de Carga (Instantánea) -->
+    <!-- Pantalla de Carga Instantánea -->
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
-        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center">
+        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl flex items-center justify-center">
             <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover">
         </div>
-        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Cargando Cultura y Cuchara...</div>
+        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase">Cultura y Cuchara...</div>
     </div>
 
     <!-- Barra Superior -->
@@ -97,7 +85,7 @@
     <!-- Barra de Navegación -->
     <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="#" ondblclick="requestAdminAccess()" onclick="handleLogoClick(event)" class="flex items-center gap-3 select-none" title="Admin Atajo">
+            <a href="#" onclick="handleLogoClick(event)" class="flex items-center gap-3 select-none" title="Admin Atajo">
                 <div class="w-10 h-10 rounded-full border-2 border-brandGold overflow-hidden bg-black shadow-sm flex items-center justify-center p-0.5">
                     <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full pointer-events-none">
                 </div>
@@ -118,7 +106,6 @@
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition" data-i18n="menuAgenda">Agenda</a>
                 
-                <!-- SELECTOR DE IDIOMA -->
                 <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer">
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
@@ -562,7 +549,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control total (Modo Sólido Local y Cloud)</p>
+                        <p class="text-xs text-brandGold">Control total local</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -661,7 +648,7 @@
 
                             <div class="flex gap-2">
                                 <button type="submit" id="saveBtnText" class="flex-1 bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
-                                    Guardar en la Nube
+                                    Guardar
                                 </button>
                                 <button type="button" onclick="resetLocationForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
                                     Cancelar / Nuevo
@@ -943,7 +930,7 @@
         </div>
     </div>
 
-    <!-- Script General y Sincronización Sólida Local/Cloud -->
+    <!-- Script General -->
     <script>
         const translations = {
             es: {
@@ -1138,120 +1125,6 @@
             renderEverything();
         }
 
-        const defaultCategories = [
-            { id: 'hotel', name: 'Hoteles & Hospedaje', icon: '🏨' },
-            { id: 'hueca', name: 'Huecas', icon: '🥘' },
-            { id: 'cafe', name: 'Cafeterías', icon: '☕' },
-            { id: 'urbana', name: 'Urbana', icon: '🍔' }
-        ];
-
-        const defaultLocations = [
-            {
-                id: 'loc_1', tag: "Hueca Tradicional", title: "Picantería Doña Rosita",
-                desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
-                dish: "Cecina tradicional asada al carbón", hours: "Lun - Sáb: 08:00 - 16:00",
-                address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
-                iconClass: "fa-mortar-pestle", category: "hueca",
-                youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                gallery: [
-                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" },
-                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Ambiente Familiar" }
-                ]
-            },
-            {
-                id: 'loc_2', tag: "Cafetería de Especialidad", title: "Café Zorzal & Altura",
-                desc: "Granos de altura cultivados en fincas lojanas, tostados artesanalmente y servidos en filtrados.",
-                dish: "Café filtrado de origen Catamayo", hours: "Mar - Dom: 09:00 - 20:00",
-                address: "Calle Bernardo Valdivieso y Rocafuerte", lat: -3.9968, lng: -79.2025, gps: "https://www.google.com/maps/search/?api=1&query=-3.9968,-79.2025",
-                iconClass: "fa-mug-hot", category: "cafe",
-                gallery: [{ img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80", title: "Filtrado V60 (Catamayo)" }]
-            },
-            {
-                id: 'loc_3', tag: "Gastronomía Urbana", title: "El Fogón de Lola",
-                desc: "Fusión innovadora entre la cocina tradicional lojana y técnicas contemporáneas.",
-                dish: "Repe ahumado con toque de la casa", hours: "Mié - Lun: 12:00 - 22:00",
-                address: "Av. Universitaria y Azuay", lat: -3.9895, lng: -79.2060, gps: "https://www.google.com/maps/search/?api=1&query=-3.9895,-79.2060",
-                iconClass: "fa-fire-burner", category: "urbana",
-                gallery: [{ img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", title: "Repe Blanco Ahumado" }]
-            },
-            {
-                id: 'loc_4', tag: "Hotel Aliado", title: "Gran Hotel Loja",
-                desc: "Hospedaje de primera categoría en el corazón cultural de la ciudad, con desayuno lojano incluido.",
-                dish: "Desayuno tradicional incluido", hours: "Atención 24/7",
-                address: "Calle Bernardo Valdivieso 10-40", lat: -3.9950, lng: -79.2010, gps: "https://www.google.com/maps/search/?api=1&query=-3.9950,-79.2010",
-                iconClass: "fa-hotel", category: "hotel",
-                gallery: [{ img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80", title: "Suite Ejecutiva" }]
-            }
-        ];
-
-        const defaultEvents = [
-            { id: 'ev_1', title: 'Feria de Café de Altura Loja', date: '15 - 18 Sep', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo.', lat: -3.9910, lng: -79.2030 },
-            { id: 'ev_2', title: 'Ruta del Repe Tradicional', date: '25 de Septiembre', type: 'Gastronomía', location: 'Mercado Central', desc: 'Demostraciones en vivo de cocina patrimonial.', lat: -3.9931, lng: -79.2042 },
-            { id: 'ev_3', title: 'Concierto Sinfónico', date: '02 de Octubre', type: 'Arte & Música', location: 'Teatro Bolívar', desc: 'Gala especial interpretando pasillos.', lat: -3.9980, lng: -79.2015 }
-        ];
-
-        let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
-        let locations = JSON.parse(localStorage.getItem('cyc_dynamic_locales')) || defaultLocations;
-        let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
-
-        let currentLocationIndex = 0;
-        let visitedLocations = []; 
-        let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
-        let passportMode = 'turista';
-        let userCoords = null;
-
-        let map, markersLayer, userMarkerInstance = null;
-        try {
-            map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
-            L.control.zoom({ position: 'bottomright' }).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
-            markersLayer = L.layerGroup().addTo(map);
-        } catch(e) {}
-
-        function forceRemoveSplash() {
-            const splash = document.getElementById('splash-screen');
-            if(splash) splash.classList.add('fade-out');
-            const body = document.getElementById('body-content');
-            if(body) body.classList.remove('overflow-hidden');
-        }
-
-        window.addEventListener('DOMContentLoaded', () => { 
-            loadSettingsFromStorage();
-            renderEverything();
-            checkLiveEventsBanner();
-            initPassport(); 
-            changeLanguage(currentLang); 
-            setTimeout(forceRemoveSplash, 300);
-        });
-
-        function loadSettingsFromStorage() {
-            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
-                badge: "Loja se conoce, se saborea y se hospeda",
-                title: "Gastronomía, Hotelería y Destinos",
-                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
-                stat1: 3, stat3: 25, stat4: 100,
-                aliado1Title: "Mesa Turística de Loja", aliado1Desc: "Impulsando el desarrollo hotelero y turístico...",
-                aliado2Title: "ILE", aliado2Desc: "Industria Lojana de Especerías..."
-            };
-            applySettings(saved);
-        }
-
-        function applySettings(s) {
-            if(document.getElementById('heroBadge')) document.getElementById('heroBadge').innerText = s.badge || "";
-            if(document.getElementById('heroTitle')) {
-                document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Hotelería", '<span class="text-brandGold">Hotelería</span>') : "";
-            }
-            if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
-            if(document.getElementById('stat1Val')) document.getElementById('stat1Val').setAttribute('data-target', s.stat1 || 3);
-            if(document.getElementById('stat3Val')) document.getElementById('stat3Val').setAttribute('data-target', s.stat3 || 25);
-            if(document.getElementById('stat4Val')) document.getElementById('stat4Val').setAttribute('data-target', s.stat4 || 100);
-
-            if(document.getElementById('aliado1Title')) document.getElementById('aliado1Title').innerText = s.aliado1Title || "";
-            if(document.getElementById('aliado1Desc')) document.getElementById('aliado1Desc').innerText = s.aliado1Desc || "";
-            if(document.getElementById('aliado2Title')) document.getElementById('aliado2Title').innerText = s.aliado2Title || "";
-            if(document.getElementById('aliado2Desc')) document.getElementById('aliado2Desc').innerText = s.aliado2Desc || "";
-        }
-
         let currentEventIndex = 0;
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
@@ -1426,14 +1299,19 @@
             updatePassportUI();
         }
 
+        function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            let dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+            let a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+        }
+
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((pos) => {
                     const lat = pos.coords.latitude, lng = pos.coords.longitude;
-                    if (Math.abs(lat - (-3.9931)) + Math.abs(lng - (-79.2042)) > 0.8) {
-                        centerOnLoja(); return;
-                    }
+                    if (Math.abs(lat - (-3.9931)) + Math.abs(lng - (-79.2042)) > 0.8) { centerOnLoja(); return; }
                     userCoords = { lat, lng };
                     if(map) map.setView([lat, lng], 16, { animate: true });
                     userMarkerInstance = L.marker([lat, lng], { icon: L.divIcon({ className: 'custom-leaflet-icon', html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce"><i class="fa-solid fa-street-view text-2xl"></i></div>`, iconSize: [48, 48], iconAnchor: [24, 24] }) }).bindPopup("<b>¡Tú estás aquí!</b>");
@@ -1458,10 +1336,7 @@
         function handleLogoClick(e) {
             e.preventDefault();
             window.logoClicks = (window.logoClicks || 0) + 1;
-            if (window.logoClicks === 3) {
-                window.logoClicks = 0;
-                requestAdminAccess();
-            }
+            if (window.logoClicks === 3) { window.logoClicks = 0; requestAdminAccess(); }
             setTimeout(() => { window.logoClicks = 0; }, 600);
         }
 
