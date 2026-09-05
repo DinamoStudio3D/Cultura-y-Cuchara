@@ -81,10 +81,10 @@
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
 
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
-        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center">
-            <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover">
+        <div class="w-32 h-32 rounded-full border-4 border-brandGold overflow-hidden bg-black shadow-2xl animate-pulse flex items-center justify-center p-1">
+            <img src="https://i.imgur.com/TIaEffN.png" alt="" class="w-full h-full object-cover rounded-full">
         </div>
-        <div class="mt-6 text-brandGold tracking-widest text-sm font-bold uppercase animate-pulse">Sincronizando con Firestore...</div>
+        <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">Preparando la mejor experiencia de Loja...</div>
     </div>
 
     <header class="bg-brandDark text-white text-[10px] sm:text-xs py-2 px-4 text-center border-b border-brandGold/30 relative z-50">
@@ -568,8 +568,8 @@
                                     <input type="text" id="admTitle" required placeholder="Ej. Picantería Central" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Name (English)</label>
-                                    <input type="text" id="admTitleEn" placeholder="Ej. Central Picantería" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Name (English)</label>
+                                    <input type="text" id="admTitleEn" placeholder="Ej. Central Picantería" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
 
@@ -598,8 +598,8 @@
                                     <input type="text" id="admTag" required placeholder="Ej. Sabor Típico" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Visible Tag (English)</label>
-                                    <input type="text" id="admTagEn" placeholder="Ej. Traditional Flavor" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Visible Tag (English)</label>
+                                    <input type="text" id="admTagEn" placeholder="Ej. Traditional Flavor" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
 
@@ -609,8 +609,8 @@
                                     <input type="text" id="admDish" required placeholder="Ej. Seco de chivo" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Star Dish / Benefit (English)</label>
-                                    <input type="text" id="admDishEn" placeholder="Ej. Goat stew" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Star Dish / Benefit (English)</label>
+                                    <input type="text" id="admDishEn" placeholder="Ej. Goat stew" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
                             
@@ -645,8 +645,8 @@
                                     <textarea id="admDesc" required placeholder="Breve descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Description (English)</label>
-                                    <textarea id="admDescEn" placeholder="Short description..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Description (English)</label>
+                                    <textarea id="admDescEn" placeholder="Short description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                                 </div>
                             </div>
 
@@ -748,8 +748,8 @@
                                     <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-semibold">Event Title (English)</label>
-                                    <input type="text" id="evTitleEn" placeholder="Title in English" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Event Title (English)</label>
+                                    <input type="text" id="evTitleEn" placeholder="Title in English" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -771,8 +771,8 @@
                                     <textarea id="evDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Description (English)</label>
-                                    <textarea id="evDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Description (English)</label>
+                                    <textarea id="evDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                                 </div>
                             </div>
                             <button type="submit" class="w-full bg-brandGold text-brandDark font-bold py-3 rounded hover:bg-white transition text-xs uppercase tracking-wider">
@@ -932,6 +932,7 @@
     <script>
         const translations = {
             es: {
+                splashText: "✨ Preparando los mejores sabores de Loja para ti...",
                 topInit: "Una iniciativa de Dínamo Studio & Codeproim",
                 topMesa: "Avalado por la Mesa Turística de Loja",
                 navSub: "Sabores • Hotelería • Destinos",
@@ -1013,6 +1014,7 @@
                 adminPinBtn: "Ingresar al Panel"
             },
             en: {
+                splashText: "✨ Preparing the best flavors of Loja for you...",
                 topInit: "An initiative by Dínamo Studio & Codeproim",
                 topMesa: "Endorsed by the Loja Tourism Board",
                 navSub: "Flavors • Hospitality • Destinations",
@@ -2402,8 +2404,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             const checkinId = urlParams.get('checkin');
             if (checkinId) {
-                registerVisit(checkinId);
-                window.history.replaceState({}, document.title, window.location.pathname);
+                let attempts = 0;
+                const checkInterval = setInterval(() => {
+                    let found = locations.find(l => l.id === checkinId) || defaultLocations.find(l => l.id === checkinId);
+                    if (found || attempts > 15) {
+                        clearInterval(checkInterval);
+                        registerVisit(checkinId);
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                    attempts++;
+                }, 200);
             }
         }
 
