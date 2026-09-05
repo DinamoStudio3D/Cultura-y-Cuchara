@@ -834,7 +834,7 @@
         </div>
     </div>
 
-    <!-- MODALES ADICIONALES (QR / PASAPORTE / CONTACTO) -->
+    <!-- MODAL DE QR Y PASAPORTE -->
     <div id="qrDemoModal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative">
             <button onclick="closeModal('qrDemoModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-xl z-10 w-8 h-8 flex items-center justify-center bg-black/50 rounded-full">
@@ -912,7 +912,7 @@
         </div>
     </div>
 
-    <!-- Script General y Sincronización Inmediata -->
+    <!-- Script General e Inicialización Inmediata -->
     <script>
         const translations = {
             es: {
@@ -1104,7 +1104,7 @@
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
         } catch(e) {
-            console.log("Error al iniciar Firebase:", e);
+            console.log("Firebase no disponible:", e);
         }
 
         const defaultCategories = [
@@ -1160,7 +1160,7 @@
         ];
 
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
-        let locations = defaultLocations; // Precarga inmediata para evitar vacíos
+        let locations = defaultLocations; // Inicialización inmediata con datos por defecto
         let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || defaultEvents;
 
         let currentLocationIndex = 0;
@@ -1170,22 +1170,32 @@
         let userCoords = null;
 
         let map, markersLayer, userMarkerInstance = null;
-        try {
-            map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
-            L.control.zoom({ position: 'bottomright' }).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
-            markersLayer = L.layerGroup().addTo(map);
-        } catch(e) { console.log('Mapa cargando...'); }
+
+        // INICIALIZACIÓN INMEDIATA AL CARGAR LA PÁGINA
+        window.addEventListener('DOMContentLoaded', function() {
+            try {
+                map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+                markersLayer = L.layerGroup().addTo(map);
+            } catch(e) {
+                console.log('Error inicializando mapa:', e);
+            }
+
+            cargarDatosDesdeFirestore();
+            initPassport();
+            changeLanguage(currentLang);
+            setTimeout(forceRemoveSplash, 300);
+        });
+
+        setTimeout(forceRemoveSplash, 1000);
 
         function cargarDatosDesdeFirestore() {
-            // Renderizado instantáneo inicial con datos por defecto
+            // Renderizado instantáneo con datos base
             renderEverything();
             checkLiveEventsBanner();
 
-            if (!db) {
-                forceRemoveSplash();
-                return;
-            }
+            if (!db) return;
 
             db.collection("locales").onSnapshot((snapshot) => {
                 if (!snapshot.empty) {
@@ -1195,14 +1205,11 @@
                     });
                     if (cloudLocales.length > 0) {
                         locations = cloudLocales;
+                        renderEverything();
                     }
                 }
-                renderEverything();
-                checkLiveEventsBanner();
-                forceRemoveSplash();
             }, (error) => {
-                console.log("Modo offline o error de red, usando locales locales");
-                forceRemoveSplash();
+                console.log("Modo offline activado, usando datos locales");
             });
 
             db.collection("settings").doc("main").get().then((doc) => {
@@ -2069,13 +2076,6 @@
             document.getElementById('establecimientos').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function getYouTubeEmbedUrl(url) {
-            if (!url) return '';
-            let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            let match = url.match(regExp);
-            return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
-        }
-
         function openMenuGallery() {
             const loc = locations[currentLocationIndex];
             if(!loc) return;
@@ -2242,15 +2242,6 @@
             if(body) body.classList.remove('overflow-hidden');
         }
 
-        window.addEventListener('DOMContentLoaded', function() {
-            cargarDatosDesdeFirestore();
-            initPassport();
-            changeLanguage(currentLang);
-            setTimeout(forceRemoveSplash, 400);
-        });
-
-        setTimeout(forceRemoveSplash, 1200);
-
         function searchItems() {
             let input = document.getElementById('searchInput').value.toLowerCase();
             let items = document.querySelectorAll('.local-item');
@@ -2279,8 +2270,10 @@
                 btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
                 btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
             });
-            btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-            btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
+            if(btnElement) {
+                btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+                btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
+            }
 
             document.querySelectorAll('.local-item').forEach(item => {
                 if (category === 'all' || item.classList.contains(category)) { 
@@ -2317,15 +2310,14 @@
         }
 
         let countersAnimated = false;
-        function revealOnScroll() {
+        window.addEventListener("scroll", () => {
             document.querySelectorAll(".reveal").forEach(el => {
                 if (el.getBoundingClientRect().top < window.innerHeight - 50) {
                     el.classList.add("active");
                     if (!countersAnimated && el.querySelector('.counter')) { animateCounters(); countersAnimated = true; }
                 }
             });
-        }
-        window.addEventListener("scroll", revealOnScroll);
+        });
 
         function toggleMobileMenu() { 
             const menu = document.getElementById('mobileMenu');
