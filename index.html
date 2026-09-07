@@ -151,10 +151,27 @@
         </button>
     </div>
 
-    <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
+    <section class="bg-gradient-to-r from-brandDark via-black to-brandDark py-4 px-4 border-b border-brandGold/40 text-white">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3 text-center sm:text-left">
+                <div class="w-12 h-12 rounded-xl bg-brandGold/20 border border-brandGold/50 text-brandGold flex items-center justify-center text-2xl flex-shrink-0 animate-pulse">
+                    <i class="fa-brands fa-youtube"></i>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase font-bold text-brandGold tracking-widest block" data-i18n="heroVideoBadge">🎬 NUEVO EPISODIO / VÍDEO DESTACADO</span>
+                    <h3 id="heroVideoTitleDisplay" class="text-sm font-bold text-white truncate max-w-md">Doña Rosita y la verdadera Cecina Lojana</h3>
+                </div>
+            </div>
+            <button onclick="openLatestVideoModal()" class="bg-brandGold text-white px-5 py-2.5 rounded-full font-bold text-xs hover:bg-brandGoldHover transition shadow-lg flex items-center gap-2 flex-shrink-0 border border-white/20">
+                <i class="fa-solid fa-play"></i> <span data-i18n="btnWatchLatest">Ver Estreno Ahora</span>
+            </button>
+        </div>
+    </section>
+
+    <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-20 px-4 overflow-hidden">
         <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
-            <div class="w-40 h-40 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl mb-6 relative flex items-center justify-center p-2">
+            <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl mb-6 relative flex items-center justify-center p-2">
                 <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
             </div>
             <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
@@ -439,9 +456,10 @@
             </div>
             <h3 class="text-lg font-bold text-brandGold uppercase tracking-wider mb-2">Apoyo Institucional y Patrocinio Oficial</h3>
             <p class="text-xs text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
-                Proyecto avalado y respaldado oficialmente por la <b>Mesa Turística de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
+                Proyecto avalado y respaldado oficialmente por la <b>Mesa Turística de Loja</b> y el <b>Municipio de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
             </p>
             <div class="flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-building-columns text-brandGold mr-1.5"></i> Municipio de Loja</span>
                 <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> Mesa Turística de Loja</span>
                 <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-leaf text-brandGold mr-1.5"></i> Patrocina: ILE</span>
             </div>
@@ -488,6 +506,23 @@
                 <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
                     <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YouTube Video Modal Player -->
+    <div id="latestVideoModal" class="fixed inset-0 z-[95] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandDark text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/60">
+                <h3 class="text-base font-bold text-brandGold" id="latestVideoModalTitle"><i class="fa-brands fa-youtube text-red-500 mr-2"></i> Nuevo Estreno / Vídeo Destacado</h3>
+                <button onclick="closeModal('latestVideoModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 bg-black">
+                <div class="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-brandGold/30">
+                    <iframe id="latestVideoIframe" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -791,11 +826,19 @@
                 <!-- Identidad y Personalización Tab -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-palette mr-1"></i> Personalizar Logotipo y Textos de la Web</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-palette mr-1"></i> Personalizar Logotipo y Vídeo / Textos</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL del Logotipo Oficial</label>
                                 <input type="text" id="setBrandLogoUrl" required placeholder="https://i.imgur.com/xaiFpa1.png" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> URL del Último Vídeo Destacado (YouTube)</label>
+                                <input type="text" id="setLatestVideoUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Destacado</label>
+                                <input type="text" id="setLatestVideoTitle" placeholder="Ej. Doña Rosita y la verdadera Cecina Lojana" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Texto de la Etiqueta Superior (Badge)</label>
@@ -810,7 +853,7 @@
                                 <textarea id="setHeroSubtitle" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
                             </div>
                             <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
-                                Aplicar Cambios de Identidad
+                                Aplicar Cambios de Identidad y Vídeo
                             </button>
                         </form>
                     </div>
@@ -902,6 +945,8 @@
                 menuItinerary: "Mi Ruta",
                 bannerLive: "🔴 PRÓXIMO HOY",
                 btnViewMap: "Ver en el mapa",
+                heroVideoBadge: "🎬 NUEVO EPISODIO / VÍDEO DESTACADO",
+                btnWatchLatest: "Ver Estreno Ahora",
                 heroBadge: "Loja se conoce, se saborea y se hospeda",
                 heroTitle: 'Sabores, <span class="text-brandGold">Historias</span> y Destinos',
                 heroSubtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
@@ -975,6 +1020,8 @@
                 menuItinerary: "My Route",
                 bannerLive: "🔴 LIVE TODAY",
                 btnViewMap: "View on map",
+                heroVideoBadge: "🎬 NEW EPISODE / FEATURED VIDEO",
+                btnWatchLatest: "Watch Premiere Now",
                 heroBadge: "Loja is experienced, tasted and hosted",
                 heroTitle: 'Flavors, <span class="text-brandGold">Stories</span> & Destinations',
                 heroSubtitle: "Discover traditional local eateries, specialty coffee shops, hotels and must-see tourist spots through our interactive route.",
@@ -1249,7 +1296,9 @@
                 badge: "Loja se conoce, se saborea y se hospeda",
                 title: "Sabores, Historias y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
-                logoUrl: "https://i.imgur.com/xaiFpa1.png"
+                logoUrl: "https://i.imgur.com/xaiFpa1.png",
+                latestVideoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                latestVideoTitle: "Doña Rosita y la verdadera Cecina Lojana"
             };
             applySettings(saved);
         }
@@ -1261,6 +1310,12 @@
             }
             if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
 
+            if (s.latestVideoTitle && document.getElementById('heroVideoTitleDisplay')) {
+                document.getElementById('heroVideoTitleDisplay').innerText = s.latestVideoTitle;
+            }
+
+            window.currentLatestVideoUrl = s.latestVideoUrl || "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+
             if (s.logoUrl) {
                 const logos = ['splashLogoImg', 'navLogoImg', 'heroLogoImg', 'podcastLogoImg', 'footerLogoImg'];
                 logos.forEach(id => {
@@ -1268,6 +1323,13 @@
                     if(el) el.src = s.logoUrl;
                 });
             }
+        }
+
+        function openLatestVideoModal() {
+            const ytIframe = document.getElementById('latestVideoIframe');
+            const targetUrl = window.currentLatestVideoUrl || "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+            ytIframe.src = getYouTubeEmbedUrl(targetUrl);
+            openModal('latestVideoModal');
         }
 
         let currentEventIndex = 0;
@@ -1914,18 +1976,24 @@
                 document.getElementById('setHeroBadge').value = document.getElementById('heroBadge').innerText;
                 document.getElementById('setHeroTitle').value = "Sabores, Historias y Destinos";
                 document.getElementById('setHeroSubtitle').value = document.getElementById('heroSubtitle').innerText;
+                document.getElementById('setLatestVideoUrl').value = window.currentLatestVideoUrl || "";
+                document.getElementById('setLatestVideoTitle').value = document.getElementById('heroVideoTitleDisplay')?.innerText || "";
             }
         }
 
         function handleSaveBrandingSettings(e) {
             e.preventDefault();
             let logoUrl = document.getElementById('setBrandLogoUrl').value;
+            let latestVideoUrl = document.getElementById('setLatestVideoUrl').value;
+            let latestVideoTitle = document.getElementById('setLatestVideoTitle').value;
             let badge = document.getElementById('setHeroBadge').value;
             let title = document.getElementById('setHeroTitle').value;
             let subtitle = document.getElementById('setHeroSubtitle').value;
 
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
             settings.logoUrl = logoUrl;
+            settings.latestVideoUrl = latestVideoUrl;
+            settings.latestVideoTitle = latestVideoTitle;
             settings.badge = badge;
             settings.title = title;
             settings.subtitle = subtitle;
@@ -1933,7 +2001,7 @@
 
             applySettings(settings);
             closeModal('adminModal');
-            showToast('¡Identidad y textos actualizados con éxito!');
+            showToast('¡Identidad y vídeo destacados actualizados con éxito!');
         }
 
         function parseCoordinates(inputVal, presetValue) {
@@ -2005,7 +2073,6 @@
                           resetLocationForm();
                       })
                       .catch(err => {
-                          console.warn("Firestore update fallback to local:", err.message);
                           let idx = locations.findIndex(l => l.id === editId);
                           if(idx > -1) locations[idx] = { id: editId, ...locationData };
                           closeModal('adminModal');
@@ -2022,7 +2089,6 @@
                           resetLocationForm();
                       })
                       .catch(err => {
-                          console.warn("Firestore set fallback to local:", err.message);
                           locations.push({ id: newId, ...locationData });
                           closeModal('adminModal');
                           showToast(`¡${title} guardado localmente!`);
