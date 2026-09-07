@@ -75,7 +75,6 @@
         }
         .stamp-earned { animation: stamp-hit 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 
-        /* Estética visual mejorada: Glassmorphism y transiciones suaves */
         .glass-nav { background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(234,88,12,0.18); border-color: rgba(234, 88, 12, 0.5); }
@@ -99,8 +98,8 @@
                     <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> Online Sync
                 </span>
             </div>
-            <span class="text-brandGold font-semibold">
-                <i class="fa-solid fa-landmark-flag mr-1"></i> <span data-i18n="topMesa">Avalado por la Mesa Turística de Loja</span> | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocina: ILE
+            <span class="text-brandGold font-semibold text-center sm:text-right" data-i18n="topMesa">
+                <i class="fa-solid fa-landmark-flag mr-1"></i> Avalado por el GAD Municipal y Mesa Turística de Loja | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocina: ILE
             </span>
         </div>
     </header>
@@ -466,11 +465,11 @@
             </div>
             <h3 class="text-lg font-bold text-brandGold uppercase tracking-wider mb-2">Apoyo Institucional y Patrocinio Oficial</h3>
             <p class="text-xs text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
-                Proyecto avalado y respaldado oficialmente por la <b>Mesa Turística de Loja</b> y el <b>Municipio de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
+                Proyecto avalado y respaldado oficialmente por el <b>GAD Municipal de Loja</b> y la <b>Mesa Turística de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
             </p>
             <div class="flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> Mesa Turística de Loja</span>
-                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-building-columns text-brandGold mr-1.5"></i> Municipio de Loja</span>
+                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-building-columns text-brandGold mr-1.5"></i> GAD Municipal de Loja</span>
+                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> Mesa Turística</span>
                 <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-leaf text-brandGold mr-1.5"></i> Patrocina: ILE</span>
             </div>
         </div>
@@ -490,7 +489,7 @@
                 </div>
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
-                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.</span> 
+                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo del GAD Municipal y Mesa Turística. © 2026.</span> 
                 <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-2 py-1 select-none" title="Admin">.</span>
             </div>
         </div>
@@ -903,7 +902,7 @@
             es: {
                 splashText: "✨ Preparando los mejores sabores de Loja para ti...",
                 topInit: "Una iniciativa de Dínamo Studio & Codeproim",
-                topMesa: "Avalado por la Mesa Turística de Loja",
+                topMesa: '<i class="fa-solid fa-landmark-flag mr-1"></i> Avalado por el GAD Municipal y Mesa Turística de Loja | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocina: ILE',
                 navSub: "Sabores • Historias • Destinos",
                 menuHome: "Inicio",
                 menuTrending: "En Tendencia",
@@ -966,7 +965,7 @@
                 podSub: "Episodios Completos",
                 podTitle: "El Podcast de Loja",
                 podDesc: "Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.",
-                footerText: "Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística. © 2026.",
+                footerText: "Loja se conoce, se saborea y se hospeda. Con el respaldo del GAD Municipal y Mesa Turística. © 2026.",
                 modalItineraryTitle: "Mi Ruta Organizada",
                 btnShareItinerary: "Compartir mi Ruta Organizada por WhatsApp",
                 adminPinTitle: "Acceso Restringido",
@@ -976,7 +975,7 @@
             en: {
                 splashText: "✨ Preparing the best flavors of Loja for you...",
                 topInit: "An initiative by Dínamo Studio & Codeproim",
-                topMesa: "Endorsed by the Loja Tourism Board",
+                topMesa: '<i class="fa-solid fa-landmark-flag mr-1"></i> Endorsed by Loja Municipality & Tourism Board | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Sponsored by: ILE',
                 navSub: "Flavors • Stories • Destinations",
                 menuHome: "Home",
                 menuTrending: "Trending",
@@ -1039,7 +1038,7 @@
                 podSub: "Full Episodes",
                 podTitle: "The Loja Podcast",
                 podDesc: "Get to know the stories of sacrifice, secret recipes and cultural heritage behind each eatery, hotel and coffee shop in our province.",
-                footerText: "Loja is experienced, tasted and hosted. Endorsed by the Tourism Board. © 2026.",
+                footerText: "Loja is experienced, tasted and hosted. Endorsed by Loja Municipality & Tourism Board. © 2026.",
                 modalItineraryTitle: "My Organized Route",
                 btnShareItinerary: "Share my Organized Route via WhatsApp",
                 adminPinTitle: "Restricted Access",
