@@ -456,7 +456,9 @@
                 </div>
                 <div>
                     <span class="text-white font-bold tracking-wide block">VIVE LOJA</span>
-                    <p class="text-[10px] text-gray-500">Dínamo Studio & Codeproim</p>
+                    <p class="text-[10px] text-gray-500">
+                        Web by: <a href="https://wa.me/593963111180?text=Hola%20D%C3%ADnamo%20Studio,%20estoy%20interesado%20en%20sus%20servicios%20web." target="_blank" class="text-brandGold font-bold hover:underline transition">Dínamo Studio</a> & Codeproim
+                    </p>
                 </div>
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
@@ -1083,10 +1085,14 @@
 
         let db = null;
         try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
+            if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+            } else if (typeof firebase !== 'undefined') {
+                db = firebase.firestore();
+            }
         } catch(e) {
-            console.log("Firebase status:", e);
+            console.log("Firebase status fallback:", e);
         }
 
         const defaultCategories = [
@@ -1221,8 +1227,9 @@
                 checkLiveEventsBanner();
                 checkUrlCheckinParam();
             }, (error) => {
-                console.error("Firestore error:", error);
+                console.warn("Firestore error fallback:", error);
                 locations = defaultLocations;
+                loadSettingsFromStorage();
                 renderEverything();
                 checkLiveEventsBanner();
                 checkUrlCheckinParam();
@@ -1438,7 +1445,7 @@
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
-                                   <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
+                                     <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
                                </div>`,
                         iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
                     });
@@ -1518,7 +1525,7 @@
                     const eventIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: `<div class="bg-brandGold text-white w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
-                                   <i class="fa-solid fa-calendar-days text-sm"></i>
+                                     <i class="fa-solid fa-calendar-days text-sm"></i>
                                </div>`,
                         iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
                     });
@@ -1560,7 +1567,7 @@
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
                             html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
-                                       <i class="fa-solid fa-street-view text-2xl"></i>
+                                         <i class="fa-solid fa-street-view text-2xl"></i>
                                    </div>`,
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
                         });
@@ -1605,7 +1612,7 @@
             const userAvatarIcon = L.divIcon({
                 className: 'custom-leaflet-icon',
                 html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
-                           <i class="fa-solid fa-street-view text-2xl"></i>
+                             <i class="fa-solid fa-street-view text-2xl"></i>
                        </div>`,
                 iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
             });
@@ -1997,7 +2004,15 @@
                           showToast(`¡${title} actualizado con éxito!`);
                           resetLocationForm();
                       })
-                      .catch(err => showToast("Error: " + err.message));
+                      .catch(err => {
+                          console.warn("Firestore update fallback to local:", err.message);
+                          let idx = locations.findIndex(l => l.id === editId);
+                          if(idx > -1) locations[idx] = { id: editId, ...locationData };
+                          closeModal('adminModal');
+                          showToast(`¡${title} actualizado localmente!`);
+                          renderEverything();
+                          resetLocationForm();
+                      });
                 } else {
                     const newId = 'loc_' + Date.now();
                     db.collection("locales").doc(newId).set(locationData)
@@ -2006,10 +2021,27 @@
                           showToast(`¡${title} guardado en Firestore!`);
                           resetLocationForm();
                       })
-                      .catch(err => showToast("Error: " + err.message));
+                      .catch(err => {
+                          console.warn("Firestore set fallback to local:", err.message);
+                          locations.push({ id: newId, ...locationData });
+                          closeModal('adminModal');
+                          showToast(`¡${title} guardado localmente!`);
+                          renderEverything();
+                          resetLocationForm();
+                      });
                 }
             } else {
-                showToast("Base de datos no conectada.");
+                const newId = editId || ('loc_' + Date.now());
+                if(editId) {
+                    let idx = locations.findIndex(l => l.id === editId);
+                    if(idx > -1) locations[idx] = { id: editId, ...locationData };
+                } else {
+                    locations.push({ id: newId, ...locationData });
+                }
+                closeModal('adminModal');
+                showToast(`¡Guardado localmente!`);
+                renderEverything();
+                resetLocationForm();
             }
         }
 
@@ -2093,7 +2125,15 @@
             if (db && id) {
                 db.collection("locales").doc(id).delete().then(() => {
                     showToast('Local eliminado de Firestore');
+                }).catch(() => {
+                    locations = locations.filter(l => l.id !== id);
+                    renderEverything();
+                    showToast('Local eliminado localmente');
                 });
+            } else {
+                locations = locations.filter(l => l.id !== id);
+                renderEverything();
+                showToast('Local eliminado localmente');
             }
         }
 
