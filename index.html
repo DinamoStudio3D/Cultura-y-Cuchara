@@ -22,6 +22,10 @@
                         brandGold: '#EA580C',
                         brandGoldHover: '#c2410c',
                         brandCream: '#F9F8F6'
+                    },
+                    boxShadow: {
+                        'warm-glow': '0 10px 30px rgba(234,88,12,0.15)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
                     }
                 }
             }
@@ -70,13 +74,18 @@
             100% { opacity: 1; transform: scale(1) rotate(-15deg); }
         }
         .stamp-earned { animation: stamp-hit 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+        /* Estética visual mejorada: Glassmorphism y transiciones suaves */
+        .glass-nav { background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(234,88,12,0.18); border-color: rgba(234, 88, 12, 0.5); }
     </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
 
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
         <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl animate-pulse flex items-center justify-center p-2">
-            <img id="splashLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="eager">
+            <img id="splashLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain">
         </div>
         <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">✨ Preparando los mejores sabores de Loja para ti...</div>
     </div>
@@ -86,12 +95,8 @@
             <div class="flex items-center gap-3">
                 <span data-i18n="topInit"><i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim</span>
                 <span class="hidden md:inline text-gray-500">|</span>
-                <span id="weatherWidget" class="text-brandGold font-semibold flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded border border-brandGold/20">
-                    <i class="fa-solid fa-cloud-sun text-sm"></i> Loja: <span id="tempDisplay">15°C</span> (Nublado)
-                </span>
-                <span class="hidden md:inline text-gray-500">|</span>
-                <span id="connectionStatusBadge" class="text-emerald-400 font-semibold flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
-                    <i class="fa-solid fa-wifi text-[10px] animate-pulse"></i> <span id="connText">Online Nube</span>
+                <span id="connectionStatusIndicator" class="text-green-400 font-semibold flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded border border-green-500/30">
+                    <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> Online Sync
                 </span>
             </div>
             <span class="text-brandGold font-semibold">
@@ -100,43 +105,43 @@
         </div>
     </header>
 
-    <nav class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur border-b border-brandGold/20 px-4 lg:px-8 py-3 shadow-lg">
+    <nav class="sticky top-0 z-40 glass-nav border-b border-brandGold/30 px-4 lg:px-8 py-3 shadow-warm-glow">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="#" class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full border-2 border-brandGold overflow-hidden bg-white shadow-sm flex items-center justify-center p-1">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 rounded-full border-2 border-brandGold overflow-hidden bg-white shadow-warm-glow flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
                     <img id="navLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
                 </div>
                 <div>
-                    <span id="brandNameText" class="text-white font-bold text-sm tracking-wide block leading-none">VIVE LOJA</span>
-                    <span class="text-brandGold text-[9px] uppercase tracking-widest" data-i18n="navSub">Sabores • Historias • Destinos</span>
+                    <span id="brandNameText" class="text-white font-black text-sm tracking-wide block leading-none">VIVE LOJA</span>
+                    <span class="text-brandGold text-[9px] uppercase tracking-widest font-semibold" data-i18n="navSub">Sabores • Historias • Destinos</span>
                 </div>
             </a>
-            <div class="hidden md:flex items-center gap-5 text-sm font-medium text-gray-300">
-                <a href="#inicio" class="hover:text-brandGold transition" data-i18n="menuHome">Inicio</a>
-                <a href="#tendencia" class="hover:text-brandGold transition" data-i18n="menuTrending">En Tendencia</a>
-                <a href="#mapa" class="hover:text-brandGold transition" data-i18n="menuMap">El Mapa</a>
-                <a href="#establecimientos" class="hover:text-brandGold transition" data-i18n="menuRoute">La Ruta</a>
-                <a href="#emprendedores" class="hover:text-brandGold transition" data-i18n="menuEntrepreneurs">Emprendedores</a>
-                <a href="#pasaporte" class="hover:text-brandGold transition relative">
+            <div class="hidden md:flex items-center gap-5 text-sm font-semibold text-gray-200">
+                <a href="#inicio" class="hover:text-brandGold transition-colors" data-i18n="menuHome">Inicio</a>
+                <a href="#tendencia" class="hover:text-brandGold transition-colors" data-i18n="menuTrending">En Tendencia</a>
+                <a href="#mapa" class="hover:text-brandGold transition-colors" data-i18n="menuMap">El Mapa</a>
+                <a href="#establecimientos" class="hover:text-brandGold transition-colors" data-i18n="menuRoute">La Ruta</a>
+                <a href="#emprendedores" class="hover:text-brandGold transition-colors" data-i18n="menuEntrepreneurs">Emprendedores</a>
+                <a href="#pasaporte" class="hover:text-brandGold transition-colors relative">
                     <i class="fa-solid fa-passport text-brandGold mr-1"></i><span data-i18n="menuPassport">Pasaporte</span>
                     <span id="navStampBadge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0/6</span>
                 </a>
-                <a href="#agenda" class="hover:text-brandGold transition" data-i18n="menuAgenda">Agenda</a>
+                <a href="#agenda" class="hover:text-brandGold transition-colors" data-i18n="menuAgenda">Agenda</a>
                 
-                <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none cursor-pointer">
+                <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2.5 py-1 text-xs font-bold outline-none cursor-pointer hover:border-brandGold transition-colors">
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
                 </select>
 
-                <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/40 px-3 py-1.5 rounded font-bold hover:bg-brandGold hover:text-brandDark transition text-xs flex items-center gap-1.5 relative">
-                    <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta</span> <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1 rounded-full hidden">0</span>
+                <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/50 px-3.5 py-1.5 rounded-xl font-bold hover:bg-brandGold hover:text-white transition-all text-xs flex items-center gap-1.5 relative shadow-warm-glow">
+                    <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta</span> <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1.5 rounded-full hidden">0</span>
                 </button>
             </div>
             <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl p-2 relative">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
-        <div id="mobileMenu" class="hidden md:hidden pt-4 pb-2 border-t border-gray-800 mt-3 flex flex-col gap-3 text-sm bg-brandDark px-4">
+        <div id="mobileMenu" class="hidden md:hidden pt-4 pb-3 border-t border-gray-800 mt-3 flex flex-col gap-3 text-sm glass-nav px-4">
             <a href="#inicio" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuHome">Inicio</a>
             <a href="#tendencia" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuTrending">En Tendencia</a>
             <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuMap">El Mapa</a>
@@ -145,7 +150,7 @@
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-passport text-brandGold mr-1"></i><span data-i18n="menuPassport">Mi Pasaporte</span></a>
             <div class="flex items-center justify-between py-1 border-t border-gray-800">
                 <span class="text-xs text-gray-400">Idioma / Language:</span>
-                <select id="langSelectorMobile" onchange="changeLanguage(this.value); toggleMobileMenu()" class="bg-black text-brandGold border border-brandGold/50 rounded px-2 py-1 text-xs font-bold outline-none">
+                <select id="langSelectorMobile" onchange="changeLanguage(this.value); toggleMobileMenu()" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2.5 py-1 text-xs font-bold outline-none">
                     <option value="es">🇪🇸 Español</option>
                     <option value="en">🇺🇸 English</option>
                 </select>
@@ -162,59 +167,311 @@
         </button>
     </div>
 
-    <section class="bg-gradient-to-r from-brandDark via-black to-brandDark py-4 px-4 border-b border-brandGold/40 text-white">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3 text-center sm:text-left">
-                <div class="w-12 h-12 rounded-xl bg-brandGold/20 border border-brandGold/50 text-brandGold flex items-center justify-center text-2xl flex-shrink-0 animate-pulse">
-                    <i class="fa-brands fa-youtube"></i>
-                </div>
-                <div>
-                    <span class="text-[10px] uppercase font-bold text-brandGold tracking-widest block" data-i18n="heroVideoBadge">🎬 NUEVO EPISODIO / VÍDEO DESTACADO</span>
-                    <h3 id="heroVideoTitleDisplay" class="text-sm font-bold text-white truncate max-w-md">Doña Rosita y la verdadera Cecina Lojana</h3>
-                </div>
-            </div>
-            <button onclick="openLatestVideoModal()" class="bg-brandGold text-white px-5 py-2.5 rounded-full font-bold text-xs hover:bg-brandGoldHover transition shadow-lg flex items-center gap-2 flex-shrink-0 border border-white/20">
-                <i class="fa-solid fa-play"></i> <span data-i18n="btnWatchLatest">Ver Estreno Ahora</span>
-            </button>
+    <!-- Banner de Último Estreno YouTube -->
+    <div id="latestVideoBanner" class="bg-[#181818] text-white py-3 px-4 border-b border-brandGold/30 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left z-30 relative shadow-inner">
+        <div class="flex items-center gap-2">
+            <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> NUEVO VÍDEO</span>
+            <span id="latestVideoTitleText" class="text-xs font-bold text-gray-200">Doña Rosita y los Secretos de la Cecina Lojana</span>
         </div>
-    </section>
+        <button onclick="openLatestVideoModal()" class="bg-brandGold text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition shadow-warm-glow flex items-center gap-1.5">
+            <i class="fa-solid fa-play"></i> Ver Estreno
+        </button>
+    </div>
 
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
         <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
-            <div class="w-40 h-40 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl mb-6 relative flex items-center justify-center p-2">
+            <div class="w-40 h-40 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
                 <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
             </div>
-            <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
+            <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4 shadow-warm-glow" data-i18n="heroBadge">
                 Loja se conoce, se saborea y se hospeda
             </span>
-            <h1 id="heroTitle" class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4" data-i18n="heroTitle">
+            <h1 id="heroTitle" class="text-3xl sm:text-5xl font-black tracking-tight mb-4" data-i18n="heroTitle">
                 Sabores, <span class="text-brandGold">Historias</span> y Destinos
             </h1>
-            <p id="heroSubtitle" class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed" data-i18n="heroSubtitle">
+            <p id="heroSubtitle" class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed font-normal" data-i18n="heroSubtitle">
                 Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
-                <a href="#mapa" class="bg-brandGold text-white font-bold px-6 py-3 rounded-lg shadow hover:bg-brandGoldHover transition text-sm text-center">
+                <a href="#mapa" class="bg-brandGold text-white font-bold px-7 py-3.5 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-sm text-center">
                     <i class="fa-solid fa-map-location-dot mr-2"></i> <span data-i18n="btnStartRoute">Iniciar la Ruta</span>
                 </a>
             </div>
         </div>
     </section>
 
-<!-- ... --><section class="py-12 px-4 bg-[#181818] text-white border-t border-brandGold/20 text-center">
+    <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
+        <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="reveal">
+                <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="3">3</span></p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporadas</p>
+            </div>
+            <div class="reveal">
+                <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="4">4</span>+</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat2Label" data-i18n="statAllies">Aliados y Hoteles</p>
+            </div>
+            <div class="reveal">
+                <p class="text-4xl font-black mb-1"><span class="counter" id="stat3Val" data-target="25">25</span>K</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat3Label" data-i18n="statTourists">Turistas Activos</p>
+            </div>
+            <div class="reveal">
+                <p class="text-4xl font-black mb-1"><span class="counter" id="stat4Val" data-target="100">100</span>%</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat4Label" data-i18n="statIdentity">Identidad Lojana</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="bg-red-500/10 text-red-600 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest border border-red-500/20 inline-block mb-2">
+                    <i class="fa-solid fa-fire mr-1 text-red-500"></i> <span data-i18n="trendingBadge">Lo más cotizado por los viajeros</span>
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-black text-brandDark" data-i18n="trendingTitle">En Tendencia esta Semana</h2>
+                <p class="text-gray-600 text-xs mt-1" data-i18n="trendingDesc">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="trendingGridContainer"></div>
+        </div>
+    </section>
+
+    <section class="py-10 px-4 bg-brandCream border-b border-gray-200 reveal">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h3 class="font-bold text-brandDark text-lg"><i class="fa-solid fa-route text-brandGold mr-2"></i> <span data-i18n="sugTitle">Experiencias Sugeridas</span></h3>
+                <p class="text-xs text-gray-500" data-i18n="sugDesc">Elige un recorrido especializado para tu viaje.</p>
+            </div>
+            <div class="flex gap-3 overflow-x-auto hide-scrollbar w-full md:w-auto pb-2 md:pb-0" id="suggestedRoutesContainer"></div>
+        </div>
+    </section>
+
+    <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-black text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div class="lg:col-span-2 rounded-2xl h-[440px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
+                <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
+                <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
+                    <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
+                        <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> <span data-i18n="btnGps">Cerca de mí</span>
+                    </button>
+                    <button onclick="centerOnLoja()" class="bg-white text-brandDark px-3 py-2.5 rounded-full shadow-xl hover:bg-gray-100 transition text-xs font-bold flex items-center gap-1.5 border border-gray-300" title="Centrar mapa en Loja">
+                        <i class="fa-solid fa-crosshairs text-brandGold"></i> <span data-i18n="btnCenter">Centrar Loja</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="mapPreviewCard" class="glass-card p-6 rounded-2xl shadow-warm-glow border border-gray-200 flex flex-col justify-between h-[440px] relative">
+                <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
+                    <i id="previewFav" class="fa-solid fa-seedling"></i>
+                </button>
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded-lg text-xs uppercase">Hueca Tradicional</span>
+                        <span id="previewOpenStatus" class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded-md text-[10px]">Abierto ahora</span>
+                    </div>
+                    <h3 id="previewTitle" class="text-xl font-bold mb-1 pr-8 text-brandDark">El Rincón Lojano</h3>
+                    <p id="previewDesc" class="text-gray-600 text-xs mb-3 h-10 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
+                    
+                    <div class="space-y-1.5 text-xs text-gray-700 border-t border-gray-100 pt-3">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours">Lun - Sáb: 08:00 - 16:00</span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress">Mercado Central / Local 14</span></div>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
+                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
+                        <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
+                    </button>
+
+                    <div class="flex gap-2">
+                        <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
+                            <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShare">Compartir</span>
+                        </a>
+                        <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
+                            <i class="fa-solid fa-diamond-turn-right text-brandGold"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="establecimientos" class="bg-white py-16 px-4 reveal">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
+                <div>
+                    <span class="text-brandGold font-bold uppercase tracking-widest text-xs" data-i18n="secTourism">Turismo y Estadía</span>
+                    <h2 class="text-2xl font-black text-brandDark mt-1" data-i18n="secAlliesTitle">Nuestros Aliados y Hoteles</h2>
+                </div>
+                <div class="relative w-full sm:w-64">
+                    <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="Buscar hotel, café, plato..." class="w-full bg-gray-100 border border-gray-200 rounded-full py-2 px-4 pl-10 text-xs focus:ring-2 focus:ring-brandGold outline-none transition" data-i18n-placeholder="searchPlaceholder">
+                    <i class="fa-solid fa-search absolute left-4 top-2.5 text-gray-400 text-xs"></i>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-2 border-b border-gray-100">
+                <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full sm:w-auto" id="categoryScroll"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="localesGrid"></div>
+            
+            <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
+                <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
+                <span data-i18n="noResults">No encontramos resultados para esa búsqueda.</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="emprendedores" class="py-16 px-4 bg-brandCream border-t border-b border-gray-200 reveal">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-store mr-1"></i> Nuevos Talentos</span>
+                <h2 class="text-3xl font-black text-brandDark mt-2 mb-3">Emprendedores Lojanos</h2>
+                <p class="text-gray-600 text-sm max-w-xl mx-auto">
+                    Apoya el talento local, la repostería artesanal, el café de autor y los productos emergentes de nuestra provincia.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="emprendedoresGridContainer"></div>
+        </div>
+    </section>
+
+    <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> <span data-i18n="ileSub">Tradición y Sabor</span></span>
+                <h2 class="text-3xl font-black mt-2 mb-3" data-i18n="ileTitle">Secretos de Cocina con ILE</h2>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto" data-i18n="ileDesc">
+                    El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between shadow-warm-glow">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🌿</div>
+                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard1Title">El Adobo Lojano</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard1Desc">Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.</p>
+                    </div>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard1Tag">Ideal para: Cecina y Secos</span>
+                </div>
+                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between shadow-warm-glow">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">☕</div>
+                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard2Title">Aromas de Altura</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard2Desc">El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.</p>
+                    </div>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard2Tag">Ideal para: Cafés y Pasteles</span>
+                </div>
+                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between shadow-warm-glow">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🍲</div>
+                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard3Title">El Toque del Repe</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard3Desc">El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.</p>
+                    </div>
+                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard3Tag">Ideal para: Repe y Sopas</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pasaporte" class="py-16 px-4 bg-brandGold text-white reveal shadow-warm-glow">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-white text-brandDark rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+                <div class="md:w-1/3 bg-brandDark p-8 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-brandGold relative overflow-hidden">
+                    <i class="fa-solid fa-passport absolute -right-4 -bottom-4 text-8xl text-white/5 transform -rotate-12"></i>
+                    <div class="relative z-10 w-full">
+                        <i class="fa-solid fa-qrcode text-6xl text-brandGold mb-4 animate-pulse"></i>
+                        <h2 class="text-2xl font-black text-white uppercase tracking-wider mb-2" data-i18n="passTitle">Pasaporte<br>Inteligente</h2>
+                        <p class="text-gray-400 text-xs mb-4" data-i18n="passDesc">Elige tu modo de exploración y reclama tu premio.</p>
+                        
+                        <button onclick="openModal('pasaporteModal')" class="w-full bg-brandGold text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-brandGoldHover transition shadow-warm-glow flex items-center justify-center mx-auto">
+                            <i class="fa-solid fa-book-open mr-2"></i> <span data-i18n="passBtnOpen">Abrir mi Pasaporte</span>
+                        </button>
+                        
+                        <button onclick="resetPassportProgess()" class="mt-4 text-[10px] text-gray-400 hover:text-white underline" data-i18n="passReset">Borrar progreso guardado</button>
+                    </div>
+                </div>
+                <div class="md:w-2/3 p-8 flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-4" data-i18n="passHowTitle">¿Cómo funciona el reto?</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
+                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-suitcase-rolling text-brandGold mr-1"></i> <span data-i18n="passTouristMode">Modo Turista</span></h4>
+                            <p class="text-[11px] text-gray-600" data-i18n="passTouristDesc">Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).</p>
+                        </div>
+                        <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
+                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-house-user text-brandGold mr-1"></i> <span data-i18n="passLocalMode">Modo Lojano</span></h4>
+                            <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).</p>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="agenda" class="py-16 px-4 bg-white border-t border-gray-200 reveal">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-calendar-days mr-1"></i> <span data-i18n="agendaSub">Loja en Movimiento</span></span>
+                <h2 class="text-3xl font-black text-brandDark mt-2 mb-3" data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
+                <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="agendaDesc">
+                    Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="agendaGridContainer"></div>
+        </div>
+    </section>
+
+    <section id="podcast" class="py-16 px-4 bg-brandDark text-white border-t border-gray-800 reveal">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="w-full md:w-1/3 p-4 flex justify-center">
+                    <div class="w-44 h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow flex items-center justify-center p-2">
+                        <img id="podcastLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
+                    </div>
+                </div>
+                <div class="w-full md:w-2/3 text-center md:text-left">
+                    <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-microphone mr-1"></i> <span data-i18n="podSub">Episodios Completos</span></span>
+                    <h2 class="text-3xl font-black mt-2 mb-4" data-i18n="podTitle">El Podcast de Loja</h2>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed" data-i18n="podDesc">Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.</p>
+                    
+                    <div class="bg-black/50 border border-brandGold/30 p-4 rounded-xl flex items-center gap-4 shadow-warm-glow">
+                        <button class="w-12 h-12 flex-shrink-0 bg-brandGold text-white rounded-full flex items-center justify-center text-lg hover:scale-105 transition">
+                            <i class="fa-solid fa-play ml-1"></i>
+                        </button>
+                        <div class="flex-grow text-left">
+                            <p class="text-xs text-brandGold font-bold">Episodio 01</p>
+                            <p class="text-sm font-bold truncate">Doña Rosita y la verdadera Cecina</p>
+                            <div class="w-full bg-gray-700 h-1.5 rounded-full mt-2">
+                                <div class="bg-brandGold h-1.5 rounded-full" style="width: 35%"></div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">12:45 / 35:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-4 bg-[#181818] text-white border-t border-brandGold/20 text-center">
         <div class="max-w-4xl mx-auto">
-            <div class="inline-block p-3 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4">
+            <div class="inline-block p-3 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4 shadow-warm-glow">
                 <i class="fa-solid fa-landmark"></i>
             </div>
             <h3 class="text-lg font-bold text-brandGold uppercase tracking-wider mb-2">Apoyo Institucional y Patrocinio Oficial</h3>
             <p class="text-xs text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
-                Proyecto avalado y respaldado oficialmente por el <b>Municipio de Loja</b> y la <b>Mesa Turística de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
+                Proyecto avalado y respaldado oficialmente por la <b>Mesa Turística de Loja</b> y el <b>Municipio de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
             </p>
             <div class="flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-building-columns text-brandGold mr-1.5"></i> Municipio de Loja</span>
-                <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> Mesa Turística de Loja</span>
-                <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-leaf text-brandGold mr-1.5"></i> Patrocina: ILE</span>
+                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> Mesa Turística de Loja</span>
+                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-building-columns text-brandGold mr-1.5"></i> Municipio de Loja</span>
+                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-leaf text-brandGold mr-1.5"></i> Patrocina: ILE</span>
             </div>
         </div>
     </section>
@@ -222,8 +479,8 @@
     <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full border border-brandGold bg-white flex items-center justify-center overflow-hidden p-0.5">
-                    <img id="footerLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
+                <div class="w-8 h-8 rounded-full border border-brandGold bg-white flex items-center justify-center overflow-hidden p-0.5 shadow-warm-glow">
+                    <img id="footerLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <span class="text-white font-bold tracking-wide block">VIVE LOJA</span>
@@ -239,11 +496,409 @@
         </div>
     </footer>
 
-    <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-2xl hover:bg-green-600 transition" title="Contáctanos por WhatsApp">
+    <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-<!-- ... --><script>
+    <!-- Modales -->
+    <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
+            <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-mug-hot text-brandGold text-xl"></i>
+                    <h3 class="text-lg font-black uppercase tracking-wider text-brandGold" data-i18n="modalItineraryTitle">Mi Ruta Organizada</h3>
+                </div>
+                <button onclick="closeModal('itineraryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-grow space-y-4" id="itineraryListContainer"></div>
+            <div class="p-4 bg-white border-t border-gray-200 text-center">
+                <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
+                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Vídeo YouTube Destacado -->
+    <div id="latestVideoModal" class="fixed inset-0 z-[95] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
+                <h3 class="text-base font-bold text-brandGold"><i class="fa-brands fa-youtube mr-1 text-red-500"></i> Último Vídeo Oficial</h3>
+                <button onclick="closeModal('latestVideoModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4">
+                <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30">
+                    <iframe id="latestYoutubeIframe" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
+            <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <div class="w-12 h-12 bg-brandGold text-white rounded-full flex items-center justify-center text-xl mx-auto mb-3 shadow">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="text-lg font-bold text-brandGold mb-1" data-i18n="adminPinTitle">Acceso Restringido</h3>
+            <p class="text-xs text-gray-400 mb-4" data-i18n="adminPinDesc">Ingresa tu PIN de administración</p>
+            <form onsubmit="verifyAdminPin(event)" class="space-y-3">
+                <input type="password" id="adminPinInput" required maxlength="6" placeholder="PIN" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-2.5 text-center text-lg tracking-widest text-white outline-none focus:border-brandGold">
+                <button type="submit" class="w-full bg-brandGold text-white font-bold py-2.5 rounded-xl hover:bg-white hover:text-brandDark transition text-xs uppercase tracking-wider" data-i18n="adminPinBtn">
+                    Ingresar al Panel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
+            <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brandGold/10 border border-brandGold/40 flex items-center justify-center text-brandGold text-lg">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
+                        <p class="text-xs text-brandGold">Control de Locales, Vídeo Destacado, Emprendedores y Agenda</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="flex border-b border-gray-800 bg-black/30 px-4 sm:px-6 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto hide-scrollbar">
+                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos y PINs</button>
+                <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Emprendedores</button>
+                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda Cultural</button>
+                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Vídeo y Logo</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-grow space-y-6">
+                <!-- Locales Tab -->
+                <div id="adminTabLocales" class="space-y-6">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con PIN y Horarios)</h4>
+                        <form onsubmit="handleSaveLocation(event)" class="space-y-4">
+                            <input type="hidden" id="admEditId">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre (Español)</label>
+                                    <input type="text" id="admTitle" required placeholder="Ej. Picantería Central" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Name (English)</label>
+                                    <input type="text" id="admTitleEn" placeholder="Ej. Central Picantería" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría</label>
+                                    <select id="admCategory" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold"></select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono del Pin</label>
+                                    <select id="admIconClass" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                        <option value="fa-utensils">🍴 Restaurante</option>
+                                        <option value="fa-mortar-pestle">🥘 Hueca Tradicional</option>
+                                        <option value="fa-mug-hot">☕ Cafetería</option>
+                                        <option value="fa-hotel">🏨 Hotel / Hospedaje</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-key"></i> PIN de Validación</label>
+                                    <input type="text" id="admPin" required maxlength="6" value="1234" class="w-full bg-[#121212] border border-brandGold/60 rounded-xl p-2.5 text-xs text-white outline-none text-center font-bold tracking-widest">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Visible (Español)</label>
+                                    <input type="text" id="admTag" required placeholder="Ej. Hueca Tradicional" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Visible Tag (English)</label>
+                                    <input type="text" id="admTagEn" placeholder="Ej. Traditional Eatery" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Plato Estrella (Español)</label>
+                                    <input type="text" id="admDish" required placeholder="Ej. Seco de chivo" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Star Dish (English)</label>
+                                    <input type="text" id="admDishEn" placeholder="Ej. Goat stew" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-brandGold/10 p-3 rounded-xl border border-brandGold/30">
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">⏰ Horario Texto</label>
+                                    <input type="text" id="admHours" placeholder="Lun - Sáb: 08:00 - 16:00" class="w-full bg-[#121212] border border-brandGold/50 rounded-lg p-2 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Abre (Hora 24h)</label>
+                                    <input type="number" id="admOpenHour" min="0" max="23" value="8" class="w-full bg-[#121212] border border-brandGold/50 rounded-lg p-2 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Cierra (Hora 24h)</label>
+                                    <input type="number" id="admCloseHour" min="0" max="23" value="20" class="w-full bg-[#121212] border border-brandGold/50 rounded-lg p-2 text-xs text-white outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Coordenadas</label>
+                                    <input type="text" id="admPlusCode" placeholder="Ej. -3.9931, -79.2042" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Zona en Loja</label>
+                                    <select id="admZonePreset" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                        <option value="-3.9931,-79.2042">Centro / Mercado Central</option>
+                                        <option value="-3.9968,-79.2025">Calle Bernardo Valdivieso</option>
+                                        <option value="-3.9895,-79.2060">Av. Universitaria</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Dirección</label>
+                                <input type="text" id="admAddress" required placeholder="Ej. Sucre y Rocafuerte" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción (Español)</label>
+                                    <textarea id="admDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Description (English)</label>
+                                    <textarea id="admDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandDark/50 p-4 rounded-xl border border-brandGold/30">
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Vídeo YouTube</label>
+                                    <input type="text" id="admYoutubeUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-images mr-1"></i> URLs de Galería (Comas)</label>
+                                    <input type="text" id="admImgsList" placeholder="https://img1.jpg, https://img2.jpg" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" id="saveBtnText" class="flex-1 bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">Guardar Local</button>
+                                <button type="button" onclick="resetLocationForm()" class="bg-gray-700 text-white px-4 py-3 rounded-xl text-xs font-bold hover:bg-gray-600 transition">Nuevo</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados</h4>
+                        <div class="space-y-2" id="adminLocationsList"></div>
+                    </div>
+                </div>
+
+                <!-- Emprendedores Tab -->
+                <div id="adminTabEmprendedores" class="space-y-6 hidden">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="empFormTitle"><i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor Lojano</h4>
+                        <form onsubmit="handleAddNewEmprendedor(event)" class="space-y-4">
+                            <input type="hidden" id="empEditId">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre</label>
+                                    <input type="text" id="empName" required placeholder="Ej. Chocolate Yacu" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría</label>
+                                    <input type="text" id="empCategory" required placeholder="Ej. Cacao Fino" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">WhatsApp (593...)</label>
+                                    <input type="text" id="empPhone" required placeholder="593999999999" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL Foto</label>
+                                    <input type="text" id="empImg" required placeholder="https://..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción</label>
+                                <textarea id="empDesc" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" id="saveEmpBtnText" class="flex-1 bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">Guardar</button>
+                                <button type="button" onclick="resetEmpForm()" class="bg-gray-700 text-white px-4 py-3 rounded-xl text-xs font-bold">Nuevo</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-white mb-3">Emprendedores Registrados</h4>
+                        <div class="space-y-2" id="adminEmprendedoresList"></div>
+                    </div>
+                </div>
+
+                <!-- Agenda Tab -->
+                <div id="adminTabAgenda" class="space-y-6 hidden">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="eventFormTitle"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural</h4>
+                        <form onsubmit="handleSaveEvent(event)" class="space-y-4">
+                            <input type="hidden" id="evEditId">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título (Español)</label>
+                                    <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Title (English)</label>
+                                    <input type="text" id="evTitleEn" placeholder="Title in English" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (2026-09-20)</label>
+                                    <input type="text" id="evDate" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Tipo</label>
+                                    <input type="text" id="evType" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL Imagen</label>
+                                    <input type="text" id="evImg" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Lugar</label>
+                                    <input type="text" id="evLocation" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Zona</label>
+                                    <select id="evZonePreset" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                        <option value="-3.9910,-79.2030">Plaza de las Flores</option>
+                                        <option value="-3.9980,-79.2015">Teatro Bolívar</option>
+                                        <option value="-3.9931,-79.2042">Mercado Central</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción</label>
+                                    <textarea id="evDesc" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Description (English)</label>
+                                    <textarea id="evDescEn" rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" id="saveEventBtnText" class="flex-1 bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">Publicar Evento</button>
+                                <button type="button" onclick="resetEventForm()" class="bg-gray-700 text-white px-4 py-3 rounded-xl text-xs font-bold">Nuevo</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-white mb-3">Eventos Programados</h4>
+                        <div class="space-y-2" id="adminEventsList"></div>
+                    </div>
+                </div>
+
+                <!-- Vídeo y Logo Tab -->
+                <div id="adminTabIdentidad" class="space-y-6 hidden">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-play mr-1"></i> Configurar Vídeo Destacado y Logotipo</h4>
+                        <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Último Vídeo Destacado (YouTube)</label>
+                                <input type="text" id="setLatestYoutubeUrl" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Destacado</label>
+                                <input type="text" id="setLatestYoutubeTitle" required placeholder="Ej. Doña Rosita y los Secretos de la Cecina" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL del Logotipo Oficial</label>
+                                <input type="text" id="setBrandLogoUrl" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
+                                Aplicar Cambios
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Galería -->
+    <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[720px]">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
+                <div>
+                    <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Vídeo y Galería del Establecimiento</h3>
+                    <p class="text-xs text-gray-400">Contenido multimedia oficial</p>
+                </div>
+                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 flex-grow overflow-y-auto space-y-6">
+                <div id="youtubeVideoContainer" class="hidden">
+                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-2"><i class="fa-brands fa-youtube mr-1"></i> Vídeo Principal</h4>
+                    <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30">
+                        <iframe id="youtubeIframe" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-images mr-1"></i> Galería de Fotos</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="galleryGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pasaporte -->
+    <div id="pasaporteModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-brandCream text-brandDark w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative">
+            <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="bg-brandDark text-center py-6 border-b-2 border-brandGold relative overflow-hidden">
+                <i class="fa-solid fa-passport absolute -left-4 -bottom-4 text-6xl text-white/5"></i>
+                <h3 class="text-2xl font-black text-brandGold uppercase tracking-widest" data-i18n="passTitleModal">Mi Pasaporte</h3>
+                <div class="flex justify-center gap-2 mt-3">
+                    <button onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded-lg text-xs font-bold bg-brandGold text-white transition" data-i18n="passTouristMode">Modo Turista</button>
+                    <button onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-800 text-gray-300 transition" data-i18n="passLocalMode">Modo Lojano</button>
+                </div>
+            </div>
+            <div class="p-6">
+                <p class="text-xs text-gray-600 mb-4 text-center font-bold" id="passportRuleDesc">Meta: 1 Hotel + 5 Gastronomía</p>
+                <div class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto p-1" id="passportStampsGrid"></div>
+                <div class="bg-gray-100 rounded-xl p-4 text-center border border-gray-200">
+                    <p class="text-sm font-bold text-brandDark mb-1"><i class="fa-solid fa-gift text-brandGold mr-1"></i> <span data-i18n="passRewardTitle">Progreso de Recompensa</span></p>
+                    <p class="text-[10px] text-gray-600" id="passportProgressText">Completa tu meta para reclamar tu kit ILE.</p>
+                    <div class="w-full bg-gray-300 h-3 rounded-full mt-3 overflow-hidden shadow-inner">
+                        <div id="passportProgressBar" class="bg-gradient-to-r from-brandGold to-amber-600 h-3 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastMessage" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
+        <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
+    </div>
+
+    <div id="stampOverlay" class="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center opacity-0 hidden">
+        <div class="text-center">
+            <i class="fa-solid fa-stamp text-9xl text-brandGold drop-shadow-[0_0_15px_rgba(234,88,12,0.8)] transform -rotate-12"></i>
+            <h2 class="text-3xl font-black text-brandGold uppercase mt-4 drop-shadow-md bg-black/50 px-4 py-1 rounded">¡Sello Ganado!</h2>
+        </div>
+    </div>
+
+    <script>
         const translations = {
             es: {
                 splashText: "✨ Preparando los mejores sabores de Loja para ti...",
@@ -260,8 +915,6 @@
                 menuItinerary: "Mi Ruta",
                 bannerLive: "🔴 PRÓXIMO HOY",
                 btnViewMap: "Ver en el mapa",
-                heroVideoBadge: "🎬 NUEVO EPISODIO / VÍDEO DESTACADO",
-                btnWatchLatest: "Ver Estreno Ahora",
                 heroBadge: "Loja se conoce, se saborea y se hospeda",
                 heroTitle: 'Sabores, <span class="text-brandGold">Historias</span> y Destinos',
                 heroSubtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
@@ -287,7 +940,7 @@
                 noResults: "No encontramos resultados para esa búsqueda.",
                 ileSub: "Tradición y Sabor",
                 ileTitle: "Secretos de Cocina con ILE",
-                ileDesc: "El alma de la gastronomía lojana reside in sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.",
+                ileDesc: "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.",
                 ileCard1Title: "El Adobo Lojano",
                 ileCard1Desc: "Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.",
                 ileCard1Tag: "Ideal para: Cecina y Secos",
@@ -335,8 +988,6 @@
                 menuItinerary: "My Route",
                 bannerLive: "🔴 LIVE TODAY",
                 btnViewMap: "View on map",
-                heroVideoBadge: "🎬 NEW EPISODE / FEATURED VIDEO",
-                btnWatchLatest: "Watch Premiere Now",
                 heroBadge: "Loja is experienced, tasted and hosted",
                 heroTitle: 'Flavors, <span class="text-brandGold">Stories</span> & Destinations',
                 heroSubtitle: "Discover traditional local eateries, specialty coffee shops, hotels and must-see tourist spots through our interactive route.",
@@ -401,9 +1052,7 @@
             let saved = localStorage.getItem('cyc_lang');
             if (saved) return saved;
             let browserLang = navigator.language || navigator.userLanguage || 'es';
-            if (browserLang.toLowerCase().startsWith('en')) {
-                return 'en';
-            }
+            if (browserLang.toLowerCase().startsWith('en')) return 'en';
             return 'es';
         }
 
@@ -447,14 +1096,10 @@
 
         let db = null;
         try {
-            if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-            } else if (typeof firebase !== 'undefined') {
-                db = firebase.firestore();
-            }
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
         } catch(e) {
-            console.log("Firebase status fallback:", e);
+            console.log("Firebase status:", e);
         }
 
         const defaultCategories = [
@@ -464,7 +1109,8 @@
             { id: 'urbana', name: 'Urbana', nameEn: 'Urban', icon: '🍔' }
         ];
 
-        const defaultLocations = [
+        let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
+        let locations = [
             {
                 id: "dinamo_studio",
                 pin: "1234",
@@ -498,8 +1144,6 @@
             }
         ];
 
-        let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
-        let locations = [];
         let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || [
             { 
                 id: 'ev_1', 
@@ -533,19 +1177,6 @@
             markersLayer = L.layerGroup().addTo(map);
         } catch(e) { console.log('Map loading...'); }
 
-        function updateConnectionStatus(isOnline) {
-            const badge = document.getElementById('connectionStatusBadge');
-            const txt = document.getElementById('connText');
-            if(!badge || !txt) return;
-            if(isOnline) {
-                badge.className = "text-emerald-400 font-semibold flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30";
-                txt.innerText = "Online Nube";
-            } else {
-                badge.className = "text-amber-400 font-semibold flex items-center gap-1 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30";
-                txt.innerText = "Modo Local";
-            }
-        }
-
         function isLocOpenNow(loc) {
             if (loc.openHour === undefined || loc.closeHour === undefined) return true;
             const now = new Date();
@@ -553,64 +1184,27 @@
             return currentHour >= loc.openHour && currentHour < loc.closeHour;
         }
 
-        function checkUrlCheckinParam() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const checkinId = urlParams.get('checkin');
-            if (checkinId) {
-                const targetLoc = locations.find(l => l.id === checkinId);
-                if (targetLoc) {
-                    const localPin = targetLoc.pin || '1234';
-                    const enteredPin = prompt(`🔐 Verificación de Sello - ${targetLoc.title}\nPor favor, entregue el dispositivo al cajero/mesero para ingresar el PIN de autorización:`);
-                    if (enteredPin === localPin) {
-                        if (!visitedLocations.includes(targetLoc.id)) {
-                            visitedLocations.push(targetLoc.id);
-                            localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
-                            updatePassportUI();
-                            triggerStampAnimation();
-                            showToast(`🎉 ¡Sello obtenido para ${targetLoc.title}!`);
-                        } else {
-                            showToast(`⚠️ Ya habías registrado el sello de ${targetLoc.title}.`);
-                        }
-                    } else if (enteredPin !== null) {
-                        showToast('❌ PIN de local incorrecto. Sello no válido.');
-                    }
-                }
-            }
-        }
-
         function cargarDatosDesdeFirestore() {
             if (!db) {
-                locations = defaultLocations;
-                updateConnectionStatus(false);
                 loadSettingsFromStorage();
                 renderEverything();
                 checkLiveEventsBanner();
-                checkUrlCheckinParam();
                 return;
             }
 
             db.collection("locales").onSnapshot((snapshot) => {
-                locations = [];
-                snapshot.forEach((doc) => {
-                    locations.push({ id: doc.id, ...doc.data() });
-                });
-                
-                if(locations.length === 0) {
-                    defaultLocations.forEach(loc => db.collection("locales").doc(loc.id).set(loc));
-                    locations = defaultLocations;
+                if(!snapshot.empty) {
+                    locations = [];
+                    snapshot.forEach((doc) => {
+                        locations.push({ id: doc.id, ...doc.data() });
+                    });
                 }
-                updateConnectionStatus(true);
                 renderEverything();
                 checkLiveEventsBanner();
-                checkUrlCheckinParam();
             }, (error) => {
-                console.warn("Firestore fallback:", error);
-                locations = defaultLocations;
-                updateConnectionStatus(false);
-                loadSettingsFromStorage();
+                console.error("Firestore error:", error);
                 renderEverything();
                 checkLiveEventsBanner();
-                checkUrlCheckinParam();
             });
 
             db.collection("settings").doc("main").get().then((doc) => {
@@ -628,39 +1222,31 @@
                 title: "Sabores, Historias y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 logoUrl: "https://i.imgur.com/xaiFpa1.png",
-                latestVideoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                latestVideoTitle: "Doña Rosita y la verdadera Cecina Lojana"
+                latestYoutubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                latestYoutubeTitle: "Doña Rosita y los Secretos de la Cecina Lojana"
             };
             applySettings(saved);
         }
 
         function applySettings(s) {
-            if(document.getElementById('heroBadge')) document.getElementById('heroBadge').innerText = s.badge || "";
+            const badgeEl = document.getElementById('heroBadge');
+            if(badgeEl) badgeEl.innerText = s.badge || "";
             if(document.getElementById('heroTitle')) {
                 document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Historias", '<span class="text-brandGold">Historias</span>') : "";
             }
             if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
 
-            if (s.latestVideoTitle && document.getElementById('heroVideoTitleDisplay')) {
-                document.getElementById('heroVideoTitleDisplay').innerText = s.latestVideoTitle;
-            }
-
-            window.currentLatestVideoUrl = s.latestVideoUrl || "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-
             if (s.logoUrl) {
-                const logos = ['splashLogoImg', 'navLogoImg', 'heroLogoImg', 'podcastLogoImg', 'footerLogoImg'];
-                logos.forEach(id => {
+                ['splashLogoImg', 'navLogoImg', 'heroLogoImg', 'podcastLogoImg', 'footerLogoImg'].forEach(id => {
                     const el = document.getElementById(id);
                     if(el) el.src = s.logoUrl;
                 });
             }
-        }
 
-        function openLatestVideoModal() {
-            const ytIframe = document.getElementById('latestVideoIframe');
-            const targetUrl = window.currentLatestVideoUrl || "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-            ytIframe.src = getYouTubeEmbedUrl(targetUrl);
-            openModal('latestVideoModal');
+            if (s.latestYoutubeTitle) {
+                const titleEl = document.getElementById('latestVideoTitleText');
+                if(titleEl) titleEl.innerText = s.latestYoutubeTitle;
+            }
         }
 
         let currentEventIndex = 0;
@@ -774,7 +1360,7 @@
                 const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
 
                 container.innerHTML += `
-                    <div class="bg-brandCream rounded-xl overflow-hidden shadow-md border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
+                    <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
                         <div class="h-44 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index + 1} EN RUTA</span>
@@ -838,7 +1424,7 @@
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
-                                     <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
+                                   <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
                                </div>`,
                         iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
                     });
@@ -877,11 +1463,11 @@
                 let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
 
                 const openBadge = isOpen 
-                    ? `<span class="bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> Abierto</span>`
-                    : `<span class="bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
+                    ? `<span class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> Abierto</span>`
+                    : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
                 grid.innerHTML += `
-                    <div class="local-item ${loc.category} bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
@@ -891,7 +1477,7 @@
                                 <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>
                                 ${openBadge}
                             </div>
-                            <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar (Google Maps)">
+                            <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar">
                                 <i class="fa-solid fa-diamond-turn-right"></i>
                             </a>
                         </div>
@@ -912,13 +1498,12 @@
             let todayStr = new Date().toISOString().split('T')[0];
             eventsList.forEach((ev) => {
                 if (ev.date && ev.date < todayStr) return;
-
                 if(ev.lat && ev.lng) {
                     const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
                     const eventIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: `<div class="bg-brandGold text-white w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
-                                     <i class="fa-solid fa-calendar-days text-sm"></i>
+                                   <i class="fa-solid fa-calendar-days text-sm"></i>
                                </div>`,
                         iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
                     });
@@ -943,25 +1528,14 @@
                     (pos) => {
                         const lat = pos.coords.latitude;
                         const lng = pos.coords.longitude;
-                        
-                        const lojaLat = -3.9931;
-                        const lojaLng = -79.2042;
-                        const distance = Math.abs(lat - lojaLat) + Math.abs(lng - lojaLng);
-
-                        if (distance > 0.8) {
-                            showToast('⚠️ Tu red indicó otra ciudad. Centrando en Loja.');
-                            centerOnLoja();
-                            return;
-                        }
-
                         userCoords = { lat, lng };
                         if(map) map.setView([lat, lng], 16, { animate: true });
                         
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
                             html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
-                                         <i class="fa-solid fa-street-view text-2xl"></i>
-                                   </div>`,
+                                   <i class="fa-solid fa-street-view text-2xl"></i>
+                               </div>`,
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
                         });
                         
@@ -969,26 +1543,9 @@
                           .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
                         
                         renderMapAndGrid(); 
-
-                        if(locations.length > 0) {
-                            let closestIndex = 0;
-                            let minDistance = Infinity;
-                            locations.forEach((loc, idx) => {
-                                let d = calcularDistanciaKm(lat, lng, loc.lat || lojaLat, loc.lng || lojaLng);
-                                if(d < minDistance) {
-                                    minDistance = d;
-                                    closestIndex = idx;
-                                }
-                            });
-                            selectLocation(closestIndex);
-                        }
-
-                        showToast('¡Ubicación encontrada y local más cercano cargado!');
+                        showToast('¡Ubicación encontrada!');
                     },
-                    (err) => {
-                        console.warn("GPS denied:", err.message);
-                        centerOnLoja();
-                    },
+                    (err) => { centerOnLoja(); },
                     { timeout: 6000, enableHighAccuracy: true }
                 );
             } else {
@@ -1001,18 +1558,6 @@
             const lojaLng = -79.2042;
             userCoords = { lat: lojaLat, lng: lojaLng };
             if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
-            
-            const userAvatarIcon = L.divIcon({
-                className: 'custom-leaflet-icon',
-                html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
-                             <i class="fa-solid fa-street-view text-2xl"></i>
-                       </div>`,
-                iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
-            });
-            
-            userMarkerInstance = L.marker([lojaLat, lojaLng], { icon: userAvatarIcon })
-              .bindPopup("<b>Centro de Loja</b><br>Ubicación oficial.");
-            
             renderMapAndGrid();
             selectLocation(0);
             showToast('Mapa centrado en Loja');
@@ -1065,7 +1610,7 @@
                 container.innerHTML = `
                     <div class="text-center py-10 text-gray-400 text-xs">
                         <i class="fa-solid fa-mug-hot text-3xl mb-2 text-gray-300"></i><br>
-                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el icono de grano de café en cualquier tarjeta o pin para agregarlo.
+                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el icono de grano de café en cualquier tarjeta para agregarlo.
                     </div>
                 `;
                 if(badge) badge.classList.add('hidden');
@@ -1086,7 +1631,7 @@
                     container.innerHTML += `
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
                             <div class="flex items-center gap-3">
-                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover" loading="lazy">
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
                                 <div>
                                     <h4 class="font-bold text-xs text-brandDark">${locTitle}</h4>
                                     <span class="text-[10px] text-brandGold font-bold">${locTag} • ${loc.address}</span>
@@ -1137,15 +1682,14 @@
 
             eventsList.forEach((ev) => {
                 if (ev.date && ev.date < todayStr) return;
-
                 const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
                 const evDesc = (currentLang === 'en' && ev.descEn) ? ev.descEn : ev.desc;
                 const evImg = ev.img || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80';
 
                 agendaContainer.innerHTML += `
-                    <div class="bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
+                    <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
                         <div class="h-40 overflow-hidden relative">
-                            <img src="${evImg}" alt="" class="w-full h-full object-cover" loading="lazy">
+                            <img src="${evImg}" alt="" class="w-full h-full object-cover">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${ev.type}</span>
                         </div>
                         <div class="p-5">
@@ -1157,7 +1701,7 @@
                         </div>
                         <div class="px-5 pb-5 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-3 text-xs">
                             <span class="text-gray-500 truncate max-w-[160px]"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
-                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded font-bold hover:bg-black transition flex-shrink-0">
+                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
                                 <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
                             </button>
                         </div>
@@ -1182,15 +1726,15 @@
 
             emprendedoresList.forEach(emp => {
                 container.innerHTML += `
-                    <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
+                    <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
                         <div class="h-44 overflow-hidden relative">
-                            <img src="${emp.img}" alt="" class="w-full h-full object-cover" loading="lazy">
+                            <img src="${emp.img}" alt="" class="w-full h-full object-cover">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow">${emp.category}</span>
                         </div>
                         <div class="p-5">
                             <h3 class="font-bold text-base text-brandDark mb-1">${emp.name}</h3>
                             <p class="text-xs text-gray-600 line-clamp-2 mb-4">${emp.desc}</p>
-                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent('¡Hola! Vi su emprendimiento ' + emp.name + ' en la web de Vive Loja y deseo más información.')}" target="_blank" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
+                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent('¡Hola! Vi su emprendimiento ' + emp.name + ' en la web de Vive Loja y deseo más información.')}" target="_blank" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
                                 <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Contactar por WhatsApp
                             </a>
                         </div>
@@ -1212,19 +1756,14 @@
             if (editId) {
                 let empObj = emprendedoresList.find(emp => emp.id === editId);
                 if(empObj) {
-                    empObj.name = name;
-                    empObj.category = category;
-                    empObj.phone = phone;
-                    empObj.img = img;
-                    empObj.desc = desc;
+                    empObj.name = name; empObj.category = category; empObj.phone = phone; empObj.img = img; empObj.desc = desc;
                 }
-                showToast('¡Emprendedor actualizado con éxito!');
+                showToast('¡Emprendedor actualizado!');
             } else {
                 const newEmp = { id: 'emp_' + Date.now(), name, category, phone, img, desc };
                 emprendedoresList.push(newEmp);
-                showToast('¡Emprendedor registrado con éxito!');
+                showToast('¡Emprendedor registrado!');
             }
-
             localStorage.setItem('cyc_dynamic_emprendedores', JSON.stringify(emprendedoresList));
             renderEverything();
             resetEmpForm();
@@ -1239,15 +1778,14 @@
             document.getElementById('empPhone').value = emp.phone || '';
             document.getElementById('empImg').value = emp.img || '';
             document.getElementById('empDesc').value = emp.desc || '';
-            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square mr-1"></i> Editando Emprendedor: ${emp.name}`;
-            document.getElementById('saveEmpBtnText').innerText = "Actualizar Emprendedor";
-            document.getElementById('empName').focus();
+            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square mr-1"></i> Editando: ${emp.name}`;
+            document.getElementById('saveEmpBtnText').innerText = "Actualizar";
         }
 
         function resetEmpForm() {
             document.getElementById('empEditId').value = '';
-            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-store mr-1"></i> Registrar o Editar Emprendedor Lojano`;
-            document.getElementById('saveEmpBtnText').innerText = "Guardar Emprendedor";
+            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor Lojano`;
+            document.getElementById('saveEmpBtnText').innerText = "Guardar";
             document.getElementById('empName').value = '';
             document.getElementById('empCategory').value = '';
             document.getElementById('empPhone').value = '';
@@ -1261,10 +1799,10 @@
             list.innerHTML = '';
             emprendedoresList.forEach(emp => {
                 list.innerHTML += `
-                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
+                    <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
                         <span class="text-brandGold font-bold">${emp.name} (${emp.category})</span>
                         <div class="flex gap-2">
-                            <button onclick="editEmprendedor('${emp.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="editEmprendedor('${emp.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="deleteEmprendedor('${emp.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
@@ -1280,15 +1818,12 @@
         }
 
         function switchAdminTab(tab) {
-            document.getElementById('adminTabLocales').classList.add('hidden');
-            document.getElementById('adminTabEmprendedores').classList.add('hidden');
-            document.getElementById('adminTabAgenda').classList.add('hidden');
-            document.getElementById('adminTabIdentidad').classList.add('hidden');
-
-            document.getElementById('tabBtnLocales').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
-            document.getElementById('tabBtnEmprendedores').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
-            document.getElementById('tabBtnAgenda').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
-            document.getElementById('tabBtnIdentidad').className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            ['adminTabLocales', 'adminTabEmprendedores', 'adminTabAgenda', 'adminTabIdentidad'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            ['tabBtnLocales', 'tabBtnEmprendedores', 'tabBtnAgenda', 'tabBtnIdentidad'].forEach(id => {
+                document.getElementById(id).className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            });
 
             if(tab === 'locales') {
                 document.getElementById('adminTabLocales').classList.remove('hidden');
@@ -1302,51 +1837,28 @@
             } else if(tab === 'identidad') {
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
                 document.getElementById('tabBtnIdentidad').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
-                const currentLogo = document.getElementById('navLogoImg')?.src || 'https://i.imgur.com/xaiFpa1.png';
-                document.getElementById('setBrandLogoUrl').value = currentLogo;
-                document.getElementById('setHeroBadge').value = document.getElementById('heroBadge').innerText;
-                document.getElementById('setHeroTitle').value = "Sabores, Historias y Destinos";
-                document.getElementById('setHeroSubtitle').value = document.getElementById('heroSubtitle').innerText;
-                document.getElementById('setLatestVideoUrl').value = window.currentLatestVideoUrl || "";
-                document.getElementById('setLatestVideoTitle').value = document.getElementById('heroVideoTitleDisplay')?.innerText || "";
+                let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+                document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || '';
+                document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || '';
+                document.getElementById('setBrandLogoUrl').value = settings.logoUrl || 'https://i.imgur.com/xaiFpa1.png';
             }
         }
 
         function handleSaveBrandingSettings(e) {
             e.preventDefault();
+            let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
+            let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
             let logoUrl = document.getElementById('setBrandLogoUrl').value;
-            let latestVideoUrl = document.getElementById('setLatestVideoUrl').value;
-            let latestVideoTitle = document.getElementById('setLatestVideoTitle').value;
-            let badge = document.getElementById('setHeroBadge').value;
-            let title = document.getElementById('setHeroTitle').value;
-            let subtitle = document.getElementById('setHeroSubtitle').value;
 
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            settings.latestYoutubeUrl = latestYoutubeUrl;
+            settings.latestYoutubeTitle = latestYoutubeTitle;
             settings.logoUrl = logoUrl;
-            settings.latestVideoUrl = latestVideoUrl;
-            settings.latestVideoTitle = latestVideoTitle;
-            settings.badge = badge;
-            settings.title = title;
-            settings.subtitle = subtitle;
             localStorage.setItem('cyc_settings', JSON.stringify(settings));
 
             applySettings(settings);
             closeModal('adminModal');
-            showToast('¡Identidad y vídeo destacados actualizados con éxito!');
-        }
-
-        function parseCoordinates(inputVal, presetValue) {
-            let input = inputVal ? inputVal.trim() : "";
-            if (input.includes(",")) {
-                let parts = input.split(",");
-                let lat = parseFloat(parts[0]);
-                let lng = parseFloat(parts[1]);
-                if (!isNaN(lat) && !isNaN(lng)) {
-                    return [lat, lng];
-                }
-            }
-            const coords = presetValue.split(',');
-            return [parseFloat(coords[0]), parseFloat(coords[1])];
+            showToast('¡Configuración guardada!');
         }
 
         function handleSaveLocation(e) {
@@ -1372,73 +1884,20 @@
             const plusCodeInput = document.getElementById('admPlusCode').value;
             const preset = document.getElementById('admZonePreset').value;
 
-            const finalCoords = parseCoordinates(plusCodeInput, preset);
+            let coords = plusCodeInput.includes(",") ? plusCodeInput.split(",").map(Number) : preset.split(",").map(Number);
 
-            let galleryArray = [];
-            if (imgsListInput.trim()) {
-                galleryArray = imgsListInput.split(',').map((url, i) => ({
-                    img: url.trim(),
-                    title: `${title} - Foto ${i + 1}`,
-                    titleEn: `${titleEn || title} - Photo ${i + 1}`
-                }));
-            } else {
-                galleryArray = [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title, titleEn: titleEn || title }];
-            }
+            let galleryArray = imgsListInput.trim() ? imgsListInput.split(',').map((u, i) => ({ img: u.trim(), title: `${title} - ${i+1}` })) : [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
 
-            const locationData = {
-                pin, tag, tagEn, title, titleEn, desc, descEn, dish, dishEn,
-                hours, openHour, closeHour, address,
-                lat: finalCoords[0], lng: finalCoords[1],
-                gps: `https://www.google.com/maps/search/?api=1&query=${finalCoords[0]},${finalCoords[1]}`,
-                iconClass, category,
-                youtubeUrl,
-                gallery: galleryArray
-            };
+            const locData = { pin, tag, tagEn, title, titleEn, desc, descEn, dish, dishEn, hours, openHour, closeHour, address, lat: coords[0], lng: coords[1], gps: `https://www.google.com/maps/search/?api=1&query=${coords[0]},${coords[1]}`, iconClass, category, youtubeUrl, gallery: galleryArray };
 
             if (db) {
                 if (editId) {
-                    db.collection("locales").doc(editId).update(locationData)
-                      .then(() => {
-                          closeModal('adminModal');
-                          showToast(`¡${title} actualizado con éxito!`);
-                          resetLocationForm();
-                      })
-                      .catch(err => {
-                          let idx = locations.findIndex(l => l.id === editId);
-                          if(idx > -1) locations[idx] = { id: editId, ...locationData };
-                          closeModal('adminModal');
-                          showToast(`¡${title} actualizado localmente!`);
-                          renderEverything();
-                          resetLocationForm();
-                      });
+                    db.collection("locales").doc(editId).update(locData).then(() => { closeModal('adminModal'); showToast('¡Local actualizado!'); resetLocationForm(); });
                 } else {
-                    const newId = 'loc_' + Date.now();
-                    db.collection("locales").doc(newId).set(locationData)
-                      .then(() => {
-                          closeModal('adminModal');
-                          showToast(`¡${title} guardado en Firestore!`);
-                          resetLocationForm();
-                      })
-                      .catch(err => {
-                          locations.push({ id: newId, ...locationData });
-                          closeModal('adminModal');
-                          showToast(`¡${title} guardado localmente!`);
-                          renderEverything();
-                          resetLocationForm();
-                      });
+                    db.collection("locales").doc('loc_' + Date.now()).set(locData).then(() => { closeModal('adminModal'); showToast('¡Local guardado!'); resetLocationForm(); });
                 }
             } else {
-                const newId = editId || ('loc_' + Date.now());
-                if(editId) {
-                    let idx = locations.findIndex(l => l.id === editId);
-                    if(idx > -1) locations[idx] = { id: editId, ...locationData };
-                } else {
-                    locations.push({ id: newId, ...locationData });
-                }
-                closeModal('adminModal');
-                showToast(`¡Guardado localmente!`);
-                renderEverything();
-                resetLocationForm();
+                showToast("Guardado en local");
             }
         }
 
@@ -1456,45 +1915,19 @@
             document.getElementById('admDish').value = loc.dish || '';
             document.getElementById('admDishEn').value = loc.dishEn || '';
             document.getElementById('admHours').value = loc.hours || '';
-            document.getElementById('admOpenHour').value = loc.openHour !== undefined ? loc.openHour : 8;
-            document.getElementById('admCloseHour').value = loc.closeHour !== undefined ? loc.closeHour : 20;
             document.getElementById('admAddress').value = loc.address;
             document.getElementById('admDesc').value = loc.desc || '';
             document.getElementById('admDescEn').value = loc.descEn || '';
             document.getElementById('admPlusCode').value = `${loc.lat}, ${loc.lng}`;
             document.getElementById('admYoutubeUrl').value = loc.youtubeUrl || '';
-            
-            if(loc.gallery && loc.gallery.length > 0) {
-                document.getElementById('admImgsList').value = loc.gallery.map(g => g.img).join(', ');
-            } else {
-                document.getElementById('admImgsList').value = '';
-            }
-
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editando: ${loc.title}`;
-            document.getElementById('saveBtnText').innerText = "Actualizar Cambios en la Nube";
-            document.getElementById('admTitle').focus();
+            document.getElementById('admImgsList').value = loc.gallery ? loc.gallery.map(g => g.img).join(', ') : '';
         }
 
         function resetLocationForm() {
             document.getElementById('admEditId').value = '';
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con PIN y Horarios)`;
-            document.getElementById('saveBtnText').innerText = "Guardar en la Nube";
             document.getElementById('admTitle').value = '';
-            document.getElementById('admTitleEn').value = '';
             document.getElementById('admAddress').value = '';
             document.getElementById('admDesc').value = '';
-            document.getElementById('admDescEn').value = '';
-            document.getElementById('admDish').value = '';
-            document.getElementById('admDishEn').value = '';
-            document.getElementById('admPin').value = '1234';
-            document.getElementById('admTag').value = '';
-            document.getElementById('admTagEn').value = '';
-            document.getElementById('admHours').value = '';
-            document.getElementById('admOpenHour').value = 8;
-            document.getElementById('admCloseHour').value = 20;
-            document.getElementById('admImgsList').value = '';
-            document.getElementById('admYoutubeUrl').value = '';
-            document.getElementById('admPlusCode').value = '';
         }
 
         function renderAdminLocationsList() {
@@ -1503,14 +1936,11 @@
             list.innerHTML = '';
             locations.forEach(loc => {
                 list.innerHTML += `
-                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
-                        <div>
-                            <span class="text-brandGold font-bold"><i class="fa-solid ${loc.iconClass} mr-1"></i> ${loc.title}</span>
-                            <span class="text-gray-400 text-[10px] block">PIN: <b class="text-white">${loc.pin || '1234'}</b> | QR Link: ?checkin=${loc.id}</span>
-                        </div>
+                    <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-brandGold font-bold">${loc.title} (PIN: ${loc.pin || '1234'})</span>
                         <div class="flex gap-2">
-                            <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded hover:bg-red-700 transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -1518,20 +1948,7 @@
         }
 
         function deleteLocation(id) {
-            if (locations.length <= 1) { showToast('Mínimo un local.'); return; }
-            if (db && id) {
-                db.collection("locales").doc(id).delete().then(() => {
-                    showToast('Local eliminado de Firestore');
-                }).catch(() => {
-                    locations = locations.filter(l => l.id !== id);
-                    renderEverything();
-                    showToast('Local eliminado localmente');
-                });
-            } else {
-                locations = locations.filter(l => l.id !== id);
-                renderEverything();
-                showToast('Local eliminado localmente');
-            }
+            if (db && id) db.collection("locales").doc(id).delete().then(() => showToast('Eliminado'));
         }
 
         function handleSaveEvent(e) {
@@ -1545,36 +1962,19 @@
             const img = document.getElementById('evImg').value;
             const desc = document.getElementById('evDesc').value;
             const descEn = document.getElementById('evDescEn').value;
-            const zoneCoords = document.getElementById('evZonePreset').value.split(',');
+            const zoneCoords = document.getElementById('evZonePreset').value.split(',').map(Number);
 
-            const lat = parseFloat(zoneCoords[0]);
-            const lng = parseFloat(zoneCoords[1]);
-
-            if (editId) {
-                let evObj = eventsList.find(ev => ev.id === editId);
-                if(evObj) {
-                    evObj.title = title;
-                    evObj.titleEn = titleEn;
-                    evObj.date = date;
-                    evObj.type = type;
-                    evObj.location = location;
-                    evObj.img = img;
-                    evObj.desc = desc;
-                    evObj.descEn = descEn;
-                    evObj.lat = lat;
-                    evObj.lng = lng;
-                }
-                showToast('¡Evento actualizado con éxito!');
+            if(editId) {
+                let ev = eventsList.find(e => e.id === editId);
+                if(ev) Object.assign(ev, { title, titleEn, date, type, location, img, desc, descEn, lat: zoneCoords[0], lng: zoneCoords[1] });
             } else {
-                const newEvent = { id: 'ev_' + Date.now(), title, titleEn, date, type, location, img, desc, descEn, lat, lng };
-                eventsList.push(newEvent);
-                showToast('¡Evento programado con éxito!');
+                eventsList.push({ id: 'ev_' + Date.now(), title, titleEn, date, type, location, img, desc, descEn, lat: zoneCoords[0], lng: zoneCoords[1] });
             }
-
             localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
             renderEverything();
             checkLiveEventsBanner();
             resetEventForm();
+            showToast('Evento guardado');
         }
 
         function editEvent(id) {
@@ -1589,23 +1989,13 @@
             document.getElementById('evImg').value = ev.img || '';
             document.getElementById('evDesc').value = ev.desc || '';
             document.getElementById('evDescEn').value = ev.descEn || '';
-            document.getElementById('eventFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square mr-1"></i> Editando Evento: ${ev.title}`;
-            document.getElementById('saveEventBtnText').innerText = "Actualizar Evento";
-            document.getElementById('evTitle').focus();
         }
 
         function resetEventForm() {
             document.getElementById('evEditId').value = '';
-            document.getElementById('eventFormTitle').innerHTML = `<i class="fa-solid fa-calendar-plus mr-1"></i> Programar o Editar Evento Cultural Bilingüe`;
-            document.getElementById('saveEventBtnText').innerText = "Publicar Evento";
             document.getElementById('evTitle').value = '';
-            document.getElementById('evTitleEn').value = '';
             document.getElementById('evDate').value = '';
-            document.getElementById('evType').value = '';
             document.getElementById('evLocation').value = '';
-            document.getElementById('evImg').value = '';
-            document.getElementById('evDesc').value = '';
-            document.getElementById('evDescEn').value = '';
         }
 
         function renderAdminEventsList() {
@@ -1614,14 +2004,11 @@
             list.innerHTML = '';
             eventsList.forEach(ev => {
                 list.innerHTML += `
-                    <div class="bg-[#121212] p-3 rounded flex justify-between items-center text-xs border border-gray-800">
-                        <div>
-                            <span class="text-brandGold font-bold">${ev.title}</span>
-                            <span class="text-gray-400 text-[10px] block">${ev.date} - ${ev.location}</span>
-                        </div>
+                    <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-brandGold font-bold">${ev.title} (${ev.date})</span>
                         <div class="flex gap-2">
-                            <button onclick="editEvent('${ev.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded hover:bg-blue-700 transition" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteEvent('${ev.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded hover:bg-red-700 transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editEvent('${ev.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteEvent('${ev.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -1657,13 +2044,13 @@
 
         window.handlePopupClick = function(index) {
             selectLocation(index);
-            const card = document.getElementById('mapPreviewCard');
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
         function selectLocation(index) {
             currentLocationIndex = index;
             const loc = locations[index];
+            if(!loc) return;
             
             const tagText = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
             const titleText = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
@@ -1672,13 +2059,12 @@
             const isOpen = isLocOpenNow(loc);
 
             document.getElementById('previewTag').innerText = tagText || '';
-            
             const statusEl = document.getElementById('previewOpenStatus');
             if(isOpen) {
-                statusEl.className = "bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded text-[10px]";
+                statusEl.className = "bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded-md text-[10px]";
                 statusEl.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> ' + (currentLang === 'en' ? 'Open now' : 'Abierto ahora');
             } else {
-                statusEl.className = "bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded text-[10px]";
+                statusEl.className = "bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded-md text-[10px]";
                 statusEl.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> ' + (currentLang === 'en' ? 'Closed' : 'Cerrado');
             }
 
@@ -1715,15 +2101,9 @@
             document.getElementById('establecimientos').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function getYouTubeEmbedUrl(url) {
-            if (!url) return '';
-            let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            let match = url.match(regExp);
-            return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
-        }
-
         function openMenuGallery() {
             const loc = locations[currentLocationIndex];
+            if(!loc) return;
             const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
             document.getElementById('galleryTitle').innerText = locTitle;
             
@@ -1741,26 +2121,24 @@
             grid.innerHTML = '';
             if (loc.gallery && loc.gallery.length > 0) {
                 loc.gallery.forEach(item => {
-                    const itemTitle = (currentLang === 'en' && item.titleEn) ? item.titleEn : item.title;
                     grid.innerHTML += `
                         <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48">
                             <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy">
                             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <span class="text-white font-bold text-xs">${itemTitle || ''}</span>
+                                <span class="text-white font-bold text-xs">${item.title || ''}</span>
                             </div>
                         </div>
                     `;
                 });
             }
-
             openModal('menuGalleryModal');
         }
 
         function initPassport() {
             const storedVisits = localStorage.getItem('cyc_visited_locations');
-            if (storedVisits) { visitedLocations = JSON.parse(storedVisits); }
+            if (storedVisits) visitedLocations = JSON.parse(storedVisits);
             const storedMode = localStorage.getItem('cyc_passport_mode');
-            if (storedMode) { passportMode = storedMode; }
+            if (storedMode) passportMode = storedMode;
             updatePassportUI();
         }
 
@@ -1770,30 +2148,13 @@
             const btnT = document.getElementById('btnTurista');
             const btnL = document.getElementById('btnLojano');
             if (mode === 'turista') {
-                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-white transition";
-                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+                btnT.className = "px-3 py-1 rounded-lg text-xs font-bold bg-brandGold text-white transition";
+                btnL.className = "px-3 py-1 rounded-lg text-xs font-bold bg-gray-800 text-gray-300 transition";
             } else {
-                btnL.className = "px-3 py-1 rounded text-xs font-bold bg-brandGold text-white transition";
-                btnT.className = "px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition";
+                btnL.className = "px-3 py-1 rounded-lg text-xs font-bold bg-brandGold text-white transition";
+                btnT.className = "px-3 py-1 rounded-lg text-xs font-bold bg-gray-800 text-gray-300 transition";
             }
             updatePassportUI();
-        }
-
-        function triggerStampAnimation() {
-            const overlay = document.getElementById('stampOverlay');
-            overlay.classList.remove('hidden');
-            const stampIcon = overlay.querySelector('.fa-stamp');
-            stampIcon.classList.remove('stamp-earned');
-            void stampIcon.offsetWidth;
-            stampIcon.classList.add('stamp-earned');
-            overlay.style.opacity = '1';
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#EA580C', '#ffffff', '#121212'] });
-            }
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-                setTimeout(() => overlay.classList.add('hidden'), 500);
-            }, 2500);
         }
 
         function updatePassportUI() {
@@ -1806,16 +2167,14 @@
 
             let stampsCount = visitedLocations.length;
             for (let i = 0; i < totalToWin; i++) {
-                const loc = locations[i] || defaultLocations[i % defaultLocations.length];
+                const loc = locations[i] || locations[0];
                 const isVisited = loc && visitedLocations.includes(loc.id);
-                let html = '';
                 if (isVisited) {
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
-                    html = `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${locTitle}</span></div>`;
+                    grid.innerHTML += `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${locTitle}</span></div>`;
                 } else {
-                    html = `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i + 1}</span></div>`;
+                    grid.innerHTML += `<div class="border-2 border-dashed border-gray-300 rounded-xl p-3 flex flex-col items-center justify-center bg-gray-50 h-24"><i class="fa-solid fa-lock text-xl text-gray-300 mb-1"></i><span class="text-[8px] text-gray-400 uppercase">Casilla ${i + 1}</span></div>`;
                 }
-                grid.innerHTML += html;
             }
 
             const percentage = Math.min((stampsCount / totalToWin) * 100, 100);
@@ -1905,8 +2264,7 @@
         }
 
         function animateCounters() {
-            const counters = document.querySelectorAll('.counter');
-            counters.forEach(counter => {
+            document.querySelectorAll('.counter').forEach(counter => {
                 const target = +counter.getAttribute('data-target');
                 const updateCount = () => {
                     const count = +counter.innerText;
