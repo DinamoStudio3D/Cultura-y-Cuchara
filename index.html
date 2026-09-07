@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vive Loja - Ruta Gastronómica y Turística</title>
+    
+    <!-- Metaetiquetas Open Graph para Redes Sociales y WhatsApp -->
+    <meta property="og:title" content="Vive Loja - Sabores, Historias y Destinos">
+    <meta property="og:description" content="Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles de Loja.">
+    <meta property="og:image" content="https://i.imgur.com/xaiFpa1.png">
+    <meta property="og:type" content="website">
+
     <link rel="icon" href="https://i.imgur.com/xaiFpa1.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -69,7 +76,7 @@
 
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
         <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl animate-pulse flex items-center justify-center p-2">
-            <img id="splashLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain">
+            <img id="splashLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="eager">
         </div>
         <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">✨ Preparando los mejores sabores de Loja para ti...</div>
     </div>
@@ -82,6 +89,10 @@
                 <span id="weatherWidget" class="text-brandGold font-semibold flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded border border-brandGold/20">
                     <i class="fa-solid fa-cloud-sun text-sm"></i> Loja: <span id="tempDisplay">15°C</span> (Nublado)
                 </span>
+                <span class="hidden md:inline text-gray-500">|</span>
+                <span id="connectionStatusBadge" class="text-emerald-400 font-semibold flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
+                    <i class="fa-solid fa-wifi text-[10px] animate-pulse"></i> <span id="connText">Online Nube</span>
+                </span>
             </div>
             <span class="text-brandGold font-semibold">
                 <i class="fa-solid fa-landmark-flag mr-1"></i> <span data-i18n="topMesa">Avalado por la Mesa Turística de Loja</span> | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocina: ILE
@@ -93,7 +104,7 @@
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-full border-2 border-brandGold overflow-hidden bg-white shadow-sm flex items-center justify-center p-1">
-                    <img id="navLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain">
+                    <img id="navLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
                 </div>
                 <div>
                     <span id="brandNameText" class="text-white font-bold text-sm tracking-wide block leading-none">VIVE LOJA</span>
@@ -168,10 +179,10 @@
         </div>
     </section>
 
-    <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-20 px-4 overflow-hidden">
+    <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
         <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
-            <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl mb-6 relative flex items-center justify-center p-2">
+            <div class="w-40 h-40 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl mb-6 relative flex items-center justify-center p-2">
                 <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
             </div>
             <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4" data-i18n="heroBadge">
@@ -191,272 +202,14 @@
         </div>
     </section>
 
-    <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative">
-        <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="3">3</span></p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporadas</p>
-            </div>
-            <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="4">4</span>+</p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat2Label" data-i18n="statAllies">Aliados y Hoteles</p>
-            </div>
-            <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="stat3Val" data-target="25">25</span>K</p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat3Label" data-i18n="statTourists">Turistas Activos</p>
-            </div>
-            <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="stat4Val" data-target="100">100</span>%</p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat4Label" data-i18n="statIdentity">Identidad Lojana</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-10">
-                <span class="bg-red-500/10 text-red-600 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest border border-red-500/20 inline-block mb-2">
-                    <i class="fa-solid fa-fire mr-1 text-red-500"></i> <span data-i18n="trendingBadge">Lo más cotizado por los viajeros</span>
-                </span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-brandDark" data-i18n="trendingTitle">En Tendencia esta Semana</h2>
-                <p class="text-gray-600 text-xs mt-1" data-i18n="trendingDesc">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="trendingGridContainer"></div>
-        </div>
-    </section>
-
-    <section class="py-10 px-4 bg-brandCream border-b border-gray-200 reveal">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-                <h3 class="font-bold text-brandDark text-lg"><i class="fa-solid fa-route text-brandGold mr-2"></i> <span data-i18n="sugTitle">Experiencias Sugeridas</span></h3>
-                <p class="text-xs text-gray-500" data-i18n="sugDesc">Elige un recorrido especializado para tu viaje.</p>
-            </div>
-            <div class="flex gap-3 overflow-x-auto hide-scrollbar w-full md:w-auto pb-2 md:pb-0" id="suggestedRoutesContainer"></div>
-        </div>
-    </section>
-
-    <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
-        <div class="text-center mb-8">
-            <h2 class="text-2xl font-extrabold text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            <div class="lg:col-span-2 rounded-xl h-[440px] shadow-md border border-gray-300 overflow-hidden relative">
-                <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
-                <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
-                    <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
-                        <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> <span data-i18n="btnGps">Cerca de mí</span>
-                    </button>
-                    <button onclick="centerOnLoja()" class="bg-white text-brandDark px-3 py-2.5 rounded-full shadow-xl hover:bg-gray-100 transition text-xs font-bold flex items-center gap-1.5 border border-gray-300" title="Centrar mapa en Loja">
-                        <i class="fa-solid fa-crosshairs text-brandGold"></i> <span data-i18n="btnCenter">Centrar Loja</span>
-                    </button>
-                </div>
-            </div>
-
-            <div id="mapPreviewCard" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col justify-between h-[440px] relative transition-all duration-300">
-                <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
-                    <i id="previewFav" class="fa-solid fa-seedling"></i>
-                </button>
-                <div>
-                    <div class="flex items-center gap-2 mb-2">
-                        <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded text-xs uppercase">Hueca Tradicional</span>
-                        <span id="previewOpenStatus" class="bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded text-[10px]">Abierto ahora</span>
-                    </div>
-                    <h3 id="previewTitle" class="text-xl font-bold mb-1 pr-8 text-brandDark">El Rincón Lojano</h3>
-                    <p id="previewDesc" class="text-gray-600 text-xs mb-3 h-10 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
-                    
-                    <div class="space-y-1.5 text-xs text-gray-700 border-t border-gray-100 pt-3">
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours">Lun - Sáb: 08:00 - 16:00</span></div>
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress">Mercado Central / Local 14</span></div>
-                    </div>
-                </div>
-
-                <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
-                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2 rounded-lg font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
-                        <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
-                    </button>
-
-                    <div class="flex gap-2">
-                        <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-2 rounded-lg font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
-                            <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShare">Compartir</span>
-                        </a>
-                        <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-2 rounded-lg font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
-                            <i class="fa-solid fa-diamond-turn-right text-brandGold"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="establecimientos" class="bg-white py-16 px-4 reveal">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
-                <div>
-                    <span class="text-brandGold font-bold uppercase tracking-widest text-xs" data-i18n="secTourism">Turismo y Estadía</span>
-                    <h2 class="text-2xl font-extrabold text-brandDark mt-1" data-i18n="secAlliesTitle">Nuestros Aliados y Hoteles</h2>
-                </div>
-                <div class="relative w-full sm:w-64">
-                    <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="Buscar hotel, café, plato..." class="w-full bg-gray-100 border border-gray-200 rounded-full py-2 px-4 pl-10 text-xs focus:ring-2 focus:ring-brandGold outline-none transition" data-i18n-placeholder="searchPlaceholder">
-                    <i class="fa-solid fa-search absolute left-4 top-2.5 text-gray-400 text-xs"></i>
-                </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-2 border-b border-gray-100">
-                <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full sm:w-auto" id="categoryScroll"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="localesGrid"></div>
-            
-            <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
-                <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
-                <span data-i18n="noResults">No encontramos resultados para esa búsqueda.</span>
-            </div>
-        </div>
-    </section>
-
-    <section id="emprendedores" class="py-16 px-4 bg-brandCream border-t border-b border-gray-200 reveal">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-store mr-1"></i> Nuevos Talentos</span>
-                <h2 class="text-3xl font-bold text-brandDark mt-2 mb-3">Emprendedores Lojanos</h2>
-                <p class="text-gray-600 text-sm max-w-xl mx-auto">
-                    Apoya el talento local, la repostería artesanal, el café de autor y los productos emergentes de nuestra provincia.
-                </p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="emprendedoresGridContainer"></div>
-        </div>
-    </section>
-
-    <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> <span data-i18n="ileSub">Tradición y Sabor</span></span>
-                <h2 class="text-3xl font-bold mt-2 mb-3" data-i18n="ileTitle">Secretos de Cocina con ILE</h2>
-                <p class="text-gray-400 text-sm max-w-xl mx-auto" data-i18n="ileDesc">
-                    El alma de la gastronomía lojana reside in sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🌿</div>
-                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard1Title">El Adobo Lojano</h3>
-                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard1Desc">Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.</p>
-                    </div>
-                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard1Tag">Ideal para: Cecina y Secos</span>
-                </div>
-                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">☕</div>
-                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard2Title">Aromas de Altura</h3>
-                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard2Desc">El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.</p>
-                    </div>
-                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard2Tag">Ideal para: Cafés y Pasteles</span>
-                </div>
-                <div class="bg-black/60 border border-brandGold/30 p-6 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🍲</div>
-                        <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard3Title">El Toque del Repe</h3>
-                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard3Desc">El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.</p>
-                    </div>
-                    <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard3Tag">Ideal para: Repe y Sopas</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="pasaporte" class="py-16 px-4 bg-brandGold text-white reveal">
-        <div class="max-w-5xl mx-auto">
-            <div class="bg-white text-brandDark rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
-                <div class="md:w-1/3 bg-brandDark p-8 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-brandGold relative overflow-hidden">
-                    <i class="fa-solid fa-passport absolute -right-4 -bottom-4 text-8xl text-white/5 transform -rotate-12"></i>
-                    <div class="relative z-10 w-full">
-                        <i class="fa-solid fa-qrcode text-6xl text-brandGold mb-4 animate-pulse"></i>
-                        <h2 class="text-2xl font-black text-white uppercase tracking-wider mb-2" data-i18n="passTitle">Pasaporte<br>Inteligente</h2>
-                        <p class="text-gray-400 text-xs mb-4" data-i18n="passDesc">Elige tu modo de exploración y reclama tu premio.</p>
-                        
-                        <button onclick="openModal('pasaporteModal')" class="w-full bg-brandGold text-white px-5 py-3 rounded-full font-bold text-sm hover:bg-brandGoldHover transition shadow-lg flex items-center justify-center mx-auto">
-                            <i class="fa-solid fa-book-open mr-2"></i> <span data-i18n="passBtnOpen">Abrir mi Pasaporte</span>
-                        </button>
-                        
-                        <button onclick="resetPassportProgess()" class="mt-4 text-[10px] text-gray-400 hover:text-white underline" data-i18n="passReset">Borrar progreso guardado</button>
-                    </div>
-                </div>
-                <div class="md:w-2/3 p-8 flex flex-col justify-center">
-                    <h3 class="text-xl font-bold mb-4" data-i18n="passHowTitle">¿Cómo funciona el reto?</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                        <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
-                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-suitcase-rolling text-brandGold mr-1"></i> <span data-i18n="passTouristMode">Modo Turista</span></h4>
-                            <p class="text-[11px] text-gray-600" data-i18n="passTouristDesc">Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).</p>
-                        </div>
-                        <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
-                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-house-user text-brandGold mr-1"></i> <span data-i18n="passLocalMode">Modo Lojano</span></h4>
-                            <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).</p>
-                        </div>
-                    </div>
-                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="agenda" class="py-16 px-4 bg-white border-t border-gray-200 reveal">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-brandGold font-semibold uppercase tracking-widest text-xs"><i class="fa-solid fa-calendar-days mr-1"></i> <span data-i18n="agendaSub">Loja en Movimiento</span></span>
-                <h2 class="text-3xl font-bold text-brandDark mt-2 mb-3" data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
-                <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="agendaDesc">
-                    Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="agendaGridContainer"></div>
-        </div>
-    </section>
-
-    <section id="podcast" class="py-16 px-4 bg-brandDark text-white border-t border-gray-800 reveal">
-        <div class="max-w-5xl mx-auto">
-            <div class="flex flex-col md:flex-row items-center gap-8">
-                <div class="w-full md:w-1/3 p-4 flex justify-center">
-                    <div class="w-44 h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl flex items-center justify-center p-2">
-                        <img id="podcastLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
-                    </div>
-                </div>
-                <div class="w-full md:w-2/3 text-center md:text-left">
-                    <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-microphone mr-1"></i> <span data-i18n="podSub">Episodios Completos</span></span>
-                    <h2 class="text-3xl font-extrabold mt-2 mb-4" data-i18n="podTitle">El Podcast de Loja</h2>
-                    <p class="text-gray-400 text-sm mb-6 leading-relaxed" data-i18n="podDesc">Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.</p>
-                    
-                    <div class="bg-black/50 border border-brandGold/30 p-4 rounded-xl flex items-center gap-4">
-                        <button class="w-12 h-12 flex-shrink-0 bg-brandGold text-white rounded-full flex items-center justify-center text-lg hover:scale-105 transition">
-                            <i class="fa-solid fa-play ml-1"></i>
-                        </button>
-                        <div class="flex-grow text-left">
-                            <p class="text-xs text-brandGold font-bold">Episodio 01</p>
-                            <p class="text-sm font-bold truncate">Doña Rosita y la verdadera Cecina</p>
-                            <div class="w-full bg-gray-700 h-1.5 rounded-full mt-2">
-                                <div class="bg-brandGold h-1.5 rounded-full" style="width: 35%"></div>
-                            </div>
-                        </div>
-                        <div class="text-xs text-gray-400">12:45 / 35:00</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-12 px-4 bg-[#181818] text-white border-t border-brandGold/20 text-center">
+<!-- ... --><section class="py-12 px-4 bg-[#181818] text-white border-t border-brandGold/20 text-center">
         <div class="max-w-4xl mx-auto">
             <div class="inline-block p-3 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4">
                 <i class="fa-solid fa-landmark"></i>
             </div>
             <h3 class="text-lg font-bold text-brandGold uppercase tracking-wider mb-2">Apoyo Institucional y Patrocinio Oficial</h3>
             <p class="text-xs text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
-                Proyecto avalado y respaldado oficialmente por la <b>Mesa Turística de Loja</b> y el <b>Municipio de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
+                Proyecto avalado y respaldado oficialmente por el <b>Municipio de Loja</b> y la <b>Mesa Turística de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b>.
             </p>
             <div class="flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
                 <span class="bg-black/50 px-4 py-2 rounded-lg border border-gray-800"><i class="fa-solid fa-building-columns text-brandGold mr-1.5"></i> Municipio de Loja</span>
@@ -470,7 +223,7 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full border border-brandGold bg-white flex items-center justify-center overflow-hidden p-0.5">
-                    <img id="footerLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain">
+                    <img id="footerLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
                 </div>
                 <div>
                     <span class="text-white font-bold tracking-wide block">VIVE LOJA</span>
@@ -490,445 +243,7 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
-            <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-mug-hot text-brandGold text-xl"></i>
-                    <h3 class="text-lg font-black uppercase tracking-wider text-brandGold" data-i18n="modalItineraryTitle">Mi Ruta Organizada</h3>
-                </div>
-                <button onclick="closeModal('itineraryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-6 overflow-y-auto flex-grow space-y-4" id="itineraryListContainer"></div>
-            <div class="p-4 bg-white border-t border-gray-200 text-center">
-                <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
-                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- YouTube Video Modal Player -->
-    <div id="latestVideoModal" class="fixed inset-0 z-[95] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
-            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/60">
-                <h3 class="text-base font-bold text-brandGold" id="latestVideoModalTitle"><i class="fa-brands fa-youtube text-red-500 mr-2"></i> Nuevo Estreno / Vídeo Destacado</h3>
-                <button onclick="closeModal('latestVideoModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-4 bg-black">
-                <div class="w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-brandGold/30">
-                    <iframe id="latestVideoIframe" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
-            <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <div class="w-12 h-12 bg-brandGold text-white rounded-full flex items-center justify-center text-xl mx-auto mb-3 shadow">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <h3 class="text-lg font-bold text-brandGold mb-1" data-i18n="adminPinTitle">Acceso Restringido</h3>
-            <p class="text-xs text-gray-400 mb-4" data-i18n="adminPinDesc">Ingresa tu PIN de administración</p>
-            <form onsubmit="verifyAdminPin(event)" class="space-y-3">
-                <input type="password" id="adminPinInput" required maxlength="6" placeholder="PIN" class="w-full bg-gray-900 border border-gray-700 rounded p-2.5 text-center text-lg tracking-widest text-white outline-none focus:border-brandGold">
-                <button type="submit" class="w-full bg-brandGold text-white font-bold py-2 rounded hover:bg-white hover:text-brandDark transition text-xs uppercase tracking-wider" data-i18n="adminPinBtn">
-                    Ingresar al Panel
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
-        <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
-            <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-brandGold/10 border border-brandGold/40 flex items-center justify-center text-brandGold text-lg">
-                        <i class="fa-solid fa-sliders"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control de Locales, Emprendedores, Eventos y Marca</p>
-                    </div>
-                </div>
-                <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="flex border-b border-gray-800 bg-black/30 px-4 sm:px-6 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto hide-scrollbar">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos y PINs</button>
-                <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Emprendedores</button>
-                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda Cultural</button>
-                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Logo e Identidad</button>
-            </div>
-
-            <div class="p-6 overflow-y-auto flex-grow space-y-6">
-                <!-- Locales Tab -->
-                <div id="adminTabLocales" class="space-y-6">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con PIN y Horarios)</h4>
-                        <form onsubmit="handleSaveLocation(event)" class="space-y-4">
-                            <input type="hidden" id="admEditId">
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre (Español)</label>
-                                    <input type="text" id="admTitle" required placeholder="Ej. Picantería Central" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Name (English)</label>
-                                    <input type="text" id="admTitleEn" placeholder="Ej. Central Picantería" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría</label>
-                                    <select id="admCategory" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono del Pin</label>
-                                    <select id="admIconClass" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                        <option value="fa-utensils">🍴 Restaurante / Plato</option>
-                                        <option value="fa-mortar-pestle">🥘 Hueca Tradicional</option>
-                                        <option value="fa-mug-hot">☕ Cafetería</option>
-                                        <option value="fa-hotel">🏨 Hotel / Hospedaje</option>
-                                        <option value="fa-fire-burner">🔥 Comida Urbana</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-key"></i> PIN de Validación</label>
-                                    <input type="text" id="admPin" required maxlength="6" value="1234" placeholder="Ej. 4589" class="w-full bg-[#121212] border border-brandGold/60 rounded p-2.5 text-xs text-white outline-none text-center font-bold tracking-widest">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Visible (Español)</label>
-                                    <input type="text" id="admTag" required placeholder="Ej. Sabor Típico" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Visible Tag (English)</label>
-                                    <input type="text" id="admTagEn" placeholder="Ej. Traditional Flavor" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Plato Estrella / Beneficio (Español)</label>
-                                    <input type="text" id="admDish" required placeholder="Ej. Seco de chivo" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Star Dish / Benefit (English)</label>
-                                    <input type="text" id="admDishEn" placeholder="Ej. Goat stew" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-brandGold/10 p-3 rounded-lg border border-brandGold/30">
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">⏰ Horario Texto</label>
-                                    <input type="text" id="admHours" placeholder="Lun - Sáb: 08:00 - 16:00" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Abre (Hora 24h)</label>
-                                    <input type="number" id="admOpenHour" min="0" max="23" value="8" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Cierra (Hora 24h)</label>
-                                    <input type="number" id="admCloseHour" min="0" max="23" value="20" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2 text-xs text-white outline-none">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">📍 Coordenadas exactas</label>
-                                    <input type="text" id="admPlusCode" placeholder="Ej. -3.9931, -79.2042" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">O selecciona Zona Rápida en Loja</label>
-                                    <select id="admZonePreset" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                        <option value="-3.9931,-79.2042">Centro / Mercado Central</option>
-                                        <option value="-3.9968,-79.2025">Calle Bernardo Valdivieso</option>
-                                        <option value="-3.9895,-79.2060">Av. Universitaria</option>
-                                        <option value="-3.9910,-79.2030">Plaza de las Flores</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Dirección Escrita</label>
-                                <input type="text" id="admAddress" required placeholder="Ej. Sucre y Rocafuerte" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción (Español)</label>
-                                    <textarea id="admDesc" required placeholder="Breve descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Description (English)</label>
-                                    <textarea id="admDescEn" placeholder="Short description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-brandDark/50 p-4 rounded-xl border border-brandGold/30">
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace de Vídeo YouTube</label>
-                                    <input type="text" id="admYoutubeUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-images mr-1"></i> URLs de Galería (Separadas por comas)</label>
-                                    <input type="text" id="admImgsList" placeholder="https://img1.jpg, https://img2.jpg" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-
-                            <div class="flex gap-2">
-                                <button type="submit" id="saveBtnText" class="flex-1 bg-brandGold text-white font-bold py-3 rounded hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
-                                    Guardar en la Nube
-                                </button>
-                                <button type="button" onclick="resetLocationForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
-                                    Cancelar / Nuevo
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados</h4>
-                        <div class="space-y-2" id="adminLocationsList"></div>
-                    </div>
-                </div>
-
-                <!-- Emprendedores Tab -->
-                <div id="adminTabEmprendedores" class="space-y-6 hidden">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4" id="empFormTitle"><i class="fa-solid fa-store mr-1"></i> Registrar o Editar Emprendedor Lojano</h4>
-                        <form onsubmit="handleAddNewEmprendedor(event)" class="space-y-4">
-                            <input type="hidden" id="empEditId">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre del Emprendimiento</label>
-                                    <input type="text" id="empName" required placeholder="Ej. Chocolate Artesanal Yacu" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Categoría / Producto</label>
-                                    <input type="text" id="empCategory" required placeholder="Ej. Cacao Fino de Aroma" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">WhatsApp de Contacto (con 593...)</label>
-                                    <input type="text" id="empPhone" required placeholder="Ej. 593999999999" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de Imagen / Foto</label>
-                                    <input type="text" id="empImg" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción / Historia</label>
-                                <textarea id="empDesc" required placeholder="Breve historia del emprendimiento..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                            </div>
-                            <div class="flex gap-2">
-                                <button type="submit" id="saveEmpBtnText" class="flex-1 bg-brandGold text-white font-bold py-3 rounded hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
-                                    Guardar Emprendedor
-                                </button>
-                                <button type="button" onclick="resetEmpForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
-                                    Nuevo
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Emprendedores Registrados</h4>
-                        <div class="space-y-2" id="adminEmprendedoresList"></div>
-                    </div>
-                </div>
-
-                <!-- Agenda Tab -->
-                <div id="adminTabAgenda" class="space-y-6 hidden">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4" id="eventFormTitle"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar o Editar Evento Cultural Bilingüe</h4>
-                        <form onsubmit="handleSaveEvent(event)" class="space-y-4">
-                            <input type="hidden" id="evEditId">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título del evento (Español)</label>
-                                    <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Event Title (English)</label>
-                                    <input type="text" id="evTitleEn" placeholder="Title in English" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (Ej. 2026-09-20)</label>
-                                    <input type="text" id="evDate" required placeholder="2026-09-20" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Tipo</label>
-                                    <input type="text" id="evType" required placeholder="Festival" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de Imagen</label>
-                                    <input type="text" id="evImg" placeholder="https://..." class="w-full bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Lugar</label>
-                                    <input type="text" id="evLocation" required placeholder="Plaza de las Flores" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Zona en Loja</label>
-                                    <select id="evZonePreset" class="w-full bg-[#121212] border border-brandGold/40 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                                        <option value="-3.9910,-79.2030">Plaza de las Flores</option>
-                                        <option value="-3.9980,-79.2015">Teatro Bolívar</option>
-                                        <option value="-3.9931,-79.2042">Mercado Central</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción (Español)</label>
-                                    <textarea id="evDesc" required placeholder="Descripción..." rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Description (English)</label>
-                                    <textarea id="evDescEn" placeholder="Description..." rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button type="submit" id="saveEventBtnText" class="flex-1 bg-brandGold text-white font-bold py-3 rounded hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
-                                    Publicar Evento
-                                </button>
-                                <button type="button" onclick="resetEventForm()" class="bg-gray-700 text-white px-4 py-3 rounded text-xs font-bold hover:bg-gray-600 transition">
-                                    Nuevo
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Eventos Programados</h4>
-                        <div class="space-y-2" id="adminEventsList"></div>
-                    </div>
-                </div>
-
-                <!-- Identidad y Personalización Tab -->
-                <div id="adminTabIdentidad" class="space-y-6 hidden">
-                    <div class="bg-black/40 border border-gray-800 p-5 rounded-xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-palette mr-1"></i> Personalizar Logotipo y Vídeo / Textos</h4>
-                        <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL del Logotipo Oficial</label>
-                                <input type="text" id="setBrandLogoUrl" required placeholder="https://i.imgur.com/xaiFpa1.png" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> URL del Último Vídeo Destacado (YouTube)</label>
-                                <input type="text" id="setLatestVideoUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Destacado</label>
-                                <input type="text" id="setLatestVideoTitle" placeholder="Ej. Doña Rosita y la verdadera Cecina Lojana" class="w-full bg-[#121212] border border-brandGold/50 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Texto de la Etiqueta Superior (Badge)</label>
-                                <input type="text" id="setHeroBadge" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título Principal</label>
-                                <input type="text" id="setHeroTitle" required class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Subtítulo Descriptivo</label>
-                                <textarea id="setHeroSubtitle" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded p-2.5 text-xs text-white outline-none focus:border-brandGold"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
-                                Aplicar Cambios de Identidad y Vídeo
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[720px]">
-            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
-                <div>
-                    <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Vídeo y Galería del Establecimiento</h3>
-                    <p class="text-xs text-gray-400">Contenido multimedia oficial</p>
-                </div>
-                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-6 flex-grow overflow-y-auto space-y-6">
-                <div id="youtubeVideoContainer" class="hidden">
-                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-2"><i class="fa-brands fa-youtube mr-1"></i> Vídeo Principal</h4>
-                    <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30">
-                        <iframe id="youtubeIframe" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-images mr-1"></i> Galería de Fotos</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="galleryGrid"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="pasaporteModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandCream text-brandDark w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative">
-            <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="bg-brandDark text-center py-6 border-b-2 border-brandGold relative overflow-hidden">
-                <i class="fa-solid fa-passport absolute -left-4 -bottom-4 text-6xl text-white/5"></i>
-                <h3 class="text-2xl font-black text-brandGold uppercase tracking-widest" data-i18n="passTitleModal">Mi Pasaporte</h3>
-                <div class="flex justify-center gap-2 mt-3">
-                    <button onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded text-xs font-bold bg-brandGold text-white transition" data-i18n="passTouristMode">Modo Turista</button>
-                    <button onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded text-xs font-bold bg-gray-800 text-gray-300 transition" data-i18n="passLocalMode">Modo Lojano</button>
-                </div>
-            </div>
-            <div class="p-6">
-                <p class="text-xs text-gray-600 mb-4 text-center font-bold" id="passportRuleDesc">Meta: 1 Hotel + 5 Gastronomía</p>
-                <div class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto p-1" id="passportStampsGrid"></div>
-                <div class="bg-gray-100 rounded-lg p-4 text-center border border-gray-200">
-                    <p class="text-sm font-bold text-brandDark mb-1"><i class="fa-solid fa-gift text-brandGold mr-1"></i> <span data-i18n="passRewardTitle">Progreso de Recompensa</span></p>
-                    <p class="text-[10px] text-gray-600" id="passportProgressText">Completa tu meta para reclamar tu kit ILE.</p>
-                    <div class="w-full bg-gray-300 h-3 rounded-full mt-3 overflow-hidden shadow-inner">
-                        <div id="passportProgressBar" class="bg-gradient-to-r from-brandGold to-amber-600 h-3 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="toastMessage" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
-        <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
-    </div>
-
-    <div id="stampOverlay" class="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center opacity-0 hidden">
-        <div class="text-center">
-            <i class="fa-solid fa-stamp text-9xl text-brandGold drop-shadow-[0_0_15px_rgba(234,88,12,0.8)] transform -rotate-12"></i>
-            <h2 class="text-3xl font-black text-brandGold uppercase mt-4 drop-shadow-md bg-black/50 px-4 py-1 rounded">¡Sello Ganado!</h2>
-        </div>
-    </div>
-
-    <script>
+<!-- ... --><script>
         const translations = {
             es: {
                 splashText: "✨ Preparando los mejores sabores de Loja para ti...",
@@ -1218,6 +533,19 @@
             markersLayer = L.layerGroup().addTo(map);
         } catch(e) { console.log('Map loading...'); }
 
+        function updateConnectionStatus(isOnline) {
+            const badge = document.getElementById('connectionStatusBadge');
+            const txt = document.getElementById('connText');
+            if(!badge || !txt) return;
+            if(isOnline) {
+                badge.className = "text-emerald-400 font-semibold flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30";
+                txt.innerText = "Online Nube";
+            } else {
+                badge.className = "text-amber-400 font-semibold flex items-center gap-1 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30";
+                txt.innerText = "Modo Local";
+            }
+        }
+
         function isLocOpenNow(loc) {
             if (loc.openHour === undefined || loc.closeHour === undefined) return true;
             const now = new Date();
@@ -1253,6 +581,7 @@
         function cargarDatosDesdeFirestore() {
             if (!db) {
                 locations = defaultLocations;
+                updateConnectionStatus(false);
                 loadSettingsFromStorage();
                 renderEverything();
                 checkLiveEventsBanner();
@@ -1270,12 +599,14 @@
                     defaultLocations.forEach(loc => db.collection("locales").doc(loc.id).set(loc));
                     locations = defaultLocations;
                 }
+                updateConnectionStatus(true);
                 renderEverything();
                 checkLiveEventsBanner();
                 checkUrlCheckinParam();
             }, (error) => {
-                console.warn("Firestore error fallback:", error);
+                console.warn("Firestore fallback:", error);
                 locations = defaultLocations;
+                updateConnectionStatus(false);
                 loadSettingsFromStorage();
                 renderEverything();
                 checkLiveEventsBanner();
@@ -1755,7 +1086,7 @@
                     container.innerHTML += `
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
                             <div class="flex items-center gap-3">
-                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover" loading="lazy">
                                 <div>
                                     <h4 class="font-bold text-xs text-brandDark">${locTitle}</h4>
                                     <span class="text-[10px] text-brandGold font-bold">${locTag} • ${loc.address}</span>
@@ -1814,7 +1145,7 @@
                 agendaContainer.innerHTML += `
                     <div class="bg-brandCream rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
                         <div class="h-40 overflow-hidden relative">
-                            <img src="${evImg}" alt="" class="w-full h-full object-cover">
+                            <img src="${evImg}" alt="" class="w-full h-full object-cover" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${ev.type}</span>
                         </div>
                         <div class="p-5">
@@ -1853,7 +1184,7 @@
                 container.innerHTML += `
                     <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
                         <div class="h-44 overflow-hidden relative">
-                            <img src="${emp.img}" alt="" class="w-full h-full object-cover">
+                            <img src="${emp.img}" alt="" class="w-full h-full object-cover" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow">${emp.category}</span>
                         </div>
                         <div class="p-5">
