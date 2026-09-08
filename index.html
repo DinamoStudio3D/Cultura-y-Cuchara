@@ -46,7 +46,7 @@
 
     <style>
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
-        #lojaMap { z-index: 1; touch-action: pan-y; }
+        #lojaMap { z-index: 1; touch-action: none; }
         
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #EA580C; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .leaflet-popup-content { font-family: inherit; margin: 12px; text-align: center; }
@@ -166,19 +166,19 @@
         </button>
     </div>
 
-    <!-- Banner de Último Estreno YouTube -->
+    <!-- Banner de Estreno YouTube -->
     <div id="latestVideoBanner" class="bg-[#181818] text-white py-3 px-4 border-b border-brandGold/30 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left z-30 relative shadow-inner">
         <div class="flex items-center gap-2">
-            <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> NUEVO VÍDEO</span>
-            <span id="latestVideoTitleText" class="text-xs font-bold text-gray-200">Doña Rosita y los Secretos de la Cecina Lojana</span>
+            <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> ESTRENO ESPECIAL</span>
+            <span id="latestVideoTitleText" class="text-xs font-bold text-gray-200">La Virgen del Cisne en Loja - Tradición y Fe</span>
         </div>
         <button onclick="openLatestVideoModal()" class="bg-brandGold text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition shadow-warm-glow flex items-center gap-1.5">
-            <i class="fa-solid fa-play"></i> Ver Estreno
+            <i class="fa-solid fa-play"></i> Ver Vídeo
         </button>
     </div>
 
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
-        <div class="absolute inset-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
+        <div id="heroBgImage" class="absolute inset-0 opacity-25 bg-cover bg-center transition-all duration-700" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
             <div class="w-40 h-40 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
                 <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
@@ -247,7 +247,7 @@
     <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl font-black text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.</p>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Desliza libremente con un dedo por el mapa o pulsa los pines para explorar los sitios.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -446,7 +446,7 @@
                         </button>
                         <div class="flex-grow text-left">
                             <p class="text-xs text-brandGold font-bold">Episodio 01</p>
-                            <p class="text-sm font-bold truncate">Doña Rosita y la verdadera Cecina</p>
+                            <p class="text-sm font-bold truncate">La llegada de la Virgen del Cisne a Loja</p>
                             <div class="w-full bg-gray-700 h-1.5 rounded-full mt-2">
                                 <div class="bg-brandGold h-1.5 rounded-full" style="width: 35%"></div>
                             </div>
@@ -490,12 +490,12 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo del GAD Municipal y Mesa Turística. © 2026.</span> 
-                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-2 py-1 select-none" title="Admin">.</span>
+                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-3.5 py-3 select-none inline-block -m-2" title="Admin">.</span>
             </div>
         </div>
     </footer>
 
-    <a href="https://wa.me/593999999999" target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
+    <a href="https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Vive%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
@@ -520,17 +520,28 @@
         </div>
     </div>
 
-    <!-- Modal Vídeo YouTube Destacado -->
+    <!-- Modal Vídeo YouTube Estreno (Tarjeta Interactiva Segura) -->
     <div id="latestVideoModal" class="fixed inset-0 z-[95] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
+        <div class="bg-brandDark text-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
-                <h3 class="text-base font-bold text-brandGold"><i class="fa-brands fa-youtube mr-1 text-red-500"></i> Último Vídeo Oficial</h3>
+                <h3 class="text-base font-bold text-brandGold"><i class="fa-brands fa-youtube mr-1 text-red-500"></i> Estreno Especial</h3>
                 <button onclick="closeModal('latestVideoModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-4">
-                <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30">
-                    <iframe id="latestYoutubeIframe" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+            <div class="p-6 text-center space-y-4">
+                <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30 relative flex flex-col items-center justify-center group cursor-pointer" onclick="openYouTubeDirectLink()">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Vídeo Estreno" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition duration-500">
+                    <div class="absolute inset-0 bg-black/40"></div>
+                    <div class="relative z-10 flex flex-col items-center p-6">
+                        <div class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-warm-glow mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-play ml-1"></i>
+                        </div>
+                        <h4 id="modalVideoTitleDisplay" class="font-bold text-base sm:text-lg text-white mb-1">La Virgen del Cisne en Loja - Tradición y Fe</h4>
+                        <p class="text-xs text-brandGold uppercase tracking-widest font-bold">Ver vídeo oficial en YouTube</p>
+                    </div>
                 </div>
+                <a id="modalDirectVideoLink" href="https://www.youtube.com/watch?v=n0BJGAkU9cg" target="_blank" class="inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition text-xs uppercase tracking-wider shadow">
+                    <i class="fa-brands fa-youtube mr-1.5 text-sm"></i> Abrir Vídeo en YouTube
+                </a>
             </div>
         </div>
     </div>
@@ -561,7 +572,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control de Locales, Vídeo Destacado, Emprendedores y Agenda</p>
+                        <p class="text-xs text-brandGold">Control de Locales, Fondo (Virgen del Cisne), Vídeo y Agenda</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -573,7 +584,7 @@
                 <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos y PINs</button>
                 <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Emprendedores</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda Cultural</button>
-                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Vídeo y Logo</button>
+                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Fondo (Virgen) y Vídeo</button>
             </div>
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
@@ -804,25 +815,29 @@
                     </div>
                 </div>
 
-                <!-- Vídeo y Logo Tab -->
+                <!-- Fondo (Virgen del Cisne) y Vídeo Tab -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-play mr-1"></i> Configurar Vídeo Destacado y Logotipo</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-image mr-1"></i> Configurar Fondo (Virgen del Cisne) y Vídeo</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Último Vídeo Destacado (YouTube)</label>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Imagen de Fondo (Hero Principal)</label>
+                                <input type="text" id="setHeroBgUrl" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Vídeo Estreno (YouTube)</label>
                                 <input type="text" id="setLatestYoutubeUrl" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Destacado</label>
-                                <input type="text" id="setLatestYoutubeTitle" required placeholder="Ej. Doña Rosita y los Secretos de la Cecina" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Estreno</label>
+                                <input type="text" id="setLatestYoutubeTitle" required placeholder="Ej. La Virgen del Cisne en Loja" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL del Logotipo Oficial</label>
                                 <input type="text" id="setBrandLogoUrl" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
-                                Aplicar Cambios
+                                Aplicar Cambios al Instante
                             </button>
                         </form>
                     </div>
@@ -846,8 +861,10 @@
             <div class="p-6 flex-grow overflow-y-auto space-y-6">
                 <div id="youtubeVideoContainer" class="hidden">
                     <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-2"><i class="fa-brands fa-youtube mr-1"></i> Vídeo Principal</h4>
-                    <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30">
-                        <iframe id="youtubeIframe" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                    <div class="w-full p-4 bg-black/60 rounded-xl border border-brandGold/30 text-center">
+                        <a id="directVideoLinkBtn" href="#" target="_blank" class="inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition text-xs uppercase tracking-wider shadow">
+                            <i class="fa-brands fa-youtube mr-1.5 text-sm"></i> Abrir Vídeo en YouTube
+                        </a>
                     </div>
                 </div>
                 <div>
@@ -890,13 +907,6 @@
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
 
-    <div id="stampOverlay" class="fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center opacity-0 hidden">
-        <div class="text-center">
-            <i class="fa-solid fa-stamp text-9xl text-brandGold drop-shadow-[0_0_15px_rgba(234,88,12,0.8)] transform -rotate-12"></i>
-            <h2 class="text-3xl font-black text-brandGold uppercase mt-4 drop-shadow-md bg-black/50 px-4 py-1 rounded">¡Sello Ganado!</h2>
-        </div>
-    </div>
-
     <script>
         const translations = {
             es: {
@@ -928,7 +938,7 @@
                 sugTitle: "Experiencias Sugeridas",
                 sugDesc: "Elige un recorrido especializado para tu viaje.",
                 mapTitle: "Mapa Interactivo de Loja",
-                mapDesc: "Toca los <b>Pines del Mapa</b> o pulsa el botón GPS para ubicarte exactamente en la ciudad.",
+                mapDesc: "Desliza libremente con un dedo por el mapa o pulsa los pines para explorar los sitios.",
                 btnGps: "Cerca de mí",
                 btnCenter: "Centrar Loja",
                 btnMedia: "Ver Vídeo y Galería de Fotos",
@@ -1001,7 +1011,7 @@
                 sugTitle: "Suggested Experiences",
                 sugDesc: "Choose a specialized tour for your trip.",
                 mapTitle: "Interactive Map of Loja",
-                mapDesc: "Tap the <b>Map Pins</b> or press the GPS button to locate yourself in the city.",
+                mapDesc: "Drag freely with one finger on the map or tap the pins to explore spots.",
                 btnGps: "Near me",
                 btnCenter: "Center Loja",
                 btnMedia: "View Video & Photo Gallery",
@@ -1136,7 +1146,7 @@
                 hours: "Lun - Sáb: 08:00 - 16:00", openHour: 8, closeHour: 16,
                 address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-mortar-pestle", category: "hueca",
-                youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                youtubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 gallery: [
                     { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón", titleEn: "Charcoal Grilled Cecina" }
                 ]
@@ -1170,7 +1180,14 @@
 
         let map, markersLayer, userMarkerInstance = null;
         try {
-            map = L.map('lojaMap', { zoomControl: false, tap: true, dragging: !L.Browser.mobile }).setView([-3.9931, -79.2042], 14);
+            map = L.map('lojaMap', { 
+                zoomControl: false, 
+                tap: true, 
+                dragging: true,
+                touchZoom: true,
+                scrollWheelZoom: true
+            }).setView([-3.9931, -79.2042], 14);
+
             L.control.zoom({ position: 'bottomright' }).addTo(map);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
@@ -1221,8 +1238,9 @@
                 title: "Sabores, Historias y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 logoUrl: "https://i.imgur.com/xaiFpa1.png",
-                latestYoutubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                latestYoutubeTitle: "Doña Rosita y los Secretos de la Cecina Lojana"
+                heroBgUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+                latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
+                latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe"
             };
             applySettings(saved);
         }
@@ -1242,10 +1260,28 @@
                 });
             }
 
+            if (s.heroBgUrl) {
+                const bgEl = document.getElementById('heroBgImage');
+                if(bgEl) bgEl.style.backgroundImage = `url('${s.heroBgUrl}')`;
+            }
+
             if (s.latestYoutubeTitle) {
                 const titleEl = document.getElementById('latestVideoTitleText');
                 if(titleEl) titleEl.innerText = s.latestYoutubeTitle;
+                const modalTitleEl = document.getElementById('modalVideoTitleDisplay');
+                if(modalTitleEl) modalTitleEl.innerText = s.latestYoutubeTitle;
             }
+
+            if (s.latestYoutubeUrl) {
+                const directLinkEl = document.getElementById('modalDirectVideoLink');
+                if(directLinkEl) directLinkEl.href = s.latestYoutubeUrl;
+            }
+        }
+
+        function openYouTubeDirectLink() {
+            let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            let url = settings.latestYoutubeUrl || "https://www.youtube.com/watch?v=n0BJGAkU9cg";
+            window.open(url, '_blank');
         }
 
         let currentEventIndex = 0;
@@ -1423,7 +1459,7 @@
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
-                                   <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
+                                     <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
                                </div>`,
                         iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
                     });
@@ -1502,7 +1538,7 @@
                     const eventIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: `<div class="bg-brandGold text-white w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
-                                   <i class="fa-solid fa-calendar-days text-sm"></i>
+                                     <i class="fa-solid fa-calendar-days text-sm"></i>
                                </div>`,
                         iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
                     });
@@ -1533,7 +1569,7 @@
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
                             html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
-                                   <i class="fa-solid fa-street-view text-2xl"></i>
+                                     <i class="fa-solid fa-street-view text-2xl"></i>
                                </div>`,
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
                         });
@@ -1626,6 +1662,9 @@
                 if(loc) {
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                     const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
+                    const shareText = currentLang === 'en' 
+                        ? `Hello! I'm visiting ${locTitle} (${loc.address}) on my Vive Loja route. Let's connect!` 
+                        : `¡Hola! Me encuentro visitando ${locTitle} (${loc.address}) en mi ruta de Vive Loja. ¡Te lo recomiendo!`;
 
                     container.innerHTML += `
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
@@ -1637,7 +1676,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <a href="https://wa.me/?text=${encodeURIComponent('¡Hola! Parada recomendada en mi ruta de Vive Loja: ' + locTitle + ' - ' + loc.address)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
+                                <a href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </a>
                                 <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
@@ -1724,6 +1763,10 @@
             container.innerHTML = '';
 
             emprendedoresList.forEach(emp => {
+                const waText = currentLang === 'en' 
+                    ? `Hello! I came from the Vive Loja website and would like information about ${emp.name}.`
+                    : `¡Hola! Vengo desde la web Vive Loja y deseo más información sobre su emprendimiento ${emp.name}.`;
+
                 container.innerHTML += `
                     <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
                         <div class="h-44 overflow-hidden relative">
@@ -1733,7 +1776,7 @@
                         <div class="p-5">
                             <h3 class="font-bold text-base text-brandDark mb-1">${emp.name}</h3>
                             <p class="text-xs text-gray-600 line-clamp-2 mb-4">${emp.desc}</p>
-                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent('¡Hola! Vi su emprendimiento ' + emp.name + ' en la web de Vive Loja y deseo más información.')}" target="_blank" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
+                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent(waText)}" target="_blank" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
                                 <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Contactar por WhatsApp
                             </a>
                         </div>
@@ -1837,19 +1880,22 @@
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
                 document.getElementById('tabBtnIdentidad').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
-                document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || '';
-                document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || '';
+                document.getElementById('setHeroBgUrl').value = settings.heroBgUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80';
+                document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || 'https://www.youtube.com/watch?v=n0BJGAkU9cg';
+                document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
                 document.getElementById('setBrandLogoUrl').value = settings.logoUrl || 'https://i.imgur.com/xaiFpa1.png';
             }
         }
 
         function handleSaveBrandingSettings(e) {
             e.preventDefault();
+            let heroBgUrl = document.getElementById('setHeroBgUrl').value;
             let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
             let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
             let logoUrl = document.getElementById('setBrandLogoUrl').value;
 
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            settings.heroBgUrl = heroBgUrl;
             settings.latestYoutubeUrl = latestYoutubeUrl;
             settings.latestYoutubeTitle = latestYoutubeTitle;
             settings.logoUrl = logoUrl;
@@ -1857,7 +1903,7 @@
 
             applySettings(settings);
             closeModal('adminModal');
-            showToast('¡Configuración guardada!');
+            showToast('¡Configuración guardada con éxito!');
         }
 
         function handleSaveLocation(e) {
@@ -2077,7 +2123,7 @@
             document.getElementById('previewGps').href = previewGpsUrl;
             
             const waBtn = document.getElementById('previewWhatsapp');
-            const waText = currentLang === 'en' ? `Hello! I recommend visiting ${titleText} on the Vive Loja route. Address: ${loc.address}` : `¡Hola! Te recomiendo visitar ${titleText} en la ruta Vive Loja. Ubicación: ${loc.address}`;
+            const waText = currentLang === 'en' ? `Hello! I came from the Vive Loja website and would like information about ${titleText} (${loc.address}).` : `¡Hola! Vengo desde la web Vive Loja y deseo más información sobre ${titleText} (${loc.address}).`;
             waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
 
             const favIcon = document.getElementById('previewFav');
@@ -2100,6 +2146,10 @@
             document.getElementById('establecimientos').scrollIntoView({ behavior: 'smooth' });
         }
 
+        function openLatestVideoModal() {
+            openModal('latestVideoModal');
+        }
+
         function openMenuGallery() {
             const loc = locations[currentLocationIndex];
             if(!loc) return;
@@ -2107,12 +2157,12 @@
             document.getElementById('galleryTitle').innerText = locTitle;
             
             const ytContainer = document.getElementById('youtubeVideoContainer');
-            const ytIframe = document.getElementById('youtubeIframe');
+            const directBtn = document.getElementById('directVideoLinkBtn');
             if (loc.youtubeUrl && loc.youtubeUrl.trim() !== "") {
-                ytIframe.src = getYouTubeEmbedUrl(loc.youtubeUrl);
+                directBtn.href = loc.youtubeUrl;
                 ytContainer.classList.remove('hidden');
             } else {
-                ytIframe.src = '';
+                directBtn.href = '#';
                 ytContainer.classList.add('hidden');
             }
 
@@ -2292,11 +2342,15 @@
         }
         function openModal(id) { 
             const m = document.getElementById(id);
-            if(m) m.classList.remove('hidden'); 
+            if(m) {
+                m.classList.remove('hidden');
+            }
         }
         function closeModal(id) { 
             const m = document.getElementById(id);
-            if(m) m.classList.add('hidden'); 
+            if(m) {
+                m.classList.add('hidden');
+            } 
         }
     </script>
 </body>
