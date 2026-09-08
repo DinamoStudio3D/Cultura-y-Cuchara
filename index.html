@@ -97,7 +97,7 @@
         </div>
     </header>
 
-    <nav class="sticky top-0 z-40 glass-nav border-b border-brandGold/30 px-4 lg:px-8 py-3 shadow-warm-glow">
+    <nav class="sticky top-0 z-40 glass-nav border-b border-brandGold/30 px-4 md:px-8 py-3 shadow-warm-glow">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3 group">
                 <div class="w-12 h-12 rounded-full border-2 border-brandGold overflow-hidden bg-white shadow-warm-glow flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
@@ -108,7 +108,7 @@
                     <span class="text-brandGold text-[9px] uppercase tracking-widest font-semibold" data-i18n="navSub">Sabores • Historias • Destinos</span>
                 </div>
             </a>
-            <div class="hidden md:flex items-center gap-5 text-sm font-semibold text-gray-200">
+            <div class="hidden md:flex items-center gap-3 lg:gap-5 text-xs lg:text-sm font-semibold text-gray-200">
                 <a href="#inicio" class="hover:text-brandGold transition-colors" data-i18n="menuHome">Inicio</a>
                 <a href="#tendencia" class="hover:text-brandGold transition-colors" data-i18n="menuTrending">En Tendencia</a>
                 <a href="#mapa" class="hover:text-brandGold transition-colors" data-i18n="menuMap">El Mapa</a>
@@ -120,12 +120,12 @@
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition-colors" data-i18n="menuAgenda">Agenda</a>
                 
-                <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2.5 py-1 text-xs font-bold outline-none cursor-pointer hover:border-brandGold transition-colors">
+                <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2 py-1 text-xs font-bold outline-none cursor-pointer hover:border-brandGold transition-colors">
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
                 </select>
 
-                <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/50 px-3.5 py-1.5 rounded-xl font-bold hover:bg-brandGold hover:text-white transition-all text-xs flex items-center gap-1.5 relative shadow-warm-glow">
+                <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/50 px-3 py-1.5 rounded-xl font-bold hover:bg-brandGold hover:text-white transition-all text-xs flex items-center gap-1.5 relative shadow-warm-glow">
                     <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta</span> <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1.5 rounded-full hidden">0</span>
                 </button>
             </div>
@@ -142,7 +142,7 @@
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-passport text-brandGold mr-1"></i><span data-i18n="menuPassport">Mi Pasaporte</span></a>
             <div class="flex items-center justify-between py-1 border-t border-gray-800">
                 <span class="text-xs text-gray-400">Idioma / Language:</span>
-                <select id="langSelectorMobile" onchange="changeLanguage(this.value); toggleMobileMenu()" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2.5 py-1 text-xs font-bold outline-none">
+                <select id="langSelectorMobile" onchange="changeLanguage(this.value); toggleMobileMenu()" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2 py-1 text-xs font-bold outline-none">
                     <option value="es">🇪🇸 Español</option>
                     <option value="en">🇺🇸 English</option>
                 </select>
@@ -159,35 +159,36 @@
         </button>
     </div>
 
-    <div id="latestVideoBanner" class="bg-[#181818] text-white py-3 px-4 border-b border-brandGold/30 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left z-30 relative shadow-inner">
+    <div id="latestVideoBanner" class="bg-[#181818] text-white py-3 px-4 border-b border-brandGold/30 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left z-30 relative shadow-inner">
         <div class="flex items-center gap-2">
-            <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> NUEVO VÍDEO</span>
+            <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> VÍDEO DESTACADO</span>
             <span id="latestVideoTitleText" class="text-xs font-bold text-gray-200">La Virgen del Cisne en Loja - Tradición y Fe</span>
         </div>
         <button onclick="openLatestVideoModal()" class="bg-brandGold text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition shadow-warm-glow flex items-center gap-1.5">
-            <i class="fa-solid fa-play"></i> Ver Estreno
+            <i class="fa-solid fa-play"></i> Ver Vídeo Oficial
         </button>
     </div>
 
-    <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
-        <div id="heroBgWrapper" class="absolute inset-0 opacity-30 overflow-hidden flex items-center justify-center bg-black">
-            <img id="heroBgImageEl" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="" class="w-full h-full transition-all duration-700" style="object-fit: cover; object-position: center center;">
+    <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
+        <div id="heroBgWrapper" class="absolute inset-0 opacity-40 overflow-hidden flex items-center justify-center bg-black">
+            <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-transparent to-brandDark opacity-90 z-10"></div>
+            <img id="heroBgImageEl" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Virgen del Cisne Loja" class="w-full h-full transition-all duration-700 filter brightness-90" style="object-fit: cover; object-position: center center;">
         </div>
-        <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
-            <div class="w-40 h-40 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
+        <div class="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center reveal active">
+            <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
                 <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
             </div>
             <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4 shadow-warm-glow" data-i18n="heroBadge">
                 Loja se conoce, se saborea y se hospeda
             </span>
-            <h1 id="heroTitle" class="text-3xl sm:text-5xl font-black tracking-tight mb-4" data-i18n="heroTitle">
+            <h1 id="heroTitle" class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-4" data-i18n="heroTitle">
                 Sabores, <span class="text-brandGold">Historias</span> y Destinos
             </h1>
-            <p id="heroSubtitle" class="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed font-normal" data-i18n="heroSubtitle">
+            <p id="heroSubtitle" class="text-sm sm:text-base lg:text-lg text-gray-200 max-w-3xl mx-auto mb-8 leading-relaxed font-normal" data-i18n="heroSubtitle">
                 Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
-                <a href="#mapa" class="bg-brandGold text-white font-bold px-7 py-3.5 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-sm text-center">
+                <a href="#mapa" class="bg-brandGold text-white font-bold px-8 py-4 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-sm text-center">
                     <i class="fa-solid fa-map-location-dot mr-2"></i> <span data-i18n="btnStartRoute">Iniciar la Ruta</span>
                 </a>
             </div>
@@ -195,7 +196,7 @@
     </section>
 
     <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
-        <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
                 <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="3">3</span></p>
                 <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporadas</p>
@@ -215,37 +216,37 @@
         </div>
     </section>
 
-    <section id="tendencia" class="py-16 px-4 bg-white reveal border-b border-gray-200">
+    <section id="tendencia" class="py-16 px-4 md:px-8 bg-white reveal border-b border-gray-200">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
                 <span class="bg-red-500/10 text-red-600 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest border border-red-500/20 inline-block mb-2">
                     <i class="fa-solid fa-fire mr-1 text-red-500"></i> <span data-i18n="trendingBadge">Lo más cotizado por los viajeros</span>
                 </span>
                 <h2 class="text-2xl sm:text-3xl font-black text-brandDark" data-i18n="trendingTitle">En Tendencia esta Semana</h2>
-                <p class="text-gray-600 text-xs mt-1" data-i18n="trendingDesc">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
+                <p class="text-gray-600 text-xs sm:text-sm mt-1" data-i18n="trendingDesc">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="trendingGridContainer"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="trendingGridContainer"></div>
         </div>
     </section>
 
-    <section class="py-10 px-4 bg-brandCream border-b border-gray-200 reveal">
+    <section class="py-10 px-4 md:px-8 bg-brandCream border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
-                <h3 class="font-bold text-brandDark text-lg"><i class="fa-solid fa-route text-brandGold mr-2"></i> <span data-i18n="sugTitle">Experiencias Sugeridas</span></h3>
+                <h3 class="font-bold text-brandDark text-base md:text-lg"><i class="fa-solid fa-route text-brandGold mr-2"></i> <span data-i18n="sugTitle">Experiencias Sugeridas</span></h3>
                 <p class="text-xs text-gray-500" data-i18n="sugDesc">Elige un recorrido especializado para tu viaje.</p>
             </div>
             <div class="flex gap-3 overflow-x-auto hide-scrollbar w-full md:w-auto pb-2 md:pb-0" id="suggestedRoutesContainer"></div>
         </div>
     </section>
 
-    <section id="mapa" class="py-16 px-4 max-w-7xl mx-auto reveal">
+    <section id="mapa" class="py-16 px-4 md:px-8 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
-            <h2 class="text-2xl font-black text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
+            <h2 class="text-2xl sm:text-3xl font-black text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
             <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Desliza libremente con un dedo por el mapa o pulsa los pines para explorar los sitios.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            <div class="lg:col-span-2 rounded-2xl h-[440px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
+            <div class="lg:col-span-2 rounded-2xl h-[460px] md:h-[500px] lg:h-[520px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
                     <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
@@ -257,7 +258,7 @@
                 </div>
             </div>
 
-            <div id="mapPreviewCard" class="glass-card p-6 rounded-2xl shadow-warm-glow border border-gray-200 flex flex-col justify-between h-[440px] relative">
+            <div id="mapPreviewCard" class="glass-card p-6 rounded-2xl shadow-warm-glow border border-gray-200 flex flex-col justify-between h-[460px] md:h-[500px] lg:h-[520px] relative">
                 <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
@@ -267,9 +268,9 @@
                         <span id="previewOpenStatus" class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded-md text-[10px]">Abierto ahora</span>
                     </div>
                     <h3 id="previewTitle" class="text-xl font-bold mb-1 pr-8 text-brandDark">El Rincón Lojano</h3>
-                    <p id="previewDesc" class="text-gray-600 text-xs mb-3 h-10 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
+                    <p id="previewDesc" class="text-gray-600 text-xs sm:text-sm mb-3 h-12 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
                     
-                    <div class="space-y-1.5 text-xs text-gray-700 border-t border-gray-100 pt-3">
+                    <div class="space-y-2 text-xs sm:text-sm text-gray-700 border-t border-gray-100 pt-3">
                         <div class="flex items-center gap-2"><i class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours">Lun - Sáb: 08:00 - 16:00</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress">Mercado Central / Local 14</span></div>
@@ -277,15 +278,15 @@
                 </div>
 
                 <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
-                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
+                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-3 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
                         <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
                     </button>
 
                     <div class="flex gap-2">
-                        <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
+                        <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
                             <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShare">Compartir</span>
                         </a>
-                        <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
+                        <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-3 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
                             <i class="fa-solid fa-diamond-turn-right text-brandGold"></i>
                         </a>
                     </div>
@@ -294,16 +295,16 @@
         </div>
     </section>
 
-    <section id="establecimientos" class="bg-white py-16 px-4 reveal">
+    <section id="establecimientos" class="bg-white py-16 px-4 md:px-8 reveal">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
                 <div>
                     <span class="text-brandGold font-bold uppercase tracking-widest text-xs" data-i18n="secTourism">Turismo y Estadía</span>
-                    <h2 class="text-2xl font-black text-brandDark mt-1" data-i18n="secAlliesTitle">Nuestros Aliados y Hoteles</h2>
+                    <h2 class="text-2xl sm:text-3xl font-black text-brandDark mt-1" data-i18n="secAlliesTitle">Nuestros Aliados y Hoteles</h2>
                 </div>
-                <div class="relative w-full sm:w-64">
-                    <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="Buscar hotel, café, plato..." class="w-full bg-gray-100 border border-gray-200 rounded-full py-2 px-4 pl-10 text-xs focus:ring-2 focus:ring-brandGold outline-none transition" data-i18n-placeholder="searchPlaceholder">
-                    <i class="fa-solid fa-search absolute left-4 top-2.5 text-gray-400 text-xs"></i>
+                <div class="relative w-full sm:w-72">
+                    <input type="text" id="searchInput" onkeyup="searchItems()" placeholder="Buscar hotel, café, plato..." class="w-full bg-gray-100 border border-gray-200 rounded-full py-2.5 px-4 pl-10 text-xs sm:text-sm focus:ring-2 focus:ring-brandGold outline-none transition" data-i18n-placeholder="searchPlaceholder">
+                    <i class="fa-solid fa-search absolute left-4 top-3 text-gray-400 text-xs"></i>
                 </div>
             </div>
 
@@ -320,8 +321,8 @@
         </div>
     </section>
 
-    <section id="emprendedores" class="py-16 px-4 bg-brandCream border-t border-b border-gray-200 reveal">
-        <div class="max-w-6xl mx-auto">
+    <section id="emprendedores" class="py-16 px-4 md:px-8 bg-brandCream border-t border-b border-gray-200 reveal">
+        <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
                 <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-store mr-1"></i> Nuevos Talentos</span>
                 <h2 class="text-3xl font-black text-brandDark mt-2 mb-3">Emprendedores Lojanos</h2>
@@ -329,12 +330,12 @@
                     Apoya el talento local, la repostería artesanal, el café de autor y los productos emergentes de nuestra provincia.
                 </p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="emprendedoresGridContainer"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="emprendedoresGridContainer"></div>
         </div>
     </section>
 
-    <section id="especias" class="py-16 px-4 bg-brandDark text-white border-t border-brandGold/30 reveal">
-        <div class="max-w-6xl mx-auto">
+    <section id="especias" class="py-16 px-4 md:px-8 bg-brandDark text-white border-t border-brandGold/30 reveal">
+        <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
                 <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> <span data-i18n="ileSub">Tradición y Sabor</span></span>
                 <h2 class="text-3xl font-black mt-2 mb-3" data-i18n="ileTitle">Secretos de Cocina con ILE</h2>
@@ -372,7 +373,7 @@
         </div>
     </section>
 
-    <section id="pasaporte" class="py-16 px-4 bg-brandGold text-white reveal shadow-warm-glow">
+    <section id="pasaporte" class="py-16 px-4 md:px-8 bg-brandGold text-white reveal shadow-warm-glow">
         <div class="max-w-5xl mx-auto">
             <div class="bg-white text-brandDark rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
                 <div class="md:w-1/3 bg-brandDark p-8 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-brandGold relative overflow-hidden">
@@ -407,8 +408,8 @@
         </div>
     </section>
 
-    <section id="agenda" class="py-16 px-4 bg-white border-t border-gray-200 reveal">
-        <div class="max-w-6xl mx-auto">
+    <section id="agenda" class="py-16 px-4 md:px-8 bg-white border-t border-gray-200 reveal">
+        <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
                 <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-calendar-days mr-1"></i> <span data-i18n="agendaSub">Loja en Movimiento</span></span>
                 <h2 class="text-3xl font-black text-brandDark mt-2 mb-3" data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
@@ -417,11 +418,11 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="agendaGridContainer"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="agendaGridContainer"></div>
         </div>
     </section>
 
-    <section id="podcast" class="py-16 px-4 bg-brandDark text-white border-t border-gray-800 reveal">
+    <section id="podcast" class="py-16 px-4 md:px-8 bg-brandDark text-white border-t border-gray-800 reveal">
         <div class="max-w-5xl mx-auto">
             <div class="flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/3 p-4 flex justify-center">
@@ -452,7 +453,7 @@
         </div>
     </section>
 
-    <section class="py-12 px-4 bg-[#181818] text-white border-t border-brandGold/20 text-center">
+    <section class="py-12 px-4 md:px-8 bg-[#181818] text-white border-t border-brandGold/20 text-center">
         <div class="max-w-4xl mx-auto">
             <div class="inline-block p-3 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4 shadow-warm-glow">
                 <i class="fa-solid fa-landmark"></i>
@@ -469,7 +470,7 @@
         </div>
     </section>
 
-    <footer class="bg-black text-gray-400 py-8 px-4 border-t border-gray-900 text-xs">
+    <footer class="bg-black text-gray-400 py-8 px-4 md:px-8 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full border border-brandGold bg-white flex items-center justify-center overflow-hidden p-0.5 shadow-warm-glow">
@@ -516,7 +517,7 @@
     <div id="latestVideoModal" class="fixed inset-0 z-[95] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
-                <h3 class="text-base font-bold text-brandGold"><i class="fa-brands fa-youtube mr-1 text-red-500"></i> Estreno Especial</h3>
+                <h3 class="text-base font-bold text-brandGold"><i class="fa-brands fa-youtube mr-1 text-red-500"></i> Vídeo Destacado</h3>
                 <button onclick="closeModal('latestVideoModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 text-center space-y-4">
@@ -564,7 +565,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control de Locales, Fondo (Virgen del Cisne), Vídeo Estreno y Agenda</p>
+                        <p class="text-xs text-brandGold">Control de Locales, Fondo, Vídeo y Agenda</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -810,22 +811,21 @@
                 <!-- Fondo, Vídeo y Logo Tab -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-image mr-1"></i> Configurar Fondo (Virgen del Cisne), Vídeo Estreno y Logo</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-image mr-1"></i> Configurar Fondo, Vídeo y Logo</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Imagen de Fondo (Hero Principal)</label>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Imagen de Fondo (Hero)</label>
                                 <input type="text" id="setHeroBgUrl" oninput="updateBgPreviewFromInput()" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             
-                            <!-- Herramienta Visual Interactiva de Encuadre y Adaptación de Imagen -->
                             <div class="bg-black/60 p-4 rounded-xl border border-brandGold/40 space-y-3">
-                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-crop mr-1"></i> Vista Previa y Modo de Visualización</label>
-                                <p class="text-[10px] text-gray-300">Elige si prefieres que la imagen llene toda la pantalla o que se muestre completa sin recortes.</p>
+                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-crop mr-1"></i> Vista Previa y Modo de Presentación</label>
+                                <p class="text-[10px] text-gray-300">Selecciona cómo deseas que se acomode la imagen en la cabecera.</p>
                                 
-                                <div id="previewHeroBox" class="w-full h-36 rounded-lg overflow-hidden relative border border-brandGold/50 bg-black shadow-inner flex items-center justify-center">
+                                <div id="previewHeroBox" class="w-full h-40 rounded-lg overflow-hidden relative border border-brandGold/50 bg-black shadow-inner flex items-center justify-center">
                                     <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="w-full h-full transition-all duration-300" style="object-fit: cover; object-position: center center;">
                                     <div class="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
-                                        <span class="text-[10px] bg-black/70 text-brandGold font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-brandGold/30">Vista Previa Web</span>
+                                        <span class="text-[10px] bg-black/70 text-brandGold font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-brandGold/30">Vista Previa</span>
                                     </div>
                                 </div>
 
@@ -833,14 +833,14 @@
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                                     <div>
-                                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Modo de Ajuste de Imagen:</label>
+                                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Modo de Presentación:</label>
                                         <select id="setHeroBgFit" onchange="updateFitPreview(this.value)" class="w-full bg-[#121212] border border-gray-700 rounded-lg p-2 text-xs text-white outline-none">
-                                            <option value="cover">Llenar toda la pantalla (Cover - Recorta bordes)</option>
-                                            <option value="contain">Mostrar imagen completa (Contain - Sin recortes)</option>
+                                            <option value="cover">Llenar pantalla completa (Cover)</option>
+                                            <option value="contain">Mostrar completa sin recortes (Contain)</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Alineación rápida:</label>
+                                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Alineación de Enfoque:</label>
                                         <div class="grid grid-cols-3 gap-1">
                                             <button type="button" onclick="setBgPosPreset('center top')" class="bg-gray-800 text-white text-[9px] font-bold py-2 rounded border border-gray-700 hover:bg-brandGold transition">Arriba</button>
                                             <button type="button" onclick="setBgPosPreset('center center')" class="bg-gray-800 text-white text-[9px] font-bold py-2 rounded border border-gray-700 hover:bg-brandGold transition">Centro</button>
@@ -851,15 +851,15 @@
                             </div>
 
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Vídeo Estreno (YouTube)</label>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Vídeo (YouTube)</label>
                                 <input type="text" id="setLatestYoutubeUrl" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Estreno</label>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Destacado</label>
                                 <input type="text" id="setLatestYoutubeTitle" required placeholder="Ej. La Virgen del Cisne en Loja" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Miniatura/Imagen del Vídeo Estreno</label>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> Miniatura del Vídeo</label>
                                 <input type="text" id="setLatestVideoThumbUrl" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
                             <div>
@@ -1397,15 +1397,15 @@
             if(catScroll) {
                 const todosLabel = currentLang === 'en' ? 'All' : 'Todos';
                 catScroll.innerHTML = `
-                    <button onclick="filterItems('all', this)" class="filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2 flex items-center gap-2 transition-all shadow-md">
-                        <i class="fa-solid fa-border-all"></i> <span class="text-sm font-bold text-white">${todosLabel}</span>
+                    <button onclick="filterItems('all', this)" class="filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2.5 flex items-center gap-2 transition-all shadow-md">
+                        <i class="fa-solid fa-border-all"></i> <span class="text-xs sm:text-sm font-bold text-white">${todosLabel}</span>
                     </button>
                 `;
                 categories.forEach(cat => {
                     const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
                     catScroll.innerHTML += `
-                        <button onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
-                            <span class="text-lg">${cat.icon}</span> <span class="text-sm font-bold">${catName}</span>
+                        <button onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
+                            <span class="text-base">${cat.icon}</span> <span class="text-xs sm:text-sm font-bold">${catName}</span>
                         </button>
                     `;
                 });
@@ -1426,7 +1426,7 @@
                 categories.slice(0, 3).forEach(cat => {
                     const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
                     sugContainer.innerHTML += `
-                        <button onclick="setSuggestedRoute('${cat.id}')" class="bg-white border border-brandGold text-brandDark px-4 py-2 rounded-xl shadow-sm hover:bg-brandGold hover:text-white transition text-xs font-bold whitespace-nowrap flex items-center">
+                        <button onclick="setSuggestedRoute('${cat.id}')" class="bg-white border border-brandGold text-brandDark px-4 py-2.5 rounded-xl shadow-sm hover:bg-brandGold hover:text-white transition text-xs sm:text-sm font-bold whitespace-nowrap flex items-center">
                             <span class="mr-2">${cat.icon}</span> ${catName}
                         </button>
                     `;
@@ -1457,14 +1457,14 @@
 
                 container.innerHTML += `
                     <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
-                        <div class="h-44 overflow-hidden relative">
+                        <div class="h-48 md:h-52 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index + 1} EN RUTA</span>
                         </div>
                         <div class="p-5">
                             <span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${locTag}</span>
-                            <h3 class="text-base font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${locTitle}</h3>
-                            <p class="text-gray-600 text-xs line-clamp-2">${locDesc}</p>
+                            <h3 class="text-base sm:text-lg font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${locTitle}</h3>
+                            <p class="text-gray-600 text-xs sm:text-sm line-clamp-2">${locDesc}</p>
                         </div>
                     </div>
                 `;
@@ -1567,7 +1567,7 @@
                         <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
-                        <div class="h-48 overflow-hidden relative">
+                        <div class="h-52 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
                                 <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>
@@ -1582,7 +1582,7 @@
                                 <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${locTitle}</h3>
                                 ${cardDistHtml}
                             </div>
-                            <p class="text-gray-600 text-xs local-desc line-clamp-2">${locDesc}</p>
+                            <p class="text-gray-600 text-xs sm:text-sm local-desc line-clamp-2">${locDesc}</p>
                             <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
                                 <i class="fa-solid fa-clock text-brandGold"></i> <span>${loc.hours || 'Lun - Dom: 08:00 - 20:00'}</span>
                             </div>
@@ -1810,7 +1810,7 @@
 
                 agendaContainer.innerHTML += `
                     <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
-                        <div class="h-40 overflow-hidden relative">
+                        <div class="h-48 md:h-52 overflow-hidden relative">
                             <img src="${evImg}" alt="" class="w-full h-full object-cover">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${ev.type}</span>
                         </div>
@@ -1818,11 +1818,11 @@
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date}</span>
                             </div>
-                            <h3 class="font-bold text-base text-brandDark mb-2">${evTitle}</h3>
-                            <p class="text-xs text-gray-600 leading-relaxed mb-4 line-clamp-2">${evDesc}</p>
+                            <h3 class="font-bold text-base sm:text-lg text-brandDark mb-2">${evTitle}</h3>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-4 line-clamp-2">${evDesc}</p>
                         </div>
                         <div class="px-5 pb-5 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-3 text-xs">
-                            <span class="text-gray-500 truncate max-w-[160px]"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
+                            <span class="text-gray-500 truncate max-w-[180px]"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
                             <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
                                 <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
                             </button>
@@ -1853,14 +1853,14 @@
 
                 container.innerHTML += `
                     <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
-                        <div class="h-44 overflow-hidden relative">
+                        <div class="h-48 md:h-52 overflow-hidden relative">
                             <img src="${emp.img}" alt="" class="w-full h-full object-cover">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow">${emp.category}</span>
                         </div>
                         <div class="p-5">
-                            <h3 class="font-bold text-base text-brandDark mb-1">${emp.name}</h3>
-                            <p class="text-xs text-gray-600 line-clamp-2 mb-4">${emp.desc}</p>
-                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent(waText)}" target="_blank" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
+                            <h3 class="font-bold text-base sm:text-lg text-brandDark mb-1">${emp.name}</h3>
+                            <p class="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-4">${emp.desc}</p>
+                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent(waText)}" target="_blank" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
                                 <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Contactar por WhatsApp
                             </a>
                         </div>
