@@ -1316,7 +1316,7 @@
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
         let passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
         let userCoords = null;
-        let defaultReferenceCoord = { lat: -3.9931, lng: -79.2042 }; // Plaza Central / Parque Central de Loja por defecto
+        let defaultReferenceCoord = { lat: -3.9931, lng: -79.2042 }; // Parque Central de Loja
         let heroSlideshowInterval = null;
 
         function applySettings(settings) {
@@ -1386,7 +1386,7 @@
                     selectLocation(currentLocationIndex);
                     showToast('Ubicación GPS encontrada y centrada');
                 }, () => {
-                    showToast('No se pudo obtener la ubicación GPS');
+                    showToast('No se pudo obtener la ubicación GPS. Verifique permisos.');
                 }, { enableHighAccuracy: true, timeout: 10000 });
             } else {
                 showToast('Geolocalización no soportada en este navegador');
@@ -1538,7 +1538,7 @@
                     let marker = L.marker([loc.lat || -3.9931, loc.lng || -79.2042], { icon: customIcon });
                     
                     const d = calculateDistance(refCoord.lat, refCoord.lng, loc.lat || -3.9931, loc.lng || -79.2042);
-                    const distanceStr = `<br><span style="font-size:10px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'}</span>`;
+                    const distanceStr = `<br><span style="font-size:11px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'}</span>`;
 
                     marker.bindPopup(`<div style="text-align:center"><b style="color:#121212">${locTitle}</b><br><span style="font-size:11px; color:#EA580C">${locTag}</span>${distanceStr}</div>`);
                     marker.on('click', () => { selectLocation(index); });
@@ -1556,7 +1556,7 @@
                         let evMarker = L.marker([ev.lat, ev.lng], { icon: eventCustomIcon });
                         
                         const d = calculateDistance(refCoord.lat, refCoord.lng, ev.lat, ev.lng);
-                        const evDistanceStr = `<br><span style="font-size:10px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'}</span>`;
+                        const evDistanceStr = `<br><span style="font-size:11px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'}</span>`;
 
                         evMarker.bindPopup(`<div style="text-align:center"><b style="color:#EA580C">${evTitle}</b><br><span style="font-size:11px">${ev.location}</span>${evDistanceStr}</div>`);
                         evMarker.on('click', () => {
