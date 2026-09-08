@@ -1377,46 +1377,66 @@
             }
 
             showToast('📡 Buscando tu ubicación GPS actual...');
+            
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     userCoords = { lat, lng };
-                    
+
                     if (map) {
-                        // Forzar el movimiento inmediato del mapa a las coordenadas exactas del usuario
-                        map.setView([lat, lng], 16, { animate: true, duration: 1 });
-                        
+                        // Forzar refresco de tamaño de Leaflet para evitar conflictos en contenedor
+                        map.invalidateSize();
+                        map.setView([lat, lng], 16, { animate: true });
+
                         if (userMarkerInstance) {
                             map.removeLayer(userMarkerInstance);
                         }
-                        
+
                         let userIconHtml = `<div class="w-10 h-10 rounded-full bg-blue-600 border-2 border-white text-white shadow-warm-glow flex items-center justify-center text-base animate-pulse"><i class="fa-solid fa-street-view"></i></div>`;
                         let userCustomIcon = L.divIcon({ className: 'custom-leaflet-icon', html: userIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
-                        
+
                         userMarkerInstance = L.marker([lat, lng], { icon: userCustomIcon }).addTo(map)
                             .bindPopup("<b>¡Tu ubicación GPS actual!</b>")
                             .openPopup();
                     }
-                    
-                    // Recalcular distancias y refrescar tarjetas y mapa
+
                     renderMapAndGrid();
                     showToast('📍 ¡Ubicación GPS encontrada con éxito!');
                 },
                 (error) => {
-                    console.error("Error GPS:", error);
-                    let msg = "No se pudo obtener la ubicación GPS.";
-                    if (error.code === 1) msg = "⚠️ Permiso de GPS denegado. Habilítalo en tu navegador.";
-                    else if (error.code === 2) msg = "⚠️ Señal de GPS no disponible.";
-                    else if (error.code === 3) msg = "⚠️ Tiempo de espera agotado al buscar GPS.";
-                    showToast(msg);
+                    console.warn("Error GPS nativo, intentando con evento Leaflet...", error);
+                    if (map) {
+                        map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
+                        map.once('locationfound', (e) => {
+                            userCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
+                            map.invalidateSize();
+                            if (userMarkerInstance) map.removeLayer(userMarkerInstance);
+                            
+                            let userIconHtml = `<div class="w-10 h-10 rounded-full bg-blue-600 border-2 border-white text-white shadow-warm-glow flex items-center justify-center text-base animate-pulse"><i class="fa-solid fa-street-view"></i></div>`;
+                            let userCustomIcon = L.divIcon({ className: 'custom-leaflet-icon', html: userIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
+                            
+                            userMarkerInstance = L.marker(e.latlng, { icon: userCustomIcon }).addTo(map)
+                                .bindPopup("<b>¡Tu ubicación GPS actual!</b>")
+                                .openPopup();
+                            
+                            renderMapAndGrid();
+                            showToast('📍 ¡Ubicación GPS encontrada!');
+                        });
+                        map.once('locationerror', (err) => {
+                            showToast('⚠️ No se pudo obtener el GPS. Verifica permisos o usa HTTPS.');
+                        });
+                    } else {
+                        showToast('⚠️ Permiso de GPS denegado o no disponible.');
+                    }
                 },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
             );
         }
 
         function centerOnLoja() {
             if (map) {
+                map.invalidateSize();
                 map.setView([-3.9931, -79.2042], 14, { animate: true });
                 showToast('Mapa centrado en Loja');
             }
@@ -1915,6 +1935,7 @@
 
         function focusEventOnMap(lat, lng, eventTitle) {
             if(map) {
+                map.invalidateSize();
                 map.setView([lat, lng], 17, { animate: true });
                 showToast(`Ubicando evento: ${eventTitle}`);
             }
@@ -2428,7 +2449,10 @@
                 previewBtn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10";
             }
 
-            if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
+            if(map) {
+                map.invalidateSize();
+                map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
+            }
         }
 
         function simulateMapClick(index) {
