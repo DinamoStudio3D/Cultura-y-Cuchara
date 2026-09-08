@@ -36,7 +36,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
-    <!-- Librería para Confeti -->
+    <!-- Confeti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <!-- SDKs de Firebase Firestore -->
@@ -67,8 +67,8 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .glass-nav { background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-nav { background: rgba(18, 18, 18, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .glass-card { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(234,88,12,0.18); border-color: rgba(234, 88, 12, 0.5); }
 
         .hero-slide { opacity: 0; transition: opacity 1.2s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -116,6 +116,10 @@
                 <a href="#mapa" class="hover:text-brandGold transition-colors" data-i18n="menuMap">El Mapa</a>
                 <a href="#establecimientos" class="hover:text-brandGold transition-colors" data-i18n="menuRoute">La Ruta</a>
                 <a href="#emprendedores" class="hover:text-brandGold transition-colors" data-i18n="menuEntrepreneurs">Emprendedores</a>
+                <a href="#fiavl" class="hover:text-brandGold transition-colors flex items-center gap-1.5 text-brandGold font-bold">
+                    <i class="fa-solid fa-masks-theater text-base"></i>
+                    <span>FIAVL 2026</span>
+                </a>
                 <a href="#pasaporte" class="hover:text-brandGold transition-colors relative">
                     <i class="fa-solid fa-passport text-brandGold mr-1"></i><span data-i18n="menuPassport">Pasaporte</span>
                     <span id="navStampBadge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0/6</span>
@@ -131,7 +135,7 @@
                     <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta</span> <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1.5 rounded-full hidden">0</span>
                 </button>
             </div>
-            <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl p-2 relative">
+            <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl p-2 relative" aria-label="Abrir Menú">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
@@ -141,6 +145,10 @@
             <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuMap">El Mapa</a>
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuRoute">La Ruta</a>
             <a href="#emprendedores" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuEntrepreneurs">Emprendedores</a>
+            <a href="#fiavl" class="text-brandGold hover:text-white flex items-center gap-2" onclick="toggleMobileMenu()">
+                <i class="fa-solid fa-masks-theater text-base"></i>
+                <span>FIAVL 2026</span>
+            </a>
             <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-passport text-brandGold mr-1"></i><span data-i18n="menuPassport">Mi Pasaporte</span></a>
             <div class="flex items-center justify-between py-1 border-t border-gray-800">
                 <span class="text-xs text-gray-400">Idioma / Language:</span>
@@ -153,6 +161,7 @@
         </div>
     </nav>
 
+    <!-- Promo Popup Modal -->
     <div id="promoPopupModal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col animate-bounce-slight">
             <button onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
@@ -166,7 +175,7 @@
             </div>
             <div class="p-6 text-center space-y-3">
                 <h3 id="popupTitleText" class="text-xl font-black text-brandDark">¡Especial del Día de las Madres!</h3>
-                <p id="popupDescText" class="text-xs sm:text-sm text-gray-600 leading-relaxed">Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.</p>
+                <p id="popupDescText" class="text-xs sm:text-sm text-gray-600 leading-relaxed">Visita nuestros aliados locales para canjear promociones exclusivas.</p>
                 <div class="pt-2 flex flex-col gap-2">
                     <a id="popupWhatsappBtn" href="#" target="_blank" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
                         <i class="fa-brands fa-whatsapp text-base"></i> Consultar Disponibilidad
@@ -191,7 +200,7 @@
             
             <div class="bg-brandCream p-4 rounded-2xl border border-brandGold/40 mb-4 flex flex-col items-center">
                 <div class="w-24 h-24 bg-white p-2 rounded-xl border border-gray-300 shadow-inner flex items-center justify-center mb-2 overflow-hidden">
-                    <img id="qrLocalAvatarImg" src="https://i.imgur.com/xaiFpa1.png" class="w-full h-full object-cover rounded-lg" alt="">
+                    <img id="qrLocalAvatarImg" src="https://i.imgur.com/xaiFpa1.png" class="w-full h-full object-cover rounded-lg" alt="Local">
                 </div>
                 <span id="qrLocalNameDisplay" class="text-xs font-bold text-brandDark">Local Aliado</span>
             </div>
@@ -224,6 +233,7 @@
         </button>
     </div>
 
+    <!-- Hero Section -->
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
         <div id="heroBgWrapper" class="absolute inset-0 opacity-45 overflow-hidden flex items-center justify-center bg-black">
             <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-brandDark/40 to-brandDark opacity-90 z-10"></div>
@@ -250,6 +260,7 @@
         </div>
     </section>
 
+    <!-- Stats -->
     <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
         <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
@@ -271,6 +282,7 @@
         </div>
     </section>
 
+    <!-- Trending -->
     <section id="tendencia" class="py-16 px-4 md:px-8 lg:px-12 bg-white reveal border-b border-gray-200">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
@@ -284,6 +296,7 @@
         </div>
     </section>
 
+    <!-- Suggested Routes -->
     <section class="py-10 px-4 md:px-8 bg-brandCream border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
@@ -294,10 +307,11 @@
         </div>
     </section>
 
+    <!-- Map Section -->
     <section id="mapa" class="py-16 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Desliza libremente con un dedo por el mapa o pulsa los pines para explorar los sitios.</p>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Desliza libremente por el mapa o pulsa los pines para explorar los sitios.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
@@ -354,6 +368,7 @@
         </div>
     </section>
 
+    <!-- Establishments Section -->
     <section id="establecimientos" class="bg-white py-16 px-4 md:px-8 lg:px-12 reveal">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
@@ -380,6 +395,7 @@
         </div>
     </section>
 
+    <!-- Entrepreneurs -->
     <section id="emprendedores" class="py-16 px-4 md:px-8 lg:px-12 bg-brandCream border-t border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
@@ -393,6 +409,7 @@
         </div>
     </section>
 
+    <!-- Spices Section -->
     <section id="especias" class="py-16 px-4 md:px-8 lg:px-12 bg-brandDark text-white border-t border-brandGold/30 reveal">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
@@ -432,6 +449,7 @@
         </div>
     </section>
 
+    <!-- Passport Section -->
     <section id="pasaporte" class="py-16 px-4 md:px-8 lg:px-12 bg-brandGold text-white reveal shadow-warm-glow">
         <div class="max-w-5xl mx-auto">
             <div class="bg-white text-brandDark rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
@@ -467,6 +485,116 @@
         </div>
     </section>
 
+    <!-- FIAVL 2026 Section -->
+    <section id="fiavl" class="py-16 lg:py-24 px-4 md:px-8 lg:px-12 bg-gradient-to-b from-[#161616] via-brandDark to-[#191919] text-white border-t border-b border-brandGold/30 relative overflow-hidden reveal">
+        <div class="absolute -top-32 -right-32 w-96 h-96 bg-brandGold/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+                <div class="w-full lg:w-1/2 text-center lg:text-left flex flex-col items-center lg:items-start">
+                    
+                    <!-- Imagen destacada grandecita con halo dorado y efecto flotante -->
+                    <div class="relative group mb-6">
+                        <div class="absolute -inset-3 bg-gradient-to-r from-brandGold via-amber-500 to-orange-600 rounded-3xl blur-2xl opacity-40 group-hover:opacity-75 transition duration-700 animate-pulse"></div>
+                        <div class="relative w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 rounded-3xl bg-black/80 border-2 border-brandGold p-4 shadow-2xl flex items-center justify-center backdrop-blur-md">
+                            <img src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL 2026 Loja" class="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(234,88,12,0.45)] group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        </div>
+                    </div>
+
+                    <div class="inline-flex items-center gap-2 bg-brandGold/15 border border-brandGold/40 px-4 py-1.5 rounded-full mb-4 shadow-warm-glow">
+                        <i class="fa-solid fa-masks-theater text-brandGold text-base"></i>
+                        <span class="text-brandGold font-bold uppercase tracking-widest text-[11px]" data-i18n="fiavlBadge">Loja, Capital Cultural del Ecuador</span>
+                    </div>
+
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-3" data-i18n="fiavlTitle">
+                        FIAVL <span class="text-brandGold">2026</span>
+                    </h2>
+
+                    <h3 class="text-base sm:text-lg font-bold text-gray-200 mb-3" data-i18n="fiavlSubTitle">
+                        Festival Internacional de Artes Vivas de Loja
+                    </h3>
+
+                    <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-6 max-w-xl mx-auto lg:mx-0" data-i18n="fiavlDesc">
+                        Loja se transforma en el escenario cultural más grande del país. Obras de teatro, danza contemporánea, circo, artes plásticas e intervenciones escénicas de compañías nacionales e internacionales se toman teatros, plazas y calles emblemáticas de nuestra ciudad.
+                    </p>
+
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                        <a href="#agenda" class="bg-brandGold text-white font-bold px-6 py-3 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-xs uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-check"></i> <span data-i18n="btnFiavlAgenda">Ver Agenda y Teatros</span>
+                        </a>
+                        <a href="#establecimientos" class="bg-white/10 text-white font-bold px-6 py-3 rounded-xl border border-white/20 hover:bg-white/20 transition-all text-xs uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-hotel"></i> <span data-i18n="btnFiavlHotels">Hoteles y Cafés Cercanos</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-black/50 border border-brandGold/30 p-5 rounded-2xl flex flex-col justify-between shadow-warm-glow hover:border-brandGold transition-all">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-brandGold/20 flex items-center justify-center text-brandGold text-xl border border-brandGold/40 shadow">
+                                <i class="fa-solid fa-masks-theater"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="fiavlCard1Title">Teatro en Salas</h4>
+                                <span class="text-[10px] text-brandGold font-bold uppercase tracking-wider" data-i18n="fiavlCard1Tag">Salas Oficiales</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-relaxed" data-i18n="fiavlCard1Desc">
+                            Obras estelares en el Teatro Benjamín Carrión Mora, Teatro Bolívar y Centro Cultural Alfredo Mora Reyes.
+                        </p>
+                    </div>
+
+                    <div class="bg-black/50 border border-brandGold/30 p-5 rounded-2xl flex flex-col justify-between shadow-warm-glow hover:border-brandGold transition-all">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-brandGold/20 flex items-center justify-center text-brandGold text-xl border border-brandGold/40 shadow">
+                                <i class="fa-solid fa-people-roof"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="fiavlCard2Title">Arte en la Calle</h4>
+                                <span class="text-[10px] text-brandGold font-bold uppercase tracking-wider" data-i18n="fiavlCard2Tag">Espacios Abiertos</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-relaxed" data-i18n="fiavlCard2Desc">
+                            Intervenciones vivas, circo, comparsas y arte visual en la Calle Bolívar, Plaza de San Sebastián y Plaza Central.
+                        </p>
+                    </div>
+
+                    <div class="bg-black/50 border border-brandGold/30 p-5 rounded-2xl flex flex-col justify-between shadow-warm-glow hover:border-brandGold transition-all">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-brandGold/20 flex items-center justify-center text-brandGold text-xl border border-brandGold/40 shadow">
+                                <i class="fa-solid fa-mug-hot"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="fiavlCard3Title">Ruta Escénica & Café</h4>
+                                <span class="text-[10px] text-brandGold font-bold uppercase tracking-wider" data-i18n="fiavlCard3Tag">Gastronomía Nocturna</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-relaxed" data-i18n="fiavlCard3Desc">
+                            Cafeterías de especialidad y huecas tradicionales listas para acoger turistas tras cada función estelar.
+                        </p>
+                    </div>
+
+                    <div class="bg-black/50 border border-brandGold/30 p-5 rounded-2xl flex flex-col justify-between shadow-warm-glow hover:border-brandGold transition-all">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-brandGold/20 flex items-center justify-center text-brandGold text-xl border border-brandGold/40 shadow">
+                                <i class="fa-solid fa-certificate"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="fiavlCard4Title">Sello FIAVL Especial</h4>
+                                <span class="text-[10px] text-brandGold font-bold uppercase tracking-wider" data-i18n="fiavlCard4Tag">En tu Pasaporte</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-relaxed" data-i18n="fiavlCard4Desc">
+                            Visita los puntos artísticos autorizados y obtén validaciones exclusivas en tu pasaporte interactivo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agenda -->
     <section id="agenda" class="py-16 px-4 md:px-8 lg:px-12 bg-white border-t border-gray-200 reveal">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
@@ -481,6 +609,7 @@
         </div>
     </section>
 
+    <!-- Podcast -->
     <section id="podcast" class="py-16 px-4 md:px-8 lg:px-12 bg-brandDark text-white border-t border-gray-800 reveal">
         <div class="max-w-5xl mx-auto">
             <div class="flex flex-col md:flex-row items-center gap-8">
@@ -495,7 +624,7 @@
                     <p class="text-gray-400 text-sm mb-6 leading-relaxed" data-i18n="podDesc">Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.</p>
                     
                     <div class="bg-black/50 border border-brandGold/30 p-4 rounded-xl flex items-center gap-4 shadow-warm-glow">
-                        <button class="w-12 h-12 flex-shrink-0 bg-brandGold text-white rounded-full flex items-center justify-center text-lg hover:scale-105 transition">
+                        <button class="w-12 h-12 flex-shrink-0 bg-brandGold text-white rounded-full flex items-center justify-center text-lg hover:scale-105 transition" aria-label="Reproducir episodio">
                             <i class="fa-solid fa-play ml-1"></i>
                         </button>
                         <div class="flex-grow text-left">
@@ -512,6 +641,7 @@
         </div>
     </section>
 
+    <!-- Institutional Sponsorship -->
     <section class="py-12 px-4 md:px-8 bg-[#181818] text-white border-t border-brandGold/20 text-center">
         <div class="max-w-4xl mx-auto">
             <div class="inline-block p-3 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4 shadow-warm-glow">
@@ -529,6 +659,7 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer class="bg-black text-gray-400 py-8 px-4 md:px-8 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
@@ -544,15 +675,17 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo del GAD Municipal y Mesa Turística. © 2026.</span> 
-                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-3.5 py-3 select-none inline-block -m-2" title="Admin">.</span>
+                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-gray-800 hover:text-brandGold transition text-[16px] px-2 select-none" title="Admin">⚙️</span>
             </div>
         </div>
     </footer>
 
+    <!-- Floating WhatsApp -->
     <a href="https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Vive%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <!-- Modal Itinerary -->
     <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
             <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
@@ -569,11 +702,12 @@
                 <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
                     <i class="fa-brands fa-whatsapp text-base"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
                 </button>
-                <button onclick="clearEntireItinerary()" class="text-xs text-red-500 hover:underline text-center">Vaciar toda la ruta</button>
+                <button onclick="clearEntireItinerary()" class="text-xs text-red-500 hover:underline text-center py-1">Vaciar toda la ruta</button>
             </div>
         </div>
     </div>
 
+    <!-- Latest Video Modal -->
     <div id="latestVideoModal" class="fixed inset-0 z-[95] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -599,6 +733,7 @@
         </div>
     </div>
 
+    <!-- Admin Pin Modal -->
     <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
             <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -616,6 +751,7 @@
         </div>
     </div>
 
+    <!-- Main Admin Modal -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -624,8 +760,8 @@
                         <i class="fa-solid fa-sliders"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control de Locales, Check-in QR, Carrusel, Vídeo y Popup</p>
+                        <h3 class="text-lg font-bold text-white">Panel de Administración</h3>
+                        <p class="text-xs text-brandGold">Gestión de Contenido y Datos</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -634,10 +770,10 @@
             </div>
 
             <div class="flex flex-wrap items-center border-b border-gray-800 bg-black/40 px-3 sm:px-6 gap-2 sm:gap-3 text-xs font-bold overflow-x-auto hide-scrollbar py-2">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y Check-in QR</button>
+                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y PIN QR</button>
                 <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Emprendedores</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda Cultural</button>
-                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Carrusel de Fondo, Vídeo y Logo</button>
+                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Carrusel, Vídeo y Logo</button>
                 <button onclick="switchAdminTab('popup')" id="tabBtnPopup" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Popup Notificación</button>
             </div>
 
@@ -645,7 +781,7 @@
                 <!-- Locales Tab -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Logo en Mapa y PIN QR)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -768,7 +904,7 @@
                 <!-- Emprendedores Tab -->
                 <div id="adminTabEmprendedores" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4" id="empFormTitle"><i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor Lojano</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="empFormTitle"><i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor</h4>
                         <form onsubmit="handleAddNewEmprendedor(event)" class="space-y-4">
                             <input type="hidden" id="empEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -825,7 +961,7 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (2026-09-20)</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (YYYY-MM-DD)</label>
                                     <input type="text" id="evDate" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                                 </div>
                                 <div>
@@ -873,10 +1009,10 @@
                     </div>
                 </div>
 
-                <!-- Carrusel de Fondo, Vídeo y Logo Tab con Arrastre Interactivo y Velocidad -->
+                <!-- Carrusel de Fondo, Vídeo y Logo Tab -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-images mr-1"></i> Configurar Carrusel de Imágenes de Fondo</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-images mr-1"></i> Configurar Carrusel de Fondo y Medios</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-list mr-1"></i> URLs de las Imágenes del Carrusel (Separadas por comas)</label>
@@ -885,14 +1021,13 @@
                             </div>
 
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-stopwatch mr-1"></i> Tiempo de cambio entre imágenes (en segundos)</label>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-stopwatch mr-1"></i> Tiempo de cambio entre imágenes (segundos)</label>
                                 <input type="number" id="setHeroIntervalSeconds" min="2" max="60" value="6" class="w-full sm:w-48 bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
-                                <span class="text-[9px] text-gray-400 mt-1 block">Ejemplo: 6 (cambia cada 6 segundos), 10 (cambia cada 10 segundos).</span>
                             </div>
                             
                             <div class="bg-black/60 p-4 rounded-xl border border-brandGold/40 space-y-3">
-                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-hand mr-1"></i> Previsualización Interactiva de Arrastre (Alineación)</label>
-                                <p class="text-[10px] text-gray-300">Haz clic y arrastra con el mouse dentro del recuadro (o desliza con el dedo) para encuadrar la imagen de fondo principal.</p>
+                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-hand mr-1"></i> Previsualización Interactiva (Arrastre para encuadre)</label>
+                                <p class="text-[10px] text-gray-300">Haz clic y arrastra con el mouse (o desliza con el dedo) para encuadrar la imagen de fondo principal.</p>
                                 
                                 <div id="interactivePreviewBox" class="w-full h-48 rounded-lg overflow-hidden relative border-2 border-brandGold bg-black shadow-inner cursor-grab active:cursor-grabbing select-none" onmousedown="startDragBg(event)" ontouchstart="startDragBg(event)">
                                     <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="absolute w-full h-auto min-h-full pointer-events-none transition-none" style="object-fit: cover; left: 0px; top: 0px;">
@@ -932,10 +1067,10 @@
                     </div>
                 </div>
 
-                <!-- Popup Promocional Tab -->
+                <!-- Popup Tab -->
                 <div id="adminTabPopup" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-bullhorn mr-1"></i> Configurar Notificación / Popup Promocional</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-bullhorn mr-1"></i> Configurar Notificación / Popup</h4>
                         <form onsubmit="handleSavePopupSettings(event)" class="space-y-4">
                             <div class="flex items-center justify-between bg-brandGold/10 p-3 rounded-xl border border-brandGold/30">
                                 <span class="text-xs font-bold text-brandGold">Activar Popup Notificación en la Web</span>
@@ -947,7 +1082,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Mensaje / Descuento</label>
-                                <textarea id="setPopupDesc" required rows="3" placeholder="Ej. Hoy en Mamá Lola tenemos un plato especial..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                                <textarea id="setPopupDesc" required rows="3" placeholder="Descripción de la promoción..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de la Imagen del Popup</label>
@@ -967,6 +1102,7 @@
         </div>
     </div>
 
+    <!-- Menu & Gallery Modal -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[720px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -995,6 +1131,7 @@
         </div>
     </div>
 
+    <!-- Passport Modal -->
     <div id="pasaporteModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative">
             <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50">
@@ -1022,6 +1159,7 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
     <div id="toastMessage" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
@@ -1030,7 +1168,7 @@
         const translations = {
             es: {
                 splashText: "✨ Preparando los mejores sabores de Loja para ti...",
-                topInit: "Una iniciativa de Dínamo Studio & Codeproim",
+                topInit: '<i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim',
                 topMesa: '<i class="fa-solid fa-landmark-flag mr-1"></i> Avalado por el GAD Municipal y Mesa Turística de Loja | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocina: ILE',
                 navSub: "Sabores • Historias • Destinos",
                 menuHome: "Inicio",
@@ -1057,7 +1195,7 @@
                 sugTitle: "Experiencias Sugeridas",
                 sugDesc: "Elige un recorrido especializado para tu viaje.",
                 mapTitle: "Mapa Interactivo de Loja",
-                mapDesc: "Desliza libremente con un dedo por el mapa o pulsa los pines para explorar los sitios.",
+                mapDesc: "Desliza libremente por el mapa o pulsa los pines para explorar los sitios.",
                 btnGps: "Cerca de mí",
                 btnCenter: "Centrar Loja",
                 btnMedia: "Ver Vídeo y Galería de Fotos",
@@ -1066,6 +1204,24 @@
                 secAlliesTitle: "Nuestros Aliados y Hoteles",
                 searchPlaceholder: "Buscar hotel, café, plato...",
                 noResults: "No encontramos resultados para esa búsqueda.",
+                fiavlBadge: "Loja, Capital Cultural del Ecuador",
+                fiavlTitle: 'FIAVL <span class="text-brandGold">2026</span>',
+                fiavlSubTitle: "Festival Internacional de Artes Vivas de Loja",
+                fiavlDesc: "Loja se transforma en el escenario cultural más grande del país. Obras de teatro, danza contemporánea, circo, artes plásticas e intervenciones escénicas de compañías nacionales e internacionales se toman teatros, plazas y calles emblemáticas de nuestra ciudad.",
+                btnFiavlAgenda: "Ver Agenda y Teatros",
+                btnFiavlHotels: "Hoteles y Cafés Cercanos",
+                fiavlCard1Title: "Teatro en Salas",
+                fiavlCard1Tag: "Salas Oficiales",
+                fiavlCard1Desc: "Obras estelares en el Teatro Benjamín Carrión Mora, Teatro Bolívar y Centro Cultural Alfredo Mora Reyes.",
+                fiavlCard2Title: "Arte en la Calle",
+                fiavlCard2Tag: "Espacios Abiertos",
+                fiavlCard2Desc: "Intervenciones vivas, circo, comparsas y arte visual en la Calle Bolívar, Plaza de San Sebastián y Plaza Central.",
+                fiavlCard3Title: "Ruta Escénica & Café",
+                fiavlCard3Tag: "Gastronomía Nocturna",
+                fiavlCard3Desc: "Cafeterías de especialidad y huecas tradicionales listas para acoger turistas tras cada función estelar.",
+                fiavlCard4Title: "Sello FIAVL Especial",
+                fiavlCard4Tag: "En tu Pasaporte",
+                fiavlCard4Desc: "Visita los puntos artísticos autorizados y obtén validaciones exclusivas en tu pasaporte interactivo.",
                 ileSub: "Tradición y Sabor",
                 ileTitle: "Secretos de Cocina con ILE",
                 ileDesc: "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.",
@@ -1103,7 +1259,7 @@
             },
             en: {
                 splashText: "✨ Preparing the best flavors of Loja for you...",
-                topInit: "An initiative by Dínamo Studio & Codeproim",
+                topInit: '<i class="fa-solid fa-star text-brandGold mr-1"></i> An initiative by Dínamo Studio & Codeproim',
                 topMesa: '<i class="fa-solid fa-landmark-flag mr-1"></i> Endorsed by Loja Municipality & Tourism Board | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Sponsored by: ILE',
                 navSub: "Flavors • Stories • Destinations",
                 menuHome: "Home",
@@ -1139,6 +1295,24 @@
                 secAlliesTitle: "Our Allies & Hotels",
                 searchPlaceholder: "Search hotel, cafe, dish...",
                 noResults: "No results found for that search.",
+                fiavlBadge: "Loja, Cultural Capital of Ecuador",
+                fiavlTitle: 'FIAVL <span class="text-brandGold">2026</span>',
+                fiavlSubTitle: "Loja International Festival of Performing Arts",
+                fiavlDesc: "Loja becomes the country's largest cultural stage. Theater, contemporary dance, circus, visual arts, and performance art from national and international companies take over theaters, squares, and historic streets.",
+                btnFiavlAgenda: "View Agenda & Theaters",
+                btnFiavlHotels: "Nearby Hotels & Cafes",
+                fiavlCard1Title: "Theater Performances",
+                fiavlCard1Tag: "Official Venues",
+                fiavlCard1Desc: "Mainstage plays at Benjamín Carrión Mora Theater, Bolívar Theater, and Alfredo Mora Reyes Cultural Center.",
+                fiavlCard2Title: "Street Art & Acts",
+                fiavlCard2Tag: "Open Spaces",
+                fiavlCard2Desc: "Live performances, circus, parades, and street art along Bolívar Street, San Sebastián Square, and Central Square.",
+                fiavlCard3Title: "Scenic Route & Coffee",
+                fiavlCard3Tag: "Night Dining",
+                fiavlCard3Desc: "Specialty coffee shops and local eateries ready to welcome visitors after every premier show.",
+                fiavlCard4Title: "Special FIAVL Stamp",
+                fiavlCard4Tag: "In your Passport",
+                fiavlCard4Desc: "Visit authorized festival spots and receive exclusive stamps on your smart passport.",
                 ileSub: "Tradition & Flavor",
                 ileTitle: "Kitchen Secrets with ILE",
                 ileDesc: "The soul of Loja gastronomy lies in its marinades, aromatic herbs and the unmistakable touch of Industria Lojana de Especerías, endorsed by the Tourism Board.",
@@ -1191,8 +1365,10 @@
             localStorage.setItem('cyc_lang', lang);
             
             const selDesktop = document.getElementById('langSelector');
+            const selTablet = document.getElementById('langSelectorTablet');
             const selMobile = document.getElementById('langSelectorMobile');
             if(selDesktop) selDesktop.value = lang;
+            if(selTablet) selTablet.value = lang;
             if(selMobile) selMobile.value = lang;
 
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1240,7 +1416,7 @@
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
         let locations = [
             {
-                id: "TVPc6WRNcvKyTXxcerCw",
+                id: "dinamo_studio",
                 pin: "1234",
                 tag: "Institucional / Merchandising", tagEn: "Institutional / Merchandising",
                 title: "Dínamo Studio", titleEn: "Dínamo Studio",
@@ -1252,7 +1428,7 @@
                 iconClass: "fa-seedling", category: "urbana", customLogoUrl: "",
                 youtubeUrl: "",
                 gallery: [
-                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Dínamo Studio", titleEn: "Dínamo Studio" }
+                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Dínamo Studio" }
                 ]
             },
             {
@@ -1263,11 +1439,11 @@
                 descEn: "The authentic taste of Loja's charcoal-grilled cecina served with cassava and pickled onion.",
                 dish: "Cecina tradicional asada al carbón", dishEn: "Traditional charcoal-grilled cecina", 
                 hours: "Lun - Sáb: 08:00 - 16:00", openHour: 8, closeHour: 16,
-                address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
+                address: "Mercado Central / Local 14", lat: -3.9945, lng: -79.2028, gps: "https://www.google.com/maps/search/?api=1&query=-3.9945,-79.2028",
                 iconClass: "fa-mortar-pestle", category: "hueca", customLogoUrl: "",
                 youtubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 gallery: [
-                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón", titleEn: "Charcoal Grilled Cecina" }
+                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" }
                 ]
             }
         ];
@@ -1280,21 +1456,22 @@
                 date: '2026-09-20', 
                 type: 'Festival', 
                 location: 'Plaza de las Flores', 
-                desc: 'Catas abiertas al público y barismo.', 
+                desc: 'Catas abiertas al público y barismo profesional en vivo.', 
                 descEn: 'Open tastings for the public and barista shows.', 
                 img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80',
                 lat: -3.9910, 
                 lng: -79.2030 
             }
         ];
+
         let emprendedoresList = JSON.parse(localStorage.getItem('cyc_dynamic_emprendedores')) || [
             { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
         ];
 
         let currentLocationIndex = 0;
-        let visitedLocations = []; 
+        let visitedLocations = JSON.parse(localStorage.getItem('cyc_visited_locations')) || [];
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
-        let passportMode = 'turista';
+        let passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
         let userCoords = null;
         let heroSlideshowInterval = null;
 
@@ -1309,9 +1486,14 @@
             }).setView([-3.9931, -79.2042], 14);
 
             L.control.zoom({ position: 'bottomright' }).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                maxZoom: 18, 
+                attribution: '© OpenStreetMap contributors' 
+            }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
-        } catch(e) { console.log('Map loading...'); }
+        } catch(e) { 
+            console.warn('Map initialization:', e); 
+        }
 
         function isLocOpenNow(loc) {
             if (loc.openHour === undefined || loc.closeHour === undefined) return true;
@@ -1394,25 +1576,31 @@
                     if (loc) {
                         openQrClaimModalForId(checkinId);
                     }
-                }, 1000);
+                }, 800);
             }
         }
 
         function maybeTriggerPopup(settings) {
             if (settings && settings.popupActive) {
-                document.getElementById('popupTitleText').innerText = settings.popupTitle || "¡Promoción Especial!";
-                document.getElementById('popupDescText').innerText = settings.popupDesc || "";
-                document.getElementById('popupImgEl').src = settings.popupImg || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80";
+                const titleEl = document.getElementById('popupTitleText');
+                const descEl = document.getElementById('popupDescText');
+                const imgEl = document.getElementById('popupImgEl');
+                if(titleEl) titleEl.innerText = settings.popupTitle || "¡Promoción Especial!";
+                if(descEl) descEl.innerText = settings.popupDesc || "";
+                if(imgEl) imgEl.src = settings.popupImg || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80";
+                
                 const waBtn = document.getElementById('popupWhatsappBtn');
-                if (settings.popupWhatsapp && settings.popupWhatsapp.trim() !== "") {
-                    waBtn.href = settings.popupWhatsapp;
-                    waBtn.classList.remove('hidden');
-                } else {
-                    waBtn.classList.add('hidden');
+                if(waBtn) {
+                    if (settings.popupWhatsapp && settings.popupWhatsapp.trim() !== "") {
+                        waBtn.href = settings.popupWhatsapp;
+                        waBtn.classList.remove('hidden');
+                    } else {
+                        waBtn.classList.add('hidden');
+                    }
                 }
                 setTimeout(() => {
                     openModal('promoPopupModal');
-                }, 1800);
+                }, 1500);
             }
         }
 
@@ -1580,13 +1768,13 @@
                 const ev = upcomingEvents[currentEventIndex % upcomingEvents.length];
                 const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
                 textEl.innerHTML = `🔥 <b>${evTitle}</b> en ${ev.location} (${ev.date})`;
-                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${evTitle}')`);
+                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${evTitle.replace(/'/g, "\\'")}')`);
                 currentEventIndex = (currentEventIndex + 1) % upcomingEvents.length;
             }
 
             rotateEvent();
             if(upcomingEvents.length > 1) {
-                setInterval(rotateEvent, 5000);
+                setInterval(rotateEvent, 6000);
             }
         }
 
@@ -1598,7 +1786,7 @@
             renderEmprendedoresUI();
             updateItineraryUI();
             if(map) {
-                setTimeout(() => { map.invalidateSize(); }, 200);
+                setTimeout(() => { map.invalidateSize(); }, 250);
             }
         }
 
@@ -1720,7 +1908,6 @@
                 if(!loc.id) loc.id = uniqueId;
 
                 const realIndex = locations.findIndex(l => l.id === loc.id);
-
                 const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                 const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
                 const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
@@ -1824,7 +2011,7 @@
                     const eventIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: `<div class="bg-brandGold text-white w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
-                                     <i class="fa-solid fa-calendar-days text-sm"></i>
+                                 <i class="fa-solid fa-calendar-days text-sm"></i>
                                </div>`,
                         iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
                     });
@@ -1918,9 +2105,9 @@
                         
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
-                            html: `<div class="blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce bg-blue-600" style="touch-action: none;">
+                            html: `<div class="text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce bg-blue-600" style="touch-action: none;">
                                      <i class="fa-solid fa-street-view text-2xl"></i>
-                               </div>`,
+                                   </div>`,
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
                         });
                         
@@ -1930,8 +2117,8 @@
                         renderMapAndGrid(); 
                         showToast('¡Ubicación encontrada!');
                     },
-                    (err) => { centerOnLoja(); },
-                    { timeout: 6000, enableHighAccuracy: true }
+                    () => { centerOnLoja(); },
+                    { timeout: 8000, enableHighAccuracy: true }
                 );
             } else {
                 centerOnLoja();
@@ -2019,7 +2206,8 @@
         function updateItineraryUI() {
             const container = document.getElementById('itineraryListContainer');
             const badge = document.getElementById('itineraryBadge');
-            const navBadge = document.getElementById('navStampBadge');
+            const badgeTablet = document.getElementById('itineraryBadgeTablet');
+            const badgeMobile = document.getElementById('itineraryBadgeMobile');
             if(!container) return;
             container.innerHTML = '';
 
@@ -2028,17 +2216,21 @@
                     <div class="text-center py-12 text-gray-400 text-xs">
                         <i class="fa-solid fa-mug-hot text-4xl mb-3 text-gray-300 animate-pulse"></i><br>
                         <strong class="text-brandDark text-sm block mb-1">Tu ruta está vacía</strong>
-                        Toca el icono de grano de café en cualquier tarjeta o pin del mapa para organizar tus paradas favoritas.
+                        Toca el icono de planta en cualquier tarjeta o pin del mapa para organizar tus paradas favoritas.
                     </div>
                 `;
-                if(badge) badge.classList.add('hidden');
+                [badge, badgeTablet, badgeMobile].forEach(b => {
+                    if(b) b.classList.add('hidden');
+                });
                 return;
             }
 
-            if(badge) {
-                badge.innerText = favoriteLocations.length;
-                badge.classList.remove('hidden');
-            }
+            [badge, badgeTablet, badgeMobile].forEach(b => {
+                if(b) {
+                    b.innerText = favoriteLocations.length;
+                    b.classList.remove('hidden');
+                }
+            });
 
             favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
@@ -2046,14 +2238,14 @@
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                     const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
                     const shareText = currentLang === 'en' 
-                        ? `Hello! Visit #${idx+1} on my Vive Loja route: ${locTitle} (${loc.address}). Join me!` 
+                        ? `Hello! Stop #${idx+1} on my Vive Loja itinerary: ${locTitle} (${loc.address}). Join me!` 
                         : `☕ Parada #${idx+1} en mi ruta de Vive Loja: *${locTitle}* (${locTag})\n📍 ${loc.address}\n¡Te lo recomiendo!`;
 
                     container.innerHTML += `
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3.5 flex items-center justify-between gap-3 shadow-sm hover:border-brandGold transition">
                             <div class="flex items-center gap-3">
                                 <span class="w-6 h-6 rounded-full bg-brandGold text-white font-bold text-xs flex items-center justify-center flex-shrink-0">${idx + 1}</span>
-                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" alt="">
                                 <div>
                                     <h4 class="font-bold text-xs text-brandDark">${locTitle}</h4>
                                     <span class="text-[10px] text-brandGold font-bold block">${locTag}</span>
@@ -2152,7 +2344,7 @@
                         </div>
                         <div class="px-5 pb-5 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-3 text-xs">
                             <span class="text-gray-500 truncate max-w-[180px]"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
-                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
+                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
                                 <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
                             </button>
                         </div>
@@ -2239,7 +2431,7 @@
 
         function resetEmpForm() {
             document.getElementById('empEditId').value = '';
-            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor Lojano`;
+            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor`;
             document.getElementById('saveEmpBtnText').innerText = "Guardar";
             document.getElementById('empName').value = '';
             document.getElementById('empCategory').value = '';
@@ -2329,7 +2521,7 @@
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
                 document.getElementById('setPopupActive').checked = settings.popupActive !== undefined ? settings.popupActive : true;
                 document.getElementById('setPopupTitle').value = settings.popupTitle || '¡Especial del Día de las Madres!';
-                document.getElementById('setPopupDesc').value = settings.popupDesc || 'Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.';
+                document.getElementById('setPopupDesc').value = settings.popupDesc || 'Hoy en Mamá Lola tenemos un plato especial...';
                 document.getElementById('setPopupImg').value = settings.popupImg || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80';
                 document.getElementById('setPopupWhatsapp').value = settings.popupWhatsapp || 'https://wa.me/593999999999';
             }
@@ -2438,7 +2630,7 @@
                     db.collection("locales").doc('loc_' + Date.now()).set(locData).then(() => { closeModal('adminModal'); showToast('¡Local guardado!'); resetLocationForm(); });
                 }
             } else {
-                showToast("Guardado en local");
+                showToast("Guardado local");
             }
         }
 
@@ -2510,7 +2702,7 @@
                 document.execCommand('copy');
                 showToast('¡Enlace check-in copiado al portapapeles!');
             } catch (err) {
-                showToast('Error al copiar');
+                showToast('Error al copiar enlace');
             }
             document.body.removeChild(textArea);
         }
@@ -2769,8 +2961,10 @@
         }
 
         function resetPassportProgess() {
-            localStorage.removeItem('cyc_visited_locations'); visitedLocations = [];
-            updatePassportUI(); showToast('Pasaporte reiniciado');
+            localStorage.removeItem('cyc_visited_locations'); 
+            visitedLocations = [];
+            updatePassportUI(); 
+            showToast('Pasaporte reiniciado');
         }
 
         function forceRemoveSplash() {
@@ -2785,6 +2979,20 @@
             initPassport();
             changeLanguage(currentLang);
             setTimeout(forceRemoveSplash, 600);
+        });
+
+        // Ensure Leaflet resizes smoothly when orientation changes or screen resizes
+        window.addEventListener('resize', function() {
+            if(map) {
+                map.invalidateSize();
+            }
+        });
+        window.addEventListener('orientationchange', function() {
+            setTimeout(function() {
+                if(map) {
+                    map.invalidateSize();
+                }
+            }, 300);
         });
 
         setTimeout(forceRemoveSplash, 1500);
@@ -2817,8 +3025,10 @@
                 btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
                 btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
             });
-            btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-            btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
+            if (btnElement) {
+                btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+                btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
+            }
 
             document.querySelectorAll('.local-item').forEach(item => {
                 if (category === 'all' || item.classList.contains(category)) { 
