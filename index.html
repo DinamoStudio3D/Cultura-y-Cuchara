@@ -157,6 +157,7 @@
         </div>
     </nav>
 
+    <!-- PROMOTIONAL POPUP MODAL -->
     <div id="promoPopupModal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col animate-bounce-slight">
             <button onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
@@ -181,6 +182,7 @@
         </div>
     </div>
 
+    <!-- QR / PIN CLAIM MODAL -->
     <div id="qrClaimModal" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative p-6 text-center">
             <button onclick="closeModal('qrClaimModal')" class="absolute top-4 right-4 text-gray-400 hover:text-black transition text-lg w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
@@ -227,6 +229,7 @@
         </button>
     </div>
 
+    <!-- HERO SECTION -->
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
         <div id="heroBgWrapper" class="absolute inset-0 opacity-45 overflow-hidden flex items-center justify-center bg-black">
             <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-brandDark/40 to-brandDark opacity-90 z-10"></div>
@@ -274,6 +277,7 @@
         </div>
     </section>
 
+    <!-- DEDICATED FIAVL 2026 SECTION -->
     <section id="fiavl" class="py-20 px-4 md:px-8 lg:px-12 bg-gradient-to-b from-brandDark via-black to-brandDark text-white relative overflow-hidden reveal border-b border-brandGold/30">
         <div class="absolute -right-20 -top-20 w-96 h-96 bg-brandGold/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="max-w-7xl mx-auto relative z-10">
@@ -584,6 +588,7 @@
         </div>
     </footer>
 
+    <!-- FLOATING FIAVL BUTTON -->
     <a href="#fiavl" class="fab-fiavl bg-brandDark border-2 border-brandGold text-white px-3.5 py-2.5 rounded-full flex items-center gap-2.5 shadow-warm-glow hover:bg-black transition-all hover:scale-105" title="Festival de Artes Vivas Loja 2026">
         <div class="w-8 h-8 rounded-full bg-white overflow-hidden p-0.5 flex-shrink-0 flex items-center justify-center shadow">
             <img src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL" class="w-full h-full object-cover rounded-full">
@@ -661,6 +666,7 @@
         </div>
     </div>
 
+    <!-- ADMIN MODAL -->
     <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -1370,7 +1376,7 @@
 
         function centerOnLoja() {
             if (map) {
-                map.setView([-3.9931, -79.2042], 14);
+                map.setView([-3.9931, -79.2042], 14, { animate: true });
                 showToast('Mapa centrado en Loja');
             }
         }
