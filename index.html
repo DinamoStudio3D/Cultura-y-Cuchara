@@ -46,7 +46,7 @@
 
     <style>
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
-        #lojaMap { z-index: 1; touch-action: none; }
+        #lojaMap { z-index: 1; touch-action: pan-y; }
         
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #EA580C; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .leaflet-popup-content { font-family: inherit; margin: 12px; text-align: center; }
@@ -166,19 +166,21 @@
         </button>
     </div>
 
-    <!-- Banner de Estreno YouTube -->
+    <!-- Banner de Último Estreno YouTube -->
     <div id="latestVideoBanner" class="bg-[#181818] text-white py-3 px-4 border-b border-brandGold/30 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left z-30 relative shadow-inner">
         <div class="flex items-center gap-2">
-            <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> ESTRENO ESPECIAL</span>
+            <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> NUEVO VÍDEO</span>
             <span id="latestVideoTitleText" class="text-xs font-bold text-gray-200">La Virgen del Cisne en Loja - Tradición y Fe</span>
         </div>
         <button onclick="openLatestVideoModal()" class="bg-brandGold text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition shadow-warm-glow flex items-center gap-1.5">
-            <i class="fa-solid fa-play"></i> Ver Vídeo
+            <i class="fa-solid fa-play"></i> Ver Estreno
         </button>
     </div>
 
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
-        <div id="heroBgImage" class="absolute inset-0 opacity-25 bg-cover bg-center transition-all duration-700" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80');"></div>
+        <div id="heroBgWrapper" class="absolute inset-0 opacity-25 overflow-hidden">
+            <img id="heroBgImageEl" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="" class="w-full h-full object-cover transition-all duration-700" style="object-position: center center;">
+        </div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
             <div class="w-40 h-40 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
                 <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
@@ -499,7 +501,6 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- Modales -->
     <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
             <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
@@ -529,7 +530,7 @@
             </div>
             <div class="p-6 text-center space-y-4">
                 <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30 relative flex flex-col items-center justify-center group cursor-pointer" onclick="openYouTubeDirectLink()">
-                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Vídeo Estreno" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition duration-500">
+                    <img id="modalVideoThumbImg" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Vídeo Estreno" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition duration-500">
                     <div class="absolute inset-0 bg-black/40"></div>
                     <div class="relative z-10 flex flex-col items-center p-6">
                         <div class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-warm-glow mb-3 group-hover:scale-110 transition">
@@ -572,7 +573,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control de Locales, Fondo (Virgen del Cisne), Vídeo y Agenda</p>
+                        <p class="text-xs text-brandGold">Control de Locales, Fondo (Virgen del Cisne), Vídeo Estreno y Agenda</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -584,7 +585,7 @@
                 <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos y PINs</button>
                 <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Emprendedores</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda Cultural</button>
-                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Fondo (Virgen) y Vídeo</button>
+                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Fondo, Vídeo y Logo</button>
             </div>
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
@@ -815,14 +816,24 @@
                     </div>
                 </div>
 
-                <!-- Fondo (Virgen del Cisne) y Vídeo Tab -->
+                <!-- Fondo, Vídeo y Logo Tab -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-image mr-1"></i> Configurar Fondo (Virgen del Cisne) y Vídeo</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-image mr-1"></i> Configurar Fondo (Virgen del Cisne), Vídeo Estreno y Logo</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Imagen de Fondo (Hero Principal)</label>
-                                <input type="text" id="setHeroBgUrl" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <input type="text" id="setHeroBgUrl" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-crop mr-1"></i> Encuadre de la Imagen (Alineación CSS)</label>
+                                <select id="setHeroBgPosition" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                    <option value="center center">Centro (Predeterminado)</option>
+                                    <option value="center top">Superior (Ideal para mostrar rostros)</option>
+                                    <option value="center bottom">Inferior</option>
+                                    <option value="left center">Izquierda</option>
+                                    <option value="right center">Derecha</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Vídeo Estreno (YouTube)</label>
@@ -831,6 +842,10 @@
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Estreno</label>
                                 <input type="text" id="setLatestYoutubeTitle" required placeholder="Ej. La Virgen del Cisne en Loja" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Miniatura/Imagen del Vídeo Estreno</label>
+                                <input type="text" id="setLatestVideoThumbUrl" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL del Logotipo Oficial</label>
@@ -957,7 +972,7 @@
                 ileCard2Desc: "El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.",
                 ileCard2Tag: "Ideal para: Cafés y Pasteles",
                 ileCard3Title: "El Toque del Repe",
-                ileCard3Desc: "El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.",
+                ileCard3Desc: "El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y o quesillo tradicional.",
                 ileCard3Tag: "Ideal para: Repe y Sopas",
                 passTitle: "Pasaporte<br>Inteligente",
                 passDesc: "Elige tu modo de exploración y reclama tu premio.",
@@ -1238,9 +1253,11 @@
                 title: "Sabores, Historias y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 logoUrl: "https://i.imgur.com/xaiFpa1.png",
-                heroBgUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+                heroBgUrl: "https://i.imgur.com/0QSbhqQ.jpeg",
+                heroBgPosition: "center center",
                 latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
-                latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe"
+                latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
+                latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
             };
             applySettings(saved);
         }
@@ -1260,9 +1277,10 @@
                 });
             }
 
-            if (s.heroBgUrl) {
-                const bgEl = document.getElementById('heroBgImage');
-                if(bgEl) bgEl.style.backgroundImage = `url('${s.heroBgUrl}')`;
+            const bgImgEl = document.getElementById('heroBgImageEl');
+            if (bgImgEl) {
+                bgImgEl.src = s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg";
+                bgImgEl.style.objectPosition = s.heroBgPosition || "center center";
             }
 
             if (s.latestYoutubeTitle) {
@@ -1275,6 +1293,11 @@
             if (s.latestYoutubeUrl) {
                 const directLinkEl = document.getElementById('modalDirectVideoLink');
                 if(directLinkEl) directLinkEl.href = s.latestYoutubeUrl;
+            }
+
+            if (s.latestVideoThumbUrl) {
+                const thumbEl = document.getElementById('modalVideoThumbImg');
+                if(thumbEl) thumbEl.src = s.latestVideoThumbUrl;
             }
         }
 
@@ -1880,9 +1903,11 @@
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
                 document.getElementById('tabBtnIdentidad').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
-                document.getElementById('setHeroBgUrl').value = settings.heroBgUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80';
+                document.getElementById('setHeroBgUrl').value = settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg';
+                document.getElementById('setHeroBgPosition').value = settings.heroBgPosition || 'center center';
                 document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || 'https://www.youtube.com/watch?v=n0BJGAkU9cg';
                 document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
+                document.getElementById('setLatestVideoThumbUrl').value = settings.latestVideoThumbUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
                 document.getElementById('setBrandLogoUrl').value = settings.logoUrl || 'https://i.imgur.com/xaiFpa1.png';
             }
         }
@@ -1890,14 +1915,18 @@
         function handleSaveBrandingSettings(e) {
             e.preventDefault();
             let heroBgUrl = document.getElementById('setHeroBgUrl').value;
+            let heroBgPosition = document.getElementById('setHeroBgPosition').value;
             let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
             let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
+            let latestVideoThumbUrl = document.getElementById('setLatestVideoThumbUrl').value;
             let logoUrl = document.getElementById('setBrandLogoUrl').value;
 
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
             settings.heroBgUrl = heroBgUrl;
+            settings.heroBgPosition = heroBgPosition;
             settings.latestYoutubeUrl = latestYoutubeUrl;
             settings.latestYoutubeTitle = latestYoutubeTitle;
+            settings.latestVideoThumbUrl = latestVideoThumbUrl;
             settings.logoUrl = logoUrl;
             localStorage.setItem('cyc_settings', JSON.stringify(settings));
 
