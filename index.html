@@ -1311,6 +1311,7 @@
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
         let passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
         let userCoords = null;
+        let defaultReferenceCoord = { lat: -3.9931, lng: -79.2042 }; // Plaza Central / Parque Central de Loja por defecto
         let heroSlideshowInterval = null;
 
         function applySettings(settings) {
@@ -1529,11 +1530,9 @@
                     let customIcon = L.divIcon({ className: 'custom-leaflet-icon', html: customIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
                     let marker = L.marker([loc.lat || -3.9931, loc.lng || -79.2042], { icon: customIcon });
                     
-                    let distanceStr = '';
-                    if (userCoords) {
-                        const d = calculateDistance(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
-                        distanceStr = `<br><span style="font-size:10px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'} de ti</span>`;
-                    }
+                    const refCoord = userCoords || defaultReferenceCoord;
+                    const d = calculateDistance(refCoord.lat, refCoord.lng, loc.lat, loc.lng);
+                    const distanceStr = `<br><span style="font-size:10px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'}</span>`;
 
                     marker.bindPopup(`<div style="text-align:center"><b style="color:#121212">${locTitle}</b><br><span style="font-size:11px; color:#EA580C">${locTag}</span>${distanceStr}</div>`);
                     marker.on('click', () => { selectLocation(index); });
@@ -1550,11 +1549,9 @@
                         let eventCustomIcon = L.divIcon({ className: 'custom-leaflet-icon', html: eventIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
                         let evMarker = L.marker([ev.lat, ev.lng], { icon: eventCustomIcon });
                         
-                        let evDistanceStr = '';
-                        if (userCoords) {
-                            const d = calculateDistance(userCoords.lat, userCoords.lng, ev.lat, ev.lng);
-                            evDistanceStr = `<br><span style="font-size:10px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'} de ti</span>`;
-                        }
+                        const refCoord = userCoords || defaultReferenceCoord;
+                        const d = calculateDistance(refCoord.lat, refCoord.lng, ev.lat, ev.lng);
+                        const evDistanceStr = `<br><span style="font-size:10px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'}</span>`;
 
                         evMarker.bindPopup(`<div style="text-align:center"><b style="color:#EA580C">${evTitle}</b><br><span style="font-size:11px">${ev.location}</span>${evDistanceStr}</div>`);
                         evMarker.on('click', () => {
@@ -2394,15 +2391,16 @@
             document.getElementById('previewAddress').innerText = loc.address;
             
             const distTextEl = document.getElementById('previewDistanceText');
-            if (userCoords && loc.lat && loc.lng) {
-                const distKm = calculateDistance(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
+            const refCoord = userCoords || defaultReferenceCoord;
+            if (loc.lat && loc.lng) {
+                const distKm = calculateDistance(refCoord.lat, refCoord.lng, loc.lat, loc.lng);
                 if (distKm < 1) {
                     distTextEl.innerText = `Aprox. ${Math.round(distKm * 1000)} metros de ti`;
                 } else {
                     distTextEl.innerText = `Aprox. ${distKm.toFixed(1)} km de ti`;
                 }
             } else {
-                distTextEl.innerText = currentLang === 'en' ? 'Activate GPS to view distance' : 'Activa GPS para ver distancia';
+                distTextEl.innerText = currentLang === 'en' ? 'Distance unavailable' : 'Distancia no disponible';
             }
 
             let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
