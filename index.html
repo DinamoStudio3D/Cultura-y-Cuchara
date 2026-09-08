@@ -71,8 +71,8 @@
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(234,88,12,0.18); border-color: rgba(234, 88, 12, 0.5); }
 
-        /* HERO SLIDESHOW ADJUSTED FOR FULL VISIBILITY (CONTAIN / NO CROPPING) */
-        .hero-slide { opacity: 0; transition: opacity 1.2s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background-color: #121212; }
+        /* HERO SLIDESHOW: OBJECT-COVER TO FILL THE SCREEN */
+        .hero-slide { opacity: 0; transition: opacity 1.2s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
         .hero-slide.active-slide { opacity: 1; }
     </style>
 </head>
@@ -881,7 +881,7 @@
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-list mr-1"></i> URLs de las Imágenes del Carrusel (Separadas por comas)</label>
                                 <textarea id="setHeroBgUrlsInput" oninput="updateCarouselPreviewFromInput()" rows="3" required placeholder="https://i.imgur.com/3j3NoCa.png, https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
-                                <span class="text-[9px] text-gray-400 mt-1 block">💡 El sistema rotará estas imágenes automáticamente según los segundos que configures abajo. Las imágenes se ajustarán completas sin recortes.</span>
+                                <span class="text-[9px] text-gray-400 mt-1 block">💡 El sistema rotará estas imágenes automáticamente según los segundos que configures abajo. Las imágenes llenarán la pantalla principal.</span>
                             </div>
 
                             <div>
@@ -945,7 +945,7 @@
                                 <textarea id="setPopupDesc" required rows="3" placeholder="Ej. Hoy en Mamá Lola tenemos un plato especial..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de la Imagen del Popup</label>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de la Imagen del Popup (Completa sin recortes)</label>
                                 <input type="text" id="setPopupImg" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
@@ -2564,7 +2564,7 @@
             if (enteredPin === correctPin) {
                 closeModal('qrClaimModal');
                 
-                // Limpiar el parámetro checkin de la URL para que sea de un solo uso y no reaparezca al actualizar
+                // Limpiar el parámetro checkin de la URL para que sea de un solo uso
                 if (window.history && window.history.replaceState) {
                     const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
                     window.history.replaceState({path: cleanUrl}, '', cleanUrl);
