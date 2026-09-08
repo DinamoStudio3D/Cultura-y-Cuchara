@@ -72,7 +72,6 @@
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(234,88,12,0.18); border-color: rgba(234, 88, 12, 0.5); }
 
-        /* HERO SLIDESHOW: OBJECT-COVER TO FILL THE SCREEN */
         .hero-slide { opacity: 0; transition: opacity 1.2s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
         .hero-slide.active-slide { opacity: 1; }
     </style>
@@ -157,7 +156,6 @@
         </div>
     </nav>
 
-    <!-- PROMOTIONAL POPUP MODAL -->
     <div id="promoPopupModal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col animate-bounce-slight">
             <button onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
@@ -182,7 +180,6 @@
         </div>
     </div>
 
-    <!-- QR / PIN CLAIM MODAL -->
     <div id="qrClaimModal" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative p-6 text-center">
             <button onclick="closeModal('qrClaimModal')" class="absolute top-4 right-4 text-gray-400 hover:text-black transition text-lg w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
@@ -229,7 +226,6 @@
         </button>
     </div>
 
-    <!-- HERO SECTION -->
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
         <div id="heroBgWrapper" class="absolute inset-0 opacity-45 overflow-hidden flex items-center justify-center bg-black">
             <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-brandDark/40 to-brandDark opacity-90 z-10"></div>
@@ -277,7 +273,6 @@
         </div>
     </section>
 
-    <!-- DEDICATED FIAVL 2026 SECTION -->
     <section id="fiavl" class="py-20 px-4 md:px-8 lg:px-12 bg-gradient-to-b from-brandDark via-black to-brandDark text-white relative overflow-hidden reveal border-b border-brandGold/30">
         <div class="absolute -right-20 -top-20 w-96 h-96 bg-brandGold/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="max-w-7xl mx-auto relative z-10">
@@ -336,7 +331,7 @@
     <section id="mapa" class="py-16 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
-            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Desliza libremente con un dedo por el mapa o pulsa los pines para explorar los sitios.</p>
+            <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="mapDesc">Desliza libremente con un dedo por el mapa o pulsa los pines de comercios y eventos para explorar los sitios.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
@@ -447,7 +442,7 @@
                     <div>
                         <div class="w-12 h-12 rounded-xl bg-brandGold/20 text-brandGold flex items-center justify-center text-xl mb-4 font-bold">🌿</div>
                         <h3 class="font-bold text-lg text-brandGold mb-2" data-i18n="ileCard1Title">El Adobo Lojano</h3>
-                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard1Desc">Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.</p>
+                        <p class="text-xs text-gray-300 leading-relaxed" data-i18n="ileCard1Desc">Mezcla magistral de comino, achiote y achiote que impregna la cecina antes de ser asada al carbón de leña.</p>
                     </div>
                     <span class="mt-6 text-[10px] text-brandGold/70 uppercase tracking-widest font-bold" data-i18n="ileCard1Tag">Ideal para: Cecina y Secos</span>
                 </div>
@@ -500,7 +495,7 @@
                             <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).</p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Cada sello debe ser de un establecimiento diferente y validado mediante PIN autorizado.</p>
+                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Cada sello debe ser de un establecimiento diferente y validado mediante PIN autorizado. No se permiten sellos repetidos.</p>
                 </div>
             </div>
         </div>
@@ -588,7 +583,7 @@
         </div>
     </footer>
 
-    <!-- FLOATING FIAVL BUTTON -->
+    <!-- FLOATING FIAVL 2026 BUTTON -->
     <a href="#fiavl" class="fab-fiavl bg-brandDark border-2 border-brandGold text-white px-3.5 py-2.5 rounded-full flex items-center gap-2.5 shadow-warm-glow hover:bg-black transition-all hover:scale-105" title="Festival de Artes Vivas Loja 2026">
         <div class="w-8 h-8 rounded-full bg-white overflow-hidden p-0.5 flex-shrink-0 flex items-center justify-center shadow">
             <img src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL" class="w-full h-full object-cover rounded-full">
@@ -685,7 +680,7 @@
             </div>
 
             <div class="flex flex-wrap items-center border-b border-gray-800 bg-black/40 px-3 sm:px-6 gap-2 sm:gap-3 text-xs font-bold overflow-x-auto hide-scrollbar py-2">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y QR</button>
+                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y Check-in</button>
                 <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Emprendedores</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda y FIAVL 2026</button>
                 <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Fondo y Vídeo</button>
@@ -820,7 +815,7 @@
                 <div id="adminTabEmprendedores" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4" id="empFormTitle"><i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor Lojano</h4>
-                        <form onsubmit="handleAddNewEmprendedor(event)" class="space-y-4">
+                        <form onsubmit="handleSaveNewEmprendedor(event)" class="space-y-4">
                             <input type="hidden" id="empEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -1092,7 +1087,7 @@
                 sugTitle: "Experiencias Sugeridas",
                 sugDesc: "Elige un recorrido especializado para tu viaje.",
                 mapTitle: "Mapa Interactivo de Loja",
-                mapDesc: "Desliza libremente con un dedo por el mapa o pulsa los pines para explorar los sitios.",
+                mapDesc: "Desliza libremente con un dedo por el mapa o pulsa los pines de comercios y eventos para explorar los sitios.",
                 btnGps: "Cerca de mí",
                 btnCenter: "Centrar Loja",
                 btnMedia: "Ver Vídeo y Galería de Fotos",
@@ -1156,7 +1151,7 @@
                 sugTitle: "Suggested Experiences",
                 sugDesc: "Choose a specialized tour for your trip.",
                 mapTitle: "Interactive Map of Loja",
-                mapDesc: "Drag freely with one finger on the map or tap the pins to explore spots.",
+                mapDesc: "Drag freely with one finger on the map or tap business and event pins to explore spots.",
                 btnGps: "Near me",
                 btnCenter: "Center Loja",
                 btnMedia: "View Video & Photo Gallery",
@@ -1309,9 +1304,9 @@
         ];
 
         let currentLocationIndex = 0;
-        let visitedLocations = []; 
+        let visitedLocations = JSON.parse(localStorage.getItem('cyc_visited_locations')) || []; 
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
-        let passportMode = 'turista';
+        let passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
         let userCoords = null;
         let heroSlideshowInterval = null;
 
@@ -1337,7 +1332,7 @@
             setupHeroSlideshow(settings.heroBgUrls || [settings.heroBgUrl || "https://i.imgur.com/3j3NoCa.png"], settings.heroIntervalSeconds || 6);
         }
 
-        let map, markersLayer, userMarkerInstance = null;
+        let map, markersLayer, eventsMarkersLayer, userMarkerInstance = null;
         try {
             map = L.map('lojaMap', { 
                 zoomControl: false, 
@@ -1349,7 +1344,9 @@
 
             L.control.zoom({ position: 'bottomright' }).addTo(map);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+            
             markersLayer = L.layerGroup().addTo(map);
+            eventsMarkersLayer = L.layerGroup().addTo(map);
         } catch(e) { console.log('Map loading...'); }
 
         function locateUserGPS() {
@@ -1471,7 +1468,9 @@
 
             grid.innerHTML = '';
             if(markersLayer) markersLayer.clearLayers();
+            if(eventsMarkersLayer) eventsMarkersLayer.clearLayers();
 
+            // Render Business Markers
             locations.forEach((loc, index) => {
                 const isFav = favoriteLocations.includes(loc.id);
                 const isOpen = isLocOpenNow(loc);
@@ -1513,10 +1512,28 @@
 
                     let customIcon = L.divIcon({ className: 'custom-leaflet-icon', html: customIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
                     let marker = L.marker([loc.lat || -3.9931, loc.lng || -79.2042], { icon: customIcon });
+                    marker.bindPopup(`<div style="text-align:center"><b style="color:#121212">${locTitle}</b><br><span style="font-size:11px; color:#EA580C">${locTag}</span></div>`);
                     marker.on('click', () => { selectLocation(index); });
                     markersLayer.addLayer(marker);
                 }
             });
+
+            // Render Event Markers (FIAVL & Cultural Events) Separately
+            if(eventsMarkersLayer && eventsList.length > 0) {
+                eventsList.forEach(ev => {
+                    if (ev.lat && ev.lng) {
+                        let evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
+                        let eventIconHtml = `<div class="w-10 h-10 rounded-full bg-brandGold border-2 border-white text-white shadow-warm-glow flex items-center justify-center text-base animate-bounce" title="${evTitle}"><i class="fa-solid fa-masks-theater"></i></div>`;
+                        let eventCustomIcon = L.divIcon({ className: 'custom-leaflet-icon', html: eventIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
+                        let evMarker = L.marker([ev.lat, ev.lng], { icon: eventCustomIcon });
+                        evMarker.bindPopup(`<div style="text-align:center"><b style="color:#EA580C">${evTitle}</b><br><span style="font-size:11px">${ev.location}</span></div>`);
+                        evMarker.on('click', () => {
+                            focusEventOnMap(ev.lat, ev.lng, evTitle);
+                        });
+                        eventsMarkersLayer.addLayer(evMarker);
+                    }
+                });
+            }
 
             if(locations.length > 0) selectLocation(0);
             renderAdminLocationsList();
@@ -1622,6 +1639,10 @@
             const urlParams = new URLSearchParams(window.location.search);
             const checkinId = urlParams.get('checkin');
             if (checkinId) {
+                if (window.history && window.history.replaceState) {
+                    const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                    window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+                }
                 setTimeout(() => {
                     const loc = locations.find(l => l.id === checkinId);
                     if (loc) {
@@ -1895,7 +1916,7 @@
             renderAdminEmprendedoresList();
         }
 
-        function handleAddNewEmprendedor(e) {
+        function handleSaveNewEmprendedor(e) {
             e.preventDefault();
             const editId = document.getElementById('empEditId').value;
             const name = document.getElementById('empName').value;
@@ -2307,9 +2328,12 @@
             }
         }
 
-        window.handlePopupClick = function(index) {
-            selectLocation(index);
-            document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.handlePopupClick = function(id) {
+            const index = locations.findIndex(l => l.id === id);
+            if (index !== -1) {
+                selectLocation(index);
+                document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+            }
         };
 
         function selectLocation(index) {
@@ -2408,10 +2432,6 @@
         }
 
         function initPassport() {
-            const storedVisits = localStorage.getItem('cyc_visited_locations');
-            if (storedVisits) visitedLocations = JSON.parse(storedVisits);
-            const storedMode = localStorage.getItem('cyc_passport_mode');
-            if (storedMode) passportMode = storedMode;
             updatePassportUI();
         }
 
@@ -2609,11 +2629,6 @@
             if (enteredPin === correctPin) {
                 closeModal('qrClaimModal');
                 
-                if (window.history && window.history.replaceState) {
-                    const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                    window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-                }
-
                 if (visitedLocations.includes(localId)) {
                     showToast(`⚠️ Ya tienes un sello registrado de ${loc.title}. ¡Cada sello debe ser de un local diferente!`);
                     setTimeout(() => openModal('pasaporteModal'), 600);
