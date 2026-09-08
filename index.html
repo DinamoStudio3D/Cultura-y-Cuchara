@@ -170,9 +170,9 @@
     </div>
 
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
-        <div id="heroBgWrapper" class="absolute inset-0 opacity-40 overflow-hidden flex items-center justify-center bg-black">
-            <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-transparent to-brandDark opacity-90 z-10"></div>
-            <img id="heroBgImageEl" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Virgen del Cisne Loja" class="w-full h-full transition-all duration-700 filter brightness-90" style="object-fit: cover; object-position: center center;">
+        <div id="heroBgWrapper" class="absolute inset-0 opacity-45 overflow-hidden flex items-center justify-center bg-black">
+            <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-brandDark/40 to-brandDark opacity-90 z-10"></div>
+            <img id="heroBgImageEl" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Virgen del Cisne Loja" class="w-full h-full transition-all duration-700 filter brightness-95" style="object-fit: cover; object-position: center center;">
         </div>
         <div class="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center reveal active">
             <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
@@ -246,7 +246,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            <div class="lg:col-span-2 rounded-2xl h-[460px] md:h-[500px] lg:h-[520px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
+            <div class="lg:col-span-2 rounded-2xl h-[460px] md:h-[520px] lg:h-[540px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
                     <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
@@ -258,7 +258,7 @@
                 </div>
             </div>
 
-            <div id="mapPreviewCard" class="glass-card p-6 rounded-2xl shadow-warm-glow border border-gray-200 flex flex-col justify-between h-[460px] md:h-[500px] lg:h-[520px] relative">
+            <div id="mapPreviewCard" class="glass-card p-6 rounded-2xl shadow-warm-glow border border-gray-200 flex flex-col justify-between h-[460px] md:h-[520px] lg:h-[540px] relative">
                 <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
@@ -312,7 +312,7 @@
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full sm:w-auto" id="categoryScroll"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="localesGrid"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="localesGrid"></div>
             
             <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
                 <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
@@ -330,7 +330,7 @@
                     Apoya el talento local, la repostería artesanal, el café de autor y los productos emergentes de nuestra provincia.
                 </p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="emprendedoresGridContainer"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="emprendedoresGridContainer"></div>
         </div>
     </section>
 
@@ -418,7 +418,7 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="agendaGridContainer"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="agendaGridContainer"></div>
         </div>
     </section>
 
