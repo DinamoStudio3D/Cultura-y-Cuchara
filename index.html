@@ -816,28 +816,43 @@
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Imagen de Fondo (Hero Principal)</label>
-                                <input type="text" id="setHeroBgUrl" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <input type="text" id="setHeroBgUrl" oninput="updateBgPreviewFromInput()" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
-                            <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-arrows-alt mr-1"></i> Encuadre Interactivo / Posición (Ej. 50% 30% o center top)</label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="text" id="setHeroBgPosition" required placeholder="center center" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none font-mono">
-                                    <button type="button" onclick="previewHeroPos('center top')" class="bg-gray-800 text-brandGold text-[10px] font-bold px-3 py-2 rounded-lg border border-brandGold/30 whitespace-nowrap hover:bg-brandGold hover:text-white transition">Arriba</button>
-                                    <button type="button" onclick="previewHeroPos('center center')" class="bg-gray-800 text-brandGold text-[10px] font-bold px-3 py-2 rounded-lg border border-brandGold/30 whitespace-nowrap hover:bg-brandGold hover:text-white transition">Centro</button>
+                            
+                            <!-- Herramienta Visual Interactiva de Encuadre -->
+                            <div class="bg-black/60 p-4 rounded-xl border border-brandGold/40 space-y-3">
+                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-crop mr-1"></i> Vista Previa e Interactivo de Encuadre</label>
+                                <p class="text-[10px] text-gray-300">Haz clic en los botones de dirección o usa los selectores rápidos para encuadrar la imagen exactamente donde se vea mejor el rostro o motivo principal.</p>
+                                
+                                <!-- Caja de Previsualización Visual del Hero -->
+                                <div id="previewHeroBox" class="w-full h-36 rounded-lg overflow-hidden relative border border-brandGold/50 bg-black shadow-inner">
+                                    <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="w-full h-full object-cover transition-all duration-300" style="object-position: center center;">
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
+                                        <span class="text-[10px] bg-black/70 text-brandGold font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-brandGold/30">Vista Previa de la Web</span>
+                                    </div>
                                 </div>
-                                <p class="text-[10px] text-gray-400 mt-1">💡 Puedes escribir porcentajes exactos (ej. <b>50% 25%</b> para enfocar rostros) o usar palabras clave (<i>center top</i>, <i>center center</i>).</p>
+
+                                <input type="hidden" id="setHeroBgPosition" value="center center">
+
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                                    <button type="button" onclick="setBgPosPreset('center top')" class="bg-gray-800 text-white text-[10px] font-bold py-2 rounded-lg border border-gray-700 hover:bg-brandGold transition">⬆️ Arriba (Rostros)</button>
+                                    <button type="button" onclick="setBgPosPreset('center center')" class="bg-gray-800 text-white text-[10px] font-bold py-2 rounded-lg border border-gray-700 hover:bg-brandGold transition">🎯 Centrado</button>
+                                    <button type="button" onclick="setBgPosPreset('center bottom')" class="bg-gray-800 text-white text-[10px] font-bold py-2 rounded-lg border border-gray-700 hover:bg-brandGold transition">⬇️ Abajo</button>
+                                    <button type="button" onclick="setBgPosPreset('50% 25%')" class="bg-gray-800 text-brandGold text-[10px] font-bold py-2 rounded-lg border border-brandGold/30 hover:bg-brandGold hover:text-white transition">⭐ Enfoque Óptimo</button>
+                                </div>
                             </div>
+
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Vídeo Estreno (YouTube)</label>
-                                <input type="text" id="setLatestYoutubeUrl" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <input type="text" id="setLatestYoutubeUrl" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Estreno</label>
-                                <input type="text" id="setLatestYoutubeTitle" required placeholder="Ej. La Virgen del Cisne en Loja" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <input type="text" id="setLatestYoutubeTitle" required placeholder="Ej. La Virgen del Cisne en Loja" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Miniatura/Imagen del Vídeo Estreno</label>
-                                <input type="text" id="setLatestVideoThumbUrl" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <input type="text" id="setLatestVideoThumbUrl" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL del Logotipo Oficial</label>
@@ -1291,12 +1306,20 @@
             }
         }
 
-        function previewHeroPos(posVal) {
-            const inputEl = document.getElementById('setHeroBgPosition');
-            if(inputEl) {
-                inputEl.value = posVal;
-                showToast(`Posición aplicada: ${posVal}`);
+        function updateBgPreviewFromInput() {
+            const urlInput = document.getElementById('setHeroBgUrl').value.trim();
+            const previewImg = document.getElementById('previewHeroImg');
+            if(urlInput && previewImg) {
+                previewImg.src = urlInput;
             }
+        }
+
+        function setBgPosPreset(posVal) {
+            const inputEl = document.getElementById('setHeroBgPosition');
+            const previewImg = document.getElementById('previewHeroImg');
+            if(inputEl) inputEl.value = posVal;
+            if(previewImg) previewImg.style.objectPosition = posVal;
+            showToast(`Encabezado ajustado a: ${posVal}`);
         }
 
         function openYouTubeDirectLink() {
@@ -1901,8 +1924,14 @@
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
                 document.getElementById('tabBtnIdentidad').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
-                document.getElementById('setHeroBgUrl').value = settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg';
-                document.getElementById('setHeroBgPosition').value = settings.heroBgPosition || 'center center';
+                let currentBg = settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg';
+                let currentPos = settings.heroBgPosition || 'center center';
+
+                document.getElementById('setHeroBgUrl').value = currentBg;
+                document.getElementById('setHeroBgPosition').value = currentPos;
+                document.getElementById('previewHeroImg').src = currentBg;
+                document.getElementById('previewHeroImg').style.objectPosition = currentPos;
+
                 document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || 'https://www.youtube.com/watch?v=n0BJGAkU9cg';
                 document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
                 document.getElementById('setLatestVideoThumbUrl').value = settings.latestVideoThumbUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
