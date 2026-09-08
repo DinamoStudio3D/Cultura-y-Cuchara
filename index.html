@@ -71,7 +71,8 @@
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(234,88,12,0.18); border-color: rgba(234, 88, 12, 0.5); }
 
-        .hero-slide { opacity: 0; transition: opacity 1.2s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        /* HERO SLIDESHOW ADJUSTED FOR FULL VISIBILITY (CONTAIN / NO CROPPING) */
+        .hero-slide { opacity: 0; transition: opacity 1.2s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background-color: #121212; }
         .hero-slide.active-slide { opacity: 1; }
     </style>
 </head>
@@ -158,9 +159,9 @@
             <button onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div class="h-48 relative overflow-hidden bg-brandDark">
-                <img id="popupImgEl" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Promoción" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-brandDark/90 via-transparent to-transparent flex items-end p-4">
+            <div class="w-full bg-brandDark relative overflow-hidden flex items-center justify-center min-h-[220px]">
+                <img id="popupImgEl" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Promoción" class="w-full h-auto object-contain max-h-[260px] mx-auto block">
+                <div class="absolute bottom-3 left-3 z-10">
                     <span id="popupBadgeText" class="bg-brandGold text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow">✨ Promoción Exclusiva</span>
                 </div>
             </div>
@@ -169,7 +170,7 @@
                 <p id="popupDescText" class="text-xs sm:text-sm text-gray-600 leading-relaxed">Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.</p>
                 <div class="pt-2 flex flex-col gap-2">
                     <a id="popupWhatsappBtn" href="#" target="_blank" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-base"></i> Consultar Disponibilidad
+                        <i id="popupBtnIcon" class="fa-brands fa-whatsapp text-base"></i> <span id="popupBtnTextLabel">Consultar Disponibilidad</span>
                     </a>
                     <button onclick="closeModal('promoPopupModal')" class="text-xs text-gray-400 hover:text-brandDark underline py-1">Continuar navegando en la web</button>
                 </div>
@@ -177,7 +178,6 @@
         </div>
     </div>
 
-    <!-- QR / PIN Claim Modal for Passport Stamps -->
     <div id="qrClaimModal" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative p-6 text-center">
             <button onclick="closeModal('qrClaimModal')" class="absolute top-4 right-4 text-gray-400 hover:text-black transition text-lg w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
@@ -873,40 +873,20 @@
                     </div>
                 </div>
 
-                <!-- Carrusel de Fondo, Vídeo y Logo Tab con Arrastre Interactivo y Velocidad -->
+                <!-- Carrusel de Fondo, Vídeo y Logo Tab -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-images mr-1"></i> Configurar Carrusel de Imágenes de Fondo</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-list mr-1"></i> URLs de las Imágenes del Carrusel (Separadas por comas)</label>
-                                <textarea id="setHeroBgUrlsInput" oninput="updateCarouselPreviewFromInput()" rows="3" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg, https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
-                                <span class="text-[9px] text-gray-400 mt-1 block">💡 El sistema rotará estas imágenes automáticamente según los segundos que configures abajo.</span>
+                                <textarea id="setHeroBgUrlsInput" oninput="updateCarouselPreviewFromInput()" rows="3" required placeholder="https://i.imgur.com/3j3NoCa.png, https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                                <span class="text-[9px] text-gray-400 mt-1 block">💡 El sistema rotará estas imágenes automáticamente según los segundos que configures abajo. Las imágenes se ajustarán completas sin recortes.</span>
                             </div>
 
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-stopwatch mr-1"></i> Tiempo de cambio entre imágenes (en segundos)</label>
                                 <input type="number" id="setHeroIntervalSeconds" min="2" max="60" value="6" class="w-full sm:w-48 bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
-                                <span class="text-[9px] text-gray-400 mt-1 block">Ejemplo: 6 (cambia cada 6 segundos), 10 (cambia cada 10 segundos).</span>
-                            </div>
-                            
-                            <div class="bg-black/60 p-4 rounded-xl border border-brandGold/40 space-y-3">
-                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-hand mr-1"></i> Previsualización Interactiva de Arrastre (Alineación)</label>
-                                <p class="text-[10px] text-gray-300">Haz clic y arrastra con el mouse dentro del recuadro (o desliza con el dedo) para encuadrar la imagen de fondo principal.</p>
-                                
-                                <div id="interactivePreviewBox" class="w-full h-48 rounded-lg overflow-hidden relative border-2 border-brandGold bg-black shadow-inner cursor-grab active:cursor-grabbing select-none" onmousedown="startDragBg(event)" ontouchstart="startDragBg(event)">
-                                    <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="absolute w-full h-auto min-h-full pointer-events-none transition-none" style="object-fit: cover; left: 0px; top: 0px;">
-                                    <div class="absolute inset-0 bg-black/20 pointer-events-none flex items-center justify-center">
-                                        <span class="text-[10px] bg-black/70 text-brandGold font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-brandGold/40 shadow">Arrastra para encuadrar</span>
-                                    </div>
-                                </div>
-
-                                <input type="hidden" id="setHeroBgPosition" value="50% 50%">
-
-                                <div class="flex justify-between items-center pt-2">
-                                    <span class="text-[10px] text-gray-400">Posición guardada: <strong id="posCoordText" class="text-brandGold">50% 50%</strong></span>
-                                    <button type="button" onclick="resetBgPosition()" class="bg-gray-800 text-brandGold text-[10px] font-bold px-3 py-1 rounded border border-gray-700 hover:bg-brandGold hover:text-white transition">Centrar automático</button>
-                                </div>
                             </div>
 
                             <div>
@@ -941,12 +921,27 @@
                                 <span class="text-xs font-bold text-brandGold">Activar Popup Notificación en la Web</span>
                                 <input type="checkbox" id="setPopupActive" class="w-5 h-5 accent-brandGold cursor-pointer">
                             </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Tipo de Notificación</label>
+                                    <select id="setPopupMode" onchange="updatePopupModeLabels(this.value)" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                        <option value="promocion">🏷️ Modo Promoción de Local</option>
+                                        <option value="evento">🎉 Modo Evento / Anuncio Especial</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Texto de la Etiqueta (Badge)</label>
+                                    <input type="text" id="setPopupBadge" required placeholder="Ej. ✨ Promoción Exclusiva" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Anuncio</label>
                                 <input type="text" id="setPopupTitle" required placeholder="Ej. ¡Especial del Día de las Madres!" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Mensaje / Descuento</label>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Mensaje / Descuento / Detalles</label>
                                 <textarea id="setPopupDesc" required rows="3" placeholder="Ej. Hoy en Mamá Lola tenemos un plato especial..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
                             </div>
                             <div>
@@ -954,7 +949,7 @@
                                 <input type="text" id="setPopupImg" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Enlace de WhatsApp (Opcional)</label>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Enlace de Acción / WhatsApp (Opcional)</label>
                                 <input type="text" id="setPopupWhatsapp" placeholder="https://wa.me/593..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
@@ -971,24 +966,22 @@
         <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[720px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <div>
-                    <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Vídeo y Galería del Establecimiento</h3>
-                    <p class="text-xs text-gray-400">Contenido multimedia oficial</p>
+                    <h3 id="galleryTitle" class="text-base font-bold text-brandGold">Galería del Establecimiento</h3>
+                    <p class="text-[10px] text-gray-400">Vídeos y fotografías oficiales</p>
                 </div>
-                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 flex-grow overflow-y-auto space-y-6">
-                <div id="youtubeVideoContainer" class="hidden">
-                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-2"><i class="fa-brands fa-youtube mr-1"></i> Vídeo Principal</h4>
-                    <div class="w-full p-4 bg-black/60 rounded-xl border border-brandGold/30 text-center">
-                        <a id="directVideoLinkBtn" href="#" target="_blank" class="inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition text-xs uppercase tracking-wider shadow">
-                            <i class="fa-brands fa-youtube mr-1.5 text-sm"></i> Abrir Vídeo en YouTube
+            <div class="p-6 overflow-y-auto space-y-6 flex-grow">
+                <div id="youtubeVideoContainer" class="hidden space-y-2">
+                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider"><i class="fa-brands fa-youtube mr-1 text-red-500"></i> Vídeo Oficial</h4>
+                    <div class="w-full aspect-video bg-black rounded-xl overflow-hidden border border-brandGold/30 relative flex flex-col items-center justify-center">
+                        <a id="directVideoLinkBtn" href="#" target="_blank" class="bg-red-600 text-white font-bold px-6 py-3 rounded-xl text-xs hover:bg-red-700 transition shadow flex items-center gap-2">
+                            <i class="fa-brands fa-youtube text-base"></i> Ver Vídeo en YouTube
                         </a>
                     </div>
                 </div>
                 <div>
-                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-images mr-1"></i> Galería de Fotos</h4>
+                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-images mr-1"></i> Fotografías del Lugar y Platos</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="galleryGrid"></div>
                 </div>
             </div>
@@ -1298,6 +1291,28 @@
         let userCoords = null;
         let heroSlideshowInterval = null;
 
+        function applySettings(settings) {
+            if (!settings) return;
+            const heroBadge = document.getElementById('heroBadge');
+            const heroTitle = document.getElementById('heroTitle');
+            const heroSubtitle = document.getElementById('heroSubtitle');
+            if (heroBadge) heroBadge.innerText = settings.badge || "Loja se conoce, se saborea y se hospeda";
+            if (heroTitle) heroTitle.innerHTML = settings.title || 'Sabores, <span class="text-brandGold">Historias</span> y Destinos';
+            if (heroSubtitle) heroSubtitle.innerText = settings.subtitle || "";
+
+            const logos = [document.getElementById('navLogoImg'), document.getElementById('heroLogoImg'), document.getElementById('footerLogoImg'), document.getElementById('podcastLogoImg'), document.getElementById('splashLogoImg')];
+            logos.forEach(logo => { if(logo && settings.logoUrl) logo.src = settings.logoUrl; });
+
+            const latestTitle = document.getElementById('latestVideoTitleText');
+            if(latestTitle) latestTitle.innerText = settings.latestYoutubeTitle || "La Virgen del Cisne en Loja";
+            const modalTitle = document.getElementById('modalVideoTitleDisplay');
+            if(modalTitle) modalTitle.innerText = settings.latestYoutubeTitle || "La Virgen del Cisne en Loja";
+            const modalThumb = document.getElementById('modalVideoThumbImg');
+            if(modalThumb) modalThumb.src = settings.latestVideoThumbUrl || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80";
+
+            setupHeroSlideshow(settings.heroBgUrls || [settings.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg"], settings.heroIntervalSeconds || 6);
+        }
+
         let map, markersLayer, userMarkerInstance = null;
         try {
             map = L.map('lojaMap', { 
@@ -1326,13 +1341,14 @@
                 title: "Sabores, Historias y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 logoUrl: "https://i.imgur.com/xaiFpa1.png",
-                heroBgUrls: ["https://i.imgur.com/0QSbhqQ.jpeg"],
-                heroBgPosition: "50% 50%",
+                heroBgUrls: ["https://i.imgur.com/3j3NoCa.png"],
                 heroIntervalSeconds: 6,
                 latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
                 latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
                 popupActive: true,
+                popupMode: "promocion",
+                popupBadge: "✨ Promoción Exclusiva",
                 popupTitle: "¡Especial del Día de las Madres!",
                 popupDesc: "Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.",
                 popupImg: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
@@ -1341,6 +1357,175 @@
             window.__initialSettings = saved;
             applySettings(saved);
         })();
+
+        function setupHeroSlideshow(urlsArray, intervalSeconds) {
+            const container = document.getElementById('heroSlidesContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (!Array.isArray(urlsArray) || urlsArray.length === 0) {
+                urlsArray = ["https://i.imgur.com/3j3NoCa.png"];
+            }
+
+            urlsArray.forEach((url, idx) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = `hero-slide ${idx === 0 ? 'active-slide' : ''}`;
+                img.onerror = function() { this.src = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80'; };
+                container.appendChild(img);
+            });
+
+            if (heroSlideshowInterval) clearInterval(heroSlideshowInterval);
+            if (urlsArray.length > 1) {
+                let currentIndex = 0;
+                const intervalMs = Math.max(2, (parseInt(intervalSeconds) || 6)) * 1000;
+                heroSlideshowInterval = setInterval(() => {
+                    const slides = container.querySelectorAll('.hero-slide');
+                    if (slides.length === 0) return;
+                    slides[currentIndex].classList.remove('active-slide');
+                    currentIndex = (currentIndex + 1) % slides.length;
+                    slides[currentIndex].classList.add('active-slide');
+                }, intervalMs);
+            }
+        }
+
+        function updateCarouselPreviewFromInput() {
+            const textarea = document.getElementById('setHeroBgUrlsInput');
+            if(!textarea) return;
+        }
+
+        function renderEverything() {
+            renderMapAndGrid();
+            renderTrendingUI();
+            renderEmprendedoresUI();
+            renderAgendaUI();
+            updateItineraryUI();
+        }
+
+        function renderMapAndGrid() {
+            const grid = document.getElementById('localesGrid');
+            const catScroll = document.getElementById('categoryScroll');
+            if(!grid || !catScroll) return;
+            
+            catScroll.innerHTML = `<button onclick="filterItems('all', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-brandDark text-brandGold border border-brandDark transition whitespace-nowrap shadow">Todos</button>`;
+            categories.forEach(cat => {
+                const catName = currentLang === 'en' ? cat.nameEn : cat.name;
+                catScroll.innerHTML += `<button onclick="filterItems('${cat.id}', this)" class="filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-gray-600 border border-gray-200 transition whitespace-nowrap shadow-sm hover:border-brandGold">${cat.icon} ${catName}</button>`;
+            });
+
+            const selectAdmCat = document.getElementById('admCategory');
+            if(selectAdmCat) {
+                selectAdmCat.innerHTML = '';
+                categories.forEach(cat => {
+                    selectAdmCat.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+            }
+
+            grid.innerHTML = '';
+            if(markersLayer) markersLayer.clearLayers();
+
+            locations.forEach((loc, index) => {
+                const isFav = favoriteLocations.includes(loc.id);
+                const isOpen = isLocOpenNow(loc);
+                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
+                const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
+                const locDish = (currentLang === 'en' && loc.dishEn) ? loc.dishEn : loc.dish;
+                const imgUrl = loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80';
+
+                grid.innerHTML += `
+                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${index})">
+                        <div class="h-48 md:h-52 overflow-hidden relative">
+                            <img src="${imgUrl}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full ${isFav ? 'bg-red-50 text-red-600 border-red-300' : 'bg-black/60 text-brandGold border-brandGold/40'} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta">
+                                <i id="cardFav_${loc.id}" class="fa-solid fa-seedling ${isFav ? 'text-red-500 scale-110' : 'text-brandGold'}"></i>
+                            </button>
+                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow uppercase tracking-wider">${locTag}</span>
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <h3 class="font-black text-lg text-brandDark local-title">${locTitle}</h3>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isOpen ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'}">${isOpen ? 'Abierto' : 'Cerrado'}</span>
+                                </div>
+                                <p class="text-xs text-gray-600 line-clamp-2 local-desc mb-3">${locDesc}</p>
+                            </div>
+                            <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                                <span class="text-brandGold font-bold truncate max-w-[200px]"><i class="fa-solid fa-utensils mr-1"></i> ${locDish}</span>
+                                <span class="text-gray-400"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${loc.address}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if(markersLayer) {
+                    let customIconHtml = loc.customLogoUrl && loc.customLogoUrl.trim() !== "" 
+                        ? `<div class="w-10 h-10 rounded-full border-2 border-brandGold bg-white shadow-warm-glow overflow-hidden flex items-center justify-center p-0.5"><img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full"></div>`
+                        : `<div class="w-10 h-10 rounded-full bg-brandDark border-2 border-brandGold text-brandGold shadow-warm-glow flex items-center justify-center text-base"><i class="fa-solid ${loc.iconClass || 'fa-utensils'}"></i></div>`;
+
+                    let customIcon = L.divIcon({ className: 'custom-leaflet-icon', html: customIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
+                    let marker = L.marker([loc.lat || -3.9931, loc.lng || -79.2042], { icon: customIcon });
+                    marker.on('click', () => { selectLocation(index); });
+                    markersLayer.addLayer(marker);
+                }
+            });
+
+            if(locations.length > 0) selectLocation(0);
+            renderAdminLocationsList();
+        }
+
+        function renderTrendingUI() {
+            const container = document.getElementById('trendingGridContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            const trendingItems = locations.slice(0, 3);
+            trendingItems.forEach(loc => {
+                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
+                const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
+                const imgUrl = loc.gallery && loc.gallery[0] ? loc.gallery[0].img : '';
+
+                container.innerHTML += `
+                    <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between cursor-pointer" onclick="handlePopupClick('${loc.id}')">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="${imgUrl}" alt="" class="w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">🔥 Tendencia</span>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-[10px] text-brandGold font-bold uppercase tracking-wider">${locTag}</span>
+                            <h3 class="font-bold text-lg text-brandDark mb-1">${locTitle}</h3>
+                            <p class="text-xs text-gray-600 line-clamp-2">${locDesc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const sugContainer = document.getElementById('suggestedRoutesContainer');
+            if(sugContainer) {
+                sugContainer.innerHTML = `
+                    <button onclick="setSuggestedRoute('hotel')" class="bg-white border border-gray-200 px-4 py-2 rounded-xl text-xs font-bold text-brandDark hover:border-brandGold transition whitespace-nowrap shadow-sm">🏨 Ruta Hotelera</button>
+                    <button onclick="setSuggestedRoute('hueca')" class="bg-white border border-gray-200 px-4 py-2 rounded-xl text-xs font-bold text-brandDark hover:border-brandGold transition whitespace-nowrap shadow-sm">🥘 Ruta de Huecas</button>
+                    <button onclick="setSuggestedRoute('cafe')" class="bg-white border border-gray-200 px-4 py-2 rounded-xl text-xs font-bold text-brandDark hover:border-brandGold transition whitespace-nowrap shadow-sm">☕ Ruta de Cafeterías</button>
+                `;
+            }
+        }
+
+        function checkLiveEventsBanner() {
+            const banner = document.getElementById('liveEventBanner');
+            const eventText = document.getElementById('liveEventText');
+            if(!banner || !eventText) return;
+            if(eventsList.length > 0) {
+                const ev = eventsList[0];
+                const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
+                eventText.innerHTML = `<b>${evTitle}</b> - ${ev.date} en ${ev.location}`;
+                const btn = document.getElementById('liveEventBtn');
+                if(btn) btn.onclick = () => focusEventOnMap(ev.lat || -3.9931, ev.lng || -79.2042, evTitle);
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
 
         function cargarDatosDesdeFirestore() {
             let initial = JSON.parse(localStorage.getItem('cyc_settings')) || window.__initialSettings;
@@ -1394,7 +1579,7 @@
                     if (loc) {
                         openQrClaimModalForId(checkinId);
                     }
-                }, 1000);
+                }, 800);
             }
         }
 
@@ -1403,7 +1588,22 @@
                 document.getElementById('popupTitleText').innerText = settings.popupTitle || "¡Promoción Especial!";
                 document.getElementById('popupDescText').innerText = settings.popupDesc || "";
                 document.getElementById('popupImgEl').src = settings.popupImg || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80";
+                
+                const badgeText = settings.popupBadge || (settings.popupMode === 'evento' ? '🎉 Evento Oficial' : '✨ Promoción Exclusiva');
+                document.getElementById('popupBadgeText').innerText = badgeText;
+
                 const waBtn = document.getElementById('popupWhatsappBtn');
+                const btnIcon = document.getElementById('popupBtnIcon');
+                const btnLabel = document.getElementById('popupBtnTextLabel');
+
+                if (settings.popupMode === 'evento') {
+                    btnIcon.className = "fa-solid fa-calendar-days text-base";
+                    btnLabel.innerText = "Ver Detalles del Evento";
+                } else {
+                    btnIcon.className = "fa-brands fa-whatsapp text-base";
+                    btnLabel.innerText = "Consultar Disponibilidad";
+                }
+
                 if (settings.popupWhatsapp && settings.popupWhatsapp.trim() !== "") {
                     waBtn.href = settings.popupWhatsapp;
                     waBtn.classList.remove('hidden');
@@ -1416,567 +1616,15 @@
             }
         }
 
-        function applySettings(s) {
-            const badgeEl = document.getElementById('heroBadge');
-            if(badgeEl) badgeEl.innerText = s.badge || "";
-            if(document.getElementById('heroTitle')) {
-                document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Historias", '<span class="text-brandGold">Historias</span>') : "";
-            }
-            if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
-
-            if (s.logoUrl) {
-                ['splashLogoImg', 'navLogoImg', 'heroLogoImg', 'podcastLogoImg', 'footerLogoImg'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) el.src = s.logoUrl;
-                });
-            }
-
-            let urls = s.heroBgUrls || [s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg"];
-            if (typeof urls === 'string') {
-                urls = urls.split(',').map(u => u.trim()).filter(u => u !== "");
-            }
-            if (urls.length === 0) urls = ["https://i.imgur.com/0QSbhqQ.jpeg"];
-
-            const slidesContainer = document.getElementById('heroSlidesContainer');
-            if (slidesContainer) {
-                slidesContainer.innerHTML = '';
-                urls.forEach((url, idx) => {
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.className = `hero-slide ${idx === 0 ? 'active-slide' : ''}`;
-                    img.style.objectPosition = s.heroBgPosition || "50% 50%";
-                    slidesContainer.appendChild(img);
-                });
-
-                if (heroSlideshowInterval) clearInterval(heroSlideshowInterval);
-                if (urls.length > 1) {
-                    let currentIndex = 0;
-                    let intervalSec = parseInt(s.heroIntervalSeconds) || 6;
-                    heroSlideshowInterval = setInterval(() => {
-                        const slides = slidesContainer.querySelectorAll('.hero-slide');
-                        if (slides.length <= 1) return;
-                        slides[currentIndex].classList.remove('active-slide');
-                        currentIndex = (currentIndex + 1) % slides.length;
-                        slides[currentIndex].classList.add('active-slide');
-                    }, intervalSec * 1000);
+        function updatePopupModeLabels(mode) {
+            const badgeInput = document.getElementById('setPopupBadge');
+            if (mode === 'evento') {
+                if(!badgeInput.value || badgeInput.value.includes('Promoción')) {
+                    badgeInput.value = '🎉 Evento / Anuncio Especial';
                 }
-            }
-
-            if (s.latestYoutubeTitle) {
-                const titleEl = document.getElementById('latestVideoTitleText');
-                if(titleEl) titleEl.innerText = s.latestYoutubeTitle;
-                const modalTitleEl = document.getElementById('modalVideoTitleDisplay');
-                if(modalTitleEl) modalTitleEl.innerText = s.latestYoutubeTitle;
-            }
-
-            if (s.latestYoutubeUrl) {
-                const directLinkEl = document.getElementById('modalDirectVideoLink');
-                if(directLinkEl) directLinkEl.href = s.latestYoutubeUrl;
-            }
-
-            if (s.latestVideoThumbUrl) {
-                const thumbEl = document.getElementById('modalVideoThumbImg');
-                if(thumbEl) thumbEl.src = s.latestVideoThumbUrl;
-            }
-        }
-
-        function updateCarouselPreviewFromInput() {
-            const inputVal = document.getElementById('setHeroBgUrlsInput').value.trim();
-            let urls = inputVal.split(',').map(u => u.trim()).filter(u => u !== "");
-            const previewImg = document.getElementById('previewHeroImg');
-            if(urls.length > 0 && previewImg) {
-                previewImg.src = urls[0];
-            }
-        }
-
-        let isDraggingBg = false;
-        let startX = 0, startY = 0;
-        let posX = 50, posY = 50;
-
-        function startDragBg(e) {
-            isDraggingBg = true;
-            startX = e.clientX || (e.touches && e.touches[0].clientX);
-            startY = e.clientY || (e.touches && e.touches[0].clientY);
-            
-            document.addEventListener('mousemove', onDragBg);
-            document.addEventListener('mouseup', stopDragBg);
-            document.addEventListener('touchmove', onDragBg);
-            document.addEventListener('touchend', stopDragBg);
-            e.preventDefault();
-        }
-
-        function onDragBg(e) {
-            if (!isDraggingBg) return;
-            const currentX = e.clientX || (e.touches && e.touches[0].clientX);
-            const currentY = e.clientY || (e.touches && e.touches[0].clientY);
-            
-            const dx = currentX - startX;
-            const dy = currentY - startY;
-            
-            posX -= dx * 0.2;
-            posY -= dy * 0.2;
-            
-            posX = Math.max(0, Math.min(100, posX));
-            posY = Math.max(0, Math.min(100, posY));
-            
-            startX = currentX;
-            startY = currentY;
-            
-            updatePreviewBgPosition();
-        }
-
-        function stopDragBg() {
-            isDraggingBg = false;
-            document.removeEventListener('mousemove', onDragBg);
-            document.removeEventListener('mouseup', stopDragBg);
-            document.removeEventListener('touchmove', onDragBg);
-            document.removeEventListener('touchend', stopDragBg);
-        }
-
-        function updatePreviewBgPosition() {
-            const previewImg = document.getElementById('previewHeroImg');
-            const posCoordText = document.getElementById('posCoordText');
-            const hiddenInput = document.getElementById('setHeroBgPosition');
-            
-            const val = `${Math.round(posX)}% ${Math.round(posY)}%`;
-            if(previewImg) previewImg.style.objectPosition = val;
-            if(posCoordText) posCoordText.innerText = val;
-            if(hiddenInput) hiddenInput.value = val;
-        }
-
-        function resetBgPosition() {
-            posX = 50; posY = 50;
-            updatePreviewBgPosition();
-        }
-
-        function openYouTubeDirectLink() {
-            let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
-            let url = settings.latestYoutubeUrl || "https://www.youtube.com/watch?v=n0BJGAkU9cg";
-            window.open(url, '_blank');
-        }
-
-        let currentEventIndex = 0;
-        function checkLiveEventsBanner() {
-            const banner = document.getElementById('liveEventBanner');
-            const textEl = document.getElementById('liveEventText');
-            const btnEl = document.getElementById('liveEventBtn');
-            if(!banner) return;
-
-            let todayStr = new Date().toISOString().split('T')[0];
-            let upcomingEvents = eventsList.filter(ev => {
-                if (!ev.date) return true;
-                return ev.date >= todayStr;
-            });
-
-            if(upcomingEvents.length === 0) {
-                banner.classList.add('hidden');
-                return;
-            }
-
-            banner.classList.remove('hidden');
-            
-            function rotateEvent() {
-                if(upcomingEvents.length === 0) return;
-                const ev = upcomingEvents[currentEventIndex % upcomingEvents.length];
-                const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
-                textEl.innerHTML = `🔥 <b>${evTitle}</b> en ${ev.location} (${ev.date})`;
-                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${evTitle}')`);
-                currentEventIndex = (currentEventIndex + 1) % upcomingEvents.length;
-            }
-
-            rotateEvent();
-            if(upcomingEvents.length > 1) {
-                setInterval(rotateEvent, 5000);
-            }
-        }
-
-        function renderEverything() {
-            renderCategoriesUI();
-            renderMapAndGrid();
-            renderTrendingUI();
-            renderAgendaUI();
-            renderEmprendedoresUI();
-            updateItineraryUI();
-            if(map) {
-                setTimeout(() => { map.invalidateSize(); }, 200);
-            }
-        }
-
-        function renderCategoriesUI() {
-            const catScroll = document.getElementById('categoryScroll');
-            if(catScroll) {
-                const todosLabel = currentLang === 'en' ? 'All' : 'Todos';
-                catScroll.innerHTML = `
-                    <button onclick="filterItems('all', this)" class="filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2.5 flex items-center gap-2 transition-all shadow-md">
-                        <i class="fa-solid fa-border-all"></i> <span class="text-xs sm:text-sm font-bold text-white">${todosLabel}</span>
-                    </button>
-                `;
-                categories.forEach(cat => {
-                    const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
-                    catScroll.innerHTML += `
-                        <button onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
-                            <span class="text-base">${cat.icon}</span> <span class="text-xs sm:text-sm font-bold">${catName}</span>
-                        </button>
-                    `;
-                });
-            }
-
-            const admCategorySelect = document.getElementById('admCategory');
-            if(admCategorySelect) {
-                admCategorySelect.innerHTML = '';
-                categories.forEach(cat => {
-                    const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
-                    admCategorySelect.innerHTML += `<option value="${cat.id}">${catName}</option>`;
-                });
-            }
-
-            const sugContainer = document.getElementById('suggestedRoutesContainer');
-            if(sugContainer) {
-                sugContainer.innerHTML = '';
-                categories.slice(0, 3).forEach(cat => {
-                    const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
-                    sugContainer.innerHTML += `
-                        <button onclick="setSuggestedRoute('${cat.id}')" class="bg-white border border-brandGold text-brandDark px-4 py-2.5 rounded-xl shadow-sm hover:bg-brandGold hover:text-white transition text-xs sm:text-sm font-bold whitespace-nowrap flex items-center">
-                            <span class="mr-2">${cat.icon}</span> ${catName}
-                        </button>
-                    `;
-                });
-            }
-        }
-
-        function renderTrendingUI() {
-            const container = document.getElementById('trendingGridContainer');
-            if(!container || locations.length === 0) return;
-            container.innerHTML = '';
-
-            let trendingList = [...locations].map(loc => {
-                let score = favoriteLocations.includes(loc.id) ? 100 : 10;
-                return { ...loc, score };
-            });
-
-            trendingList.sort((a, b) => b.score - a.score);
-            let topTrending = trendingList.slice(0, 3);
-
-            topTrending.forEach((loc, index) => {
-                const realIndex = locations.findIndex(l => l.id === loc.id);
-                let medalIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉";
-
-                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
-                const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
-                const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
-
-                container.innerHTML += `
-                    <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
-                        <div class="h-48 md:h-52 overflow-hidden relative">
-                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
-                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index + 1} EN RUTA</span>
-                        </div>
-                        <div class="p-5">
-                            <span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${locTag}</span>
-                            <h3 class="text-base sm:text-lg font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${locTitle}</h3>
-                            <p class="text-gray-600 text-xs sm:text-sm line-clamp-2">${locDesc}</p>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
-            const R = 6371;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
-
-        function renderMapAndGrid() {
-            if(!markersLayer) return;
-            markersLayer.clearLayers();
-            
-            const grid = document.getElementById('localesGrid');
-            if(!grid) return;
-            grid.innerHTML = '';
-
-            const aliadoCountEl = document.getElementById('totalAliadosCount');
-            if(aliadoCountEl) {
-                aliadoCountEl.setAttribute('data-target', locations.length);
-                aliadoCountEl.innerText = locations.length;
-            }
-
-            let renderList = [...locations];
-            if (userCoords) {
-                renderList.sort((a, b) => {
-                    let distA = calcularDistanciaKm(userCoords.lat, userCoords.lng, a.lat || -3.9931, a.lng || -79.2042);
-                    let distB = calcularDistanciaKm(userCoords.lat, userCoords.lng, b.lat || -3.9931, b.lng || -79.2042);
-                    return distA - distB;
-                });
-            }
-
-            renderList.forEach((loc, index) => {
-                const uniqueId = loc.id || 'loc_' + index;
-                if(!loc.id) loc.id = uniqueId;
-
-                const realIndex = locations.findIndex(l => l.id === loc.id);
-
-                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
-                const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
-                const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
-                const isOpen = isLocOpenNow(loc);
-
-                if(loc.lat && loc.lng) {
-                    let pinHtml = "";
-                    if (loc.customLogoUrl && loc.customLogoUrl.trim() !== "") {
-                        pinHtml = `<div class="w-12 h-12 rounded-full border-[3px] border-brandGold overflow-hidden bg-white shadow-2xl hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action: none;">
-                                     <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}">
-                                   </div>`;
-                    } else {
-                        pinHtml = `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
-                                     <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
-                                   </div>`;
-                    }
-
-                    const customIcon = L.divIcon({
-                        className: 'custom-leaflet-icon',
-                        html: pinHtml,
-                        iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
-                    });
-
-                    const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
-                    
-                    let distanciaTexto = "";
-                    if (userCoords) {
-                        let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
-                        distanciaTexto = `<span class="text-[10px] text-blue-600 font-bold block mb-1">📍 A ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'} de ti</span>`;
-                    }
-
-                    const popupContent = `
-                        <div class="text-center p-1">
-                            <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${locTag}</span>
-                            <b class="text-brandDark text-xs block my-1">${locTitle}</b>
-                            ${distanciaTexto}
-                            <button onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-white px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
-                                Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i>
-                            </button>
-                        </div>
-                    `;
-                    marker.bindPopup(popupContent);
-                    markersLayer.addLayer(marker);
-                }
-
-                const isFav = favoriteLocations.includes(loc.id);
-                const favClass = isFav ? "fa-solid fa-seedling text-red-500 scale-110" : "fa-solid fa-seedling text-brandGold";
-                const favBg = isFav ? "bg-red-50 text-red-600 border-red-300" : "bg-black/60 text-brandGold border-brandGold/40";
-
-                let cardDistHtml = "";
-                if (userCoords) {
-                    let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042);
-                    cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
-                }
-
-                let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
-
-                const openBadge = isOpen 
-                    ? `<span class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> Abierto</span>`
-                    : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
-
-                grid.innerHTML += `
-                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
-                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta">
-                            <i id="cardFav_${loc.id}" class="${favClass}"></i>
-                        </button>
-                        <div class="h-52 overflow-hidden relative">
-                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
-                            <div class="absolute top-3 left-3 flex gap-1.5 z-10">
-                                <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>
-                                ${openBadge}
-                            </div>
-                            <div class="absolute bottom-3 right-3 flex gap-1.5 z-20">
-                                <button onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)">
-                                    <i class="fa-solid fa-qrcode"></i>
-                                </button>
-                                <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
-                                    <i class="fa-solid fa-diamond-turn-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="p-5 relative">
-                            <div class="flex items-center justify-between mb-1">
-                                <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${locTitle}</h3>
-                                ${cardDistHtml}
-                            </div>
-                            <p class="text-gray-600 text-xs sm:text-sm local-desc line-clamp-2">${locDesc}</p>
-                            <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
-                                <i class="fa-solid fa-clock text-brandGold"></i> <span>${loc.hours || 'Lun - Dom: 08:00 - 20:00'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            let todayStr = new Date().toISOString().split('T')[0];
-            eventsList.forEach((ev) => {
-                if (ev.date && ev.date < todayStr) return;
-                if(ev.lat && ev.lng) {
-                    const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
-                    const eventIcon = L.divIcon({
-                        className: 'custom-leaflet-icon',
-                        html: `<div class="bg-brandGold text-white w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
-                                     <i class="fa-solid fa-calendar-days text-sm"></i>
-                               </div>`,
-                        iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
-                    });
-                    const evMarker = L.marker([ev.lat, ev.lng], { icon: eventIcon });
-                    evMarker.bindPopup(`<div class="text-center p-1"><span class="bg-brandGold text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">Evento Cultural</span><b class="text-brandDark text-xs block mt-1">${evTitle}</b><p class="text-[10px] text-gray-600 mt-0.5">${ev.date} - ${ev.location}</p></div>`);
-                    markersLayer.addLayer(evMarker);
-                }
-            });
-
-            if(userMarkerInstance) {
-                userMarkerInstance.addTo(markersLayer);
-            }
-
-            renderAdminLocationsList();
-            updatePassportUI();
-        }
-
-        function openQrClaimModal(e, localId) {
-            e.stopPropagation();
-            openQrClaimModalForId(localId);
-        }
-
-        function openQrClaimModalForId(localId) {
-            const loc = locations.find(l => l.id === localId);
-            if(!loc) return;
-            document.getElementById('qrTargetLocalId').value = loc.id;
-            const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
-            document.getElementById('qrLocalNameDisplay').innerText = locTitle;
-            
-            const avatarImg = document.getElementById('qrLocalAvatarImg');
-            if (loc.customLogoUrl && loc.customLogoUrl.trim() !== "") {
-                avatarImg.src = loc.customLogoUrl;
-            } else if (loc.gallery && loc.gallery[0]) {
-                avatarImg.src = loc.gallery[0].img;
             } else {
-                avatarImg.src = "https://i.imgur.com/xaiFpa1.png";
-            }
-
-            document.getElementById('inputBusinessPin').value = '';
-            openModal('qrClaimModal');
-        }
-
-        function openQrClaimForCurrent() {
-            const loc = locations[currentLocationIndex];
-            if(!loc) return;
-            openQrClaimModalForId(loc.id);
-        }
-
-        function verifyBusinessPinForStamp(e) {
-            e.preventDefault();
-            const localId = document.getElementById('qrTargetLocalId').value;
-            const enteredPin = document.getElementById('inputBusinessPin').value.trim();
-            const loc = locations.find(l => l.id === localId);
-            
-            if(!loc) { showToast('Local no encontrado'); return; }
-            const validPin = loc.pin || "1234";
-
-            if (enteredPin === validPin) {
-                if (!visitedLocations.includes(localId)) {
-                    visitedLocations.push(localId);
-                    localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
-                    updatePassportUI();
-                }
-                closeModal('qrClaimModal');
-                
-                try {
-                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                } catch(err) {}
-
-                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
-                showToast(`🎉 ¡Sello obtenido en ${locTitle}!`);
-                
-                setTimeout(() => {
-                    openModal('pasaporteModal');
-                }, 400);
-            } else {
-                showToast('❌ PIN de establecimiento incorrecto');
-                document.getElementById('inputBusinessPin').value = '';
-            }
-        }
-
-        function locateUserGPS() {
-            showToast('Obteniendo tu ubicación exacta...');
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lng = pos.coords.longitude;
-                        userCoords = { lat, lng };
-                        if(map) map.setView([lat, lng], 16, { animate: true });
-                        
-                        const userAvatarIcon = L.divIcon({
-                            className: 'custom-leaflet-icon',
-                            html: `<div class="blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce bg-blue-600" style="touch-action: none;">
-                                     <i class="fa-solid fa-street-view text-2xl"></i>
-                               </div>`,
-                            iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
-                        });
-                        
-                        userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
-                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
-                        
-                        renderMapAndGrid(); 
-                        showToast('¡Ubicación encontrada!');
-                    },
-                    (err) => { centerOnLoja(); },
-                    { timeout: 6000, enableHighAccuracy: true }
-                );
-            } else {
-                centerOnLoja();
-            }
-        }
-
-        function centerOnLoja() {
-            const lojaLat = -3.9931;
-            const lojaLng = -79.2042;
-            userCoords = { lat: lojaLat, lng: lojaLng };
-            if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
-            renderMapAndGrid();
-            selectLocation(0);
-            showToast('Mapa centrado en Loja');
-        }
-
-        function toggleFavoriteCurrent(btn) {
-            const loc = locations[currentLocationIndex];
-            if(!loc) return;
-            const index = favoriteLocations.indexOf(loc.id);
-            const icon = btn.querySelector('i');
-            if (index > -1) {
-                favoriteLocations.splice(index, 1);
-                icon.className = "fa-solid fa-seedling text-brandGold";
-                btn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10";
-                showToast(`Quitado de tu ruta`);
-            } else {
-                favoriteLocations.push(loc.id);
-                icon.className = "fa-solid fa-seedling text-red-500 scale-110";
-                btn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-red-50 backdrop-blur border border-red-300 text-red-600 flex items-center justify-center hover:scale-110 transition shadow-lg text-lg z-10";
-                showToast(`¡Añadido a Mi Ruta! ☕`);
-            }
-            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
-            updateItineraryUI();
-            renderTrendingUI();
-            
-            const cardIcon = document.getElementById(`cardFav_${loc.id}`);
-            if(cardIcon) {
-                const isNowFav = favoriteLocations.includes(loc.id);
-                cardIcon.className = isNowFav ? "fa-solid fa-seedling text-red-500 scale-110" : "fa-solid fa-seedling text-brandGold";
-                const parentBtn = cardIcon.closest('button');
-                if(parentBtn) {
-                    parentBtn.className = isNowFav 
-                        ? "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-red-50 text-red-600 border-red-300 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg"
-                        : "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 text-brandGold border-brandGold/40 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
+                if(!badgeInput.value || badgeInput.value.includes('Evento')) {
+                    badgeInput.value = '✨ Promoción Exclusiva';
                 }
             }
         }
@@ -2298,25 +1946,12 @@
                 document.getElementById('tabBtnIdentidad').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
                 
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
-                let urlsArr = settings.heroBgUrls || [settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg'];
+                let urlsArr = settings.heroBgUrls || [settings.heroBgUrl || 'https://i.imgur.com/3j3NoCa.png'];
                 if(Array.isArray(urlsArr)) urlsArr = urlsArr.join(', ');
-                let currentPos = settings.heroBgPosition || '50% 50%';
                 let currentInterval = settings.heroIntervalSeconds || 6;
 
                 document.getElementById('setHeroBgUrlsInput').value = urlsArr;
                 document.getElementById('setHeroIntervalSeconds').value = currentInterval;
-                document.getElementById('setHeroBgPosition').value = currentPos;
-                
-                let firstUrl = settings.heroBgUrls && settings.heroBgUrls.length > 0 ? settings.heroBgUrls[0] : 'https://i.imgur.com/0QSbhqQ.jpeg';
-                document.getElementById('previewHeroImg').src = firstUrl;
-                document.getElementById('previewHeroImg').style.objectPosition = currentPos;
-                document.getElementById('posCoordText').innerText = currentPos;
-                
-                let parts = currentPos.split(' ');
-                if(parts.length === 2) {
-                    posX = parseFloat(parts[0]) || 50;
-                    posY = parseFloat(parts[1]) || 50;
-                }
 
                 document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || 'https://www.youtube.com/watch?v=n0BJGAkU9cg';
                 document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
@@ -2328,6 +1963,8 @@
                 
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
                 document.getElementById('setPopupActive').checked = settings.popupActive !== undefined ? settings.popupActive : true;
+                document.getElementById('setPopupMode').value = settings.popupMode || 'promocion';
+                document.getElementById('setPopupBadge').value = settings.popupBadge || '✨ Promoción Exclusiva';
                 document.getElementById('setPopupTitle').value = settings.popupTitle || '¡Especial del Día de las Madres!';
                 document.getElementById('setPopupDesc').value = settings.popupDesc || 'Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.';
                 document.getElementById('setPopupImg').value = settings.popupImg || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80';
@@ -2338,6 +1975,8 @@
         function handleSavePopupSettings(e) {
             e.preventDefault();
             let popupActive = document.getElementById('setPopupActive').checked;
+            let popupMode = document.getElementById('setPopupMode').value;
+            let popupBadge = document.getElementById('setPopupBadge').value.trim();
             let popupTitle = document.getElementById('setPopupTitle').value.trim();
             let popupDesc = document.getElementById('setPopupDesc').value.trim();
             let popupImg = document.getElementById('setPopupImg').value.trim();
@@ -2345,6 +1984,8 @@
 
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
             settings.popupActive = popupActive;
+            settings.popupMode = popupMode;
+            settings.popupBadge = popupBadge;
             settings.popupTitle = popupTitle;
             settings.popupDesc = popupDesc;
             settings.popupImg = popupImg;
@@ -2362,6 +2003,18 @@
                     document.getElementById('popupTitleText').innerText = popupTitle;
                     document.getElementById('popupDescText').innerText = popupDesc;
                     document.getElementById('popupImgEl').src = popupImg;
+                    document.getElementById('popupBadgeText').innerText = popupBadge;
+                    
+                    const btnIcon = document.getElementById('popupBtnIcon');
+                    const btnLabel = document.getElementById('popupBtnTextLabel');
+                    if (popupMode === 'evento') {
+                        btnIcon.className = "fa-solid fa-calendar-days text-base";
+                        btnLabel.innerText = "Ver Detalles del Evento";
+                    } else {
+                        btnIcon.className = "fa-brands fa-whatsapp text-base";
+                        btnLabel.innerText = "Consultar Disponibilidad";
+                    }
+
                     openModal('promoPopupModal');
                 }, 500);
             }
@@ -2371,10 +2024,9 @@
             e.preventDefault();
             let urlsInput = document.getElementById('setHeroBgUrlsInput').value.trim();
             let heroBgUrls = urlsInput.split(',').map(u => u.trim()).filter(u => u !== "");
-            if (heroBgUrls.length === 0) heroBgUrls = ["https://i.imgur.com/0QSbhqQ.jpeg"];
+            if (heroBgUrls.length === 0) heroBgUrls = ["https://i.imgur.com/3j3NoCa.png"];
 
             let heroIntervalSeconds = parseInt(document.getElementById('setHeroIntervalSeconds').value) || 6;
-            let heroBgPosition = document.getElementById('setHeroBgPosition').value;
             let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
             let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
             let latestVideoThumbUrl = document.getElementById('setLatestVideoThumbUrl').value;
@@ -2384,7 +2036,6 @@
             settings.heroBgUrls = heroBgUrls;
             settings.heroBgUrl = heroBgUrls[0];
             settings.heroIntervalSeconds = heroIntervalSeconds;
-            settings.heroBgPosition = heroBgPosition;
             settings.latestYoutubeUrl = latestYoutubeUrl;
             settings.latestYoutubeTitle = latestYoutubeTitle;
             settings.latestVideoThumbUrl = latestVideoThumbUrl;
@@ -2879,14 +2530,60 @@
             }
         }
         function closeModal(id) { 
-            const m = document.getElementById('adminModal');
-            if(id === 'adminModal' && m) {
-                stopDragBg();
-            }
             const targetM = document.getElementById(id);
             if(targetM) {
                 targetM.classList.add('hidden');
             } 
+        }
+
+        function openQrClaimModalForId(localId) {
+            const loc = locations.find(l => l.id === localId);
+            if(!loc) return;
+            document.getElementById('qrTargetLocalId').value = loc.id;
+            document.getElementById('qrLocalNameDisplay').innerText = loc.title;
+            const avatar = document.getElementById('qrLocalAvatarImg');
+            if(loc.gallery && loc.gallery[0]) avatar.src = loc.gallery[0].img;
+            document.getElementById('inputBusinessPin').value = '';
+            openModal('qrClaimModal');
+        }
+
+        function openQrClaimForCurrent() {
+            const loc = locations[currentLocationIndex];
+            if(loc) openQrClaimModalForId(loc.id);
+        }
+
+        function verifyBusinessPinForStamp(e) {
+            e.preventDefault();
+            const localId = document.getElementById('qrTargetLocalId').value;
+            const enteredPin = document.getElementById('inputBusinessPin').value.trim();
+            const loc = locations.find(l => l.id === localId);
+
+            if (!loc) { showToast('Local no encontrado'); return; }
+
+            const correctPin = loc.pin || "1234";
+            if (enteredPin === correctPin) {
+                closeModal('qrClaimModal');
+                
+                // Limpiar el parámetro checkin de la URL para que sea de un solo uso y no reaparezca al actualizar
+                if (window.history && window.history.replaceState) {
+                    const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                    window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+                }
+
+                if (!visitedLocations.includes(localId)) {
+                    visitedLocations.push(localId);
+                    localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
+                    updatePassportUI();
+                }
+                try {
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                } catch(err) {}
+                showToast(`🎯 ¡Sello obtenido en ${loc.title}!`);
+                setTimeout(() => openModal('pasaporteModal'), 600);
+            } else {
+                showToast('❌ PIN de validación incorrecto');
+                document.getElementById('inputBusinessPin').value = '';
+            }
         }
     </script>
 </body>
