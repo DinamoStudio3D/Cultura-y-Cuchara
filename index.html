@@ -59,6 +59,7 @@
         .reveal.active { opacity: 1; transform: translateY(0); }
 
         .fab-whatsapp { position: fixed; bottom: 28px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
+        .fab-fiavl { position: fixed; bottom: 96px; right: 20px; z-index: 90; animation: bounce-slight 2.5s infinite; }
         @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
         #splash-screen { transition: opacity 0.5s ease-out; z-index: 9999; }
@@ -111,8 +112,9 @@
                     <span class="text-brandGold text-[9px] uppercase tracking-widest font-semibold" data-i18n="navSub">Sabores • Historias • Destinos</span>
                 </div>
             </a>
-            <div class="hidden md:flex items-center gap-3 lg:gap-5 text-xs lg:text-sm font-semibold text-gray-200">
+            <div class="hidden md:flex items-center gap-3 lg:gap-4 text-xs lg:text-sm font-semibold text-gray-200">
                 <a href="#inicio" class="hover:text-brandGold transition-colors" data-i18n="menuHome">Inicio</a>
+                <a href="#fiavl" class="text-brandGold hover:text-white transition-colors flex items-center gap-1 font-bold"><i class="fa-solid fa-masks-theater"></i> FIAVL 2026</a>
                 <a href="#tendencia" class="hover:text-brandGold transition-colors" data-i18n="menuTrending">En Tendencia</a>
                 <a href="#mapa" class="hover:text-brandGold transition-colors" data-i18n="menuMap">El Mapa</a>
                 <a href="#establecimientos" class="hover:text-brandGold transition-colors" data-i18n="menuRoute">La Ruta</a>
@@ -138,6 +140,7 @@
         </div>
         <div id="mobileMenu" class="hidden md:hidden pt-4 pb-3 border-t border-gray-800 mt-3 flex flex-col gap-3 text-sm glass-nav px-4">
             <a href="#inicio" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuHome">Inicio</a>
+            <a href="#fiavl" class="text-brandGold font-bold hover:text-white" onclick="toggleMobileMenu()"><i class="fa-solid fa-masks-theater mr-1"></i> FIAVL 2026</a>
             <a href="#tendencia" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuTrending">En Tendencia</a>
             <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuMap">El Mapa</a>
             <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuRoute">La Ruta</a>
@@ -159,7 +162,7 @@
             <button onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div class="w-full bg-brandDark relative overflow-hidden flex items-center justify-center min-h-[220px]">
+            <div class="w-full bg-brandDark relative overflow-hidden flex items-center justify-center min-h-[220px] p-2">
                 <img id="popupImgEl" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Promoción" class="w-full h-auto object-contain max-h-[260px] mx-auto block">
                 <div class="absolute bottom-3 left-3 z-10">
                     <span id="popupBadgeText" class="bg-brandGold text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow">✨ Promoción Exclusiva</span>
@@ -267,6 +270,38 @@
             <div class="reveal">
                 <p class="text-4xl font-black mb-1"><span class="counter" id="stat4Val" data-target="100">100</span>%</p>
                 <p class="text-xs font-bold uppercase tracking-widest" id="stat4Label" data-i18n="statIdentity">Identidad Lojana</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="fiavl" class="py-20 px-4 md:px-8 lg:px-12 bg-gradient-to-b from-brandDark via-black to-brandDark text-white relative overflow-hidden reveal border-b border-brandGold/30">
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-brandGold/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+                <div class="w-full lg:w-1/2 flex justify-center">
+                    <div class="w-64 h-64 sm:w-80 sm:h-80 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow relative flex items-center justify-center p-3 animate-bounce-slight">
+                        <img src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL 2026" class="w-full h-full object-cover rounded-full">
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/2 text-center lg:text-left">
+                    <span class="bg-brandGold text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest inline-block mb-4 shadow">
+                        🎭 Festival Internacional de Artes Vivas 2026
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-4 text-brandGold">
+                        Loja Capital Cultural de Iberoamérica
+                    </h2>
+                    <p class="text-gray-300 text-sm sm:text-base leading-relaxed mb-6 font-normal">
+                        Del 12 al 22 de noviembre de 2026, las calles, plazas y teatros históricos de Loja se convierten en el escenario más grande del arte escénico, música y teatro. Vive la experiencia combinando la alta cocina lojana con espectáculos internacionales de primer nivel.
+                    </p>
+                    <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+                        <a href="#agenda" class="bg-brandGold text-white font-bold px-6 py-3 rounded-xl hover:bg-brandGoldHover transition shadow-warm-glow text-xs uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days"></i> Ver Programación Oficial
+                        </a>
+                        <a href="#mapa" class="bg-white/10 border border-brandGold/50 text-white font-bold px-6 py-3 rounded-xl hover:bg-white/20 transition text-xs uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-map-location-dot"></i> Ubicar Teatros en el Mapa
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -461,7 +496,7 @@
                             <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).</p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.</p>
+                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Cada sello debe ser de un establecimiento diferente y validado mediante PIN autorizado.</p>
                 </div>
             </div>
         </div>
@@ -549,6 +584,16 @@
         </div>
     </footer>
 
+    <a href="#fiavl" class="fab-fiavl bg-brandDark border-2 border-brandGold text-white px-3.5 py-2.5 rounded-full flex items-center gap-2.5 shadow-warm-glow hover:bg-black transition-all hover:scale-105" title="Festival de Artes Vivas Loja 2026">
+        <div class="w-8 h-8 rounded-full bg-white overflow-hidden p-0.5 flex-shrink-0 flex items-center justify-center shadow">
+            <img src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL" class="w-full h-full object-cover rounded-full">
+        </div>
+        <div class="text-left pr-1">
+            <span class="text-[10px] text-brandGold font-bold block leading-none">FESTIVAL</span>
+            <span class="text-xs font-black tracking-wider text-white">FIAVL 2026</span>
+        </div>
+    </a>
+
     <a href="https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Vive%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
@@ -625,7 +670,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control de Locales, Check-in QR, Carrusel, Vídeo y Popup</p>
+                        <p class="text-xs text-brandGold">Control de Locales, Check-in QR, FIAVL 2026 y Popup</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -634,10 +679,10 @@
             </div>
 
             <div class="flex flex-wrap items-center border-b border-gray-800 bg-black/40 px-3 sm:px-6 gap-2 sm:gap-3 text-xs font-bold overflow-x-auto hide-scrollbar py-2">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y Check-in QR</button>
+                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y QR</button>
                 <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Emprendedores</button>
-                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda Cultural</button>
-                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Carrusel de Fondo, Vídeo y Logo</button>
+                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda y FIAVL 2026</button>
+                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Fondo y Vídeo</button>
                 <button onclick="switchAdminTab('popup')" id="tabBtnPopup" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Popup Notificación</button>
             </div>
 
@@ -645,7 +690,7 @@
                 <!-- Locales Tab -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Logo en Mapa y PIN QR)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con PIN QR)</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -664,7 +709,7 @@
                                     <select id="admCategory" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold"></select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono por Defecto</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono</label>
                                     <select id="admIconClass" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                         <option value="fa-utensils">🍴 Restaurante</option>
                                         <option value="fa-mortar-pestle">🥘 Hueca Tradicional</option>
@@ -673,13 +718,13 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-key"></i> PIN de Validación QR</label>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-key"></i> PIN QR</label>
                                     <input type="text" id="admPin" required maxlength="6" value="1234" class="w-full bg-[#121212] border border-brandGold/60 rounded-xl p-2.5 text-xs text-white outline-none text-center font-bold tracking-widest">
                                 </div>
                             </div>
                             <div class="bg-brandGold/10 p-3 rounded-xl border border-brandGold/30">
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL del Logo para el Pin del Mapa (Opcional)</label>
-                                <input type="text" id="admCustomLogoUrl" placeholder="https://i.imgur.com/... (Si se deja vacío, usará el icono por defecto)" class="w-full bg-[#121212] border border-brandGold/50 rounded-lg p-2.5 text-xs text-white outline-none">
+                                <input type="text" id="admCustomLogoUrl" placeholder="https://i.imgur.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-lg p-2.5 text-xs text-white outline-none">
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -807,16 +852,16 @@
                     </div>
                 </div>
 
-                <!-- Agenda Tab -->
+                <!-- Agenda & FIAVL Tab -->
                 <div id="adminTabAgenda" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4" id="eventFormTitle"><i class="fa-solid fa-calendar-plus mr-1"></i> Programar Evento Cultural</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="eventFormTitle"><i class="fa-solid fa-masks-theater mr-1"></i> Programar Evento Cultural o FIAVL 2026</h4>
                         <form onsubmit="handleSaveEvent(event)" class="space-y-4">
                             <input type="hidden" id="evEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Título (Español)</label>
-                                    <input type="text" id="evTitle" required placeholder="Título" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                    <input type="text" id="evTitle" required placeholder="Título del evento" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Title (English)</label>
@@ -825,12 +870,12 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (2026-09-20)</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Fecha (2026-11-15)</label>
                                     <input type="text" id="evDate" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Tipo</label>
-                                    <input type="text" id="evType" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Tipo (Ej. FIAVL 2026)</label>
+                                    <input type="text" id="evType" required value="FIAVL 2026" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL Imagen</label>
@@ -839,14 +884,14 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Lugar</label>
-                                    <input type="text" id="evLocation" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Lugar (Teatro / Plaza)</label>
+                                    <input type="text" id="evLocation" required placeholder="Ej. Teatro Bolívar" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Zona</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Zona en Mapa</label>
                                     <select id="evZonePreset" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
-                                        <option value="-3.9910,-79.2030">Plaza de las Flores</option>
                                         <option value="-3.9980,-79.2015">Teatro Bolívar</option>
+                                        <option value="-3.9910,-79.2030">Plaza de las Flores</option>
                                         <option value="-3.9931,-79.2042">Mercado Central</option>
                                     </select>
                                 </div>
@@ -868,42 +913,35 @@
                         </form>
                     </div>
                     <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Eventos Programados</h4>
+                        <h4 class="font-bold text-sm text-white mb-3">Eventos y FIAVL 2026 Programados</h4>
                         <div class="space-y-2" id="adminEventsList"></div>
                     </div>
                 </div>
 
-                <!-- Carrusel de Fondo, Vídeo y Logo Tab -->
+                <!-- Fondo y Vídeo Tab -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-images mr-1"></i> Configurar Carrusel de Imágenes de Fondo</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-list mr-1"></i> URLs de las Imágenes del Carrusel (Separadas por comas)</label>
-                                <textarea id="setHeroBgUrlsInput" oninput="updateCarouselPreviewFromInput()" rows="3" required placeholder="https://i.imgur.com/3j3NoCa.png, https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
-                                <span class="text-[9px] text-gray-400 mt-1 block">💡 El sistema rotará estas imágenes automáticamente según los segundos que configures abajo. Las imágenes llenarán la pantalla principal.</span>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-list mr-1"></i> URLs del Carrusel (Separadas por comas)</label>
+                                <textarea id="setHeroBgUrlsInput" rows="3" required class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
                             </div>
-
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-stopwatch mr-1"></i> Tiempo de cambio entre imágenes (en segundos)</label>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-stopwatch mr-1"></i> Segundos por imagen</label>
                                 <input type="number" id="setHeroIntervalSeconds" min="2" max="60" value="6" class="w-full sm:w-48 bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
-
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Vídeo (YouTube)</label>
-                                <input type="text" id="setLatestYoutubeUrl" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Vídeo YouTube</label>
+                                <input type="text" id="setLatestYoutubeUrl" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo Destacado</label>
-                                <input type="text" id="setLatestYoutubeTitle" required placeholder="Ej. La Virgen del Cisne en Loja" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Vídeo</label>
+                                <input type="text" id="setLatestYoutubeTitle" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> Miniatura del Vídeo</label>
-                                <input type="text" id="setLatestVideoThumbUrl" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL del Logotipo Oficial</label>
-                                <input type="text" id="setBrandLogoUrl" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> Miniatura Vídeo</label>
+                                <input type="text" id="setLatestVideoThumbUrl" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
                                 Aplicar Cambios al Instante
@@ -912,7 +950,7 @@
                     </div>
                 </div>
 
-                <!-- Popup Promocional Tab -->
+                <!-- Popup Tab -->
                 <div id="adminTabPopup" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-bullhorn mr-1"></i> Configurar Notificación / Popup Promocional</h4>
@@ -921,7 +959,6 @@
                                 <span class="text-xs font-bold text-brandGold">Activar Popup Notificación en la Web</span>
                                 <input type="checkbox" id="setPopupActive" class="w-5 h-5 accent-brandGold cursor-pointer">
                             </div>
-                            
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Tipo de Notificación</label>
@@ -931,26 +968,25 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Texto de la Etiqueta (Badge)</label>
-                                    <input type="text" id="setPopupBadge" required placeholder="Ej. ✨ Promoción Exclusiva" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Etiqueta (Badge)</label>
+                                    <input type="text" id="setPopupBadge" required class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                                 </div>
                             </div>
-
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Anuncio</label>
-                                <input type="text" id="setPopupTitle" required placeholder="Ej. ¡Especial del Día de las Madres!" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título</label>
+                                <input type="text" id="setPopupTitle" required class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Mensaje / Descuento / Detalles</label>
-                                <textarea id="setPopupDesc" required rows="3" placeholder="Ej. Hoy en Mamá Lola tenemos un plato especial..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Mensaje / Detalles</label>
+                                <textarea id="setPopupDesc" required rows="3" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de la Imagen del Popup (Completa sin recortes)</label>
-                                <input type="text" id="setPopupImg" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de la Imagen (Completa - Cartel/Flyer)</label>
+                                <input type="text" id="setPopupImg" required class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Enlace de Acción / WhatsApp (Opcional)</label>
-                                <input type="text" id="setPopupWhatsapp" placeholder="https://wa.me/593..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Enlace WhatsApp / Acción</label>
+                                <input type="text" id="setPopupWhatsapp" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
                                 Guardar y Publicar Popup
@@ -1062,15 +1098,6 @@
                 ileSub: "Tradición y Sabor",
                 ileTitle: "Secretos de Cocina con ILE",
                 ileDesc: "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.",
-                ileCard1Title: "El Adobo Lojano",
-                ileCard1Desc: "Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.",
-                ileCard1Tag: "Ideal para: Cecina y Secos",
-                ileCard2Title: "Aromas de Altura",
-                ileCard2Desc: "El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.",
-                ileCard2Tag: "Ideal para: Cafés y Pasteles",
-                ileCard3Title: "El Toque del Repe",
-                ileCard3Desc: "El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.",
-                ileCard3Tag: "Ideal para: Repe y Sopas",
                 passTitle: "Pasaporte<br>Inteligente",
                 passDesc: "Elige tu modo de exploración y reclama tu premio.",
                 passBtnOpen: "Abrir mi Pasaporte",
@@ -1080,7 +1107,7 @@
                 passTouristDesc: "Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).",
                 passLocalMode: "Modo Lojano",
                 passLocalDesc: "Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).",
-                passRules: "* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.",
+                passRules: "* Reglas de seguridad: Cada sello debe ser de un establecimiento diferente y validado mediante PIN autorizado.",
                 agendaSub: "Loja en Movimiento",
                 agendaTitle: "Agenda Cultural y Eventos",
                 agendaDesc: "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
@@ -1135,15 +1162,6 @@
                 ileSub: "Tradition & Flavor",
                 ileTitle: "Kitchen Secrets with ILE",
                 ileDesc: "The soul of Loja gastronomy lies in its marinades, aromatic herbs and the unmistakable touch of Industria Lojana de Especerías, endorsed by the Tourism Board.",
-                ileCard1Title: "Loja Marinade",
-                ileCard1Desc: "Masterful blend of cumin, achiote and garlic that infuses cecina before being grilled over firewood coals.",
-                ileCard1Tag: "Ideal for: Cecina & Stews",
-                ileCard2Title: "Highland Aromas",
-                ileCard2Desc: "Coffee from Catamayo and Olmedo pairs perfectly with subtle notes of cinnamon and cloves in pastry.",
-                ileCard2Tag: "Ideal for: Coffees & Pastries",
-                ileCard3Title: "The Repe Touch",
-                ileCard3Desc: "Fresh cilantro and a touch of white pepper enhance the creaminess of green plantain and traditional quesillo.",
-                ileCard3Tag: "Ideal for: Repe & Soups",
                 passTitle: "Smart<br>Passport",
                 passDesc: "Choose your exploration mode and claim your reward.",
                 passBtnOpen: "Open my Passport",
@@ -1153,7 +1171,7 @@
                 passTouristDesc: "Requires: <b>1 Hotel + 5 Gastronomy</b> (6 stamps).",
                 passLocalMode: "Local Mode",
                 passLocalDesc: "Requires: <b>6 Gastronomic Stops</b> (Free choice).",
-                passRules: "* Security rules: To get your stamp by scanning the QR, the cashier or waiter must enter the authorized validation PIN.",
+                passRules: "* Security rules: Each stamp must be from a different establishment and validated via authorized PIN.",
                 agendaSub: "Loja in Motion",
                 agendaTitle: "Cultural Agenda & Events",
                 agendaDesc: "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
@@ -1249,7 +1267,7 @@
                 ]
             },
             {
-                id: "dona_rosita",
+                id: "48oHIrFu8Q6afNpwUrLp",
                 pin: "5678",
                 tag: "Hueca Tradicional", tagEn: "Traditional Local Eatery", title: "Picantería Doña Rosita", titleEn: "Doña Rosita Picantería",
                 desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
@@ -1268,16 +1286,16 @@
         let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || [
             { 
                 id: 'ev_1', 
-                title: 'Feria de Altura Loja', 
-                titleEn: 'Loja High-Altitude Coffee Fair', 
-                date: '2026-09-20', 
-                type: 'Festival', 
-                location: 'Plaza de las Flores', 
-                desc: 'Catas abiertas al público y barismo.', 
-                descEn: 'Open tastings for the public and barista shows.', 
+                title: 'Gran Inauguración FIAVL 2026', 
+                titleEn: 'FIAVL 2026 Grand Opening', 
+                date: '2026-11-12', 
+                type: 'FIAVL 2026', 
+                location: 'Teatro Bolívar', 
+                desc: 'Espectáculo inaugural internacional de artes vivas con artistas invitados de Europa y Latinoamérica.', 
+                descEn: 'International opening performance with guest artists from Europe and Latin America.', 
                 img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80',
-                lat: -3.9910, 
-                lng: -79.2030 
+                lat: -3.9980, 
+                lng: -79.2015 
             }
         ];
         let emprendedoresList = JSON.parse(localStorage.getItem('cyc_dynamic_emprendedores')) || [
@@ -1310,7 +1328,7 @@
             const modalThumb = document.getElementById('modalVideoThumbImg');
             if(modalThumb) modalThumb.src = settings.latestVideoThumbUrl || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80";
 
-            setupHeroSlideshow(settings.heroBgUrls || [settings.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg"], settings.heroIntervalSeconds || 6);
+            setupHeroSlideshow(settings.heroBgUrls || [settings.heroBgUrl || "https://i.imgur.com/3j3NoCa.png"], settings.heroIntervalSeconds || 6);
         }
 
         let map, markersLayer, userMarkerInstance = null;
@@ -1327,6 +1345,35 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
         } catch(e) { console.log('Map loading...'); }
+
+        function locateUserGPS() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    userCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    if (map) {
+                        map.setView([userCoords.lat, userCoords.lng], 16);
+                        if (userMarkerInstance) map.removeLayer(userMarkerInstance);
+                        
+                        let userIconHtml = `<div class="w-10 h-10 rounded-full bg-blue-600 border-2 border-white text-white shadow-warm-glow flex items-center justify-center text-base animate-pulse"><i class="fa-solid fa-street-view"></i></div>`;
+                        let userCustomIcon = L.divIcon({ className: 'custom-leaflet-icon', html: userIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
+                        
+                        userMarkerInstance = L.marker([userCoords.lat, userCoords.lng], { icon: userCustomIcon }).addTo(map).bindPopup("¡Estás aquí!").openPopup();
+                    }
+                    showToast('Ubicación GPS encontrada');
+                }, () => {
+                    showToast('No se pudo obtener la ubicación GPS');
+                });
+            } else {
+                showToast('Geolocalización no soportada en este navegador');
+            }
+        }
+
+        function centerOnLoja() {
+            if (map) {
+                map.setView([-3.9931, -79.2042], 14);
+                showToast('Mapa centrado en Loja');
+            }
+        }
 
         function isLocOpenNow(loc) {
             if (loc.openHour === undefined || loc.closeHour === undefined) return true;
@@ -1387,11 +1434,6 @@
                     slides[currentIndex].classList.add('active-slide');
                 }, intervalMs);
             }
-        }
-
-        function updateCarouselPreviewFromInput() {
-            const textarea = document.getElementById('setHeroBgUrlsInput');
-            if(!textarea) return;
         }
 
         function renderEverything() {
@@ -1620,7 +1662,7 @@
             const badgeInput = document.getElementById('setPopupBadge');
             if (mode === 'evento') {
                 if(!badgeInput.value || badgeInput.value.includes('Promoción')) {
-                    badgeInput.value = '🎉 Evento / Anuncio Especial';
+                    badgeInput.value = '🎉 FIAVL 2026 / Evento Especial';
                 }
             } else {
                 if(!badgeInput.value || badgeInput.value.includes('Evento')) {
@@ -1956,7 +1998,6 @@
                 document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || 'https://www.youtube.com/watch?v=n0BJGAkU9cg';
                 document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
                 document.getElementById('setLatestVideoThumbUrl').value = settings.latestVideoThumbUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
-                document.getElementById('setBrandLogoUrl').value = settings.logoUrl || 'https://i.imgur.com/xaiFpa1.png';
             } else if(tab === 'popup') {
                 document.getElementById('adminTabPopup').classList.remove('hidden');
                 document.getElementById('tabBtnPopup').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
@@ -2030,7 +2071,6 @@
             let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
             let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
             let latestVideoThumbUrl = document.getElementById('setLatestVideoThumbUrl').value;
-            let logoUrl = document.getElementById('setBrandLogoUrl').value;
 
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
             settings.heroBgUrls = heroBgUrls;
@@ -2039,7 +2079,6 @@
             settings.latestYoutubeUrl = latestYoutubeUrl;
             settings.latestYoutubeTitle = latestYoutubeTitle;
             settings.latestVideoThumbUrl = latestVideoThumbUrl;
-            settings.logoUrl = logoUrl;
             
             localStorage.setItem('cyc_settings', JSON.stringify(settings));
 
@@ -2564,13 +2603,11 @@
             if (enteredPin === correctPin) {
                 closeModal('qrClaimModal');
                 
-                // Limpiar el parámetro checkin de la URL para hacerlo de un solo uso inmediato (evita F5 repetitivo)
                 if (window.history && window.history.replaceState) {
                     const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
                     window.history.replaceState({path: cleanUrl}, '', cleanUrl);
                 }
 
-                // Verificar si ya tiene este local registrado
                 if (visitedLocations.includes(localId)) {
                     showToast(`⚠️ Ya tienes un sello registrado de ${loc.title}. ¡Cada sello debe ser de un local diferente!`);
                     setTimeout(() => openModal('pasaporteModal'), 600);
