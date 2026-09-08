@@ -68,13 +68,6 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        @keyframes stamp-hit {
-            0% { opacity: 0; transform: scale(3) rotate(-15deg); }
-            50% { opacity: 1; transform: scale(0.9) rotate(-15deg); }
-            100% { opacity: 1; transform: scale(1) rotate(-15deg); }
-        }
-        .stamp-earned { animation: stamp-hit 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-
         .glass-nav { background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(234,88,12,0.18); border-color: rgba(234, 88, 12, 0.5); }
@@ -521,7 +514,7 @@
         </div>
     </div>
 
-    <!-- Modal Vídeo YouTube Estreno (Tarjeta Interactiva Segura) -->
+    <!-- Modal Vídeo YouTube Destacado Interactivo -->
     <div id="latestVideoModal" class="fixed inset-0 z-[95] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -826,14 +819,13 @@
                                 <input type="text" id="setHeroBgUrl" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-crop mr-1"></i> Encuadre de la Imagen (Alineación CSS)</label>
-                                <select id="setHeroBgPosition" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
-                                    <option value="center center">Centro (Predeterminado)</option>
-                                    <option value="center top">Superior (Ideal para mostrar rostros)</option>
-                                    <option value="center bottom">Inferior</option>
-                                    <option value="left center">Izquierda</option>
-                                    <option value="right center">Derecha</option>
-                                </select>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-arrows-alt mr-1"></i> Encuadre Interactivo / Posición (Ej. 50% 30% o center top)</label>
+                                <div class="flex gap-2 items-center">
+                                    <input type="text" id="setHeroBgPosition" required placeholder="center center" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none font-mono">
+                                    <button type="button" onclick="previewHeroPos('center top')" class="bg-gray-800 text-brandGold text-[10px] font-bold px-3 py-2 rounded-lg border border-brandGold/30 whitespace-nowrap hover:bg-brandGold hover:text-white transition">Arriba</button>
+                                    <button type="button" onclick="previewHeroPos('center center')" class="bg-gray-800 text-brandGold text-[10px] font-bold px-3 py-2 rounded-lg border border-brandGold/30 whitespace-nowrap hover:bg-brandGold hover:text-white transition">Centro</button>
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-1">💡 Puedes escribir porcentajes exactos (ej. <b>50% 25%</b> para enfocar rostros) o usar palabras clave (<i>center top</i>, <i>center center</i>).</p>
                             </div>
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-brands fa-youtube mr-1"></i> Enlace del Vídeo Estreno (YouTube)</label>
@@ -861,7 +853,6 @@
         </div>
     </div>
 
-    <!-- Modal Galería -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[720px]">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -890,7 +881,6 @@
         </div>
     </div>
 
-    <!-- Modal Pasaporte -->
     <div id="pasaporteModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative">
             <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50">
@@ -1298,6 +1288,14 @@
             if (s.latestVideoThumbUrl) {
                 const thumbEl = document.getElementById('modalVideoThumbImg');
                 if(thumbEl) thumbEl.src = s.latestVideoThumbUrl;
+            }
+        }
+
+        function previewHeroPos(posVal) {
+            const inputEl = document.getElementById('setHeroBgPosition');
+            if(inputEl) {
+                inputEl.value = posVal;
+                showToast(`Posición aplicada: ${posVal}`);
             }
         }
 
