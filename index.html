@@ -45,8 +45,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
-        html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
-        #lojaMap { z-index: 1; touch-action: pan-y; }
+        html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-action: manipulation; }
+        #lojaMap { z-index: 1; touch-action: pan-x pan-y; }
         
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #EA580C; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .leaflet-popup-content { font-family: inherit; margin: 12px; text-align: center; }
@@ -159,7 +159,6 @@
         </button>
     </div>
 
-    <!-- Banner de Último Estreno YouTube -->
     <div id="latestVideoBanner" class="bg-[#181818] text-white py-3 px-4 border-b border-brandGold/30 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left z-30 relative shadow-inner">
         <div class="flex items-center gap-2">
             <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> NUEVO VÍDEO</span>
@@ -171,8 +170,8 @@
     </div>
 
     <section id="inicio" class="relative bg-brandDark text-white py-16 lg:py-24 px-4 overflow-hidden">
-        <div id="heroBgWrapper" class="absolute inset-0 opacity-25 overflow-hidden">
-            <img id="heroBgImageEl" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="" class="w-full h-full object-cover transition-all duration-700" style="object-position: center center;">
+        <div id="heroBgWrapper" class="absolute inset-0 opacity-30 overflow-hidden flex items-center justify-center bg-black">
+            <img id="heroBgImageEl" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="" class="w-full h-full transition-all duration-700" style="object-fit: cover; object-position: center center;">
         </div>
         <div class="max-w-5xl mx-auto relative z-10 text-center flex flex-col items-center reveal active">
             <div class="w-40 h-40 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
@@ -514,7 +513,6 @@
         </div>
     </div>
 
-    <!-- Modal Vídeo YouTube Destacado Interactivo -->
     <div id="latestVideoModal" class="fixed inset-0 z-[95] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
@@ -819,26 +817,36 @@
                                 <input type="text" id="setHeroBgUrl" oninput="updateBgPreviewFromInput()" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
                             </div>
                             
-                            <!-- Herramienta Visual Interactiva de Encuadre -->
+                            <!-- Herramienta Visual Interactiva de Encuadre y Adaptación de Imagen -->
                             <div class="bg-black/60 p-4 rounded-xl border border-brandGold/40 space-y-3">
-                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-crop mr-1"></i> Vista Previa e Interactivo de Encuadre</label>
-                                <p class="text-[10px] text-gray-300">Haz clic en los botones de dirección o usa los selectores rápidos para encuadrar la imagen exactamente donde se vea mejor el rostro o motivo principal.</p>
+                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-crop mr-1"></i> Vista Previa y Modo de Visualización</label>
+                                <p class="text-[10px] text-gray-300">Elige si prefieres que la imagen llene toda la pantalla o que se muestre completa sin recortes.</p>
                                 
-                                <!-- Caja de Previsualización Visual del Hero -->
-                                <div id="previewHeroBox" class="w-full h-36 rounded-lg overflow-hidden relative border border-brandGold/50 bg-black shadow-inner">
-                                    <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="w-full h-full object-cover transition-all duration-300" style="object-position: center center;">
+                                <div id="previewHeroBox" class="w-full h-36 rounded-lg overflow-hidden relative border border-brandGold/50 bg-black shadow-inner flex items-center justify-center">
+                                    <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="w-full h-full transition-all duration-300" style="object-fit: cover; object-position: center center;">
                                     <div class="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
-                                        <span class="text-[10px] bg-black/70 text-brandGold font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-brandGold/30">Vista Previa de la Web</span>
+                                        <span class="text-[10px] bg-black/70 text-brandGold font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-brandGold/30">Vista Previa Web</span>
                                     </div>
                                 </div>
 
                                 <input type="hidden" id="setHeroBgPosition" value="center center">
 
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                                    <button type="button" onclick="setBgPosPreset('center top')" class="bg-gray-800 text-white text-[10px] font-bold py-2 rounded-lg border border-gray-700 hover:bg-brandGold transition">⬆️ Arriba (Rostros)</button>
-                                    <button type="button" onclick="setBgPosPreset('center center')" class="bg-gray-800 text-white text-[10px] font-bold py-2 rounded-lg border border-gray-700 hover:bg-brandGold transition">🎯 Centrado</button>
-                                    <button type="button" onclick="setBgPosPreset('center bottom')" class="bg-gray-800 text-white text-[10px] font-bold py-2 rounded-lg border border-gray-700 hover:bg-brandGold transition">⬇️ Abajo</button>
-                                    <button type="button" onclick="setBgPosPreset('50% 25%')" class="bg-gray-800 text-brandGold text-[10px] font-bold py-2 rounded-lg border border-brandGold/30 hover:bg-brandGold hover:text-white transition">⭐ Enfoque Óptimo</button>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                                    <div>
+                                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Modo de Ajuste de Imagen:</label>
+                                        <select id="setHeroBgFit" onchange="updateFitPreview(this.value)" class="w-full bg-[#121212] border border-gray-700 rounded-lg p-2 text-xs text-white outline-none">
+                                            <option value="cover">Llenar toda la pantalla (Cover - Recorta bordes)</option>
+                                            <option value="contain">Mostrar imagen completa (Contain - Sin recortes)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Alineación rápida:</label>
+                                        <div class="grid grid-cols-3 gap-1">
+                                            <button type="button" onclick="setBgPosPreset('center top')" class="bg-gray-800 text-white text-[9px] font-bold py-2 rounded border border-gray-700 hover:bg-brandGold transition">Arriba</button>
+                                            <button type="button" onclick="setBgPosPreset('center center')" class="bg-gray-800 text-white text-[9px] font-bold py-2 rounded border border-gray-700 hover:bg-brandGold transition">Centro</button>
+                                            <button type="button" onclick="setBgPosPreset('center bottom')" class="bg-gray-800 text-white text-[9px] font-bold py-2 rounded border border-gray-700 hover:bg-brandGold transition">Abajo</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -977,7 +985,7 @@
                 ileCard2Desc: "El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.",
                 ileCard2Tag: "Ideal para: Cafés y Pasteles",
                 ileCard3Title: "El Toque del Repe",
-                ileCard3Desc: "El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y o quesillo tradicional.",
+                ileCard3Desc: "El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.",
                 ileCard3Tag: "Ideal para: Repe y Sopas",
                 passTitle: "Pasaporte<br>Inteligente",
                 passDesc: "Elige tu modo de exploración y reclama tu premio.",
@@ -1260,6 +1268,7 @@
                 logoUrl: "https://i.imgur.com/xaiFpa1.png",
                 heroBgUrl: "https://i.imgur.com/0QSbhqQ.jpeg",
                 heroBgPosition: "center center",
+                heroBgFit: "cover",
                 latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
                 latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
@@ -1286,6 +1295,7 @@
             if (bgImgEl) {
                 bgImgEl.src = s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg";
                 bgImgEl.style.objectPosition = s.heroBgPosition || "center center";
+                bgImgEl.style.objectFit = s.heroBgFit || "cover";
             }
 
             if (s.latestYoutubeTitle) {
@@ -1319,7 +1329,14 @@
             const previewImg = document.getElementById('previewHeroImg');
             if(inputEl) inputEl.value = posVal;
             if(previewImg) previewImg.style.objectPosition = posVal;
-            showToast(`Encabezado ajustado a: ${posVal}`);
+            showToast(`Alineación ajustada: ${posVal}`);
+        }
+
+        function updateFitPreview(fitVal) {
+            const previewImg = document.getElementById('previewHeroImg');
+            if(previewImg) {
+                previewImg.style.objectFit = fitVal;
+            }
         }
 
         function openYouTubeDirectLink() {
@@ -1659,6 +1676,11 @@
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             updateItineraryUI();
             renderTrendingUI();
+            
+            const cardIcon = document.getElementById(`cardFav_${loc.id}`);
+            if(cardIcon) {
+                cardIcon.className = index > -1 ? "fa-solid fa-seedling text-brandGold" : "fa-solid fa-seedling text-red-500";
+            }
         }
 
         function toggleFavoriteCard(e, localId) {
@@ -1667,16 +1689,24 @@
             const icon = document.getElementById(`cardFav_${localId}`);
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
-                if(icon) icon.className = "fa-solid fa-seedling text-brandGold text-lg";
+                if(icon) icon.className = "fa-solid fa-seedling text-brandGold";
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
-                if(icon) icon.className = "fa-solid fa-seedling text-red-500 text-lg";
+                if(icon) icon.className = "fa-solid fa-seedling text-red-500";
                 showToast(`¡Añadido a Mi Ruta!`);
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             updateItineraryUI();
             renderTrendingUI();
+            
+            const currentLoc = locations[currentLocationIndex];
+            if (currentLoc && currentLoc.id === localId) {
+                const previewFavIcon = document.getElementById('previewFav');
+                if(previewFavIcon) {
+                    previewFavIcon.className = favoriteLocations.includes(localId) ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
+                }
+            }
         }
 
         function updateItineraryUI() {
@@ -1737,6 +1767,16 @@
             renderMapAndGrid();
             renderTrendingUI();
             updateItineraryUI();
+            
+            const cardIcon = document.getElementById(`cardFav_${id}`);
+            if(cardIcon) cardIcon.className = "fa-solid fa-seedling text-brandGold";
+            
+            const currentLoc = locations[currentLocationIndex];
+            if(currentLoc && currentLoc.id === id) {
+                const previewFavIcon = document.getElementById('previewFav');
+                if(previewFavIcon) previewFavIcon.className = "fa-solid fa-seedling text-brandGold";
+            }
+            
             showToast('Lugar eliminado de tu ruta');
         }
 
@@ -1926,11 +1966,14 @@
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
                 let currentBg = settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg';
                 let currentPos = settings.heroBgPosition || 'center center';
+                let currentFit = settings.heroBgFit || 'cover';
 
                 document.getElementById('setHeroBgUrl').value = currentBg;
                 document.getElementById('setHeroBgPosition').value = currentPos;
+                document.getElementById('setHeroBgFit').value = currentFit;
                 document.getElementById('previewHeroImg').src = currentBg;
                 document.getElementById('previewHeroImg').style.objectPosition = currentPos;
+                document.getElementById('previewHeroImg').style.objectFit = currentFit;
 
                 document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || 'https://www.youtube.com/watch?v=n0BJGAkU9cg';
                 document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
@@ -1943,6 +1986,7 @@
             e.preventDefault();
             let heroBgUrl = document.getElementById('setHeroBgUrl').value;
             let heroBgPosition = document.getElementById('setHeroBgPosition').value;
+            let heroBgFit = document.getElementById('setHeroBgFit').value;
             let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
             let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
             let latestVideoThumbUrl = document.getElementById('setLatestVideoThumbUrl').value;
@@ -1951,6 +1995,7 @@
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
             settings.heroBgUrl = heroBgUrl;
             settings.heroBgPosition = heroBgPosition;
+            settings.heroBgFit = heroBgFit;
             settings.latestYoutubeUrl = latestYoutubeUrl;
             settings.latestYoutubeTitle = latestYoutubeTitle;
             settings.latestVideoThumbUrl = latestVideoThumbUrl;
