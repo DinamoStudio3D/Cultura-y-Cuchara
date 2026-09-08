@@ -177,6 +177,35 @@
         </div>
     </div>
 
+    <!-- QR / PIN Claim Modal for Passport Stamps -->
+    <div id="qrClaimModal" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
+        <div class="bg-white text-brandDark w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative p-6 text-center">
+            <button onclick="closeModal('qrClaimModal')" class="absolute top-4 right-4 text-gray-400 hover:text-black transition text-lg w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-14 h-14 bg-brandGold/20 text-brandGold rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow">
+                <i class="fa-solid fa-qrcode"></i>
+            </div>
+            <h3 id="qrModalTitle" class="text-lg font-black text-brandDark mb-1">Sellar Pasaporte Inteligente</h3>
+            <p id="qrModalSubtitle" class="text-xs text-gray-600 mb-4">Ingresa el PIN de autorización del establecimiento para registrar tu visita.</p>
+            
+            <div class="bg-brandCream p-4 rounded-2xl border border-brandGold/40 mb-4 flex flex-col items-center">
+                <div class="w-24 h-24 bg-white p-2 rounded-xl border border-gray-300 shadow-inner flex items-center justify-center mb-2 overflow-hidden">
+                    <img id="qrLocalAvatarImg" src="https://i.imgur.com/xaiFpa1.png" class="w-full h-full object-cover rounded-lg" alt="">
+                </div>
+                <span id="qrLocalNameDisplay" class="text-xs font-bold text-brandDark">Local Aliado</span>
+            </div>
+
+            <form onsubmit="verifyBusinessPinForStamp(event)" class="space-y-3">
+                <input type="hidden" id="qrTargetLocalId">
+                <input type="password" id="inputBusinessPin" required maxlength="6" placeholder="PIN de Validación" class="w-full bg-gray-100 border border-gray-300 rounded-xl p-3 text-center text-lg tracking-widest text-brandDark font-bold outline-none focus:border-brandGold">
+                <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider shadow">
+                    Validar y Obtener Sello 🎯
+                </button>
+            </form>
+        </div>
+    </div>
+
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-amber-600 to-brandGold text-white py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
         <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
         <span id="liveEventText">Cargando eventos...</span>
@@ -198,10 +227,7 @@
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
         <div id="heroBgWrapper" class="absolute inset-0 opacity-45 overflow-hidden flex items-center justify-center bg-black">
             <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-brandDark/40 to-brandDark opacity-90 z-10"></div>
-            <!-- Carrusel dinámico de múltiples imágenes de fondo -->
-            <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full">
-                <!-- Se inyectan dinámicamente con JS -->
-            </div>
+            <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full"></div>
         </div>
         <div class="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center reveal active">
             <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
@@ -307,15 +333,19 @@
                 </div>
 
                 <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
-                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-3 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
+                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
                         <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
+                    </button>
+                    
+                    <button onclick="openQrClaimForCurrent()" class="w-full bg-brandGold text-white py-2.5 rounded-xl font-bold text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-qrcode"></i> Sellar Pasaporte en este Local
                     </button>
 
                     <div class="flex gap-2">
-                        <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
+                        <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
                             <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShare">Compartir</span>
                         </a>
-                        <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-3 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
+                        <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
                             <i class="fa-solid fa-diamond-turn-right text-brandGold"></i>
                         </a>
                     </div>
@@ -595,7 +625,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control de Locales, Carrusel de Fondo, Vídeo, Popup y Agenda</p>
+                        <p class="text-xs text-brandGold">Control de Locales, Check-in QR, Carrusel, Vídeo y Popup</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -604,7 +634,7 @@
             </div>
 
             <div class="flex flex-wrap items-center border-b border-gray-800 bg-black/40 px-3 sm:px-6 gap-2 sm:gap-3 text-xs font-bold overflow-x-auto hide-scrollbar py-2">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y Pines</button>
+                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y Check-in QR</button>
                 <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Emprendedores</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda Cultural</button>
                 <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Carrusel de Fondo, Vídeo y Logo</button>
@@ -615,7 +645,7 @@
                 <!-- Locales Tab -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Logo en Mapa)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Logo en Mapa y PIN QR)</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -643,7 +673,7 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-key"></i> PIN de Validación</label>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-key"></i> PIN de Validación QR</label>
                                     <input type="text" id="admPin" required maxlength="6" value="1234" class="w-full bg-[#121212] border border-brandGold/60 rounded-xl p-2.5 text-xs text-white outline-none text-center font-bold tracking-widest">
                                 </div>
                             </div>
@@ -730,8 +760,8 @@
                         </form>
                     </div>
                     <div>
-                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados</h4>
-                        <div class="space-y-2" id="adminLocationsList"></div>
+                        <h4 class="font-bold text-sm text-white mb-3">Establecimientos Registrados y Enlaces Check-in QR</h4>
+                        <div class="space-y-3" id="adminLocationsList"></div>
                     </div>
                 </div>
 
@@ -843,7 +873,7 @@
                     </div>
                 </div>
 
-                <!-- Carrusel de Fondo, Vídeo y Logo Tab con Arrastre Interactivo -->
+                <!-- Carrusel de Fondo, Vídeo y Logo Tab con Arrastre Interactivo y Velocidad -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
                         <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-images mr-1"></i> Configurar Carrusel de Imágenes de Fondo</h4>
@@ -851,7 +881,13 @@
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-list mr-1"></i> URLs de las Imágenes del Carrusel (Separadas por comas)</label>
                                 <textarea id="setHeroBgUrlsInput" oninput="updateCarouselPreviewFromInput()" rows="3" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg, https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
-                                <span class="text-[9px] text-gray-400 mt-1 block">💡 El sistema rotará estas imágenes automáticamente cada 6 segundos con una transición elegante.</span>
+                                <span class="text-[9px] text-gray-400 mt-1 block">💡 El sistema rotará estas imágenes automáticamente según los segundos que configures abajo.</span>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-stopwatch mr-1"></i> Tiempo de cambio entre imágenes (en segundos)</label>
+                                <input type="number" id="setHeroIntervalSeconds" min="2" max="60" value="6" class="w-full sm:w-48 bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <span class="text-[9px] text-gray-400 mt-1 block">Ejemplo: 6 (cambia cada 6 segundos), 10 (cambia cada 10 segundos).</span>
                             </div>
                             
                             <div class="bg-black/60 p-4 rounded-xl border border-brandGold/40 space-y-3">
@@ -1204,7 +1240,7 @@
         let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
         let locations = [
             {
-                id: "dinamo_studio",
+                id: "TVPc6WRNcvKyTXxcerCw",
                 pin: "1234",
                 tag: "Institucional / Merchandising", tagEn: "Institutional / Merchandising",
                 title: "Dínamo Studio", titleEn: "Dínamo Studio",
@@ -1284,7 +1320,6 @@
             return currentHour >= loc.openHour && currentHour < loc.closeHour;
         }
 
-        // INITIAL SETTINGS LOADER WITH PERSISTENCE PRIORITY
         (function() {
             let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
                 badge: "Loja se conoce, se saborea y se hospeda",
@@ -1293,6 +1328,7 @@
                 logoUrl: "https://i.imgur.com/xaiFpa1.png",
                 heroBgUrls: ["https://i.imgur.com/0QSbhqQ.jpeg"],
                 heroBgPosition: "50% 50%",
+                heroIntervalSeconds: 6,
                 latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
                 latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
@@ -1314,6 +1350,7 @@
                 renderEverything();
                 checkLiveEventsBanner();
                 maybeTriggerPopup(initial);
+                checkUrlParamForCheckin();
                 return;
             }
 
@@ -1326,10 +1363,12 @@
                 }
                 renderEverything();
                 checkLiveEventsBanner();
+                checkUrlParamForCheckin();
             }, (error) => {
                 console.error("Firestore error:", error);
                 renderEverything();
                 checkLiveEventsBanner();
+                checkUrlParamForCheckin();
             });
 
             db.collection("settings").doc("main").get().then((doc) => {
@@ -1344,6 +1383,19 @@
             }).catch(() => {
                 maybeTriggerPopup(initial);
             });
+        }
+
+        function checkUrlParamForCheckin() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkinId = urlParams.get('checkin');
+            if (checkinId) {
+                setTimeout(() => {
+                    const loc = locations.find(l => l.id === checkinId);
+                    if (loc) {
+                        openQrClaimModalForId(checkinId);
+                    }
+                }, 1000);
+            }
         }
 
         function maybeTriggerPopup(settings) {
@@ -1379,7 +1431,6 @@
                 });
             }
 
-            // Carrusel de fondo
             let urls = s.heroBgUrls || [s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg"];
             if (typeof urls === 'string') {
                 urls = urls.split(',').map(u => u.trim()).filter(u => u !== "");
@@ -1400,13 +1451,14 @@
                 if (heroSlideshowInterval) clearInterval(heroSlideshowInterval);
                 if (urls.length > 1) {
                     let currentIndex = 0;
+                    let intervalSec = parseInt(s.heroIntervalSeconds) || 6;
                     heroSlideshowInterval = setInterval(() => {
                         const slides = slidesContainer.querySelectorAll('.hero-slide');
                         if (slides.length <= 1) return;
                         slides[currentIndex].classList.remove('active-slide');
                         currentIndex = (currentIndex + 1) % slides.length;
                         slides[currentIndex].classList.add('active-slide');
-                    }, 6000);
+                    }, intervalSec * 1000);
                 }
             }
 
@@ -1437,7 +1489,6 @@
             }
         }
 
-        // DRAG TO PAN BACKGROUND LOGIC
         let isDraggingBg = false;
         let startX = 0, startY = 0;
         let posX = 50, posY = 50;
@@ -1742,9 +1793,14 @@
                                 <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>
                                 ${openBadge}
                             </div>
-                            <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="absolute bottom-3 right-3 bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition z-20" title="Cómo llegar">
-                                <i class="fa-solid fa-diamond-turn-right"></i>
-                            </a>
+                            <div class="absolute bottom-3 right-3 flex gap-1.5 z-20">
+                                <button onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                </button>
+                                <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
+                                    <i class="fa-solid fa-diamond-turn-right"></i>
+                                </a>
+                            </div>
                         </div>
                         <div class="p-5 relative">
                             <div class="flex items-center justify-between mb-1">
@@ -1786,6 +1842,70 @@
             updatePassportUI();
         }
 
+        function openQrClaimModal(e, localId) {
+            e.stopPropagation();
+            openQrClaimModalForId(localId);
+        }
+
+        function openQrClaimModalForId(localId) {
+            const loc = locations.find(l => l.id === localId);
+            if(!loc) return;
+            document.getElementById('qrTargetLocalId').value = loc.id;
+            const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+            document.getElementById('qrLocalNameDisplay').innerText = locTitle;
+            
+            const avatarImg = document.getElementById('qrLocalAvatarImg');
+            if (loc.customLogoUrl && loc.customLogoUrl.trim() !== "") {
+                avatarImg.src = loc.customLogoUrl;
+            } else if (loc.gallery && loc.gallery[0]) {
+                avatarImg.src = loc.gallery[0].img;
+            } else {
+                avatarImg.src = "https://i.imgur.com/xaiFpa1.png";
+            }
+
+            document.getElementById('inputBusinessPin').value = '';
+            openModal('qrClaimModal');
+        }
+
+        function openQrClaimForCurrent() {
+            const loc = locations[currentLocationIndex];
+            if(!loc) return;
+            openQrClaimModalForId(loc.id);
+        }
+
+        function verifyBusinessPinForStamp(e) {
+            e.preventDefault();
+            const localId = document.getElementById('qrTargetLocalId').value;
+            const enteredPin = document.getElementById('inputBusinessPin').value.trim();
+            const loc = locations.find(l => l.id === localId);
+            
+            if(!loc) { showToast('Local no encontrado'); return; }
+            const validPin = loc.pin || "1234";
+
+            if (enteredPin === validPin) {
+                if (!visitedLocations.includes(localId)) {
+                    visitedLocations.push(localId);
+                    localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
+                    updatePassportUI();
+                }
+                closeModal('qrClaimModal');
+                
+                try {
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                } catch(err) {}
+
+                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                showToast(`🎉 ¡Sello obtenido en ${locTitle}!`);
+                
+                setTimeout(() => {
+                    openModal('pasaporteModal');
+                }, 400);
+            } else {
+                showToast('❌ PIN de establecimiento incorrecto');
+                document.getElementById('inputBusinessPin').value = '';
+            }
+        }
+
         function locateUserGPS() {
             showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
@@ -1798,7 +1918,7 @@
                         
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
-                            html: `<div class="bg-blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce" style="touch-action: none;">
+                            html: `<div class="blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce bg-blue-600" style="touch-action: none;">
                                      <i class="fa-solid fa-street-view text-2xl"></i>
                                </div>`,
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
@@ -2181,8 +2301,10 @@
                 let urlsArr = settings.heroBgUrls || [settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg'];
                 if(Array.isArray(urlsArr)) urlsArr = urlsArr.join(', ');
                 let currentPos = settings.heroBgPosition || '50% 50%';
+                let currentInterval = settings.heroIntervalSeconds || 6;
 
                 document.getElementById('setHeroBgUrlsInput').value = urlsArr;
+                document.getElementById('setHeroIntervalSeconds').value = currentInterval;
                 document.getElementById('setHeroBgPosition').value = currentPos;
                 
                 let firstUrl = settings.heroBgUrls && settings.heroBgUrls.length > 0 ? settings.heroBgUrls[0] : 'https://i.imgur.com/0QSbhqQ.jpeg';
@@ -2251,6 +2373,7 @@
             let heroBgUrls = urlsInput.split(',').map(u => u.trim()).filter(u => u !== "");
             if (heroBgUrls.length === 0) heroBgUrls = ["https://i.imgur.com/0QSbhqQ.jpeg"];
 
+            let heroIntervalSeconds = parseInt(document.getElementById('setHeroIntervalSeconds').value) || 6;
             let heroBgPosition = document.getElementById('setHeroBgPosition').value;
             let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
             let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
@@ -2260,6 +2383,7 @@
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
             settings.heroBgUrls = heroBgUrls;
             settings.heroBgUrl = heroBgUrls[0];
+            settings.heroIntervalSeconds = heroIntervalSeconds;
             settings.heroBgPosition = heroBgPosition;
             settings.latestYoutubeUrl = latestYoutubeUrl;
             settings.latestYoutubeTitle = latestYoutubeTitle;
@@ -2274,7 +2398,7 @@
 
             applySettings(settings);
             closeModal('adminModal');
-            showToast('¡Carrusel de fondo guardado y sincronizado!');
+            showToast('¡Carrusel de fondo y velocidad guardados!');
         }
 
         function handleSaveLocation(e) {
@@ -2354,16 +2478,41 @@
             if(!list) return;
             list.innerHTML = '';
             locations.forEach(loc => {
+                const currentBaseUrl = window.location.href.split('?')[0];
+                const checkinLink = `${currentBaseUrl}?checkin=${loc.id}`;
+
                 list.innerHTML += `
-                    <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
-                        <span class="text-brandGold font-bold">${loc.title} (PIN: ${loc.pin || '1234'})</span>
-                        <div class="flex gap-2">
-                            <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                    <div class="bg-[#121212] p-4 rounded-xl flex flex-col gap-2 text-xs border border-gray-800">
+                        <div class="flex justify-between items-center">
+                            <span class="text-brandGold font-bold text-sm">${loc.title} (PIN: <span class="text-white">${loc.pin || '1234'}</span>)</span>
+                            <div class="flex gap-2">
+                                <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1.5 rounded-lg" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="bg-black/60 p-2.5 rounded-lg border border-gray-800 flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-gray-300 font-mono truncate select-all">?checkin=${loc.id}</span>
+                            <button onclick="copySpecificLink('${checkinLink}')" class="bg-brandGold text-white text-[10px] px-3 py-1.5 rounded font-bold hover:bg-brandGoldHover transition flex-shrink-0">
+                                <i class="fa-solid fa-copy mr-1"></i> Copiar Link
+                            </button>
                         </div>
                     </div>
                 `;
             });
+        }
+
+        function copySpecificLink(link) {
+            const textArea = document.createElement("textarea");
+            textArea.value = link;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('¡Enlace check-in copiado al portapapeles!');
+            } catch (err) {
+                showToast('Error al copiar');
+            }
+            document.body.removeChild(textArea);
         }
 
         function deleteLocation(id) {
