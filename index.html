@@ -180,6 +180,7 @@
         </div>
     </div>
 
+    <!-- QR PIN MODAL FOR STAMP CLAIM -->
     <div id="qrClaimModal" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative p-6 text-center">
             <button onclick="closeModal('qrClaimModal')" class="absolute top-4 right-4 text-gray-400 hover:text-black transition text-lg w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
@@ -273,6 +274,7 @@
         </div>
     </section>
 
+    <!-- SECTION FIAVL 2026 -->
     <section id="fiavl" class="py-20 px-4 md:px-8 lg:px-12 bg-gradient-to-b from-brandDark via-black to-brandDark text-white relative overflow-hidden reveal border-b border-brandGold/30">
         <div class="absolute -right-20 -top-20 w-96 h-96 bg-brandGold/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="max-w-7xl mx-auto relative z-10">
@@ -360,6 +362,7 @@
                     <p id="previewDesc" class="text-gray-600 text-xs sm:text-sm mb-3 h-12 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
                     
                     <div class="space-y-2 text-xs sm:text-sm text-gray-700 border-t border-gray-100 pt-3">
+                        <div class="flex items-center gap-2 text-brandGold font-bold" id="previewDistanceContainer"><i class="fa-solid fa-location-arrow"></i> <span id="previewDistanceText">Calculando distancia...</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours">Lun - Sáb: 08:00 - 16:00</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress">Mercado Central / Local 14</span></div>
@@ -1289,7 +1292,7 @@
                 id: 'ev_1', 
                 title: 'Gran Inauguración FIAVL 2026', 
                 titleEn: 'FIAVL 2026 Grand Opening', 
-                date: '2026-11-12', 
+                date: '2026-11-15', 
                 type: 'FIAVL 2026', 
                 location: 'Teatro Bolívar', 
                 desc: 'Espectáculo inaugural internacional de artes vivas con artistas invitados de Europa y Latinoamérica.', 
@@ -1349,6 +1352,18 @@
             eventsMarkersLayer = L.layerGroup().addTo(map);
         } catch(e) { console.log('Map loading...'); }
 
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radio de la tierra en km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const d = R * c; // en km
+            return d;
+        }
+
         function locateUserGPS() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
@@ -1362,6 +1377,7 @@
                         
                         userMarkerInstance = L.marker([userCoords.lat, userCoords.lng], { icon: userCustomIcon }).addTo(map).bindPopup("¡Estás aquí!").openPopup();
                     }
+                    selectLocation(currentLocationIndex);
                     showToast('Ubicación GPS encontrada');
                 }, () => {
                     showToast('No se pudo obtener la ubicación GPS');
@@ -1512,7 +1528,14 @@
 
                     let customIcon = L.divIcon({ className: 'custom-leaflet-icon', html: customIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
                     let marker = L.marker([loc.lat || -3.9931, loc.lng || -79.2042], { icon: customIcon });
-                    marker.bindPopup(`<div style="text-align:center"><b style="color:#121212">${locTitle}</b><br><span style="font-size:11px; color:#EA580C">${locTag}</span></div>`);
+                    
+                    let distanceStr = '';
+                    if (userCoords) {
+                        const d = calculateDistance(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
+                        distanceStr = `<br><span style="font-size:10px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'} de ti</span>`;
+                    }
+
+                    marker.bindPopup(`<div style="text-align:center"><b style="color:#121212">${locTitle}</b><br><span style="font-size:11px; color:#EA580C">${locTag}</span>${distanceStr}</div>`);
                     marker.on('click', () => { selectLocation(index); });
                     markersLayer.addLayer(marker);
                 }
@@ -1526,7 +1549,14 @@
                         let eventIconHtml = `<div class="w-10 h-10 rounded-full bg-brandGold border-2 border-white text-white shadow-warm-glow flex items-center justify-center text-base animate-bounce" title="${evTitle}"><i class="fa-solid fa-masks-theater"></i></div>`;
                         let eventCustomIcon = L.divIcon({ className: 'custom-leaflet-icon', html: eventIconHtml, iconSize: [40, 40], iconAnchor: [20, 20] });
                         let evMarker = L.marker([ev.lat, ev.lng], { icon: eventCustomIcon });
-                        evMarker.bindPopup(`<div style="text-align:center"><b style="color:#EA580C">${evTitle}</b><br><span style="font-size:11px">${ev.location}</span></div>`);
+                        
+                        let evDistanceStr = '';
+                        if (userCoords) {
+                            const d = calculateDistance(userCoords.lat, userCoords.lng, ev.lat, ev.lng);
+                            evDistanceStr = `<br><span style="font-size:10px; color:#2563eb; font-weight:bold;"><i class="fa-solid fa-location-arrow"></i> Aprox. ${d < 1 ? Math.round(d*1000) + ' m' : d.toFixed(1) + ' km'} de ti</span>`;
+                        }
+
+                        evMarker.bindPopup(`<div style="text-align:center"><b style="color:#EA580C">${evTitle}</b><br><span style="font-size:11px">${ev.location}</span>${evDistanceStr}</div>`);
                         evMarker.on('click', () => {
                             focusEventOnMap(ev.lat, ev.lng, evTitle);
                         });
@@ -2363,6 +2393,18 @@
             document.getElementById('previewHours').innerText = loc.hours || "Lun - Dom: 08:00 - 20:00";
             document.getElementById('previewAddress').innerText = loc.address;
             
+            const distTextEl = document.getElementById('previewDistanceText');
+            if (userCoords && loc.lat && loc.lng) {
+                const distKm = calculateDistance(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
+                if (distKm < 1) {
+                    distTextEl.innerText = `Aprox. ${Math.round(distKm * 1000)} metros de ti`;
+                } else {
+                    distTextEl.innerText = `Aprox. ${distKm.toFixed(1)} km de ti`;
+                }
+            } else {
+                distTextEl.innerText = currentLang === 'en' ? 'Activate GPS to view distance' : 'Activa GPS para ver distancia';
+            }
+
             let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
             document.getElementById('previewGps').href = previewGpsUrl;
             
