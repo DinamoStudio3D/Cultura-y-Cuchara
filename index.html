@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vive Loja - Ruta Gastronómica y Turística</title>
     
-    <!-- Metaetiquetas Open Graph para Redes Sociales y WhatsApp -->
     <meta property="og:title" content="Vive Loja - Sabores, Historias y Destinos">
     <meta property="og:description" content="Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles de Loja.">
     <meta property="og:image" content="https://i.imgur.com/xaiFpa1.png">
@@ -71,6 +70,9 @@
         .glass-nav { background: rgba(18, 18, 18, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(234,88,12,0.18); border-color: rgba(234, 88, 12, 0.5); }
+
+        .hero-slide { opacity: 0; transition: opacity 1.2s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .hero-slide.active-slide { opacity: 1; }
     </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -151,6 +153,30 @@
         </div>
     </nav>
 
+    <div id="promoPopupModal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white text-brandDark w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col animate-bounce-slight">
+            <button onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="h-48 relative overflow-hidden bg-brandDark">
+                <img id="popupImgEl" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Promoción" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-brandDark/90 via-transparent to-transparent flex items-end p-4">
+                    <span id="popupBadgeText" class="bg-brandGold text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow">✨ Promoción Exclusiva</span>
+                </div>
+            </div>
+            <div class="p-6 text-center space-y-3">
+                <h3 id="popupTitleText" class="text-xl font-black text-brandDark">¡Especial del Día de las Madres!</h3>
+                <p id="popupDescText" class="text-xs sm:text-sm text-gray-600 leading-relaxed">Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.</p>
+                <div class="pt-2 flex flex-col gap-2">
+                    <a id="popupWhatsappBtn" href="#" target="_blank" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-base"></i> Consultar Disponibilidad
+                    </a>
+                    <button onclick="closeModal('promoPopupModal')" class="text-xs text-gray-400 hover:text-brandDark underline py-1">Continuar navegando en la web</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-amber-600 to-brandGold text-white py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
         <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
         <span id="liveEventText">Cargando eventos...</span>
@@ -172,7 +198,10 @@
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
         <div id="heroBgWrapper" class="absolute inset-0 opacity-45 overflow-hidden flex items-center justify-center bg-black">
             <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-brandDark/40 to-brandDark opacity-90 z-10"></div>
-            <img id="heroBgImageEl" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Virgen del Cisne Loja" class="w-full h-full transition-all duration-700 filter brightness-95" style="object-fit: cover; object-position: center center;">
+            <!-- Carrusel dinámico de múltiples imágenes de fondo -->
+            <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full">
+                <!-- Se inyectan dinámicamente con JS -->
+            </div>
         </div>
         <div class="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center reveal active">
             <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
@@ -225,7 +254,7 @@
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-brandDark" data-i18n="trendingTitle">En Tendencia esta Semana</h2>
                 <p class="text-gray-600 text-xs sm:text-sm mt-1" data-i18n="trendingDesc">Los establecimientos favoritos que los turistas están guardando más en sus rutas.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="trendingGridContainer"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="trendingGridContainer"></div>
         </div>
     </section>
 
@@ -246,7 +275,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-            <div class="lg:col-span-2 rounded-2xl h-[460px] md:h-[520px] lg:h-[580px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
+            <div class="lg:col-span-2 rounded-2xl h-[460px] md:h-[500px] lg:h-[520px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
                     <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
@@ -258,8 +287,8 @@
                 </div>
             </div>
 
-            <div id="mapPreviewCard" class="glass-card p-6 rounded-2xl shadow-warm-glow border border-gray-200 flex flex-col justify-between h-[460px] md:h-[520px] lg:h-[580px] relative">
-                <button onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
+            <div id="mapPreviewCard" class="glass-card p-6 rounded-2xl shadow-warm-glow border border-gray-200 flex flex-col justify-between h-[460px] md:h-[500px] lg:h-[520px] relative">
+                <button id="previewFavBtn" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
                 <div>
@@ -494,7 +523,6 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- Modals Section -->
     <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col max-h-[85vh]">
             <div class="bg-brandDark text-white p-5 flex justify-between items-center border-b border-brandGold/40">
@@ -507,10 +535,11 @@
                 </button>
             </div>
             <div class="p-6 overflow-y-auto flex-grow space-y-4" id="itineraryListContainer"></div>
-            <div class="p-4 bg-white border-t border-gray-200 text-center">
-                <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-green-600 transition shadow">
-                    <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
+            <div class="p-4 bg-white border-t border-gray-200 flex flex-col gap-2">
+                <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-base"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
                 </button>
+                <button onclick="clearEntireItinerary()" class="text-xs text-red-500 hover:underline text-center">Vaciar toda la ruta</button>
             </div>
         </div>
     </div>
@@ -566,7 +595,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">Panel de Administración Total</h3>
-                        <p class="text-xs text-brandGold">Control de Locales, Fondo, Vídeo y Agenda</p>
+                        <p class="text-xs text-brandGold">Control de Locales, Carrusel de Fondo, Vídeo, Popup y Agenda</p>
                     </div>
                 </div>
                 <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
@@ -574,18 +603,19 @@
                 </button>
             </div>
 
-            <div class="flex border-b border-gray-800 bg-black/30 px-4 sm:px-6 gap-4 sm:gap-6 text-xs font-bold overflow-x-auto hide-scrollbar">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap">Establecimientos y PINs</button>
-                <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Emprendedores</button>
-                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Agenda Cultural</button>
-                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap">Fondo, Vídeo y Logo</button>
+            <div class="flex flex-wrap items-center border-b border-gray-800 bg-black/40 px-3 sm:px-6 gap-2 sm:gap-3 text-xs font-bold overflow-x-auto hide-scrollbar py-2">
+                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y Pines</button>
+                <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Emprendedores</button>
+                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda Cultural</button>
+                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Carrusel de Fondo, Vídeo y Logo</button>
+                <button onclick="switchAdminTab('popup')" id="tabBtnPopup" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Popup Notificación</button>
             </div>
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
                 <!-- Locales Tab -->
                 <div id="adminTabLocales" class="space-y-6">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4 flex items-center gap-2" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con PIN y Horarios)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="formActionTitle"><i class="fa-solid fa-plus"></i> Registrar Local / Hotel (con Logo en Mapa)</h4>
                         <form onsubmit="handleSaveLocation(event)" class="space-y-4">
                             <input type="hidden" id="admEditId">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -604,7 +634,7 @@
                                     <select id="admCategory" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold"></select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono del Pin</label>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Icono por Defecto</label>
                                     <select id="admIconClass" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
                                         <option value="fa-utensils">🍴 Restaurante</option>
                                         <option value="fa-mortar-pestle">🥘 Hueca Tradicional</option>
@@ -616,6 +646,10 @@
                                     <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-key"></i> PIN de Validación</label>
                                     <input type="text" id="admPin" required maxlength="6" value="1234" class="w-full bg-[#121212] border border-brandGold/60 rounded-xl p-2.5 text-xs text-white outline-none text-center font-bold tracking-widest">
                                 </div>
+                            </div>
+                            <div class="bg-brandGold/10 p-3 rounded-xl border border-brandGold/30">
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL del Logo para el Pin del Mapa (Opcional)</label>
+                                <input type="text" id="admCustomLogoUrl" placeholder="https://i.imgur.com/... (Si se deja vacío, usará el icono por defecto)" class="w-full bg-[#121212] border border-brandGold/50 rounded-lg p-2.5 text-xs text-white outline-none">
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -809,21 +843,22 @@
                     </div>
                 </div>
 
-                <!-- Fondo, Vídeo y Logo Tab con Arrastre Interactivo -->
+                <!-- Carrusel de Fondo, Vídeo y Logo Tab con Arrastre Interactivo -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-image mr-1"></i> Configurar Fondo Interactivo (Arrastra a tu gusto)</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-images mr-1"></i> Configurar Carrusel de Imágenes de Fondo</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
-                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Imagen de Fondo (Hero)</label>
-                                <input type="text" id="setHeroBgUrl" oninput="updateBgPreviewFromInput()" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-list mr-1"></i> URLs de las Imágenes del Carrusel (Separadas por comas)</label>
+                                <textarea id="setHeroBgUrlsInput" oninput="updateCarouselPreviewFromInput()" rows="3" required placeholder="https://i.imgur.com/0QSbhqQ.jpeg, https://images.unsplash.com/..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                                <span class="text-[9px] text-gray-400 mt-1 block">💡 El sistema rotará estas imágenes automáticamente cada 6 segundos con una transición elegante.</span>
                             </div>
                             
                             <div class="bg-black/60 p-4 rounded-xl border border-brandGold/40 space-y-3">
-                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-hand mr-1"></i> Herramienta Interactiva de Encuadre</label>
-                                <p class="text-[10px] text-gray-300">Haz clic y arrastra con el mouse dentro del recuadro (o desliza con el dedo) para posicionar exactamente el encuadre de la imagen.</p>
+                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-hand mr-1"></i> Previsualización Interactiva de Arrastre (Alineación)</label>
+                                <p class="text-[10px] text-gray-300">Haz clic y arrastra con el mouse dentro del recuadro (o desliza con el dedo) para encuadrar la imagen de fondo principal.</p>
                                 
-                                <div id="interactivePreviewBox" class="w-full h-48 rounded-lg overflow-hidden relative border-2 border-brandGold bg-black shadow-inner cursor-grab active:cursor-grabbing select-none" onmousedown="startDragBg(event)" onttouchstart="startDragBg(event)">
+                                <div id="interactivePreviewBox" class="w-full h-48 rounded-lg overflow-hidden relative border-2 border-brandGold bg-black shadow-inner cursor-grab active:cursor-grabbing select-none" onmousedown="startDragBg(event)" ontouchstart="startDragBg(event)">
                                     <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="absolute w-full h-auto min-h-full pointer-events-none transition-none" style="object-fit: cover; left: 0px; top: 0px;">
                                     <div class="absolute inset-0 bg-black/20 pointer-events-none flex items-center justify-center">
                                         <span class="text-[10px] bg-black/70 text-brandGold font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-brandGold/40 shadow">Arrastra para encuadrar</span>
@@ -856,6 +891,38 @@
                             </div>
                             <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
                                 Aplicar Cambios al Instante
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Popup Promocional Tab -->
+                <div id="adminTabPopup" class="space-y-6 hidden">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-bullhorn mr-1"></i> Configurar Notificación / Popup Promocional</h4>
+                        <form onsubmit="handleSavePopupSettings(event)" class="space-y-4">
+                            <div class="flex items-center justify-between bg-brandGold/10 p-3 rounded-xl border border-brandGold/30">
+                                <span class="text-xs font-bold text-brandGold">Activar Popup Notificación en la Web</span>
+                                <input type="checkbox" id="setPopupActive" class="w-5 h-5 accent-brandGold cursor-pointer">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Título del Anuncio</label>
+                                <input type="text" id="setPopupTitle" required placeholder="Ej. ¡Especial del Día de las Madres!" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Mensaje / Descuento</label>
+                                <textarea id="setPopupDesc" required rows="3" placeholder="Ej. Hoy en Mamá Lola tenemos un plato especial..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de la Imagen del Popup</label>
+                                <input type="text" id="setPopupImg" required placeholder="https://images.unsplash.com/..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Enlace de WhatsApp (Opcional)</label>
+                                <input type="text" id="setPopupWhatsapp" placeholder="https://wa.me/593..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
+                                Guardar y Publicar Popup
                             </button>
                         </form>
                     </div>
@@ -1146,7 +1213,7 @@
                 dish: "Kit de bienvenida institucional", dishEn: "Institutional welcome kit", 
                 hours: "Lun - Vie: 09:00 - 18:00", openHour: 9, closeHour: 18,
                 address: "Loja, Ecuador", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
-                iconClass: "fa-seedling", category: "urbana",
+                iconClass: "fa-seedling", category: "urbana", customLogoUrl: "",
                 youtubeUrl: "",
                 gallery: [
                     { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Dínamo Studio", titleEn: "Dínamo Studio" }
@@ -1161,7 +1228,7 @@
                 dish: "Cecina tradicional asada al carbón", dishEn: "Traditional charcoal-grilled cecina", 
                 hours: "Lun - Sáb: 08:00 - 16:00", openHour: 8, closeHour: 16,
                 address: "Mercado Central / Local 14", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
-                iconClass: "fa-mortar-pestle", category: "hueca",
+                iconClass: "fa-mortar-pestle", category: "hueca", customLogoUrl: "",
                 youtubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 gallery: [
                     { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón", titleEn: "Charcoal Grilled Cecina" }
@@ -1193,6 +1260,7 @@
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
         let passportMode = 'turista';
         let userCoords = null;
+        let heroSlideshowInterval = null;
 
         let map, markersLayer, userMarkerInstance = null;
         try {
@@ -1216,28 +1284,36 @@
             return currentHour >= loc.openHour && currentHour < loc.closeHour;
         }
 
-        // INITIAL SETTINGS LOADER IMMEDIATELY EXECUTED ON PARSE
+        // INITIAL SETTINGS LOADER WITH PERSISTENCE PRIORITY
         (function() {
             let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
                 badge: "Loja se conoce, se saborea y se hospeda",
                 title: "Sabores, Historias y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 logoUrl: "https://i.imgur.com/xaiFpa1.png",
-                heroBgUrl: "https://i.imgur.com/0QSbhqQ.jpeg",
-                heroBgPosition: "center center",
+                heroBgUrls: ["https://i.imgur.com/0QSbhqQ.jpeg"],
+                heroBgPosition: "50% 50%",
                 latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
-                latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+                latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+                popupActive: true,
+                popupTitle: "¡Especial del Día de las Madres!",
+                popupDesc: "Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.",
+                popupImg: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
+                popupWhatsapp: "https://wa.me/593999999999"
             };
             window.__initialSettings = saved;
+            applySettings(saved);
         })();
 
         function cargarDatosDesdeFirestore() {
-            applySettings(window.__initialSettings);
+            let initial = JSON.parse(localStorage.getItem('cyc_settings')) || window.__initialSettings;
+            applySettings(initial);
 
             if (!db) {
                 renderEverything();
                 checkLiveEventsBanner();
+                maybeTriggerPopup(initial);
                 return;
             }
 
@@ -1258,10 +1334,34 @@
 
             db.collection("settings").doc("main").get().then((doc) => {
                 if (doc.exists) {
-                    applySettings(doc.data());
-                    localStorage.setItem('cyc_settings', JSON.stringify(doc.data()));
+                    const data = doc.data();
+                    applySettings(data);
+                    localStorage.setItem('cyc_settings', JSON.stringify(data));
+                    maybeTriggerPopup(data);
+                } else {
+                    maybeTriggerPopup(initial);
                 }
-            }).catch(() => {});
+            }).catch(() => {
+                maybeTriggerPopup(initial);
+            });
+        }
+
+        function maybeTriggerPopup(settings) {
+            if (settings && settings.popupActive) {
+                document.getElementById('popupTitleText').innerText = settings.popupTitle || "¡Promoción Especial!";
+                document.getElementById('popupDescText').innerText = settings.popupDesc || "";
+                document.getElementById('popupImgEl').src = settings.popupImg || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80";
+                const waBtn = document.getElementById('popupWhatsappBtn');
+                if (settings.popupWhatsapp && settings.popupWhatsapp.trim() !== "") {
+                    waBtn.href = settings.popupWhatsapp;
+                    waBtn.classList.remove('hidden');
+                } else {
+                    waBtn.classList.add('hidden');
+                }
+                setTimeout(() => {
+                    openModal('promoPopupModal');
+                }, 1800);
+            }
         }
 
         function applySettings(s) {
@@ -1279,10 +1379,35 @@
                 });
             }
 
-            const bgImgEl = document.getElementById('heroBgImageEl');
-            if (bgImgEl) {
-                bgImgEl.src = s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg";
-                bgImgEl.style.objectPosition = s.heroBgPosition || "center center";
+            // Carrusel de fondo
+            let urls = s.heroBgUrls || [s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg"];
+            if (typeof urls === 'string') {
+                urls = urls.split(',').map(u => u.trim()).filter(u => u !== "");
+            }
+            if (urls.length === 0) urls = ["https://i.imgur.com/0QSbhqQ.jpeg"];
+
+            const slidesContainer = document.getElementById('heroSlidesContainer');
+            if (slidesContainer) {
+                slidesContainer.innerHTML = '';
+                urls.forEach((url, idx) => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.className = `hero-slide ${idx === 0 ? 'active-slide' : ''}`;
+                    img.style.objectPosition = s.heroBgPosition || "50% 50%";
+                    slidesContainer.appendChild(img);
+                });
+
+                if (heroSlideshowInterval) clearInterval(heroSlideshowInterval);
+                if (urls.length > 1) {
+                    let currentIndex = 0;
+                    heroSlideshowInterval = setInterval(() => {
+                        const slides = slidesContainer.querySelectorAll('.hero-slide');
+                        if (slides.length <= 1) return;
+                        slides[currentIndex].classList.remove('active-slide');
+                        currentIndex = (currentIndex + 1) % slides.length;
+                        slides[currentIndex].classList.add('active-slide');
+                    }, 6000);
+                }
             }
 
             if (s.latestYoutubeTitle) {
@@ -1303,11 +1428,12 @@
             }
         }
 
-        function updateBgPreviewFromInput() {
-            const urlInput = document.getElementById('setHeroBgUrl').value.trim();
+        function updateCarouselPreviewFromInput() {
+            const inputVal = document.getElementById('setHeroBgUrlsInput').value.trim();
+            let urls = inputVal.split(',').map(u => u.trim()).filter(u => u !== "");
             const previewImg = document.getElementById('previewHeroImg');
-            if(urlInput && previewImg) {
-                previewImg.src = urlInput;
+            if(urls.length > 0 && previewImg) {
+                previewImg.src = urls[0];
             }
         }
 
@@ -1550,11 +1676,20 @@
                 const isOpen = isLocOpenNow(loc);
 
                 if(loc.lat && loc.lng) {
+                    let pinHtml = "";
+                    if (loc.customLogoUrl && loc.customLogoUrl.trim() !== "") {
+                        pinHtml = `<div class="w-12 h-12 rounded-full border-[3px] border-brandGold overflow-hidden bg-white shadow-2xl hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action: none;">
+                                     <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}">
+                                   </div>`;
+                    } else {
+                        pinHtml = `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
+                                     <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
+                                   </div>`;
+                    }
+
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
-                        html: `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
-                                     <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
-                               </div>`,
+                        html: pinHtml,
                         iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
                     });
 
@@ -1581,7 +1716,8 @@
                 }
 
                 const isFav = favoriteLocations.includes(loc.id);
-                const favClass = isFav ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
+                const favClass = isFav ? "fa-solid fa-seedling text-red-500 scale-110" : "fa-solid fa-seedling text-brandGold";
+                const favBg = isFav ? "bg-red-50 text-red-600 border-red-300" : "bg-black/60 text-brandGold border-brandGold/40";
 
                 let cardDistHtml = "";
                 if (userCoords) {
@@ -1597,7 +1733,7 @@
 
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
-                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur border border-brandGold/40 flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg" title="Añadir a mi ruta">
+                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
                         <div class="h-52 overflow-hidden relative">
@@ -1700,11 +1836,13 @@
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
                 icon.className = "fa-solid fa-seedling text-brandGold";
+                btn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10";
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(loc.id);
-                icon.className = "fa-solid fa-seedling text-red-500";
-                showToast(`¡Añadido a Mi Ruta!`);
+                icon.className = "fa-solid fa-seedling text-red-500 scale-110";
+                btn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-red-50 backdrop-blur border border-red-300 text-red-600 flex items-center justify-center hover:scale-110 transition shadow-lg text-lg z-10";
+                showToast(`¡Añadido a Mi Ruta! ☕`);
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             updateItineraryUI();
@@ -1712,7 +1850,14 @@
             
             const cardIcon = document.getElementById(`cardFav_${loc.id}`);
             if(cardIcon) {
-                cardIcon.className = favoriteLocations.includes(loc.id) ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
+                const isNowFav = favoriteLocations.includes(loc.id);
+                cardIcon.className = isNowFav ? "fa-solid fa-seedling text-red-500 scale-110" : "fa-solid fa-seedling text-brandGold";
+                const parentBtn = cardIcon.closest('button');
+                if(parentBtn) {
+                    parentBtn.className = isNowFav 
+                        ? "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-red-50 text-red-600 border-red-300 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg"
+                        : "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 text-brandGold border-brandGold/40 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
+                }
             }
         }
 
@@ -1720,14 +1865,18 @@
             e.stopPropagation();
             const index = favoriteLocations.indexOf(localId);
             const icon = document.getElementById(`cardFav_${localId}`);
+            const parentBtn = icon ? icon.closest('button') : null;
+
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
                 if(icon) icon.className = "fa-solid fa-seedling text-brandGold";
+                if(parentBtn) parentBtn.className = "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 text-brandGold border-brandGold/40 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
-                if(icon) icon.className = "fa-solid fa-seedling text-red-500";
-                showToast(`¡Añadido a Mi Ruta!`);
+                if(icon) icon.className = "fa-solid fa-seedling text-red-500 scale-110";
+                if(parentBtn) parentBtn.className = "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-red-50 text-red-600 border-red-300 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
+                showToast(`¡Añadido a Mi Ruta! ☕`);
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             updateItineraryUI();
@@ -1736,8 +1885,13 @@
             const currentLoc = locations[currentLocationIndex];
             if (currentLoc && currentLoc.id === localId) {
                 const previewFavIcon = document.getElementById('previewFav');
-                if(previewFavIcon) {
-                    previewFavIcon.className = favoriteLocations.includes(localId) ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
+                const previewBtn = document.getElementById('previewFavBtn');
+                const isNowFav = favoriteLocations.includes(localId);
+                if(previewFavIcon) previewFavIcon.className = isNowFav ? "fa-solid fa-seedling text-red-500 scale-110" : "fa-solid fa-seedling text-brandGold";
+                if(previewBtn) {
+                    previewBtn.className = isNowFav 
+                        ? "absolute top-5 right-5 w-10 h-10 rounded-full bg-red-50 backdrop-blur border border-red-300 text-red-600 flex items-center justify-center hover:scale-110 transition shadow-lg text-lg z-10"
+                        : "absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10";
                 }
             }
         }
@@ -1745,14 +1899,16 @@
         function updateItineraryUI() {
             const container = document.getElementById('itineraryListContainer');
             const badge = document.getElementById('itineraryBadge');
+            const navBadge = document.getElementById('navStampBadge');
             if(!container) return;
             container.innerHTML = '';
 
             if(favoriteLocations.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-10 text-gray-400 text-xs">
-                        <i class="fa-solid fa-mug-hot text-3xl mb-2 text-gray-300"></i><br>
-                        Aún no has guardado ningún lugar en tu ruta.<br>Toca el icono de grano de café en cualquier tarjeta para agregarlo.
+                    <div class="text-center py-12 text-gray-400 text-xs">
+                        <i class="fa-solid fa-mug-hot text-4xl mb-3 text-gray-300 animate-pulse"></i><br>
+                        <strong class="text-brandDark text-sm block mb-1">Tu ruta está vacía</strong>
+                        Toca el icono de grano de café en cualquier tarjeta o pin del mapa para organizar tus paradas favoritas.
                     </div>
                 `;
                 if(badge) badge.classList.add('hidden');
@@ -1764,29 +1920,33 @@
                 badge.classList.remove('hidden');
             }
 
-            favoriteLocations.forEach((id) => {
+            favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
                 if(loc) {
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                     const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
                     const shareText = currentLang === 'en' 
-                        ? `Hello! I'm visiting ${locTitle} (${loc.address}) on my Vive Loja route. Let's connect!` 
-                        : `¡Hola! Me encuentro visitando ${locTitle} (${loc.address}) en mi ruta de Vive Loja. ¡Te lo recomiendo!`;
+                        ? `Hello! Visit #${idx+1} on my Vive Loja route: ${locTitle} (${loc.address}). Join me!` 
+                        : `☕ Parada #${idx+1} en mi ruta de Vive Loja: *${locTitle}* (${locTag})\n📍 ${loc.address}\n¡Te lo recomiendo!`;
 
                     container.innerHTML += `
-                        <div class="bg-white border border-brandGold/30 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm mb-2">
+                        <div class="bg-white border border-brandGold/30 rounded-xl p-3.5 flex items-center justify-between gap-3 shadow-sm hover:border-brandGold transition">
                             <div class="flex items-center gap-3">
-                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover">
+                                <span class="w-6 h-6 rounded-full bg-brandGold text-white font-bold text-xs flex items-center justify-center flex-shrink-0">${idx + 1}</span>
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                                 <div>
                                     <h4 class="font-bold text-xs text-brandDark">${locTitle}</h4>
-                                    <span class="text-[10px] text-brandGold font-bold">${locTag} • ${loc.address}</span>
+                                    <span class="text-[10px] text-brandGold font-bold block">${locTag}</span>
+                                    <span class="text-[10px] text-gray-500 block truncate max-w-[180px] sm:max-w-xs">${loc.address}</span>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <a href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir">
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <a href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir parada">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </a>
-                                <button onclick="removeFavorite('${loc.id}')" class="text-red-400 hover:text-red-600 p-1.5"><i class="fa-solid fa-trash text-xs"></i></button>
+                                <button onclick="removeFavorite('${loc.id}')" class="w-8 h-8 rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition flex items-center justify-center text-xs" title="Quitar de la ruta">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     `;
@@ -1802,26 +1962,42 @@
             updateItineraryUI();
             
             const cardIcon = document.getElementById(`cardFav_${id}`);
-            if(cardIcon) cardIcon.className = "fa-solid fa-seedling text-brandGold";
+            if(cardIcon) {
+                cardIcon.className = "fa-solid fa-seedling text-brandGold";
+                const parentBtn = cardIcon.closest('button');
+                if(parentBtn) parentBtn.className = "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 text-brandGold border-brandGold/40 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
+            }
             
             const currentLoc = locations[currentLocationIndex];
             if(currentLoc && currentLoc.id === id) {
                 const previewFavIcon = document.getElementById('previewFav');
+                const previewBtn = document.getElementById('previewFavBtn');
                 if(previewFavIcon) previewFavIcon.className = "fa-solid fa-seedling text-brandGold";
+                if(previewBtn) previewBtn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10";
             }
             
             showToast('Lugar eliminado de tu ruta');
         }
 
+        function clearEntireItinerary() {
+            if(favoriteLocations.length === 0) return;
+            favoriteLocations = [];
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            renderMapAndGrid();
+            renderTrendingUI();
+            updateItineraryUI();
+            showToast('Se ha vaciado toda la ruta');
+        }
+
         function shareStructuredItinerary() {
             if(favoriteLocations.length === 0) { showToast('Tu ruta está vacía.'); return; }
             let text = "✨ *Mi Itinerario Organizado - Vive Loja* ✨\n\n";
-            favoriteLocations.forEach((id) => {
+            favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
                 if(loc) { 
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                     const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
-                    text += `• *${locTitle}* (${locTag})\n  📍 ${loc.address}\n\n`; 
+                    text += `${idx + 1}. *${locTitle}* (${locTag})\n   📍 ${loc.address}\n\n`; 
                 }
             });
             text += "¡Te invito a recorrer Loja conmigo!";
@@ -1977,33 +2153,40 @@
         }
 
         function switchAdminTab(tab) {
-            ['adminTabLocales', 'adminTabEmprendedores', 'adminTabAgenda', 'adminTabIdentidad'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
+            ['adminTabLocales', 'adminTabEmprendedores', 'adminTabAgenda', 'adminTabIdentidad', 'adminTabPopup'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
             });
-            ['tabBtnLocales', 'tabBtnEmprendedores', 'tabBtnAgenda', 'tabBtnIdentidad'].forEach(id => {
-                document.getElementById(id).className = "py-3 text-gray-400 hover:text-white transition border-b-2 border-transparent whitespace-nowrap";
+            ['tabBtnLocales', 'tabBtnEmprendedores', 'tabBtnAgenda', 'tabBtnIdentidad', 'tabBtnPopup'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.className = "px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap";
+                }
             });
 
             if(tab === 'locales') {
                 document.getElementById('adminTabLocales').classList.remove('hidden');
-                document.getElementById('tabBtnLocales').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+                document.getElementById('tabBtnLocales').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
             } else if(tab === 'emprendedores') {
                 document.getElementById('adminTabEmprendedores').classList.remove('hidden');
-                document.getElementById('tabBtnEmprendedores').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+                document.getElementById('tabBtnEmprendedores').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
             } else if(tab === 'agenda') {
                 document.getElementById('adminTabAgenda').classList.remove('hidden');
-                document.getElementById('tabBtnAgenda').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+                document.getElementById('tabBtnAgenda').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
             } else if(tab === 'identidad') {
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
-                document.getElementById('tabBtnIdentidad').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+                document.getElementById('tabBtnIdentidad').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
                 
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
-                let currentBg = settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg';
+                let urlsArr = settings.heroBgUrls || [settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg'];
+                if(Array.isArray(urlsArr)) urlsArr = urlsArr.join(', ');
                 let currentPos = settings.heroBgPosition || '50% 50%';
 
-                document.getElementById('setHeroBgUrl').value = currentBg;
+                document.getElementById('setHeroBgUrlsInput').value = urlsArr;
                 document.getElementById('setHeroBgPosition').value = currentPos;
-                document.getElementById('previewHeroImg').src = currentBg;
+                
+                let firstUrl = settings.heroBgUrls && settings.heroBgUrls.length > 0 ? settings.heroBgUrls[0] : 'https://i.imgur.com/0QSbhqQ.jpeg';
+                document.getElementById('previewHeroImg').src = firstUrl;
                 document.getElementById('previewHeroImg').style.objectPosition = currentPos;
                 document.getElementById('posCoordText').innerText = currentPos;
                 
@@ -2017,12 +2200,57 @@
                 document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
                 document.getElementById('setLatestVideoThumbUrl').value = settings.latestVideoThumbUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
                 document.getElementById('setBrandLogoUrl').value = settings.logoUrl || 'https://i.imgur.com/xaiFpa1.png';
+            } else if(tab === 'popup') {
+                document.getElementById('adminTabPopup').classList.remove('hidden');
+                document.getElementById('tabBtnPopup').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
+                
+                let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+                document.getElementById('setPopupActive').checked = settings.popupActive !== undefined ? settings.popupActive : true;
+                document.getElementById('setPopupTitle').value = settings.popupTitle || '¡Especial del Día de las Madres!';
+                document.getElementById('setPopupDesc').value = settings.popupDesc || 'Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.';
+                document.getElementById('setPopupImg').value = settings.popupImg || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80';
+                document.getElementById('setPopupWhatsapp').value = settings.popupWhatsapp || 'https://wa.me/593999999999';
+            }
+        }
+
+        function handleSavePopupSettings(e) {
+            e.preventDefault();
+            let popupActive = document.getElementById('setPopupActive').checked;
+            let popupTitle = document.getElementById('setPopupTitle').value.trim();
+            let popupDesc = document.getElementById('setPopupDesc').value.trim();
+            let popupImg = document.getElementById('setPopupImg').value.trim();
+            let popupWhatsapp = document.getElementById('setPopupWhatsapp').value.trim();
+
+            let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            settings.popupActive = popupActive;
+            settings.popupTitle = popupTitle;
+            settings.popupDesc = popupDesc;
+            settings.popupImg = popupImg;
+            settings.popupWhatsapp = popupWhatsapp;
+
+            localStorage.setItem('cyc_settings', JSON.stringify(settings));
+            if (db) {
+                db.collection("settings").doc("main").set(settings, { merge: true }).catch(err => console.log(err));
+            }
+
+            closeModal('adminModal');
+            showToast('¡Configuración de Popup guardada!');
+            if (popupActive) {
+                setTimeout(() => {
+                    document.getElementById('popupTitleText').innerText = popupTitle;
+                    document.getElementById('popupDescText').innerText = popupDesc;
+                    document.getElementById('popupImgEl').src = popupImg;
+                    openModal('promoPopupModal');
+                }, 500);
             }
         }
 
         function handleSaveBrandingSettings(e) {
             e.preventDefault();
-            let heroBgUrl = document.getElementById('setHeroBgUrl').value.trim();
+            let urlsInput = document.getElementById('setHeroBgUrlsInput').value.trim();
+            let heroBgUrls = urlsInput.split(',').map(u => u.trim()).filter(u => u !== "");
+            if (heroBgUrls.length === 0) heroBgUrls = ["https://i.imgur.com/0QSbhqQ.jpeg"];
+
             let heroBgPosition = document.getElementById('setHeroBgPosition').value;
             let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
             let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
@@ -2030,7 +2258,8 @@
             let logoUrl = document.getElementById('setBrandLogoUrl').value;
 
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
-            settings.heroBgUrl = heroBgUrl;
+            settings.heroBgUrls = heroBgUrls;
+            settings.heroBgUrl = heroBgUrls[0];
             settings.heroBgPosition = heroBgPosition;
             settings.latestYoutubeUrl = latestYoutubeUrl;
             settings.latestYoutubeTitle = latestYoutubeTitle;
@@ -2040,12 +2269,12 @@
             localStorage.setItem('cyc_settings', JSON.stringify(settings));
 
             if (db) {
-                db.collection("settings").doc("main").set(settings).catch(err => console.log(err));
+                db.collection("settings").doc("main").set(settings, { merge: true }).catch(err => console.log(err));
             }
 
             applySettings(settings);
             closeModal('adminModal');
-            showToast('¡Configuración guardada y sincronizada!');
+            showToast('¡Carrusel de fondo guardado y sincronizado!');
         }
 
         function handleSaveLocation(e) {
@@ -2055,6 +2284,7 @@
             const titleEn = document.getElementById('admTitleEn').value;
             const category = document.getElementById('admCategory').value;
             const iconClass = document.getElementById('admIconClass').value;
+            const customLogoUrl = document.getElementById('admCustomLogoUrl').value.trim();
             const pin = document.getElementById('admPin').value || "1234";
             const tag = document.getElementById('admTag').value;
             const tagEn = document.getElementById('admTagEn').value;
@@ -2075,7 +2305,7 @@
 
             let galleryArray = imgsListInput.trim() ? imgsListInput.split(',').map((u, i) => ({ img: u.trim(), title: `${title} - ${i+1}` })) : [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
 
-            const locData = { pin, tag, tagEn, title, titleEn, desc, descEn, dish, dishEn, hours, openHour, closeHour, address, lat: coords[0], lng: coords[1], gps: `https://www.google.com/maps/search/?api=1&query=${coords[0]},${coords[1]}`, iconClass, category, youtubeUrl, gallery: galleryArray };
+            const locData = { pin, tag, tagEn, title, titleEn, desc, descEn, dish, dishEn, hours, openHour, closeHour, address, lat: coords[0], lng: coords[1], gps: `https://www.google.com/maps/search/?api=1&query=${coords[0]},${coords[1]}`, iconClass, customLogoUrl, category, youtubeUrl, gallery: galleryArray };
 
             if (db) {
                 if (editId) {
@@ -2096,6 +2326,7 @@
             document.getElementById('admTitleEn').value = loc.titleEn || '';
             document.getElementById('admCategory').value = loc.category;
             document.getElementById('admIconClass').value = loc.iconClass;
+            document.getElementById('admCustomLogoUrl').value = loc.customLogoUrl || '';
             document.getElementById('admPin').value = loc.pin || '1234';
             document.getElementById('admTag').value = loc.tag || '';
             document.getElementById('admTagEn').value = loc.tagEn || '';
@@ -2115,6 +2346,7 @@
             document.getElementById('admTitle').value = '';
             document.getElementById('admAddress').value = '';
             document.getElementById('admDesc').value = '';
+            document.getElementById('admCustomLogoUrl').value = '';
         }
 
         function renderAdminLocationsList() {
@@ -2222,6 +2454,7 @@
             if (pin === '1234') {
                 closeModal('adminPinModal');
                 openModal('adminModal');
+                switchAdminTab('locales');
                 showToast('¡Acceso concedido!');
             } else {
                 showToast('❌ PIN incorrecto');
@@ -2269,10 +2502,14 @@
             waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
 
             const favIcon = document.getElementById('previewFav');
-            if(favoriteLocations.includes(loc.id)) {
-                favIcon.className = "fa-solid fa-seedling text-red-500";
+            const previewBtn = document.getElementById('previewFavBtn');
+            const isFav = favoriteLocations.includes(loc.id);
+            if(isFav) {
+                favIcon.className = "fa-solid fa-seedling text-red-500 scale-110";
+                previewBtn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-red-50 backdrop-blur border border-red-300 text-red-600 flex items-center justify-center hover:scale-110 transition shadow-lg text-lg z-10";
             } else {
                 favIcon.className = "fa-solid fa-seedling text-brandGold";
+                previewBtn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10";
             }
 
             if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
@@ -2485,6 +2722,10 @@
         function openModal(id) { 
             const m = document.getElementById(id);
             if(m) {
+                if(id === 'itineraryModal') updateItineraryUI();
+                if(id === 'adminModal') {
+                    switchAdminTab('locales');
+                }
                 m.classList.remove('hidden');
             }
         }
