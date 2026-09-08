@@ -809,10 +809,10 @@
                     </div>
                 </div>
 
-                <!-- Fondo, Vídeo y Logo Tab -->
+                <!-- Fondo, Vídeo y Logo Tab con Arrastre Interactivo -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-image mr-1"></i> Configurar Fondo, Vídeo y Logo</h4>
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-image mr-1"></i> Configurar Fondo Interactivo (Arrastra a tu gusto)</h4>
                         <form onsubmit="handleSaveBrandingSettings(event)" class="space-y-4">
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL de la Imagen de Fondo (Hero)</label>
@@ -820,34 +820,21 @@
                             </div>
                             
                             <div class="bg-black/60 p-4 rounded-xl border border-brandGold/40 space-y-3">
-                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-crop mr-1"></i> Vista Previa y Modo de Presentación</label>
-                                <p class="text-[10px] text-gray-300">Selecciona cómo deseas que se acomode la imagen en la cabecera.</p>
+                                <label class="block text-xs text-brandGold font-bold uppercase"><i class="fa-solid fa-hand mr-1"></i> Herramienta Interactiva de Encuadre</label>
+                                <p class="text-[10px] text-gray-300">Haz clic y arrastra con el mouse dentro del recuadro (o desliza con el dedo) para posicionar exactamente el encuadre de la imagen.</p>
                                 
-                                <div id="previewHeroBox" class="w-full h-40 rounded-lg overflow-hidden relative border border-brandGold/50 bg-black shadow-inner flex items-center justify-center">
-                                    <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="w-full h-full transition-all duration-300" style="object-fit: cover; object-position: center center;">
-                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
-                                        <span class="text-[10px] bg-black/70 text-brandGold font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border border-brandGold/30">Vista Previa</span>
+                                <div id="interactivePreviewBox" class="w-full h-48 rounded-lg overflow-hidden relative border-2 border-brandGold bg-black shadow-inner cursor-grab active:cursor-grabbing select-none" onmousedown="startDragBg(event)" onttouchstart="startDragBg(event)">
+                                    <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="absolute w-full h-auto min-h-full pointer-events-none transition-none" style="object-fit: cover; left: 0px; top: 0px;">
+                                    <div class="absolute inset-0 bg-black/20 pointer-events-none flex items-center justify-center">
+                                        <span class="text-[10px] bg-black/70 text-brandGold font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-brandGold/40 shadow">Arrastra para encuadrar</span>
                                     </div>
                                 </div>
 
-                                <input type="hidden" id="setHeroBgPosition" value="center center">
+                                <input type="hidden" id="setHeroBgPosition" value="50% 50%">
 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                                    <div>
-                                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Modo de Presentación:</label>
-                                        <select id="setHeroBgFit" onchange="updateFitPreview(this.value)" class="w-full bg-[#121212] border border-gray-700 rounded-lg p-2 text-xs text-white outline-none">
-                                            <option value="cover">Llenar pantalla completa (Cover)</option>
-                                            <option value="contain">Mostrar completa sin recortes (Contain)</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Alineación de Enfoque:</label>
-                                        <div class="grid grid-cols-3 gap-1">
-                                            <button type="button" onclick="setBgPosPreset('center top')" class="bg-gray-800 text-white text-[9px] font-bold py-2 rounded border border-gray-700 hover:bg-brandGold transition">Arriba</button>
-                                            <button type="button" onclick="setBgPosPreset('center center')" class="bg-gray-800 text-white text-[9px] font-bold py-2 rounded border border-gray-700 hover:bg-brandGold transition">Centro</button>
-                                            <button type="button" onclick="setBgPosPreset('center bottom')" class="bg-gray-800 text-white text-[9px] font-bold py-2 rounded border border-gray-700 hover:bg-brandGold transition">Abajo</button>
-                                        </div>
-                                    </div>
+                                <div class="flex justify-between items-center pt-2">
+                                    <span class="text-[10px] text-gray-400">Posición guardada: <strong id="posCoordText" class="text-brandGold">50% 50%</strong></span>
+                                    <button type="button" onclick="resetBgPosition()" class="bg-gray-800 text-brandGold text-[10px] font-bold px-3 py-1 rounded border border-gray-700 hover:bg-brandGold hover:text-white transition">Centrar automático</button>
                                 </div>
                             </div>
 
@@ -1229,9 +1216,24 @@
             return currentHour >= loc.openHour && currentHour < loc.closeHour;
         }
 
+        // INITIAL SETTINGS LOADER IMMEDIATELY EXECUTED ON PARSE
+        (function() {
+            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
+                badge: "Loja se conoce, se saborea y se hospeda",
+                title: "Sabores, Historias y Destinos",
+                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
+                logoUrl: "https://i.imgur.com/xaiFpa1.png",
+                heroBgUrl: "https://i.imgur.com/0QSbhqQ.jpeg",
+                heroBgPosition: "center center",
+                latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
+                latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
+                latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+            };
+            window.__initialSettings = saved;
+        })();
+
         function cargarDatosDesdeFirestore() {
-            // Apply settings immediately from localStorage to ensure instant retention before async
-            loadSettingsFromStorage();
+            applySettings(window.__initialSettings);
 
             if (!db) {
                 renderEverything();
@@ -1257,24 +1259,9 @@
             db.collection("settings").doc("main").get().then((doc) => {
                 if (doc.exists) {
                     applySettings(doc.data());
+                    localStorage.setItem('cyc_settings', JSON.stringify(doc.data()));
                 }
             }).catch(() => {});
-        }
-
-        function loadSettingsFromStorage() {
-            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
-                badge: "Loja se conoce, se saborea y se hospeda",
-                title: "Sabores, Historias y Destinos",
-                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
-                logoUrl: "https://i.imgur.com/xaiFpa1.png",
-                heroBgUrl: "https://i.imgur.com/0QSbhqQ.jpeg",
-                heroBgPosition: "center center",
-                heroBgFit: "cover",
-                latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
-                latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
-                latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
-            };
-            applySettings(saved);
         }
 
         function applySettings(s) {
@@ -1296,7 +1283,6 @@
             if (bgImgEl) {
                 bgImgEl.src = s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg";
                 bgImgEl.style.objectPosition = s.heroBgPosition || "center center";
-                bgImgEl.style.objectFit = s.heroBgFit || "cover";
             }
 
             if (s.latestYoutubeTitle) {
@@ -1325,19 +1311,65 @@
             }
         }
 
-        function setBgPosPreset(posVal) {
-            const inputEl = document.getElementById('setHeroBgPosition');
-            const previewImg = document.getElementById('previewHeroImg');
-            if(inputEl) inputEl.value = posVal;
-            if(previewImg) previewImg.style.objectPosition = posVal;
-            showToast(`Alineación ajustada: ${posVal}`);
+        // DRAG TO PAN BACKGROUND LOGIC
+        let isDraggingBg = false;
+        let startX = 0, startY = 0;
+        let posX = 50, posY = 50;
+
+        function startDragBg(e) {
+            isDraggingBg = true;
+            startX = e.clientX || (e.touches && e.touches[0].clientX);
+            startY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            document.addEventListener('mousemove', onDragBg);
+            document.addEventListener('mouseup', stopDragBg);
+            document.addEventListener('touchmove', onDragBg);
+            document.addEventListener('touchend', stopDragBg);
+            e.preventDefault();
         }
 
-        function updateFitPreview(fitVal) {
+        function onDragBg(e) {
+            if (!isDraggingBg) return;
+            const currentX = e.clientX || (e.touches && e.touches[0].clientX);
+            const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            const dx = currentX - startX;
+            const dy = currentY - startY;
+            
+            posX -= dx * 0.2;
+            posY -= dy * 0.2;
+            
+            posX = Math.max(0, Math.min(100, posX));
+            posY = Math.max(0, Math.min(100, posY));
+            
+            startX = currentX;
+            startY = currentY;
+            
+            updatePreviewBgPosition();
+        }
+
+        function stopDragBg() {
+            isDraggingBg = false;
+            document.removeEventListener('mousemove', onDragBg);
+            document.removeEventListener('mouseup', stopDragBg);
+            document.removeEventListener('touchmove', onDragBg);
+            document.removeEventListener('touchend', stopDragBg);
+        }
+
+        function updatePreviewBgPosition() {
             const previewImg = document.getElementById('previewHeroImg');
-            if(previewImg) {
-                previewImg.style.objectFit = fitVal;
-            }
+            const posCoordText = document.getElementById('posCoordText');
+            const hiddenInput = document.getElementById('setHeroBgPosition');
+            
+            const val = `${Math.round(posX)}% ${Math.round(posY)}%`;
+            if(previewImg) previewImg.style.objectPosition = val;
+            if(posCoordText) posCoordText.innerText = val;
+            if(hiddenInput) hiddenInput.value = val;
+        }
+
+        function resetBgPosition() {
+            posX = 50; posY = 50;
+            updatePreviewBgPosition();
         }
 
         function openYouTubeDirectLink() {
@@ -1680,7 +1712,7 @@
             
             const cardIcon = document.getElementById(`cardFav_${loc.id}`);
             if(cardIcon) {
-                cardIcon.className = index > -1 ? "fa-solid fa-seedling text-brandGold" : "fa-solid fa-seedling text-red-500";
+                cardIcon.className = favoriteLocations.includes(loc.id) ? "fa-solid fa-seedling text-red-500" : "fa-solid fa-seedling text-brandGold";
             }
         }
 
@@ -1964,17 +1996,22 @@
             } else if(tab === 'identidad') {
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
                 document.getElementById('tabBtnIdentidad').className = "py-3 text-brandGold border-b-2 border-brandGold transition whitespace-nowrap";
+                
                 let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
                 let currentBg = settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg';
-                let currentPos = settings.heroBgPosition || 'center center';
-                let currentFit = settings.heroBgFit || 'cover';
+                let currentPos = settings.heroBgPosition || '50% 50%';
 
                 document.getElementById('setHeroBgUrl').value = currentBg;
                 document.getElementById('setHeroBgPosition').value = currentPos;
-                document.getElementById('setHeroBgFit').value = currentFit;
                 document.getElementById('previewHeroImg').src = currentBg;
                 document.getElementById('previewHeroImg').style.objectPosition = currentPos;
-                document.getElementById('previewHeroImg').style.objectFit = currentFit;
+                document.getElementById('posCoordText').innerText = currentPos;
+                
+                let parts = currentPos.split(' ');
+                if(parts.length === 2) {
+                    posX = parseFloat(parts[0]) || 50;
+                    posY = parseFloat(parts[1]) || 50;
+                }
 
                 document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || 'https://www.youtube.com/watch?v=n0BJGAkU9cg';
                 document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
@@ -1987,7 +2024,6 @@
             e.preventDefault();
             let heroBgUrl = document.getElementById('setHeroBgUrl').value.trim();
             let heroBgPosition = document.getElementById('setHeroBgPosition').value;
-            let heroBgFit = document.getElementById('setHeroBgFit').value;
             let latestYoutubeUrl = document.getElementById('setLatestYoutubeUrl').value;
             let latestYoutubeTitle = document.getElementById('setLatestYoutubeTitle').value;
             let latestVideoThumbUrl = document.getElementById('setLatestVideoThumbUrl').value;
@@ -1996,7 +2032,6 @@
             let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
             settings.heroBgUrl = heroBgUrl;
             settings.heroBgPosition = heroBgPosition;
-            settings.heroBgFit = heroBgFit;
             settings.latestYoutubeUrl = latestYoutubeUrl;
             settings.latestYoutubeTitle = latestYoutubeTitle;
             settings.latestVideoThumbUrl = latestVideoThumbUrl;
@@ -2360,9 +2395,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', function() {
-            // IMMEDIATE BACKGROUND RESTORATION ON LOAD
-            loadSettingsFromStorage();
-
             cargarDatosDesdeFirestore();
             initPassport();
             changeLanguage(currentLang);
@@ -2457,9 +2489,13 @@
             }
         }
         function closeModal(id) { 
-            const m = document.getElementById(id);
-            if(m) {
-                m.classList.add('hidden');
+            const m = document.getElementById('adminModal');
+            if(id === 'adminModal' && m) {
+                stopDragBg();
+            }
+            const targetM = document.getElementById(id);
+            if(targetM) {
+                targetM.classList.add('hidden');
             } 
         }
     </script>
