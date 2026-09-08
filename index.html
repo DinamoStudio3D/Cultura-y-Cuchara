@@ -1384,6 +1384,7 @@
                         userMarkerInstance = L.marker([userCoords.lat, userCoords.lng], { icon: userCustomIcon }).addTo(map).bindPopup("¡Estás aquí!").openPopup();
                     }
                     selectLocation(currentLocationIndex);
+                    renderMapAndGrid();
                     showToast('Ubicación GPS encontrada y centrada');
                 }, () => {
                     showToast('No se pudo obtener la ubicación GPS. Verifique permisos.');
@@ -1408,25 +1409,7 @@
         }
 
         (function() {
-            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
-                badge: "Loja se conoce, se saborea y se hospeda",
-                title: "Sabores, Historias y Destinos",
-                subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
-                logoUrl: "https://i.imgur.com/xaiFpa1.png",
-                heroBgUrls: ["https://i.imgur.com/3j3NoCa.png"],
-                heroIntervalSeconds: 6,
-                latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
-                latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
-                latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
-                popupActive: true,
-                popupMode: "promocion",
-                popupBadge: "✨ Promoción Exclusiva",
-                popupTitle: "¡Especial del Día de las Madres!",
-                popupDesc: "Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.",
-                popupImg: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
-                popupWhatsapp: "https://wa.me/593999999999"
-            };
-            window.__initialSettings = saved;
+            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || window.__initialSettings;
             applySettings(saved);
         })();
 
