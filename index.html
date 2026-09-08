@@ -618,19 +618,15 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-black uppercase tracking-wider text-brandDark mb-1.5">
-                            <i class="fa-solid fa-palette text-brandGold mr-1"></i> <span data-i18n="postcardFrameLabel">2. Elige el Estilo del Marco</span>
-                        </label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button type="button" onclick="setPostcardTheme('fiavl')" id="btnThemeFiavl" class="px-2.5 py-2 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm">
-                                <span>🎭</span> <span class="text-[10px]">FIAVL 2026</span>
-                            </button>
-                            <button type="button" onclick="setPostcardTheme('vintage')" id="btnThemeVintage" class="px-2.5 py-2 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold">
-                                <span>📜</span> <span class="text-[10px]">Postal Clásica</span>
-                            </button>
-                            <button type="button" onclick="setPostcardTheme('cafe')" id="btnThemeCafe" class="px-2.5 py-2 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold">
-                                <span>☕</span> <span class="text-[10px]">Ruta del Café</span>
-                            </button>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-black uppercase tracking-wider text-brandDark">
+                                <i class="fa-solid fa-palette text-brandGold mr-1"></i> <span data-i18n="postcardFrameLabel">2. Elige el Estilo del Marco</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Contenedor dinámico de botones de marcos (Base + Personalizados) -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="postcardFramesContainer">
+                            <!-- Se puebla dinámicamente con JavaScript -->
                         </div>
                     </div>
 
@@ -1273,8 +1269,56 @@
 
                 <!-- Postales Tab en Admin -->
                 <div id="adminTabPostales" class="space-y-6 hidden">
+                    <!-- 1. Subida de nuevos marcos PNG con transparencia -->
+                    <div class="bg-black/40 border border-brandGold/40 p-5 rounded-2xl shadow-warm-glow space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-brandGold/20 border border-brandGold/50 text-brandGold flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-file-image"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-brandGold">Subir Marcos PNG Adicionales (Con Transparencia)</h4>
+                                <p class="text-[10px] text-gray-400">El marco se sobrepondrá automáticamente sobre la foto del visitante en formato 9:16.</p>
+                            </div>
+                        </div>
+
+                        <form onsubmit="handleUploadCustomFrame(event)" class="space-y-4 pt-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Nombre del Marco</label>
+                                    <input type="text" id="newFrameName" required placeholder="Ej. FIAVL 2026 Escenario Central" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Emoji o Icono</label>
+                                    <input type="text" id="newFrameIcon" maxlength="4" placeholder="🎭" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Opción A: Seleccionar archivo PNG local</label>
+                                    <input type="file" id="newFrameFile" accept="image/png,image/*" onchange="handleCustomFrameFile(event)" class="w-full text-xs text-gray-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brandGold file:text-white cursor-pointer bg-[#121212] border border-gray-700 rounded-xl p-1.5">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Opción B: Pegar URL directa del PNG</label>
+                                    <input type="text" id="newFrameUrl" placeholder="https://i.imgur.com/tu-marco.png" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider shadow">
+                                <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Guardar y Publicar Nuevo Marco
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 2. Catálogo de marcos creados -->
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
-                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-camera-retro mr-1"></i> Configuración del Generador de Postales</h4>
+                        <h4 class="font-bold text-sm text-white mb-3"><i class="fa-solid fa-layer-group text-brandGold mr-1.5"></i> Marcos Adicionales Creados</h4>
+                        <div class="space-y-2" id="adminFramesListContainer"></div>
+                    </div>
+
+                    <!-- 3. Ajustes de textos y marcas de agua -->
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-gear mr-1"></i> Textos y Marcas Predeterminadas</h4>
                         <form onsubmit="handleSavePostcardSettings(event)" class="space-y-4">
                             <div>
                                 <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Texto de Marca / Watermark Inferior</label>
@@ -1829,6 +1873,9 @@
         ];
         let currentTimeSpotIndex = 0;
 
+        let customPostcardFrames = JSON.parse(localStorage.getItem('cyc_custom_frames')) || [];
+        let loadedCustomFrameImages = {};
+
         let postcardSettings = JSON.parse(localStorage.getItem('cyc_postcard_settings')) || {
             watermark: "VIVE LOJA • FIAVL 2026",
             sampleImg: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80",
@@ -2223,6 +2270,7 @@
             renderAgendaUI();
             renderEmprendedoresUI();
             renderLojaTimeUI();
+            renderPublicFrameButtons();
             renderPostcardPreview();
             updateItineraryUI();
             if(map) {
@@ -3043,24 +3091,53 @@
             if(handle) handle.style.left = '50%';
         }
 
-        function setPostcardTheme(theme) {
-            currentPostcardTheme = theme;
-            ['btnThemeFiavl', 'btnThemeVintage', 'btnThemeCafe', 'btnThemePolaroid'].forEach(id => {
-                const btn = document.getElementById(id);
-                if(btn) {
-                    btn.className = "p-2.5 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold";
-                }
+        function renderPublicFrameButtons() {
+            const container = document.getElementById('postcardFramesContainer');
+            if (!container) return;
+
+            let html = `
+                <button type="button" onclick="setPostcardTheme('fiavl')" id="btnThemeFiavl" class="${currentPostcardTheme === 'fiavl' ? 'px-2.5 py-2.5 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm' : 'px-2.5 py-2.5 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold'}">
+                    <span>🎭</span> <span class="text-[10px] font-bold">FIAVL 2026</span>
+                </button>
+                <button type="button" onclick="setPostcardTheme('vintage')" id="btnThemeVintage" class="${currentPostcardTheme === 'vintage' ? 'px-2.5 py-2.5 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm' : 'px-2.5 py-2.5 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold'}">
+                    <span>📜</span> <span class="text-[10px] font-bold">Postal Clásica</span>
+                </button>
+                <button type="button" onclick="setPostcardTheme('cafe')" id="btnThemeCafe" class="${currentPostcardTheme === 'cafe' ? 'px-2.5 py-2.5 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm' : 'px-2.5 py-2.5 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold'}">
+                    <span>☕</span> <span class="text-[10px] font-bold">Ruta del Café</span>
+                </button>
+                <button type="button" onclick="setPostcardTheme('polaroid')" id="btnThemePolaroid" class="${currentPostcardTheme === 'polaroid' ? 'px-2.5 py-2.5 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm' : 'px-2.5 py-2.5 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold'}">
+                    <span>📸</span> <span class="text-[10px] font-bold">Polaroid Retro</span>
+                </button>
+            `;
+
+            customPostcardFrames.forEach(frame => {
+                const isActive = currentPostcardTheme === frame.id;
+                html += `
+                    <button type="button" onclick="setPostcardTheme('${frame.id}')" id="btnTheme_${frame.id}" class="${isActive ? 'px-2.5 py-2.5 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm' : 'px-2.5 py-2.5 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold'}">
+                        <span>${frame.icon || '🖼️'}</span> <span class="text-[10px] font-bold truncate max-w-[80px]">${frame.name}</span>
+                    </button>
+                `;
             });
 
-            const activeBtn = document.getElementById(
-                theme === 'fiavl' ? 'btnThemeFiavl' :
-                theme === 'vintage' ? 'btnThemeVintage' :
-                theme === 'cafe' ? 'btnThemeCafe' : 'btnThemePolaroid'
-            );
-            if(activeBtn) {
-                activeBtn.className = "p-2.5 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm";
-            }
+            container.innerHTML = html;
+        }
 
+        function setPostcardTheme(theme) {
+            currentPostcardTheme = theme;
+            const isCustom = customPostcardFrames.some(f => f.id === theme);
+            if (isCustom) {
+                // Al elegir un marco personalizado, ocultar sticker y textos por defecto para que luzca limpio
+                currentPostcardSticker = 'none';
+                const stickerSel = document.getElementById('postcardStickerSelect');
+                if(stickerSel) stickerSel.value = 'none';
+
+                postcardShowTexts = false;
+                const textToggle = document.getElementById('postcardShowTextsToggle');
+                if(textToggle) textToggle.checked = false;
+                const panel = document.getElementById('postcardTextsPanel');
+                if(panel) panel.classList.add('opacity-40', 'pointer-events-none');
+            }
+            renderPublicFrameButtons();
             renderPostcardPreview();
         }
 
@@ -3134,12 +3211,7 @@
 
             // 2. Coordenadas de imagen según el marco
             let imgX = 0, imgY = 0, imgW = W, imgH = H;
-            if (currentPostcardTheme === 'polaroid') {
-                imgX = 64;
-                imgY = 120;
-                imgW = W - 128;
-                imgH = H - 540;
-            } else if (currentPostcardTheme === 'vintage') {
+            if (currentPostcardTheme === 'vintage') {
                 imgX = 60;
                 imgY = 60;
                 imgW = W - 120;
@@ -3180,25 +3252,36 @@
                 ctx.restore();
             }
 
-            // 4. Capa de degradado cinematográfico para legibilidad (salvo en Polaroid pura)
-            if (currentPostcardTheme !== 'polaroid') {
-                const topGrad = ctx.createLinearGradient(0, 0, 0, 420);
-                topGrad.addColorStop(0, "rgba(10, 10, 10, 0.94)");
-                topGrad.addColorStop(1, "rgba(10, 10, 10, 0)");
-                ctx.fillStyle = topGrad;
-                ctx.fillRect(0, 0, W, 420);
+            // 4. Capa de degradado cinematográfico para legibilidad
+            const topGrad = ctx.createLinearGradient(0, 0, 0, 420);
+            topGrad.addColorStop(0, "rgba(10, 10, 10, 0.94)");
+            topGrad.addColorStop(1, "rgba(10, 10, 10, 0)");
+            ctx.fillStyle = topGrad;
+            ctx.fillRect(0, 0, W, 420);
 
-                const botGrad = ctx.createLinearGradient(0, H - 620, 0, H);
-                botGrad.addColorStop(0, "rgba(10, 10, 10, 0)");
-                botGrad.addColorStop(0.3, "rgba(10, 10, 10, 0.82)");
-                botGrad.addColorStop(1, "rgba(10, 10, 10, 0.98)");
-                ctx.fillStyle = botGrad;
-                ctx.fillRect(0, H - 620, W, 620);
-            }
+            const botGrad = ctx.createLinearGradient(0, H - 620, 0, H);
+            botGrad.addColorStop(0, "rgba(10, 10, 10, 0)");
+            botGrad.addColorStop(0.3, "rgba(10, 10, 10, 0.82)");
+            botGrad.addColorStop(1, "rgba(10, 10, 10, 0.98)");
+            ctx.fillStyle = botGrad;
+            ctx.fillRect(0, H - 620, W, 620);
 
             // 5. RENDERIZADO DEL MARCO ESPECÍFICO
-            if (currentPostcardTheme === 'fiavl') {
-                // Marco FIAVL: Cartel Vanguardista con detalles dorados y caretas
+            const customFrame = customPostcardFrames.find(f => f.id === currentPostcardTheme);
+            if (customFrame) {
+                // Marco PNG personalizado subido por el administrador
+                if (loadedCustomFrameImages[customFrame.id] && loadedCustomFrameImages[customFrame.id].complete) {
+                    ctx.drawImage(loadedCustomFrameImages[customFrame.id], 0, 0, W, H);
+                } else {
+                    const cImg = new Image();
+                    cImg.crossOrigin = "anonymous";
+                    cImg.onload = function() {
+                        loadedCustomFrameImages[customFrame.id] = cImg;
+                        renderPostcardPreview();
+                    };
+                    cImg.src = customFrame.img;
+                }
+            } else if (currentPostcardTheme === 'fiavl') {
                 ctx.lineWidth = 16;
                 ctx.strokeStyle = "#EA580C";
                 ctx.strokeRect(34, 34, W - 68, H - 68);
@@ -3207,16 +3290,13 @@
                 ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
                 ctx.strokeRect(50, 50, W - 100, H - 100);
 
-                // Cinta superior de festival
                 ctx.fillStyle = "#EA580C";
                 ctx.fillRect(70, 70, 320, 44);
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "900 20px sans-serif";
-                ctx.letterSpacing = "3px";
                 ctx.textAlign = "center";
                 ctx.fillText("FESTIVAL DE ARTES VIVAS", 230, 100);
 
-                // Caretas / Escudo FIAVL
                 ctx.save();
                 ctx.translate(W - 140, 120);
                 ctx.fillStyle = "#121212";
@@ -3231,25 +3311,20 @@
                 ctx.fillText("🎭", 0, 10);
                 ctx.restore();
 
-                // Cabecera del festival
                 ctx.fillStyle = "#EA580C";
                 ctx.font = "900 40px sans-serif";
-                ctx.letterSpacing = "6px";
                 ctx.textAlign = "center";
                 ctx.fillText("L O J A   2 0 2 6", W / 2, 210);
 
                 ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
                 ctx.font = "700 20px sans-serif";
-                ctx.letterSpacing = "3px";
                 ctx.fillText("ESCENARIO CULTURAL DEL ECUADOR", W / 2, 250);
 
             } else if (currentPostcardTheme === 'vintage') {
-                // Marco Filatélico: Dientes de estampilla postal troquelada
                 ctx.fillStyle = "#fdfbf7";
                 const toothR = 14;
                 const step = 38;
 
-                // Perforaciones en bordes de estampilla
                 for(let x = step; x < W; x += step) {
                     ctx.beginPath(); ctx.arc(x, 0, toothR, 0, Math.PI); ctx.fill();
                     ctx.beginPath(); ctx.arc(x, H, toothR, Math.PI, 0); ctx.fill();
@@ -3263,7 +3338,6 @@
                 ctx.strokeStyle = "#8B4513";
                 ctx.strokeRect(60, 60, W - 120, H - 120);
 
-                // Matasellos Postal Circular Gastado con Inclinación
                 ctx.save();
                 ctx.translate(W - 220, 240);
                 ctx.rotate(-14 * Math.PI / 180);
@@ -3287,7 +3361,6 @@
                 ctx.fillText("CENTINELA DEL SUR", 0, 42);
                 ctx.restore();
 
-                // Cabecera epistolar
                 ctx.fillStyle = "#EA580C";
                 ctx.font = "900 36px serif";
                 ctx.textAlign = "center";
@@ -3297,12 +3370,10 @@
                 ctx.fillText("Tierra de Música, Flores y Memoria", W / 2, 180);
 
             } else if (currentPostcardTheme === 'cafe') {
-                // Marco Ruta del Café: Estética de cafetería de especialidad con notas de altura
                 ctx.lineWidth = 12;
                 ctx.strokeStyle = "#A25F2E";
                 ctx.strokeRect(34, 34, W - 68, H - 68);
 
-                // Mancha de taza de café estética en esquina
                 ctx.save();
                 ctx.strokeStyle = "rgba(162, 95, 46, 0.28)";
                 ctx.lineWidth = 14;
@@ -3315,7 +3386,6 @@
                 ctx.stroke();
                 ctx.restore();
 
-                // Sello de altitud y café de origen
                 ctx.save();
                 ctx.translate(W - 200, 160);
                 ctx.fillStyle = "rgba(18, 18, 18, 0.85)";
@@ -3339,43 +3409,42 @@
 
                 ctx.fillStyle = "#ffffff";
                 ctx.font = "900 36px sans-serif";
-                ctx.letterSpacing = "4px";
                 ctx.textAlign = "center";
                 ctx.fillText("LOJA ES AROMA Y ORIGEN", W / 2, 260);
 
             } else if (currentPostcardTheme === 'polaroid') {
-                // Marco Polaroid: Marco blanco grueso de película instantánea
-                ctx.fillStyle = "#F5F3EF";
-                ctx.fillRect(40, 60, W - 80, H - 120);
+                // Marco estilo Polaroid / Fotografía instantánea
+                ctx.lineWidth = 26;
+                ctx.strokeStyle = "#f3f0ea";
+                ctx.strokeRect(40, 40, W - 80, H - 80);
 
-                // Sombra interior de foto polaroid
-                ctx.lineWidth = 4;
-                ctx.strokeStyle = "rgba(0, 0, 0, 0.12)";
-                ctx.strokeRect(imgX, imgY, imgW, imgH);
-
-                // Cinta adhesiva / Washi-Tape decorativo en esquinas
+                // Cinta washi-tape superior inclinada
                 ctx.save();
-                ctx.translate(110, 85);
-                ctx.rotate(-18 * Math.PI / 180);
-                ctx.fillStyle = "rgba(234, 88, 12, 0.75)";
-                ctx.fillRect(-60, -18, 120, 36);
-                ctx.restore();
-
-                ctx.save();
-                ctx.translate(W - 110, 85);
-                ctx.rotate(18 * Math.PI / 180);
-                ctx.fillStyle = "rgba(234, 88, 12, 0.75)";
-                ctx.fillRect(-60, -18, 120, 36);
-                ctx.restore();
-
-                // Notas musicales en la base polaroid
-                ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
-                ctx.font = "28px serif";
+                ctx.translate(W / 2, 70);
+                ctx.rotate(-4 * Math.PI / 180);
+                ctx.fillStyle = "rgba(234, 88, 12, 0.85)";
+                ctx.fillRect(-140, -18, 280, 36);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "900 16px sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText("🎵  🎼  🎶  •  Loja Capital Musical", W / 2, H - 470);
+                ctx.fillText("♪ VIVE LOJA MUSICAL ♪", 0, 6);
+                ctx.restore();
+
+                // Faja blanca polaroid inferior
+                ctx.fillStyle = "#f3f0ea";
+                ctx.fillRect(40, H - 280, W - 80, 240);
+
+                ctx.fillStyle = "#121212";
+                ctx.font = "900 28px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText("RECUERDOS DE LA CIUDAD CASTELLANA", W / 2, H - 210);
+
+                ctx.fillStyle = "#EA580C";
+                ctx.font = "italic 700 20px serif";
+                ctx.fillText("Cuna de artistas, poetas y café", W / 2, H - 170);
             }
 
-            // 6. DIBUJAR STICKER CULTURAL SELECCIONADO (Rotado con personalidad)
+            // 6. DIBUJAR STICKER CULTURAL
             if (currentPostcardSticker !== 'none') {
                 ctx.save();
                 ctx.translate(W - 200, H - 560);
@@ -3435,36 +3504,28 @@
                 ctx.restore();
             }
 
-            // 7. TEXTOS DEL VIAJERO (Nombre, Lugar y Frase)
-            const isPolaroid = currentPostcardTheme === 'polaroid';
+            // 7. TEXTOS DEL VIAJERO
             ctx.textAlign = "center";
 
-            // Ubicación / Parada
-            ctx.fillStyle = isPolaroid ? "#EA580C" : "#EA580C";
+            ctx.fillStyle = "#EA580C";
             ctx.font = "900 32px sans-serif";
-            ctx.letterSpacing = "3px";
             ctx.fillText(`📍 ${userSpot.toUpperCase()}`, W / 2, H - 380);
 
-            // Nombre del Viajero / Firma
-            ctx.fillStyle = isPolaroid ? "#181818" : "#ffffff";
-            ctx.font = isPolaroid ? "italic 800 52px cursive, sans-serif" : "900 50px sans-serif";
-            ctx.letterSpacing = "1px";
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "900 50px sans-serif";
             ctx.fillText(userName, W / 2, H - 305);
 
-            // Frase o Dicho Lojano
-            ctx.fillStyle = isPolaroid ? "#333333" : "rgba(255, 255, 255, 0.9)";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
             ctx.font = "italic 600 28px serif, sans-serif";
             ctx.fillText(`"${userMsg}"`, W / 2, H - 235);
 
             // 8. PIE DE MARCA INSTITUCIONAL
-            ctx.fillStyle = isPolaroid ? "#EA580C" : "rgba(234, 88, 12, 0.95)";
+            ctx.fillStyle = "rgba(234, 88, 12, 0.95)";
             ctx.font = "900 22px sans-serif";
-            ctx.letterSpacing = "4px";
             ctx.fillText(postcardSettings.watermark || "VIVE LOJA • FIAVL 2026", W / 2, H - 120);
 
-            ctx.fillStyle = isPolaroid ? "#666666" : "rgba(255, 255, 255, 0.5)";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
             ctx.font = "600 16px sans-serif";
-            ctx.letterSpacing = "1px";
             ctx.fillText("Mesa Turística de Loja • GAD Municipal • Patrocina: ILE", W / 2, H - 85);
 
             ctx.restore();
@@ -3490,6 +3551,91 @@
                 ? `📸 Look at my travel postcard from ${userSpot} on Vive Loja! Create yours at: ${window.location.href}`
                 : `📸 ¡Mira mi postal de viaje desde *${userSpot}* en Vive Loja! Hecha por ${userName}. Crea la tuya en: ${window.location.href}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+        }
+
+        function handleUploadCustomFrame(e) {
+            e.preventDefault();
+            const name = document.getElementById('newFrameName').value.trim();
+            const icon = document.getElementById('newFrameIcon').value.trim() || '🖼️';
+            const url = document.getElementById('newFrameUrl').value.trim();
+
+            if (!name || !url) {
+                showToast('Por favor completa el nombre y la imagen del marco');
+                return;
+            }
+
+            const newFrame = {
+                id: 'frame_' + Date.now(),
+                name,
+                icon,
+                img: url
+            };
+
+            customPostcardFrames.push(newFrame);
+            localStorage.setItem('cyc_custom_frames', JSON.stringify(customPostcardFrames));
+
+            if (db) {
+                db.collection("settings").doc("postcard_frames").set({ frames: customPostcardFrames }, { merge: true }).catch(err => console.log(err));
+            }
+
+            document.getElementById('newFrameName').value = '';
+            document.getElementById('newFrameIcon').value = '';
+            document.getElementById('newFrameUrl').value = '';
+            const fileInput = document.getElementById('newFrameFile');
+            if(fileInput) fileInput.value = '';
+
+            renderAdminFramesList();
+            renderPublicFrameButtons();
+            showToast('¡Marco personalizado guardado!');
+        }
+
+        function handleCustomFrameFile(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('newFrameUrl').value = evt.target.result;
+                showToast('Imagen PNG cargada');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderAdminFramesList() {
+            const list = document.getElementById('adminFramesListContainer');
+            if (!list) return;
+            list.innerHTML = '';
+            if (customPostcardFrames.length === 0) {
+                list.innerHTML = '<p class="text-gray-400 text-xs text-center py-2">No has subido marcos personalizados aún.</p>';
+                return;
+            }
+            customPostcardFrames.forEach(frame => {
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
+                        <div class="flex items-center gap-2">
+                            <img src="${frame.img}" class="w-8 h-12 object-contain bg-black rounded border border-gray-700" alt="${frame.name}">
+                            <span class="text-brandGold font-bold">${frame.icon || '🖼️'} ${frame.name}</span>
+                        </div>
+                        <button type="button" onclick="deleteCustomFrame('${frame.id}')" class="text-red-400 hover:text-red-300 p-1.5" title="Eliminar marco">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteCustomFrame(id) {
+            customPostcardFrames = customPostcardFrames.filter(f => f.id !== id);
+            localStorage.setItem('cyc_custom_frames', JSON.stringify(customPostcardFrames));
+            if (db) {
+                db.collection("settings").doc("postcard_frames").set({ frames: customPostcardFrames }, { merge: true }).catch(err => console.log(err));
+            }
+            if (currentPostcardTheme === id) {
+                currentPostcardTheme = 'fiavl';
+            }
+            renderAdminFramesList();
+            renderPublicFrameButtons();
+            renderPostcardPreview();
+            showToast('Marco eliminado');
         }
 
         function handleSaveTimeSpot(e) {
@@ -3639,6 +3785,7 @@
                 document.getElementById('setPostcardWatermark').value = postcardSettings.watermark || "VIVE LOJA • FIAVL 2026";
                 document.getElementById('setPostcardSampleImg').value = postcardSettings.sampleImg || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80";
                 document.getElementById('setPostcardDefaultMsg').value = postcardSettings.defaultMsg || "¡Enamorándome de los sabores de Loja!";
+                renderAdminFramesList();
             } else if(tab === 'identidad') {
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
                 document.getElementById('tabBtnIdentidad').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
