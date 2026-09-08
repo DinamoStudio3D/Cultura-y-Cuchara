@@ -73,6 +73,25 @@
 
         .hero-slide { opacity: 0; transition: opacity 1.2s ease-in-out; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
         .hero-slide.active-slide { opacity: 1; }
+        /* Comparador Loja en el Tiempo */
+        .before-after-container { position: relative; overflow: hidden; user-select: none; -webkit-user-select: none; }
+        .before-img-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
+        .before-after-slider-handle {
+            position: absolute; top: 0; bottom: 0; width: 3px; background: #EA580C;
+            transform: translateX(-50%); cursor: ew-resize; z-index: 20;
+            box-shadow: 0 0 14px rgba(234, 88, 12, 0.85);
+        }
+        .slider-circle-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 38px; height: 38px; border-radius: 50%; background: #121212; border: 2px solid #EA580C;
+            color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); pointer-events: none;
+        }
+        .postcard-preview-container {
+            aspect-ratio: 9 / 16;
+            max-width: 330px;
+            width: 100%;
+        }
     </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -110,7 +129,9 @@
                     <span class="text-brandGold text-[9px] uppercase tracking-widest font-semibold" data-i18n="navSub">Sabores • Historias • Destinos</span>
                 </div>
             </a>
-            <div class="hidden md:flex items-center gap-3 lg:gap-5 text-xs lg:text-sm font-semibold text-gray-200">
+            
+            <!-- Desktop / Large Navigation Menu -->
+            <div class="hidden xl:flex items-center gap-3 lg:gap-4 text-xs lg:text-sm font-semibold text-gray-200">
                 <a href="#inicio" class="hover:text-brandGold transition-colors" data-i18n="menuHome">Inicio</a>
                 <a href="#tendencia" class="hover:text-brandGold transition-colors" data-i18n="menuTrending">En Tendencia</a>
                 <a href="#mapa" class="hover:text-brandGold transition-colors" data-i18n="menuMap">El Mapa</a>
@@ -120,6 +141,8 @@
                     <i class="fa-solid fa-masks-theater text-base"></i>
                     <span>FIAVL 2026</span>
                 </a>
+                <a href="#loja-tiempo" class="hover:text-brandGold transition-colors" data-i18n="menuTime">Loja en el Tiempo</a>
+                <a href="#postales" class="hover:text-brandGold transition-colors" data-i18n="menuPostcards">Postales</a>
                 <a href="#pasaporte" class="hover:text-brandGold transition-colors relative">
                     <i class="fa-solid fa-passport text-brandGold mr-1"></i><span data-i18n="menuPassport">Pasaporte</span>
                     <span id="navStampBadge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0/6</span>
@@ -135,29 +158,38 @@
                     <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta</span> <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1.5 rounded-full hidden">0</span>
                 </button>
             </div>
-            <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl p-2 relative" aria-label="Abrir Menú">
+
+            <!-- Hamburger Button for Mobile / Tablet -->
+            <button onclick="toggleMobileMenu()" class="xl:hidden text-white text-xl p-2 relative" aria-label="Abrir Menú">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
-        <div id="mobileMenu" class="hidden md:hidden pt-4 pb-3 border-t border-gray-800 mt-3 flex flex-col gap-3 text-sm glass-nav px-4">
-            <a href="#inicio" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuHome">Inicio</a>
-            <a href="#tendencia" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuTrending">En Tendencia</a>
-            <a href="#mapa" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuMap">El Mapa</a>
-            <a href="#establecimientos" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuRoute">La Ruta</a>
-            <a href="#emprendedores" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()" data-i18n="menuEntrepreneurs">Emprendedores</a>
-            <a href="#fiavl" class="text-brandGold hover:text-white flex items-center gap-2" onclick="toggleMobileMenu()">
-                <i class="fa-solid fa-masks-theater text-base"></i>
-                <span>FIAVL 2026</span>
-            </a>
-            <a href="#pasaporte" class="text-gray-300 hover:text-brandGold" onclick="toggleMobileMenu()"><i class="fa-solid fa-passport text-brandGold mr-1"></i><span data-i18n="menuPassport">Mi Pasaporte</span></a>
-            <div class="flex items-center justify-between py-1 border-t border-gray-800">
+
+        <!-- Single Responsive Mobile / Tablet Dropdown Menu -->
+        <div id="mobileMenu" class="hidden xl:hidden pt-4 pb-4 border-t border-gray-800 mt-3 glass-nav px-4">
+            <div class="grid grid-cols-2 gap-2 text-xs font-semibold mb-3">
+                <a href="#inicio" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuHome"><i class="fa-solid fa-house text-brandGold"></i> Inicio</a>
+                <a href="#tendencia" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuTrending"><i class="fa-solid fa-fire text-red-500"></i> En Tendencia</a>
+                <a href="#mapa" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuMap"><i class="fa-solid fa-map text-brandGold"></i> El Mapa</a>
+                <a href="#establecimientos" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuRoute"><i class="fa-solid fa-utensils text-brandGold"></i> La Ruta</a>
+                <a href="#emprendedores" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuEntrepreneurs"><i class="fa-solid fa-store text-brandGold"></i> Emprendedores</a>
+                <a href="#fiavl" class="bg-brandGold/15 p-2.5 rounded-xl border border-brandGold/50 text-brandGold font-bold flex items-center gap-2" onclick="toggleMobileMenu()"><i class="fa-solid fa-masks-theater"></i> FIAVL 2026</a>
+                <a href="#loja-tiempo" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuTime"><i class="fa-solid fa-clock-rotate-left text-brandGold"></i> Loja en el Tiempo</a>
+                <a href="#postales" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuPostcards"><i class="fa-solid fa-camera-retro text-brandGold"></i> Postales</a>
+                <a href="#pasaporte" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()"><i class="fa-solid fa-passport text-brandGold"></i> <span data-i18n="menuPassport">Pasaporte</span></a>
+                <a href="#agenda" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()"><i class="fa-solid fa-calendar-days text-brandGold"></i> <span data-i18n="menuAgenda">Agenda</span></a>
+            </div>
+            
+            <div class="flex items-center justify-between py-2 border-t border-gray-800">
                 <span class="text-xs text-gray-400">Idioma / Language:</span>
                 <select id="langSelectorMobile" onchange="changeLanguage(this.value); toggleMobileMenu()" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2 py-1 text-xs font-bold outline-none">
                     <option value="es">🇪🇸 Español</option>
                     <option value="en">🇺🇸 English</option>
                 </select>
             </div>
-            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="text-brandGold hover:text-white text-left"><i class="fa-solid fa-mug-hot mr-1"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span></button>
+            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="w-full mt-2 bg-brandGold text-white font-bold py-2.5 rounded-xl text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-2">
+                <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span>
+            </button>
         </div>
     </nav>
 
@@ -317,6 +349,17 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
             <div class="lg:col-span-2 rounded-2xl h-[460px] md:h-[500px] lg:h-[520px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
+                
+                <div id="mapSpotlightIndicator" class="absolute top-4 left-4 right-4 sm:right-auto z-[900] bg-brandDark/90 backdrop-blur border border-brandGold text-white px-4 py-2 rounded-2xl shadow-xl flex items-center justify-between gap-3 hidden">
+                    <div class="flex items-center gap-2 truncate">
+                        <span class="w-2.5 h-2.5 rounded-full bg-brandGold animate-ping flex-shrink-0"></span>
+                        <span class="text-xs font-bold text-gray-200 truncate">Punto: <strong id="mapSpotlightText" class="text-brandGold"></strong></span>
+                    </div>
+                    <button onclick="clearSpotlightPin()" class="text-gray-400 hover:text-white text-xs bg-white/10 hover:bg-white/20 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" title="Cerrar indicador">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
                 <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
                     <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
                         <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> <span data-i18n="btnGps">Cerca de mí</span>
@@ -337,6 +380,9 @@
                         <span id="previewOpenStatus" class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded-md text-[10px]">Abierto ahora</span>
                     </div>
                     <h3 id="previewTitle" class="text-xl font-bold mb-1 pr-8 text-brandDark">El Rincón Lojano</h3>
+                    <div id="previewDistanceBadge" class="inline-flex items-center gap-1.5 text-xs text-blue-600 font-bold mb-2 hidden">
+                        <i class="fa-solid fa-location-arrow"></i> <span></span>
+                    </div>
                     <p id="previewDesc" class="text-gray-600 text-xs sm:text-sm mb-3 h-12 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
                     
                     <div class="space-y-2 text-xs sm:text-sm text-gray-700 border-t border-gray-100 pt-3">
@@ -480,6 +526,152 @@
                         </div>
                     </div>
                     <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loja en el Tiempo Section (Antes vs Después) -->
+    <section id="loja-tiempo" class="py-16 lg:py-24 px-4 md:px-8 lg:px-12 bg-[#0f0f0f] text-white border-t border-brandGold/30 relative overflow-hidden reveal">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-10">
+                <span class="bg-brandGold/20 text-brandGold font-bold px-4 py-1.5 rounded-full text-xs uppercase tracking-widest border border-brandGold/40 inline-flex items-center gap-2 shadow-warm-glow mb-3">
+                    <i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="timeBadge">Patrimonio Vivo</span>
+                </span>
+                <h2 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white" data-i18n="timeTitle">
+                    Loja en el <span class="text-brandGold">Tiempo</span>
+                </h2>
+                <p class="text-gray-300 text-xs sm:text-sm mt-2 max-w-2xl mx-auto leading-relaxed" data-i18n="timeDesc">
+                    Desliza el cursor o tu dedo sobre las imágenes para viajar entre el ayer y el hoy de nuestros rincones más queridos.
+                </p>
+
+                <!-- Selector de sitios históricos -->
+                <div class="flex items-center justify-center gap-2 mt-6 overflow-x-auto hide-scrollbar pb-2" id="lojaTimeTabsContainer">
+                    <!-- Se llena dinámicamente con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Contenedor del visor Antes / Después -->
+            <div class="max-w-4xl mx-auto bg-black/60 rounded-3xl p-3 sm:p-5 border-2 border-brandGold/40 shadow-2xl">
+                <div id="beforeAfterViewer" class="before-after-container w-full h-[320px] sm:h-[420px] md:h-[480px] rounded-2xl relative shadow-inner overflow-hidden cursor-ew-resize">
+                    <!-- Imagen Después (Presente - Fondo) -->
+                    <img id="timeImgAfter" src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80" alt="Loja Presente" class="absolute inset-0 w-full h-full object-cover pointer-events-none">
+                    <span id="timeLabelAfter" class="absolute bottom-4 right-4 bg-brandDark/85 backdrop-blur text-brandGold border border-brandGold/50 text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow z-10">
+                        Presente (Hoy)
+                    </span>
+
+                    <!-- Imagen Antes (Pasado - Overlay recortado) -->
+                    <div id="timeOverlayBefore" class="before-img-overlay pointer-events-none" style="width: 50%;">
+                        <img id="timeImgBefore" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" alt="Loja Pasado" class="absolute inset-0 w-full h-full object-cover max-w-none" style="filter: grayscale(100%) contrast(110%);">
+                        <span id="timeLabelBefore" class="absolute bottom-4 left-4 bg-black/85 backdrop-blur text-white border border-gray-600 text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow z-10">
+                            Ayer (1945)
+                        </span>
+                    </div>
+
+                    <!-- Divisor / Barra deslizante -->
+                    <div id="timeSliderHandle" class="before-after-slider-handle" style="left: 50%;">
+                        <div class="slider-circle-btn">
+                            <i class="fa-solid fa-arrows-left-right text-brandGold"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles del punto histórico -->
+                <div class="mt-4 p-4 rounded-xl bg-[#141414] border border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div>
+                        <h3 id="timeSpotTitle" class="text-base sm:text-lg font-black text-brandGold">Puerta de la Ciudad</h3>
+                        <p id="timeSpotDesc" class="text-xs text-gray-300 mt-0.5 leading-relaxed">De entrada fortificada a ícono cultural y museo de arte vivo.</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <button onclick="centerTimeSpotOnMap()" class="bg-brandGold text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-map-pin"></i> <span data-i18n="btnViewMap">Ver en el mapa</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Generador de Postales Digitales e Historias -->
+    <section id="postales" class="py-16 lg:py-24 px-4 md:px-8 lg:px-12 bg-white text-brandDark border-t border-b border-gray-200 reveal">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="bg-red-500/10 text-red-600 font-bold px-4 py-1.5 rounded-full text-xs uppercase tracking-widest border border-red-500/20 inline-flex items-center gap-2 mb-3">
+                    <i class="fa-solid fa-camera-retro"></i> <span data-i18n="postcardBadge">Comparte tu Experiencia</span>
+                </span>
+                <h2 class="text-2xl sm:text-4xl lg:text-5xl font-black text-brandDark" data-i18n="postcardTitle">
+                    Crea tu Postal <span class="text-brandGold">Vive Loja</span>
+                </h2>
+                <p class="text-gray-600 text-xs sm:text-sm mt-2 max-w-2xl mx-auto leading-relaxed" data-i18n="postcardDesc">
+                    Sube tu foto, escoge tu marco favorito (FIAVL 2026, Ruta del Café o Tradición Lojana), personaliza tu recuerdo y descárgalo con formato listo para tus Historias de Instagram y WhatsApp.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
+                <!-- Panel de Configuración -->
+                <div class="lg:col-span-6 bg-brandCream p-6 sm:p-8 rounded-3xl border-2 border-brandGold/40 shadow-warm-glow space-y-4">
+                    <div>
+                        <label class="block text-xs font-black uppercase tracking-wider text-brandDark mb-1.5">
+                            <i class="fa-solid fa-cloud-arrow-up text-brandGold mr-1"></i> <span data-i18n="postcardUploadLabel">1. Sube tu Foto de Loja</span>
+                        </label>
+                        <input type="file" id="postcardImageInput" accept="image/*" onchange="handlePostcardUpload(event)" class="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brandDark file:text-brandGold hover:file:bg-black cursor-pointer bg-white border border-gray-300 rounded-xl p-1.5">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase tracking-wider text-brandDark mb-1.5">
+                            <i class="fa-solid fa-palette text-brandGold mr-1"></i> <span data-i18n="postcardFrameLabel">2. Elige el Estilo del Marco</span>
+                        </label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="setPostcardTheme('fiavl')" id="btnThemeFiavl" class="px-2.5 py-2 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm">
+                                <span>🎭</span> <span class="text-[10px]">FIAVL 2026</span>
+                            </button>
+                            <button type="button" onclick="setPostcardTheme('vintage')" id="btnThemeVintage" class="px-2.5 py-2 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold">
+                                <span>📜</span> <span class="text-[10px]">Postal Clásica</span>
+                            </button>
+                            <button type="button" onclick="setPostcardTheme('cafe')" id="btnThemeCafe" class="px-2.5 py-2 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold">
+                                <span>☕</span> <span class="text-[10px]">Ruta del Café</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardNameLabel">Tu Nombre o Apodo</label>
+                            <input type="text" id="postcardUserName" oninput="renderPostcardPreview()" maxlength="25" placeholder="Ej. Alex Viajero" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-brandDark font-bold outline-none focus:border-brandGold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardSpotLabel">Lugar o Parada</label>
+                            <input type="text" id="postcardUserSpot" oninput="renderPostcardPreview()" maxlength="30" placeholder="Ej. Calle Lourdes, Loja" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-brandDark font-bold outline-none focus:border-brandGold">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardMsgLabel">Frase o Saludo Corto</label>
+                        <input type="text" id="postcardUserMsg" oninput="renderPostcardPreview()" maxlength="50" placeholder="¡Enamorándome de los sabores de Loja!" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-brandDark font-bold outline-none focus:border-brandGold">
+                    </div>
+
+                    <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+                        <button onclick="downloadPostcardImage()" class="flex-1 bg-brandGold text-white font-black py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider shadow-warm-glow flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> <span data-i18n="btnDownloadPostcard">Descargar Postal (HD)</span>
+                        </button>
+                        <button onclick="sharePostcardWhatsapp()" class="bg-green-500 text-white font-bold px-4 py-3 rounded-xl hover:bg-green-600 transition text-xs flex items-center justify-center gap-1.5 shadow">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> <span data-i18n="btnSharePostcard">Compartir</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Previsualización en Vivo de la Postal (Formato Historia 9:16) -->
+                <div class="lg:col-span-6 flex flex-col items-center justify-center">
+                    <div class="postcard-preview-container rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold bg-brandDark p-3 relative flex items-center justify-center">
+                        <canvas id="postcardCanvas" class="w-full h-full rounded-2xl shadow-inner bg-black object-contain block"></canvas>
+                        <!-- Indicador visual sutil -->
+                        <span class="absolute top-5 right-5 bg-black/75 backdrop-blur text-brandGold border border-brandGold/40 text-[9px] font-bold px-2 py-0.5 rounded-full shadow pointer-events-none">
+                            <i class="fa-solid fa-mobile-screen mr-1"></i> Story 9:16
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-2 text-center" data-i18n="postcardHint">
+                        💡 Lista para publicar en tus estados de WhatsApp o Stories de Instagram.
+                    </p>
                 </div>
             </div>
         </div>
@@ -675,7 +867,7 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo del GAD Municipal y Mesa Turística. © 2026.</span> 
-                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-gray-800 hover:text-brandGold transition text-[16px] px-2 select-none" title="Admin">⚙️</span>
+                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-3.5 py-3 select-none inline-block -m-2" title="Admin">.</span>
             </div>
         </div>
     </footer>
@@ -773,6 +965,8 @@
                 <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y PIN QR</button>
                 <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Emprendedores</button>
                 <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda Cultural</button>
+                <button onclick="switchAdminTab('lojatiempo')" id="tabBtnLojaTiempo" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Loja en el Tiempo</button>
+                <button onclick="switchAdminTab('postales')" id="tabBtnPostales" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Postales & Marcos</button>
                 <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Carrusel, Vídeo y Logo</button>
                 <button onclick="switchAdminTab('popup')" id="tabBtnPopup" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Popup Notificación</button>
             </div>
@@ -1009,6 +1203,98 @@
                     </div>
                 </div>
 
+                <!-- Loja en el Tiempo Tab en Admin -->
+                <div id="adminTabLojaTiempo" class="space-y-6 hidden">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4" id="timeFormTitle"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Registrar / Editar Punto Histórico</h4>
+                        <form onsubmit="handleSaveTimeSpot(event)" class="space-y-4">
+                            <input type="hidden" id="timeEditId">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Nombre del Punto (Español)</label>
+                                    <input type="text" id="timeAdmTitle" required placeholder="Ej. Puerta de la Ciudad" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Spot Name (English)</label>
+                                    <input type="text" id="timeAdmTitleEn" placeholder="Ej. City Gate (Puerta de la Ciudad)" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none focus:border-brandGold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Pasado (Ej. Ayer - 1940)</label>
+                                    <input type="text" id="timeAdmLabelPast" required placeholder="Ayer (1940)" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Etiqueta Presente (Ej. Presente - Hoy)</label>
+                                    <input type="text" id="timeAdmLabelPresent" required placeholder="Hoy (2026)" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL Imagen Antigua (Pasado)</label>
+                                    <input type="text" id="timeAdmImgPast" required placeholder="https://..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold"><i class="fa-solid fa-image mr-1"></i> URL Imagen Moderna (Presente)</label>
+                                    <input type="text" id="timeAdmImgPresent" required placeholder="https://..." class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Coordenadas (Lat, Lng)</label>
+                                    <input type="text" id="timeAdmCoords" placeholder="-3.9870, -79.2052" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Ubicación de referencia</label>
+                                    <input type="text" id="timeAdmLocation" placeholder="Norte de Loja / Av. Gran Colombia" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Descripción Histórica (Español)</label>
+                                    <textarea id="timeAdmDesc" required rows="2" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Historical Description (English)</label>
+                                    <textarea id="timeAdmDescEn" rows="2" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none"></textarea>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" id="saveTimeBtnText" class="flex-1 bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">Guardar Punto Histórico</button>
+                                <button type="button" onclick="resetTimeSpotForm()" class="bg-gray-700 text-white px-4 py-3 rounded-xl text-xs font-bold">Nuevo</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-white mb-3">Puntos Históricos Configurados</h4>
+                        <div class="space-y-2" id="adminTimeSpotsList"></div>
+                    </div>
+                </div>
+
+                <!-- Postales Tab en Admin -->
+                <div id="adminTabPostales" class="space-y-6 hidden">
+                    <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
+                        <h4 class="font-bold text-sm text-brandGold mb-4"><i class="fa-solid fa-camera-retro mr-1"></i> Configuración del Generador de Postales</h4>
+                        <form onsubmit="handleSavePostcardSettings(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] text-brandGold mb-1 uppercase font-bold">Texto de Marca / Watermark Inferior</label>
+                                <input type="text" id="setPostcardWatermark" required placeholder="VIVE LOJA • FIAVL 2026" class="w-full bg-[#121212] border border-brandGold/50 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">URL de Foto de Muestra / Default (Fondo)</label>
+                                <input type="text" id="setPostcardSampleImg" required placeholder="https://..." class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1 uppercase font-semibold">Frase Predeterminada para Turistas</label>
+                                <input type="text" id="setPostcardDefaultMsg" placeholder="¡Enamorándome de los sabores de Loja!" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs text-white outline-none">
+                            </div>
+                            <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider">
+                                Guardar Ajustes de Postales
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- Carrusel de Fondo, Vídeo y Logo Tab -->
                 <div id="adminTabIdentidad" class="space-y-6 hidden">
                     <div class="bg-black/40 border border-gray-800 p-5 rounded-2xl">
@@ -1176,6 +1462,8 @@
                 menuMap: "El Mapa",
                 menuRoute: "La Ruta",
                 menuEntrepreneurs: "Emprendedores",
+                menuTime: "Loja en el Tiempo",
+                menuPostcards: "Postales",
                 menuPassport: "Pasaporte",
                 menuAgenda: "Agenda",
                 menuItinerary: "Mi Ruta",
@@ -1222,6 +1510,20 @@
                 fiavlCard4Title: "Sello FIAVL Especial",
                 fiavlCard4Tag: "En tu Pasaporte",
                 fiavlCard4Desc: "Visita los puntos artísticos autorizados y obtén validaciones exclusivas en tu pasaporte interactivo.",
+                timeBadge: "Patrimonio Vivo",
+                timeTitle: 'Loja en el <span class="text-brandGold">Tiempo</span>',
+                timeDesc: "Desliza el cursor o tu dedo sobre las imágenes para viajar entre el ayer y el hoy de nuestros rincones más queridos.",
+                postcardBadge: "Comparte tu Experiencia",
+                postcardTitle: 'Crea tu Postal <span class="text-brandGold">Vive Loja</span>',
+                postcardDesc: "Sube tu foto, escoge tu marco favorito (FIAVL 2026, Ruta del Café o Tradición Lojana), personaliza tu recuerdo y descárgalo con formato listo para tus Historias de Instagram y WhatsApp.",
+                postcardUploadLabel: "1. Sube tu Foto de Loja",
+                postcardFrameLabel: "2. Elige el Estilo del Marco",
+                postcardNameLabel: "Tu Nombre o Apodo",
+                postcardSpotLabel: "Lugar o Parada",
+                postcardMsgLabel: "Frase o Saludo Corto",
+                btnDownloadPostcard: "Descargar Postal (HD)",
+                btnSharePostcard: "Compartir",
+                postcardHint: "💡 Lista para publicar en tus estados de WhatsApp o Stories de Instagram.",
                 ileSub: "Tradición y Sabor",
                 ileTitle: "Secretos de Cocina con ILE",
                 ileDesc: "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.",
@@ -1267,6 +1569,8 @@
                 menuMap: "The Map",
                 menuRoute: "The Route",
                 menuEntrepreneurs: "Entrepreneurs",
+                menuTime: "Loja Through Time",
+                menuPostcards: "Postcards",
                 menuPassport: "Passport",
                 menuAgenda: "Agenda",
                 menuItinerary: "My Route",
@@ -1313,6 +1617,20 @@
                 fiavlCard4Title: "Special FIAVL Stamp",
                 fiavlCard4Tag: "In your Passport",
                 fiavlCard4Desc: "Visit authorized festival spots and receive exclusive stamps on your smart passport.",
+                timeBadge: "Living Heritage",
+                timeTitle: 'Loja Through <span class="text-brandGold">Time</span>',
+                timeDesc: "Slide your cursor or finger across the images to travel between yesterday and today in our most iconic spots.",
+                postcardBadge: "Share your Journey",
+                postcardTitle: 'Create your <span class="text-brandGold">Vive Loja</span> Postcard',
+                postcardDesc: "Upload your photo, pick a signature frame (FIAVL 2026, Coffee Route or Loja Heritage), customize your memory, and export it ready for your Instagram & WhatsApp Stories.",
+                postcardUploadLabel: "1. Upload your Loja Photo",
+                postcardFrameLabel: "2. Choose Frame Style",
+                postcardNameLabel: "Your Name or Handle",
+                postcardSpotLabel: "Location or Stop",
+                postcardMsgLabel: "Short Greeting or Quote",
+                btnDownloadPostcard: "Download Postcard (HD)",
+                btnSharePostcard: "Share",
+                postcardHint: "💡 Ready to post directly to your WhatsApp status or Instagram Stories.",
                 ileSub: "Tradition & Flavor",
                 ileTitle: "Kitchen Secrets with ILE",
                 ileDesc: "The soul of Loja gastronomy lies in its marinades, aromatic herbs and the unmistakable touch of Industria Lojana de Especerías, endorsed by the Tourism Board.",
@@ -1468,6 +1786,59 @@
             { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
         ];
 
+        let lojaTimeList = JSON.parse(localStorage.getItem('cyc_dynamic_lojatiempo')) || [
+            {
+                id: 'time_puerta',
+                title: 'Puerta de la Ciudad',
+                titleEn: 'City Gate (Puerta de la Ciudad)',
+                labelPast: 'Ayer (1950)',
+                labelPresent: 'Hoy (2026)',
+                imgPast: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+                imgPresent: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80',
+                desc: 'Antiguo puente y acceso fluvial sobre el río Malacatos, hoy símbolo monumental y centro de exposiciones de Loja.',
+                descEn: 'Historic fortified bridge over the Malacatos river, transformed into a cultural hub and iconic landmark.',
+                lat: -3.9870,
+                lng: -79.2052
+            },
+            {
+                id: 'time_san_sebastian',
+                title: 'Plaza de San Sebastián',
+                titleEn: 'San Sebastián Historic Square',
+                labelPast: 'Ayer (1930)',
+                labelPresent: 'Hoy (2026)',
+                imgPast: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80',
+                imgPresent: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80',
+                desc: 'La torre del reloj de 32 metros y las tradicionales glorietas que han albergado tertulias, ferias y arte por generaciones.',
+                descEn: 'The 32-meter clock tower and shaded pergolas, heart of local gatherings, cafes and festival events.',
+                lat: -3.9985,
+                lng: -79.2045
+            },
+            {
+                id: 'time_calle_lourdes',
+                title: 'Calle Lourdes Patrimonial',
+                titleEn: 'Lourdes Heritage Street',
+                labelPast: 'Ayer (1960)',
+                labelPresent: 'Hoy (2026)',
+                imgPast: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+                imgPresent: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
+                desc: 'La calle colonial empedrada más famosa de la ciudad, donde las antiguas casonas cobijan hoy cafés de especialidad y artesanías.',
+                descEn: 'Loja’s most famous cobblestone street, whose adobe colonial houses now host artisan workshops and coffee bars.',
+                lat: -3.9960,
+                lng: -79.2030
+            }
+        ];
+        let currentTimeSpotIndex = 0;
+
+        let postcardSettings = JSON.parse(localStorage.getItem('cyc_postcard_settings')) || {
+            watermark: "VIVE LOJA • FIAVL 2026",
+            sampleImg: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80",
+            defaultMsg: "¡Qué elegancia de la de Francia, qué sabor el de mi Loja!"
+        };
+        let currentPostcardTheme = 'fiavl';
+        let currentPostcardFilter = 'none';
+        let currentPostcardSticker = 'cepa';
+        let currentUploadedImageObj = null;
+
         let currentLocationIndex = 0;
         let visitedLocations = JSON.parse(localStorage.getItem('cyc_visited_locations')) || [];
         let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
@@ -1477,6 +1848,71 @@
 
         let map, markersLayer, userMarkerInstance = null;
         let markersMap = {};
+        let spotlightMarker = null;
+
+        function clearSpotlightPin() {
+            if (spotlightMarker && map) {
+                map.removeLayer(spotlightMarker);
+                spotlightMarker = null;
+            }
+            const indicator = document.getElementById('mapSpotlightIndicator');
+            if (indicator) indicator.classList.add('hidden');
+        }
+
+        function showSpotlightPinOnMap({ lat, lng, title, tag, subtext, icon, type }) {
+            if (!map || !lat || !lng) return;
+
+            clearSpotlightPin();
+
+            const isHistoric = type === 'historic';
+            const pinBg = isHistoric ? 'bg-amber-600' : 'bg-brandGold';
+            const pinIcon = icon || (isHistoric ? 'fa-landmark' : 'fa-calendar-days');
+
+            const customIcon = L.divIcon({
+                className: 'custom-leaflet-icon',
+                html: `
+                    <div class="relative flex items-center justify-center pointer-events-auto" style="touch-action: none;">
+                        <span class="absolute w-12 h-12 rounded-full ${pinBg} opacity-75 animate-ping"></span>
+                        <div class="${pinBg} text-white w-12 h-12 rounded-full border-4 border-white shadow-2xl flex items-center justify-center relative z-10 hover:scale-110 transition-transform">
+                            <i class="fa-solid ${pinIcon} text-lg pointer-events-none"></i>
+                        </div>
+                    </div>
+                `,
+                iconSize: [48, 48],
+                iconAnchor: [24, 24],
+                popupAnchor: [0, -28]
+            });
+
+            const popupHtml = `
+                <div class="text-center p-1.5 min-w-[190px]">
+                    <span class="bg-brandGold text-white text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow inline-block mb-1">${tag || 'Punto Destacado'}</span>
+                    <b class="text-brandDark text-xs sm:text-sm block font-black leading-tight my-1">${title}</b>
+                    ${subtext ? `<p class="text-[11px] text-gray-600 mb-2 leading-snug">${subtext}</p>` : ''}
+                    <div class="flex gap-1.5 justify-center mt-2 pt-2 border-t border-gray-100">
+                        <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" class="bg-brandDark text-brandGold px-2.5 py-1 rounded-lg text-[10px] font-bold hover:bg-black transition">
+                            <i class="fa-solid fa-diamond-turn-right mr-1"></i> Cómo llegar
+                        </a>
+                        <button onclick="clearSpotlightPin()" class="bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg text-[10px] font-bold hover:bg-gray-200 transition">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            spotlightMarker = L.marker([lat, lng], { icon: customIcon, zIndexOffset: 1000 }).addTo(map);
+            spotlightMarker.bindPopup(popupHtml, { autoClose: false, closeOnClick: false }).openPopup();
+
+            map.flyTo([lat, lng], 17, { duration: 1.2 });
+
+            const indicator = document.getElementById('mapSpotlightIndicator');
+            const indicatorText = document.getElementById('mapSpotlightText');
+            if (indicator && indicatorText) {
+                indicatorText.innerText = title;
+                indicator.classList.remove('hidden');
+            }
+
+            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+        }
         try {
             map = L.map('lojaMap', { 
                 zoomControl: false, 
@@ -1769,7 +2205,8 @@
                 const ev = upcomingEvents[currentEventIndex % upcomingEvents.length];
                 const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
                 textEl.innerHTML = `🔥 <b>${evTitle}</b> en ${ev.location} (${ev.date})`;
-                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat}, ${ev.lng}, '${evTitle.replace(/'/g, "\\'")}')`);
+                
+                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}', '${ev.date || ''}', '${(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')`);
                 currentEventIndex = (currentEventIndex + 1) % upcomingEvents.length;
             }
 
@@ -1785,6 +2222,8 @@
             renderTrendingUI();
             renderAgendaUI();
             renderEmprendedoresUI();
+            renderLojaTimeUI();
+            renderPostcardPreview();
             updateItineraryUI();
             if(map) {
                 setTimeout(() => { map.invalidateSize(); }, 250);
@@ -2006,24 +2445,6 @@
                 `;
             });
 
-            let todayStr = new Date().toISOString().split('T')[0];
-            eventsList.forEach((ev) => {
-                if (ev.date && ev.date < todayStr) return;
-                if(ev.lat && ev.lng) {
-                    const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
-                    const eventIcon = L.divIcon({
-                        className: 'custom-leaflet-icon',
-                        html: `<div class="bg-brandGold text-white w-11 h-11 rounded-full border-[3px] border-white flex items-center justify-center shadow-xl animate-bounce" style="touch-action: none;">
-                                 <i class="fa-solid fa-calendar-days text-sm"></i>
-                               </div>`,
-                        iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -24]
-                    });
-                    const evMarker = L.marker([ev.lat, ev.lng], { icon: eventIcon });
-                    evMarker.bindPopup(`<div class="text-center p-1"><span class="bg-brandGold text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">Evento Cultural</span><b class="text-brandDark text-xs block mt-1">${evTitle}</b><p class="text-[10px] text-gray-600 mt-0.5">${ev.date} - ${ev.location}</p></div>`);
-                    markersLayer.addLayer(evMarker);
-                }
-            });
-
             if(userMarkerInstance) {
                 userMarkerInstance.addTo(markersLayer);
             }
@@ -2097,7 +2518,7 @@
         }
 
         function locateUserGPS() {
-            showToast(currentLang === 'en' ? 'Finding your location...' : 'Obteniendo tu ubicación exacta...');
+            showToast('Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
@@ -2107,60 +2528,59 @@
                         
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
-                            html: `<div class="text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce bg-blue-600" style="touch-action: none;">
+                            html: `<div class="blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce bg-blue-600" style="touch-action: none;">
                                      <i class="fa-solid fa-street-view text-2xl"></i>
                                    </div>`,
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
                         });
                         
-                        if (userMarkerInstance && markersLayer) {
+                        if(userMarkerInstance && markersLayer) {
                             markersLayer.removeLayer(userMarkerInstance);
                         }
                         userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
                           .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
+                        if(markersLayer) markersLayer.addLayer(userMarkerInstance);
                         
-                        renderMapAndGrid(); 
+                        renderMapAndGrid();
 
-                        // Buscar el establecimiento más cercano
-                        let closestIndex = -1;
-                        let minDistance = Infinity;
-                        locations.forEach((loc, idx) => {
-                            if (loc.lat && loc.lng) {
-                                let d = calcularDistanciaKm(lat, lng, loc.lat, loc.lng);
-                                if (d < minDistance) {
-                                    minDistance = d;
-                                    closestIndex = idx;
+                        // Detect and highlight closest establishment
+                        if (locations.length > 0) {
+                            let closestIndex = 0;
+                            let minDistance = Infinity;
+                            locations.forEach((loc, idx) => {
+                                if (loc.lat && loc.lng) {
+                                    let dist = calcularDistanciaKm(lat, lng, loc.lat, loc.lng);
+                                    if (dist < minDistance) {
+                                        minDistance = dist;
+                                        closestIndex = idx;
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                        if (closestIndex !== -1) {
                             selectLocation(closestIndex, false);
-                            const closestLoc = locations[closestIndex];
-                            const distFormatted = minDistance < 1 ? `${Math.round(minDistance * 1000)} m` : `${minDistance.toFixed(1)} km`;
-                            const locTitle = (currentLang === 'en' && closestLoc.titleEn) ? closestLoc.titleEn : closestLoc.title;
 
-                            // Encuadrar el mapa mostrando al usuario y al establecimiento más cercano
-                            if (map && closestLoc.lat && closestLoc.lng) {
+                            const closestLoc = locations[closestIndex];
+                            if (closestLoc && closestLoc.lat && closestLoc.lng && map) {
                                 const bounds = L.latLngBounds([
                                     [lat, lng],
                                     [closestLoc.lat, closestLoc.lng]
                                 ]);
-                                map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16, animate: true });
+                                map.fitBounds(bounds, { padding: [60, 60], maxZoom: 16 });
+                                if (markersMap[closestLoc.id]) {
+                                    markersMap[closestLoc.id].openPopup();
+                                }
                             }
-
-                            if (markersMap[closestLoc.id]) {
-                                markersMap[closestLoc.id].openPopup();
-                            }
-
-                            showToast(currentLang === 'en' ? `📍 Nearest spot: ${locTitle} (${distFormatted})` : `📍 Más cercano: ${locTitle} (a ${distFormatted})`);
+                            
+                            const distFormatted = minDistance < 1 ? `${Math.round(minDistance * 1000)} m` : `${minDistance.toFixed(1)} km`;
+                            const locTitle = (currentLang === 'en' && closestLoc.titleEn) ? closestLoc.titleEn : closestLoc.title;
+                            showToast(`📍 Más cercano: ${locTitle} (${distFormatted})`);
                         } else {
                             if(map) map.setView([lat, lng], 16, { animate: true });
                             showToast('¡Ubicación encontrada!');
                         }
                     },
-                    () => { centerOnLoja(); },
-                    { timeout: 8000, enableHighAccuracy: true }
+                    (err) => { centerOnLoja(); },
+                    { timeout: 6000, enableHighAccuracy: true }
                 );
             } else {
                 centerOnLoja();
@@ -2171,6 +2591,7 @@
             const lojaLat = -3.9931;
             const lojaLng = -79.2042;
             userCoords = { lat: lojaLat, lng: lojaLng };
+            clearSpotlightPin();
             if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
             renderMapAndGrid();
             selectLocation(0);
@@ -2248,8 +2669,7 @@
         function updateItineraryUI() {
             const container = document.getElementById('itineraryListContainer');
             const badge = document.getElementById('itineraryBadge');
-            const badgeTablet = document.getElementById('itineraryBadgeTablet');
-            const badgeMobile = document.getElementById('itineraryBadgeMobile');
+            const navBadge = document.getElementById('navStampBadge');
             if(!container) return;
             container.innerHTML = '';
 
@@ -2258,21 +2678,17 @@
                     <div class="text-center py-12 text-gray-400 text-xs">
                         <i class="fa-solid fa-mug-hot text-4xl mb-3 text-gray-300 animate-pulse"></i><br>
                         <strong class="text-brandDark text-sm block mb-1">Tu ruta está vacía</strong>
-                        Toca el icono de planta en cualquier tarjeta o pin del mapa para organizar tus paradas favoritas.
+                        Toca el icono de hoja en cualquier tarjeta o pin del mapa para organizar tus paradas favoritas.
                     </div>
                 `;
-                [badge, badgeTablet, badgeMobile].forEach(b => {
-                    if(b) b.classList.add('hidden');
-                });
+                if(badge) badge.classList.add('hidden');
                 return;
             }
 
-            [badge, badgeTablet, badgeMobile].forEach(b => {
-                if(b) {
-                    b.innerText = favoriteLocations.length;
-                    b.classList.remove('hidden');
-                }
-            });
+            if(badge) {
+                badge.innerText = favoriteLocations.length;
+                badge.classList.remove('hidden');
+            }
 
             favoriteLocations.forEach((id, idx) => {
                 const loc = locations.find(l => l.id === id);
@@ -2280,14 +2696,14 @@
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                     const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
                     const shareText = currentLang === 'en' 
-                        ? `Hello! Stop #${idx+1} on my Vive Loja itinerary: ${locTitle} (${loc.address}). Join me!` 
+                        ? `Hello! Visit #${idx+1} on my Vive Loja route: ${locTitle} (${loc.address}). Join me!` 
                         : `☕ Parada #${idx+1} en mi ruta de Vive Loja: *${locTitle}* (${locTag})\n📍 ${loc.address}\n¡Te lo recomiendo!`;
 
                     container.innerHTML += `
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3.5 flex items-center justify-between gap-3 shadow-sm hover:border-brandGold transition">
                             <div class="flex items-center gap-3">
                                 <span class="w-6 h-6 rounded-full bg-brandGold text-white font-bold text-xs flex items-center justify-center flex-shrink-0">${idx + 1}</span>
-                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" alt="">
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                                 <div>
                                     <h4 class="font-bold text-xs text-brandDark">${locTitle}</h4>
                                     <span class="text-[10px] text-brandGold font-bold block">${locTag}</span>
@@ -2386,7 +2802,7 @@
                         </div>
                         <div class="px-5 pb-5 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-3 text-xs">
                             <span class="text-gray-500 truncate max-w-[180px]"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
-                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
+                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}', '${ev.date || ''}', '${(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
                                 <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
                             </button>
                         </div>
@@ -2396,12 +2812,19 @@
             renderAdminEventsList();
         }
 
-        function focusEventOnMap(lat, lng, eventTitle) {
-            if(map) {
-                map.setView([lat, lng], 17, { animate: true });
-                showToast(`Ubicando evento: ${eventTitle}`);
-            }
-            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+        function focusEventOnMap(lat, lng, eventTitle, eventDate, eventLoc, eventType) {
+            const tagText = eventType || (currentLang === 'en' ? 'Cultural Event' : 'Evento Cultural');
+            const subtext = (eventDate ? `📅 ${eventDate}` : '') + (eventLoc ? ` • 📍 ${eventLoc}` : '');
+            showSpotlightPinOnMap({
+                lat: lat || -3.9931,
+                lng: lng || -79.2042,
+                title: eventTitle,
+                tag: tagText,
+                subtext: subtext,
+                icon: 'fa-calendar-days',
+                type: 'event'
+            });
+            showToast(`Mostrando en mapa: ${eventTitle}`);
         }
 
         function renderEmprendedoresUI() {
@@ -2473,7 +2896,7 @@
 
         function resetEmpForm() {
             document.getElementById('empEditId').value = '';
-            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor`;
+            document.getElementById('empFormTitle').innerHTML = `<i class="fa-solid fa-store mr-1"></i> Registrar Emprendedor Lojano`;
             document.getElementById('saveEmpBtnText').innerText = "Guardar";
             document.getElementById('empName').value = '';
             document.getElementById('empCategory').value = '';
@@ -2506,12 +2929,691 @@
             showToast('Emprendedor eliminado');
         }
 
+        function renderLojaTimeUI() {
+            const tabsContainer = document.getElementById('lojaTimeTabsContainer');
+            if(!tabsContainer || lojaTimeList.length === 0) return;
+            tabsContainer.innerHTML = '';
+
+            lojaTimeList.forEach((spot, idx) => {
+                const titleText = (currentLang === 'en' && spot.titleEn) ? spot.titleEn : spot.title;
+                const isActive = idx === currentTimeSpotIndex;
+                const activeClass = isActive 
+                    ? "bg-brandGold text-white border-brandGold shadow-warm-glow" 
+                    : "bg-black/50 text-gray-300 border-gray-800 hover:border-brandGold/60";
+                
+                tabsContainer.innerHTML += `
+                    <button type="button" onclick="selectTimeSpot(${idx})" class="px-4 py-2 rounded-xl text-xs font-bold border transition whitespace-nowrap flex items-center gap-1.5 ${activeClass}">
+                        <i class="fa-solid fa-landmark text-brandGold"></i> ${titleText}
+                    </button>
+                `;
+            });
+
+            const currentSpot = lojaTimeList[currentTimeSpotIndex] || lojaTimeList[0];
+            if(currentSpot) {
+                const titleText = (currentLang === 'en' && currentSpot.titleEn) ? currentSpot.titleEn : currentSpot.title;
+                const descText = (currentLang === 'en' && currentSpot.descEn) ? currentSpot.descEn : currentSpot.desc;
+
+                const titleEl = document.getElementById('timeSpotTitle');
+                const descEl = document.getElementById('timeSpotDesc');
+                const imgBefore = document.getElementById('timeImgBefore');
+                const imgAfter = document.getElementById('timeImgAfter');
+                const labelBefore = document.getElementById('timeLabelBefore');
+                const labelAfter = document.getElementById('timeLabelAfter');
+
+                if(titleEl) titleEl.innerText = titleText;
+                if(descEl) descEl.innerText = descText;
+                if(imgBefore) imgBefore.src = currentSpot.imgPast;
+                if(imgAfter) imgAfter.src = currentSpot.imgPresent;
+                if(labelBefore) labelBefore.innerText = currentSpot.labelPast || "Ayer";
+                if(labelAfter) labelAfter.innerText = currentSpot.labelPresent || "Hoy";
+            }
+
+            renderAdminTimeSpotsList();
+        }
+
+        function selectTimeSpot(idx) {
+            currentTimeSpotIndex = idx;
+            renderLojaTimeUI();
+            resetTimeSliderPosition();
+        }
+
+        function centerTimeSpotOnMap() {
+            const spot = lojaTimeList[currentTimeSpotIndex];
+            if(!spot) return;
+            const titleText = (currentLang === 'en' && spot.titleEn) ? spot.titleEn : spot.title;
+            const tagText = currentLang === 'en' ? 'Living Heritage' : 'Loja en el Tiempo';
+            
+            showSpotlightPinOnMap({
+                lat: spot.lat || -3.9931,
+                lng: spot.lng || -79.2042,
+                title: titleText,
+                tag: tagText,
+                subtext: `${spot.labelPast || 'Ayer'} ➔ ${spot.labelPresent || 'Hoy'}`,
+                icon: 'fa-landmark',
+                type: 'historic'
+            });
+            showToast(`Mostrando en mapa: ${titleText}`);
+        }
+
+        // Manejo táctil y de ratón para el deslizador Antes/Después
+        let isSlidingTime = false;
+
+        function initTimeSliderEvents() {
+            const viewer = document.getElementById('beforeAfterViewer');
+            if(!viewer) return;
+
+            const onMove = (e) => {
+                if(!isSlidingTime) return;
+                const rect = viewer.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                if(clientX === undefined) return;
+                let offset = clientX - rect.left;
+                let percentage = (offset / rect.width) * 100;
+                percentage = Math.max(0, Math.min(100, percentage));
+
+                const overlay = document.getElementById('timeOverlayBefore');
+                const handle = document.getElementById('timeSliderHandle');
+                if(overlay) overlay.style.width = `${percentage}%`;
+                if(handle) handle.style.left = `${percentage}%`;
+            };
+
+            const startSlide = (e) => {
+                isSlidingTime = true;
+                onMove(e);
+            };
+
+            const stopSlide = () => {
+                isSlidingTime = false;
+            };
+
+            viewer.addEventListener('mousedown', startSlide);
+            viewer.addEventListener('touchstart', startSlide, { passive: true });
+
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, { passive: true });
+
+            window.addEventListener('mouseup', stopSlide);
+            window.addEventListener('touchend', stopSlide);
+        }
+
+        function resetTimeSliderPosition() {
+            const overlay = document.getElementById('timeOverlayBefore');
+            const handle = document.getElementById('timeSliderHandle');
+            if(overlay) overlay.style.width = '50%';
+            if(handle) handle.style.left = '50%';
+        }
+
+        function setPostcardTheme(theme) {
+            currentPostcardTheme = theme;
+            ['btnThemeFiavl', 'btnThemeVintage', 'btnThemeCafe', 'btnThemePolaroid'].forEach(id => {
+                const btn = document.getElementById(id);
+                if(btn) {
+                    btn.className = "p-2.5 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold";
+                }
+            });
+
+            const activeBtn = document.getElementById(
+                theme === 'fiavl' ? 'btnThemeFiavl' :
+                theme === 'vintage' ? 'btnThemeVintage' :
+                theme === 'cafe' ? 'btnThemeCafe' : 'btnThemePolaroid'
+            );
+            if(activeBtn) {
+                activeBtn.className = "p-2.5 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm";
+            }
+
+            renderPostcardPreview();
+        }
+
+        function setPostcardFilter(val) {
+            currentPostcardFilter = val;
+            renderPostcardPreview();
+        }
+
+        function setPostcardSticker(val) {
+            currentPostcardSticker = val;
+            renderPostcardPreview();
+        }
+
+        function applyQuickPhrase(phrase) {
+            const input = document.getElementById('postcardUserMsg');
+            if(input) {
+                input.value = phrase;
+                renderPostcardPreview();
+            }
+        }
+
+        function handlePostcardUpload(e) {
+            const file = e.target.files && e.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    currentUploadedImageObj = img;
+                    renderPostcardPreview();
+                    showToast(currentLang === 'en' ? 'Photo loaded successfully!' : '¡Foto cargada con éxito!');
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderPostcardPreview() {
+            const canvas = document.getElementById('postcardCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Resolución para Historia 9:16 (1080 x 1920)
+            const W = 1080;
+            const H = 1920;
+            canvas.width = W;
+            canvas.height = H;
+
+            // Datos de usuario
+            const userName = document.getElementById('postcardUserName')?.value.trim() || (currentLang === 'en' ? "Loja Explorer" : "Viajero en Loja");
+            const userSpot = document.getElementById('postcardUserSpot')?.value.trim() || "Loja, Ecuador";
+            const userMsg = document.getElementById('postcardUserMsg')?.value.trim() || postcardSettings.defaultMsg || "¡Qué elegancia de la de Francia, qué sabor el de mi Loja!";
+
+            const baseImg = currentUploadedImageObj || new Image();
+            if(!currentUploadedImageObj) {
+                baseImg.crossOrigin = "anonymous";
+                baseImg.onload = () => drawPostcardContent(ctx, baseImg, W, H, userName, userSpot, userMsg);
+                baseImg.src = postcardSettings.sampleImg || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80";
+            } else {
+                drawPostcardContent(ctx, baseImg, W, H, userName, userSpot, userMsg);
+            }
+        }
+
+        function drawPostcardContent(ctx, img, W, H, userName, userSpot, userMsg) {
+            // 1. Limpiar y Fondo base
+            ctx.save();
+            ctx.filter = "none";
+            ctx.fillStyle = "#111111";
+            ctx.fillRect(0, 0, W, H);
+
+            // 2. Coordenadas de imagen según el marco
+            let imgX = 0, imgY = 0, imgW = W, imgH = H;
+            if (currentPostcardTheme === 'polaroid') {
+                imgX = 64;
+                imgY = 120;
+                imgW = W - 128;
+                imgH = H - 540;
+            } else if (currentPostcardTheme === 'vintage') {
+                imgX = 60;
+                imgY = 60;
+                imgW = W - 120;
+                imgH = H - 120;
+            }
+
+            // 3. Dibujar la fotografía con el filtro seleccionado
+            if(img && img.width > 0 && img.height > 0) {
+                ctx.save();
+                
+                // Aplicar filtros de ambiente
+                if (currentPostcardFilter === 'sunset') {
+                    ctx.filter = "sepia(0.35) saturate(1.4) contrast(1.1) brightness(1.02)";
+                } else if (currentPostcardFilter === 'sepia') {
+                    ctx.filter = "sepia(0.85) contrast(1.15) brightness(0.92)";
+                } else if (currentPostcardFilter === 'teatro') {
+                    ctx.filter = "grayscale(1) contrast(1.35) brightness(0.95)";
+                } else {
+                    ctx.filter = "contrast(1.05) saturate(1.08)";
+                }
+
+                const imgRatio = img.width / img.height;
+                const targetRatio = imgW / imgH;
+                let sW, sH, sX, sY;
+
+                if (imgRatio > targetRatio) {
+                    sH = img.height;
+                    sW = img.height * targetRatio;
+                    sX = (img.width - sW) / 2;
+                    sY = 0;
+                } else {
+                    sW = img.width;
+                    sH = img.width / targetRatio;
+                    sX = 0;
+                    sY = (img.height - sH) / 2;
+                }
+                ctx.drawImage(img, sX, sY, sW, sH, imgX, imgY, imgW, imgH);
+                ctx.restore();
+            }
+
+            // 4. Capa de degradado cinematográfico para legibilidad (salvo en Polaroid pura)
+            if (currentPostcardTheme !== 'polaroid') {
+                const topGrad = ctx.createLinearGradient(0, 0, 0, 420);
+                topGrad.addColorStop(0, "rgba(10, 10, 10, 0.94)");
+                topGrad.addColorStop(1, "rgba(10, 10, 10, 0)");
+                ctx.fillStyle = topGrad;
+                ctx.fillRect(0, 0, W, 420);
+
+                const botGrad = ctx.createLinearGradient(0, H - 620, 0, H);
+                botGrad.addColorStop(0, "rgba(10, 10, 10, 0)");
+                botGrad.addColorStop(0.3, "rgba(10, 10, 10, 0.82)");
+                botGrad.addColorStop(1, "rgba(10, 10, 10, 0.98)");
+                ctx.fillStyle = botGrad;
+                ctx.fillRect(0, H - 620, W, 620);
+            }
+
+            // 5. RENDERIZADO DEL MARCO ESPECÍFICO
+            if (currentPostcardTheme === 'fiavl') {
+                // Marco FIAVL: Cartel Vanguardista con detalles dorados y caretas
+                ctx.lineWidth = 16;
+                ctx.strokeStyle = "#EA580C";
+                ctx.strokeRect(34, 34, W - 68, H - 68);
+
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+                ctx.strokeRect(50, 50, W - 100, H - 100);
+
+                // Cinta superior de festival
+                ctx.fillStyle = "#EA580C";
+                ctx.fillRect(70, 70, 320, 44);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "900 20px sans-serif";
+                ctx.letterSpacing = "3px";
+                ctx.textAlign = "center";
+                ctx.fillText("FESTIVAL DE ARTES VIVAS", 230, 100);
+
+                // Caretas / Escudo FIAVL
+                ctx.save();
+                ctx.translate(W - 140, 120);
+                ctx.fillStyle = "#121212";
+                ctx.strokeStyle = "#EA580C";
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(0, 0, 46, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "900 28px sans-serif";
+                ctx.fillText("🎭", 0, 10);
+                ctx.restore();
+
+                // Cabecera del festival
+                ctx.fillStyle = "#EA580C";
+                ctx.font = "900 40px sans-serif";
+                ctx.letterSpacing = "6px";
+                ctx.textAlign = "center";
+                ctx.fillText("L O J A   2 0 2 6", W / 2, 210);
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+                ctx.font = "700 20px sans-serif";
+                ctx.letterSpacing = "3px";
+                ctx.fillText("ESCENARIO CULTURAL DEL ECUADOR", W / 2, 250);
+
+            } else if (currentPostcardTheme === 'vintage') {
+                // Marco Filatélico: Dientes de estampilla postal troquelada
+                ctx.fillStyle = "#fdfbf7";
+                const toothR = 14;
+                const step = 38;
+
+                // Perforaciones en bordes de estampilla
+                for(let x = step; x < W; x += step) {
+                    ctx.beginPath(); ctx.arc(x, 0, toothR, 0, Math.PI); ctx.fill();
+                    ctx.beginPath(); ctx.arc(x, H, toothR, Math.PI, 0); ctx.fill();
+                }
+                for(let y = step; y < H; y += step) {
+                    ctx.beginPath(); ctx.arc(0, y, toothR, -Math.PI/2, Math.PI/2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(W, y, toothR, Math.PI/2, -Math.PI/2); ctx.fill();
+                }
+
+                ctx.lineWidth = 8;
+                ctx.strokeStyle = "#8B4513";
+                ctx.strokeRect(60, 60, W - 120, H - 120);
+
+                // Matasellos Postal Circular Gastado con Inclinación
+                ctx.save();
+                ctx.translate(W - 220, 240);
+                ctx.rotate(-14 * Math.PI / 180);
+                ctx.strokeStyle = "rgba(234, 88, 12, 0.85)";
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.arc(0, 0, 95, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(0, 0, 75, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = "rgba(234, 88, 12, 0.9)";
+                ctx.font = "900 16px monospace";
+                ctx.textAlign = "center";
+                ctx.fillText("CORREOS DE LOJA", 0, -35);
+                ctx.font = "800 24px monospace";
+                ctx.fillText("SEP • 2026", 0, 8);
+                ctx.font = "700 14px monospace";
+                ctx.fillText("CENTINELA DEL SUR", 0, 42);
+                ctx.restore();
+
+                // Cabecera epistolar
+                ctx.fillStyle = "#EA580C";
+                ctx.font = "900 36px serif";
+                ctx.textAlign = "center";
+                ctx.fillText("~ Saludos desde Loja ~", W / 2, 140);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+                ctx.font = "italic 22px serif";
+                ctx.fillText("Tierra de Música, Flores y Memoria", W / 2, 180);
+
+            } else if (currentPostcardTheme === 'cafe') {
+                // Marco Ruta del Café: Estética de cafetería de especialidad con notas de altura
+                ctx.lineWidth = 12;
+                ctx.strokeStyle = "#A25F2E";
+                ctx.strokeRect(34, 34, W - 68, H - 68);
+
+                // Mancha de taza de café estética en esquina
+                ctx.save();
+                ctx.strokeStyle = "rgba(162, 95, 46, 0.28)";
+                ctx.lineWidth = 14;
+                ctx.beginPath();
+                ctx.arc(160, 200, 90, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(155, 195, 76, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+
+                // Sello de altitud y café de origen
+                ctx.save();
+                ctx.translate(W - 200, 160);
+                ctx.fillStyle = "rgba(18, 18, 18, 0.85)";
+                ctx.strokeStyle = "#EA580C";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.roundRect(-120, -50, 240, 100, 14);
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = "#EA580C";
+                ctx.font = "900 18px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText("☕ RUTA DEL CAFÉ", 0, -15);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "800 24px sans-serif";
+                ctx.fillText("ALTURA 1,850m", 0, 15);
+                ctx.fillStyle = "#A25F2E";
+                ctx.font = "700 13px sans-serif";
+                ctx.fillText("Vilcabamba • Olmedo • Loja", 0, 36);
+                ctx.restore();
+
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "900 36px sans-serif";
+                ctx.letterSpacing = "4px";
+                ctx.textAlign = "center";
+                ctx.fillText("LOJA ES AROMA Y ORIGEN", W / 2, 260);
+
+            } else if (currentPostcardTheme === 'polaroid') {
+                // Marco Polaroid: Marco blanco grueso de película instantánea
+                ctx.fillStyle = "#F5F3EF";
+                ctx.fillRect(40, 60, W - 80, H - 120);
+
+                // Sombra interior de foto polaroid
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = "rgba(0, 0, 0, 0.12)";
+                ctx.strokeRect(imgX, imgY, imgW, imgH);
+
+                // Cinta adhesiva / Washi-Tape decorativo en esquinas
+                ctx.save();
+                ctx.translate(110, 85);
+                ctx.rotate(-18 * Math.PI / 180);
+                ctx.fillStyle = "rgba(234, 88, 12, 0.75)";
+                ctx.fillRect(-60, -18, 120, 36);
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(W - 110, 85);
+                ctx.rotate(18 * Math.PI / 180);
+                ctx.fillStyle = "rgba(234, 88, 12, 0.75)";
+                ctx.fillRect(-60, -18, 120, 36);
+                ctx.restore();
+
+                // Notas musicales en la base polaroid
+                ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+                ctx.font = "28px serif";
+                ctx.textAlign = "center";
+                ctx.fillText("🎵  🎼  🎶  •  Loja Capital Musical", W / 2, H - 470);
+            }
+
+            // 6. DIBUJAR STICKER CULTURAL SELECCIONADO (Rotado con personalidad)
+            if (currentPostcardSticker !== 'none') {
+                ctx.save();
+                ctx.translate(W - 200, H - 560);
+                ctx.rotate(-8 * Math.PI / 180);
+
+                if (currentPostcardSticker === 'cepa') {
+                    ctx.fillStyle = "#EA580C";
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 6;
+                    ctx.beginPath(); ctx.roundRect(-150, -45, 300, 90, 20); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "900 20px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText("APROBADO POR UN", 0, -10);
+                    ctx.font = "900 26px sans-serif";
+                    ctx.fillText("LOJANO DE CEPA 🥘", 0, 24);
+
+                } else if (currentPostcardSticker === 'fiavl') {
+                    ctx.fillStyle = "#121212";
+                    ctx.strokeStyle = "#EA580C";
+                    ctx.lineWidth = 6;
+                    ctx.beginPath(); ctx.roundRect(-150, -45, 300, 90, 20); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#EA580C";
+                    ctx.font = "900 20px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText("PASAPORTE CULTURAL", 0, -10);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "900 26px sans-serif";
+                    ctx.fillText("FIAVL 2026 🎭", 0, 24);
+
+                } else if (currentPostcardSticker === 'cafe') {
+                    ctx.fillStyle = "#45220c";
+                    ctx.strokeStyle = "#EA580C";
+                    ctx.lineWidth = 6;
+                    ctx.beginPath(); ctx.roundRect(-150, -45, 300, 90, 20); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#EA580C";
+                    ctx.font = "900 18px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText("NOTAS A JAZMÍN Y MIEL", 0, -10);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "900 24px sans-serif";
+                    ctx.fillText("100% ARÁBICA ☕", 0, 24);
+
+                } else if (currentPostcardSticker === 'centinela') {
+                    ctx.fillStyle = "#161616";
+                    ctx.strokeStyle = "#f59e0b";
+                    ctx.lineWidth = 6;
+                    ctx.beginPath(); ctx.roundRect(-150, -45, 300, 90, 20); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#f59e0b";
+                    ctx.font = "900 18px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText("EN LA FRONTERA SUR", 0, -10);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "900 24px sans-serif";
+                    ctx.fillText("CENTINELA DEL SUR 🏰", 0, 24);
+                }
+                ctx.restore();
+            }
+
+            // 7. TEXTOS DEL VIAJERO (Nombre, Lugar y Frase)
+            const isPolaroid = currentPostcardTheme === 'polaroid';
+            ctx.textAlign = "center";
+
+            // Ubicación / Parada
+            ctx.fillStyle = isPolaroid ? "#EA580C" : "#EA580C";
+            ctx.font = "900 32px sans-serif";
+            ctx.letterSpacing = "3px";
+            ctx.fillText(`📍 ${userSpot.toUpperCase()}`, W / 2, H - 380);
+
+            // Nombre del Viajero / Firma
+            ctx.fillStyle = isPolaroid ? "#181818" : "#ffffff";
+            ctx.font = isPolaroid ? "italic 800 52px cursive, sans-serif" : "900 50px sans-serif";
+            ctx.letterSpacing = "1px";
+            ctx.fillText(userName, W / 2, H - 305);
+
+            // Frase o Dicho Lojano
+            ctx.fillStyle = isPolaroid ? "#333333" : "rgba(255, 255, 255, 0.9)";
+            ctx.font = "italic 600 28px serif, sans-serif";
+            ctx.fillText(`"${userMsg}"`, W / 2, H - 235);
+
+            // 8. PIE DE MARCA INSTITUCIONAL
+            ctx.fillStyle = isPolaroid ? "#EA580C" : "rgba(234, 88, 12, 0.95)";
+            ctx.font = "900 22px sans-serif";
+            ctx.letterSpacing = "4px";
+            ctx.fillText(postcardSettings.watermark || "VIVE LOJA • FIAVL 2026", W / 2, H - 120);
+
+            ctx.fillStyle = isPolaroid ? "#666666" : "rgba(255, 255, 255, 0.5)";
+            ctx.font = "600 16px sans-serif";
+            ctx.letterSpacing = "1px";
+            ctx.fillText("Mesa Turística de Loja • GAD Municipal • Patrocina: ILE", W / 2, H - 85);
+
+            ctx.restore();
+        }
+
+        function downloadPostcardImage() {
+            const canvas = document.getElementById('postcardCanvas');
+            if(!canvas) return;
+            const link = document.createElement('a');
+            link.download = `ViveLoja_Postal_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png', 0.95);
+            link.click();
+            try {
+                confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
+            } catch(e){}
+            showToast(currentLang === 'en' ? '🎉 Postcard downloaded!' : '🎉 ¡Postal descargada en alta calidad!');
+        }
+
+        function sharePostcardWhatsapp() {
+            const userName = document.getElementById('postcardUserName')?.value.trim() || "Un viajero";
+            const userSpot = document.getElementById('postcardUserSpot')?.value.trim() || "Loja";
+            const shareText = currentLang === 'en'
+                ? `📸 Look at my travel postcard from ${userSpot} on Vive Loja! Create yours at: ${window.location.href}`
+                : `📸 ¡Mira mi postal de viaje desde *${userSpot}* en Vive Loja! Hecha por ${userName}. Crea la tuya en: ${window.location.href}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+        }
+
+        function handleSaveTimeSpot(e) {
+            e.preventDefault();
+            const editId = document.getElementById('timeEditId').value;
+            const title = document.getElementById('timeAdmTitle').value.trim();
+            const titleEn = document.getElementById('timeAdmTitleEn').value.trim();
+            const labelPast = document.getElementById('timeAdmLabelPast').value.trim();
+            const labelPresent = document.getElementById('timeAdmLabelPresent').value.trim();
+            const imgPast = document.getElementById('timeAdmImgPast').value.trim();
+            const imgPresent = document.getElementById('timeAdmImgPresent').value.trim();
+            const coordsStr = document.getElementById('timeAdmCoords').value.trim();
+            const desc = document.getElementById('timeAdmDesc').value.trim();
+            const descEn = document.getElementById('timeAdmDescEn').value.trim();
+
+            let coords = coordsStr.includes(',') ? coordsStr.split(',').map(Number) : [-3.9931, -79.2042];
+
+            const spotData = {
+                id: editId || 'time_' + Date.now(),
+                title, titleEn, labelPast, labelPresent, imgPast, imgPresent,
+                lat: coords[0], lng: coords[1], desc, descEn
+            };
+
+            if(editId) {
+                const idx = lojaTimeList.findIndex(s => s.id === editId);
+                if(idx > -1) lojaTimeList[idx] = spotData;
+            } else {
+                lojaTimeList.push(spotData);
+            }
+
+            localStorage.setItem('cyc_dynamic_lojatiempo', JSON.stringify(lojaTimeList));
+            if(db) {
+                db.collection("loja_tiempo").doc(spotData.id).set(spotData, { merge: true }).catch(err => console.log(err));
+            }
+
+            renderLojaTimeUI();
+            resetTimeSpotForm();
+            showToast('¡Punto histórico guardado!');
+        }
+
+        function editTimeSpot(id) {
+            const spot = lojaTimeList.find(s => s.id === id);
+            if(!spot) return;
+            document.getElementById('timeEditId').value = spot.id;
+            document.getElementById('timeAdmTitle').value = spot.title || '';
+            document.getElementById('timeAdmTitleEn').value = spot.titleEn || '';
+            document.getElementById('timeAdmLabelPast').value = spot.labelPast || '';
+            document.getElementById('timeAdmLabelPresent').value = spot.labelPresent || '';
+            document.getElementById('timeAdmImgPast').value = spot.imgPast || '';
+            document.getElementById('timeAdmImgPresent').value = spot.imgPresent || '';
+            document.getElementById('timeAdmCoords').value = (spot.lat && spot.lng) ? `${spot.lat}, ${spot.lng}` : '';
+            document.getElementById('timeAdmDesc').value = spot.desc || '';
+            document.getElementById('timeAdmDescEn').value = spot.descEn || '';
+            document.getElementById('timeFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square mr-1"></i> Editando: ${spot.title}`;
+            document.getElementById('saveTimeBtnText').innerText = "Actualizar Punto Histórico";
+        }
+
+        function deleteTimeSpot(id) {
+            lojaTimeList = lojaTimeList.filter(s => s.id !== id);
+            localStorage.setItem('cyc_dynamic_lojatiempo', JSON.stringify(lojaTimeList));
+            if(db) {
+                db.collection("loja_tiempo").doc(id).delete().catch(err => console.log(err));
+            }
+            currentTimeSpotIndex = 0;
+            renderLojaTimeUI();
+            showToast('Punto histórico eliminado');
+        }
+
+        function resetTimeSpotForm() {
+            document.getElementById('timeEditId').value = '';
+            document.getElementById('timeFormTitle').innerHTML = `<i class="fa-solid fa-clock-rotate-left mr-1"></i> Registrar Punto Histórico`;
+            document.getElementById('saveTimeBtnText').innerText = "Guardar Punto Histórico";
+            document.getElementById('timeAdmTitle').value = '';
+            document.getElementById('timeAdmTitleEn').value = '';
+            document.getElementById('timeAdmLabelPast').value = '';
+            document.getElementById('timeAdmLabelPresent').value = '';
+            document.getElementById('timeAdmImgPast').value = '';
+            document.getElementById('timeAdmImgPresent').value = '';
+            document.getElementById('timeAdmCoords').value = '';
+            document.getElementById('timeAdmDesc').value = '';
+            document.getElementById('timeAdmDescEn').value = '';
+        }
+
+        function renderAdminTimeSpotsList() {
+            const list = document.getElementById('adminTimeSpotsList');
+            if(!list) return;
+            list.innerHTML = '';
+            lojaTimeList.forEach(spot => {
+                list.innerHTML += `
+                    <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
+                        <span class="text-brandGold font-bold">${spot.title} (${spot.labelPast} ➔ ${spot.labelPresent})</span>
+                        <div class="flex gap-2">
+                            <button onclick="editTimeSpot('${spot.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteTimeSpot('${spot.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function handleSavePostcardSettings(e) {
+            e.preventDefault();
+            const watermark = document.getElementById('setPostcardWatermark').value.trim();
+            const sampleImg = document.getElementById('setPostcardSampleImg').value.trim();
+            const defaultMsg = document.getElementById('setPostcardDefaultMsg').value.trim();
+
+            postcardSettings = { watermark, sampleImg, defaultMsg };
+            localStorage.setItem('cyc_postcard_settings', JSON.stringify(postcardSettings));
+
+            if(db) {
+                db.collection("settings").doc("postcards").set(postcardSettings, { merge: true }).catch(err => console.log(err));
+            }
+
+            renderPostcardPreview();
+            closeModal('adminModal');
+            showToast('¡Ajustes de postales guardados!');
+        }
+
         function switchAdminTab(tab) {
-            ['adminTabLocales', 'adminTabEmprendedores', 'adminTabAgenda', 'adminTabIdentidad', 'adminTabPopup'].forEach(id => {
+            ['adminTabLocales', 'adminTabEmprendedores', 'adminTabAgenda', 'adminTabLojaTiempo', 'adminTabPostales', 'adminTabIdentidad', 'adminTabPopup'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
             });
-            ['tabBtnLocales', 'tabBtnEmprendedores', 'tabBtnAgenda', 'tabBtnIdentidad', 'tabBtnPopup'].forEach(id => {
+            ['tabBtnLocales', 'tabBtnEmprendedores', 'tabBtnAgenda', 'tabBtnLojaTiempo', 'tabBtnPostales', 'tabBtnIdentidad', 'tabBtnPopup'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
                     el.className = "px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap";
@@ -2527,6 +3629,16 @@
             } else if(tab === 'agenda') {
                 document.getElementById('adminTabAgenda').classList.remove('hidden');
                 document.getElementById('tabBtnAgenda').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
+            } else if(tab === 'lojatiempo') {
+                document.getElementById('adminTabLojaTiempo').classList.remove('hidden');
+                document.getElementById('tabBtnLojaTiempo').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
+                renderAdminTimeSpotsList();
+            } else if(tab === 'postales') {
+                document.getElementById('adminTabPostales').classList.remove('hidden');
+                document.getElementById('tabBtnPostales').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
+                document.getElementById('setPostcardWatermark').value = postcardSettings.watermark || "VIVE LOJA • FIAVL 2026";
+                document.getElementById('setPostcardSampleImg').value = postcardSettings.sampleImg || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80";
+                document.getElementById('setPostcardDefaultMsg').value = postcardSettings.defaultMsg || "¡Enamorándome de los sabores de Loja!";
             } else if(tab === 'identidad') {
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
                 document.getElementById('tabBtnIdentidad').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
@@ -3032,6 +4144,7 @@
         window.addEventListener('DOMContentLoaded', function() {
             cargarDatosDesdeFirestore();
             initPassport();
+            initTimeSliderEvents();
             changeLanguage(currentLang);
             setTimeout(forceRemoveSplash, 600);
         });
