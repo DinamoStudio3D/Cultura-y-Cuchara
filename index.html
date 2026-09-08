@@ -2395,9 +2395,9 @@
 
             let stampsCount = visitedLocations.length;
             for (let i = 0; i < totalToWin; i++) {
-                const loc = locations[i] || locations[0];
-                const isVisited = loc && visitedLocations.includes(loc.id);
-                if (isVisited) {
+                const visitedId = visitedLocations[i];
+                const loc = visitedId ? locations.find(l => l.id === visitedId) : null;
+                if (loc) {
                     const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                     grid.innerHTML += `<div class="border-2 border-brandGold rounded-xl p-3 flex flex-col items-center justify-center bg-brandGold/10 h-24 relative overflow-hidden shadow-inner"><i class="fa-solid fa-stamp text-4xl text-brandGold mb-1"></i><span class="text-[8px] font-bold text-brandDark uppercase text-center">${locTitle}</span></div>`;
                 } else {
@@ -2564,17 +2564,23 @@
             if (enteredPin === correctPin) {
                 closeModal('qrClaimModal');
                 
-                // Limpiar el parámetro checkin de la URL para que sea de un solo uso
+                // Limpiar el parámetro checkin de la URL para hacerlo de un solo uso inmediato (evita F5 repetitivo)
                 if (window.history && window.history.replaceState) {
                     const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
                     window.history.replaceState({path: cleanUrl}, '', cleanUrl);
                 }
 
-                if (!visitedLocations.includes(localId)) {
-                    visitedLocations.push(localId);
-                    localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
-                    updatePassportUI();
+                // Verificar si ya tiene este local registrado
+                if (visitedLocations.includes(localId)) {
+                    showToast(`⚠️ Ya tienes un sello registrado de ${loc.title}. ¡Cada sello debe ser de un local diferente!`);
+                    setTimeout(() => openModal('pasaporteModal'), 600);
+                    return;
                 }
+
+                visitedLocations.push(localId);
+                localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
+                updatePassportUI();
+
                 try {
                     confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
                 } catch(err) {}
