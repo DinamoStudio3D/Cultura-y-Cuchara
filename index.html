@@ -1476,6 +1476,7 @@
         let heroSlideshowInterval = null;
 
         let map, markersLayer, userMarkerInstance = null;
+        let markersMap = {};
         try {
             map = L.map('lojaMap', { 
                 zoomControl: false, 
@@ -1883,6 +1884,7 @@
         function renderMapAndGrid() {
             if(!markersLayer) return;
             markersLayer.clearLayers();
+            markersMap = {};
             
             const grid = document.getElementById('localesGrid');
             if(!grid) return;
@@ -1950,6 +1952,7 @@
                         </div>
                     `;
                     marker.bindPopup(popupContent);
+                    markersMap[loc.id] = marker;
                     markersLayer.addLayer(marker);
                 }
 
@@ -2094,14 +2097,13 @@
         }
 
         function locateUserGPS() {
-            showToast('Obteniendo tu ubicación exacta...');
+            showToast(currentLang === 'en' ? 'Finding your location...' : 'Obteniendo tu ubicación exacta...');
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         const lat = pos.coords.latitude;
                         const lng = pos.coords.longitude;
                         userCoords = { lat, lng };
-                        if(map) map.setView([lat, lng], 16, { animate: true });
                         
                         const userAvatarIcon = L.divIcon({
                             className: 'custom-leaflet-icon',
@@ -2111,11 +2113,51 @@
                             iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
                         });
                         
+                        if (userMarkerInstance && markersLayer) {
+                            markersLayer.removeLayer(userMarkerInstance);
+                        }
                         userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
                           .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
                         
                         renderMapAndGrid(); 
-                        showToast('¡Ubicación encontrada!');
+
+                        // Buscar el establecimiento más cercano
+                        let closestIndex = -1;
+                        let minDistance = Infinity;
+                        locations.forEach((loc, idx) => {
+                            if (loc.lat && loc.lng) {
+                                let d = calcularDistanciaKm(lat, lng, loc.lat, loc.lng);
+                                if (d < minDistance) {
+                                    minDistance = d;
+                                    closestIndex = idx;
+                                }
+                            }
+                        });
+
+                        if (closestIndex !== -1) {
+                            selectLocation(closestIndex, false);
+                            const closestLoc = locations[closestIndex];
+                            const distFormatted = minDistance < 1 ? `${Math.round(minDistance * 1000)} m` : `${minDistance.toFixed(1)} km`;
+                            const locTitle = (currentLang === 'en' && closestLoc.titleEn) ? closestLoc.titleEn : closestLoc.title;
+
+                            // Encuadrar el mapa mostrando al usuario y al establecimiento más cercano
+                            if (map && closestLoc.lat && closestLoc.lng) {
+                                const bounds = L.latLngBounds([
+                                    [lat, lng],
+                                    [closestLoc.lat, closestLoc.lng]
+                                ]);
+                                map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16, animate: true });
+                            }
+
+                            if (markersMap[closestLoc.id]) {
+                                markersMap[closestLoc.id].openPopup();
+                            }
+
+                            showToast(currentLang === 'en' ? `📍 Nearest spot: ${locTitle} (${distFormatted})` : `📍 Más cercano: ${locTitle} (a ${distFormatted})`);
+                        } else {
+                            if(map) map.setView([lat, lng], 16, { animate: true });
+                            showToast('¡Ubicación encontrada!');
+                        }
                     },
                     () => { centerOnLoja(); },
                     { timeout: 8000, enableHighAccuracy: true }
@@ -2808,7 +2850,7 @@
             document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
-        function selectLocation(index) {
+        function selectLocation(index, shouldCenterMap = true) {
             currentLocationIndex = index;
             const loc = locations[index];
             if(!loc) return;
@@ -2827,6 +2869,19 @@
             } else {
                 statusEl.className = "bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded-md text-[10px]";
                 statusEl.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> ' + (currentLang === 'en' ? 'Closed' : 'Cerrado');
+            }
+
+            // Distancia en tiempo real en la tarjeta de previsualización
+            const distBadge = document.getElementById('previewDistanceBadge');
+            if (distBadge) {
+                if (userCoords && loc.lat && loc.lng) {
+                    let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat, loc.lng);
+                    let distFormatted = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
+                    distBadge.querySelector('span').innerText = (currentLang === 'en' ? 'At ' : 'A ') + distFormatted;
+                    distBadge.classList.remove('hidden');
+                } else {
+                    distBadge.classList.add('hidden');
+                }
             }
 
             document.getElementById('previewTitle').innerText = titleText || '';
@@ -2853,7 +2908,7 @@
                 previewBtn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10";
             }
 
-            if(map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
+            if(shouldCenterMap && map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
         }
 
         function simulateMapClick(index) {
