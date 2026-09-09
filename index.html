@@ -2,13 +2,20 @@
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vive Loja - Ruta Gastronómica y Turística</title>
+    <meta name="description" content="Descubre la gastronomía, hoteles, emprendimientos, eventos y destinos turísticos de Loja en una ruta interactiva.">
+    <meta name="theme-color" content="#121212">
     
     <meta property="og:title" content="Vive Loja - Sabores, Historias y Destinos">
     <meta property="og:description" content="Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles de Loja.">
     <meta property="og:image" content="https://i.imgur.com/xaiFpa1.png">
     <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://i.imgur.com" crossorigin>
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
 
     <link rel="icon" href="https://i.imgur.com/xaiFpa1.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -45,6 +52,9 @@
 
     <style>
         html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-action: manipulation; }
+        :focus-visible { outline: 3px solid #EA580C; outline-offset: 3px; }
+        .skip-link { position: fixed; left: 1rem; top: 1rem; z-index: 10000; transform: translateY(-160%); background: #EA580C; color: #fff; padding: .75rem 1rem; border-radius: .75rem; font-weight: 700; }
+        .skip-link:focus { transform: translateY(0); }
         #lojaMap { z-index: 1; touch-action: pan-x pan-y; }
         
         .leaflet-popup-content-wrapper { border-radius: 12px; border: 3px solid #EA580C; background: #ffffff; color: #121212; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
@@ -60,6 +70,19 @@
 
         .fab-whatsapp { position: fixed; bottom: 28px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
         @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .web-mascot { position: fixed; left: 12px; bottom: 10px; z-index: 85; width: 150px; pointer-events: none; transition: opacity .3s ease, transform .3s ease; }
+        .web-mascot.is-hidden { opacity: 0; transform: translateX(-130%); visibility: hidden; }
+        .web-mascot-character { width: 100%; filter: drop-shadow(0 10px 14px rgba(0,0,0,.35)); transform-origin: 50% 100%; animation: mascot-dance 3.2s ease-in-out infinite; pointer-events: auto; cursor: pointer; }
+        .web-mascot-bubble { position: absolute; left: 105px; bottom: 118px; width: 190px; padding: 10px 12px; border: 2px solid #EA580C; border-radius: 16px 16px 16px 4px; background: rgba(18,18,18,.96); color: white; font-size: 12px; line-height: 1.35; font-weight: 700; box-shadow: 0 10px 28px rgba(0,0,0,.35); pointer-events: auto; transition: opacity .25s ease, transform .25s ease; }
+        .web-mascot-bubble.is-quiet { opacity: 0; transform: translateY(8px); pointer-events: none; }
+        .web-mascot-close { position: absolute; right: -2px; top: -8px; width: 28px; height: 28px; border-radius: 999px; background: #121212; color: #fff; border: 1px solid rgba(255,255,255,.3); pointer-events: auto; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+        .web-mascot-restore { position: fixed; left: 14px; bottom: 14px; z-index: 85; width: 46px; height: 46px; border-radius: 999px; border: 2px solid #EA580C; background: #121212; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+        @keyframes mascot-dance { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-9px) rotate(1.5deg); } }
+        @media (max-width: 640px) {
+            .web-mascot { width: 105px; left: 6px; bottom: 4px; }
+            .web-mascot-bubble { left: 76px; bottom: 82px; width: 155px; font-size: 11px; padding: 8px 10px; }
+        }
 
         #splash-screen { transition: opacity 0.5s ease-out; z-index: 9999; }
         .fade-out { opacity: 0; pointer-events: none; visibility: hidden; }
@@ -92,13 +115,20 @@
             max-width: 330px;
             width: 100%;
         }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto !important; }
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+            .reveal { opacity: 1; transform: none; }
+            .web-mascot-character { animation: none; }
+        }
     </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
         <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl animate-pulse flex items-center justify-center p-2">
-            <img id="splashLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain">
+            <img id="splashLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" width="144" height="144" fetchpriority="high" class="w-full h-full object-contain">
         </div>
         <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">✨ Preparando los mejores sabores de Loja para ti...</div>
     </div>
@@ -122,7 +152,7 @@
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3 group">
                 <div class="w-12 h-12 rounded-full border-2 border-brandGold overflow-hidden bg-white shadow-warm-glow flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
-                    <img id="navLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
+                    <img id="navLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" width="48" height="48" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <span id="brandNameText" class="text-white font-black text-sm tracking-wide block leading-none">VIVE LOJA</span>
@@ -154,13 +184,13 @@
                     <option value="en">🇺🇸 EN</option>
                 </select>
 
-                <button onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/50 px-3 py-1.5 rounded-xl font-bold hover:bg-brandGold hover:text-white transition-all text-xs flex items-center gap-1.5 relative shadow-warm-glow">
+                <button type="button" onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/50 px-3 py-1.5 rounded-xl font-bold hover:bg-brandGold hover:text-white transition-all text-xs flex items-center gap-1.5 relative shadow-warm-glow">
                     <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta</span> <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1.5 rounded-full hidden">0</span>
                 </button>
             </div>
 
             <!-- Hamburger Button for Mobile / Tablet -->
-            <button onclick="toggleMobileMenu()" class="xl:hidden text-white text-xl p-2 relative" aria-label="Abrir Menú">
+            <button id="mobileMenuButton" type="button" onclick="toggleMobileMenu()" class="xl:hidden text-white text-xl p-2 relative" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
@@ -187,16 +217,17 @@
                     <option value="en">🇺🇸 English</option>
                 </select>
             </div>
-            <button onclick="openModal('itineraryModal'); toggleMobileMenu()" class="w-full mt-2 bg-brandGold text-white font-bold py-2.5 rounded-xl text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-2">
+            <button type="button" onclick="openModal('itineraryModal'); toggleMobileMenu()" class="w-full mt-2 bg-brandGold text-white font-bold py-2.5 rounded-xl text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-2">
                 <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span>
             </button>
         </div>
     </nav>
 
+    <main id="main-content">
     <!-- Promo Popup Modal -->
     <div id="promoPopupModal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col animate-bounce-slight">
-            <button onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
+            <button type="button" onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="h-48 relative overflow-hidden bg-brandDark">
@@ -209,10 +240,10 @@
                 <h3 id="popupTitleText" class="text-xl font-black text-brandDark">¡Especial del Día de las Madres!</h3>
                 <p id="popupDescText" class="text-xs sm:text-sm text-gray-600 leading-relaxed">Visita nuestros aliados locales para canjear promociones exclusivas.</p>
                 <div class="pt-2 flex flex-col gap-2">
-                    <a id="popupWhatsappBtn" href="#" target="_blank" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
+                    <a id="popupWhatsappBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
                         <i class="fa-brands fa-whatsapp text-base"></i> Consultar Disponibilidad
                     </a>
-                    <button onclick="closeModal('promoPopupModal')" class="text-xs text-gray-400 hover:text-brandDark underline py-1">Continuar navegando en la web</button>
+                    <button type="button" onclick="closeModal('promoPopupModal')" class="text-xs text-gray-400 hover:text-brandDark underline py-1">Continuar navegando en la web</button>
                 </div>
             </div>
         </div>
@@ -221,7 +252,7 @@
     <!-- QR / PIN Claim Modal for Passport Stamps -->
     <div id="qrClaimModal" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-white text-brandDark w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative p-6 text-center">
-            <button onclick="closeModal('qrClaimModal')" class="absolute top-4 right-4 text-gray-400 hover:text-black transition text-lg w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+            <button type="button" onclick="closeModal('qrClaimModal')" class="absolute top-4 right-4 text-gray-400 hover:text-black transition text-lg w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="w-14 h-14 bg-brandGold/20 text-brandGold rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow">
@@ -250,7 +281,7 @@
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-amber-600 to-brandGold text-white py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
         <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
         <span id="liveEventText">Cargando eventos...</span>
-        <button id="liveEventBtn" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
+        <button id="liveEventBtn" type="button" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
             <i class="fa-solid fa-map-pin mr-1"></i> <span data-i18n="btnViewMap">Ver en el mapa</span>
         </button>
     </div>
@@ -260,7 +291,7 @@
             <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> VÍDEO DESTACADO</span>
             <span id="latestVideoTitleText" class="text-xs font-bold text-gray-200">La Virgen del Cisne en Loja - Tradición y Fe</span>
         </div>
-        <button onclick="openLatestVideoModal()" class="bg-brandGold text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition shadow-warm-glow flex items-center gap-1.5">
+        <button type="button" onclick="openLatestVideoModal()" class="bg-brandGold text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition shadow-warm-glow flex items-center gap-1.5">
             <i class="fa-solid fa-play"></i> Ver Vídeo Oficial
         </button>
     </div>
@@ -273,10 +304,10 @@
         </div>
         <div class="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center reveal active">
             <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
-                <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
+                <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy" decoding="async">
             </div>
-            <span id="heroBadge" class="bg-brandGold/20 text-brandGold px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-brandGold/40 inline-block mb-4 shadow-warm-glow" data-i18n="heroBadge">
-                Loja se conoce, se saborea y se hospeda
+            <span id="heroBadge" class="bg-black/40 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-brandGold/70 inline-block mb-4 shadow-warm-glow" data-i18n="heroBadge">
+                LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA
             </span>
             <h1 id="heroTitle" class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-4" data-i18n="heroTitle">
                 Sabores, <span class="text-brandGold">Historias</span> y Destinos
@@ -288,6 +319,12 @@
                 <a href="#mapa" class="bg-brandGold text-white font-bold px-8 py-4 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-sm text-center">
                     <i class="fa-solid fa-map-location-dot mr-2"></i> <span data-i18n="btnStartRoute">Iniciar la Ruta</span>
                 </a>
+                <a href="#misiones" class="bg-black/55 text-white border border-brandGold/70 font-bold px-8 py-4 rounded-xl hover:bg-brandGold transition-all text-sm text-center">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Misiones de Chabaquito
+                </a>
+                <button type="button" onclick="openSmartRoutePlanner()" class="bg-white/10 text-white border border-white/40 font-bold px-8 py-4 rounded-xl hover:bg-white hover:text-brandDark transition-all text-sm text-center">
+                    <i class="fa-solid fa-route mr-2"></i> Crear Ruta Inteligente
+                </button>
             </div>
         </div>
     </section>
@@ -355,23 +392,23 @@
                         <span class="w-2.5 h-2.5 rounded-full bg-brandGold animate-ping flex-shrink-0"></span>
                         <span class="text-xs font-bold text-gray-200 truncate">Punto: <strong id="mapSpotlightText" class="text-brandGold"></strong></span>
                     </div>
-                    <button onclick="clearSpotlightPin()" class="text-gray-400 hover:text-white text-xs bg-white/10 hover:bg-white/20 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" title="Cerrar indicador">
+                    <button type="button" onclick="clearSpotlightPin()" class="text-gray-400 hover:text-white text-xs bg-white/10 hover:bg-white/20 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" title="Cerrar indicador">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
                 <div class="absolute bottom-4 left-4 z-[900] flex gap-2">
-                    <button onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
+                    <button type="button" onclick="locateUserGPS()" class="bg-brandDark text-brandGold px-4 py-2.5 rounded-full shadow-xl hover:bg-black transition text-xs font-bold flex items-center gap-2 border border-brandGold/40">
                         <i class="fa-solid fa-street-view text-sm text-brandGold animate-bounce"></i> <span data-i18n="btnGps">Cerca de mí</span>
                     </button>
-                    <button onclick="centerOnLoja()" class="bg-white text-brandDark px-3 py-2.5 rounded-full shadow-xl hover:bg-gray-100 transition text-xs font-bold flex items-center gap-1.5 border border-gray-300" title="Centrar mapa en Loja">
+                    <button type="button" onclick="centerOnLoja()" class="bg-white text-brandDark px-3 py-2.5 rounded-full shadow-xl hover:bg-gray-100 transition text-xs font-bold flex items-center gap-1.5 border border-gray-300" title="Centrar mapa en Loja">
                         <i class="fa-solid fa-crosshairs text-brandGold"></i> <span data-i18n="btnCenter">Centrar Loja</span>
                     </button>
                 </div>
             </div>
 
             <div id="mapPreviewCard" class="glass-card p-6 rounded-2xl shadow-warm-glow border border-gray-200 flex flex-col justify-between h-[460px] md:h-[500px] lg:h-[520px] relative">
-                <button id="previewFavBtn" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
+                <button id="previewFavBtn" type="button" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
                 <div>
@@ -393,19 +430,22 @@
                 </div>
 
                 <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
-                    <button onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
+                    <button id="previewAudioGuideBtn" type="button" onclick="toggleLocationAudioGuide()" class="w-full bg-brandGold/10 text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-brandGold hover:text-white transition border border-brandGold/40 flex items-center justify-center gap-2" aria-label="Escuchar audioguía del lugar seleccionado">
+                        <i class="fa-solid fa-volume-high"></i> <span id="previewAudioGuideLabel">Escuchar audioguía</span>
+                    </button>
+                    <button type="button" onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
                         <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
                     </button>
                     
-                    <button onclick="openQrClaimForCurrent()" class="w-full bg-brandGold text-white py-2.5 rounded-xl font-bold text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="openQrClaimForCurrent()" class="w-full bg-brandGold text-white py-2.5 rounded-xl font-bold text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-qrcode"></i> Sellar Pasaporte en este Local
                     </button>
 
                     <div class="flex gap-2">
-                        <a id="previewWhatsapp" href="#" target="_blank" class="flex-1 bg-green-500 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
+                        <a id="previewWhatsapp" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 bg-green-500 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
                             <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShare">Compartir</span>
                         </a>
-                        <a id="previewGps" href="https://maps.google.com" target="_blank" class="bg-gray-100 text-brandDark px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
+                        <a id="previewGps" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="bg-gray-100 text-brandDark px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
                             <i class="fa-solid fa-diamond-turn-right text-brandGold"></i>
                         </a>
                     </div>
@@ -506,11 +546,11 @@
                         <h2 class="text-2xl font-black text-white uppercase tracking-wider mb-2" data-i18n="passTitle">Pasaporte<br>Inteligente</h2>
                         <p class="text-gray-400 text-xs mb-4" data-i18n="passDesc">Elige tu modo de exploración y reclama tu premio.</p>
                         
-                        <button onclick="openModal('pasaporteModal')" class="w-full bg-brandGold text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-brandGoldHover transition shadow-warm-glow flex items-center justify-center mx-auto">
+                        <button type="button" onclick="openModal('pasaporteModal')" class="w-full bg-brandGold text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-brandGoldHover transition shadow-warm-glow flex items-center justify-center mx-auto">
                             <i class="fa-solid fa-book-open mr-2"></i> <span data-i18n="passBtnOpen">Abrir mi Pasaporte</span>
                         </button>
                         
-                        <button onclick="resetPassportProgess()" class="mt-4 text-[10px] text-gray-400 hover:text-white underline" data-i18n="passReset">Borrar progreso guardado</button>
+                        <button type="button" onclick="resetPassportProgess()" class="mt-4 text-[10px] text-gray-400 hover:text-white underline" data-i18n="passReset">Borrar progreso guardado</button>
                     </div>
                 </div>
                 <div class="md:w-2/3 p-8 flex flex-col justify-center">
@@ -526,6 +566,64 @@
                         </div>
                     </div>
                     <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Misiones de Chabaquito -->
+    <section id="misiones" class="py-16 px-4 md:px-8 lg:px-12 bg-brandCream border-b border-gray-200 reveal">
+        <div class="max-w-6xl mx-auto">
+            <div class="bg-brandDark text-white rounded-3xl overflow-hidden shadow-2xl border border-brandGold/40">
+                <div class="grid lg:grid-cols-[280px_1fr]">
+                    <div class="bg-gradient-to-b from-brandGold/25 to-black p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_#EA580C_0,_transparent_65%)]"></div>
+                        <img src="assets/mascota-vive-loja.png" alt="Chabaquito presenta las misiones de Vive Loja" width="1122" height="1402" class="relative w-36 sm:w-44 h-auto drop-shadow-2xl" loading="lazy" decoding="async">
+                        <span class="relative mt-2 text-brandGold text-xs font-black uppercase tracking-widest" data-i18n="missionBadge">Aventura interactiva</span>
+                        <h2 class="relative text-2xl font-black mt-2" data-i18n="missionTitle">Las Misiones de Chabaquito</h2>
+                        <p class="relative text-xs text-gray-300 mt-2 leading-relaxed" data-i18n="missionDesc">Explora la web, completa cinco retos y desbloquea tu insignia digital.</p>
+                    </div>
+
+                    <div class="p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                            <div>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest" data-i18n="missionProgress">Tu progreso</p>
+                                <p id="missionProgressText" class="text-lg font-black text-brandGold">0 de 5 misiones</p>
+                            </div>
+                            <div class="w-full sm:w-64 h-3 rounded-full bg-gray-800 overflow-hidden" role="progressbar" aria-label="Progreso de misiones" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" id="missionProgressBar">
+                                <div id="missionProgressFill" class="h-full bg-gradient-to-r from-brandGold to-amber-400 rounded-full transition-all duration-500" style="width:0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-3" id="missionCards">
+                            <button type="button" data-mission="mapa" onclick="goToMission('mapa')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition">
+                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-map-location-dot"></i></span>
+                                <strong class="block text-sm" data-i18n="missionMapTitle">Explora el mapa</strong><span class="text-[11px] text-gray-400" data-i18n="missionMapDesc">Abre la información de un lugar.</span>
+                            </button>
+                            <button type="button" data-mission="ruta" onclick="goToMission('ruta')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition">
+                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-seedling"></i></span>
+                                <strong class="block text-sm" data-i18n="missionRouteTitle">Crea tu ruta</strong><span class="text-[11px] text-gray-400" data-i18n="missionRouteDesc">Guarda un establecimiento favorito.</span>
+                            </button>
+                            <button type="button" data-mission="fiavl" onclick="goToMission('fiavl')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition">
+                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-masks-theater"></i></span>
+                                <strong class="block text-sm" data-i18n="missionFiavlTitle">Descubre FIAVL</strong><span class="text-[11px] text-gray-400" data-i18n="missionFiavlDesc">Visita la sección del festival.</span>
+                            </button>
+                            <button type="button" data-mission="postal" onclick="goToMission('postal')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition">
+                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-camera-retro"></i></span>
+                                <strong class="block text-sm" data-i18n="missionPostcardTitle">Crea un recuerdo</strong><span class="text-[11px] text-gray-400" data-i18n="missionPostcardDesc">Descarga una postal de Vive Loja.</span>
+                            </button>
+                            <button type="button" data-mission="podcast" onclick="goToMission('podcast')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition sm:col-span-2">
+                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-headphones"></i></span>
+                                <strong class="block text-sm" data-i18n="missionPodcastTitle">Escucha Loja</strong><span class="text-[11px] text-gray-400" data-i18n="missionPodcastDesc">Reproduce la canción de muestra del podcast.</span>
+                            </button>
+                        </div>
+
+                        <div id="missionReward" class="hidden mt-5 bg-brandGold/15 border border-brandGold/50 rounded-2xl p-4 text-center">
+                            <i class="fa-solid fa-award text-4xl text-brandGold mb-2"></i>
+                            <p class="font-black text-brandGold" data-i18n="missionRewardTitle">¡Insignia Explorador de Loja desbloqueada!</p>
+                            <p class="text-xs text-gray-300 mt-1" data-i18n="missionRewardDesc">Completaste las cinco misiones de Chabaquito.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -582,8 +680,11 @@
                         <h3 id="timeSpotTitle" class="text-base sm:text-lg font-black text-brandGold">Puerta de la Ciudad</h3>
                         <p id="timeSpotDesc" class="text-xs text-gray-300 mt-0.5 leading-relaxed">De entrada fortificada a ícono cultural y museo de arte vivo.</p>
                     </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                        <button onclick="centerTimeSpotOnMap()" class="bg-brandGold text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition flex items-center gap-1.5 shadow">
+                    <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
+                        <button id="timeAudioGuideBtn" type="button" onclick="toggleTimeAudioGuide()" class="bg-white/10 text-white border border-brandGold/50 px-4 py-2 rounded-xl text-xs font-bold hover:bg-brandGold transition flex items-center gap-1.5 shadow" aria-label="Escuchar historia del lugar">
+                            <i class="fa-solid fa-headphones"></i> <span id="timeAudioGuideLabel">Escuchar historia</span>
+                        </button>
+                        <button type="button" onclick="centerTimeSpotOnMap()" class="bg-brandGold text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition flex items-center gap-1.5 shadow">
                             <i class="fa-solid fa-map-pin"></i> <span data-i18n="btnViewMap">Ver en el mapa</span>
                         </button>
                     </div>
@@ -647,10 +748,10 @@
                     </div>
 
                     <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
-                        <button onclick="downloadPostcardImage()" class="flex-1 bg-brandGold text-white font-black py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider shadow-warm-glow flex items-center justify-center gap-2">
+                        <button type="button" onclick="downloadPostcardImage()" class="flex-1 bg-brandGold text-white font-black py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider shadow-warm-glow flex items-center justify-center gap-2">
                             <i class="fa-solid fa-download"></i> <span data-i18n="btnDownloadPostcard">Descargar Postal (HD)</span>
                         </button>
-                        <button onclick="sharePostcardWhatsapp()" class="bg-green-500 text-white font-bold px-4 py-3 rounded-xl hover:bg-green-600 transition text-xs flex items-center justify-center gap-1.5 shadow">
+                        <button type="button" onclick="sharePostcardWhatsapp()" class="bg-green-500 text-white font-bold px-4 py-3 rounded-xl hover:bg-green-600 transition text-xs flex items-center justify-center gap-1.5 shadow">
                             <i class="fa-brands fa-whatsapp text-sm"></i> <span data-i18n="btnSharePostcard">Compartir</span>
                         </button>
                     </div>
@@ -686,7 +787,7 @@
                     <div class="relative group mb-6">
                         <div class="absolute -inset-3 bg-gradient-to-r from-brandGold via-amber-500 to-orange-600 rounded-3xl blur-2xl opacity-40 group-hover:opacity-75 transition duration-700 animate-pulse"></div>
                         <div class="relative w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 rounded-3xl bg-black/80 border-2 border-brandGold p-4 shadow-2xl flex items-center justify-center backdrop-blur-md">
-                            <img src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL 2026 Loja" class="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(234,88,12,0.45)] group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                            <img src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL 2026 Loja" class="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(234,88,12,0.45)] group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async">
                         </div>
                     </div>
 
@@ -803,7 +904,7 @@
             <div class="flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/3 p-4 flex justify-center">
                     <div class="w-44 h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow flex items-center justify-center p-2">
-                        <img id="podcastLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy">
+                        <img id="podcastLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy" decoding="async">
                     </div>
                 </div>
                 <div class="w-full md:w-2/3 text-center md:text-left">
@@ -811,18 +912,21 @@
                     <h2 class="text-3xl font-black mt-2 mb-4" data-i18n="podTitle">El Podcast de Loja</h2>
                     <p class="text-gray-400 text-sm mb-6 leading-relaxed" data-i18n="podDesc">Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.</p>
                     
-                    <div class="bg-black/50 border border-brandGold/30 p-4 rounded-xl flex items-center gap-4 shadow-warm-glow">
-                        <button class="w-12 h-12 flex-shrink-0 bg-brandGold text-white rounded-full flex items-center justify-center text-lg hover:scale-105 transition" aria-label="Reproducir episodio">
-                            <i class="fa-solid fa-play ml-1"></i>
-                        </button>
-                        <div class="flex-grow text-left">
-                            <p class="text-xs text-brandGold font-bold">Episodio 01</p>
-                            <p class="text-sm font-bold truncate">La llegada de la Virgen del Cisne en Loja</p>
-                            <div class="w-full bg-gray-700 h-1.5 rounded-full mt-2">
-                                <div class="bg-brandGold h-1.5 rounded-full" style="width: 35%"></div>
+                    <div id="podcastSampleCard" class="bg-black/50 border border-brandGold/30 p-4 sm:p-5 rounded-xl shadow-warm-glow">
+                        <div class="flex items-center gap-3 mb-4 text-left">
+                            <div class="w-11 h-11 flex-shrink-0 bg-brandGold/20 border border-brandGold/50 text-brandGold rounded-full flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-music"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p id="podcastSampleType" class="text-xs text-brandGold font-bold uppercase tracking-wider">Canción de muestra</p>
+                                <p id="podcastSampleTitle" class="text-sm sm:text-base font-bold truncate">Vive Loja — El Podcast de Loja</p>
+                                <p id="podcastSampleDuration" class="text-[11px] text-gray-400 mt-0.5">Duración: 3:09</p>
                             </div>
                         </div>
-                        <div class="text-xs text-gray-400">12:45 / 35:00</div>
+                        <audio id="podcastSampleAudio" class="w-full h-11 accent-orange-600" controls preload="metadata" aria-label="Reproducir canción de muestra de El Podcast de Loja">
+                            <source src="audio/cancion-muestra-vive-loja.mp3" type="audio/mpeg">
+                            Tu navegador no puede reproducir este audio.
+                        </audio>
                     </div>
                 </div>
             </div>
@@ -847,6 +951,8 @@
         </div>
     </section>
 
+    </main>
+
     <!-- Footer -->
     <footer class="bg-black text-gray-400 py-8 px-4 md:px-8 border-t border-gray-900 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
@@ -857,7 +963,7 @@
                 <div>
                     <span class="text-white font-bold tracking-wide block">VIVE LOJA</span>
                     <p class="text-[10px] text-gray-500">
-                        Web by: <a href="https://wa.me/593963111180?text=Hola%20D%C3%ADnamo%20Studio,%20estoy%20interesado%20en%20sus%20servicios%20web." target="_blank" class="text-brandGold font-bold hover:underline transition">Dínamo Studio</a> & Codeproim
+                        Web by: <a href="https://wa.me/593963111180?text=Hola%20D%C3%ADnamo%20Studio,%20estoy%20interesado%20en%20sus%20servicios%20web." target="_blank" rel="noopener noreferrer" class="text-brandGold font-bold hover:underline transition">Dínamo Studio</a> & Codeproim
                     </p>
                 </div>
             </div>
@@ -868,8 +974,22 @@
         </div>
     </footer>
 
+    <!-- Mascota animada de Vive Loja -->
+    <aside id="webMascot" class="web-mascot" aria-label="Mascota guía de Vive Loja">
+        <button type="button" class="web-mascot-close" onclick="dismissWebMascot()" aria-label="Ocultar mascota" title="Ocultar mascota">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div id="webMascotBubble" class="web-mascot-bubble" role="status" aria-live="polite">¡Hola! Soy tu guía de Vive Loja. ¿Empezamos la ruta?</div>
+        <button type="button" class="block w-full bg-transparent border-0 p-0" onclick="toggleMascotBubble()" aria-label="Escuchar consejo de la mascota">
+            <img src="assets/mascota-vive-loja.png" alt="Mascota cultural de Vive Loja" width="1122" height="1402" class="web-mascot-character" loading="lazy" decoding="async">
+        </button>
+    </aside>
+    <button id="webMascotRestore" type="button" class="web-mascot-restore hidden" onclick="restoreWebMascot()" aria-label="Mostrar mascota" title="Mostrar mascota">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+    </button>
+
     <!-- Floating WhatsApp -->
-    <a href="https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Vive%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
+    <a href="https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Vive%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
@@ -881,16 +1001,69 @@
                     <i class="fa-solid fa-mug-hot text-brandGold text-xl"></i>
                     <h3 class="text-lg font-black uppercase tracking-wider text-brandGold" data-i18n="modalItineraryTitle">Mi Ruta Organizada</h3>
                 </div>
-                <button onclick="closeModal('itineraryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
+                <button type="button" onclick="closeModal('itineraryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center rounded-full bg-white/10">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="p-6 overflow-y-auto flex-grow space-y-4" id="itineraryListContainer"></div>
             <div class="p-4 bg-white border-t border-gray-200 flex flex-col gap-2">
-                <button onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
+                <button type="button" onclick="shareStructuredItinerary()" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
                     <i class="fa-brands fa-whatsapp text-base"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
                 </button>
-                <button onclick="clearEntireItinerary()" class="text-xs text-red-500 hover:underline text-center py-1">Vaciar toda la ruta</button>
+                <button type="button" onclick="clearEntireItinerary()" class="text-xs text-red-500 hover:underline text-center py-1">Vaciar toda la ruta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ruta Inteligente de Chabaquito -->
+    <div id="smartRouteModal" class="fixed inset-0 z-[95] bg-black/90 backdrop-blur hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-brandCream text-brandDark w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold flex flex-col max-h-[92vh]">
+            <div class="bg-brandDark text-white p-4 sm:p-5 flex justify-between items-center border-b border-brandGold/40">
+                <div class="flex items-center gap-3">
+                    <img src="assets/mascota-vive-loja.png" alt="Chabaquito" width="1122" height="1402" class="w-12 h-12 object-contain" loading="lazy" decoding="async">
+                    <div><h3 class="text-lg font-black text-brandGold">Ruta Inteligente de Chabaquito</h3><p class="text-[11px] text-gray-400">Un recorrido preparado según tu tiempo e intereses</p></div>
+                </div>
+                <button type="button" onclick="closeModal('smartRouteModal')" class="text-gray-400 hover:text-white text-xl w-9 h-9 rounded-full bg-white/10" aria-label="Cerrar planificador"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="p-4 sm:p-6 overflow-y-auto">
+                <form id="smartRouteForm" onsubmit="generateSmartRoute(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <label class="text-xs font-bold">Tiempo disponible
+                        <select id="smartRouteTime" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm outline-none focus:border-brandGold">
+                            <option value="60">1 hora</option><option value="240">Medio día</option><option value="480">Día completo</option>
+                        </select>
+                    </label>
+                    <label class="text-xs font-bold">¿Qué te interesa?
+                        <select id="smartRouteCategory" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm outline-none focus:border-brandGold"><option value="all">Un poco de todo</option></select>
+                    </label>
+                    <label class="text-xs font-bold">¿Cómo te movilizas?
+                        <select id="smartRouteTransport" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm outline-none focus:border-brandGold">
+                            <option value="walk">Caminando</option><option value="drive">En vehículo</option>
+                        </select>
+                    </label>
+                    <label class="text-xs font-bold">Tipo de recorrido
+                        <select id="smartRouteBudget" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm outline-none focus:border-brandGold">
+                            <option value="short">Esencial</option><option value="balanced" selected>Equilibrado</option><option value="complete">Completo</option>
+                        </select>
+                    </label>
+                    <label class="sm:col-span-2 flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 text-xs cursor-pointer">
+                        <input id="smartRouteUseGps" type="checkbox" class="w-4 h-4 accent-orange-600"><span><b>Usar mi ubicación actual</b><br><span class="text-gray-500">El navegador solicitará permiso solamente al generar la ruta.</span></span>
+                    </label>
+                    <button type="submit" class="sm:col-span-2 bg-brandGold text-white font-black py-3.5 rounded-xl hover:bg-brandGoldHover transition shadow-warm-glow"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Preparar mi recorrido</button>
+                </form>
+
+                <div id="smartRouteResults" class="hidden mt-6 border-t border-gray-200 pt-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <div><p class="text-[10px] uppercase tracking-widest text-brandGold font-black">Ruta recomendada</p><h4 id="smartRouteSummary" class="text-lg font-black"></h4></div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="addSmartRouteToFavorites()" class="bg-brandDark text-brandGold px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-seedling mr-1"></i>Guardar ruta</button>
+                            <button type="button" onclick="shareSmartRoute()" class="bg-green-500 text-white px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-brands fa-whatsapp mr-1"></i>Compartir</button>
+                        </div>
+                    </div>
+                    <div id="smartRouteStops" class="space-y-3"></div>
+                    <p class="text-[10px] text-gray-500 mt-4 leading-relaxed">Los tiempos son estimados y pueden variar según el tránsito, ritmo de caminata y duración de cada visita.</p>
+                </div>
+                <div id="smartRouteEmpty" class="hidden mt-5 bg-amber-50 border border-amber-300 text-amber-800 rounded-xl p-4 text-sm">No encontramos suficientes lugares para esa selección. Prueba con “Un poco de todo”.</div>
             </div>
         </div>
     </div>
@@ -900,7 +1073,7 @@
         <div class="bg-brandDark text-white w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col">
             <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <h3 class="text-base font-bold text-brandGold"><i class="fa-brands fa-youtube mr-1 text-red-500"></i> Vídeo Destacado</h3>
-                <button onclick="closeModal('latestVideoModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeModal('latestVideoModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 text-center space-y-4">
                 <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30 relative flex flex-col items-center justify-center group cursor-pointer" onclick="openYouTubeDirectLink()">
@@ -914,7 +1087,7 @@
                         <p class="text-xs text-brandGold uppercase tracking-widest font-bold">Ver vídeo oficial en YouTube</p>
                     </div>
                 </div>
-                <a id="modalDirectVideoLink" href="https://www.youtube.com/watch?v=n0BJGAkU9cg" target="_blank" class="inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition text-xs uppercase tracking-wider shadow">
+                <a id="modalDirectVideoLink" href="https://www.youtube.com/watch?v=n0BJGAkU9cg" target="_blank" rel="noopener noreferrer" class="inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition text-xs uppercase tracking-wider shadow">
                     <i class="fa-brands fa-youtube mr-1.5 text-sm"></i> Abrir Vídeo en YouTube
                 </a>
             </div>
@@ -924,7 +1097,7 @@
     <!-- Admin Pin Modal -->
     <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
-            <button onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <button type="button" onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
             <div class="w-12 h-12 bg-brandGold text-white rounded-full flex items-center justify-center text-xl mx-auto mb-3 shadow">
                 <i class="fa-solid fa-lock"></i>
             </div>
@@ -952,19 +1125,19 @@
                         <p class="text-xs text-brandGold">Gestión de Contenido y Datos</p>
                     </div>
                 </div>
-                <button onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
+                <button type="button" onclick="closeModal('adminModal')" class="text-gray-400 hover:text-white transition text-xl w-9 h-9 flex items-center justify-center bg-white/5 rounded-full border border-gray-700">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
             <div class="flex flex-wrap items-center border-b border-gray-800 bg-black/40 px-3 sm:px-6 gap-2 sm:gap-3 text-xs font-bold overflow-x-auto hide-scrollbar py-2">
-                <button onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y PIN QR</button>
-                <button onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Emprendedores</button>
-                <button onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda Cultural</button>
-                <button onclick="switchAdminTab('lojatiempo')" id="tabBtnLojaTiempo" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Loja en el Tiempo</button>
-                <button onclick="switchAdminTab('postales')" id="tabBtnPostales" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Postales & Marcos</button>
-                <button onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Carrusel, Vídeo y Logo</button>
-                <button onclick="switchAdminTab('popup')" id="tabBtnPopup" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Popup Notificación</button>
+                <button type="button" onclick="switchAdminTab('locales')" id="tabBtnLocales" class="px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap">Establecimientos y PIN QR</button>
+                <button type="button" onclick="switchAdminTab('emprendedores')" id="tabBtnEmprendedores" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Emprendedores</button>
+                <button type="button" onclick="switchAdminTab('agenda')" id="tabBtnAgenda" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Agenda Cultural</button>
+                <button type="button" onclick="switchAdminTab('lojatiempo')" id="tabBtnLojaTiempo" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Loja en el Tiempo</button>
+                <button type="button" onclick="switchAdminTab('postales')" id="tabBtnPostales" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Postales & Marcos</button>
+                <button type="button" onclick="switchAdminTab('identidad')" id="tabBtnIdentidad" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Carrusel, Vídeo y Logo</button>
+                <button type="button" onclick="switchAdminTab('popup')" id="tabBtnPopup" class="px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 border border-transparent transition whitespace-nowrap">Popup Notificación</button>
             </div>
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6">
@@ -1440,7 +1613,7 @@
                     <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Vídeo y Galería del Establecimiento</h3>
                     <p class="text-xs text-gray-400">Contenido multimedia oficial</p>
                 </div>
-                <button onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
+                <button type="button" onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -1448,7 +1621,7 @@
                 <div id="youtubeVideoContainer" class="hidden">
                     <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-2"><i class="fa-brands fa-youtube mr-1"></i> Vídeo Principal</h4>
                     <div class="w-full p-4 bg-black/60 rounded-xl border border-brandGold/30 text-center">
-                        <a id="directVideoLinkBtn" href="#" target="_blank" class="inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition text-xs uppercase tracking-wider shadow">
+                        <a id="directVideoLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition text-xs uppercase tracking-wider shadow">
                             <i class="fa-brands fa-youtube mr-1.5 text-sm"></i> Abrir Vídeo en YouTube
                         </a>
                     </div>
@@ -1464,15 +1637,15 @@
     <!-- Passport Modal -->
     <div id="pasaporteModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
         <div class="bg-brandCream text-brandDark w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border-4 border-brandGold relative">
-            <button onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50">
+            <button type="button" onclick="closeModal('pasaporteModal')" class="absolute top-3 right-3 text-gray-500 hover:text-black transition text-xl z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/50">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="bg-brandDark text-center py-6 border-b-2 border-brandGold relative overflow-hidden">
                 <i class="fa-solid fa-passport absolute -left-4 -bottom-4 text-6xl text-white/5"></i>
                 <h3 class="text-2xl font-black text-brandGold uppercase tracking-widest" data-i18n="passTitleModal">Mi Pasaporte</h3>
                 <div class="flex justify-center gap-2 mt-3">
-                    <button onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded-lg text-xs font-bold bg-brandGold text-white transition" data-i18n="passTouristMode">Modo Turista</button>
-                    <button onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-800 text-gray-300 transition" data-i18n="passLocalMode">Modo Lojano</button>
+                    <button type="button" onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded-lg text-xs font-bold bg-brandGold text-white transition" data-i18n="passTouristMode">Modo Turista</button>
+                    <button type="button" onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-800 text-gray-300 transition" data-i18n="passLocalMode">Modo Lojano</button>
                 </div>
             </div>
             <div class="p-6">
@@ -1490,7 +1663,7 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toastMessage" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
+    <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
 
@@ -1513,7 +1686,7 @@
                 menuItinerary: "Mi Ruta",
                 bannerLive: "🔴 PRÓXIMO HOY",
                 btnViewMap: "Ver en el mapa",
-                heroBadge: "Loja se conoce, se saborea y se hospeda",
+                heroBadge: "LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA",
                 heroTitle: 'Sabores, <span class="text-brandGold">Historias</span> y Destinos',
                 heroSubtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 btnStartRoute: "Iniciar la Ruta",
@@ -1590,6 +1763,22 @@
                 passLocalMode: "Modo Lojano",
                 passLocalDesc: "Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).",
                 passRules: "* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.",
+                missionBadge: "Aventura interactiva",
+                missionTitle: "Las Misiones de Chabaquito",
+                missionDesc: "Explora la web, completa cinco retos y desbloquea tu insignia digital.",
+                missionProgress: "Tu progreso",
+                missionMapTitle: "Explora el mapa",
+                missionMapDesc: "Abre la información de un lugar.",
+                missionRouteTitle: "Crea tu ruta",
+                missionRouteDesc: "Guarda un establecimiento favorito.",
+                missionFiavlTitle: "Descubre FIAVL",
+                missionFiavlDesc: "Visita la sección del festival.",
+                missionPostcardTitle: "Crea un recuerdo",
+                missionPostcardDesc: "Descarga una postal de Vive Loja.",
+                missionPodcastTitle: "Escucha Loja",
+                missionPodcastDesc: "Reproduce la canción de muestra del podcast.",
+                missionRewardTitle: "¡Insignia Explorador de Loja desbloqueada!",
+                missionRewardDesc: "Completaste las cinco misiones de Chabaquito.",
                 agendaSub: "Loja en Movimiento",
                 agendaTitle: "Agenda Cultural y Eventos",
                 agendaDesc: "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
@@ -1697,6 +1886,22 @@
                 passLocalMode: "Local Mode",
                 passLocalDesc: "Requires: <b>6 Gastronomic Stops</b> (Free choice).",
                 passRules: "* Security rules: To get your stamp by scanning the QR, the cashier or waiter must enter the authorized validation PIN.",
+                missionBadge: "Interactive adventure",
+                missionTitle: "Chabaquito's Missions",
+                missionDesc: "Explore the website, complete five challenges and unlock your digital badge.",
+                missionProgress: "Your progress",
+                missionMapTitle: "Explore the map",
+                missionMapDesc: "Open the details of a place.",
+                missionRouteTitle: "Build your route",
+                missionRouteDesc: "Save a favorite establishment.",
+                missionFiavlTitle: "Discover FIAVL",
+                missionFiavlDesc: "Visit the festival section.",
+                missionPostcardTitle: "Create a memory",
+                missionPostcardDesc: "Download a Vive Loja postcard.",
+                missionPodcastTitle: "Listen to Loja",
+                missionPodcastDesc: "Play the podcast sample song.",
+                missionRewardTitle: "Loja Explorer badge unlocked!",
+                missionRewardDesc: "You completed Chabaquito's five missions.",
                 agendaSub: "Loja in Motion",
                 agendaTitle: "Cultural Agenda & Events",
                 agendaDesc: "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
@@ -1748,6 +1953,8 @@
             });
 
             renderEverything();
+            if (typeof renderChabaquitoMissions === 'function') renderChabaquitoMissions();
+            if (typeof refreshAudioGuideLabels === 'function') refreshAudioGuideLabels();
         }
 
         const firebaseConfig = {
@@ -1768,6 +1975,45 @@
             console.log("Firebase status:", e);
         }
 
+        function applyPodcastConfiguration(data) {
+            if (!data || typeof data !== 'object') return;
+            const card = document.getElementById('podcastSampleCard');
+            const title = document.getElementById('podcastSampleTitle');
+            const type = document.getElementById('podcastSampleType');
+            const duration = document.getElementById('podcastSampleDuration');
+            const audio = document.getElementById('podcastSampleAudio');
+            const logo = document.getElementById('podcastLogoImg');
+            if (card) card.classList.toggle('hidden', data.visible === false);
+            if (title && data.title) title.textContent = data.title;
+            if (type && data.label) type.textContent = data.label;
+            if (duration && data.duration) duration.textContent = `Duración: ${data.duration}`;
+            if (logo && data.coverUrl) logo.src = data.coverUrl;
+            if (audio && data.audioUrl && audio.dataset.remoteUrl !== data.audioUrl) {
+                audio.pause();
+                audio.src = data.audioUrl;
+                audio.dataset.remoteUrl = data.audioUrl;
+                audio.load();
+            }
+        }
+
+        if (db) {
+            db.collection('siteContent').doc('podcast').onSnapshot(
+                snapshot => { if (snapshot.exists) applyPodcastConfiguration(snapshot.data()); },
+                error => console.warn('No se pudo cargar la configuración remota del podcast:', error.code || error.message)
+            );
+        }
+
+        function safeReadJSON(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (error) {
+                console.warn(`Se restableció el dato local inválido: ${key}`);
+                try { localStorage.removeItem(key); } catch (_) {}
+                return fallback;
+            }
+        }
+
         const defaultCategories = [
             { id: 'hotel', name: 'Hoteles & Hospedaje', nameEn: 'Hotels & Lodging', icon: '🏨' },
             { id: 'hueca', name: 'Huecas', nameEn: 'Local Eateries', icon: '🥘' },
@@ -1775,7 +2021,7 @@
             { id: 'urbana', name: 'Urbana', nameEn: 'Urban', icon: '🍔' }
         ];
 
-        let categories = JSON.parse(localStorage.getItem('cyc_dynamic_cats')) || defaultCategories;
+        let categories = safeReadJSON('cyc_dynamic_cats', defaultCategories);
         let locations = [
             {
                 id: "dinamo_studio",
@@ -1810,7 +2056,7 @@
             }
         ];
 
-        let eventsList = JSON.parse(localStorage.getItem('cyc_dynamic_events')) || [
+        let eventsList = safeReadJSON('cyc_dynamic_events', [
             { 
                 id: 'ev_1', 
                 title: 'Feria de Altura Loja', 
@@ -1824,13 +2070,13 @@
                 lat: -3.9910, 
                 lng: -79.2030 
             }
-        ];
+        ]);
 
-        let emprendedoresList = JSON.parse(localStorage.getItem('cyc_dynamic_emprendedores')) || [
+        let emprendedoresList = safeReadJSON('cyc_dynamic_emprendedores', [
             { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
-        ];
+        ]);
 
-        let lojaTimeList = JSON.parse(localStorage.getItem('cyc_dynamic_lojatiempo')) || [
+        let lojaTimeList = safeReadJSON('cyc_dynamic_lojatiempo', [
             {
                 id: 'time_puerta',
                 title: 'Puerta de la Ciudad',
@@ -1870,25 +2116,25 @@
                 lat: -3.9960,
                 lng: -79.2030
             }
-        ];
+        ]);
         let currentTimeSpotIndex = 0;
 
-        let customPostcardFrames = JSON.parse(localStorage.getItem('cyc_custom_frames')) || [];
+        let customPostcardFrames = safeReadJSON('cyc_custom_frames', []);
         let loadedCustomFrameImages = {};
 
-        let postcardSettings = JSON.parse(localStorage.getItem('cyc_postcard_settings')) || {
+        let postcardSettings = safeReadJSON('cyc_postcard_settings', {
             watermark: "VIVE LOJA • FIAVL 2026",
             sampleImg: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80",
             defaultMsg: "¡Qué elegancia de la de Francia, qué sabor el de mi Loja!"
-        };
+        });
         let currentPostcardTheme = 'fiavl';
         let currentPostcardFilter = 'none';
         let currentPostcardSticker = 'cepa';
         let currentUploadedImageObj = null;
 
         let currentLocationIndex = 0;
-        let visitedLocations = JSON.parse(localStorage.getItem('cyc_visited_locations')) || [];
-        let favoriteLocations = JSON.parse(localStorage.getItem('cyc_favorites')) || [];
+        let visitedLocations = safeReadJSON('cyc_visited_locations', []);
+        let favoriteLocations = safeReadJSON('cyc_favorites', []);
         let passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
         let userCoords = null;
         let heroSlideshowInterval = null;
@@ -1896,6 +2142,10 @@
         let map, markersLayer, userMarkerInstance = null;
         let markersMap = {};
         let spotlightMarker = null;
+        let smartRouteLayer = null;
+        let currentSmartRoute = [];
+        let activeSpeechUtterance = null;
+        let activeSpeechButton = null;
 
         function clearSpotlightPin() {
             if (spotlightMarker && map) {
@@ -1936,10 +2186,10 @@
                     <b class="text-brandDark text-xs sm:text-sm block font-black leading-tight my-1">${title}</b>
                     ${subtext ? `<p class="text-[11px] text-gray-600 mb-2 leading-snug">${subtext}</p>` : ''}
                     <div class="flex gap-1.5 justify-center mt-2 pt-2 border-t border-gray-100">
-                        <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" class="bg-brandDark text-brandGold px-2.5 py-1 rounded-lg text-[10px] font-bold hover:bg-black transition">
+                        <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-2.5 py-1 rounded-lg text-[10px] font-bold hover:bg-black transition">
                             <i class="fa-solid fa-diamond-turn-right mr-1"></i> Cómo llegar
                         </a>
-                        <button onclick="clearSpotlightPin()" class="bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg text-[10px] font-bold hover:bg-gray-200 transition">
+                        <button type="button" onclick="clearSpotlightPin()" class="bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg text-[10px] font-bold hover:bg-gray-200 transition">
                             Cerrar
                         </button>
                     </div>
@@ -1981,13 +2231,16 @@
 
         function isLocOpenNow(loc) {
             if (loc.openHour === undefined || loc.closeHour === undefined) return true;
-            const now = new Date();
-            const currentHour = now.getHours();
+            const currentHour = Number(new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/Guayaquil',
+                hour: '2-digit',
+                hour12: false
+            }).format(new Date())) % 24;
             return currentHour >= loc.openHour && currentHour < loc.closeHour;
         }
 
         (function() {
-            let saved = JSON.parse(localStorage.getItem('cyc_settings')) || {
+            let saved = safeReadJSON('cyc_settings', {
                 badge: "Loja se conoce, se saborea y se hospeda",
                 title: "Sabores, Historias y Destinos",
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
@@ -2003,13 +2256,13 @@
                 popupDesc: "Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.",
                 popupImg: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
                 popupWhatsapp: "https://wa.me/593999999999"
-            };
+            });
             window.__initialSettings = saved;
             applySettings(saved);
         })();
 
         function cargarDatosDesdeFirestore() {
-            let initial = JSON.parse(localStorage.getItem('cyc_settings')) || window.__initialSettings;
+            let initial = safeReadJSON('cyc_settings', window.__initialSettings);
             applySettings(initial);
 
             if (!db) {
@@ -2090,7 +2343,12 @@
 
         function applySettings(s) {
             const badgeEl = document.getElementById('heroBadge');
-            if(badgeEl) badgeEl.innerText = s.badge || "";
+            if(badgeEl) {
+                badgeEl.innerText = currentLang === 'en'
+                    ? 'LOJA IS EXPERIENCED, TASTED AND HOSTED'
+                    : 'LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA';
+                badgeEl.classList.remove('hidden');
+            }
             if(document.getElementById('heroTitle')) {
                 document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Historias", '<span class="text-brandGold">Historias</span>') : "";
             }
@@ -2222,23 +2480,34 @@
         }
 
         function openYouTubeDirectLink() {
-            let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            let settings = safeReadJSON('cyc_settings', {});
             let url = settings.latestYoutubeUrl || "https://www.youtube.com/watch?v=n0BJGAkU9cg";
-            window.open(url, '_blank');
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
 
         let currentEventIndex = 0;
+        let liveEventRotationInterval = null;
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
             if(!banner) return;
 
-            let todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Guayaquil',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(new Date());
             let upcomingEvents = eventsList.filter(ev => {
                 if (!ev.date) return true;
                 return ev.date >= todayStr;
             });
+
+            if (liveEventRotationInterval) {
+                clearInterval(liveEventRotationInterval);
+                liveEventRotationInterval = null;
+            }
 
             if(upcomingEvents.length === 0) {
                 banner.classList.add('hidden');
@@ -2259,7 +2528,7 @@
 
             rotateEvent();
             if(upcomingEvents.length > 1) {
-                setInterval(rotateEvent, 6000);
+                liveEventRotationInterval = setInterval(rotateEvent, 6000);
             }
         }
 
@@ -2283,14 +2552,14 @@
             if(catScroll) {
                 const todosLabel = currentLang === 'en' ? 'All' : 'Todos';
                 catScroll.innerHTML = `
-                    <button onclick="filterItems('all', this)" class="filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2.5 flex items-center gap-2 transition-all shadow-md">
+                    <button type="button" onclick="filterItems('all', this)" class="filter-btn flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2.5 flex items-center gap-2 transition-all shadow-md">
                         <i class="fa-solid fa-border-all"></i> <span class="text-xs sm:text-sm font-bold text-white">${todosLabel}</span>
                     </button>
                 `;
                 categories.forEach(cat => {
                     const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
                     catScroll.innerHTML += `
-                        <button onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
+                        <button type="button" onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
                             <span class="text-base">${cat.icon}</span> <span class="text-xs sm:text-sm font-bold">${catName}</span>
                         </button>
                     `;
@@ -2312,7 +2581,7 @@
                 categories.slice(0, 3).forEach(cat => {
                     const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
                     sugContainer.innerHTML += `
-                        <button onclick="setSuggestedRoute('${cat.id}')" class="bg-white border border-brandGold text-brandDark px-4 py-2.5 rounded-xl shadow-sm hover:bg-brandGold hover:text-white transition text-xs sm:text-sm font-bold whitespace-nowrap flex items-center">
+                        <button type="button" onclick="setSuggestedRoute('${cat.id}')" class="bg-white border border-brandGold text-brandDark px-4 py-2.5 rounded-xl shadow-sm hover:bg-brandGold hover:text-white transition text-xs sm:text-sm font-bold whitespace-nowrap flex items-center">
                             <span class="mr-2">${cat.icon}</span> ${catName}
                         </button>
                     `;
@@ -2344,7 +2613,7 @@
                 container.innerHTML += `
                     <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})">
                         <div class="h-48 md:h-52 overflow-hidden relative">
-                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index + 1} EN RUTA</span>
                         </div>
                         <div class="p-5">
@@ -2433,7 +2702,7 @@
                             <span class="bg-brandGold/20 text-brandDark text-[9px] font-bold px-2 py-0.5 rounded uppercase">${locTag}</span>
                             <b class="text-brandDark text-xs block my-1">${locTitle}</b>
                             ${distanciaTexto}
-                            <button onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-white px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
+                            <button type="button" onclick="window.handlePopupClick(${realIndex})" class="bg-brandGold text-white px-3 py-1.5 rounded-full text-[10px] font-bold shadow hover:bg-brandDark hover:text-brandGold transition-colors w-full uppercase tracking-wider mt-1">
                                 Ver detalles <i class="fa-solid fa-arrow-down ml-1"></i>
                             </button>
                         </div>
@@ -2461,20 +2730,20 @@
 
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
-                        <button onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta">
+                        <button type="button" onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
                         <div class="h-52 overflow-hidden relative">
-                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
                                 <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>
                                 ${openBadge}
                             </div>
                             <div class="absolute bottom-3 right-3 flex gap-1.5 z-20">
-                                <button onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)">
+                                <button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)">
                                     <i class="fa-solid fa-qrcode"></i>
                                 </button>
-                                <a href="${gpsUrl}" target="_blank" onclick="event.stopPropagation()" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
+                                <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
                                     <i class="fa-solid fa-diamond-turn-right"></i>
                                 </a>
                             </div>
@@ -2661,6 +2930,7 @@
                 icon.className = "fa-solid fa-seedling text-red-500 scale-110";
                 btn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-red-50 backdrop-blur border border-red-300 text-red-600 flex items-center justify-center hover:scale-110 transition shadow-lg text-lg z-10";
                 showToast(`¡Añadido a Mi Ruta! ☕`);
+                completeChabaquitoMission('ruta');
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             updateItineraryUI();
@@ -2695,6 +2965,7 @@
                 if(icon) icon.className = "fa-solid fa-seedling text-red-500 scale-110";
                 if(parentBtn) parentBtn.className = "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-red-50 text-red-600 border-red-300 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
                 showToast(`¡Añadido a Mi Ruta! ☕`);
+                completeChabaquitoMission('ruta');
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             updateItineraryUI();
@@ -2759,10 +3030,10 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0">
-                                <a href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir parada">
+                                <a href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs shadow hover:bg-green-600 transition" title="Compartir parada">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </a>
-                                <button onclick="removeFavorite('${loc.id}')" class="w-8 h-8 rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition flex items-center justify-center text-xs" title="Quitar de la ruta">
+                                <button type="button" onclick="removeFavorite('${loc.id}')" class="w-8 h-8 rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition flex items-center justify-center text-xs" title="Quitar de la ruta">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
@@ -2819,7 +3090,7 @@
                 }
             });
             text += "¡Te invito a recorrer Loja conmigo!";
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
         }
 
         function renderAgendaUI() {
@@ -2850,7 +3121,7 @@
                         </div>
                         <div class="px-5 pb-5 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-3 text-xs">
                             <span class="text-gray-500 truncate max-w-[180px]"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
-                            <button onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}', '${ev.date || ''}', '${(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
+                            <button type="button" onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}', '${ev.date || ''}', '${(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
                                 <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
                             </button>
                         </div>
@@ -2894,7 +3165,7 @@
                         <div class="p-5">
                             <h3 class="font-bold text-base sm:text-lg text-brandDark mb-1">${emp.name}</h3>
                             <p class="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-4">${emp.desc}</p>
-                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent(waText)}" target="_blank" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
+                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener noreferrer" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
                                 <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Contactar por WhatsApp
                             </a>
                         </div>
@@ -2962,8 +3233,8 @@
                     <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
                         <span class="text-brandGold font-bold">${emp.name} (${emp.category})</span>
                         <div class="flex gap-2">
-                            <button onclick="editEmprendedor('${emp.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteEmprendedor('${emp.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="editEmprendedor('${emp.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="deleteEmprendedor('${emp.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -3020,6 +3291,7 @@
         }
 
         function selectTimeSpot(idx) {
+            stopAudioGuide();
             currentTimeSpotIndex = idx;
             renderLojaTimeUI();
             resetTimeSliderPosition();
@@ -3541,6 +3813,7 @@
             try {
                 confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
             } catch(e){}
+            completeChabaquitoMission('postal');
             showToast(currentLang === 'en' ? '🎉 Postcard downloaded!' : '🎉 ¡Postal descargada en alta calidad!');
         }
 
@@ -3550,7 +3823,7 @@
             const shareText = currentLang === 'en'
                 ? `📸 Look at my travel postcard from ${userSpot} on Vive Loja! Create yours at: ${window.location.href}`
                 : `📸 ¡Mira mi postal de viaje desde *${userSpot}* en Vive Loja! Hecha por ${userName}. Crea la tuya en: ${window.location.href}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+            window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener,noreferrer');
         }
 
         function handleUploadCustomFrame(e) {
@@ -3728,8 +4001,8 @@
                     <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
                         <span class="text-brandGold font-bold">${spot.title} (${spot.labelPast} ➔ ${spot.labelPresent})</span>
                         <div class="flex gap-2">
-                            <button onclick="editTimeSpot('${spot.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteTimeSpot('${spot.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="editTimeSpot('${spot.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="deleteTimeSpot('${spot.id}')" class="text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -3790,7 +4063,7 @@
                 document.getElementById('adminTabIdentidad').classList.remove('hidden');
                 document.getElementById('tabBtnIdentidad').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
                 
-                let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+                let settings = safeReadJSON('cyc_settings', {});
                 let urlsArr = settings.heroBgUrls || [settings.heroBgUrl || 'https://i.imgur.com/0QSbhqQ.jpeg'];
                 if(Array.isArray(urlsArr)) urlsArr = urlsArr.join(', ');
                 let currentPos = settings.heroBgPosition || '50% 50%';
@@ -3819,7 +4092,7 @@
                 document.getElementById('adminTabPopup').classList.remove('hidden');
                 document.getElementById('tabBtnPopup').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
                 
-                let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+                let settings = safeReadJSON('cyc_settings', {});
                 document.getElementById('setPopupActive').checked = settings.popupActive !== undefined ? settings.popupActive : true;
                 document.getElementById('setPopupTitle').value = settings.popupTitle || '¡Especial del Día de las Madres!';
                 document.getElementById('setPopupDesc').value = settings.popupDesc || 'Hoy en Mamá Lola tenemos un plato especial...';
@@ -3836,7 +4109,7 @@
             let popupImg = document.getElementById('setPopupImg').value.trim();
             let popupWhatsapp = document.getElementById('setPopupWhatsapp').value.trim();
 
-            let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            let settings = safeReadJSON('cyc_settings', {});
             settings.popupActive = popupActive;
             settings.popupTitle = popupTitle;
             settings.popupDesc = popupDesc;
@@ -3873,7 +4146,7 @@
             let latestVideoThumbUrl = document.getElementById('setLatestVideoThumbUrl').value;
             let logoUrl = document.getElementById('setBrandLogoUrl').value;
 
-            let settings = JSON.parse(localStorage.getItem('cyc_settings')) || {};
+            let settings = safeReadJSON('cyc_settings', {});
             settings.heroBgUrls = heroBgUrls;
             settings.heroBgUrl = heroBgUrls[0];
             settings.heroIntervalSeconds = heroIntervalSeconds;
@@ -3979,13 +4252,13 @@
                         <div class="flex justify-between items-center">
                             <span class="text-brandGold font-bold text-sm">${loc.title} (PIN: <span class="text-white">${loc.pin || '1234'}</span>)</span>
                             <div class="flex gap-2">
-                                <button onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1.5 rounded-lg" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                <button type="button" onclick="editLocation('${loc.id}')" class="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                <button type="button" onclick="deleteLocation('${loc.id}')" class="bg-red-600 text-white px-2.5 py-1.5 rounded-lg" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
                         <div class="bg-black/60 p-2.5 rounded-lg border border-gray-800 flex items-center justify-between gap-2">
                             <span class="text-[11px] text-gray-300 font-mono truncate select-all">?checkin=${loc.id}</span>
-                            <button onclick="copySpecificLink('${checkinLink}')" class="bg-brandGold text-white text-[10px] px-3 py-1.5 rounded font-bold hover:bg-brandGoldHover transition flex-shrink-0">
+                            <button type="button" onclick="copySpecificLink('${checkinLink}')" class="bg-brandGold text-white text-[10px] px-3 py-1.5 rounded font-bold hover:bg-brandGoldHover transition flex-shrink-0">
                                 <i class="fa-solid fa-copy mr-1"></i> Copiar Link
                             </button>
                         </div>
@@ -4068,8 +4341,8 @@
                     <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
                         <span class="text-brandGold font-bold">${ev.title} (${ev.date})</span>
                         <div class="flex gap-2">
-                            <button onclick="editEvent('${ev.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteEvent('${ev.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="editEvent('${ev.id}')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="deleteEvent('${ev.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded-lg"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -4110,6 +4383,7 @@
         };
 
         function selectLocation(index, shouldCenterMap = true) {
+            stopAudioGuide();
             currentLocationIndex = index;
             const loc = locations[index];
             if(!loc) return;
@@ -4172,6 +4446,7 @@
 
         function simulateMapClick(index) {
             selectLocation(index);
+            completeChabaquitoMission('mapa');
             document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -4206,7 +4481,7 @@
                 loc.gallery.forEach(item => {
                     grid.innerHTML += `
                         <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48">
-                            <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy">
+                            <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy" decoding="async">
                             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
                                 <span class="text-white font-bold text-xs">${item.title || ''}</span>
                             </div>
@@ -4292,16 +4567,20 @@
             cargarDatosDesdeFirestore();
             initPassport();
             initTimeSliderEvents();
+            initChabaquitoMissions();
+            initWebMascot();
             changeLanguage(currentLang);
             setTimeout(forceRemoveSplash, 600);
         });
 
-        // Ensure Leaflet resizes smoothly when orientation changes or screen resizes
+        // Ensure Leaflet resizes smoothly without recalculating on every pixel change
+        let mapResizeTimer = null;
         window.addEventListener('resize', function() {
-            if(map) {
-                map.invalidateSize();
-            }
-        });
+            clearTimeout(mapResizeTimer);
+            mapResizeTimer = setTimeout(function() {
+                if(map) map.invalidateSize();
+            }, 150);
+        }, { passive: true });
         window.addEventListener('orientationchange', function() {
             setTimeout(function() {
                 if(map) {
@@ -4379,28 +4658,431 @@
         }
 
         let countersAnimated = false;
+        function activateReveal(el) {
+            el.classList.add('active');
+            if (!countersAnimated && el.querySelector('.counter')) {
+                animateCounters();
+                countersAnimated = true;
+            }
+        }
+
         function revealOnScroll() {
-            document.querySelectorAll(".reveal").forEach(el => {
-                if (el.getBoundingClientRect().top < window.innerHeight - 50) {
-                    el.classList.add("active");
-                    if (!countersAnimated && el.querySelector('.counter')) { animateCounters(); countersAnimated = true; }
-                }
+            document.querySelectorAll('.reveal:not(.active)').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) activateReveal(el);
             });
         }
-        window.addEventListener("scroll", revealOnScroll);
+
+        if ('IntersectionObserver' in window) {
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        activateReveal(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: '0px 0px -50px 0px', threshold: 0.05 });
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        } else {
+            window.addEventListener('scroll', revealOnScroll, { passive: true });
+            revealOnScroll();
+        }
 
         function toggleMobileMenu() { 
             const menu = document.getElementById('mobileMenu');
-            if(menu) menu.classList.toggle('hidden'); 
+            const button = document.getElementById('mobileMenuButton');
+            if(menu) {
+                menu.classList.toggle('hidden');
+                if (button) button.setAttribute('aria-expanded', String(!menu.classList.contains('hidden')));
+            }
         }
+
+        function refreshAudioGuideLabels() {
+            const locationLabel = document.getElementById('previewAudioGuideLabel');
+            const timeLabel = document.getElementById('timeAudioGuideLabel');
+            if (locationLabel && activeSpeechButton?.id !== 'previewAudioGuideBtn') locationLabel.textContent = currentLang === 'en' ? 'Listen to audio guide' : 'Escuchar audioguía';
+            if (timeLabel && activeSpeechButton?.id !== 'timeAudioGuideBtn') timeLabel.textContent = currentLang === 'en' ? 'Listen to the story' : 'Escuchar historia';
+        }
+
+        function resetAudioGuideButton() {
+            if (!activeSpeechButton) return;
+            const isLocation = activeSpeechButton.id === 'previewAudioGuideBtn';
+            activeSpeechButton.classList.remove('bg-red-600', 'text-white', 'border-red-500');
+            const icon = activeSpeechButton.querySelector('i');
+            const label = activeSpeechButton.querySelector('span');
+            if (icon) icon.className = isLocation ? 'fa-solid fa-volume-high' : 'fa-solid fa-headphones';
+            if (label) label.textContent = currentLang === 'en'
+                ? (isLocation ? 'Listen to audio guide' : 'Listen to the story')
+                : (isLocation ? 'Escuchar audioguía' : 'Escuchar historia');
+            activeSpeechButton = null;
+            activeSpeechUtterance = null;
+        }
+
+        function stopAudioGuide() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            resetAudioGuideButton();
+        }
+
+        function speakWithChabaquito(text, button) {
+            if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+                showToast('La audioguía no está disponible en este navegador.');
+                return;
+            }
+            if (activeSpeechButton === button && window.speechSynthesis.speaking) {
+                stopAudioGuide();
+                return;
+            }
+
+            stopAudioGuide();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = currentLang === 'en' ? 'en-US' : 'es-EC';
+            utterance.rate = 0.94;
+            utterance.pitch = 1.02;
+            const voices = window.speechSynthesis.getVoices();
+            const preferred = voices.find(voice => voice.lang.toLowerCase() === utterance.lang.toLowerCase()) || voices.find(voice => voice.lang.toLowerCase().startsWith(currentLang === 'en' ? 'en' : 'es'));
+            if (preferred) utterance.voice = preferred;
+            activeSpeechUtterance = utterance;
+            activeSpeechButton = button;
+            button.classList.add('bg-red-600', 'text-white', 'border-red-500');
+            const icon = button.querySelector('i');
+            const label = button.querySelector('span');
+            if (icon) icon.className = 'fa-solid fa-stop';
+            if (label) label.textContent = currentLang === 'en' ? 'Stop audio' : 'Detener audio';
+            utterance.onend = resetAudioGuideButton;
+            utterance.onerror = resetAudioGuideButton;
+            setMascotMessage(currentLang === 'en' ? 'Listen carefully, I will tell you this story.' : 'Escucha con atención, te contaré esta historia.');
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleLocationAudioGuide() {
+            const location = locations[currentLocationIndex];
+            const button = document.getElementById('previewAudioGuideBtn');
+            if (!location || !button) return;
+            const title = currentLang === 'en' && location.titleEn ? location.titleEn : location.title;
+            const description = currentLang === 'en' && location.descEn ? location.descEn : location.desc;
+            const specialty = currentLang === 'en' && location.dishEn ? location.dishEn : location.dish;
+            const intro = currentLang === 'en' ? `Welcome to ${title}.` : `Bienvenido a ${title}.`;
+            const detail = specialty ? (currentLang === 'en' ? `Its featured experience is ${specialty}.` : `Su experiencia destacada es ${specialty}.`) : '';
+            speakWithChabaquito(`${intro} ${description || ''} ${detail}`, button);
+        }
+
+        function toggleTimeAudioGuide() {
+            const place = lojaTimeList[currentTimeSpotIndex];
+            const button = document.getElementById('timeAudioGuideBtn');
+            if (!place || !button) return;
+            const title = currentLang === 'en' && place.titleEn ? place.titleEn : place.title;
+            const description = currentLang === 'en' && place.descEn ? place.descEn : place.desc;
+            const intro = currentLang === 'en' ? `This is ${title}.` : `Esta es la historia de ${title}.`;
+            speakWithChabaquito(`${intro} ${description || ''}`, button);
+        }
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+        }
+
+        function openSmartRoutePlanner() {
+            const select = document.getElementById('smartRouteCategory');
+            if (select) {
+                const currentValue = select.value || 'all';
+                select.innerHTML = `<option value="all">${currentLang === 'en' ? 'A little of everything' : 'Un poco de todo'}</option>`;
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = currentLang === 'en' && category.nameEn ? category.nameEn : category.name;
+                    select.appendChild(option);
+                });
+                if ([...select.options].some(option => option.value === currentValue)) select.value = currentValue;
+            }
+            openModal('smartRouteModal');
+        }
+
+        function generateSmartRoute(event) {
+            event.preventDefault();
+            const preferences = {
+                minutes: Number(document.getElementById('smartRouteTime').value),
+                category: document.getElementById('smartRouteCategory').value,
+                transport: document.getElementById('smartRouteTransport').value,
+                intensity: document.getElementById('smartRouteBudget').value
+            };
+            const useGps = document.getElementById('smartRouteUseGps').checked;
+
+            if (useGps && navigator.geolocation) {
+                setMascotMessage('Estoy buscando tu ubicación para preparar la mejor ruta...');
+                navigator.geolocation.getCurrentPosition(position => {
+                    userCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    buildSmartRoute(preferences, userCoords);
+                }, () => {
+                    showToast('No pudimos obtener tu ubicación. Usaremos el centro de Loja.');
+                    buildSmartRoute(preferences, { lat: -3.9931, lng: -79.2042 });
+                }, { timeout: 7000, enableHighAccuracy: true });
+            } else {
+                buildSmartRoute(preferences, userCoords || { lat: -3.9931, lng: -79.2042 });
+            }
+        }
+
+        function buildSmartRoute(preferences, origin) {
+            const results = document.getElementById('smartRouteResults');
+            const empty = document.getElementById('smartRouteEmpty');
+            let candidates = locations.filter(location =>
+                Number.isFinite(Number(location.lat)) && Number.isFinite(Number(location.lng)) &&
+                (preferences.category === 'all' || location.category === preferences.category)
+            );
+
+            if (!candidates.length) {
+                currentSmartRoute = [];
+                if (results) results.classList.add('hidden');
+                if (empty) empty.classList.remove('hidden');
+                return;
+            }
+
+            if (empty) empty.classList.add('hidden');
+            const intensityLimit = { short: 2, balanced: 4, complete: 6 }[preferences.intensity] || 4;
+            const timeLimit = Math.max(1, Math.floor(preferences.minutes / 45));
+            const maxStops = Math.min(intensityLimit, timeLimit, candidates.length);
+            const speedKmH = preferences.transport === 'drive' ? 24 : 4.5;
+            const selected = [];
+            let cursor = { lat: Number(origin.lat), lng: Number(origin.lng) };
+            let totalDistance = 0;
+            let totalMinutes = 0;
+
+            while (candidates.length && selected.length < maxStops) {
+                candidates.sort((a, b) => calcularDistanciaKm(cursor.lat, cursor.lng, Number(a.lat), Number(a.lng)) - calcularDistanciaKm(cursor.lat, cursor.lng, Number(b.lat), Number(b.lng)));
+                const next = candidates.shift();
+                const distance = calcularDistanciaKm(cursor.lat, cursor.lng, Number(next.lat), Number(next.lng));
+                const travelMinutes = Math.max(2, Math.round((distance / speedKmH) * 60));
+                const visitMinutes = next.category === 'hotel' ? 20 : 30;
+                if (selected.length > 0 && totalMinutes + travelMinutes + visitMinutes > preferences.minutes) break;
+                totalDistance += distance;
+                totalMinutes += travelMinutes + visitMinutes;
+                selected.push({ ...next, routeDistance: distance, travelMinutes, visitMinutes });
+                cursor = { lat: Number(next.lat), lng: Number(next.lng) };
+            }
+
+            currentSmartRoute = selected;
+            if (!selected.length) {
+                if (results) results.classList.add('hidden');
+                if (empty) empty.classList.remove('hidden');
+                return;
+            }
+
+            renderSmartRoute(totalDistance, totalMinutes, preferences.transport);
+            drawSmartRouteOnMap(origin);
+            if (results) results.classList.remove('hidden');
+            setMascotMessage(`¡Ruta lista! Preparé ${selected.length} paradas para tu aventura.`);
+            showToast(`🗺️ Ruta creada con ${selected.length} paradas`);
+        }
+
+        function renderSmartRoute(totalDistance, totalMinutes, transport) {
+            const summary = document.getElementById('smartRouteSummary');
+            const stops = document.getElementById('smartRouteStops');
+            const distanceText = totalDistance < 1 ? `${Math.round(totalDistance * 1000)} m` : `${totalDistance.toFixed(1)} km`;
+            if (summary) summary.textContent = `${currentSmartRoute.length} paradas · ${distanceText} · ${Math.round(totalMinutes)} min`;
+            if (!stops) return;
+            stops.innerHTML = currentSmartRoute.map((stop, index) => {
+                const title = escapeHTML(currentLang === 'en' && stop.titleEn ? stop.titleEn : stop.title);
+                const address = escapeHTML(stop.address || 'Loja, Ecuador');
+                const modeIcon = transport === 'drive' ? 'fa-car' : 'fa-person-walking';
+                return `<button type="button" onclick="focusSmartRouteStop(${index})" class="w-full text-left bg-white border border-gray-200 rounded-xl p-3 flex items-center gap-3 hover:border-brandGold transition shadow-sm">
+                    <span class="w-9 h-9 rounded-full bg-brandGold text-white flex items-center justify-center font-black flex-shrink-0">${index + 1}</span>
+                    <span class="min-w-0 flex-grow"><b class="block text-sm truncate">${title}</b><span class="block text-[11px] text-gray-500 truncate">${address}</span></span>
+                    <span class="text-[10px] text-gray-500 flex-shrink-0"><i class="fa-solid ${modeIcon} text-brandGold mr-1"></i>${stop.travelMinutes} min</span>
+                </button>`;
+            }).join('');
+        }
+
+        function drawSmartRouteOnMap(origin) {
+            if (!map || !window.L || !currentSmartRoute.length) return;
+            if (smartRouteLayer) map.removeLayer(smartRouteLayer);
+            const points = [[Number(origin.lat), Number(origin.lng)], ...currentSmartRoute.map(stop => [Number(stop.lat), Number(stop.lng)])];
+            smartRouteLayer = L.polyline(points, { color: '#EA580C', weight: 5, opacity: 0.9, dashArray: '10 8' }).addTo(map);
+            map.fitBounds(smartRouteLayer.getBounds(), { padding: [45, 45], maxZoom: 16 });
+        }
+
+        function focusSmartRouteStop(index) {
+            const stop = currentSmartRoute[index];
+            if (!stop) return;
+            const locationIndex = locations.findIndex(location => location.id === stop.id);
+            if (locationIndex >= 0) selectLocation(locationIndex);
+            closeModal('smartRouteModal');
+            document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function addSmartRouteToFavorites() {
+            if (!currentSmartRoute.length) return;
+            currentSmartRoute.forEach(stop => {
+                if (!favoriteLocations.includes(stop.id)) favoriteLocations.push(stop.id);
+            });
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            updateItineraryUI();
+            renderTrendingUI();
+            completeChabaquitoMission('ruta');
+            showToast('🌱 Ruta guardada en Mi Ruta');
+        }
+
+        function shareSmartRoute() {
+            if (!currentSmartRoute.length) return;
+            const lines = currentSmartRoute.map((stop, index) => `${index + 1}. ${stop.title} — ${stop.address || 'Loja'}`);
+            const text = `🗺️ Mi Ruta Inteligente de Vive Loja\n\n${lines.join('\n')}\n\nCreada con Chabaquito en ${window.location.origin}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+        }
+
+        const chabaquitoMissionIds = ['mapa', 'ruta', 'fiavl', 'postal', 'podcast'];
+        let completedChabaquitoMissions = safeReadJSON('vive_loja_chabaquito_missions', []);
+
+        function renderChabaquitoMissions() {
+            const completed = chabaquitoMissionIds.filter(id => completedChabaquitoMissions.includes(id));
+            const count = completed.length;
+            const percentage = (count / chabaquitoMissionIds.length) * 100;
+            const progressText = document.getElementById('missionProgressText');
+            const progressBar = document.getElementById('missionProgressBar');
+            const progressFill = document.getElementById('missionProgressFill');
+            if (progressText) progressText.textContent = currentLang === 'en'
+                ? `${count} of ${chabaquitoMissionIds.length} missions`
+                : `${count} de ${chabaquitoMissionIds.length} misiones`;
+            if (progressBar) progressBar.setAttribute('aria-valuenow', String(count));
+            if (progressFill) progressFill.style.width = `${percentage}%`;
+
+            document.querySelectorAll('.mission-card').forEach(card => {
+                const isComplete = completed.includes(card.dataset.mission);
+                card.classList.toggle('border-green-500', isComplete);
+                card.classList.toggle('bg-green-500/10', isComplete);
+                card.classList.toggle('border-gray-700', !isComplete);
+                const icon = card.querySelector('.mission-icon');
+                if (icon && isComplete) icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                card.setAttribute('aria-label', `${card.querySelector('strong')?.textContent || 'Misión'}: ${isComplete ? 'completada' : 'pendiente'}`);
+            });
+
+            const reward = document.getElementById('missionReward');
+            if (reward) reward.classList.toggle('hidden', count !== chabaquitoMissionIds.length);
+        }
+
+        function completeChabaquitoMission(id) {
+            if (!chabaquitoMissionIds.includes(id) || completedChabaquitoMissions.includes(id)) return;
+            completedChabaquitoMissions.push(id);
+            try { localStorage.setItem('vive_loja_chabaquito_missions', JSON.stringify(completedChabaquitoMissions)); } catch (_) {}
+            renderChabaquitoMissions();
+            const remaining = chabaquitoMissionIds.length - completedChabaquitoMissions.length;
+            setMascotMessage(remaining > 0
+                ? `¡Misión completada! Te faltan ${remaining} para obtener tu insignia.`
+                : '¡Felicitaciones! Desbloqueaste la insignia Explorador de Loja.');
+            showToast(remaining > 0 ? `⭐ Misión completada. Faltan ${remaining}.` : '🏆 ¡Insignia Explorador de Loja desbloqueada!');
+            try {
+                confetti({ particleCount: remaining > 0 ? 45 : 140, spread: remaining > 0 ? 55 : 90, origin: { y: 0.7 } });
+            } catch (_) {}
+        }
+
+        function goToMission(id) {
+            const targets = { mapa: 'mapa', ruta: 'establecimientos', fiavl: 'fiavl', postal: 'postales', podcast: 'podcast' };
+            const target = document.getElementById(targets[id]);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setMascotMessage({
+                mapa: 'Elige un punto del mapa y abre sus detalles.',
+                ruta: 'Pulsa la semilla de un establecimiento para guardarlo.',
+                fiavl: 'Descubre el festival y sus espacios culturales.',
+                postal: 'Personaliza una postal y descárgala.',
+                podcast: 'Reproduce la canción de muestra para completar el reto.'
+            }[id]);
+        }
+
+        function initChabaquitoMissions() {
+            completedChabaquitoMissions = completedChabaquitoMissions.filter(id => chabaquitoMissionIds.includes(id));
+            if (favoriteLocations.length > 0 && !completedChabaquitoMissions.includes('ruta')) {
+                completedChabaquitoMissions.push('ruta');
+                try { localStorage.setItem('vive_loja_chabaquito_missions', JSON.stringify(completedChabaquitoMissions)); } catch (_) {}
+            }
+            renderChabaquitoMissions();
+            const audio = document.getElementById('podcastSampleAudio');
+            if (audio) audio.addEventListener('play', () => completeChabaquitoMission('podcast'), { once: true });
+
+            const fiavl = document.getElementById('fiavl');
+            if (fiavl && 'IntersectionObserver' in window) {
+                const observer = new IntersectionObserver(entries => {
+                    if (entries.some(entry => entry.isIntersecting)) {
+                        completeChabaquitoMission('fiavl');
+                        observer.disconnect();
+                    }
+                }, { threshold: 0.5 });
+                observer.observe(fiavl);
+            }
+        }
+
+        const mascotSectionMessages = {
+            inicio: '¡Hola! Soy tu guía de Vive Loja. ¿Empezamos la ruta?',
+            mapa: 'Toca los puntos del mapa y descubre nuevos sabores y destinos.',
+            establecimientos: 'Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.',
+            fiavl: '¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!',
+            postales: 'Crea una postal de tu visita y compártela con tus amigos.',
+            pasaporte: 'Completa tu pasaporte y guarda cada parada de tu aventura.',
+            misiones: '¡Acepta mis cinco misiones y conviértete en Explorador de Loja!',
+            podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.'
+        };
+
+        function setMascotMessage(message) {
+            const bubble = document.getElementById('webMascotBubble');
+            if (!bubble) return;
+            bubble.textContent = message;
+            bubble.classList.remove('is-quiet');
+        }
+
+        function toggleMascotBubble() {
+            const bubble = document.getElementById('webMascotBubble');
+            if (bubble) bubble.classList.toggle('is-quiet');
+        }
+
+        function dismissWebMascot() {
+            const mascot = document.getElementById('webMascot');
+            const restore = document.getElementById('webMascotRestore');
+            if (mascot) mascot.classList.add('is-hidden');
+            if (restore) restore.classList.remove('hidden');
+            try { localStorage.setItem('vive_loja_mascot_hidden', '1'); } catch (_) {}
+        }
+
+        function restoreWebMascot() {
+            const mascot = document.getElementById('webMascot');
+            const restore = document.getElementById('webMascotRestore');
+            if (mascot) mascot.classList.remove('is-hidden');
+            if (restore) restore.classList.add('hidden');
+            try { localStorage.removeItem('vive_loja_mascot_hidden'); } catch (_) {}
+            setMascotMessage(mascotSectionMessages.inicio);
+        }
+
+        function initWebMascot() {
+            try {
+                if (localStorage.getItem('vive_loja_mascot_hidden') === '1') {
+                    dismissWebMascot();
+                    return;
+                }
+            } catch (_) {}
+
+            if (!('IntersectionObserver' in window)) return;
+            const sectionObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && mascotSectionMessages[entry.target.id]) {
+                        setMascotMessage(mascotSectionMessages[entry.target.id]);
+                    }
+                });
+            }, { threshold: 0.35 });
+
+            Object.keys(mascotSectionMessages).forEach(id => {
+                const section = document.getElementById(id);
+                if (section) sectionObserver.observe(section);
+            });
+        }
+
+        let lastFocusedElement = null;
         function openModal(id) { 
             const m = document.getElementById(id);
             if(m) {
+                lastFocusedElement = document.activeElement;
                 if(id === 'itineraryModal') updateItineraryUI();
                 if(id === 'adminModal') {
                     switchAdminTab('locales');
                 }
                 m.classList.remove('hidden');
+                m.setAttribute('role', 'dialog');
+                m.setAttribute('aria-modal', 'true');
+                m.setAttribute('aria-hidden', 'false');
+                const focusTarget = m.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (focusTarget) setTimeout(() => focusTarget.focus(), 0);
             }
         }
         function closeModal(id) { 
@@ -4411,8 +5093,16 @@
             const targetM = document.getElementById(id);
             if(targetM) {
                 targetM.classList.add('hidden');
+                targetM.setAttribute('aria-hidden', 'true');
+                if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
             } 
         }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key !== 'Escape') return;
+            const openDialog = Array.from(document.querySelectorAll('[role="dialog"]')).find(el => !el.classList.contains('hidden'));
+            if (openDialog) closeModal(openDialog.id);
+        });
     </script>
 </body>
 </html>
