@@ -72,7 +72,7 @@
                         <label class="block"><span class="text-sm font-semibold block mb-2">Descripción administrativa</span><textarea id="podcastDescription" class="field min-h-24" maxlength="500" placeholder="Nota interna o descripción del episodio"></textarea></label>
 
                         <div class="grid md:grid-cols-2 gap-4">
-                            <label><span class="text-sm font-semibold block mb-2"><i class="fa-solid fa-file-audio text-amber-400 mr-2"></i>Ruta del MP3</span><input id="podcastAudioUrl" class="field" value="audio/cancion-muestra-vive-loja.mp3" placeholder="audio/mi-cancion.mp3"></label>
+                            <label><span class="text-sm font-semibold block mb-2"><i class="fa-solid fa-file-audio text-amber-400 mr-2"></i>Archivo MP3 publicado</span><input id="podcastAudioUrl" class="field" value="cancion-muestra-vive-loja.mp3" placeholder="mi-cancion.mp3"></label>
                             <label><span class="text-sm font-semibold block mb-2"><i class="fa-solid fa-image text-amber-400 mr-2"></i>Ruta o enlace de portada</span><input id="podcastCoverUrl" class="field" placeholder="https://... o assets/portada.png"></label>
                         </div>
                         <p class="text-xs text-gray-400 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3"><i class="fa-solid fa-circle-info text-amber-400 mr-2"></i>Mientras utilizamos el plan gratuito, los archivos se agregan al repositorio y desde aquí puedes elegir cuál mostrar. El audio de muestra actual ya está incluido.</p>
@@ -157,7 +157,7 @@ auth.onAuthStateChanged(async user => {
             document.getElementById('podcastDuration').value = currentData.duration || '3:09';
             document.getElementById('podcastDescription').value = currentData.description || '';
             document.getElementById('podcastVisible').checked = currentData.visible !== false;
-            document.getElementById('podcastAudioUrl').value = currentData.audioUrl || 'audio/cancion-muestra-vive-loja.mp3';
+            document.getElementById('podcastAudioUrl').value = currentData.audioUrl || 'cancion-muestra-vive-loja.mp3';
             document.getElementById('podcastCoverUrl').value = currentData.coverUrl || '';
             if (currentData.audioUrl) {
                 document.getElementById('currentAudioWrap').classList.remove('hidden');
@@ -188,7 +188,7 @@ document.getElementById('podcastForm').addEventListener('submit', async event =>
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             updatedBy: auth.currentUser.email
         };
-        data.audioUrl = audioUrl || 'audio/cancion-muestra-vive-loja.mp3';
+        data.audioUrl = audioUrl || 'cancion-muestra-vive-loja.mp3';
         data.coverUrl = coverUrl;
         await podcastRef.set(data, { merge: true });
         currentData = { ...currentData, ...data };
