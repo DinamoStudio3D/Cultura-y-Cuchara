@@ -441,6 +441,10 @@
                         <i class="fa-solid fa-qrcode"></i> Sellar Pasaporte en este Local
                     </button>
 
+                    <button id="previewShareLinkBtn" type="button" onclick="shareCurrentLocationLink()" class="w-full bg-white text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-orange-50 transition shadow border border-brandGold/40 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-link text-brandGold"></i> <span id="previewShareLinkLabel">Compartir enlace del lugar</span>
+                    </button>
+
                     <div class="flex gap-2">
                         <a id="previewWhatsapp" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 bg-green-500 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
                             <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> <span data-i18n="btnShare">Compartir</span>
@@ -2146,6 +2150,7 @@
         let currentSmartRoute = [];
         let activeSpeechUtterance = null;
         let activeSpeechButton = null;
+        let handledLocationUrl = false;
 
         function clearSpotlightPin() {
             if (spotlightMarker && map) {
@@ -2314,6 +2319,55 @@
                         openQrClaimModalForId(checkinId);
                     }
                 }, 800);
+            }
+            openLocationFromUrl(urlParams.get('lugar'));
+        }
+
+        function buildLocationShareUrl(loc) {
+            const url = new URL(window.location.href);
+            url.search = '';
+            url.hash = '';
+            url.searchParams.set('lugar', loc.id);
+            return url.toString();
+        }
+
+        function openLocationFromUrl(locationId) {
+            if (!locationId || handledLocationUrl) return;
+            const index = locations.findIndex(loc => String(loc.id) === String(locationId));
+            if (index < 0) return;
+            handledLocationUrl = true;
+            setTimeout(() => {
+                selectLocation(index, true);
+                const loc = locations[index];
+                const title = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+                document.title = `${title} | Vive Loja`;
+                document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (markersMap[loc.id]) markersMap[loc.id].openPopup();
+                showToast(currentLang === 'en' ? `Showing ${title}` : `Descubre ${title}`);
+            }, 350);
+        }
+
+        async function shareCurrentLocationLink() {
+            const loc = locations[currentLocationIndex];
+            if (!loc) return;
+            const title = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+            const url = buildLocationShareUrl(loc);
+            const shareData = {
+                title: `${title} | Vive Loja`,
+                text: currentLang === 'en' ? `Discover ${title} in Vive Loja.` : `Descubre ${title} en Vive Loja.`,
+                url
+            };
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(url);
+                    showToast(currentLang === 'en' ? 'Link copied' : 'Enlace copiado');
+                } else {
+                    window.prompt(currentLang === 'en' ? 'Copy this link:' : 'Copia este enlace:', url);
+                }
+            } catch (error) {
+                if (error?.name !== 'AbortError') showToast(currentLang === 'en' ? 'Could not share the link' : 'No se pudo compartir el enlace');
             }
         }
 
@@ -4427,8 +4481,11 @@
             document.getElementById('previewGps').href = previewGpsUrl;
             
             const waBtn = document.getElementById('previewWhatsapp');
-            const waText = currentLang === 'en' ? `Hello! I came from the Vive Loja website and would like information about ${titleText} (${loc.address}).` : `¡Hola! Vengo desde la web Vive Loja y deseo más información sobre ${titleText} (${loc.address}).`;
+            const locationShareUrl = buildLocationShareUrl(loc);
+            const waText = currentLang === 'en' ? `Discover ${titleText} in Vive Loja: ${locationShareUrl}` : `Descubre ${titleText} en Vive Loja: ${locationShareUrl}`;
             waBtn.href = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+            const shareLabel = document.getElementById('previewShareLinkLabel');
+            if (shareLabel) shareLabel.textContent = currentLang === 'en' ? 'Share this place link' : 'Compartir enlace del lugar';
 
             const favIcon = document.getElementById('previewFav');
             const previewBtn = document.getElementById('previewFavBtn');
