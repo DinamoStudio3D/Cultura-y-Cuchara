@@ -686,6 +686,7 @@
                             <i class="fa-solid fa-award text-4xl text-brandGold mb-2"></i>
                             <p class="font-black text-brandGold" data-i18n="missionRewardTitle">¡Insignia Explorador de Loja desbloqueada!</p>
                             <p class="text-xs text-gray-300 mt-1" data-i18n="missionRewardDesc">Completaste las cinco misiones de Chabaquito.</p>
+                            <div id="certificateRewardControls" class="mt-4 max-w-md mx-auto flex flex-col sm:flex-row gap-2"><input id="certificateVisitorName" class="flex-1 bg-white text-brandDark border border-brandGold/40 rounded-xl px-4 py-3 text-sm font-bold outline-none" maxlength="45" placeholder="Escribe tu nombre"><button type="button" onclick="downloadExplorerCertificate()" class="bg-brandGold hover:bg-orange-500 text-white font-black rounded-xl px-5 py-3 text-xs whitespace-nowrap"><i class="fa-solid fa-certificate mr-1"></i>Descargar certificado</button></div>
                         </div>
                     </div>
                 </div>
@@ -5412,6 +5413,15 @@
             } catch (_) {}
         }
 
+        function wrapCertificateText(ctx,text,x,y,maxWidth,lineHeight){const words=String(text||'').split(/\s+/);let line='',lines=[];words.forEach(word=>{const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else line=test;});if(line)lines.push(line);lines.slice(0,4).forEach((item,index)=>ctx.fillText(item,x,y+index*lineHeight));}
+
+        function downloadExplorerCertificate(){
+            if(!chabaquitoMissionIds.every(id=>completedChabaquitoMissions.includes(id))){showToast('Completa las cinco misiones para desbloquear el certificado.');return;}
+            if(explorerCertificateConfig.active===false){showToast('El certificado no está disponible en este momento.');return;}
+            const input=document.getElementById('certificateVisitorName'),name=input?.value.trim();if(!name){showToast('Escribe tu nombre para crear el certificado.');input?.focus();return;}
+            const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=1130;const ctx=canvas.getContext('2d');const gradient=ctx.createLinearGradient(0,0,1600,1130);gradient.addColorStop(0,'#0b0b12');gradient.addColorStop(.55,'#172033');gradient.addColorStop(1,'#31120a');ctx.fillStyle=gradient;ctx.fillRect(0,0,1600,1130);ctx.strokeStyle='#EA580C';ctx.lineWidth=18;ctx.strokeRect(38,38,1524,1054);ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=3;ctx.strokeRect(65,65,1470,1000);ctx.textAlign='center';ctx.fillStyle='#EA580C';ctx.font='900 30px sans-serif';ctx.fillText('VIVE LOJA · MISIONES DE CHABAQUITO',800,170);ctx.fillStyle='#fff';ctx.font='900 72px sans-serif';ctx.fillText('CERTIFICADO',800,285);ctx.fillStyle='#f7b267';ctx.font='800 42px sans-serif';ctx.fillText(explorerCertificateConfig.title||'Explorador de Loja',800,360);ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='500 25px sans-serif';ctx.fillText('Se otorga el presente reconocimiento a',800,455);ctx.fillStyle='#fff';ctx.font='italic 900 64px serif';ctx.fillText(name.slice(0,45),800,555);ctx.strokeStyle='#EA580C';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(350,585);ctx.lineTo(1250,585);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.86)';ctx.font='500 27px sans-serif';wrapCertificateText(ctx,explorerCertificateConfig.text,800,665,1120,42);ctx.fillStyle='#EA580C';ctx.font='800 28px sans-serif';ctx.fillText(explorerCertificateConfig.signature||'Vive Loja · Cultura y Cuchara',800,900);ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='500 20px sans-serif';ctx.fillText(`Loja, Ecuador · ${new Intl.DateTimeFormat('es-EC',{dateStyle:'long'}).format(new Date())}`,800,950);ctx.fillStyle='#EA580C';ctx.beginPath();ctx.arc(800,1030,40,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='900 28px sans-serif';ctx.fillText('VL',800,1040);const link=document.createElement('a');link.download=`Certificado_Explorador_Loja_${name.replace(/[^a-z0-9]+/gi,'_')}.png`;link.href=canvas.toDataURL('image/png');link.click();showToast('🏆 ¡Certificado descargado!');try{confetti({particleCount:140,spread:90,origin:{y:.7}});}catch(_){}
+        }
+
         function goToMission(id) {
             const targets = { mapa: 'mapa', ruta: 'establecimientos', fiavl: 'fiavl', postal: 'postales', podcast: 'podcast' };
             const target = document.getElementById(targets[id]);
@@ -5459,9 +5469,13 @@
         };
 
         let chabaquitoEnabled = true;
+        let explorerCertificateConfig = { active:true, title:'Explorador de Loja', text:'Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.', signature:'Vive Loja · Cultura y Cuchara' };
 
         function applyChabaquitoConfig(data = {}) {
             chabaquitoEnabled = data.active !== false;
+            explorerCertificateConfig = { ...explorerCertificateConfig, ...(data.certificate || {}) };
+            const certificateControls = document.getElementById('certificateRewardControls');
+            if (certificateControls) certificateControls.classList.toggle('hidden', explorerCertificateConfig.active === false);
             if (data.messages && typeof data.messages === 'object') Object.assign(mascotSectionMessages, data.messages);
             const imageUrl = data.imageUrl || 'mascota-vive-loja.png';
             document.querySelectorAll('img').forEach(image => {
