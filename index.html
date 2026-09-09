@@ -1017,7 +1017,7 @@
             </div>
             <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
                 <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo del GAD Municipal y Mesa Turística. © 2026.</span> 
-                <span onclick="requestAdminAccess()" ontouchstart="requestAdminAccess()" class="cursor-pointer text-black hover:text-brandGold transition text-[16px] px-3.5 py-3 select-none inline-block -m-2" title="Admin">.</span>
+                <span class="text-black/50 text-[16px] px-3.5 py-3 select-none inline-block -m-2" aria-hidden="true">.</span>
             </div>
         </div>
     </footer>
@@ -2245,7 +2245,8 @@
             { id: 'hotel', name: 'Hoteles & Hospedaje', nameEn: 'Hotels & Lodging', icon: '🏨' },
             { id: 'hueca', name: 'Huecas', nameEn: 'Local Eateries', icon: '🥘' },
             { id: 'cafe', name: 'Cafeterías', nameEn: 'Coffee Shops', icon: '☕' },
-            { id: 'urbana', name: 'Urbana', nameEn: 'Urban', icon: '🍔' }
+            { id: 'urbana', name: 'Urbana', nameEn: 'Urban', icon: '🍔' },
+            { id: 'turismo', name: 'Atractivos', nameEn: 'Attractions', icon: '📍' }
         ];
 
         let categories = safeReadJSON('cyc_dynamic_cats', defaultCategories);
@@ -4654,9 +4655,7 @@
         }
 
         function requestAdminAccess() {
-            openModal('adminPinModal');
-            document.getElementById('adminPinInput').value = '';
-            document.getElementById('adminPinInput').focus();
+            window.location.href = 'admin.html';
         }
 
         function verifyAdminPin(e) {

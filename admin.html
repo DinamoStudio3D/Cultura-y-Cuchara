@@ -52,8 +52,8 @@
                 <aside class="panel rounded-2xl p-3 h-fit">
                     <button id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left bg-amber-500 text-black font-black rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y Podcast</button>
                     <button id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-masks-theater w-6"></i>Modo Festival</button>
+                    <button id="placesNavBtn" type="button" onclick="showAdminModule('places')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-location-dot w-6"></i>Lugares</button>
                     <p class="text-xs text-gray-500 px-4 pt-4 pb-2">Próximos módulos</p>
-                    <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-location-dot w-6"></i>Lugares</div>
                     <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-calendar w-6"></i>Eventos</div>
                     <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</div>
                 </aside>
@@ -104,6 +104,33 @@
                         <button id="festivalSaveBtn" type="submit" class="w-full sm:w-auto bg-fuchsia-500 hover:bg-fuchsia-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Modo Festival</button>
                     </form>
                 </section>
+
+                <section id="placesModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+                        <div><p class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Módulo 3</p><h2 class="text-2xl font-black mt-1">Lugares y establecimientos</h2><p class="text-sm text-gray-400 mt-1">Administra los puntos del mapa y sus fichas públicas.</p></div>
+                        <button id="newPlaceBtn" type="button" onclick="resetPlaceForm()" class="bg-cyan-500 hover:bg-cyan-400 text-black rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nuevo lugar</button>
+                    </div>
+
+                    <form id="placeForm" class="space-y-5 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-7">
+                        <input id="placeEditId" type="hidden">
+                        <h3 id="placeFormTitle" class="font-black text-lg">Registrar un lugar</h3>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Nombre en español *</span><input id="placeTitle" class="field" required maxlength="120"></label><label><span class="text-sm font-semibold block mb-2">Nombre en inglés</span><input id="placeTitleEn" class="field" maxlength="120"></label></div>
+                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Categoría *</span><select id="placeCategory" class="field" required><option value="hueca">Hueca</option><option value="cafe">Cafetería</option><option value="hotel">Hotel / Hospedaje</option><option value="urbana">Restaurante urbano</option><option value="turismo">Atractivo turístico</option></select></label><label><span class="text-sm font-semibold block mb-2">Etiqueta visible</span><input id="placeTag" class="field" placeholder="Hueca tradicional"></label><label><span class="text-sm font-semibold block mb-2">PIN del pasaporte *</span><input id="placePin" class="field" required inputmode="numeric" maxlength="6" value="1234"></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Descripción en español *</span><textarea id="placeDesc" class="field min-h-24" required maxlength="700"></textarea></label><label><span class="text-sm font-semibold block mb-2">Descripción en inglés</span><textarea id="placeDescEn" class="field min-h-24" maxlength="700"></textarea></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Plato, producto o beneficio</span><input id="placeDish" class="field"></label><label><span class="text-sm font-semibold block mb-2">Versión en inglés</span><input id="placeDishEn" class="field"></label></div>
+                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Horario visible</span><input id="placeHours" class="field" placeholder="Lun - Sáb: 08:00 - 20:00"></label><label><span class="text-sm font-semibold block mb-2">Hora de apertura</span><input id="placeOpenHour" class="field" type="number" min="0" max="23" value="8"></label><label><span class="text-sm font-semibold block mb-2">Hora de cierre</span><input id="placeCloseHour" class="field" type="number" min="0" max="24" value="20"></label></div>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Dirección *</span><input id="placeAddress" class="field" required></label>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Latitud *</span><input id="placeLat" class="field" required type="number" step="any" placeholder="-3.9931"></label><label><span class="text-sm font-semibold block mb-2">Longitud *</span><input id="placeLng" class="field" required type="number" step="any" placeholder="-79.2042"></label></div>
+                        <p class="text-xs text-gray-400 bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-3"><i class="fa-solid fa-location-crosshairs text-cyan-300 mr-2"></i>En Google Maps haz clic derecho sobre el lugar y copia sus coordenadas.</p>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">URL del logotipo</span><input id="placeLogo" class="field" type="url" placeholder="https://..."></label><label><span class="text-sm font-semibold block mb-2">Video de YouTube</span><input id="placeYoutube" class="field" type="url" placeholder="https://youtube.com/..."></label></div>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Fotografías</span><textarea id="placeGallery" class="field min-h-20" placeholder="Pega una dirección de imagen por línea"></textarea><span class="text-xs text-gray-500 mt-1 block">Durante las pruebas utilizaremos enlaces públicos de imágenes.</span></label>
+                        <div id="placeFormMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
+                        <div class="flex flex-col sm:flex-row gap-3"><button id="placeSaveBtn" type="submit" class="bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar lugar</button><button type="button" onclick="resetPlaceForm()" class="border border-gray-700 hover:border-gray-500 rounded-xl px-5 py-3 text-sm font-bold">Cancelar edición</button></div>
+                    </form>
+
+                    <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Lugares registrados</h3><span id="placesCount" class="text-xs text-gray-400">0 lugares</span></div>
+                    <div id="placesList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando lugares…</p></div>
+                </section>
             </div>
         </section>
     </main>
@@ -125,14 +152,24 @@ const loginView = document.getElementById('loginView');
 const adminView = document.getElementById('adminView');
 const podcastRef = db.collection('siteContent').doc('podcast');
 const festivalRef = db.collection('siteContent').doc('festival');
+const placesRef = db.collection('locales');
 let currentData = {};
 let festivalDraftEvents = [];
+let adminPlaces = [];
+let placesUnsubscribe = null;
 const DEFAULT_ADMIN_FESTIVAL_EVENTS = [
     { id: 'fiavl-demo-1', title: 'Desfile inaugural FIAVL 2026', date: '2026-11-12', time: '18:00', durationMinutes: 90, place: 'Centro de Loja', category: 'Inauguración', free: true, lat: -3.9967, lng: -79.2018, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Centro+de+Loja+Ecuador' },
     { id: 'fiavl-demo-2', title: 'Teatro en las plazas', date: '2026-11-13', time: '17:00', durationMinutes: 90, place: 'Plaza de San Sebastián', category: 'Teatro', free: true, lat: -3.9985, lng: -79.2045, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Plaza+San+Sebastian+Loja' },
     { id: 'fiavl-demo-3', title: 'Noche de danza y movimiento', date: '2026-11-13', time: '20:00', durationMinutes: 90, place: 'Escenario por confirmar', category: 'Danza', free: false, lat: '', lng: '', mapUrl: '' },
     { id: 'fiavl-demo-4', title: 'Encuentro familiar con Chabaquito', date: '2026-11-14', time: '11:00', durationMinutes: 90, place: 'Parque Central', category: 'Familiar', free: true, lat: -3.9967, lng: -79.2018, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Parque+Central+Loja' }
 ];
+
+function message(element, text, success = false) {
+    if (!element) return;
+    element.textContent = text;
+    element.className = `text-sm rounded-xl p-3 ${success ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-200' : 'bg-red-500/10 border border-red-500/30 text-red-200'}`;
+    element.classList.remove('hidden');
+}
 
 function friendlyAuthError(error) {
     const map = {
@@ -158,11 +195,68 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
 document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
 function showAdminModule(moduleName) {
-    const festival = moduleName === 'festival';
-    document.getElementById('podcastModule').classList.toggle('hidden', festival);
-    document.getElementById('festivalModule').classList.toggle('hidden', !festival);
-    document.getElementById('podcastNavBtn').className = `w-full text-left font-black rounded-xl px-4 py-3 ${festival ? 'text-gray-300 hover:bg-white/5' : 'bg-amber-500 text-black'}`;
-    document.getElementById('festivalNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${festival ? 'bg-fuchsia-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    ['podcast', 'festival', 'places'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    document.getElementById('podcastNavBtn').className = `w-full text-left font-black rounded-xl px-4 py-3 ${moduleName === 'podcast' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('festivalNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'festival' ? 'bg-fuchsia-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('placesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'places' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
+}
+
+function createAdminSlug(value) {
+    return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'lugar';
+}
+
+function placeIcon(category) {
+    return ({ hueca: 'fa-mortar-pestle', cafe: 'fa-mug-hot', hotel: 'fa-hotel', urbana: 'fa-utensils', turismo: 'fa-landmark' })[category] || 'fa-location-dot';
+}
+
+function publicPlaceUrl(place) {
+    return `${window.location.origin}/?lugar=${encodeURIComponent(createAdminSlug(place.title))}`;
+}
+
+function renderAdminPlaces() {
+    const list = document.getElementById('placesList');
+    document.getElementById('placesCount').textContent = `${adminPlaces.length} ${adminPlaces.length === 1 ? 'lugar' : 'lugares'}`;
+    if (!adminPlaces.length) {
+        list.innerHTML = '<p class="text-gray-500 text-sm border border-dashed border-gray-700 rounded-xl p-6 text-center">Todavía no hay lugares guardados en Firestore.</p>';
+        return;
+    }
+    list.innerHTML = adminPlaces.map(place => `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div class="min-w-0"><div class="flex items-center gap-2"><span class="w-9 h-9 rounded-full bg-cyan-500/15 text-cyan-300 grid place-items-center"><i class="fa-solid ${escapeAdminHtml(place.iconClass || placeIcon(place.category))}"></i></span><div class="min-w-0"><h4 class="font-black truncate">${escapeAdminHtml(place.title || 'Sin nombre')}</h4><p class="text-xs text-gray-400 truncate">${escapeAdminHtml(place.tag || place.category || 'Sin categoría')} · ${escapeAdminHtml(place.address || 'Sin dirección')}</p></div></div></div><div class="flex flex-wrap gap-2"><button type="button" onclick="copyAdminPlaceLink('${escapeAdminHtml(place.id)}')" class="border border-gray-700 hover:border-cyan-400 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-link mr-1"></i>Copiar link</button><button type="button" onclick="editAdminPlace('${escapeAdminHtml(place.id)}')" class="bg-cyan-500/15 text-cyan-200 hover:bg-cyan-500/25 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-pen mr-1"></i>Editar</button><button type="button" onclick="deleteAdminPlace('${escapeAdminHtml(place.id)}')" class="bg-red-500/10 text-red-300 hover:bg-red-500/20 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Eliminar</button></div></div></article>`).join('');
+}
+
+function resetPlaceForm() {
+    document.getElementById('placeForm').reset();
+    document.getElementById('placeEditId').value = '';
+    document.getElementById('placeFormTitle').textContent = 'Registrar un lugar';
+    document.getElementById('placePin').value = '1234';
+    document.getElementById('placeOpenHour').value = '8';
+    document.getElementById('placeCloseHour').value = '20';
+    document.getElementById('placeFormMessage').classList.add('hidden');
+}
+
+function editAdminPlace(id) {
+    const place = adminPlaces.find(item => item.id === id);
+    if (!place) return;
+    showAdminModule('places');
+    document.getElementById('placeEditId').value = place.id;
+    document.getElementById('placeFormTitle').textContent = `Editar: ${place.title || 'lugar'}`;
+    const values = { placeTitle: place.title, placeTitleEn: place.titleEn, placeCategory: place.category, placeTag: place.tag, placePin: place.pin, placeDesc: place.desc, placeDescEn: place.descEn, placeDish: place.dish, placeDishEn: place.dishEn, placeHours: place.hours, placeOpenHour: place.openHour, placeCloseHour: place.closeHour, placeAddress: place.address, placeLat: place.lat, placeLng: place.lng, placeLogo: place.customLogoUrl, placeYoutube: place.youtubeUrl, placeGallery: Array.isArray(place.gallery) ? place.gallery.map(item => item.img).filter(Boolean).join('\n') : '' };
+    Object.entries(values).forEach(([field, value]) => { document.getElementById(field).value = value ?? ''; });
+    document.getElementById('placeForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function copyAdminPlaceLink(id) {
+    const place = adminPlaces.find(item => item.id === id);
+    if (!place) return;
+    const url = publicPlaceUrl(place);
+    try { await navigator.clipboard.writeText(url); message(document.getElementById('placeFormMessage'), `Enlace copiado: ${url}`, true); }
+    catch (_) { window.prompt('Copia este enlace:', url); }
+}
+
+async function deleteAdminPlace(id) {
+    const place = adminPlaces.find(item => item.id === id);
+    if (!place || !window.confirm(`¿Eliminar definitivamente “${place.title}”?`)) return;
+    try { await placesRef.doc(id).delete(); resetPlaceForm(); }
+    catch (error) { message(document.getElementById('placeFormMessage'), error.code === 'permission-denied' ? 'Firestore no permitió eliminar este lugar.' : 'No se pudo eliminar el lugar.'); }
 }
 
 function makeFestivalEvent() {
@@ -216,7 +310,11 @@ function loadFestivalForm(data = {}) {
 auth.onAuthStateChanged(async user => {
     loginView.classList.toggle('hidden', !!user);
     adminView.classList.toggle('hidden', !user);
-    if (!user) return;
+    if (!user) {
+        if (placesUnsubscribe) placesUnsubscribe();
+        placesUnsubscribe = null;
+        return;
+    }
     if ((user.email || '').toLowerCase() !== ADMIN_EMAIL) {
         await auth.signOut();
         loginView.classList.remove('hidden');
@@ -242,9 +340,56 @@ auth.onAuthStateChanged(async user => {
             }
         }
         loadFestivalForm(festivalSnapshot.exists ? festivalSnapshot.data() : {});
+        if (placesUnsubscribe) placesUnsubscribe();
+        placesUnsubscribe = placesRef.onSnapshot(snapshot => {
+            adminPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'es'));
+            renderAdminPlaces();
+        }, () => { document.getElementById('placesList').innerHTML = '<p class="text-red-300 text-sm">No fue posible cargar los lugares. Revisa los permisos de Firestore.</p>'; });
     } catch (error) {
         message(document.getElementById('formMessage'), 'Tu cuenta inició sesión, pero todavía no tiene permisos para leer el contenido. Deben configurarse las reglas de Firebase.');
     }
+});
+
+document.getElementById('placeForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = document.getElementById('placeSaveBtn');
+    const formMessage = document.getElementById('placeFormMessage');
+    const title = document.getElementById('placeTitle').value.trim();
+    const lat = Number(document.getElementById('placeLat').value);
+    const lng = Number(document.getElementById('placeLng').value);
+    if (!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lng) || lng < -180 || lng > 180) {
+        message(formMessage, 'Las coordenadas no son válidas. La latitud debe estar entre -90 y 90 y la longitud entre -180 y 180.');
+        return;
+    }
+    const galleryUrls = document.getElementById('placeGallery').value.split(/[\n,]+/).map(url => url.trim()).filter(Boolean);
+    const category = document.getElementById('placeCategory').value;
+    const description = document.getElementById('placeDesc').value.trim();
+    const dish = document.getElementById('placeDish').value.trim();
+    const tag = document.getElementById('placeTag').value.trim() || category;
+    const data = {
+        pin: document.getElementById('placePin').value.trim(), tag, tagEn: tag, title,
+        titleEn: document.getElementById('placeTitleEn').value.trim() || title,
+        desc: description, descEn: document.getElementById('placeDescEn').value.trim() || description,
+        dish, dishEn: document.getElementById('placeDishEn').value.trim() || dish,
+        hours: document.getElementById('placeHours').value.trim(),
+        openHour: Number(document.getElementById('placeOpenHour').value || 0),
+        closeHour: Number(document.getElementById('placeCloseHour').value || 24),
+        address: document.getElementById('placeAddress').value.trim(), lat, lng,
+        gps: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
+        iconClass: placeIcon(category), customLogoUrl: document.getElementById('placeLogo').value.trim(), category,
+        youtubeUrl: document.getElementById('placeYoutube').value.trim(),
+        gallery: galleryUrls.map((img, index) => ({ img, title: `${title} - ${index + 1}` })),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email
+    };
+    button.disabled = true;
+    try {
+        const editId = document.getElementById('placeEditId').value;
+        await placesRef.doc(editId || `loc_${createAdminSlug(title)}_${Date.now()}`).set(data, { merge: true });
+        if (!editId) resetPlaceForm();
+        message(formMessage, editId ? 'Lugar actualizado correctamente.' : 'Lugar registrado correctamente.', true);
+    } catch (error) {
+        message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar. Revisa las reglas de seguridad.' : (error.message || 'No se pudo guardar el lugar.'));
+    } finally { button.disabled = false; }
 });
 
 document.getElementById('podcastForm').addEventListener('submit', async event => {
