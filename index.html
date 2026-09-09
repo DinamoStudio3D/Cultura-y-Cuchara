@@ -2322,6 +2322,14 @@
         let emprendedoresList = safeReadJSON('cyc_dynamic_emprendedores', [
             { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
         ]);
+        if (db) {
+            db.collection('siteContent').doc('entrepreneurs').onSnapshot(snapshot => {
+                if (!snapshot.exists || !Array.isArray(snapshot.data().items)) return;
+                emprendedoresList = snapshot.data().items.map(item => ({ ...item }));
+                localStorage.setItem('cyc_dynamic_emprendedores', JSON.stringify(emprendedoresList));
+                renderEmprendedoresUI();
+            }, error => console.warn('No se pudieron sincronizar los emprendimientos:', error));
+        }
 
         let lojaTimeList = safeReadJSON('cyc_dynamic_lojatiempo', [
             {
