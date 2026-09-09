@@ -2047,6 +2047,15 @@
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
 
+            const editableQrId = new URLSearchParams(window.location.search).get('qr');
+            if (editableQrId) {
+                db.collection('qrCodes').doc(editableQrId).get().then(snapshot => {
+                    if (!snapshot.exists || !snapshot.data().targetUrl) return;
+                    const destination = new URL(snapshot.data().targetUrl, window.location.origin);
+                    if (['http:', 'https:'].includes(destination.protocol)) window.location.replace(destination.href);
+                }).catch(error => console.warn('No se pudo resolver el código QR:', error));
+            }
+
             db.collection('siteContent').doc('maintenance').onSnapshot(snapshot => {
                 const data = snapshot.exists ? snapshot.data() : { active: false };
                 const overlay = document.getElementById('maintenanceOverlay');
