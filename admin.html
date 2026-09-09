@@ -50,14 +50,15 @@
 
             <div class="grid lg:grid-cols-[240px_1fr] gap-6">
                 <aside class="panel rounded-2xl p-3 h-fit">
-                    <button class="w-full text-left bg-amber-500 text-black font-black rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y Podcast</button>
+                    <button id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left bg-amber-500 text-black font-black rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y Podcast</button>
+                    <button id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-masks-theater w-6"></i>Modo Festival</button>
                     <p class="text-xs text-gray-500 px-4 pt-4 pb-2">Próximos módulos</p>
                     <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-location-dot w-6"></i>Lugares</div>
                     <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-calendar w-6"></i>Eventos</div>
                     <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</div>
                 </aside>
 
-                <section class="panel rounded-2xl p-5 sm:p-7">
+                <section id="podcastModule" class="panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex items-start justify-between gap-4 mb-6">
                         <div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Módulo 1</p><h2 class="text-2xl font-black mt-1">Audio de muestra</h2><p class="text-sm text-gray-400 mt-1">Los cambios guardados aparecerán en “El Podcast de Loja”.</p></div>
                         <span id="saveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Sin cambios</span>
@@ -87,6 +88,22 @@
                         <button id="saveBtn" type="submit" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar y publicar contenido</button>
                     </form>
                 </section>
+
+                <section id="festivalModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="flex items-start justify-between gap-4 mb-6">
+                        <div><p class="text-fuchsia-400 text-xs font-bold uppercase tracking-widest">Módulo 2</p><h2 class="text-2xl font-black mt-1">Modo Festival</h2><p class="text-sm text-gray-400 mt-1">Administra la cuenta regresiva y la agenda que aparece en la portada.</p></div>
+                        <span id="festivalSaveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Sin cambios</span>
+                    </div>
+                    <form id="festivalForm" class="space-y-5">
+                        <label class="flex items-center justify-between gap-4 bg-black/35 rounded-xl p-4 border border-gray-800"><span><strong class="block">Activar Modo Festival</strong><span class="text-xs text-gray-400">Oculta o muestra toda la experiencia.</span></span><input id="festivalActive" class="w-5 h-5 accent-fuchsia-500" type="checkbox" checked></label>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Título</span><input id="festivalTitle" class="field" maxlength="100" value="Loja se convierte en escenario"></label><label><span class="text-sm font-semibold block mb-2">Texto breve</span><input id="festivalSubtitle" class="field" maxlength="220" value="Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas."></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Inicio del Festival</span><input id="festivalStart" class="field" type="datetime-local" value="2026-11-12T18:00"></label><label><span class="text-sm font-semibold block mb-2">Final del Festival</span><input id="festivalEnd" class="field" type="datetime-local" value="2026-11-22T23:59"></label></div>
+                        <label class="flex items-center justify-between gap-4 bg-fuchsia-500/10 rounded-xl p-4 border border-fuchsia-500/25"><span><strong class="block">Marcar como demostración</strong><span class="text-xs text-gray-400">Mantén esta opción activa hasta cargar la cartelera oficial.</span></span><input id="festivalDemo" class="w-5 h-5 accent-fuchsia-500" type="checkbox" checked></label>
+                        <div class="border-t border-gray-800 pt-5"><div class="flex items-center justify-between gap-3 mb-4"><div><h3 class="font-black text-lg">Actividades</h3><p class="text-xs text-gray-400">Agrega horarios, lugares y enlaces de ubicación.</p></div><button type="button" onclick="addFestivalEvent()" class="bg-fuchsia-600 hover:bg-fuchsia-500 rounded-xl px-4 py-2 text-sm font-bold"><i class="fa-solid fa-plus mr-1"></i>Agregar</button></div><div id="festivalEventsEditor" class="space-y-4"></div></div>
+                        <div id="festivalFormMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
+                        <button id="festivalSaveBtn" type="submit" class="w-full sm:w-auto bg-fuchsia-500 hover:bg-fuchsia-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Modo Festival</button>
+                    </form>
+                </section>
             </div>
         </section>
     </main>
@@ -107,12 +124,9 @@ const ADMIN_EMAIL = 'sukogames1996@gmail.com';
 const loginView = document.getElementById('loginView');
 const adminView = document.getElementById('adminView');
 const podcastRef = db.collection('siteContent').doc('podcast');
+const festivalRef = db.collection('siteContent').doc('festival');
 let currentData = {};
-
-function message(element, text, ok = false) {
-    element.textContent = text;
-    element.className = `text-sm rounded-xl p-3 ${ok ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-red-500/15 text-red-300 border border-red-500/30'}`;
-}
+let festivalDraftEvents = [];
 
 function friendlyAuthError(error) {
     const map = {
@@ -136,6 +150,63 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
 });
 
 document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+
+function showAdminModule(moduleName) {
+    const festival = moduleName === 'festival';
+    document.getElementById('podcastModule').classList.toggle('hidden', festival);
+    document.getElementById('festivalModule').classList.toggle('hidden', !festival);
+    document.getElementById('podcastNavBtn').className = `w-full text-left font-black rounded-xl px-4 py-3 ${festival ? 'text-gray-300 hover:bg-white/5' : 'bg-amber-500 text-black'}`;
+    document.getElementById('festivalNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${festival ? 'bg-fuchsia-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+}
+
+function makeFestivalEvent() {
+    return { id: `fiavl-${Date.now()}`, title: '', date: '2026-11-12', time: '18:00', place: '', category: 'Teatro', free: true, mapUrl: '' };
+}
+
+function escapeAdminHtml(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character]));
+}
+
+function renderFestivalEditor() {
+    const container = document.getElementById('festivalEventsEditor');
+    if (!festivalDraftEvents.length) {
+        container.innerHTML = '<p class="text-sm text-center text-gray-500 border border-dashed border-gray-700 rounded-xl p-6">Todavía no hay actividades. Presiona “Agregar”.</p>';
+        return;
+    }
+    container.innerHTML = festivalDraftEvents.map((event, index) => `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex items-center justify-between mb-3"><strong class="text-sm text-fuchsia-300">Actividad ${index + 1}</strong><button type="button" onclick="removeFestivalEvent(${index})" class="text-red-300 hover:text-red-200 text-sm"><i class="fa-solid fa-trash mr-1"></i>Quitar</button></div><div class="grid md:grid-cols-2 gap-3"><label class="md:col-span-2"><span class="text-xs text-gray-400 block mb-1">Nombre</span><input class="field" data-event-index="${index}" data-event-field="title" value="${escapeAdminHtml(event.title)}" required></label><label><span class="text-xs text-gray-400 block mb-1">Fecha</span><input class="field" type="date" data-event-index="${index}" data-event-field="date" value="${escapeAdminHtml(event.date)}" required></label><label><span class="text-xs text-gray-400 block mb-1">Hora</span><input class="field" type="time" data-event-index="${index}" data-event-field="time" value="${escapeAdminHtml(event.time)}" required></label><label><span class="text-xs text-gray-400 block mb-1">Lugar</span><input class="field" data-event-index="${index}" data-event-field="place" value="${escapeAdminHtml(event.place)}" required></label><label><span class="text-xs text-gray-400 block mb-1">Categoría</span><input class="field" data-event-index="${index}" data-event-field="category" value="${escapeAdminHtml(event.category)}"></label><label class="md:col-span-2"><span class="text-xs text-gray-400 block mb-1">Enlace de Google Maps</span><input class="field" type="url" data-event-index="${index}" data-event-field="mapUrl" value="${escapeAdminHtml(event.mapUrl)}" placeholder="https://maps.google.com/..."></label><label class="md:col-span-2 flex items-center gap-2 text-sm"><input type="checkbox" class="accent-fuchsia-500 w-4 h-4" data-event-index="${index}" data-event-field="free" ${event.free ? 'checked' : ''}> Entrada libre</label></div></article>`).join('');
+}
+
+function syncFestivalEditor() {
+    document.querySelectorAll('[data-event-index]').forEach(input => {
+        const event = festivalDraftEvents[Number(input.dataset.eventIndex)];
+        if (!event) return;
+        event[input.dataset.eventField] = input.type === 'checkbox' ? input.checked : input.value.trim();
+    });
+}
+
+function addFestivalEvent() {
+    syncFestivalEditor();
+    festivalDraftEvents.push(makeFestivalEvent());
+    renderFestivalEditor();
+}
+
+function removeFestivalEvent(index) {
+    syncFestivalEditor();
+    festivalDraftEvents.splice(index, 1);
+    renderFestivalEditor();
+}
+
+function loadFestivalForm(data = {}) {
+    document.getElementById('festivalActive').checked = data.active !== false;
+    document.getElementById('festivalDemo').checked = data.demo !== false;
+    document.getElementById('festivalTitle').value = data.title || 'Loja se convierte en escenario';
+    document.getElementById('festivalSubtitle').value = data.subtitle || 'Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.';
+    document.getElementById('festivalStart').value = (data.startDate || '2026-11-12T18:00:00-05:00').slice(0,16);
+    document.getElementById('festivalEnd').value = (data.endDate || '2026-11-22T23:59:59-05:00').slice(0,16);
+    festivalDraftEvents = Array.isArray(data.events) ? data.events.map(event => ({ ...event })) : [];
+    renderFestivalEditor();
+}
+
 auth.onAuthStateChanged(async user => {
     loginView.classList.toggle('hidden', !!user);
     adminView.classList.toggle('hidden', !user);
@@ -149,7 +220,7 @@ auth.onAuthStateChanged(async user => {
     }
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
     try {
-        const snapshot = await podcastRef.get();
+        const [snapshot, festivalSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get()]);
         if (snapshot.exists) {
             currentData = snapshot.data();
             document.getElementById('podcastLabel').value = currentData.label || 'Canción de muestra';
@@ -164,6 +235,7 @@ auth.onAuthStateChanged(async user => {
                 document.getElementById('currentAudio').src = currentData.audioUrl;
             }
         }
+        loadFestivalForm(festivalSnapshot.exists ? festivalSnapshot.data() : {});
     } catch (error) {
         message(document.getElementById('formMessage'), 'Tu cuenta inició sesión, pero todavía no tiene permisos para leer el contenido. Deben configurarse las reglas de Firebase.');
     }
@@ -203,6 +275,38 @@ document.getElementById('podcastForm').addEventListener('submit', async event =>
         const permission = error.code === 'permission-denied';
         message(formMessage, permission ? 'Tu usuario todavía no tiene permiso para modificar el contenido. Revisa que las reglas de Firestore hayan sido publicadas.' : (error.message || 'No se pudo guardar el contenido.'));
     } finally { saveBtn.disabled = false; }
+});
+
+document.getElementById('festivalForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    syncFestivalEditor();
+    const saveButton = document.getElementById('festivalSaveBtn');
+    const state = document.getElementById('festivalSaveState');
+    const formMessage = document.getElementById('festivalFormMessage');
+    saveButton.disabled = true;
+    state.textContent = 'Guardando…';
+    try {
+        const start = document.getElementById('festivalStart').value;
+        const end = document.getElementById('festivalEnd').value;
+        if (!start || !end || new Date(start) >= new Date(end)) throw new Error('La fecha final debe ser posterior a la fecha inicial.');
+        const data = {
+            active: document.getElementById('festivalActive').checked,
+            demo: document.getElementById('festivalDemo').checked,
+            title: document.getElementById('festivalTitle').value.trim(),
+            subtitle: document.getElementById('festivalSubtitle').value.trim(),
+            startDate: `${start}:00-05:00`,
+            endDate: `${end}:00-05:00`,
+            events: festivalDraftEvents.map(item => ({ ...item })),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedBy: auth.currentUser.email
+        };
+        await festivalRef.set(data, { merge: true });
+        state.textContent = 'Guardado';
+        message(formMessage, 'Modo Festival actualizado correctamente en la web.', true);
+    } catch (error) {
+        state.textContent = 'No guardado';
+        message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar. Revisa que las reglas estén publicadas.' : (error.message || 'No se pudo guardar el Modo Festival.'));
+    } finally { saveButton.disabled = false; }
 });
 </script>
 </body>
