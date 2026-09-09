@@ -2364,6 +2364,15 @@
                 lng: -79.2030
             }
         ]);
+        if (db) {
+            db.collection('loja_tiempo').onSnapshot(snapshot => {
+                if (snapshot.empty) return;
+                lojaTimeList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                localStorage.setItem('cyc_dynamic_lojatiempo', JSON.stringify(lojaTimeList));
+                if (currentTimeSpotIndex >= lojaTimeList.length) currentTimeSpotIndex = 0;
+                renderLojaTimeUI();
+            }, error => console.warn('No se pudo sincronizar Loja en el Tiempo:', error));
+        }
         let currentTimeSpotIndex = 0;
 
         let customPostcardFrames = safeReadJSON('cyc_custom_frames', []);

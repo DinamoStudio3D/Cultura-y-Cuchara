@@ -57,6 +57,7 @@
                     <button id="chabaquitoNavBtn" type="button" onclick="showAdminModule('chabaquito')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</button>
                     <button id="settingsNavBtn" type="button" onclick="showAdminModule('settings')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-sliders w-6"></i>Configuración</button>
                     <button id="postcardsNavBtn" type="button" onclick="showAdminModule('postcards')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-camera-retro w-6"></i>Postales</button>
+                    <button id="timeNavBtn" type="button" onclick="showAdminModule('time')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-clock-rotate-left w-6"></i>Loja en el Tiempo</button>
                 </aside>
 
                 <section id="podcastModule" class="panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
@@ -221,6 +222,21 @@
                     <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Marcos personalizados</h3><span id="postcardFramesCount" class="text-xs text-gray-400">0 marcos</span></div>
                     <div id="postcardFramesList" class="space-y-3"></div>
                 </section>
+
+                <section id="timeModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6"><div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Módulo 8</p><h2 class="text-2xl font-black mt-1">Loja en el Tiempo</h2><p class="text-sm text-gray-400 mt-1">Administra las comparaciones históricas del antes y el presente.</p></div><button type="button" onclick="resetTimeForm()" class="bg-amber-500 hover:bg-amber-400 text-black rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nuevo punto</button></div>
+                    <form id="timeForm" class="space-y-5 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-7">
+                        <input id="timeEditIdSecure" type="hidden"><h3 id="timeSecureFormTitle" class="font-black text-lg">Registrar punto histórico</h3>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Nombre en español *</span><input id="timeTitle" class="field" required maxlength="140"></label><label><span class="text-sm font-semibold block mb-2">Nombre en inglés</span><input id="timeTitleEn" class="field" maxlength="140"></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Etiqueta del pasado *</span><input id="timeLabelPast" class="field" required placeholder="Ayer (1950)"></label><label><span class="text-sm font-semibold block mb-2">Etiqueta actual *</span><input id="timeLabelPresent" class="field" required placeholder="Hoy (2026)"></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Imagen antigua *</span><input id="timeImagePast" class="field" required placeholder="https://... o foto-antigua.jpg"></label><label><span class="text-sm font-semibold block mb-2">Imagen actual *</span><input id="timeImagePresent" class="field" required placeholder="https://... o foto-actual.jpg"></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Descripción en español *</span><textarea id="timeDesc" class="field min-h-24" required maxlength="900"></textarea></label><label><span class="text-sm font-semibold block mb-2">Descripción en inglés</span><textarea id="timeDescEn" class="field min-h-24" maxlength="900"></textarea></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Latitud *</span><input id="timeLat" class="field" required type="number" step="any" placeholder="-3.9931"></label><label><span class="text-sm font-semibold block mb-2">Longitud *</span><input id="timeLng" class="field" required type="number" step="any" placeholder="-79.2042"></label></div>
+                        <div id="timeMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
+                        <div class="flex flex-col sm:flex-row gap-3"><button id="timeSaveBtn" type="submit" class="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar punto</button><button type="button" onclick="resetTimeForm()" class="border border-gray-700 hover:border-gray-500 rounded-xl px-5 py-3 text-sm font-bold">Cancelar edición</button></div>
+                    </form>
+                    <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Puntos históricos</h3><span id="timeCount" class="text-xs text-gray-400">0 puntos</span></div><div id="timeList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando puntos…</p></div>
+                </section>
             </div>
         </section>
     </main>
@@ -248,6 +264,7 @@ const settingsRef = db.collection('settings').doc('main');
 const postcardsRef = db.collection('settings').doc('postcards');
 const postcardFramesRef = db.collection('settings').doc('postcard_frames');
 const placesRef = db.collection('locales');
+const timeRef = db.collection('loja_tiempo');
 let currentData = {};
 let festivalDraftEvents = [];
 let adminPlaces = [];
@@ -255,9 +272,16 @@ let placesUnsubscribe = null;
 let generalEvents = [];
 let adminPostcardFrames = [];
 let postcardFramePreviewValid = false;
+let adminTimeSpots = [];
+let timeUnsubscribe = null;
 const DEFAULT_GENERAL_EVENTS = [{ id: 'ev_1', title: 'Feria de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '2026-09-20', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo profesional en vivo.', descEn: 'Open tastings for the public and barista shows.', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', lat: -3.9910, lng: -79.2030 }];
 const DEFAULT_CHABAQUITO = { active: true, animated: true, imageUrl: 'mascota-vive-loja.png', messages: { inicio: '¡Hola! Soy tu guía de Vive Loja. ¿Empezamos la ruta?', mapa: 'Toca los puntos del mapa y descubre nuevos sabores y destinos.', establecimientos: 'Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.', fiavl: '¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!', postales: 'Crea una postal de tu visita y compártela con tus amigos.', pasaporte: 'Completa tu pasaporte y guarda cada parada de tu aventura.', misiones: '¡Acepta mis cinco misiones y conviértete en Explorador de Loja!', podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.' } };
 const DEFAULT_SETTINGS = { title: 'Sabores, Historias y Destinos', subtitle: 'Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.', logoUrl: 'https://i.imgur.com/xaiFpa1.png', heroBgUrls: ['https://i.imgur.com/0QSbhqQ.jpeg'], heroBgPosition: '50% 50%', heroIntervalSeconds: 6, latestYoutubeUrl: 'https://www.youtube.com/watch?v=n0BJGAkU9cg', latestYoutubeTitle: 'La Virgen del Cisne en Loja - Tradición y Fe', latestVideoThumbUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80', popupActive: true, popupTitle: '¡Especial del Día de las Madres!', popupDesc: 'Hoy en Mamá Lola tenemos un plato especial.', popupImg: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80', popupWhatsapp: 'https://wa.me/593999999999' };
+const DEFAULT_TIME_SPOTS = [
+ { id:'time_puerta', title:'Puerta de la Ciudad', titleEn:'City Gate (Puerta de la Ciudad)', labelPast:'Ayer (1950)', labelPresent:'Hoy (2026)', imgPast:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80', imgPresent:'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80', desc:'Antiguo puente y acceso fluvial sobre el río Malacatos, hoy símbolo monumental y centro de exposiciones de Loja.', descEn:'Historic fortified bridge over the Malacatos river, transformed into a cultural hub and iconic landmark.', lat:-3.9870, lng:-79.2052 },
+ { id:'time_san_sebastian', title:'Plaza de San Sebastián', titleEn:'San Sebastián Historic Square', labelPast:'Ayer (1930)', labelPresent:'Hoy (2026)', imgPast:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80', imgPresent:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80', desc:'La torre del reloj de 32 metros y las tradicionales glorietas que han albergado tertulias, ferias y arte por generaciones.', descEn:'The 32-meter clock tower and shaded pergolas, heart of local gatherings, cafes and festival events.', lat:-3.9985, lng:-79.2045 },
+ { id:'time_calle_lourdes', title:'Calle Lourdes Patrimonial', titleEn:'Lourdes Heritage Street', labelPast:'Ayer (1960)', labelPresent:'Hoy (2026)', imgPast:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80', imgPresent:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80', desc:'La calle colonial empedrada más famosa de la ciudad, donde las antiguas casonas cobijan hoy cafés de especialidad y artesanías.', descEn:'Loja’s most famous cobblestone street, whose adobe colonial houses now host artisan workshops and coffee bars.', lat:-3.9960, lng:-79.2030 }
+];
 const DEFAULT_ADMIN_FESTIVAL_EVENTS = [
     { id: 'fiavl-demo-1', title: 'Desfile inaugural FIAVL 2026', date: '2026-11-12', time: '18:00', durationMinutes: 90, place: 'Centro de Loja', category: 'Inauguración', free: true, lat: -3.9967, lng: -79.2018, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Centro+de+Loja+Ecuador' },
     { id: 'fiavl-demo-2', title: 'Teatro en las plazas', date: '2026-11-13', time: '17:00', durationMinutes: 90, place: 'Plaza de San Sebastián', category: 'Teatro', free: true, lat: -3.9985, lng: -79.2045, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Plaza+San+Sebastian+Loja' },
@@ -296,7 +320,7 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
 document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
 function showAdminModule(moduleName) {
-    ['podcast', 'festival', 'places', 'events', 'chabaquito', 'settings', 'postcards'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['podcast', 'festival', 'places', 'events', 'chabaquito', 'settings', 'postcards', 'time'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('podcastNavBtn').className = `w-full text-left font-black rounded-xl px-4 py-3 ${moduleName === 'podcast' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('festivalNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'festival' ? 'bg-fuchsia-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('placesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'places' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -304,6 +328,7 @@ function showAdminModule(moduleName) {
     document.getElementById('chabaquitoNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'chabaquito' ? 'bg-orange-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('settingsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'settings' ? 'bg-emerald-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('postcardsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'postcards' ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('timeNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'time' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
 }
 
 function loadChabaquitoForm(data = {}) {
@@ -383,6 +408,29 @@ async function deleteAdminPostcardFrame(id) {
     adminPostcardFrames = adminPostcardFrames.filter(item => item.id !== id);
     try { await saveAdminPostcardFrames(); message(document.getElementById('postcardsMessage'), 'Marco eliminado correctamente.', true); }
     catch (_) { adminPostcardFrames = previous; renderAdminPostcardFrames(); message(document.getElementById('postcardsMessage'), 'No se pudo eliminar el marco.'); }
+}
+
+function renderAdminTimeSpots() {
+    const list = document.getElementById('timeList');
+    document.getElementById('timeCount').textContent = `${adminTimeSpots.length} ${adminTimeSpots.length === 1 ? 'punto' : 'puntos'}`;
+    if (!adminTimeSpots.length) { list.innerHTML = '<p class="text-gray-500 text-sm">Todavía no hay puntos históricos.</p>'; return; }
+    list.innerHTML = adminTimeSpots.map(spot => `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h4 class="font-black">${escapeAdminHtml(spot.title)}</h4><p class="text-xs text-gray-400">${escapeAdminHtml(spot.labelPast)} → ${escapeAdminHtml(spot.labelPresent)}</p></div><div class="flex gap-2"><button type="button" onclick="editTimeSpotSecure('${escapeAdminHtml(spot.id)}')" class="bg-amber-500/15 text-amber-200 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-pen mr-1"></i>Editar</button><button type="button" onclick="deleteTimeSpotSecure('${escapeAdminHtml(spot.id)}')" class="bg-red-500/10 text-red-300 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Eliminar</button></div></div></article>`).join('');
+}
+
+function resetTimeForm() {
+    document.getElementById('timeForm').reset(); document.getElementById('timeEditIdSecure').value = ''; document.getElementById('timeSecureFormTitle').textContent = 'Registrar punto histórico'; document.getElementById('timeMessage').classList.add('hidden');
+}
+
+function editTimeSpotSecure(id) {
+    const spot = adminTimeSpots.find(item => item.id === id); if (!spot) return;
+    showAdminModule('time'); document.getElementById('timeEditIdSecure').value = spot.id; document.getElementById('timeSecureFormTitle').textContent = `Editar: ${spot.title}`;
+    const values={timeTitle:spot.title,timeTitleEn:spot.titleEn,timeLabelPast:spot.labelPast,timeLabelPresent:spot.labelPresent,timeImagePast:spot.imgPast,timeImagePresent:spot.imgPresent,timeDesc:spot.desc,timeDescEn:spot.descEn,timeLat:spot.lat,timeLng:spot.lng};
+    Object.entries(values).forEach(([id,value])=>document.getElementById(id).value=value??''); document.getElementById('timeForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function deleteTimeSpotSecure(id) {
+    const spot=adminTimeSpots.find(item=>item.id===id); if(!spot||!confirm(`¿Eliminar “${spot.title}”?`)) return;
+    try { await timeRef.doc(id).delete(); resetTimeForm(); message(document.getElementById('timeMessage'),'Punto histórico eliminado.',true); } catch(error) { message(document.getElementById('timeMessage'),'No se pudo eliminar el punto histórico.'); }
 }
 
 function createAdminSlug(value) {
@@ -540,7 +588,9 @@ auth.onAuthStateChanged(async user => {
     adminView.classList.toggle('hidden', !user);
     if (!user) {
         if (placesUnsubscribe) placesUnsubscribe();
+        if (timeUnsubscribe) timeUnsubscribe();
         placesUnsubscribe = null;
+        timeUnsubscribe = null;
         return;
     }
     if ((user.email || '').toLowerCase() !== ADMIN_EMAIL) {
@@ -578,6 +628,14 @@ auth.onAuthStateChanged(async user => {
             adminPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'es'));
             renderAdminPlaces();
         }, () => { document.getElementById('placesList').innerHTML = '<p class="text-red-300 text-sm">No fue posible cargar los lugares. Revisa los permisos de Firestore.</p>'; });
+        if (timeUnsubscribe) timeUnsubscribe();
+        timeUnsubscribe = timeRef.onSnapshot(async snapshot => {
+            if (snapshot.empty) {
+                const batch = db.batch(); DEFAULT_TIME_SPOTS.forEach(spot => batch.set(timeRef.doc(spot.id), spot)); await batch.commit(); return;
+            }
+            adminTimeSpots = snapshot.docs.map(doc => ({ id:doc.id, ...doc.data() })).sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''),'es'));
+            renderAdminTimeSpots();
+        }, () => { document.getElementById('timeList').innerHTML='<p class="text-red-300 text-sm">No fue posible cargar los puntos históricos.</p>'; });
     } catch (error) {
         message(document.getElementById('formMessage'), 'Tu cuenta inició sesión, pero todavía no tiene permisos para leer el contenido. Deben configurarse las reglas de Firebase.');
     }
@@ -711,6 +769,17 @@ document.getElementById('postcardFrameForm').addEventListener('submit', async ev
     try { await saveAdminPostcardFrames(); document.getElementById('postcardFrameForm').reset(); document.getElementById('postcardFrameIcon').value = '🎭'; postcardFramePreviewValid = false; previewAdminPostcardFrame(); message(formMessage, 'El marco se publicó correctamente y ya puede utilizarse para generar postales.', true); }
     catch (error) { adminPostcardFrames = adminPostcardFrames.filter(item => item.id !== frame.id); renderAdminPostcardFrames(); message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar el marco.' : 'No se pudo publicar el marco.'); }
     finally { button.disabled = false; }
+});
+
+document.getElementById('timeForm').addEventListener('submit', async event => {
+    event.preventDefault(); const button=document.getElementById('timeSaveBtn'); const formMessage=document.getElementById('timeMessage');
+    const lat=Number(document.getElementById('timeLat').value), lng=Number(document.getElementById('timeLng').value);
+    if(!Number.isFinite(lat)||lat < -90||lat > 90||!Number.isFinite(lng)||lng < -180||lng > 180){message(formMessage,'Las coordenadas no son válidas.');return;}
+    const editId=document.getElementById('timeEditIdSecure').value, title=document.getElementById('timeTitle').value.trim(), desc=document.getElementById('timeDesc').value.trim();
+    const data={title,titleEn:document.getElementById('timeTitleEn').value.trim()||title,labelPast:document.getElementById('timeLabelPast').value.trim(),labelPresent:document.getElementById('timeLabelPresent').value.trim(),imgPast:document.getElementById('timeImagePast').value.trim(),imgPresent:document.getElementById('timeImagePresent').value.trim(),desc,descEn:document.getElementById('timeDescEn').value.trim()||desc,lat,lng,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email};
+    button.disabled=true;
+    try { await timeRef.doc(editId||`time_${createAdminSlug(title)}_${Date.now()}`).set(data,{merge:true}); if(!editId)resetTimeForm(); message(formMessage,editId?'Punto histórico actualizado.':'Punto histórico publicado.',true); }
+    catch(error){message(formMessage,error.code==='permission-denied'?'Firestore no permitió guardar este punto.':'No se pudo guardar el punto histórico.');} finally{button.disabled=false;}
 });
 
 document.getElementById('podcastForm').addEventListener('submit', async event => {
