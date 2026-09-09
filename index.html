@@ -1152,7 +1152,7 @@
     </div>
 
     <!-- Admin Pin Modal -->
-    <div id="adminPinModal" class="fixed inset-0 z-[90] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
+    <template id="legacyAdminPinTemplate">
         <div class="bg-brandDark text-white w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold p-6 text-center relative">
             <button type="button" onclick="closeModal('adminPinModal')" class="absolute top-3 right-3 text-gray-400 hover:text-white transition text-lg"><i class="fa-solid fa-xmark"></i></button>
             <div class="w-12 h-12 bg-brandGold text-white rounded-full flex items-center justify-center text-xl mx-auto mb-3 shadow">
@@ -1167,10 +1167,10 @@
                 </button>
             </form>
         </div>
-    </div>
+    </template>
 
     <!-- Main Admin Modal -->
-    <div id="adminModal" class="fixed inset-0 z-[80] bg-brandDark/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4">
+    <template id="legacyAdminPanelTemplate">
         <div class="bg-[#181818] text-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border-2 border-brandGold relative flex flex-col h-[90vh]">
             <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-black/50">
                 <div class="flex items-center gap-3">
@@ -1660,7 +1660,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 
     <!-- Menu & Gallery Modal -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
@@ -4771,16 +4771,7 @@
 
         function verifyAdminPin(e) {
             e.preventDefault();
-            const pin = document.getElementById('adminPinInput').value;
-            if (pin === '1234') {
-                closeModal('adminPinModal');
-                openModal('adminModal');
-                switchAdminTab('locales');
-                showToast('¡Acceso concedido!');
-            } else {
-                showToast('❌ PIN incorrecto');
-                document.getElementById('adminPinInput').value = '';
-            }
+            window.location.href = 'admin.html';
         }
 
         window.handlePopupClick = function(index) {
