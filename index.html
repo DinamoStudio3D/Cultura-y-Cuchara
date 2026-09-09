@@ -2300,6 +2300,16 @@
             }
         ]);
 
+        if (db) {
+            db.collection('siteContent').doc('events').onSnapshot(snapshot => {
+                if (!snapshot.exists || !Array.isArray(snapshot.data().events)) return;
+                eventsList = snapshot.data().events.map(event => ({ ...event }));
+                localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
+                renderEverything();
+                checkLiveEventsBanner();
+            }, error => console.warn('No se pudo sincronizar la agenda pública:', error));
+        }
+
         let emprendedoresList = safeReadJSON('cyc_dynamic_emprendedores', [
             { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
         ]);

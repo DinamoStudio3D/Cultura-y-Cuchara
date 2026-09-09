@@ -53,8 +53,8 @@
                     <button id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left bg-amber-500 text-black font-black rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y Podcast</button>
                     <button id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-masks-theater w-6"></i>Modo Festival</button>
                     <button id="placesNavBtn" type="button" onclick="showAdminModule('places')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-location-dot w-6"></i>Lugares</button>
+                    <button id="eventsNavBtn" type="button" onclick="showAdminModule('events')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-calendar w-6"></i>Eventos</button>
                     <p class="text-xs text-gray-500 px-4 pt-4 pb-2">Próximos módulos</p>
-                    <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-calendar w-6"></i>Eventos</div>
                     <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</div>
                 </aside>
 
@@ -131,6 +131,27 @@
                     <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Lugares registrados</h3><span id="placesCount" class="text-xs text-gray-400">0 lugares</span></div>
                     <div id="placesList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando lugares…</p></div>
                 </section>
+
+                <section id="eventsModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+                        <div><p class="text-blue-400 text-xs font-bold uppercase tracking-widest">Módulo 4</p><h2 class="text-2xl font-black mt-1">Agenda y eventos</h2><p class="text-sm text-gray-400 mt-1">Publica actividades culturales y muéstralas en la agenda y el mapa.</p></div>
+                        <button type="button" onclick="resetGeneralEventForm()" class="bg-blue-500 hover:bg-blue-400 text-white rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nuevo evento</button>
+                    </div>
+                    <form id="generalEventForm" class="space-y-5 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-7">
+                        <input id="generalEventEditId" type="hidden">
+                        <h3 id="generalEventFormTitle" class="font-black text-lg">Programar un evento</h3>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Título en español *</span><input id="generalEventTitle" class="field" required maxlength="140"></label><label><span class="text-sm font-semibold block mb-2">Título en inglés</span><input id="generalEventTitleEn" class="field" maxlength="140"></label></div>
+                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Fecha *</span><input id="generalEventDate" class="field" type="date" required></label><label><span class="text-sm font-semibold block mb-2">Tipo *</span><select id="generalEventType" class="field" required><option>Festival</option><option>Gastronomía</option><option>Música</option><option>Teatro</option><option>Danza</option><option>Feria</option><option>Turismo</option><option>Deporte</option><option>Otro</option></select></label><label><span class="text-sm font-semibold block mb-2">Imagen</span><input id="generalEventImage" class="field" type="url" placeholder="https://..."></label></div>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Lugar *</span><input id="generalEventLocation" class="field" required maxlength="180"></label>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Descripción en español *</span><textarea id="generalEventDesc" class="field min-h-24" required maxlength="700"></textarea></label><label><span class="text-sm font-semibold block mb-2">Descripción en inglés</span><textarea id="generalEventDescEn" class="field min-h-24" maxlength="700"></textarea></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Latitud *</span><input id="generalEventLat" class="field" required type="number" step="any" placeholder="-3.9931"></label><label><span class="text-sm font-semibold block mb-2">Longitud *</span><input id="generalEventLng" class="field" required type="number" step="any" placeholder="-79.2042"></label></div>
+                        <p class="text-xs text-gray-400 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3"><i class="fa-solid fa-map-pin text-blue-300 mr-2"></i>Estas coordenadas crearán el acceso del evento dentro del mapa.</p>
+                        <div id="generalEventMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
+                        <div class="flex flex-col sm:flex-row gap-3"><button id="generalEventSaveBtn" type="submit" class="bg-blue-500 hover:bg-blue-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar evento</button><button type="button" onclick="resetGeneralEventForm()" class="border border-gray-700 hover:border-gray-500 rounded-xl px-5 py-3 text-sm font-bold">Cancelar edición</button></div>
+                    </form>
+                    <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Eventos publicados</h3><span id="generalEventsCount" class="text-xs text-gray-400">0 eventos</span></div>
+                    <div id="generalEventsList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando eventos…</p></div>
+                </section>
             </div>
         </section>
     </main>
@@ -152,11 +173,14 @@ const loginView = document.getElementById('loginView');
 const adminView = document.getElementById('adminView');
 const podcastRef = db.collection('siteContent').doc('podcast');
 const festivalRef = db.collection('siteContent').doc('festival');
+const generalEventsRef = db.collection('siteContent').doc('events');
 const placesRef = db.collection('locales');
 let currentData = {};
 let festivalDraftEvents = [];
 let adminPlaces = [];
 let placesUnsubscribe = null;
+let generalEvents = [];
+const DEFAULT_GENERAL_EVENTS = [{ id: 'ev_1', title: 'Feria de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '2026-09-20', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo profesional en vivo.', descEn: 'Open tastings for the public and barista shows.', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', lat: -3.9910, lng: -79.2030 }];
 const DEFAULT_ADMIN_FESTIVAL_EVENTS = [
     { id: 'fiavl-demo-1', title: 'Desfile inaugural FIAVL 2026', date: '2026-11-12', time: '18:00', durationMinutes: 90, place: 'Centro de Loja', category: 'Inauguración', free: true, lat: -3.9967, lng: -79.2018, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Centro+de+Loja+Ecuador' },
     { id: 'fiavl-demo-2', title: 'Teatro en las plazas', date: '2026-11-13', time: '17:00', durationMinutes: 90, place: 'Plaza de San Sebastián', category: 'Teatro', free: true, lat: -3.9985, lng: -79.2045, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Plaza+San+Sebastian+Loja' },
@@ -195,10 +219,11 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
 document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
 function showAdminModule(moduleName) {
-    ['podcast', 'festival', 'places'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['podcast', 'festival', 'places', 'events'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('podcastNavBtn').className = `w-full text-left font-black rounded-xl px-4 py-3 ${moduleName === 'podcast' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('festivalNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'festival' ? 'bg-fuchsia-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('placesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'places' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('eventsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'events' ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
 }
 
 function createAdminSlug(value) {
@@ -257,6 +282,50 @@ async function deleteAdminPlace(id) {
     if (!place || !window.confirm(`¿Eliminar definitivamente “${place.title}”?`)) return;
     try { await placesRef.doc(id).delete(); resetPlaceForm(); }
     catch (error) { message(document.getElementById('placeFormMessage'), error.code === 'permission-denied' ? 'Firestore no permitió eliminar este lugar.' : 'No se pudo eliminar el lugar.'); }
+}
+
+function renderGeneralEvents() {
+    const list = document.getElementById('generalEventsList');
+    const ordered = [...generalEvents].sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')));
+    document.getElementById('generalEventsCount').textContent = `${ordered.length} ${ordered.length === 1 ? 'evento' : 'eventos'}`;
+    if (!ordered.length) {
+        list.innerHTML = '<p class="text-gray-500 text-sm border border-dashed border-gray-700 rounded-xl p-6 text-center">Todavía no hay eventos publicados.</p>';
+        return;
+    }
+    list.innerHTML = ordered.map(event => `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><span class="text-[10px] uppercase tracking-wider text-blue-300 font-black">${escapeAdminHtml(event.type || 'Evento')}</span><h4 class="font-black">${escapeAdminHtml(event.title || 'Sin título')}</h4><p class="text-xs text-gray-400"><i class="fa-regular fa-calendar mr-1"></i>${escapeAdminHtml(event.date || 'Sin fecha')} · <i class="fa-solid fa-location-dot ml-1 mr-1"></i>${escapeAdminHtml(event.location || 'Sin lugar')}</p></div><div class="flex gap-2"><button type="button" onclick="editGeneralEvent('${escapeAdminHtml(event.id)}')" class="bg-blue-500/15 text-blue-200 hover:bg-blue-500/25 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-pen mr-1"></i>Editar</button><button type="button" onclick="deleteGeneralEvent('${escapeAdminHtml(event.id)}')" class="bg-red-500/10 text-red-300 hover:bg-red-500/20 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Eliminar</button></div></div></article>`).join('');
+}
+
+function resetGeneralEventForm() {
+    document.getElementById('generalEventForm').reset();
+    document.getElementById('generalEventEditId').value = '';
+    document.getElementById('generalEventFormTitle').textContent = 'Programar un evento';
+    document.getElementById('generalEventMessage').classList.add('hidden');
+}
+
+function editGeneralEvent(id) {
+    const event = generalEvents.find(item => item.id === id);
+    if (!event) return;
+    showAdminModule('events');
+    document.getElementById('generalEventEditId').value = event.id;
+    document.getElementById('generalEventFormTitle').textContent = `Editar: ${event.title || 'evento'}`;
+    const values = { generalEventTitle: event.title, generalEventTitleEn: event.titleEn, generalEventDate: event.date, generalEventType: event.type, generalEventImage: event.img, generalEventLocation: event.location, generalEventDesc: event.desc, generalEventDescEn: event.descEn, generalEventLat: event.lat, generalEventLng: event.lng };
+    Object.entries(values).forEach(([field, value]) => { document.getElementById(field).value = value ?? ''; });
+    document.getElementById('generalEventForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function publishGeneralEvents(successText) {
+    await generalEventsRef.set({ events: generalEvents, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email });
+    renderGeneralEvents();
+    if (successText) message(document.getElementById('generalEventMessage'), successText, true);
+}
+
+async function deleteGeneralEvent(id) {
+    const event = generalEvents.find(item => item.id === id);
+    if (!event || !window.confirm(`¿Eliminar definitivamente “${event.title}”?`)) return;
+    const previous = generalEvents;
+    generalEvents = generalEvents.filter(item => item.id !== id);
+    try { await publishGeneralEvents('Evento eliminado correctamente.'); resetGeneralEventForm(); message(document.getElementById('generalEventMessage'), 'Evento eliminado correctamente.', true); }
+    catch (error) { generalEvents = previous; renderGeneralEvents(); message(document.getElementById('generalEventMessage'), 'No se pudo eliminar el evento.'); }
 }
 
 function makeFestivalEvent() {
@@ -324,7 +393,7 @@ auth.onAuthStateChanged(async user => {
     }
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
     try {
-        const [snapshot, festivalSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get()]);
+        const [snapshot, festivalSnapshot, generalEventsSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), generalEventsRef.get()]);
         if (snapshot.exists) {
             currentData = snapshot.data();
             document.getElementById('podcastLabel').value = currentData.label || 'Canción de muestra';
@@ -340,6 +409,8 @@ auth.onAuthStateChanged(async user => {
             }
         }
         loadFestivalForm(festivalSnapshot.exists ? festivalSnapshot.data() : {});
+        generalEvents = generalEventsSnapshot.exists && Array.isArray(generalEventsSnapshot.data().events) ? generalEventsSnapshot.data().events.map(item => ({ ...item })) : DEFAULT_GENERAL_EVENTS.map(item => ({ ...item }));
+        renderGeneralEvents();
         if (placesUnsubscribe) placesUnsubscribe();
         placesUnsubscribe = placesRef.onSnapshot(snapshot => {
             adminPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'es'));
@@ -389,6 +460,33 @@ document.getElementById('placeForm').addEventListener('submit', async event => {
         message(formMessage, editId ? 'Lugar actualizado correctamente.' : 'Lugar registrado correctamente.', true);
     } catch (error) {
         message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar. Revisa las reglas de seguridad.' : (error.message || 'No se pudo guardar el lugar.'));
+    } finally { button.disabled = false; }
+});
+
+document.getElementById('generalEventForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = document.getElementById('generalEventSaveBtn');
+    const formMessage = document.getElementById('generalEventMessage');
+    const lat = Number(document.getElementById('generalEventLat').value);
+    const lng = Number(document.getElementById('generalEventLng').value);
+    if (!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lng) || lng < -180 || lng > 180) {
+        message(formMessage, 'Las coordenadas del evento no son válidas.'); return;
+    }
+    const editId = document.getElementById('generalEventEditId').value;
+    const title = document.getElementById('generalEventTitle').value.trim();
+    const description = document.getElementById('generalEventDesc').value.trim();
+    const data = { id: editId || `ev_${Date.now()}`, title, titleEn: document.getElementById('generalEventTitleEn').value.trim() || title, date: document.getElementById('generalEventDate').value, type: document.getElementById('generalEventType').value, location: document.getElementById('generalEventLocation').value.trim(), img: document.getElementById('generalEventImage').value.trim(), desc: description, descEn: document.getElementById('generalEventDescEn').value.trim() || description, lat, lng };
+    const previous = generalEvents.map(item => ({ ...item }));
+    const index = generalEvents.findIndex(item => item.id === data.id);
+    if (index >= 0) generalEvents[index] = data; else generalEvents.push(data);
+    button.disabled = true;
+    try {
+        await publishGeneralEvents();
+        if (!editId) resetGeneralEventForm();
+        message(formMessage, editId ? 'Evento actualizado correctamente.' : 'Evento publicado correctamente.', true);
+    } catch (error) {
+        generalEvents = previous; renderGeneralEvents();
+        message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar el evento.' : 'No se pudo guardar el evento.');
     } finally { button.disabled = false; }
 });
 
