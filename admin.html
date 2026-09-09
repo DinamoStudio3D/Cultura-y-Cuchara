@@ -54,8 +54,7 @@
                     <button id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-masks-theater w-6"></i>Modo Festival</button>
                     <button id="placesNavBtn" type="button" onclick="showAdminModule('places')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-location-dot w-6"></i>Lugares</button>
                     <button id="eventsNavBtn" type="button" onclick="showAdminModule('events')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-calendar w-6"></i>Eventos</button>
-                    <p class="text-xs text-gray-500 px-4 pt-4 pb-2">Próximos módulos</p>
-                    <div class="text-sm text-gray-500 px-4 py-2"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</div>
+                    <button id="chabaquitoNavBtn" type="button" onclick="showAdminModule('chabaquito')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</button>
                 </aside>
 
                 <section id="podcastModule" class="panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
@@ -152,6 +151,27 @@
                     <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Eventos publicados</h3><span id="generalEventsCount" class="text-xs text-gray-400">0 eventos</span></div>
                     <div id="generalEventsList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando eventos…</p></div>
                 </section>
+
+                <section id="chabaquitoModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="flex items-start justify-between gap-4 mb-6"><div><p class="text-orange-400 text-xs font-bold uppercase tracking-widest">Módulo 5</p><h2 class="text-2xl font-black mt-1">Chabaquito</h2><p class="text-sm text-gray-400 mt-1">Controla la mascota guía y los consejos que muestra durante el recorrido.</p></div><span id="chabaquitoSaveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Sin cambios</span></div>
+                    <form id="chabaquitoForm" class="space-y-5">
+                        <div class="grid md:grid-cols-2 gap-4"><label class="flex items-center justify-between gap-4 bg-black/35 rounded-xl p-4 border border-gray-800"><span><strong class="block">Mostrar mascota</strong><span class="text-xs text-gray-400">Permite ocultarla sin borrar su configuración.</span></span><input id="chabaquitoActive" class="w-5 h-5 accent-orange-500" type="checkbox" checked></label><label class="flex items-center justify-between gap-4 bg-black/35 rounded-xl p-4 border border-gray-800"><span><strong class="block">Mantener movimiento</strong><span class="text-xs text-gray-400">Activa su animación suave.</span></span><input id="chabaquitoAnimated" class="w-5 h-5 accent-orange-500" type="checkbox" checked></label></div>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Imagen de Chabaquito</span><input id="chabaquitoImage" class="field" value="mascota-vive-loja.png" placeholder="mascota-vive-loja.png o https://..."></label>
+                        <p class="text-xs text-gray-400 bg-orange-500/10 border border-orange-500/20 rounded-xl p-3"><i class="fa-solid fa-circle-info text-orange-300 mr-2"></i>Si reemplazas la imagen en GitHub conservando el nombre <strong>mascota-vive-loja.png</strong>, no necesitas cambiar este campo.</p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <label><span class="text-sm font-semibold block mb-2">Mensaje de bienvenida</span><textarea id="chabaquitoInicio" class="field min-h-20" maxlength="220"></textarea></label>
+                            <label><span class="text-sm font-semibold block mb-2">Mensaje del mapa</span><textarea id="chabaquitoMapa" class="field min-h-20" maxlength="220"></textarea></label>
+                            <label><span class="text-sm font-semibold block mb-2">Mensaje de establecimientos</span><textarea id="chabaquitoEstablecimientos" class="field min-h-20" maxlength="220"></textarea></label>
+                            <label><span class="text-sm font-semibold block mb-2">Mensaje del festival</span><textarea id="chabaquitoFiavl" class="field min-h-20" maxlength="220"></textarea></label>
+                            <label><span class="text-sm font-semibold block mb-2">Mensaje de postales</span><textarea id="chabaquitoPostales" class="field min-h-20" maxlength="220"></textarea></label>
+                            <label><span class="text-sm font-semibold block mb-2">Mensaje del pasaporte</span><textarea id="chabaquitoPasaporte" class="field min-h-20" maxlength="220"></textarea></label>
+                            <label><span class="text-sm font-semibold block mb-2">Mensaje de misiones</span><textarea id="chabaquitoMisiones" class="field min-h-20" maxlength="220"></textarea></label>
+                            <label><span class="text-sm font-semibold block mb-2">Mensaje del podcast</span><textarea id="chabaquitoPodcast" class="field min-h-20" maxlength="220"></textarea></label>
+                        </div>
+                        <div id="chabaquitoMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
+                        <button id="chabaquitoSaveBtn" type="submit" class="bg-orange-500 hover:bg-orange-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Chabaquito</button>
+                    </form>
+                </section>
             </div>
         </section>
     </main>
@@ -174,6 +194,7 @@ const adminView = document.getElementById('adminView');
 const podcastRef = db.collection('siteContent').doc('podcast');
 const festivalRef = db.collection('siteContent').doc('festival');
 const generalEventsRef = db.collection('siteContent').doc('events');
+const chabaquitoRef = db.collection('siteContent').doc('chabaquito');
 const placesRef = db.collection('locales');
 let currentData = {};
 let festivalDraftEvents = [];
@@ -181,6 +202,7 @@ let adminPlaces = [];
 let placesUnsubscribe = null;
 let generalEvents = [];
 const DEFAULT_GENERAL_EVENTS = [{ id: 'ev_1', title: 'Feria de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '2026-09-20', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo profesional en vivo.', descEn: 'Open tastings for the public and barista shows.', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', lat: -3.9910, lng: -79.2030 }];
+const DEFAULT_CHABAQUITO = { active: true, animated: true, imageUrl: 'mascota-vive-loja.png', messages: { inicio: '¡Hola! Soy tu guía de Vive Loja. ¿Empezamos la ruta?', mapa: 'Toca los puntos del mapa y descubre nuevos sabores y destinos.', establecimientos: 'Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.', fiavl: '¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!', postales: 'Crea una postal de tu visita y compártela con tus amigos.', pasaporte: 'Completa tu pasaporte y guarda cada parada de tu aventura.', misiones: '¡Acepta mis cinco misiones y conviértete en Explorador de Loja!', podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.' } };
 const DEFAULT_ADMIN_FESTIVAL_EVENTS = [
     { id: 'fiavl-demo-1', title: 'Desfile inaugural FIAVL 2026', date: '2026-11-12', time: '18:00', durationMinutes: 90, place: 'Centro de Loja', category: 'Inauguración', free: true, lat: -3.9967, lng: -79.2018, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Centro+de+Loja+Ecuador' },
     { id: 'fiavl-demo-2', title: 'Teatro en las plazas', date: '2026-11-13', time: '17:00', durationMinutes: 90, place: 'Plaza de San Sebastián', category: 'Teatro', free: true, lat: -3.9985, lng: -79.2045, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Plaza+San+Sebastian+Loja' },
@@ -219,11 +241,21 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
 document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
 function showAdminModule(moduleName) {
-    ['podcast', 'festival', 'places', 'events'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['podcast', 'festival', 'places', 'events', 'chabaquito'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('podcastNavBtn').className = `w-full text-left font-black rounded-xl px-4 py-3 ${moduleName === 'podcast' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('festivalNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'festival' ? 'bg-fuchsia-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('placesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'places' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('eventsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'events' ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('chabaquitoNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'chabaquito' ? 'bg-orange-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
+}
+
+function loadChabaquitoForm(data = {}) {
+    const config = { ...DEFAULT_CHABAQUITO, ...data, messages: { ...DEFAULT_CHABAQUITO.messages, ...(data.messages || {}) } };
+    document.getElementById('chabaquitoActive').checked = config.active !== false;
+    document.getElementById('chabaquitoAnimated').checked = config.animated !== false;
+    document.getElementById('chabaquitoImage').value = config.imageUrl || 'mascota-vive-loja.png';
+    const fields = { inicio: 'chabaquitoInicio', mapa: 'chabaquitoMapa', establecimientos: 'chabaquitoEstablecimientos', fiavl: 'chabaquitoFiavl', postales: 'chabaquitoPostales', pasaporte: 'chabaquitoPasaporte', misiones: 'chabaquitoMisiones', podcast: 'chabaquitoPodcast' };
+    Object.entries(fields).forEach(([key, id]) => { document.getElementById(id).value = config.messages[key] || ''; });
 }
 
 function createAdminSlug(value) {
@@ -393,7 +425,7 @@ auth.onAuthStateChanged(async user => {
     }
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
     try {
-        const [snapshot, festivalSnapshot, generalEventsSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), generalEventsRef.get()]);
+        const [snapshot, festivalSnapshot, generalEventsSnapshot, chabaquitoSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), generalEventsRef.get(), chabaquitoRef.get()]);
         if (snapshot.exists) {
             currentData = snapshot.data();
             document.getElementById('podcastLabel').value = currentData.label || 'Canción de muestra';
@@ -411,6 +443,7 @@ auth.onAuthStateChanged(async user => {
         loadFestivalForm(festivalSnapshot.exists ? festivalSnapshot.data() : {});
         generalEvents = generalEventsSnapshot.exists && Array.isArray(generalEventsSnapshot.data().events) ? generalEventsSnapshot.data().events.map(item => ({ ...item })) : DEFAULT_GENERAL_EVENTS.map(item => ({ ...item }));
         renderGeneralEvents();
+        loadChabaquitoForm(chabaquitoSnapshot.exists ? chabaquitoSnapshot.data() : {});
         if (placesUnsubscribe) placesUnsubscribe();
         placesUnsubscribe = placesRef.onSnapshot(snapshot => {
             adminPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'es'));
@@ -488,6 +521,21 @@ document.getElementById('generalEventForm').addEventListener('submit', async eve
         generalEvents = previous; renderGeneralEvents();
         message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar el evento.' : 'No se pudo guardar el evento.');
     } finally { button.disabled = false; }
+});
+
+document.getElementById('chabaquitoForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = document.getElementById('chabaquitoSaveBtn');
+    const state = document.getElementById('chabaquitoSaveState');
+    const formMessage = document.getElementById('chabaquitoMessage');
+    const fieldMap = { inicio: 'chabaquitoInicio', mapa: 'chabaquitoMapa', establecimientos: 'chabaquitoEstablecimientos', fiavl: 'chabaquitoFiavl', postales: 'chabaquitoPostales', pasaporte: 'chabaquitoPasaporte', misiones: 'chabaquitoMisiones', podcast: 'chabaquitoPodcast' };
+    const messages = {};
+    Object.entries(fieldMap).forEach(([key, id]) => { messages[key] = document.getElementById(id).value.trim() || DEFAULT_CHABAQUITO.messages[key]; });
+    const data = { active: document.getElementById('chabaquitoActive').checked, animated: document.getElementById('chabaquitoAnimated').checked, imageUrl: document.getElementById('chabaquitoImage').value.trim() || 'mascota-vive-loja.png', messages, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email };
+    button.disabled = true; state.textContent = 'Guardando…';
+    try { await chabaquitoRef.set(data, { merge: true }); state.textContent = 'Guardado'; message(formMessage, 'Chabaquito se actualizó correctamente en la web.', true); }
+    catch (error) { state.textContent = 'No guardado'; message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar la configuración.' : 'No se pudo actualizar Chabaquito.'); }
+    finally { button.disabled = false; }
 });
 
 document.getElementById('podcastForm').addEventListener('submit', async event => {

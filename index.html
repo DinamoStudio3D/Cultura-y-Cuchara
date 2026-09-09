@@ -5327,6 +5327,40 @@
             podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.'
         };
 
+        let chabaquitoEnabled = true;
+
+        function applyChabaquitoConfig(data = {}) {
+            chabaquitoEnabled = data.active !== false;
+            if (data.messages && typeof data.messages === 'object') Object.assign(mascotSectionMessages, data.messages);
+            const imageUrl = data.imageUrl || 'mascota-vive-loja.png';
+            document.querySelectorAll('img').forEach(image => {
+                if (image.dataset.chabaquitoImage === '1' || (image.getAttribute('src') || '').includes('mascota-vive-loja.png')) {
+                    image.dataset.chabaquitoImage = '1';
+                    image.src = imageUrl;
+                }
+            });
+            const character = document.querySelector('.web-mascot-character');
+            if (character) character.style.animationPlayState = data.animated === false ? 'paused' : 'running';
+            const mascot = document.getElementById('webMascot');
+            const restore = document.getElementById('webMascotRestore');
+            if (!chabaquitoEnabled) {
+                if (mascot) mascot.classList.add('is-hidden');
+                if (restore) restore.classList.add('hidden');
+            } else {
+                let visitorHidden = false;
+                try { visitorHidden = localStorage.getItem('vive_loja_mascot_hidden') === '1'; } catch (_) {}
+                if (mascot) mascot.classList.toggle('is-hidden', visitorHidden);
+                if (restore) restore.classList.toggle('hidden', !visitorHidden);
+                setMascotMessage(mascotSectionMessages.inicio);
+            }
+        }
+
+        if (db) {
+            db.collection('siteContent').doc('chabaquito').onSnapshot(snapshot => {
+                if (snapshot.exists) applyChabaquitoConfig(snapshot.data());
+            }, error => console.warn('No se pudo sincronizar Chabaquito:', error));
+        }
+
         function setMascotMessage(message) {
             const bubble = document.getElementById('webMascotBubble');
             if (!bubble) return;
@@ -5348,6 +5382,7 @@
         }
 
         function restoreWebMascot() {
+            if (!chabaquitoEnabled) return;
             const mascot = document.getElementById('webMascot');
             const restore = document.getElementById('webMascotRestore');
             if (mascot) mascot.classList.remove('is-hidden');
@@ -5357,6 +5392,7 @@
         }
 
         function initWebMascot() {
+            if (!chabaquitoEnabled) return;
             try {
                 if (localStorage.getItem('vive_loja_mascot_hidden') === '1') {
                     dismissWebMascot();
