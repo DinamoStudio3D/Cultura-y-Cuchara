@@ -118,6 +118,7 @@
             aspect-ratio: 9 / 16;
             max-width: 330px;
             width: 100%;
+            transition: aspect-ratio .25s ease, max-width .25s ease;
         }
         @media (prefers-reduced-motion: reduce) {
             html { scroll-behavior: auto !important; }
@@ -766,6 +767,14 @@
                         <input type="file" id="postcardImageInput" accept="image/*" onchange="handlePostcardUpload(event)" class="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brandDark file:text-brandGold hover:file:bg-black cursor-pointer bg-white border border-gray-300 rounded-xl p-1.5">
                     </div>
 
+                    <div class="bg-white border border-gray-300 rounded-2xl p-4 space-y-3">
+                        <div class="flex items-center justify-between"><strong class="text-xs uppercase tracking-wider"><i class="fa-solid fa-crop-simple text-brandGold mr-1"></i>Ajusta tu fotografía</strong><button type="button" onclick="resetPostcardPhotoAdjustment()" class="text-[10px] font-bold text-brandGold hover:underline">Restablecer</button></div>
+                        <label class="grid grid-cols-[65px_1fr_42px] items-center gap-2 text-xs"><span class="font-bold">Zoom</span><input id="postcardPhotoZoom" type="range" min="100" max="300" value="100" step="1" oninput="updatePostcardPhotoAdjustment()" class="accent-brandGold"><output id="postcardPhotoZoomValue" class="text-right font-bold">100%</output></label>
+                        <label class="grid grid-cols-[65px_1fr_42px] items-center gap-2 text-xs"><span class="font-bold">Horizontal</span><input id="postcardPhotoX" type="range" min="-100" max="100" value="0" step="1" oninput="updatePostcardPhotoAdjustment()" class="accent-brandGold"><output id="postcardPhotoXValue" class="text-right font-bold">0</output></label>
+                        <label class="grid grid-cols-[65px_1fr_42px] items-center gap-2 text-xs"><span class="font-bold">Vertical</span><input id="postcardPhotoY" type="range" min="-100" max="100" value="0" step="1" oninput="updatePostcardPhotoAdjustment()" class="accent-brandGold"><output id="postcardPhotoYValue" class="text-right font-bold">0</output></label>
+                        <p class="text-[10px] text-gray-500"><i class="fa-solid fa-hand-pointer mr-1"></i>También puedes arrastrar la fotografía directamente dentro de la vista previa.</p>
+                    </div>
+
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
                             <label class="block text-xs font-black uppercase tracking-wider text-brandDark">
@@ -808,10 +817,10 @@
                 <!-- Previsualización en Vivo de la Postal (Formato Historia 9:16) -->
                 <div class="lg:col-span-6 flex flex-col items-center justify-center">
                     <div class="postcard-preview-container rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold bg-brandDark p-3 relative flex items-center justify-center">
-                        <canvas id="postcardCanvas" class="w-full h-full rounded-2xl shadow-inner bg-black object-contain block"></canvas>
+                        <canvas id="postcardCanvas" class="w-full h-full rounded-2xl shadow-inner bg-black object-contain block cursor-move touch-none"></canvas>
                         <!-- Indicador visual sutil -->
                         <span class="absolute top-5 right-5 bg-black/75 backdrop-blur text-brandGold border border-brandGold/40 text-[9px] font-bold px-2 py-0.5 rounded-full shadow pointer-events-none">
-                            <i class="fa-solid fa-mobile-screen mr-1"></i> Story 9:16
+                            <i class="fa-solid fa-expand mr-1"></i> <span id="postcardFormatLabel">Vertical 9:16</span>
                         </span>
                     </div>
                     <p class="text-[11px] text-gray-500 mt-2 text-center" data-i18n="postcardHint">
@@ -2386,6 +2395,10 @@
         let currentPostcardFilter = 'none';
         let currentPostcardSticker = 'cepa';
         let currentUploadedImageObj = null;
+        let postcardPhotoZoom = 1;
+        let postcardPhotoOffsetX = 0;
+        let postcardPhotoOffsetY = 0;
+        let postcardDragState = null;
 
         let currentLocationIndex = 0;
         let visitedLocations = safeReadJSON('cyc_visited_locations', []);
@@ -3772,16 +3785,65 @@
             reader.readAsDataURL(file);
         }
 
+        function updatePostcardPhotoAdjustment() {
+            postcardPhotoZoom = Number(document.getElementById('postcardPhotoZoom')?.value || 100) / 100;
+            postcardPhotoOffsetX = Number(document.getElementById('postcardPhotoX')?.value || 0);
+            postcardPhotoOffsetY = Number(document.getElementById('postcardPhotoY')?.value || 0);
+            const zoomValue = document.getElementById('postcardPhotoZoomValue');
+            const xValue = document.getElementById('postcardPhotoXValue');
+            const yValue = document.getElementById('postcardPhotoYValue');
+            if (zoomValue) zoomValue.value = `${Math.round(postcardPhotoZoom * 100)}%`;
+            if (xValue) xValue.value = Math.round(postcardPhotoOffsetX);
+            if (yValue) yValue.value = Math.round(postcardPhotoOffsetY);
+            renderPostcardPreview();
+        }
+
+        function resetPostcardPhotoAdjustment() {
+            ['postcardPhotoX', 'postcardPhotoY'].forEach(id => { const input = document.getElementById(id); if (input) input.value = 0; });
+            const zoom = document.getElementById('postcardPhotoZoom');
+            if (zoom) zoom.value = 100;
+            updatePostcardPhotoAdjustment();
+        }
+
+        function initPostcardCanvasDragging() {
+            const canvas = document.getElementById('postcardCanvas');
+            if (!canvas) return;
+            canvas.addEventListener('pointerdown', event => { postcardDragState = { x: event.clientX, y: event.clientY, startX: postcardPhotoOffsetX, startY: postcardPhotoOffsetY }; canvas.setPointerCapture(event.pointerId); });
+            canvas.addEventListener('pointermove', event => {
+                if (!postcardDragState) return;
+                const rect = canvas.getBoundingClientRect();
+                postcardPhotoOffsetX = Math.max(-100, Math.min(100, postcardDragState.startX + (event.clientX - postcardDragState.x) / rect.width * 200));
+                postcardPhotoOffsetY = Math.max(-100, Math.min(100, postcardDragState.startY + (event.clientY - postcardDragState.y) / rect.height * 200));
+                document.getElementById('postcardPhotoX').value = postcardPhotoOffsetX;
+                document.getElementById('postcardPhotoY').value = postcardPhotoOffsetY;
+                document.getElementById('postcardPhotoXValue').value = Math.round(postcardPhotoOffsetX);
+                document.getElementById('postcardPhotoYValue').value = Math.round(postcardPhotoOffsetY);
+                renderPostcardPreview();
+            });
+            const stop = () => { postcardDragState = null; };
+            canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointercancel', stop);
+        }
+
         function renderPostcardPreview() {
             const canvas = document.getElementById('postcardCanvas');
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
             
-            // Resolución para Historia 9:16 (1080 x 1920)
-            const W = 1080;
-            const H = 1920;
+            // El lienzo adopta automáticamente la proporción del marco personalizado.
+            const selectedFrame = customPostcardFrames.find(frame => frame.id === currentPostcardTheme);
+            const loadedFrame = selectedFrame ? loadedCustomFrameImages[selectedFrame.id] : null;
+            let W = 1080, H = 1920;
+            if (loadedFrame && loadedFrame.naturalWidth && loadedFrame.naturalHeight) {
+                const ratio = loadedFrame.naturalWidth / loadedFrame.naturalHeight;
+                if (ratio >= 1) { W = 1920; H = Math.max(640, Math.round(1920 / ratio)); }
+                else { H = 1920; W = Math.max(640, Math.round(1920 * ratio)); }
+            }
             canvas.width = W;
             canvas.height = H;
+            const previewContainer = canvas.closest('.postcard-preview-container');
+            if (previewContainer) { previewContainer.style.aspectRatio = `${W} / ${H}`; previewContainer.style.maxWidth = W >= H ? '560px' : (Math.abs(W / H - 1) < .12 ? '430px' : '330px'); }
+            const formatLabel = document.getElementById('postcardFormatLabel');
+            if (formatLabel) formatLabel.textContent = W > H ? 'Horizontal' : (Math.abs(W - H) < 80 ? 'Cuadrado' : 'Vertical');
 
             // Datos de usuario
             const userName = document.getElementById('postcardUserName')?.value.trim() || (currentLang === 'en' ? "Loja Explorer" : "Viajero en Loja");
@@ -3829,26 +3891,20 @@
                     ctx.filter = "contrast(1.05) saturate(1.08)";
                 }
 
-                const imgRatio = img.width / img.height;
-                const targetRatio = imgW / imgH;
-                let sW, sH, sX, sY;
-
-                if (imgRatio > targetRatio) {
-                    sH = img.height;
-                    sW = img.height * targetRatio;
-                    sX = (img.width - sW) / 2;
-                    sY = 0;
-                } else {
-                    sW = img.width;
-                    sH = img.width / targetRatio;
-                    sX = 0;
-                    sY = (img.height - sH) / 2;
-                }
-                ctx.drawImage(img, sX, sY, sW, sH, imgX, imgY, imgW, imgH);
+                const scale = Math.max(imgW / img.width, imgH / img.height) * postcardPhotoZoom;
+                const drawW = img.width * scale, drawH = img.height * scale;
+                const travelX = Math.max(0, drawW - imgW) / 2;
+                const travelY = Math.max(0, drawH - imgH) / 2;
+                const drawX = imgX + (imgW - drawW) / 2 + (postcardPhotoOffsetX / 100) * travelX;
+                const drawY = imgY + (imgH - drawH) / 2 + (postcardPhotoOffsetY / 100) * travelY;
+                ctx.beginPath(); ctx.rect(imgX, imgY, imgW, imgH); ctx.clip();
+                ctx.drawImage(img, drawX, drawY, drawW, drawH);
                 ctx.restore();
             }
 
             // 4. Capa de degradado cinematográfico para legibilidad
+            const customFrame = customPostcardFrames.find(f => f.id === currentPostcardTheme);
+            if (!customFrame) {
             const topGrad = ctx.createLinearGradient(0, 0, 0, 420);
             topGrad.addColorStop(0, "rgba(10, 10, 10, 0.94)");
             topGrad.addColorStop(1, "rgba(10, 10, 10, 0)");
@@ -3861,9 +3917,9 @@
             botGrad.addColorStop(1, "rgba(10, 10, 10, 0.98)");
             ctx.fillStyle = botGrad;
             ctx.fillRect(0, H - 620, W, 620);
+            }
 
             // 5. RENDERIZADO DEL MARCO ESPECÍFICO
-            const customFrame = customPostcardFrames.find(f => f.id === currentPostcardTheme);
             if (customFrame) {
                 // Marco PNG personalizado subido por el administrador
                 if (loadedCustomFrameImages[customFrame.id] && loadedCustomFrameImages[customFrame.id].complete) {
@@ -3881,6 +3937,8 @@
                     };
                     cImg.src = customFrame.img;
                 }
+                ctx.restore();
+                return;
             } else if (currentPostcardTheme === 'fiavl') {
                 ctx.lineWidth = 16;
                 ctx.strokeStyle = "#EA580C";
@@ -4906,6 +4964,7 @@
             initTimeSliderEvents();
             initChabaquitoMissions();
             initWebMascot();
+            initPostcardCanvasDragging();
             changeLanguage(currentLang);
             setTimeout(forceRemoveSplash, 600);
         });
