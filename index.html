@@ -2365,6 +2365,23 @@
             sampleImg: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80",
             defaultMsg: "¡Qué elegancia de la de Francia, qué sabor el de mi Loja!"
         });
+
+        if (db) {
+            db.collection('settings').doc('postcards').onSnapshot(snapshot => {
+                if (!snapshot.exists) return;
+                postcardSettings = { ...postcardSettings, ...snapshot.data() };
+                localStorage.setItem('cyc_postcard_settings', JSON.stringify(postcardSettings));
+                if (typeof renderPostcardPreview === 'function') renderPostcardPreview();
+            }, error => console.warn('No se pudieron sincronizar los ajustes de postales:', error));
+
+            db.collection('settings').doc('postcard_frames').onSnapshot(snapshot => {
+                if (!snapshot.exists || !Array.isArray(snapshot.data().frames)) return;
+                customPostcardFrames = snapshot.data().frames.map(frame => ({ ...frame }));
+                localStorage.setItem('cyc_custom_frames', JSON.stringify(customPostcardFrames));
+                if (typeof renderPublicFrameButtons === 'function') renderPublicFrameButtons();
+                if (typeof renderPostcardPreview === 'function') renderPostcardPreview();
+            }, error => console.warn('No se pudieron sincronizar los marcos de postales:', error));
+        }
         let currentPostcardTheme = 'fiavl';
         let currentPostcardFilter = 'none';
         let currentPostcardSticker = 'cepa';
@@ -3858,6 +3875,10 @@
                         loadedCustomFrameImages[customFrame.id] = cImg;
                         renderPostcardPreview();
                     };
+                    cImg.onerror = function() {
+                        loadedCustomFrameImages[customFrame.id] = null;
+                        showToast(currentLang === 'en' ? 'The custom frame could not be loaded.' : 'No se pudo cargar el marco personalizado.');
+                    };
                     cImg.src = customFrame.img;
                 }
             } else if (currentPostcardTheme === 'fiavl') {
@@ -4113,10 +4134,15 @@
         function downloadPostcardImage() {
             const canvas = document.getElementById('postcardCanvas');
             if(!canvas) return;
-            const link = document.createElement('a');
-            link.download = `ViveLoja_Postal_${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png', 0.95);
-            link.click();
+            try {
+                const link = document.createElement('a');
+                link.download = `ViveLoja_Postal_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png', 0.95);
+                link.click();
+            } catch (error) {
+                showToast(currentLang === 'en' ? 'This frame blocks downloads. Use a PNG hosted on this website.' : 'Este marco bloquea la descarga. Utiliza un PNG subido al mismo repositorio.');
+                return;
+            }
             try {
                 confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
             } catch(e){}

@@ -56,6 +56,7 @@
                     <button id="eventsNavBtn" type="button" onclick="showAdminModule('events')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-calendar w-6"></i>Eventos</button>
                     <button id="chabaquitoNavBtn" type="button" onclick="showAdminModule('chabaquito')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</button>
                     <button id="settingsNavBtn" type="button" onclick="showAdminModule('settings')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-sliders w-6"></i>Configuración</button>
+                    <button id="postcardsNavBtn" type="button" onclick="showAdminModule('postcards')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-camera-retro w-6"></i>Postales</button>
                 </aside>
 
                 <section id="podcastModule" class="panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
@@ -198,6 +199,28 @@
                         <button id="settingsSaveBtn" type="submit" class="bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar configuración</button>
                     </form>
                 </section>
+
+                <section id="postcardsModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="flex items-start justify-between gap-4 mb-6"><div><p class="text-violet-400 text-xs font-bold uppercase tracking-widest">Módulo 7</p><h2 class="text-2xl font-black mt-1">Postales turísticas</h2><p class="text-sm text-gray-400 mt-1">Configura los textos y marcos que utilizan los visitantes.</p></div><span id="postcardsSaveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Sin cambios</span></div>
+                    <form id="postcardsSettingsForm" class="space-y-4 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-6">
+                        <h3 class="font-black text-lg text-violet-300">Textos predeterminados</h3>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Marca inferior</span><input id="postcardWatermark" class="field" maxlength="100" value="VIVE LOJA • FIAVL 2026"></label>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Imagen de muestra</span><input id="postcardSampleImage" class="field" placeholder="https://..."></label>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Frase inicial para el turista</span><input id="postcardDefaultMessage" class="field" maxlength="220"></label>
+                        <div id="postcardsMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
+                        <button id="postcardsSaveBtn" type="submit" class="bg-violet-500 hover:bg-violet-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar textos</button>
+                    </form>
+                    <form id="postcardFrameForm" class="space-y-4 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-6">
+                        <h3 class="font-black text-lg text-violet-300">Agregar marco PNG</h3>
+                        <div class="grid md:grid-cols-[1fr_100px] gap-4"><label><span class="text-sm font-semibold block mb-2">Nombre del marco *</span><input id="postcardFrameName" class="field" required maxlength="100" placeholder="FIAVL 2026"></label><label><span class="text-sm font-semibold block mb-2">Ícono</span><input id="postcardFrameIcon" class="field" maxlength="4" value="🎭"></label></div>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Nombre del archivo o dirección del PNG *</span><input id="postcardFrameUrl" class="field" required oninput="previewAdminPostcardFrame()" placeholder="marco-festival.png"></label>
+                        <div class="grid md:grid-cols-[180px_1fr] gap-4 items-center bg-black/30 border border-gray-800 rounded-xl p-4"><div class="aspect-[9/16] max-h-64 bg-[linear-gradient(45deg,#222_25%,transparent_25%),linear-gradient(-45deg,#222_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#222_75%),linear-gradient(-45deg,transparent_75%,#222_75%)] bg-[length:20px_20px] overflow-hidden rounded-lg border border-gray-700"><img id="postcardFramePreview" class="w-full h-full object-contain hidden" alt="Vista previa del marco"></div><div><strong class="block mb-2">Vista previa del marco</strong><p id="postcardFramePreviewStatus" class="text-xs text-gray-400">Escribe el nombre del archivo para comprobarlo.</p><p class="text-xs text-violet-200 mt-3"><i class="fa-solid fa-check mr-1"></i>Recomendado: PNG vertical 1080 × 1920, centro transparente y peso menor a 2 MB.</p></div></div>
+                        <p class="text-xs text-gray-400 bg-violet-500/10 border border-violet-500/20 rounded-xl p-3"><i class="fa-solid fa-circle-info text-violet-300 mr-2"></i>Primero sube tu PNG junto a <strong>index.html</strong> en GitHub. Después escribe aquí exactamente su nombre, por ejemplo <strong>marco-festival.png</strong>. También puedes usar una URL directa que permita CORS.</p>
+                        <button id="postcardFrameSaveBtn" type="submit" class="bg-violet-500 hover:bg-violet-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-plus mr-2"></i>Agregar marco</button>
+                    </form>
+                    <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Marcos personalizados</h3><span id="postcardFramesCount" class="text-xs text-gray-400">0 marcos</span></div>
+                    <div id="postcardFramesList" class="space-y-3"></div>
+                </section>
             </div>
         </section>
     </main>
@@ -222,12 +245,16 @@ const festivalRef = db.collection('siteContent').doc('festival');
 const generalEventsRef = db.collection('siteContent').doc('events');
 const chabaquitoRef = db.collection('siteContent').doc('chabaquito');
 const settingsRef = db.collection('settings').doc('main');
+const postcardsRef = db.collection('settings').doc('postcards');
+const postcardFramesRef = db.collection('settings').doc('postcard_frames');
 const placesRef = db.collection('locales');
 let currentData = {};
 let festivalDraftEvents = [];
 let adminPlaces = [];
 let placesUnsubscribe = null;
 let generalEvents = [];
+let adminPostcardFrames = [];
+let postcardFramePreviewValid = false;
 const DEFAULT_GENERAL_EVENTS = [{ id: 'ev_1', title: 'Feria de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '2026-09-20', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo profesional en vivo.', descEn: 'Open tastings for the public and barista shows.', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', lat: -3.9910, lng: -79.2030 }];
 const DEFAULT_CHABAQUITO = { active: true, animated: true, imageUrl: 'mascota-vive-loja.png', messages: { inicio: '¡Hola! Soy tu guía de Vive Loja. ¿Empezamos la ruta?', mapa: 'Toca los puntos del mapa y descubre nuevos sabores y destinos.', establecimientos: 'Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.', fiavl: '¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!', postales: 'Crea una postal de tu visita y compártela con tus amigos.', pasaporte: 'Completa tu pasaporte y guarda cada parada de tu aventura.', misiones: '¡Acepta mis cinco misiones y conviértete en Explorador de Loja!', podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.' } };
 const DEFAULT_SETTINGS = { title: 'Sabores, Historias y Destinos', subtitle: 'Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.', logoUrl: 'https://i.imgur.com/xaiFpa1.png', heroBgUrls: ['https://i.imgur.com/0QSbhqQ.jpeg'], heroBgPosition: '50% 50%', heroIntervalSeconds: 6, latestYoutubeUrl: 'https://www.youtube.com/watch?v=n0BJGAkU9cg', latestYoutubeTitle: 'La Virgen del Cisne en Loja - Tradición y Fe', latestVideoThumbUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80', popupActive: true, popupTitle: '¡Especial del Día de las Madres!', popupDesc: 'Hoy en Mamá Lola tenemos un plato especial.', popupImg: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80', popupWhatsapp: 'https://wa.me/593999999999' };
@@ -269,13 +296,14 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
 document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
 function showAdminModule(moduleName) {
-    ['podcast', 'festival', 'places', 'events', 'chabaquito', 'settings'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['podcast', 'festival', 'places', 'events', 'chabaquito', 'settings', 'postcards'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('podcastNavBtn').className = `w-full text-left font-black rounded-xl px-4 py-3 ${moduleName === 'podcast' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('festivalNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'festival' ? 'bg-fuchsia-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('placesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'places' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('eventsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'events' ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('chabaquitoNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'chabaquito' ? 'bg-orange-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('settingsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'settings' ? 'bg-emerald-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('postcardsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'postcards' ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
 }
 
 function loadChabaquitoForm(data = {}) {
@@ -306,6 +334,55 @@ function loadSettingsForm(data = {}) {
     document.getElementById('settingsPopupDesc').value = settings.popupDesc || '';
     document.getElementById('settingsPopupImage').value = settings.popupImg || '';
     document.getElementById('settingsPopupWhatsapp').value = settings.popupWhatsapp || '';
+}
+
+function loadPostcardsForm(settings = {}, framesData = {}) {
+    document.getElementById('postcardWatermark').value = settings.watermark || 'VIVE LOJA • FIAVL 2026';
+    document.getElementById('postcardSampleImage').value = settings.sampleImg || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80';
+    document.getElementById('postcardDefaultMessage').value = settings.defaultMsg || '¡Qué elegancia de la de Francia, qué sabor el de mi Loja!';
+    adminPostcardFrames = Array.isArray(framesData.frames) ? framesData.frames.map(frame => ({ ...frame })) : [];
+    renderAdminPostcardFrames();
+}
+
+function renderAdminPostcardFrames() {
+    const list = document.getElementById('postcardFramesList');
+    document.getElementById('postcardFramesCount').textContent = `${adminPostcardFrames.length} ${adminPostcardFrames.length === 1 ? 'marco' : 'marcos'}`;
+    if (!adminPostcardFrames.length) { list.innerHTML = '<p class="text-gray-500 text-sm border border-dashed border-gray-700 rounded-xl p-6 text-center">Todavía no hay marcos personalizados.</p>'; return; }
+    list.innerHTML = adminPostcardFrames.map(frame => `<article class="bg-black/30 border border-gray-800 rounded-2xl p-3 flex items-center justify-between gap-4"><div class="flex items-center gap-3 min-w-0"><img src="${escapeAdminHtml(frame.img)}" alt="" class="w-10 h-14 object-contain bg-black rounded border border-gray-700"><div class="min-w-0"><h4 class="font-black truncate">${escapeAdminHtml(frame.icon || '🖼️')} ${escapeAdminHtml(frame.name || 'Marco')}</h4><p class="text-xs text-gray-500 truncate">${escapeAdminHtml(frame.img || '')}</p></div></div><button type="button" onclick="deleteAdminPostcardFrame('${escapeAdminHtml(frame.id)}')" class="bg-red-500/10 text-red-300 hover:bg-red-500/20 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Eliminar</button></article>`).join('');
+}
+
+function previewAdminPostcardFrame() {
+    const url = document.getElementById('postcardFrameUrl').value.trim();
+    const preview = document.getElementById('postcardFramePreview');
+    const status = document.getElementById('postcardFramePreviewStatus');
+    postcardFramePreviewValid = false;
+    if (!url) { preview.classList.add('hidden'); preview.removeAttribute('src'); status.textContent = 'Escribe el nombre del archivo para comprobarlo.'; return; }
+    status.textContent = 'Comprobando imagen…';
+    preview.classList.add('hidden');
+    preview.onload = () => {
+        postcardFramePreviewValid = true;
+        preview.classList.remove('hidden');
+        const ratio = preview.naturalWidth / preview.naturalHeight;
+        const recommended = Math.abs(ratio - 9 / 16) < 0.08;
+        status.textContent = `${preview.naturalWidth} × ${preview.naturalHeight} px. ${recommended ? 'Proporción vertical correcta.' : 'Funcionará, pero se recomienda proporción 9:16.'}`;
+        status.className = `text-xs ${recommended ? 'text-emerald-300' : 'text-amber-300'}`;
+    };
+    preview.onerror = () => { postcardFramePreviewValid = false; preview.classList.add('hidden'); status.textContent = 'No se encontró el PNG. Revisa que ya esté publicado en GitHub y que el nombre sea exacto.'; status.className = 'text-xs text-red-300'; };
+    preview.src = `${url}${url.includes('?') ? '&' : '?'}preview=${Date.now()}`;
+}
+
+async function saveAdminPostcardFrames() {
+    await postcardFramesRef.set({ frames: adminPostcardFrames, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email });
+    renderAdminPostcardFrames();
+}
+
+async function deleteAdminPostcardFrame(id) {
+    const frame = adminPostcardFrames.find(item => item.id === id);
+    if (!frame || !window.confirm(`¿Eliminar el marco “${frame.name}”?`)) return;
+    const previous = adminPostcardFrames.map(item => ({ ...item }));
+    adminPostcardFrames = adminPostcardFrames.filter(item => item.id !== id);
+    try { await saveAdminPostcardFrames(); message(document.getElementById('postcardsMessage'), 'Marco eliminado correctamente.', true); }
+    catch (_) { adminPostcardFrames = previous; renderAdminPostcardFrames(); message(document.getElementById('postcardsMessage'), 'No se pudo eliminar el marco.'); }
 }
 
 function createAdminSlug(value) {
@@ -475,7 +552,7 @@ auth.onAuthStateChanged(async user => {
     }
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
     try {
-        const [snapshot, festivalSnapshot, generalEventsSnapshot, chabaquitoSnapshot, settingsSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), generalEventsRef.get(), chabaquitoRef.get(), settingsRef.get()]);
+        const [snapshot, festivalSnapshot, generalEventsSnapshot, chabaquitoSnapshot, settingsSnapshot, postcardsSnapshot, framesSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), generalEventsRef.get(), chabaquitoRef.get(), settingsRef.get(), postcardsRef.get(), postcardFramesRef.get()]);
         if (snapshot.exists) {
             currentData = snapshot.data();
             document.getElementById('podcastLabel').value = currentData.label || 'Canción de muestra';
@@ -495,6 +572,7 @@ auth.onAuthStateChanged(async user => {
         renderGeneralEvents();
         loadChabaquitoForm(chabaquitoSnapshot.exists ? chabaquitoSnapshot.data() : {});
         loadSettingsForm(settingsSnapshot.exists ? settingsSnapshot.data() : {});
+        loadPostcardsForm(postcardsSnapshot.exists ? postcardsSnapshot.data() : {}, framesSnapshot.exists ? framesSnapshot.data() : {});
         if (placesUnsubscribe) placesUnsubscribe();
         placesUnsubscribe = placesRef.onSnapshot(snapshot => {
             adminPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'es'));
@@ -607,6 +685,31 @@ document.getElementById('settingsForm').addEventListener('submit', async event =
     button.disabled = true; state.textContent = 'Guardando…';
     try { await settingsRef.set(data, { merge: true }); state.textContent = 'Guardado'; message(formMessage, 'La configuración general se actualizó correctamente.', true); }
     catch (error) { state.textContent = 'No guardado'; message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar la configuración.' : 'No se pudo guardar la configuración.'); }
+    finally { button.disabled = false; }
+});
+
+document.getElementById('postcardsSettingsForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = document.getElementById('postcardsSaveBtn');
+    const state = document.getElementById('postcardsSaveState');
+    const formMessage = document.getElementById('postcardsMessage');
+    const data = { watermark: document.getElementById('postcardWatermark').value.trim(), sampleImg: document.getElementById('postcardSampleImage').value.trim(), defaultMsg: document.getElementById('postcardDefaultMessage').value.trim(), updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email };
+    button.disabled = true; state.textContent = 'Guardando…';
+    try { await postcardsRef.set(data, { merge: true }); state.textContent = 'Guardado'; message(formMessage, 'Los ajustes de las postales se actualizaron correctamente.', true); }
+    catch (error) { state.textContent = 'No guardado'; message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar las postales.' : 'No se pudieron guardar los ajustes.'); }
+    finally { button.disabled = false; }
+});
+
+document.getElementById('postcardFrameForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = document.getElementById('postcardFrameSaveBtn');
+    const formMessage = document.getElementById('postcardsMessage');
+    const url = document.getElementById('postcardFrameUrl').value.trim();
+    if (!postcardFramePreviewValid) { message(formMessage, 'Primero verifica que la vista previa del marco cargue correctamente.'); return; }
+    const frame = { id: `frame_${Date.now()}`, name: document.getElementById('postcardFrameName').value.trim(), icon: document.getElementById('postcardFrameIcon').value.trim() || '🖼️', img: url };
+    button.disabled = true; adminPostcardFrames.push(frame);
+    try { await saveAdminPostcardFrames(); document.getElementById('postcardFrameForm').reset(); document.getElementById('postcardFrameIcon').value = '🎭'; postcardFramePreviewValid = false; previewAdminPostcardFrame(); message(formMessage, 'El marco se publicó correctamente y ya puede utilizarse para generar postales.', true); }
+    catch (error) { adminPostcardFrames = adminPostcardFrames.filter(item => item.id !== frame.id); renderAdminPostcardFrames(); message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar el marco.' : 'No se pudo publicar el marco.'); }
     finally { button.disabled = false; }
 });
 
