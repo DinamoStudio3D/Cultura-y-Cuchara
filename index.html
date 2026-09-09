@@ -345,6 +345,7 @@
                 <button type="button" onclick="openSmartRoutePlanner()" class="bg-white/10 text-white border border-white/40 font-bold px-8 py-4 rounded-xl hover:bg-white hover:text-brandDark transition-all text-sm text-center">
                     <i class="fa-solid fa-route mr-2"></i> Crear Ruta Inteligente
                 </button>
+                <button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()" class="bg-sky-500/20 text-white border border-sky-300/60 font-bold px-8 py-4 rounded-xl hover:bg-sky-500 transition-all text-sm text-center"><i class="fa-solid fa-compass mr-2"></i>¿Qué hacer ahora?</button>
             </div>
         </div>
     </section>
@@ -1122,6 +1123,7 @@
                     <label class="sm:col-span-2 flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 text-xs cursor-pointer">
                         <input id="smartRouteUseGps" type="checkbox" class="w-4 h-4 accent-orange-600"><span><b>Usar mi ubicación actual</b><br><span class="text-gray-500">El navegador solicitará permiso solamente al generar la ruta.</span></span>
                     </label>
+                    <label class="sm:col-span-2 flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs cursor-pointer"><input id="smartRouteOpenNow" type="checkbox" class="w-4 h-4 accent-emerald-600"><span><b>Mostrar solamente lugares abiertos ahora</b><br><span class="text-gray-500">Utiliza los horarios configurados para cada establecimiento.</span></span></label>
                     <button type="submit" class="sm:col-span-2 bg-brandGold text-white font-black py-3.5 rounded-xl hover:bg-brandGoldHover transition shadow-warm-glow"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Preparar mi recorrido</button>
                 </form>
 
@@ -2735,6 +2737,7 @@
         }
 
         function applySettings(s) {
+            const nowButton=document.getElementById('nowRecommendationBtn');if(nowButton)nowButton.classList.toggle('hidden',s.showNowPlanner===false);
             const badgeEl = document.getElementById('heroBadge');
             if(badgeEl) {
                 badgeEl.innerText = currentLang === 'en'
@@ -5238,13 +5241,16 @@
             openModal('smartRouteModal');
         }
 
+        function openWhatToDoNow(){openSmartRoutePlanner();document.getElementById('smartRouteTime').value='60';document.getElementById('smartRouteBudget').value='short';document.getElementById('smartRouteOpenNow').checked=true;setMascotMessage('¡Vamos a descubrir qué puedes hacer ahora mismo en Loja!');}
+
         function generateSmartRoute(event) {
             event.preventDefault();
             const preferences = {
                 minutes: Number(document.getElementById('smartRouteTime').value),
                 category: document.getElementById('smartRouteCategory').value,
                 transport: document.getElementById('smartRouteTransport').value,
-                intensity: document.getElementById('smartRouteBudget').value
+                intensity: document.getElementById('smartRouteBudget').value,
+                openNow: document.getElementById('smartRouteOpenNow').checked
             };
             const useGps = document.getElementById('smartRouteUseGps').checked;
 
@@ -5267,7 +5273,8 @@
             const empty = document.getElementById('smartRouteEmpty');
             let candidates = locations.filter(location =>
                 Number.isFinite(Number(location.lat)) && Number.isFinite(Number(location.lng)) &&
-                (preferences.category === 'all' || location.category === preferences.category)
+                (preferences.category === 'all' || location.category === preferences.category) &&
+                (!preferences.openNow || isLocOpenNow(location))
             );
 
             if (!candidates.length) {
