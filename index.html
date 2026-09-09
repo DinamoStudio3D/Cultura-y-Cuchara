@@ -329,6 +329,43 @@
         </div>
     </section>
 
+    <!-- FIAVL Live Mode -->
+    <section id="festival-live" class="bg-[#090914] text-white py-12 px-4 border-y border-fuchsia-500/30 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+                <div>
+                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Modo Festival · Demostración</span>
+                    <h2 id="festivalModeTitle" class="text-3xl sm:text-4xl font-black mt-4">Loja se convierte en escenario</h2>
+                    <p id="festivalModeSubtitle" class="text-sm text-gray-300 mt-2 max-w-2xl">Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.</p>
+                </div>
+                <div id="festivalCountdown" class="grid grid-cols-4 gap-2 text-center min-w-full sm:min-w-[390px] lg:min-w-[430px]">
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalDays" class="block text-2xl text-fuchsia-300">--</strong><span class="text-[10px] uppercase text-gray-400">Días</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalHours" class="block text-2xl text-cyan-300">--</strong><span class="text-[10px] uppercase text-gray-400">Horas</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalMinutes" class="block text-2xl text-yellow-300">--</strong><span class="text-[10px] uppercase text-gray-400">Min</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalSeconds" class="block text-2xl text-orange-300">--</strong><span class="text-[10px] uppercase text-gray-400">Seg</span></div>
+                </div>
+            </div>
+
+            <div id="festivalNowCard" class="bg-gradient-to-r from-fuchsia-700/50 to-cyan-700/40 border border-white/20 rounded-2xl p-5 sm:p-6 mb-7 shadow-2xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-full bg-white text-fuchsia-600 flex items-center justify-center text-lg flex-shrink-0"><i id="festivalNowIcon" class="fa-solid fa-hourglass-half"></i></div>
+                        <div><p id="festivalNowLabel" class="text-xs font-black text-yellow-300 uppercase tracking-widest">Próximamente</p><h3 id="festivalNowTitle" class="text-xl font-black mt-1">Preparando la agenda del Festival</h3><p id="festivalNowMeta" class="text-sm text-gray-200 mt-1">La próxima actividad aparecerá aquí.</p></div>
+                    </div>
+                    <a id="festivalNowMap" href="#festival-agenda" class="bg-white text-gray-950 font-black rounded-xl px-5 py-3 text-sm text-center hover:bg-yellow-300 transition"><i class="fa-solid fa-calendar-days mr-2"></i>Ver agenda</a>
+                </div>
+            </div>
+
+            <div id="festival-agenda">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><h3 class="text-xl font-black">Agenda diaria</h3><span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Contenido inicial de demostración</span></div>
+                <div id="festivalDayTabs" class="flex gap-2 overflow-x-auto pb-3 mb-3"></div>
+                <div id="festivalAgendaGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                <p id="festivalEmpty" class="hidden text-center text-gray-400 bg-white/5 rounded-2xl p-8">No hay actividades cargadas para este día.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Stats -->
     <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
         <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -2007,6 +2044,139 @@
             );
         }
 
+        const defaultFestivalConfig = {
+            active: true,
+            demo: true,
+            title: 'Loja se convierte en escenario',
+            subtitle: 'Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.',
+            startDate: '2026-11-12T18:00:00-05:00',
+            endDate: '2026-11-22T23:59:59-05:00',
+            events: [
+                { id: 'fiavl-demo-1', title: 'Desfile inaugural FIAVL 2026', date: '2026-11-12', time: '18:00', place: 'Centro de Loja', category: 'Inauguración', free: true, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Centro+de+Loja+Ecuador' },
+                { id: 'fiavl-demo-2', title: 'Teatro en las plazas', date: '2026-11-13', time: '17:00', place: 'Plaza de San Sebastián', category: 'Teatro', free: true, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Plaza+San+Sebastian+Loja' },
+                { id: 'fiavl-demo-3', title: 'Noche de danza y movimiento', date: '2026-11-13', time: '20:00', place: 'Escenario por confirmar', category: 'Danza', free: false, mapUrl: '' },
+                { id: 'fiavl-demo-4', title: 'Encuentro familiar con Chabaquito', date: '2026-11-14', time: '11:00', place: 'Parque Central', category: 'Familiar', free: true, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Parque+Central+Loja' }
+            ]
+        };
+        let festivalConfig = { ...defaultFestivalConfig };
+        let selectedFestivalDay = defaultFestivalConfig.events[0].date;
+        let festivalClockTimer = null;
+
+        function festivalDateTime(event) {
+            return new Date(`${event.date}T${event.time || '00:00'}:00-05:00`);
+        }
+
+        function formatFestivalDay(dateValue) {
+            return new Intl.DateTimeFormat(currentLang === 'en' ? 'en-US' : 'es-EC', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'America/Guayaquil' }).format(new Date(`${dateValue}T12:00:00-05:00`));
+        }
+
+        function updateFestivalClock() {
+            const now = new Date();
+            const start = new Date(festivalConfig.startDate);
+            const end = new Date(festivalConfig.endDate);
+            const countdown = document.getElementById('festivalCountdown');
+            const badge = document.getElementById('festivalModeBadge');
+            let target = start;
+            if (now >= start && now <= end) {
+                target = end;
+                if (badge) badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Festival en vivo';
+            } else if (now > end) {
+                if (countdown) countdown.classList.add('hidden');
+                if (badge) badge.innerHTML = '<i class="fa-solid fa-star"></i> Revive el Festival';
+                updateFestivalNow();
+                return;
+            } else if (badge) {
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> ${festivalConfig.demo ? 'Modo Festival · Demostración' : 'Próximo Festival'}`;
+            }
+            if (countdown) countdown.classList.remove('hidden');
+            const distance = Math.max(0, target - now);
+            const values = [
+                Math.floor(distance / 86400000),
+                Math.floor(distance / 3600000) % 24,
+                Math.floor(distance / 60000) % 60,
+                Math.floor(distance / 1000) % 60
+            ];
+            ['festivalDays','festivalHours','festivalMinutes','festivalSeconds'].forEach((id, index) => {
+                const el = document.getElementById(id); if (el) el.textContent = String(values[index]).padStart(2, '0');
+            });
+            updateFestivalNow();
+        }
+
+        function updateFestivalNow() {
+            const events = [...(festivalConfig.events || [])].sort((a,b) => festivalDateTime(a) - festivalDateTime(b));
+            const now = new Date();
+            const live = events.find(event => {
+                const start = festivalDateTime(event);
+                const finish = new Date(start.getTime() + Number(event.durationMinutes || 90) * 60000);
+                return now >= start && now <= finish;
+            });
+            const next = events.find(event => festivalDateTime(event) > now);
+            const chosen = live || next;
+            const label = document.getElementById('festivalNowLabel');
+            const title = document.getElementById('festivalNowTitle');
+            const meta = document.getElementById('festivalNowMeta');
+            const action = document.getElementById('festivalNowMap');
+            if (!chosen) {
+                if (label) label.textContent = 'Agenda finalizada';
+                if (title) title.textContent = 'Gracias por vivir el Festival en Loja';
+                if (meta) meta.textContent = 'Muy pronto compartiremos nuevas experiencias culturales.';
+                return;
+            }
+            if (label) label.textContent = live ? 'En este momento' : 'Próxima actividad';
+            if (title) title.textContent = chosen.title;
+            if (meta) meta.textContent = `${formatFestivalDay(chosen.date)} · ${chosen.time} · ${chosen.place}`;
+            if (action) {
+                action.href = chosen.mapUrl || '#festival-agenda';
+                action.target = chosen.mapUrl ? '_blank' : '';
+                action.rel = chosen.mapUrl ? 'noopener noreferrer' : '';
+                action.innerHTML = chosen.mapUrl ? '<i class="fa-solid fa-location-arrow mr-2"></i>Cómo llegar' : '<i class="fa-solid fa-calendar-days mr-2"></i>Ver agenda';
+            }
+        }
+
+        function selectFestivalDay(day) {
+            selectedFestivalDay = day;
+            renderFestivalAgenda();
+        }
+
+        function saveFestivalEvent(eventId) {
+            const key = 'cyc_saved_festival_events';
+            const saved = safeReadJSON(key, []);
+            const next = saved.includes(eventId) ? saved.filter(id => id !== eventId) : [...saved, eventId];
+            localStorage.setItem(key, JSON.stringify(next));
+            renderFestivalAgenda();
+            showToast(next.includes(eventId) ? 'Actividad guardada en tu agenda' : 'Actividad retirada de tu agenda');
+        }
+
+        function renderFestivalAgenda() {
+            const section = document.getElementById('festival-live');
+            if (!section) return;
+            section.classList.toggle('hidden', festivalConfig.active === false);
+            document.getElementById('festivalModeTitle').textContent = festivalConfig.title || defaultFestivalConfig.title;
+            document.getElementById('festivalModeSubtitle').textContent = festivalConfig.subtitle || defaultFestivalConfig.subtitle;
+            const events = festivalConfig.events || [];
+            const days = [...new Set(events.map(event => event.date))].sort();
+            if (!days.includes(selectedFestivalDay)) selectedFestivalDay = days[0] || '';
+            document.getElementById('festivalDayTabs').innerHTML = days.map(day => `<button type="button" onclick="selectFestivalDay('${day}')" class="flex-shrink-0 px-4 py-2 rounded-full text-xs font-black border transition ${day === selectedFestivalDay ? 'bg-fuchsia-500 border-fuchsia-400 text-white' : 'bg-white/5 border-white/15 text-gray-300 hover:border-fuchsia-400'}">${formatFestivalDay(day)}</button>`).join('');
+            const visible = events.filter(event => event.date === selectedFestivalDay).sort((a,b) => String(a.time).localeCompare(String(b.time)));
+            const saved = safeReadJSON('cyc_saved_festival_events', []);
+            document.getElementById('festivalAgendaGrid').innerHTML = visible.map(event => `<article class="bg-white/5 border border-white/15 rounded-2xl p-5 hover:border-fuchsia-400/60 transition"><div class="flex items-start justify-between gap-3"><span class="text-xs font-black text-cyan-300 uppercase tracking-wider">${event.category || 'Arte'}</span><span class="text-xs ${event.free ? 'text-green-300' : 'text-yellow-300'}">${event.free ? 'Entrada libre' : 'Consultar acceso'}</span></div><h4 class="font-black text-lg mt-3">${event.title}</h4><p class="text-sm text-gray-300 mt-2"><i class="fa-regular fa-clock text-fuchsia-300 mr-2"></i>${event.time} &nbsp;·&nbsp; <i class="fa-solid fa-location-dot text-fuchsia-300 mr-1"></i>${event.place}</p><div class="grid grid-cols-2 gap-2 mt-4"><button type="button" onclick="saveFestivalEvent('${event.id}')" class="rounded-xl py-2.5 text-xs font-bold border ${saved.includes(event.id) ? 'bg-yellow-300 text-black border-yellow-300' : 'border-white/20 hover:bg-white/10'}"><i class="fa-${saved.includes(event.id) ? 'solid' : 'regular'} fa-star mr-1"></i>${saved.includes(event.id) ? 'Guardado' : 'Mi agenda'}</button>${event.mapUrl ? `<a href="${event.mapUrl}" target="_blank" rel="noopener noreferrer" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600 hover:bg-fuchsia-500"><i class="fa-solid fa-route mr-1"></i>Cómo llegar</a>` : '<span class="rounded-xl py-2.5 text-xs text-center text-gray-500 border border-white/10">Ubicación pendiente</span>'}</div></article>`).join('');
+            document.getElementById('festivalEmpty').classList.toggle('hidden', visible.length > 0);
+            updateFestivalClock();
+        }
+
+        function applyFestivalConfiguration(data) {
+            if (!data || typeof data !== 'object') return;
+            festivalConfig = { ...defaultFestivalConfig, ...data, events: Array.isArray(data.events) ? data.events : defaultFestivalConfig.events };
+            renderFestivalAgenda();
+        }
+
+        if (db) {
+            db.collection('siteContent').doc('festival').onSnapshot(
+                snapshot => applyFestivalConfiguration(snapshot.exists ? snapshot.data() : defaultFestivalConfig),
+                () => applyFestivalConfiguration(defaultFestivalConfig)
+            );
+        }
+
         function safeReadJSON(key, fallback) {
             try {
                 const raw = localStorage.getItem(key);
@@ -2323,17 +2493,35 @@
             openLocationFromUrl(urlParams.get('lugar'));
         }
 
+        function createLocationSlug(value) {
+            return String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 80);
+        }
+
+        function getLocationSlug(loc) {
+            return createLocationSlug(loc.slug || loc.title || loc.titleEn || loc.id);
+        }
+
         function buildLocationShareUrl(loc) {
             const url = new URL(window.location.href);
             url.search = '';
             url.hash = '';
-            url.searchParams.set('lugar', loc.id);
+            url.searchParams.set('lugar', getLocationSlug(loc));
             return url.toString();
         }
 
-        function openLocationFromUrl(locationId) {
-            if (!locationId || handledLocationUrl) return;
-            const index = locations.findIndex(loc => String(loc.id) === String(locationId));
+        function openLocationFromUrl(locationReference) {
+            if (!locationReference || handledLocationUrl) return;
+            const normalizedReference = createLocationSlug(locationReference);
+            const index = locations.findIndex(loc =>
+                String(loc.id) === String(locationReference)
+                || getLocationSlug(loc) === normalizedReference
+            );
             if (index < 0) return;
             handledLocationUrl = true;
             setTimeout(() => {
@@ -4622,6 +4810,9 @@
 
         window.addEventListener('DOMContentLoaded', function() {
             cargarDatosDesdeFirestore();
+            renderFestivalAgenda();
+            if (festivalClockTimer) clearInterval(festivalClockTimer);
+            festivalClockTimer = setInterval(updateFestivalClock, 1000);
             initPassport();
             initTimeSliderEvents();
             initChabaquitoMissions();
