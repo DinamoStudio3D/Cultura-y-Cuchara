@@ -646,7 +646,7 @@
                         <img src="mascota-vive-loja.png" alt="Chabaquito presenta las misiones de Vive Loja" width="1122" height="1402" class="relative w-36 sm:w-44 h-auto drop-shadow-2xl" loading="lazy" decoding="async">
                         <span class="relative mt-2 text-brandGold text-xs font-black uppercase tracking-widest" data-i18n="missionBadge">Aventura interactiva</span>
                         <h2 class="relative text-2xl font-black mt-2" data-i18n="missionTitle">Las Misiones de Chabaquito</h2>
-                        <p class="relative text-xs text-gray-300 mt-2 leading-relaxed" data-i18n="missionDesc">Explora la web, completa cinco retos y desbloquea tu insignia digital.</p>
+                        <p class="relative text-xs text-gray-300 mt-2 leading-relaxed" data-i18n="missionDesc">Completa cinco experiencias, obtén tu certificado y desbloquea beneficios disponibles.</p>
                     </div>
 
                     <div class="p-6 sm:p-8">
@@ -658,6 +658,11 @@
                             <div class="w-full sm:w-64 h-3 rounded-full bg-gray-800 overflow-hidden" role="progressbar" aria-label="Progreso de misiones" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" id="missionProgressBar">
                                 <div id="missionProgressFill" class="h-full bg-gradient-to-r from-brandGold to-amber-400 rounded-full transition-all duration-500" style="width:0%"></div>
                             </div>
+                        </div>
+
+                        <div class="mb-5 grid sm:grid-cols-2 gap-3">
+                            <div class="bg-white/5 border border-white/10 rounded-xl p-3 flex gap-3 items-center"><span class="w-9 h-9 rounded-full bg-brandGold/20 text-brandGold grid place-items-center flex-shrink-0"><i class="fa-solid fa-trophy"></i></span><div><strong class="block text-xs">Premio garantizado</strong><span class="text-[11px] text-gray-400">Insignia y certificado personalizado de Explorador de Loja.</span></div></div>
+                            <div id="missionBenefitPreview" class="hidden bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex gap-3 items-center"><span class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-300 grid place-items-center flex-shrink-0"><i class="fa-solid fa-gift"></i></span><div><strong id="missionBenefitPreviewTitle" class="block text-xs">Beneficio especial</strong><span class="text-[11px] text-gray-300">Se revela al completar las cinco misiones.</span></div></div>
                         </div>
 
                         <div class="grid sm:grid-cols-2 gap-3" id="missionCards">
@@ -688,6 +693,8 @@
                             <p class="font-black text-brandGold" data-i18n="missionRewardTitle">¡Insignia Explorador de Loja desbloqueada!</p>
                             <p class="text-xs text-gray-300 mt-1" data-i18n="missionRewardDesc">Completaste las cinco misiones de Chabaquito.</p>
                             <div id="certificateRewardControls" class="mt-4 max-w-md mx-auto flex flex-col sm:flex-row gap-2"><input id="certificateVisitorName" class="flex-1 bg-white text-brandDark border border-brandGold/40 rounded-xl px-4 py-3 text-sm font-bold outline-none" maxlength="45" placeholder="Escribe tu nombre"><button type="button" onclick="downloadExplorerCertificate()" class="bg-brandGold hover:bg-orange-500 text-white font-black rounded-xl px-5 py-3 text-xs whitespace-nowrap"><i class="fa-solid fa-certificate mr-1"></i>Descargar certificado</button></div>
+                            <div id="missionBenefitReward" class="hidden mt-4 max-w-xl mx-auto bg-emerald-950/70 border border-emerald-400/40 rounded-2xl p-4 text-left"><p class="text-[10px] text-emerald-300 font-black uppercase tracking-widest"><i class="fa-solid fa-gift mr-1"></i>Beneficio desbloqueado</p><h3 id="missionBenefitRewardTitle" class="font-black text-lg text-white mt-1"></h3><p id="missionBenefitRewardDescription" class="text-xs text-gray-300 mt-1"></p><div id="missionBenefitCodeBox" class="hidden mt-3 bg-black/40 border border-dashed border-emerald-400 rounded-xl p-3 text-center"><span class="text-[10px] text-gray-400 uppercase">Código de canje</span><strong id="missionBenefitRewardCode" class="block text-xl tracking-widest text-emerald-300"></strong></div><p id="missionBenefitRewardValidity" class="text-[11px] text-amber-200 mt-2"></p><a id="missionBenefitRewardLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden mt-3 bg-emerald-500 text-white rounded-xl px-4 py-3 text-xs font-black text-center"><i class="fa-solid fa-ticket mr-1"></i><span>Solicitar beneficio</span></a></div>
+                            <button type="button" onclick="resetChabaquitoMissions()" class="mt-4 text-[11px] text-gray-400 hover:text-white underline">Reiniciar misiones</button>
                         </div>
                     </div>
                 </div>
@@ -1861,7 +1868,7 @@
                 passRules: "* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.",
                 missionBadge: "Aventura interactiva",
                 missionTitle: "Las Misiones de Chabaquito",
-                missionDesc: "Explora la web, completa cinco retos y desbloquea tu insignia digital.",
+                missionDesc: "Completa cinco experiencias, obtén tu certificado y desbloquea beneficios disponibles.",
                 missionProgress: "Tu progreso",
                 missionMapTitle: "Explora el mapa",
                 missionMapDesc: "Abre la información de un lugar.",
@@ -1874,7 +1881,7 @@
                 missionPodcastTitle: "Escucha Loja",
                 missionPodcastDesc: "Reproduce la canción de muestra del podcast.",
                 missionRewardTitle: "¡Insignia Explorador de Loja desbloqueada!",
-                missionRewardDesc: "Completaste las cinco misiones de Chabaquito.",
+                missionRewardDesc: "Completaste las cinco misiones. Tu certificado y beneficios ya están disponibles.",
                 agendaSub: "Loja en Movimiento",
                 agendaTitle: "Agenda Cultural y Eventos",
                 agendaDesc: "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
@@ -1984,7 +1991,7 @@
                 passRules: "* Security rules: To get your stamp by scanning the QR, the cashier or waiter must enter the authorized validation PIN.",
                 missionBadge: "Interactive adventure",
                 missionTitle: "Chabaquito's Missions",
-                missionDesc: "Explore the website, complete five challenges and unlock your digital badge.",
+                missionDesc: "Complete five experiences, earn your certificate and unlock available benefits.",
                 missionProgress: "Your progress",
                 missionMapTitle: "Explore the map",
                 missionMapDesc: "Open the details of a place.",
@@ -1997,7 +2004,7 @@
                 missionPodcastTitle: "Listen to Loja",
                 missionPodcastDesc: "Play the podcast sample song.",
                 missionRewardTitle: "Loja Explorer badge unlocked!",
-                missionRewardDesc: "You completed Chabaquito's five missions.",
+                missionRewardDesc: "You completed all five missions. Your certificate and benefits are now available.",
                 agendaSub: "Loja in Motion",
                 agendaTitle: "Cultural Agenda & Events",
                 agendaDesc: "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
@@ -4856,6 +4863,7 @@
             currentLocationIndex = index;
             const loc = locations[index];
             if(!loc) return;
+            completeChabaquitoMission('mapa');
             
             const tagText = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
             const titleText = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
@@ -5450,12 +5458,18 @@
                 card.classList.toggle('bg-green-500/10', isComplete);
                 card.classList.toggle('border-gray-700', !isComplete);
                 const icon = card.querySelector('.mission-icon');
-                if (icon && isComplete) icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                if(icon&&!icon.dataset.originalHtml)icon.dataset.originalHtml=icon.innerHTML;
+                if(icon)icon.innerHTML=isComplete?'<i class="fa-solid fa-check"></i>':icon.dataset.originalHtml;
+                let status=card.querySelector('.mission-status');
+                if(!status){status=document.createElement('span');status.className='mission-status float-right text-[9px] font-black uppercase tracking-wider rounded-full px-2 py-1';card.prepend(status);}
+                status.textContent=isComplete?'Completada':'Ir ahora';
+                status.className=`mission-status float-right text-[9px] font-black uppercase tracking-wider rounded-full px-2 py-1 ${isComplete?'bg-green-500/20 text-green-300':'bg-brandGold/15 text-brandGold'}`;
                 card.setAttribute('aria-label', `${card.querySelector('strong')?.textContent || 'Misión'}: ${isComplete ? 'completada' : 'pendiente'}`);
             });
 
             const reward = document.getElementById('missionReward');
             if (reward) reward.classList.toggle('hidden', count !== chabaquitoMissionIds.length);
+            renderMissionBenefit();
         }
 
         function completeChabaquitoMission(id) {
@@ -5472,6 +5486,8 @@
                 confetti({ particleCount: remaining > 0 ? 45 : 140, spread: remaining > 0 ? 55 : 90, origin: { y: 0.7 } });
             } catch (_) {}
         }
+
+        function resetChabaquitoMissions(){if(!window.confirm('¿Quieres reiniciar el progreso de las cinco misiones en este dispositivo?'))return;completedChabaquitoMissions=[];try{localStorage.removeItem('vive_loja_chabaquito_missions');}catch(_){}renderChabaquitoMissions();showToast('Progreso de misiones reiniciado.');}
 
         function wrapCertificateText(ctx,text,x,y,maxWidth,lineHeight){const words=String(text||'').split(/\s+/);let line='',lines=[];words.forEach(word=>{const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else line=test;});if(line)lines.push(line);lines.slice(0,4).forEach((item,index)=>ctx.fillText(item,x,y+index*lineHeight));}
 
@@ -5530,12 +5546,25 @@
 
         let chabaquitoEnabled = true;
         let explorerCertificateConfig = { active:true, title:'Explorador de Loja', text:'Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.', signature:'Vive Loja · Cultura y Cuchara' };
+        let explorerBenefitConfig = {active:false,title:'Beneficio de Explorador',description:'Presenta tu pasaporte completado para conocer el beneficio disponible.',code:'EXPLORADOR',validity:'',buttonText:'Solicitar beneficio',url:''};
+
+        function renderMissionBenefit(){
+            const active=explorerBenefitConfig.active===true,preview=document.getElementById('missionBenefitPreview'),reward=document.getElementById('missionBenefitReward');
+            if(preview)preview.classList.toggle('hidden',!active);
+            const previewTitle=document.getElementById('missionBenefitPreviewTitle');if(previewTitle)previewTitle.textContent=explorerBenefitConfig.title||'Beneficio especial';
+            if(reward)reward.classList.toggle('hidden',!active);
+            const title=document.getElementById('missionBenefitRewardTitle'),description=document.getElementById('missionBenefitRewardDescription'),code=document.getElementById('missionBenefitRewardCode'),codeBox=document.getElementById('missionBenefitCodeBox'),validity=document.getElementById('missionBenefitRewardValidity'),link=document.getElementById('missionBenefitRewardLink');
+            if(title)title.textContent=explorerBenefitConfig.title||'Beneficio de Explorador';if(description)description.textContent=explorerBenefitConfig.description||'';if(code)code.textContent=explorerBenefitConfig.code||'';if(codeBox)codeBox.classList.toggle('hidden',!explorerBenefitConfig.code);if(validity)validity.textContent=explorerBenefitConfig.validity||'';
+            if(link){const hasUrl=Boolean(explorerBenefitConfig.url);link.classList.toggle('hidden',!hasUrl);link.href=hasUrl?explorerBenefitConfig.url:'#';const label=link.querySelector('span');if(label)label.textContent=explorerBenefitConfig.buttonText||'Solicitar beneficio';}
+        }
 
         function applyChabaquitoConfig(data = {}) {
             chabaquitoEnabled = data.active !== false;
             explorerCertificateConfig = { ...explorerCertificateConfig, ...(data.certificate || {}) };
+            explorerBenefitConfig = { ...explorerBenefitConfig, ...(data.benefit || {}) };
             const certificateControls = document.getElementById('certificateRewardControls');
             if (certificateControls) certificateControls.classList.toggle('hidden', explorerCertificateConfig.active === false);
+            renderMissionBenefit();
             if (data.messages && typeof data.messages === 'object') Object.assign(mascotSectionMessages, data.messages);
             const imageUrl = data.imageUrl || 'mascota-vive-loja.png';
             document.querySelectorAll('img').forEach(image => {
