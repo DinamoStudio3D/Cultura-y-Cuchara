@@ -2510,6 +2510,11 @@
         let activeSpeechUtterance = null;
         let activeSpeechButton = null;
         let handledLocationUrl = false;
+        const businessAnalyticsSession=localStorage.getItem('cyc_analytics_session')||(`visit_${Date.now()}_${Math.random().toString(36).slice(2,9)}`);localStorage.setItem('cyc_analytics_session',businessAnalyticsSession);
+        function paidPlaceBenefits(loc){const subscription=loc?.subscription||{};if(subscription.status==='paused'||subscription.status==='pending'||subscription.plan==='free'||!subscription.plan)return{};if(subscription.endDate&&subscription.endDate<new Date().toISOString().slice(0,10))return{};return subscription.benefits||{};}
+        function trackBusinessEvent(placeId,type){if(!db||!placeId||!['view','directions','favorite','stamp','promo'].includes(type))return;const loc=locations.find(item=>item.id===placeId);if(!loc||paidPlaceBenefits(loc).stats!==true)return;const onceKey=`cyc_metric_${businessAnalyticsSession}_${placeId}_${type}`;if(type==='view'&&sessionStorage.getItem(onceKey))return;if(type==='view')sessionStorage.setItem(onceKey,'1');db.collection('businessEvents').add({placeId,type,sessionId:businessAnalyticsSession,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});}
+        function placePromotionIsVisible(loc){const subscription=loc?.subscription||{},promo=subscription.promotion||{},today=new Date().toISOString().slice(0,10);return paidPlaceBenefits(loc).promo===true&&promo.active===true&&(!promo.startDate||promo.startDate<=today)&&(!promo.endDate||promo.endDate>=today);}
+        function maybeShowPlacePromotion(loc){if(!placePromotionIsVisible(loc))return;const promo=loc.subscription.promotion,key=`cyc_promo_seen_${loc.id}_${promo.startDate||'current'}_${promo.endDate||''}`;if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,'1');document.getElementById('popupBadgeText').textContent='✨ Promoción de una Parada Aliada';document.getElementById('popupTitleText').textContent=promo.title||loc.title;document.getElementById('popupDescText').textContent=promo.description||'';document.getElementById('popupImgEl').src=promo.image||(loc.gallery?.[0]?.img||'https://i.imgur.com/xaiFpa1.png');const button=document.getElementById('popupWhatsappBtn');if(promo.buttonUrl){button.href=promo.buttonUrl;button.innerHTML=`<i class="fa-solid fa-arrow-up-right-from-square"></i> ${promo.buttonText||'Conocer promoción'}`;button.classList.remove('hidden');button.onclick=()=>trackBusinessEvent(loc.id,'promo');}else button.classList.add('hidden');setTimeout(()=>openModal('promoPopupModal'),450);}
 
         function clearSpotlightPin() {
             if (spotlightMarker && map) {
@@ -2761,6 +2766,7 @@
                 
                 const waBtn = document.getElementById('popupWhatsappBtn');
                 if(waBtn) {
+                    waBtn.onclick=null;waBtn.innerHTML='<i class="fa-brands fa-whatsapp text-base"></i> Consultar disponibilidad';
                     if (settings.popupWhatsapp && settings.popupWhatsapp.trim() !== "") {
                         waBtn.href = settings.popupWhatsapp;
                         waBtn.classList.remove('hidden');
@@ -3090,11 +3096,12 @@
             let renderList = [...locations];
             if (userCoords) {
                 renderList.sort((a, b) => {
+                    const priorityDifference=Number(paidPlaceBenefits(b).priority===true)-Number(paidPlaceBenefits(a).priority===true);if(priorityDifference)return priorityDifference;
                     let distA = calcularDistanciaKm(userCoords.lat, userCoords.lng, a.lat || -3.9931, a.lng || -79.2042);
                     let distB = calcularDistanciaKm(userCoords.lat, userCoords.lng, b.lat || -3.9931, b.lng || -79.2042);
                     return distA - distB;
                 });
-            }
+            } else renderList.sort((a,b)=>Number(paidPlaceBenefits(b).priority===true)-Number(paidPlaceBenefits(a).priority===true));
 
             renderList.forEach((loc, index) => {
                 const uniqueId = loc.id || 'loc_' + index;
@@ -3105,11 +3112,12 @@
                 const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
                 const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
                 const isOpen = isLocOpenNow(loc);
+                const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasLogoPin=paidBenefits.logoPin===true&&loc.customLogoUrl&&loc.customLogoUrl.trim()!=='';
 
                 if(loc.lat && loc.lng) {
                     let pinHtml = "";
-                    if (loc.customLogoUrl && loc.customLogoUrl.trim() !== "") {
-                        pinHtml = `<div class="w-12 h-12 rounded-full border-[3px] border-brandGold overflow-hidden bg-white shadow-2xl hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action: none;">
+                    if (hasLogoPin) {
+                        pinHtml = `<div class="w-14 h-14 rounded-full border-[4px] border-teal-400 overflow-hidden bg-white shadow-[0_0_0_5px_rgba(234,88,12,.28),0_12px_25px_rgba(0,0,0,.35)] hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action: none;">
                                      <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}">
                                    </div>`;
                     } else {
@@ -3121,7 +3129,7 @@
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: pinHtml,
-                        iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -28]
+                        iconSize: hasLogoPin?[56,56]:[48, 48], iconAnchor: hasLogoPin?[28,28]:[24, 24], popupAnchor: [0, -28]
                     });
 
                     const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
@@ -3164,21 +3172,21 @@
                     : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
                 grid.innerHTML += `
-                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <button type="button" onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
                         <div class="h-52 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
-                                <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>
+                                <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>${hasPaidBadge?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Parada aliada</span>':''}
                                 ${openBadge}
                             </div>
                             <div class="absolute bottom-3 right-3 flex gap-1.5 z-20">
                                 <button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)">
                                     <i class="fa-solid fa-qrcode"></i>
                                 </button>
-                                <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
+                                <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
                                     <i class="fa-solid fa-diamond-turn-right"></i>
                                 </a>
                             </div>
@@ -3250,6 +3258,7 @@
                 const isNewStamp=!visitedLocations.includes(localId);
                 if (isNewStamp) {
                     visitedLocations.push(localId);
+                    trackBusinessEvent(localId,'stamp');
                     localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
                     updatePassportUI();
                 }
@@ -3364,6 +3373,7 @@
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(loc.id);
+                trackBusinessEvent(loc.id,'favorite');
                 icon.className = "fa-solid fa-seedling text-red-500 scale-110";
                 btn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-red-50 backdrop-blur border border-red-300 text-red-600 flex items-center justify-center hover:scale-110 transition shadow-lg text-lg z-10";
                 showToast(`¡Añadido a Mi Ruta! ☕`);
@@ -3399,6 +3409,7 @@
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
+                trackBusinessEvent(localId,'favorite');
                 if(icon) icon.className = "fa-solid fa-seedling text-red-500 scale-110";
                 if(parentBtn) parentBtn.className = "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-red-50 text-red-600 border-red-300 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
                 showToast(`¡Añadido a Mi Ruta! ☕`);
@@ -4867,6 +4878,8 @@
             currentLocationIndex = index;
             const loc = locations[index];
             if(!loc) return;
+            trackBusinessEvent(loc.id,'view');
+            maybeShowPlacePromotion(loc);
             completeChabaquitoMission('mapa');
             
             const tagText = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
@@ -4905,7 +4918,7 @@
             document.getElementById('previewAddress').innerText = loc.address;
             
             let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
-            document.getElementById('previewGps').href = previewGpsUrl;
+            document.getElementById('previewGps').href = previewGpsUrl;document.getElementById('previewGps').onclick=()=>trackBusinessEvent(loc.id,'directions');
             
             const waBtn = document.getElementById('previewWhatsapp');
             const locationShareUrl = buildLocationShareUrl(loc);
