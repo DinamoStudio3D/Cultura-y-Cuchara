@@ -3112,12 +3112,12 @@
                 const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
                 const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
                 const isOpen = isLocOpenNow(loc);
-                const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasLogoPin=paidBenefits.logoPin===true&&loc.customLogoUrl&&loc.customLogoUrl.trim()!=='';
+                const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasCustomLogo=Boolean(loc.customLogoUrl&&loc.customLogoUrl.trim()!==''),hasPaidLogoStyle=hasCustomLogo&&paidBenefits.logoPin===true;
 
                 if(loc.lat && loc.lng) {
                     let pinHtml = "";
-                    if (hasLogoPin) {
-                        pinHtml = `<div class="w-14 h-14 rounded-full border-[4px] border-teal-400 overflow-hidden bg-white shadow-[0_0_0_5px_rgba(234,88,12,.28),0_12px_25px_rgba(0,0,0,.35)] hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action: none;">
+                    if (hasCustomLogo) {
+                        pinHtml = `<div class="${hasPaidLogoStyle?'w-14 h-14 border-[4px] border-teal-400 shadow-[0_0_0_5px_rgba(234,88,12,.28),0_12px_25px_rgba(0,0,0,.35)]':'w-12 h-12 border-[3px] border-brandGold shadow-2xl'} rounded-full overflow-hidden bg-white hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action: none;">
                                      <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}">
                                    </div>`;
                     } else {
@@ -3129,7 +3129,7 @@
                     const customIcon = L.divIcon({
                         className: 'custom-leaflet-icon',
                         html: pinHtml,
-                        iconSize: hasLogoPin?[56,56]:[48, 48], iconAnchor: hasLogoPin?[28,28]:[24, 24], popupAnchor: [0, -28]
+                        iconSize: hasPaidLogoStyle?[56,56]:[48,48], iconAnchor: hasPaidLogoStyle?[28,28]:[24,24], popupAnchor: [0, -28]
                     });
 
                     const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
