@@ -292,8 +292,9 @@
 
             <form onsubmit="verifyBusinessPinForStamp(event)" class="space-y-3">
                 <input type="hidden" id="qrTargetLocalId">
-                <input type="password" id="inputBusinessPin" required maxlength="6" placeholder="PIN de Validación" class="w-full bg-gray-100 border border-gray-300 rounded-xl p-3 text-center text-lg tracking-widest text-brandDark font-bold outline-none focus:border-brandGold">
-                <button type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider shadow">
+                <input type="password" id="inputBusinessPin" required inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" autocomplete="off" placeholder="PIN privado de la parada" class="w-full bg-gray-100 border border-gray-300 rounded-xl p-3 text-center text-lg tracking-widest text-brandDark font-bold outline-none focus:border-brandGold">
+                <p id="stampValidationMessage" class="hidden text-xs rounded-xl p-2" role="status"></p>
+                <button id="stampValidationButton" type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover disabled:opacity-50 transition text-xs uppercase tracking-wider shadow">
                     Validar y Obtener Sello 🎯
                 </button>
             </form>
@@ -2341,7 +2342,6 @@
         let locations = [
             {
                 id: "dinamo_studio",
-                pin: "1234",
                 tag: "Institucional / Merchandising", tagEn: "Institutional / Merchandising",
                 title: "Dínamo Studio", titleEn: "Dínamo Studio",
                 desc: "Estudio creativo y desarrollo tecnológico oficial del proyecto.",
@@ -2357,7 +2357,6 @@
             },
             {
                 id: "dona_rosita",
-                pin: "5678",
                 tag: "Hueca Tradicional", tagEn: "Traditional Local Eatery", title: "Picantería Doña Rosita", titleEn: "Doña Rosita Picantería",
                 desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
                 descEn: "The authentic taste of Loja's charcoal-grilled cecina served with cassava and pickled onion.",
@@ -3240,6 +3239,7 @@
             }
 
             document.getElementById('inputBusinessPin').value = '';
+            const validationNotice=document.getElementById('stampValidationMessage');if(validationNotice){validationNotice.textContent='';validationNotice.className='hidden text-xs rounded-xl p-2';}
             openModal('qrClaimModal');
         }
 
@@ -3249,17 +3249,20 @@
             openQrClaimModalForId(loc.id);
         }
 
-        function verifyBusinessPinForStamp(e) {
+        async function verifyBusinessPinForStamp(e) {
             e.preventDefault();
             const localId = document.getElementById('qrTargetLocalId').value;
             const enteredPin = document.getElementById('inputBusinessPin').value.trim();
             const loc = locations.find(l => l.id === localId);
-            
+            const button=document.getElementById('stampValidationButton'),notice=document.getElementById('stampValidationMessage'),attemptKey=`cyc_stamp_attempts_${localId}`,attempts=safeReadJSON(attemptKey,{count:0,lockedUntil:0});
             if(!loc) { showToast('Local no encontrado'); return; }
             if(!['hotel','hueca','cafe','urbana'].includes(loc.category)){showToast('Esta parada informativa no participa en los sellos del pasaporte.');closeModal('qrClaimModal');return;}
-            const validPin = loc.pin || "1234";
-
-            if (enteredPin === validPin) {
+            if(!/^\d{4,6}$/.test(enteredPin)){notice.textContent='El PIN debe contener entre 4 y 6 números.';notice.className='text-xs rounded-xl p-2 bg-red-50 text-red-700';return;}
+            if(Number(attempts.lockedUntil)>Date.now()){const minutes=Math.max(1,Math.ceil((attempts.lockedUntil-Date.now())/60000));notice.textContent=`Espera ${minutes} minuto${minutes===1?'':'s'} antes de intentarlo nuevamente.`;notice.className='text-xs rounded-xl p-2 bg-amber-50 text-amber-800';return;}
+            button.disabled=true;button.innerHTML='<i class="fa-solid fa-shield-halved fa-spin mr-1"></i>Validando de forma segura…';notice.textContent='Comprobando el PIN privado de esta parada…';notice.className='text-xs rounded-xl p-2 bg-blue-50 text-blue-700';
+            try {
+                await db.collection('stampClaims').add({placeId:localId,sessionId:businessAnalyticsSession,pin:enteredPin,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+                localStorage.removeItem(attemptKey);
                 const isNewStamp=!visitedLocations.includes(localId);
                 if (isNewStamp) {
                     visitedLocations.push(localId);
@@ -3279,9 +3282,14 @@
                 setTimeout(() => {
                     openModal('pasaporteModal');
                 }, 400);
-            } else {
+            } catch(error) {
+                const nextCount=Number(attempts.count||0)+1,lockedUntil=nextCount>=5?Date.now()+5*60*1000:0;localStorage.setItem(attemptKey,JSON.stringify({count:lockedUntil?0:nextCount,lockedUntil}));
                 showToast('❌ PIN de establecimiento incorrecto');
                 document.getElementById('inputBusinessPin').value = '';
+                notice.textContent=lockedUntil?'Demasiados intentos. La validación se bloqueó durante 5 minutos.':`PIN incorrecto. Te quedan ${5-nextCount} intentos antes de una pausa.`;
+                notice.className='text-xs rounded-xl p-2 bg-red-50 text-red-700';
+            } finally {
+                button.disabled=false;button.innerHTML='Validar y Obtener Sello 🎯';
             }
         }
 

@@ -162,7 +162,7 @@
                         <input id="placeEditId" type="hidden">
                         <h3 id="placeFormTitle" class="font-black text-lg">Registrar una parada</h3>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Nombre en español *</span><input id="placeTitle" class="field" required maxlength="120"></label><label><span class="text-sm font-semibold block mb-2">Nombre en inglés</span><input id="placeTitleEn" class="field" maxlength="120"></label></div>
-                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Categoría *</span><select id="placeCategory" class="field" required><option value="hueca">Hueca</option><option value="cafe">Cafetería</option><option value="hotel">Hotel / Hospedaje</option><option value="urbana">Restaurante urbano</option><option value="turismo">Atractivo turístico</option></select></label><label><span class="text-sm font-semibold block mb-2">Etiqueta visible</span><input id="placeTag" class="field" placeholder="Hueca tradicional"></label><label><span class="text-sm font-semibold block mb-2">PIN del pasaporte *</span><input id="placePin" class="field" required inputmode="numeric" maxlength="6" value="1234"></label></div>
+                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Categoría *</span><select id="placeCategory" class="field" required><option value="hueca">Hueca</option><option value="cafe">Cafetería</option><option value="hotel">Hotel / Hospedaje</option><option value="urbana">Restaurante urbano</option><option value="turismo">Atractivo turístico</option></select></label><label><span class="text-sm font-semibold block mb-2">Etiqueta visible</span><input id="placeTag" class="field" placeholder="Hueca tradicional"></label><label><span class="text-sm font-semibold block mb-2"><i class="fa-solid fa-shield-halved text-emerald-300 mr-1"></i>PIN privado *</span><input id="placePin" class="field" type="password" required inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" autocomplete="new-password" value="1234"><span class="text-xs text-emerald-200 mt-1 block">Usa de 4 a 6 números. Se guardará fuera de la ficha pública.</span></label></div>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Descripción en español *</span><textarea id="placeDesc" class="field min-h-24" required maxlength="700"></textarea></label><label><span class="text-sm font-semibold block mb-2">Descripción en inglés</span><textarea id="placeDescEn" class="field min-h-24" maxlength="700"></textarea></label></div>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Plato, producto o beneficio</span><input id="placeDish" class="field"></label><label><span class="text-sm font-semibold block mb-2">Versión en inglés</span><input id="placeDishEn" class="field"></label></div>
                         <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Horario visible</span><input id="placeHours" class="field" placeholder="Lun - Sáb: 08:00 - 20:00"></label><label><span class="text-sm font-semibold block mb-2">Hora de apertura</span><input id="placeOpenHour" class="field" type="number" min="0" max="23" value="8"></label><label><span class="text-sm font-semibold block mb-2">Hora de cierre</span><input id="placeCloseHour" class="field" type="number" min="0" max="24" value="20"></label></div>
@@ -397,6 +397,7 @@ const timeRef = db.collection('loja_tiempo');
 const qrRef = db.collection('qrCodes');
 const businessEventsRef = db.collection('businessEvents');
 const passportCompletionsRef = db.collection('passportCompletions');
+const passportPinsRef = db.collection('passportPins');
 let currentData = {};
 let festivalDraftEvents = [];
 let adminPlaces = [];
@@ -410,6 +411,7 @@ let adminEntrepreneurs = [];
 let adminQrCodes=[];let qrUnsubscribe=null;let currentQrValue='';let currentQrName='QR-Vive-Loja';let qrRenderToken=0;
 let adminBusinessEvents=[];let businessEventsUnsubscribe=null;
 let adminPassportCompletions=[];let passportCompletionsUnsubscribe=null;
+let adminPassportPins={};let passportPinsUnsubscribe=null;let legacyPinMigrationRunning=false;
 let subscriptionDraftPlans=[];let subscriptionDraftFaq=[];
 const DEFAULT_GENERAL_EVENTS = [{ id: 'ev_1', title: 'Feria de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '2026-09-20', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo profesional en vivo.', descEn: 'Open tastings for the public and barista shows.', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', lat: -3.9910, lng: -79.2030 }];
 const DEFAULT_CHABAQUITO = { active: true, animated: true, imageUrl: 'mascota-vive-loja.png', messages: { inicio: '¡Hola! Soy tu guía de Vive Loja. ¿Empezamos la ruta?', mapa: 'Toca los puntos del mapa y descubre nuevos sabores y destinos.', establecimientos: 'Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.', fiavl: '¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!', postales: 'Crea una postal de tu visita y compártela con tus amigos.', pasaporte: 'Completa tu pasaporte y guarda cada parada de tu aventura.', misiones: '¡Acepta mis cinco misiones y conviértete en Explorador de Loja!', podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.' }, certificate: { active:true, title:'Explorador de Loja', text:'Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.', signature:'Vive Loja · Cultura y Cuchara' }, benefit:{active:false,title:'Beneficio de Explorador',description:'Presenta tu pasaporte completado para conocer el beneficio disponible.',code:'EXPLORADOR',validity:'',buttonText:'Solicitar beneficio',url:''} };
@@ -676,6 +678,8 @@ function renderAdminPlaces() {
     list.innerHTML = adminPlaces.map(place => `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div class="min-w-0"><div class="flex items-center gap-2"><span class="w-9 h-9 rounded-full bg-cyan-500/15 text-cyan-300 grid place-items-center"><i class="fa-solid ${escapeAdminHtml(place.iconClass || placeIcon(place.category))}"></i></span><div class="min-w-0"><span class="text-[9px] font-black uppercase tracking-wider text-cyan-300">Parada Vive Loja</span><h4 class="font-black truncate">${escapeAdminHtml(place.title || 'Sin nombre')}</h4><p class="text-xs text-gray-400 truncate">${escapeAdminHtml(place.tag || place.category || 'Sin categoría')} · ${escapeAdminHtml(place.address || 'Sin dirección')}</p></div></div></div><div class="flex flex-wrap gap-2"><button type="button" onclick="prepareStopQr('${escapeAdminHtml(place.id)}')" class="bg-teal-500 text-black rounded-lg px-3 py-2 text-xs font-black"><i class="fa-solid fa-qrcode mr-1"></i>QR de parada</button><button type="button" onclick="copyAdminPlaceLink('${escapeAdminHtml(place.id)}')" class="border border-gray-700 hover:border-cyan-400 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-link mr-1"></i>Compartir ficha</button><button type="button" onclick="editAdminPlace('${escapeAdminHtml(place.id)}')" class="bg-cyan-500/15 text-cyan-200 hover:bg-cyan-500/25 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-pen mr-1"></i>Editar</button><button type="button" onclick="deleteAdminPlace('${escapeAdminHtml(place.id)}')" class="bg-red-500/10 text-red-300 hover:bg-red-500/20 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Eliminar</button></div></div></article>`).join('');
 }
 
+async function migrateLegacyPlacePins(){if(legacyPinMigrationRunning)return;const legacy=adminPlaces.filter(place=>/^\d{4,6}$/.test(String(place.pin||''))).slice(0,200);if(!legacy.length)return;legacyPinMigrationRunning=true;try{const batch=db.batch();legacy.forEach(place=>{batch.set(passportPinsRef.doc(place.id),{pin:String(place.pin),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email},{merge:true});batch.update(placesRef.doc(place.id),{pin:firebase.firestore.FieldValue.delete()});});await batch.commit();}catch(error){console.warn('No se pudieron proteger automáticamente los PIN existentes:',error);}finally{legacyPinMigrationRunning=false;}}
+
 function prepareStopQr(id){const place=adminPlaces.find(item=>item.id===id);if(!place)return;showAdminModule('qr');if(!['hotel','hueca','cafe','urbana'].includes(place.category)){resetQrForm();message(document.getElementById('qrMessage'),'Esta ficha es un atractivo turístico. Los sellos del pasaporte se generan únicamente para hoteles, cafeterías, huecas y restaurantes.');return;}const stopSlug=createAdminSlug(place.title),qrId=`parada-${stopSlug}`,existing=adminQrCodes.find(item=>item.id===qrId);if(existing){editSavedQr(existing.id);message(document.getElementById('qrMessage'),`QR de la parada “${place.title}” cargado. Puedes descargarlo o cambiar su diseño.`,true);return;}resetQrForm();document.getElementById('qrName').value=`Parada ${place.title}`;document.getElementById('qrType').value='editable';document.getElementById('qrSlug').value=qrId;document.getElementById('qrTarget').value=`${window.location.origin}/?checkin=${encodeURIComponent(stopSlug)}`;updateQrExplanation();previewQrFromForm();message(document.getElementById('qrMessage'),'Personaliza el QR y presiona “Generar y guardar”. Luego imprímelo y colócalo en esta parada.',true);}
 
 const PLACE_PLAN_DEFAULTS={free:{logoPin:false,badge:false,priority:false,promo:false,stats:false,video:false},impulse:{logoPin:true,badge:true,priority:false,promo:false,stats:true,video:false},featured:{logoPin:true,badge:true,priority:true,promo:true,stats:true,video:false},premium:{logoPin:true,badge:true,priority:true,promo:true,stats:true,video:true}};
@@ -696,14 +700,14 @@ function resetPlaceForm() {
     document.getElementById('placeFormMessage').classList.add('hidden');
 }
 
-function editAdminPlace(id) {
+async function editAdminPlace(id) {
     const place = adminPlaces.find(item => item.id === id);
     if (!place) return;
     showAdminModule('places');
     document.getElementById('placeEditId').value = place.id;
     document.getElementById('placeFormTitle').textContent = `Editar: ${place.title || 'parada'}`;
-    const subscription=place.subscription||{},benefits=subscription.benefits||{},promo=subscription.promotion||{};
-    const values = { placeTitle: place.title, placeTitleEn: place.titleEn, placeCategory: place.category, placeTag: place.tag, placePin: place.pin, placeDesc: place.desc, placeDescEn: place.descEn, placeDish: place.dish, placeDishEn: place.dishEn, placeHours: place.hours, placeOpenHour: place.openHour, placeCloseHour: place.closeHour, placeAddress: place.address, placeLat: place.lat, placeLng: place.lng, placeLogo: place.customLogoUrl, placeYoutube: place.youtubeUrl, placeGallery: Array.isArray(place.gallery) ? place.gallery.map(item => item.img).filter(Boolean).join('\n') : '',placeSubscriptionPlan:subscription.plan||'free',placeSubscriptionStatus:subscription.status||'active',placeSubscriptionStart:toLocalDateTimeInput(subscription.startAt||subscription.startDate),placeSubscriptionEnd:toLocalDateTimeInput(subscription.endAt||subscription.endDate,true),placePromoTitle:promo.title||'',placePromoImage:promo.image||'',placePromoDescription:promo.description||'',placePromoButtonText:promo.buttonText||'Conocer promoción',placePromoButtonUrl:promo.buttonUrl||'',placePromoStart:toLocalDateTimeInput(promo.startAt||promo.startDate),placePromoEnd:toLocalDateTimeInput(promo.endAt||promo.endDate,true) };
+    const subscription=place.subscription||{},benefits=subscription.benefits||{},promo=subscription.promotion||{};let privatePin=adminPassportPins[place.id]||place.pin||'';if(!privatePin){try{const pinSnapshot=await passportPinsRef.doc(place.id).get();privatePin=pinSnapshot.exists?pinSnapshot.data().pin||'':'';}catch(_){}}
+    const values = { placeTitle: place.title, placeTitleEn: place.titleEn, placeCategory: place.category, placeTag: place.tag, placePin: privatePin, placeDesc: place.desc, placeDescEn: place.descEn, placeDish: place.dish, placeDishEn: place.dishEn, placeHours: place.hours, placeOpenHour: place.openHour, placeCloseHour: place.closeHour, placeAddress: place.address, placeLat: place.lat, placeLng: place.lng, placeLogo: place.customLogoUrl, placeYoutube: place.youtubeUrl, placeGallery: Array.isArray(place.gallery) ? place.gallery.map(item => item.img).filter(Boolean).join('\n') : '',placeSubscriptionPlan:subscription.plan||'free',placeSubscriptionStatus:subscription.status||'active',placeSubscriptionStart:toLocalDateTimeInput(subscription.startAt||subscription.startDate),placeSubscriptionEnd:toLocalDateTimeInput(subscription.endAt||subscription.endDate,true),placePromoTitle:promo.title||'',placePromoImage:promo.image||'',placePromoDescription:promo.description||'',placePromoButtonText:promo.buttonText||'Conocer promoción',placePromoButtonUrl:promo.buttonUrl||'',placePromoStart:toLocalDateTimeInput(promo.startAt||promo.startDate),placePromoEnd:toLocalDateTimeInput(promo.endAt||promo.endDate,true) };
     Object.entries(values).forEach(([field, value]) => { document.getElementById(field).value = value ?? ''; });
     document.getElementById('placeBenefitLogoPin').checked=benefits.logoPin===true;document.getElementById('placeBenefitBadge').checked=benefits.badge===true;document.getElementById('placeBenefitPriority').checked=benefits.priority===true;document.getElementById('placeBenefitPromo').checked=benefits.promo===true;document.getElementById('placeBenefitStats').checked=benefits.stats===true;document.getElementById('placeBenefitVideo').checked=benefits.video===true;document.getElementById('placePromoActive').checked=promo.active===true;updatePlaceSubscriptionPreview();refreshPlaceStats();
     document.getElementById('placeForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -720,7 +724,7 @@ async function copyAdminPlaceLink(id) {
 async function deleteAdminPlace(id) {
     const place = adminPlaces.find(item => item.id === id);
     if (!place || !window.confirm(`¿Eliminar definitivamente “${place.title}”?`)) return;
-    try { await placesRef.doc(id).delete(); resetPlaceForm(); }
+    try { const batch=db.batch();batch.delete(placesRef.doc(id));batch.delete(passportPinsRef.doc(id));await batch.commit();resetPlaceForm(); }
     catch (error) { message(document.getElementById('placeFormMessage'), error.code === 'permission-denied' ? 'Firestore no permitió eliminar esta parada.' : 'No se pudo eliminar la parada.'); }
 }
 
@@ -825,11 +829,13 @@ auth.onAuthStateChanged(async user => {
         if (qrUnsubscribe) qrUnsubscribe();
         if (businessEventsUnsubscribe) businessEventsUnsubscribe();
         if (passportCompletionsUnsubscribe) passportCompletionsUnsubscribe();
+        if (passportPinsUnsubscribe) passportPinsUnsubscribe();
         placesUnsubscribe = null;
         timeUnsubscribe = null;
         qrUnsubscribe = null;
         businessEventsUnsubscribe = null;
         passportCompletionsUnsubscribe = null;
+        passportPinsUnsubscribe = null;
         return;
     }
     if ((user.email || '').toLowerCase() !== ADMIN_EMAIL) {
@@ -870,6 +876,7 @@ auth.onAuthStateChanged(async user => {
         placesUnsubscribe = placesRef.onSnapshot(snapshot => {
             adminPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'es'));
             renderAdminPlaces();
+            migrateLegacyPlacePins();
         }, () => { document.getElementById('placesList').innerHTML = '<p class="text-red-300 text-sm">No fue posible cargar las paradas. Revisa los permisos de Firestore.</p>'; });
         if (timeUnsubscribe) timeUnsubscribe();
         timeUnsubscribe = timeRef.onSnapshot(async snapshot => {
@@ -882,6 +889,7 @@ auth.onAuthStateChanged(async user => {
         if(qrUnsubscribe)qrUnsubscribe();qrUnsubscribe=qrRef.onSnapshot(snapshot=>{adminQrCodes=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderQrList();});
         if(businessEventsUnsubscribe)businessEventsUnsubscribe();businessEventsUnsubscribe=businessEventsRef.orderBy('createdAt','desc').limit(5000).onSnapshot(snapshot=>{adminBusinessEvents=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));refreshPlaceStats();},()=>{adminBusinessEvents=[];});
         if(passportCompletionsUnsubscribe)passportCompletionsUnsubscribe();passportCompletionsUnsubscribe=passportCompletionsRef.orderBy('completedAt','desc').limit(5000).onSnapshot(snapshot=>{adminPassportCompletions=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));refreshPassportStats();},()=>{adminPassportCompletions=[];refreshPassportStats();});
+        if(passportPinsUnsubscribe)passportPinsUnsubscribe();passportPinsUnsubscribe=passportPinsRef.onSnapshot(snapshot=>{adminPassportPins={};snapshot.docs.forEach(doc=>{adminPassportPins[doc.id]=doc.data().pin||'';});},()=>{adminPassportPins={};});
     } catch (error) {
         message(document.getElementById('formMessage'), 'Tu cuenta inició sesión, pero todavía no tiene permisos para leer el contenido. Deben configurarse las reglas de Firebase.');
     }
@@ -906,8 +914,10 @@ document.getElementById('placeForm').addEventListener('submit', async event => {
     if(subscriptionStart&&subscriptionEnd&&new Date(subscriptionStart)>=new Date(subscriptionEnd)){message(formMessage,'La fecha final de la suscripción debe ser posterior a la fecha de inicio.');return;}
     if(promoStart&&promoEnd&&new Date(promoStart)>=new Date(promoEnd)){message(formMessage,'La fecha final de la promoción debe ser posterior a la fecha de inicio.');return;}
     const tag = document.getElementById('placeTag').value.trim() || category;
+    const privatePin=document.getElementById('placePin').value.trim();
+    if(!/^\d{4,6}$/.test(privatePin)){message(formMessage,'El PIN privado debe tener entre 4 y 6 números.');return;}
     const data = {
-        pin: document.getElementById('placePin').value.trim(), tag, tagEn: tag, title,
+        pin: firebase.firestore.FieldValue.delete(), tag, tagEn: tag, title,
         titleEn: document.getElementById('placeTitleEn').value.trim() || title,
         desc: description, descEn: document.getElementById('placeDescEn').value.trim() || description,
         dish, dishEn: document.getElementById('placeDishEn').value.trim() || dish,
@@ -925,7 +935,7 @@ document.getElementById('placeForm').addEventListener('submit', async event => {
     button.disabled = true;
     try {
         const editId = document.getElementById('placeEditId').value;
-        await placesRef.doc(editId || `loc_${createAdminSlug(title)}_${Date.now()}`).set(data, { merge: true });
+        const placeId=editId||`loc_${createAdminSlug(title)}_${Date.now()}`,batch=db.batch();batch.set(placesRef.doc(placeId),data,{merge:true});batch.set(passportPinsRef.doc(placeId),{pin:privatePin,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email},{merge:true});await batch.commit();
         if (!editId) resetPlaceForm();
         message(formMessage, editId ? 'Parada actualizada correctamente.' : 'Parada registrada correctamente.', true);
     } catch (error) {
