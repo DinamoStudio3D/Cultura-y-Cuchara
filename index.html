@@ -343,9 +343,9 @@
                     <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Misiones de Chabaquito
                 </a>
                 <button type="button" onclick="openSmartRoutePlanner()" class="bg-white/10 text-white border border-white/40 font-bold px-8 py-4 rounded-xl hover:bg-white hover:text-brandDark transition-all text-sm text-center">
-                    <i class="fa-solid fa-route mr-2"></i> Crear Ruta Inteligente
+                    <i class="fa-solid fa-route mr-2"></i> Planificar mi recorrido
                 </button>
-                <button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()" class="bg-sky-500/20 text-white border border-sky-300/60 font-bold px-8 py-4 rounded-xl hover:bg-sky-500 transition-all text-sm text-center"><i class="fa-solid fa-compass mr-2"></i>¿Qué hacer ahora?</button>
+                <button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()" class="bg-sky-500/20 text-white border border-sky-300/60 font-bold px-8 py-4 rounded-xl hover:bg-sky-500 transition-all text-sm text-center"><i class="fa-solid fa-compass mr-2"></i>Ver qué está abierto</button>
             </div>
         </div>
     </section>
@@ -1085,6 +1085,27 @@
                     <i class="fa-brands fa-whatsapp text-base"></i> <span data-i18n="btnShareItinerary">Compartir mi Ruta Organizada por WhatsApp</span>
                 </button>
                 <button type="button" onclick="clearEntireItinerary()" class="text-xs text-red-500 hover:underline text-center py-1">Vaciar toda la ruta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recomendaciones inmediatas -->
+    <div id="whatToDoNowModal" class="fixed inset-0 z-[95] bg-black/90 backdrop-blur hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-brandCream text-brandDark w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border-2 border-sky-500 flex flex-col max-h-[92vh]">
+            <div class="bg-gradient-to-r from-sky-700 to-cyan-600 text-white p-4 sm:p-5 flex justify-between items-center">
+                <div><h3 class="text-lg font-black"><i class="fa-solid fa-compass mr-2"></i>¿Qué hacer ahora?</h3><p id="whatToDoNowSubtitle" class="text-[11px] text-sky-100">Opciones disponibles en este momento</p></div>
+                <button type="button" onclick="closeModal('whatToDoNowModal')" class="text-white text-xl w-9 h-9 rounded-full bg-white/15" aria-label="Cerrar recomendaciones"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 sm:p-6 overflow-y-auto">
+                <p class="text-sm text-gray-600 mb-4">Elige cuánto tiempo tienes y te mostraremos lugares abiertos para disfrutar de inmediato. No necesitas preparar una ruta completa.</p>
+                <div class="grid grid-cols-3 gap-2 mb-5" role="group" aria-label="Tiempo disponible">
+                    <button type="button" data-now-minutes="30" onclick="refreshWhatToDoNow(30)" class="now-time-btn border border-sky-300 rounded-xl py-3 text-xs font-black hover:bg-sky-50">30 minutos</button>
+                    <button type="button" data-now-minutes="60" onclick="refreshWhatToDoNow(60)" class="now-time-btn bg-sky-600 text-white border border-sky-600 rounded-xl py-3 text-xs font-black">1 hora</button>
+                    <button type="button" data-now-minutes="120" onclick="refreshWhatToDoNow(120)" class="now-time-btn border border-sky-300 rounded-xl py-3 text-xs font-black hover:bg-sky-50">2 horas</button>
+                </div>
+                <div id="whatToDoNowResults" class="space-y-3"></div>
+                <div id="whatToDoNowEmpty" class="hidden bg-amber-50 border border-amber-300 text-amber-800 rounded-xl p-4 text-sm"><b>No encontramos lugares abiertos con los horarios registrados.</b><br>Puedes explorar el mapa o comprobar nuevamente más tarde.</div>
+                <a href="#mapa" onclick="closeModal('whatToDoNowModal')" class="mt-5 border border-sky-600 text-sky-700 font-black rounded-xl py-3 px-4 text-sm flex items-center justify-center"><i class="fa-solid fa-map mr-2"></i>Ver todos en el mapa</a>
             </div>
         </div>
     </div>
@@ -5250,7 +5271,30 @@
             openModal('smartRouteModal');
         }
 
-        function openWhatToDoNow(){openSmartRoutePlanner();document.getElementById('smartRouteTime').value='60';document.getElementById('smartRouteBudget').value='short';document.getElementById('smartRouteOpenNow').checked=true;setMascotMessage('¡Vamos a descubrir qué puedes hacer ahora mismo en Loja!');}
+        function openWhatToDoNow(){openModal('whatToDoNowModal');refreshWhatToDoNow(60);setMascotMessage('¡Vamos a descubrir qué puedes hacer ahora mismo en Loja!');}
+
+        function refreshWhatToDoNow(minutes=60){
+            document.querySelectorAll('.now-time-btn').forEach(button=>{const active=Number(button.dataset.nowMinutes)===Number(minutes);button.className=`now-time-btn border rounded-xl py-3 text-xs font-black transition ${active?'bg-sky-600 text-white border-sky-600':'border-sky-300 text-brandDark hover:bg-sky-50'}`;});
+            const results=document.getElementById('whatToDoNowResults'),empty=document.getElementById('whatToDoNowEmpty'),subtitle=document.getElementById('whatToDoNowSubtitle');
+            if(!results||!empty)return;
+            const currentHour=new Intl.DateTimeFormat('es-EC',{timeZone:'America/Guayaquil',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+            if(subtitle)subtitle.textContent=`Opciones abiertas a las ${currentHour} en Loja`;
+            const limit=minutes<=30?2:minutes<=60?3:4;
+            let openLocations=locations.map((location,index)=>({location,index})).filter(item=>isLocOpenNow(item.location));
+            if(userCoords){openLocations.sort((a,b)=>calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(a.location.lat),Number(a.location.lng))-calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(b.location.lat),Number(b.location.lng)));}
+            const selected=[],usedCategories=new Set();
+            openLocations.forEach(item=>{if(selected.length>=limit)return;if(!usedCategories.has(item.location.category)){selected.push(item);usedCategories.add(item.location.category);}});
+            openLocations.forEach(item=>{if(selected.length<limit&&!selected.some(chosen=>chosen.index===item.index))selected.push(item);});
+            const recommendations=selected.slice(0,limit);empty.classList.toggle('hidden',recommendations.length>0);
+            if(!recommendations.length){results.innerHTML='';return;}
+            results.innerHTML=recommendations.map(({location,index})=>{
+                const title=escapeHTML(currentLang==='en'&&location.titleEn?location.titleEn:location.title),description=escapeHTML(currentLang==='en'&&location.dishEn?location.dishEn:(location.dish||location.tag||'Experiencia recomendada')),address=escapeHTML(location.address||'Loja, Ecuador'),icon=escapeHTML(location.iconClass||'fa-location-dot');
+                return `<article class="bg-white border border-sky-200 rounded-2xl p-4 shadow-sm"><div class="flex items-start gap-3"><span class="w-11 h-11 flex-shrink-0 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid ${icon}"></i></span><div class="min-w-0 flex-grow"><div class="flex items-center justify-between gap-2"><h4 class="font-black truncate">${title}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 rounded-full px-2 py-1 font-black flex-shrink-0"><i class="fa-solid fa-circle text-[6px] mr-1"></i>ABIERTO</span></div><p class="text-xs text-gray-600 mt-1">${description}</p><p class="text-[11px] text-gray-500 mt-1 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${address}</p></div></div><div class="grid grid-cols-2 gap-2 mt-3"><button type="button" onclick="selectNowRecommendation(${index})" class="bg-sky-600 text-white rounded-xl py-2.5 text-xs font-black"><i class="fa-solid fa-eye mr-1"></i>Ver detalle</button><button type="button" onclick="openNowDirections(${index})" class="border border-sky-500 text-sky-700 rounded-xl py-2.5 text-xs font-black"><i class="fa-solid fa-location-arrow mr-1"></i>Cómo llegar</button></div></article>`;
+            }).join('');
+        }
+
+        function selectNowRecommendation(index){closeModal('whatToDoNowModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
+        function openNowDirections(index){const location=locations[index];if(!location)return;const query=Number.isFinite(Number(location.lat))&&Number.isFinite(Number(location.lng))?`${location.lat},${location.lng}`:`${location.title||''} ${location.address||'Loja Ecuador'}`;window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,'_blank','noopener,noreferrer');}
 
         function generateSmartRoute(event) {
             event.preventDefault();
