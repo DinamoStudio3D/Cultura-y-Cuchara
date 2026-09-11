@@ -133,11 +133,18 @@ service cloud.firestore {
     }
 
     match /passportCompletions/{completionId} {
-      allow read, delete: if isViveLojaAdmin();
-      allow create: if request.resource.data.keys().hasOnly([
-          'campaignId', 'mode', 'sessionId', 'stampsCount',
+      allow read: if isViveLojaAdmin()
+        || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow delete: if isViveLojaAdmin();
+      allow create: if request.auth != null
+        && exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.profileComplete == true
+        && request.resource.data.keys().hasOnly([
+          'campaignId', 'mode', 'sessionId', 'userId', 'stampsCount',
           'claimCode', 'status', 'completedAt'
         ])
+        && request.resource.data.userId == request.auth.uid
+        && completionId == request.auth.uid + '_' + request.resource.data.campaignId + '_' + request.resource.data.mode
         && request.resource.data.campaignId is string
         && request.resource.data.campaignId.size() > 0
         && request.resource.data.campaignId.size() <= 60
