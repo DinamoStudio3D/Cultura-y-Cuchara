@@ -2170,10 +2170,13 @@
                     renderVisitorReady(user, currentVisitorProfile);
                 } else {
                     fillVisitorProfileForm(user, snapshot.exists ? snapshot.data() : {});
+                    openModal('accountModal');
                     showVisitorAccountView('visitorProfileForm');
                 }
             } catch (error) {
                 fillVisitorProfileForm(user);
+                openModal('accountModal');
+                showVisitorAccountView('visitorProfileFormFormForm');
                 showVisitorAccountView('visitorProfileForm');
                 setVisitorMessage('visitorProfileMessage', 'No pudimos consultar tu perfil. Verifica que las reglas de usuarios estén activadas en Firebase.', true);
             }
@@ -2191,6 +2194,7 @@
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await visitorAuth.signInWithPopup(provider);
                 await handleVisitorAuthState(result.user);
+                openModal('accountModal');
             } catch (error) {
                 const blocked = error?.code === 'auth/popup-blocked';
                 const domain = error?.code === 'auth/unauthorized-domain';
