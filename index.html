@@ -48,6 +48,7 @@
 
     <!-- SDKs de Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
@@ -199,6 +200,7 @@
                 </a>
                 <a href="#agenda" class="hover:text-brandGold transition-colors" data-i18n="menuAgenda">Agenda</a>
                 <a href="sumar-negocio.html" class="subscription-entry business-signup-entry bg-teal-500/15 text-teal-200 border border-teal-400/40 rounded-lg px-2.5 py-1.5 hover:bg-teal-500 hover:text-white transition-colors"><i class="fa-solid fa-store mr-1"></i>Sumar mi negocio</a>
+                <button id="accountNavButton" type="button" onclick="openAccountModal()" class="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-1.5 hover:border-brandGold hover:text-brandGold transition-colors flex items-center gap-2"><i class="fa-solid fa-circle-user"></i><span id="accountNavLabel">Ingresar</span></button>
                 
                 <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2 py-1 text-xs font-bold outline-none cursor-pointer hover:border-brandGold transition-colors">
                     <option value="es">🇪🇸 ES</option>
@@ -230,6 +232,7 @@
                 <a href="#pasaporte" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()"><i class="fa-solid fa-passport text-brandGold"></i> <span data-i18n="menuPassport">Pasaporte</span></a>
                 <a href="#agenda" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()"><i class="fa-solid fa-calendar-days text-brandGold"></i> <span data-i18n="menuAgenda">Agenda</span></a>
                 <a href="sumar-negocio.html" class="subscription-entry business-signup-entry bg-teal-500/15 p-2.5 rounded-xl border border-teal-400/50 text-teal-200 font-bold flex items-center gap-2"><i class="fa-solid fa-store"></i> Sumar mi negocio</a>
+                <button id="accountMobileButton" type="button" onclick="openAccountModal(); toggleMobileMenu()" class="bg-white/10 p-2.5 rounded-xl border border-white/20 text-white font-bold flex items-center gap-2"><i class="fa-solid fa-circle-user text-brandGold"></i><span id="accountMobileLabel">Ingresar o crear cuenta</span></button>
             </div>
             
             <div class="flex items-center justify-between py-2 border-t border-gray-800">
@@ -244,6 +247,39 @@
             </button>
         </div>
     </nav>
+
+    <div id="accountModal" class="fixed inset-0 z-[120] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4" aria-hidden="true">
+        <div class="bg-white text-brandDark w-full max-w-lg rounded-3xl shadow-2xl border border-brandGold/30 overflow-hidden max-h-[92vh] overflow-y-auto">
+            <div class="bg-brandDark text-white px-6 py-5 flex items-start justify-between gap-4">
+                <div><p class="text-brandGold text-[10px] font-black uppercase tracking-[.22em]">Tu cuenta Vive Loja</p><h2 class="text-2xl font-black mt-1">Personaliza tu experiencia</h2><p class="text-sm text-gray-300 mt-1">Identifícate para disfrutar tu pasaporte y los beneficios de Vive Loja.</p></div>
+                <button type="button" onclick="closeModal('accountModal')" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6">
+                <div id="accountSignedOut" class="text-center">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-orange-50 text-brandGold grid place-items-center text-2xl"><i class="fa-solid fa-user"></i></div>
+                    <h3 class="font-black text-xl mt-4">Ingresa con Google</h3>
+                    <p class="text-sm text-gray-600 mt-2">No necesitas crear ni recordar otra contraseña.</p>
+                    <button id="googleSignInButton" type="button" onclick="signInVisitorWithGoogle()" class="w-full mt-6 border-2 border-gray-200 hover:border-brandGold rounded-xl px-5 py-3.5 font-black flex items-center justify-center gap-3 transition"><span class="w-7 h-7 rounded-full bg-white shadow grid place-items-center text-sm font-black text-blue-600">G</span>Continuar con Google</button>
+                </div>
+                <form id="visitorProfileForm" class="hidden space-y-4" onsubmit="saveVisitorProfile(event)">
+                    <div class="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl p-3"><img id="visitorAvatar" class="w-12 h-12 rounded-full object-cover bg-white" alt="Foto de perfil"><div class="min-w-0"><p id="visitorWelcome" class="font-black truncate">Completa tu perfil</p><p id="visitorGoogleEmail" class="text-xs text-gray-600 truncate"></p></div></div>
+                    <label class="block"><span class="text-sm font-bold block mb-2">Nombre completo *</span><input id="visitorFullName" type="text" maxlength="100" autocomplete="name" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"></label>
+                    <label class="block"><span class="text-sm font-bold block mb-2">Correo electrónico</span><input id="visitorEmail" type="email" readonly class="w-full border border-gray-200 bg-gray-100 text-gray-600 rounded-xl px-4 py-3"></label>
+                    <label class="block"><span class="text-sm font-bold block mb-2">Número de WhatsApp *</span><div class="flex"><span class="bg-gray-100 border border-r-0 border-gray-300 rounded-l-xl px-3 py-3 text-sm font-bold">+593</span><input id="visitorWhatsapp" type="tel" inputmode="numeric" autocomplete="tel" maxlength="10" pattern="0?9[0-9]{8}" placeholder="0991234567" required class="w-full border border-gray-300 rounded-r-xl px-4 py-3 focus:border-brandGold outline-none"></div><span class="text-xs text-gray-500 mt-1 block">Ingresa un celular ecuatoriano de 10 dígitos.</span></label>
+                    <div class="grid sm:grid-cols-2 gap-4"><label class="block"><span class="text-sm font-bold block mb-2">Ciudad de residencia *</span><input id="visitorCity" type="text" maxlength="80" autocomplete="address-level2" value="Loja" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"></label><label class="block"><span class="text-sm font-bold block mb-2">Tipo de visitante *</span><select id="visitorType" required class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white focus:border-brandGold outline-none"><option value="lojano">Vivo en Loja</option><option value="turista">Visito Loja</option></select></label></div>
+                    <label class="flex items-start gap-3 text-sm text-gray-600 bg-gray-50 rounded-xl p-3"><input id="visitorConsent" type="checkbox" required class="mt-1 accent-orange-600"><span>Acepto que Vive Loja guarde estos datos para administrar mi cuenta, pasaporte y beneficios.</span></label>
+                    <p id="visitorProfileMessage" class="hidden text-sm rounded-xl p-3" role="alert"></p>
+                    <button id="saveVisitorProfileButton" type="submit" class="w-full bg-brandGold hover:bg-brandGoldHover text-white font-black rounded-xl px-5 py-3.5"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar y continuar</button>
+                </form>
+                <div id="accountReady" class="hidden text-center">
+                    <img id="accountReadyAvatar" class="w-20 h-20 mx-auto rounded-full object-cover border-4 border-orange-100" alt="Foto de perfil">
+                    <h3 id="accountReadyName" class="font-black text-2xl mt-4"></h3><p id="accountReadyEmail" class="text-sm text-gray-500 mt-1"></p>
+                    <div class="grid sm:grid-cols-3 gap-3 mt-5"><a href="#pasaporte" onclick="closeModal('accountModal')" class="bg-orange-50 text-brandGold font-black rounded-xl px-4 py-3"><i class="fa-solid fa-passport mr-2"></i>Pasaporte</a><button type="button" onclick="editVisitorProfile()" class="bg-gray-100 text-gray-700 font-black rounded-xl px-4 py-3"><i class="fa-solid fa-pen mr-2"></i>Editar</button><button type="button" onclick="signOutVisitor()" class="bg-gray-100 text-gray-700 font-black rounded-xl px-4 py-3"><i class="fa-solid fa-right-from-bracket mr-2"></i>Salir</button></div>
+                </div>
+                <p id="visitorAuthMessage" class="hidden text-sm rounded-xl p-3 mt-4" role="alert"></p>
+            </div>
+        </div>
+    </div>
 
     <main id="main-content">
     <!-- Promo Popup Modal -->
@@ -2062,6 +2098,158 @@
             if (typeof refreshAudioGuideLabels === 'function') refreshAudioGuideLabels();
         }
 
+        function setVisitorMessage(elementId, text, isError = false) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            element.textContent = text;
+            element.className = `text-sm rounded-xl p-3 ${isError ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`;
+        }
+
+        function showVisitorAccountView(view) {
+            ['accountSignedOut', 'visitorProfileForm', 'accountReady'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.classList.toggle('hidden', id !== view);
+            });
+            const authMessage = document.getElementById('visitorAuthMessage');
+            if (authMessage) authMessage.classList.add('hidden');
+        }
+
+        function openAccountModal() {
+            const modal = document.getElementById('accountModal');
+            if (!modal) return;
+            openModal('accountModal');
+            if (!visitorAuth || !visitorAuth.currentUser) showVisitorAccountView('accountSignedOut');
+        }
+
+        function updateVisitorAccountLabels(user, profile = null) {
+            const shortName = profile?.fullName?.trim().split(/\s+/)[0] || user?.displayName?.trim().split(/\s+/)[0] || 'Mi cuenta';
+            const desktop = document.getElementById('accountNavLabel');
+            const mobile = document.getElementById('accountMobileLabel');
+            if (desktop) desktop.textContent = user ? shortName : 'Ingresar';
+            if (mobile) mobile.textContent = user ? `Mi cuenta · ${shortName}` : 'Ingresar o crear cuenta';
+        }
+
+        function fillVisitorProfileForm(user, profile = {}) {
+            document.getElementById('visitorAvatar').src = user.photoURL || 'https://i.imgur.com/xaiFpa1.png';
+            document.getElementById('visitorWelcome').textContent = profile.fullName ? `Hola, ${profile.fullName}` : 'Completa tu perfil';
+            document.getElementById('visitorGoogleEmail').textContent = user.email || '';
+            document.getElementById('visitorFullName').value = profile.fullName || user.displayName || '';
+            document.getElementById('visitorEmail').value = user.email || '';
+            document.getElementById('visitorWhatsapp').value = profile.whatsappDisplay || '';
+            document.getElementById('visitorCity').value = profile.city || 'Loja';
+            document.getElementById('visitorType').value = profile.visitorType || 'lojano';
+            document.getElementById('visitorConsent').checked = Boolean(profile.consentAt);
+        }
+
+        function renderVisitorReady(user, profile) {
+            document.getElementById('accountReadyAvatar').src = user.photoURL || 'https://i.imgur.com/xaiFpa1.png';
+            document.getElementById('accountReadyName').textContent = profile.fullName || user.displayName || 'Explorador de Loja';
+            document.getElementById('accountReadyEmail').textContent = user.email || '';
+            showVisitorAccountView('accountReady');
+            updateVisitorAccountLabels(user, profile);
+        }
+
+        function editVisitorProfile() {
+            const user = visitorAuth?.currentUser;
+            if (!user) return;
+            fillVisitorProfileForm(user, currentVisitorProfile || {});
+            showVisitorAccountView('visitorProfileForm');
+        }
+
+        async function handleVisitorAuthState(user) {
+            currentVisitorProfile = null;
+            updateVisitorAccountLabels(user);
+            if (!user || !db) {
+                showVisitorAccountView('accountSignedOut');
+                return;
+            }
+            try {
+                const snapshot = await db.collection('userProfiles').doc(user.uid).get();
+                if (snapshot.exists && snapshot.data().profileComplete === true) {
+                    currentVisitorProfile = snapshot.data();
+                    renderVisitorReady(user, currentVisitorProfile);
+                } else {
+                    fillVisitorProfileForm(user, snapshot.exists ? snapshot.data() : {});
+                    showVisitorAccountView('visitorProfileForm');
+                }
+            } catch (error) {
+                fillVisitorProfileForm(user);
+                showVisitorAccountView('visitorProfileForm');
+                setVisitorMessage('visitorProfileMessage', 'No pudimos consultar tu perfil. Verifica que las reglas de usuarios estén activadas en Firebase.', true);
+            }
+        }
+
+        async function signInVisitorWithGoogle() {
+            if (!visitorAuth) {
+                setVisitorMessage('visitorAuthMessage', 'El acceso todavía no está disponible. Inténtalo nuevamente.', true);
+                return;
+            }
+            const button = document.getElementById('googleSignInButton');
+            button.disabled = true;
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                const result = await visitorAuth.signInWithPopup(provider);
+                await handleVisitorAuthState(result.user);
+            } catch (error) {
+                const blocked = error?.code === 'auth/popup-blocked';
+                const domain = error?.code === 'auth/unauthorized-domain';
+                setVisitorMessage('visitorAuthMessage', domain ? 'Debes autorizar este dominio en Firebase Authentication para activar el ingreso con Google.' : blocked ? 'El navegador bloqueó la ventana de Google. Permite ventanas emergentes e inténtalo nuevamente.' : 'No se pudo iniciar sesión con Google. Inténtalo nuevamente.', true);
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function saveVisitorProfile(event) {
+            event.preventDefault();
+            const user = visitorAuth?.currentUser;
+            if (!user || !db) return;
+            const rawWhatsapp = document.getElementById('visitorWhatsapp').value.replace(/\D/g, '');
+            const nationalWhatsapp = rawWhatsapp.startsWith('0') ? rawWhatsapp : `0${rawWhatsapp}`;
+            if (!/^09\d{8}$/.test(nationalWhatsapp)) {
+                setVisitorMessage('visitorProfileMessage', 'Ingresa un número celular ecuatoriano válido, por ejemplo 0991234567.', true);
+                return;
+            }
+            const button = document.getElementById('saveVisitorProfileButton');
+            button.disabled = true;
+            try {
+                const profileRef = db.collection('userProfiles').doc(user.uid);
+                const existing = await profileRef.get();
+                const data = {
+                    uid: user.uid,
+                    fullName: document.getElementById('visitorFullName').value.trim(),
+                    email: user.email || '',
+                    whatsapp: `+593${nationalWhatsapp.slice(1)}`,
+                    whatsappDisplay: nationalWhatsapp,
+                    city: document.getElementById('visitorCity').value.trim(),
+                    visitorType: document.getElementById('visitorType').value,
+                    photoURL: user.photoURL || '',
+                    profileComplete: true,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                if (!existing.exists) {
+                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    data.consentAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+                await profileRef.set(data, { merge: true });
+                currentVisitorProfile = { ...(existing.exists ? existing.data() : {}), ...data, consentAt: existing.data()?.consentAt || true };
+                renderVisitorReady(user, currentVisitorProfile);
+                showToast('¡Tu cuenta Vive Loja está lista!');
+            } catch (error) {
+                setVisitorMessage('visitorProfileMessage', 'No se pudo guardar tu perfil. Revisa la configuración de usuarios en Firebase e inténtalo nuevamente.', true);
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function signOutVisitor() {
+            if (!visitorAuth) return;
+            await visitorAuth.signOut();
+            currentVisitorProfile = null;
+            updateVisitorAccountLabels(null);
+            showVisitorAccountView('accountSignedOut');
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
             authDomain: "cultura-y-cuchara.firebaseapp.com",
@@ -2073,9 +2261,13 @@
         };
 
         let db = null;
+        let visitorAuth = null;
+        let currentVisitorProfile = null;
         try {
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
+            visitorAuth = firebase.auth();
+            visitorAuth.onAuthStateChanged(handleVisitorAuthState);
 
             const editableQrId = new URLSearchParams(window.location.search).get('qr');
             if (editableQrId) {
