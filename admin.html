@@ -52,6 +52,7 @@
             <div class="grid lg:grid-cols-[240px_1fr] gap-6">
                 <aside class="panel rounded-2xl p-3 h-fit">
                     <button id="dashboardNavBtn" type="button" onclick="showAdminModule('dashboard')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-chart-pie w-6"></i>Resumen y respaldo</button>
+                    <button id="usersNavBtn" type="button" onclick="showAdminModule('users')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-users w-6"></i>Usuarios registrados <span id="usersNavCount" class="hidden float-right bg-violet-500 text-white text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
                     <button id="controlNavBtn" type="button" onclick="showAdminModule('control')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-list-check w-6"></i>Control de paradas <span id="controlNavCount" class="hidden float-right bg-amber-500 text-black text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
                     <button id="analyticsNavBtn" type="button" onclick="showAdminModule('analytics')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-chart-line w-6"></i>Estadísticas y reportes</button>
                     <button id="qrNavBtn" type="button" onclick="showAdminModule('qr')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-qrcode w-6"></i>Centro de QR</button>
@@ -69,6 +70,14 @@
                     <button id="timeNavBtn" type="button" onclick="showAdminModule('time')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-clock-rotate-left w-6"></i>Loja en el Tiempo</button>
                     <button id="entrepreneursNavBtn" type="button" onclick="showAdminModule('entrepreneurs')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3 mt-2"><i class="fa-solid fa-store w-6"></i>Emprendedores</button>
                 </aside>
+
+                <section id="usersModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6"><div><p class="text-violet-400 text-xs font-bold uppercase tracking-widest">Comunidad Vive Loja</p><h2 class="text-2xl font-black mt-1">Usuarios registrados</h2><p class="text-sm text-gray-400 mt-1">Consulta los datos entregados por las personas que crearon su cuenta.</p></div><button type="button" onclick="downloadRegisteredUsersCsv()" class="border border-violet-400/40 text-violet-200 hover:bg-violet-500/10 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-file-arrow-down mr-2"></i>Descargar CSV</button></div>
+                    <div class="grid grid-cols-3 gap-3 mb-5"><div class="bg-violet-500/10 border border-violet-500/25 rounded-2xl p-4"><i class="fa-solid fa-users text-violet-300"></i><strong id="usersStatTotal" class="block text-3xl mt-2">0</strong><span class="text-xs text-gray-400">Total</span></div><div class="bg-orange-500/10 border border-orange-500/25 rounded-2xl p-4"><i class="fa-solid fa-house-user text-orange-300"></i><strong id="usersStatLocal" class="block text-3xl mt-2">0</strong><span class="text-xs text-gray-400">Lojanos</span></div><div class="bg-cyan-500/10 border border-cyan-500/25 rounded-2xl p-4"><i class="fa-solid fa-suitcase-rolling text-cyan-300"></i><strong id="usersStatTourist" class="block text-3xl mt-2">0</strong><span class="text-xs text-gray-400">Turistas</span></div></div>
+                    <label class="block mb-5"><span class="text-sm font-semibold block mb-2">Buscar usuario</span><div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i><input id="usersSearch" class="field pl-11" placeholder="Nombre, correo, WhatsApp o ciudad" oninput="renderRegisteredUsers()"></div></label>
+                    <div id="usersList" class="space-y-3"><p class="text-sm text-gray-500">Cargando usuarios...</p></div>
+                    <p id="usersMessage" class="hidden text-sm rounded-xl p-3 mt-4" role="alert"></p>
+                </section>
 
                 <section id="dashboardModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6"><div><p class="text-indigo-400 text-xs font-bold uppercase tracking-widest">Control general</p><h2 class="text-2xl font-black mt-1">Resumen y respaldo</h2><p class="text-sm text-gray-400 mt-1">Comprueba el contenido publicado y descarga una copia de seguridad.</p></div><button id="dashboardRefreshBtn" type="button" onclick="loadDashboardSummary()" class="border border-indigo-400/40 text-indigo-200 hover:bg-indigo-500/15 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-rotate mr-1"></i>Actualizar</button></div>
@@ -426,6 +435,7 @@ const passportCompletionsRef = db.collection('passportCompletions');
 const passportPinsRef = db.collection('passportPins');
 const businessApplicationsRef = db.collection('businessApplications');
 const businessApplicationStatusRef = db.collection('businessApplicationStatus');
+const userProfilesRef = db.collection('userProfiles');
 let currentData = {};
 let festivalDraftEvents = [];
 let adminPlaces = [];
@@ -441,6 +451,7 @@ let adminBusinessEvents=[];let businessEventsUnsubscribe=null;
 let adminPassportCompletions=[];let passportCompletionsUnsubscribe=null;
 let adminPassportPins={};let passportPinsUnsubscribe=null;let legacyPinMigrationRunning=false;
 let adminBusinessApplications=[];let businessApplicationsUnsubscribe=null;
+let adminUserProfiles=[];let userProfilesUnsubscribe=null;
 let subscriptionDraftPlans=[];let subscriptionDraftFaq=[];
 const DEFAULT_GENERAL_EVENTS = [{ id: 'ev_1', title: 'Feria de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '2026-09-20', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo profesional en vivo.', descEn: 'Open tastings for the public and barista shows.', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', lat: -3.9910, lng: -79.2030 }];
 const DEFAULT_CHABAQUITO = { active: true, animated: true, imageUrl: 'mascota-vive-loja.png', messages: { inicio: '¡Hola! Soy tu guía de Vive Loja. ¿Empezamos la ruta?', mapa: 'Toca los puntos del mapa y descubre nuevos sabores y destinos.', establecimientos: 'Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.', fiavl: '¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!', postales: 'Crea una postal de tu visita y compártela con tus amigos.', pasaporte: 'Completa tu pasaporte y guarda cada parada de tu aventura.', misiones: '¡Acepta mis cinco misiones y conviértete en Explorador de Loja!', podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.' }, certificate: { active:true, title:'Explorador de Loja', text:'Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.', signature:'Vive Loja' }, benefit:{active:false,title:'Beneficio de Explorador',description:'Presenta tu pasaporte completado para conocer el beneficio disponible.',code:'EXPLORADOR',validity:'',buttonText:'Solicitar beneficio',url:''} };
@@ -491,8 +502,9 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
 document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
 function showAdminModule(moduleName) {
-    ['dashboard','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'chabaquito', 'passport', 'subscriptions', 'settings', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['dashboard','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'chabaquito', 'passport', 'subscriptions', 'settings', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('usersNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'users' ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('controlNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'control' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('analyticsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'analytics' ? 'bg-sky-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('qrNavBtn').className=`w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName==='qr'?'bg-teal-500 text-black':'text-gray-300 hover:bg-white/5'}`;
@@ -514,7 +526,13 @@ function showAdminModule(moduleName) {
     if(moduleName==='analytics')renderAnalyticsDashboard();
     if(moduleName==='passport')refreshPassportStats();
     if(moduleName==='applications')renderBusinessApplications();
+    if(moduleName==='users')renderRegisteredUsers();
 }
+
+function userProfileDate(value){if(!value)return null;if(value?.toDate)return value.toDate();const date=new Date(value);return Number.isNaN(date.getTime())?null:date;}
+function registeredUserTypeLabel(value){return value==='turista'?'Turista':'Lojano/a';}
+function renderRegisteredUsers(){const list=document.getElementById('usersList');if(!list)return;const term=(document.getElementById('usersSearch')?.value||'').trim().toLowerCase(),filtered=adminUserProfiles.filter(user=>[user.fullName,user.email,user.whatsappDisplay,user.whatsapp,user.city,registeredUserTypeLabel(user.visitorType)].some(value=>String(value||'').toLowerCase().includes(term)));document.getElementById('usersStatTotal').textContent=adminUserProfiles.length;document.getElementById('usersStatLocal').textContent=adminUserProfiles.filter(user=>user.visitorType==='lojano').length;document.getElementById('usersStatTourist').textContent=adminUserProfiles.filter(user=>user.visitorType==='turista').length;const nav=document.getElementById('usersNavCount');nav.textContent=adminUserProfiles.length;nav.classList.toggle('hidden',!adminUserProfiles.length);nav.classList.toggle('inline-flex',!!adminUserProfiles.length);if(!filtered.length){list.innerHTML=`<div class="border border-dashed border-gray-700 rounded-2xl p-8 text-center"><i class="fa-solid fa-users text-3xl text-gray-600"></i><p class="text-sm text-gray-400 mt-3">${adminUserProfiles.length?'No encontramos usuarios con esa búsqueda.':'Todavía no hay usuarios registrados.'}</p></div>`;return;}list.innerHTML=filtered.map(user=>{const date=userProfileDate(user.createdAt),digits=String(user.whatsapp||user.whatsappDisplay||'').replace(/\D/g,''),type=user.visitorType==='turista'?{label:'Turista',tone:'bg-cyan-500/15 text-cyan-200'}:{label:'Lojano/a',tone:'bg-orange-500/15 text-orange-200'};return `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><h3 class="font-black text-lg">${escapeAdminHtml(user.fullName||'Usuario sin nombre')}</h3><span class="text-[10px] font-black uppercase rounded-full px-2.5 py-1 ${type.tone}">${type.label}</span></div><p class="text-sm text-gray-400 mt-1"><i class="fa-solid fa-location-dot w-5 text-violet-300"></i>${escapeAdminHtml(user.city||'Ciudad no indicada')}</p><p class="text-xs text-gray-500 mt-1">Registro: ${date?date.toLocaleString('es-EC'):'Fecha no disponible'}</p></div><div class="grid sm:grid-cols-2 gap-2 lg:min-w-[430px]"><a href="mailto:${encodeURIComponent(user.email||'')}" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-3 py-2.5 text-sm truncate"><i class="fa-solid fa-envelope text-violet-300 mr-2"></i>${escapeAdminHtml(user.email||'Sin correo')}</a><a href="${digits?`https://wa.me/${digits}`:'#'}" target="_blank" rel="noopener noreferrer" class="bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl px-3 py-2.5 text-sm truncate"><i class="fa-brands fa-whatsapp text-emerald-300 mr-2"></i>${escapeAdminHtml(user.whatsappDisplay||user.whatsapp||'Sin WhatsApp')}</a></div></div></article>`;}).join('');}
+function downloadRegisteredUsersCsv(){if(!adminUserProfiles.length){message(document.getElementById('usersMessage'),'Todavía no hay usuarios registrados.');return;}const rows=[['Nombre','Correo','WhatsApp','Ciudad','Tipo','Fecha de registro'],...adminUserProfiles.map(user=>{const date=userProfileDate(user.createdAt);return[user.fullName||'',user.email||'',user.whatsappDisplay||user.whatsapp||'',user.city||'',registeredUserTypeLabel(user.visitorType),date?date.toLocaleString('es-EC'):''];})],csv='\ufeff'+rows.map(row=>row.map(value=>`"${String(value??'').replace(/"/g,'""')}"`).join(',')).join('\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`usuarios-vive-loja-${new Date().toISOString().slice(0,10)}.csv`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message(document.getElementById('usersMessage'),'Listado descargado correctamente.',true);}
 
 function controlEncodedId(value){return encodeURIComponent(String(value||'')).replace(/'/g,'%27');}
 function controlAction(type,encodedId){const id=decodeURIComponent(encodedId||'');if(type==='edit')editAdminPlace(id);else if(type==='qr')prepareStopQr(id);else if(type==='applications')showAdminModule('applications');}
@@ -897,6 +915,7 @@ auth.onAuthStateChanged(async user => {
         if (passportCompletionsUnsubscribe) passportCompletionsUnsubscribe();
         if (passportPinsUnsubscribe) passportPinsUnsubscribe();
         if (businessApplicationsUnsubscribe) businessApplicationsUnsubscribe();
+        if (userProfilesUnsubscribe) userProfilesUnsubscribe();
         placesUnsubscribe = null;
         timeUnsubscribe = null;
         qrUnsubscribe = null;
@@ -904,6 +923,8 @@ auth.onAuthStateChanged(async user => {
         passportCompletionsUnsubscribe = null;
         passportPinsUnsubscribe = null;
         businessApplicationsUnsubscribe = null;
+        userProfilesUnsubscribe = null;
+        adminUserProfiles = [];
         return;
     }
     if ((user.email || '').toLowerCase() !== ADMIN_EMAIL) {
@@ -961,6 +982,7 @@ auth.onAuthStateChanged(async user => {
         if(passportCompletionsUnsubscribe)passportCompletionsUnsubscribe();passportCompletionsUnsubscribe=passportCompletionsRef.orderBy('completedAt','desc').limit(5000).onSnapshot(snapshot=>{adminPassportCompletions=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));refreshPassportStats();renderAnalyticsDashboard();},()=>{adminPassportCompletions=[];refreshPassportStats();renderAnalyticsDashboard();});
         if(passportPinsUnsubscribe)passportPinsUnsubscribe();passportPinsUnsubscribe=passportPinsRef.onSnapshot(snapshot=>{adminPassportPins={};snapshot.docs.forEach(doc=>{adminPassportPins[doc.id]=doc.data().pin||'';});renderControlCenter();},()=>{adminPassportPins={};renderControlCenter();});
         if(businessApplicationsUnsubscribe)businessApplicationsUnsubscribe();businessApplicationsUnsubscribe=businessApplicationsRef.orderBy('submittedAt','desc').limit(500).onSnapshot(snapshot=>{adminBusinessApplications=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderBusinessApplications();renderControlCenter();},()=>{adminBusinessApplications=[];renderBusinessApplications();renderControlCenter();message(document.getElementById('applicationsMessage'),'No fue posible cargar las solicitudes. Publica las reglas actualizadas de Firestore.');});
+        if(userProfilesUnsubscribe)userProfilesUnsubscribe();userProfilesUnsubscribe=userProfilesRef.onSnapshot(snapshot=>{adminUserProfiles=snapshot.docs.map(doc=>({id:doc.id,...doc.data()})).sort((a,b)=>(userProfileDate(b.createdAt)?.getTime()||0)-(userProfileDate(a.createdAt)?.getTime()||0));renderRegisteredUsers();},()=>{adminUserProfiles=[];renderRegisteredUsers();message(document.getElementById('usersMessage'),'No fue posible cargar los usuarios registrados. Revisa las reglas de Firestore.');});
     } catch (error) {
         message(document.getElementById('formMessage'), 'Tu cuenta inició sesión, pero todavía no tiene permisos para leer el contenido. Deben configurarse las reglas de Firebase.');
     }
