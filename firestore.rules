@@ -1,0 +1,161 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isViveLojaAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'sukogames1996@gmail.com';
+    }
+
+    function isProfileOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validUserProfile(userId) {
+      return request.resource.data.keys().hasOnly([
+          'uid', 'fullName', 'email', 'whatsapp', 'whatsappDisplay',
+          'city', 'visitorType', 'photoURL', 'profileComplete',
+          'createdAt', 'updatedAt', 'consentAt'
+        ])
+        && request.resource.data.uid == userId
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.size() >= 2
+        && request.resource.data.fullName.size() <= 100
+        && request.resource.data.whatsapp is string
+        && request.resource.data.whatsapp.matches('^\\+5939[0-9]{8}$')
+        && request.resource.data.whatsappDisplay is string
+        && request.resource.data.whatsappDisplay.matches('^09[0-9]{8}$')
+        && request.resource.data.city is string
+        && request.resource.data.city.size() >= 2
+        && request.resource.data.city.size() <= 80
+        && request.resource.data.visitorType in ['turista', 'lojano']
+        && request.resource.data.photoURL is string
+        && request.resource.data.photoURL.size() <= 1000
+        && request.resource.data.profileComplete == true;
+    }
+
+    match /userProfiles/{userId} {
+      allow read: if isProfileOwner(userId) || isViveLojaAdmin();
+      allow create: if isProfileOwner(userId)
+        && validUserProfile(userId)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.consentAt == request.time;
+      allow update: if isViveLojaAdmin() || (
+        isProfileOwner(userId)
+        && validUserProfile(userId)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.consentAt == resource.data.consentAt
+        && request.resource.data.updatedAt == request.time
+      );
+      allow delete: if isProfileOwner(userId) || isViveLojaAdmin();
+    }
+
+    function passportPinExists(placeId) {
+      return exists(/databases/$(database)/documents/passportPins/$(placeId));
+    }
+
+    function passportPinMatches(placeId, submittedPin) {
+      return get(/databases/$(database)/documents/passportPins/$(placeId)).data.pin == submittedPin;
+    }
+
+    function isStampPlace(placeId) {
+      return get(/databases/$(database)/documents/locales/$(placeId)).data.category
+        in ['hotel', 'hueca', 'cafe', 'urbana'];
+    }
+
+    match /siteContent/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /locales/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /passportPins/{placeId} {
+      allow read, create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /stampClaims/{claimId} {
+      allow read, delete: if isViveLojaAdmin();
+      allow create: if request.resource.data.keys().hasOnly([
+          'placeId', 'sessionId', 'pin', 'createdAt'
+        ])
+        && request.resource.data.placeId is string
+        && request.resource.data.placeId.size() > 0
+        && request.resource.data.placeId.size() <= 160
+        && request.resource.data.sessionId is string
+        && request.resource.data.sessionId.size() > 0
+        && request.resource.data.sessionId.size() <= 100
+        && request.resource.data.pin is string
+        && request.resource.data.pin.size() >= 4
+        && request.resource.data.pin.size() <= 6
+        && request.resource.data.createdAt == request.time
+        && passportPinExists(request.resource.data.placeId)
+        && passportPinMatches(request.resource.data.placeId, request.resource.data.pin)
+        && isStampPlace(request.resource.data.placeId);
+      allow update: if false;
+    }
+
+    match /settings/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /loja_tiempo/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /qrCodes/{documentId} {
+      allow read: if true;
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /businessEvents/{eventId} {
+      allow read, delete: if isViveLojaAdmin();
+      allow create: if request.resource.data.keys().hasOnly([
+          'placeId', 'type', 'sessionId', 'createdAt'
+        ])
+        && request.resource.data.placeId is string
+        && request.resource.data.placeId.size() > 0
+        && request.resource.data.placeId.size() <= 160
+        && request.resource.data.type in ['view', 'directions', 'favorite', 'stamp', 'promo']
+        && request.resource.data.sessionId is string
+        && request.resource.data.sessionId.size() > 0
+        && request.resource.data.sessionId.size() <= 100
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+    }
+
+    match /passportCompletions/{completionId} {
+      allow read, delete: if isViveLojaAdmin();
+      allow create: if request.resource.data.keys().hasOnly([
+          'campaignId', 'mode', 'sessionId', 'stampsCount',
+          'claimCode', 'status', 'completedAt'
+        ])
+        && request.resource.data.campaignId is string
+        && request.resource.data.campaignId.size() > 0
+        && request.resource.data.campaignId.size() <= 60
+        && request.resource.data.mode in ['turista', 'lojano']
+        && request.resource.data.sessionId is string
+        && request.resource.data.sessionId.size() > 0
+        && request.resource.data.sessionId.size() <= 100
+        && request.resource.data.stampsCount == 6
+        && request.resource.data.claimCode is string
+        && request.resource.data.claimCode.size() >= 6
+        && request.resource.data.claimCode.size() <= 20
+        && request.resource.data.status == 'pending'
+        && request.resource.data.completedAt == request.time;
+      allow update: if isViveLojaAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
