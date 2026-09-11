@@ -1803,6 +1803,24 @@
         </div>
     </div>
 
+    <!-- Invitación flotante de cuenta -->
+    <aside id="accountFloatingInvite" class="hidden fixed bottom-20 sm:bottom-6 left-1/2 sm:left-auto sm:right-5 -translate-x-1/2 sm:translate-x-0 z-[90] w-[calc(100%-2rem)] max-w-sm overflow-hidden rounded-2xl border border-amber-300/60 bg-brandDark text-white shadow-2xl" role="dialog" aria-label="Guardar mi aventura en Vive Loja">
+        <div class="h-1.5 bg-gradient-to-r from-orange-500 via-amber-400 to-teal-400"></div>
+        <button type="button" onclick="dismissAccountFloatingInvite()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white" aria-label="Cerrar invitación"><i class="fa-solid fa-xmark"></i></button>
+        <div class="p-5 pr-12">
+            <div class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-400 text-white grid place-items-center text-xl shadow-lg"><i class="fa-solid fa-passport"></i></span>
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-[.2em] text-teal-300">Vive Loja contigo</p>
+                    <h3 class="font-black text-xl leading-tight mt-1">Guarda tu aventura</h3>
+                    <p class="text-xs text-gray-300 mt-2 leading-relaxed">Crea tu cuenta gratuita, conserva tu pasaporte y reclama tus premios en Vive Loja.</p>
+                </div>
+            </div>
+            <button id="accountFloatingInviteButton" type="button" onclick="openAccountFromFloatingInvite()" class="w-full mt-4 rounded-xl bg-gradient-to-r from-orange-500 via-amber-400 to-teal-400 hover:brightness-110 text-brandDark font-black px-4 py-3 text-sm transition"><i class="fa-solid fa-cloud-arrow-up mr-2"></i>Guardar mi progreso</button>
+            <p class="text-[10px] text-center text-gray-400 mt-2">Puedes seguir explorando sin registrarte.</p>
+        </div>
+    </aside>
+
     <!-- Toast Notification -->
     <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
@@ -5337,6 +5355,7 @@
         });
 
         setTimeout(forceRemoveSplash, 1500);
+        setTimeout(showAccountFloatingInvite, 9000);
 
         function searchItems() {
             let input = document.getElementById('searchInput').value.toLowerCase();
@@ -5380,6 +5399,31 @@
                     item.classList.add('hidden-item'); 
                 }
             });
+        }
+
+        function showAccountFloatingInvite() {
+            const invite = document.getElementById('accountFloatingInvite');
+            if (!invite || sessionStorage.getItem('cyc_account_invite_dismissed') === '1') return;
+            const button = document.getElementById('accountFloatingInviteButton');
+            if (visitorAuth?.currentUser && currentVisitorProfile?.profileComplete) {
+                button.innerHTML = '<i class="fa-solid fa-passport mr-2"></i>Ver mi pasaporte';
+            }
+            invite.classList.remove('hidden');
+        }
+
+        function dismissAccountFloatingInvite() {
+            document.getElementById('accountFloatingInvite')?.classList.add('hidden');
+            sessionStorage.setItem('cyc_account_invite_dismissed', '1');
+        }
+
+        function openAccountFromFloatingInvite() {
+            dismissAccountFloatingInvite();
+            if (visitorAuth?.currentUser && currentVisitorProfile?.profileComplete) {
+                document.getElementById('pasaporte')?.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => openModal('pasaporteModal'), 450);
+                return;
+            }
+            openAccountModal();
         }
 
         function showToast(message) {
