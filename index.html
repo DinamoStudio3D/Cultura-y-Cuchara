@@ -2645,10 +2645,15 @@
             { id: 'hueca', name: 'Huecas', nameEn: 'Local Eateries', icon: '🥘' },
             { id: 'cafe', name: 'Cafeterías', nameEn: 'Coffee Shops', icon: '☕' },
             { id: 'urbana', name: 'Urbana', nameEn: 'Urban', icon: '🍔' },
-            { id: 'turismo', name: 'Atractivos', nameEn: 'Attractions', icon: '📍' }
+            { id: 'turismo', name: 'Atractivos', nameEn: 'Attractions', icon: '📍' },
+            { id: 'aliado', name: 'Marcas aliadas', nameEn: 'Partner Brands', icon: '🤝' }
         ];
 
         let categories = safeReadJSON('cyc_dynamic_cats', defaultCategories);
+        if (!categories.some(category => category.id === 'aliado')) {
+            categories.push({ id: 'aliado', name: 'Marcas aliadas', nameEn: 'Partner Brands', icon: '🤝' });
+            localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
+        }
         let locations = [
             {
                 id: "dinamo_studio",
@@ -5388,7 +5393,14 @@
 
             document.getElementById('previewTitle').innerText = titleText || '';
             document.getElementById('previewDesc').innerText = descText || '';
-            document.getElementById('previewDish').innerText = (loc.category === 'hotel' ? (currentLang === 'en' ? "Benefit: " : "Beneficio: ") : (currentLang === 'en' ? "Dish: " : "Plato: ")) + (dishText || '');
+            const detailPrefix = loc.category === 'hotel'
+                ? (currentLang === 'en' ? 'Benefit: ' : 'Beneficio: ')
+                : loc.category === 'aliado'
+                    ? (currentLang === 'en' ? 'Contribution: ' : 'Aporte al proyecto: ')
+                    : loc.category === 'turismo'
+                        ? (currentLang === 'en' ? 'Experience: ' : 'Experiencia: ')
+                        : (currentLang === 'en' ? 'Dish: ' : 'Plato: ');
+            document.getElementById('previewDish').innerText = detailPrefix + (dishText || '');
             document.getElementById('previewHours').innerText = loc.hours || "Lun - Dom: 08:00 - 20:00";
             document.getElementById('previewAddress').innerText = loc.address;
             
