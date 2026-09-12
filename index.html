@@ -2567,7 +2567,7 @@
             const next = saved.includes(eventId) ? saved.filter(id => id !== eventId) : [...saved, eventId];
             localStorage.setItem(key, JSON.stringify(next));
             renderFestivalAgenda();
-            showToast(next.includes(eventId) ? 'Actividad guardada en tu agenda' : 'Actividad retirada de tu agenda');
+            showToast(next.includes(eventId)?(currentLang==='en'?'Activity saved to your agenda':'Actividad guardada en tu agenda'):(currentLang==='en'?'Activity removed from your agenda':'Actividad retirada de tu agenda'));
         }
 
         function festivalMarkerStyle(category) {
@@ -3917,7 +3917,7 @@
                 : [...saved, String(eventId)];
             localStorage.setItem('cyc_saved_agenda_events', JSON.stringify(next));
             renderAgendaUI();
-            showToast(next.includes(String(eventId)) ? 'Evento guardado en tu agenda' : 'Evento retirado de tu agenda');
+            showToast(next.includes(String(eventId))?(currentLang==='en'?'Event saved to your agenda':'Evento guardado en tu agenda'):(currentLang==='en'?'Event removed from your agenda':'Evento retirado de tu agenda'));
         }
 
         function escapeCalendarText(value) {
@@ -3930,10 +3930,10 @@
 
         function downloadAgendaEventCalendar(eventId) {
             const eventIndex = eventsList.findIndex((ev, index) => agendaEventKey(ev, index) === String(eventId));
-            if (eventIndex < 0) return showToast('No se pudo encontrar el evento');
+            if (eventIndex < 0) return showToast(currentLang==='en'?'We could not find this event':'No se pudo encontrar el evento');
             const ev = eventsList[eventIndex];
             const cleanDate = String(ev.date || '').replace(/-/g, '');
-            if (!/^\d{8}$/.test(cleanDate)) return showToast('Este evento todavía no tiene una fecha válida');
+            if (!/^\d{8}$/.test(cleanDate)) return showToast(currentLang==='en'?'This event does not have a valid date yet':'Este evento todavía no tiene una fecha válida');
             const title = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
             const desc = (currentLang === 'en' && ev.descEn) ? ev.descEn : ev.desc;
             const startDate = new Date(String(ev.date) + 'T12:00:00');
@@ -3969,7 +3969,7 @@
             link.click();
             link.remove();
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-            showToast('Evento listo para añadir a tu calendario');
+            showToast(currentLang==='en'?'Event ready to add to your calendar':'Evento listo para añadir a tu calendario');
         }
 
         function renderAgendaUI() {
@@ -4050,7 +4050,7 @@
 
         function buildEventDayPlan(eventId) {
             const eventIndex=eventsList.findIndex((ev,index)=>agendaEventKey(ev,index)===String(eventId));
-            if(eventIndex<0)return showToast('No se pudo encontrar el evento');
+            if(eventIndex<0)return showToast(currentLang==='en'?'We could not find this event':'No se pudo encontrar el evento');
             const ev=eventsList[eventIndex];
             const origin={lat:Number(ev.lat)||-3.9931,lng:Number(ev.lng)||-79.2042};
             const eligible=locations.filter(location=>location.category!=='aliado'&&Number.isFinite(Number(location.lat))&&Number.isFinite(Number(location.lng))&&![location.category,location.tag,location.title,location.type].join(' ').toLowerCase().includes('motel'));
@@ -4063,7 +4063,7 @@
             if(selected.length<3){
                 eligible.filter(location=>!selected.some(item=>item.id===location.id)).sort((a,b)=>calcularDistanciaKm(origin.lat,origin.lng,Number(a.lat),Number(a.lng))-calcularDistanciaKm(origin.lat,origin.lng,Number(b.lat),Number(b.lng))).slice(0,3-selected.length).forEach(location=>selected.push(location));
             }
-            if(!selected.length)return showToast('Todavía no hay lugares cercanos suficientes para crear este plan');
+            if(!selected.length)return showToast(currentLang==='en'?'There are not enough nearby places to create this plan yet':'Todavía no hay lugares cercanos suficientes para crear este plan');
             currentSmartRoute=selected.map(location=>{const distance=calcularDistanciaKm(origin.lat,origin.lng,Number(location.lat),Number(location.lng));return {...location,routeDistance:distance,travelMinutes:Math.max(3,Math.round(distance/18*60)),visitMinutes:eventPlanCategory(location)==='stay'?20:40};});
             openSmartRoutePlanner();
             const dateInput=document.getElementById('smartRouteDate');if(dateInput&&ev.date)dateInput.value=ev.date;
@@ -4074,8 +4074,8 @@
             const totalDistance=currentSmartRoute.reduce((sum,stop)=>sum+stop.routeDistance,0),totalMinutes=currentSmartRoute.reduce((sum,stop)=>sum+stop.travelMinutes+stop.visitMinutes,0);
             renderSmartRoute(totalDistance,totalMinutes,'drive');drawSmartRouteOnMap(origin);if(results)results.classList.remove('hidden');
             const summary=document.getElementById('smartRouteSummary');if(summary)summary.textContent=`${currentSmartRoute.length} recomendaciones cerca del evento · ${totalDistance<1?Math.round(totalDistance*1000)+' m':totalDistance.toFixed(1)+' km'}`;
-            setMascotMessage('¡Plan listo! Combiné tu evento con sabores, café y hospedaje cercanos.');
-            showToast('✨ Tu día en Loja está listo');
+            setMascotMessage(currentLang==='en'?'Your plan is ready! I combined your event with nearby food, coffee and accommodation.':'¡Plan listo! Combiné tu evento con sabores, café y hospedaje cercanos.');
+            showToast(currentLang==='en'?'✨ Your day in Loja is ready':'✨ Tu día en Loja está listo');
             renderVisitorExperience();
         }
 
@@ -4091,7 +4091,7 @@
                 icon: 'fa-calendar-days',
                 type: 'event'
             });
-            showToast(`Mostrando en mapa: ${eventTitle}`);
+            showToast(`${currentLang==='en'?'Showing on map':'Mostrando en mapa'}: ${eventTitle}`);
         }
 
         function renderEmprendedoresUI() {
