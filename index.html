@@ -4010,18 +4010,25 @@
             const todayStr = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0];
             const savedGeneral = getSavedAgendaEvents();
             const savedFestival = safeReadJSON('cyc_saved_festival_events', []).map(String);
-            const generalItems = eventsList
-                .map((event, index) => ({ kind: 'general', event, eventId: agendaEventKey(event, index) }))
-                .filter(item => !item.event.date || item.event.date >= todayStr);
+            const allGeneralItems = eventsList
+                .map((event, index) => ({ kind: 'general', event, eventId: agendaEventKey(event, index) }));
+            const upcomingGeneralItems = allGeneralItems.filter(item => !item.event.date || item.event.date >= todayStr);
             const festivalItems = (festivalConfig?.events || [])
                 .map(event => ({ kind: 'festival', event, eventId: String(event.id || '') }))
-                .filter(item => item.eventId && savedFestival.includes(item.eventId) && (!item.event.date || item.event.date >= todayStr));
-            const visibleItems = (agendaViewMode === 'saved'
-                ? [...generalItems.filter(item => savedGeneral.includes(item.eventId)), ...festivalItems]
-                : generalItems
-            ).sort((a, b) => String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')));
+                .filter(item => item.eventId && savedFestival.includes(item.eventId));
+            const savedItems = [
+                ...allGeneralItems.filter(item => savedGeneral.includes(item.eventId)),
+                ...festivalItems
+            ];
+            const agendaGroupOrder = { today: 0, week: 1, later: 2, undated: 3, past: 4 };
+            const weekLimit = new Date(todayStr + 'T12:00:00-05:00');
+            weekLimit.setDate(weekLimit.getDate() + 7);
+            const weekLimitStr = weekLimit.toISOString().split('T')[0];
+            const itemGroup = item => !item.event.date ? 'undated' : item.event.date < todayStr ? 'past' : item.event.date === todayStr ? 'today' : item.event.date <= weekLimitStr ? 'week' : 'later';
+            const visibleItems = (agendaViewMode === 'saved' ? savedItems : upcomingGeneralItems)
+                .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')));
 
-            const totalSaved = savedGeneral.length + savedFestival.length;
+            const totalSaved = savedItems.length;
             const allButton = document.getElementById('agendaAllButton');
             const savedButton = document.getElementById('agendaSavedButton');
             const countLabel = document.getElementById('agendaSavedCount');
@@ -4041,7 +4048,17 @@
                 return;
             }
 
+            const groupLabels = currentLang === 'en'
+                ? { today: 'Today', week: 'This week', later: 'Coming up', undated: 'Date to be confirmed', past: 'Finished events' }
+                : { today: 'Hoy', week: 'Esta semana', later: 'Más adelante', undated: 'Fecha por confirmar', past: 'Eventos finalizados' };
+            let previousGroup = '';
             visibleItems.forEach(({ kind, event: ev, eventId }) => {
+                const group = itemGroup({ event: ev });
+                if (agendaViewMode === 'saved' && group !== previousGroup) {
+                    previousGroup = group;
+                    agendaContainer.innerHTML += `<div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3 pt-3"><span class="h-px flex-1 bg-gray-200"></span><h3 class="text-xs font-black uppercase tracking-widest ${group === 'past' ? 'text-gray-400' : 'text-brandGold'}">${groupLabels[group]}</h3><span class="h-px flex-1 bg-gray-200"></span></div>`;
+                }
+                const isPast = group === 'past';
                 const isFestival = kind === 'festival';
                 const title = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : (ev.title || 'Evento Vive Loja');
                 const description = (currentLang === 'en' && ev.descEn) ? ev.descEn : (ev.desc || ev.description || '');
@@ -4056,22 +4073,22 @@
                 const mapUrl = ev.mapUrl || ((Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng))) ? `https://www.google.com/maps/search/?api=1&query=${ev.lat},${ev.lng}` : '');
 
                 agendaContainer.innerHTML += `
-                    <article class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between">
+                    <article class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between ${isPast ? 'opacity-70 grayscale-[25%]' : ''}">
                         <div class="h-48 md:h-52 overflow-hidden relative">
                             <img src="${escapeHTML(image)}" alt="" class="w-full h-full object-cover" loading="lazy">
                             <span class="absolute top-3 left-3 ${isFestival ? 'bg-fuchsia-700 text-white' : 'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${escapeHTML(badge)}</span>
                             <button type="button" onclick="${toggleAction}" aria-label="${isSaved ? 'Quitar de mis guardados' : 'Guardar evento'}" class="absolute top-3 right-3 w-10 h-10 rounded-full border border-white/70 shadow-lg transition ${isSaved ? 'bg-brandGold text-white' : 'bg-white/95 text-brandDark hover:text-brandGold'}"><i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i></button>
                         </div>
                         <div class="p-5">
-                            <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${escapeHTML(ev.date || 'Fecha por confirmar')} ${ev.time ? '· ' + escapeHTML(ev.time) : ''}</span>
+                            <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${escapeHTML(ev.date || 'Fecha por confirmar')} ${ev.time ? '· ' + escapeHTML(ev.time) : ''}</span>${isPast ? `<span class="ml-2 text-[9px] font-black uppercase bg-gray-200 text-gray-600 rounded-full px-2 py-1">${currentLang === 'en' ? 'Finished' : 'Finalizado'}</span>` : ''}
                             <h3 class="font-bold text-base sm:text-lg text-brandDark mt-2 mb-2">${escapeHTML(title)}</h3>
                             <p class="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">${escapeHTML(description)}</p>
                         </div>
                         <div class="px-5 pb-5 pt-3 border-t border-gray-200/60">
                             <p class="text-xs text-gray-500 truncate mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${escapeHTML(place)}</p>
                             ${isFestival
-                                ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${currentLang === 'en' ? 'View map' : 'Ver mapa'}</a>` : '<span></span>'}</div>`
-                                : `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-regular fa-calendar-plus mr-1"></i> ${currentLang === 'en' ? 'Calendar' : 'Calendario'}</button><button type="button" onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${String(title).replace(/'/g, "\\'")}', '${ev.date || ''}', '${String(place).replace(/'/g, "\\'")}', '${ev.type || ''}')" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${currentLang === 'en' ? 'View map' : 'Ver mapa'}</button></div>`}
+                                ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : '<span></span>'}</div>`
+                                : `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-regular fa-calendar-plus mr-1"></i> ${currentLang === 'en' ? 'Calendar' : 'Calendario'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-route mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : `<span class="border border-gray-200 text-gray-400 px-3 py-2.5 rounded-xl text-center text-xs">${currentLang === 'en' ? 'Location pending' : 'Ubicación pendiente'}</span>`}</div>`}
                         </div>
                     </article>`;
             });
