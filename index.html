@@ -385,7 +385,7 @@
                 <button type="button" onclick="openSmartRoutePlanner()" class="bg-white/10 text-white border border-white/40 font-bold px-8 py-4 rounded-xl hover:bg-white hover:text-brandDark transition-all text-sm text-center">
                     <i class="fa-solid fa-route mr-2"></i> Planificar mi recorrido
                 </button>
-                <button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()" class="bg-sky-500/20 text-white border border-sky-300/60 font-bold px-8 py-4 rounded-xl hover:bg-sky-500 transition-all text-sm text-center"><i class="fa-solid fa-compass mr-2"></i>Ver qué está abierto</button>
+                <button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()" class="bg-sky-500/20 text-white border border-sky-300/60 font-bold px-8 py-4 rounded-xl hover:bg-sky-500 transition-all text-sm text-center"><i class="fa-solid fa-compass mr-2"></i>¿Qué hacer ahora?</button>
             </div>
         </div>
     </section>
@@ -1140,7 +1140,13 @@
                 <button type="button" onclick="closeModal('whatToDoNowModal')" class="text-white text-xl w-9 h-9 rounded-full bg-white/15" aria-label="Cerrar recomendaciones"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-4 sm:p-6 overflow-y-auto">
-                <p class="text-sm text-gray-600 mb-4">Elige cuánto tiempo tienes y te mostraremos lugares abiertos para disfrutar de inmediato. No necesitas preparar una ruta completa.</p>
+                <p class="text-sm text-gray-600 mb-4">Una decisión rápida para este momento: dinos qué buscas y Chabaquito elegirá la mejor opción abierta, cercana y útil para tu pasaporte.</p>
+                <div class="grid sm:grid-cols-2 gap-3 mb-3">
+                    <label class="text-xs font-bold">¿Qué deseas hacer?
+                        <select id="whatToDoNowInterest" onchange="refreshWhatToDoNow()" class="mt-1 w-full bg-white border border-sky-300 rounded-xl px-3 py-3 text-sm"><option value="all">Sorpréndeme</option><option value="food">Comer algo lojano</option><option value="cafe">Tomar café</option><option value="culture">Cultura y fotografía</option><option value="stay">Hospedaje</option></select>
+                    </label>
+                    <button type="button" onclick="locateForWhatToDoNow()" class="self-end border border-sky-500 text-sky-700 rounded-xl px-3 py-3 text-xs font-black"><i class="fa-solid fa-location-crosshairs mr-2"></i>Usar mi ubicación</button>
+                </div>
                 <div class="grid grid-cols-3 gap-2 mb-5" role="group" aria-label="Tiempo disponible">
                     <button type="button" data-now-minutes="30" onclick="refreshWhatToDoNow(30)" class="now-time-btn border border-sky-300 rounded-xl py-3 text-xs font-black hover:bg-sky-50">30 minutos</button>
                     <button type="button" data-now-minutes="60" onclick="refreshWhatToDoNow(60)" class="now-time-btn bg-sky-600 text-white border border-sky-600 rounded-xl py-3 text-xs font-black">1 hora</button>
@@ -1183,6 +1189,18 @@
                         <select id="smartRouteBudget" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm outline-none focus:border-brandGold">
                             <option value="short">Esencial</option><option value="balanced" selected>Equilibrado</option><option value="complete">Completo</option>
                         </select>
+                    </label>
+                    <label class="text-xs font-bold">Fecha del recorrido
+                        <input id="smartRouteDate" type="date" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm">
+                    </label>
+                    <label class="text-xs font-bold">Hora de inicio
+                        <input id="smartRouteStartTime" type="time" value="10:00" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm">
+                    </label>
+                    <label class="text-xs font-bold">¿Con quién viajas?
+                        <select id="smartRouteGroup" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm"><option value="solo">Solo</option><option value="couple">En pareja</option><option value="family">En familia</option><option value="friends">Con amigos</option></select>
+                    </label>
+                    <label class="text-xs font-bold">Objetivo especial
+                        <select id="smartRouteGoal" class="mt-1 w-full bg-white border border-gray-300 rounded-xl px-3 py-3 text-sm"><option value="explore">Conocer Loja</option><option value="passport">Avanzar mi pasaporte</option><option value="gastronomy">Sabores lojanos</option><option value="photos">Fotografía y recuerdos</option></select>
                     </label>
                     <label class="sm:col-span-2 flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 text-xs cursor-pointer">
                         <input id="smartRouteUseGps" type="checkbox" class="w-4 h-4 accent-orange-600"><span><b>Usar mi ubicación actual</b><br><span class="text-gray-500">El navegador solicitará permiso solamente al generar la ruta.</span></span>
@@ -2873,9 +2891,12 @@
                 if(!snapshot.empty) {
                     locations = [];
                     snapshot.forEach((doc) => {
-                        locations.push({ id: doc.id, ...doc.data() });
+                        const location={ id: doc.id, ...doc.data() };
+                        const searchable=[location.category,location.tag,location.title,location.type].join(' ').toLowerCase();
+                        if(!searchable.includes('motel')) locations.push(location);
                     });
                 }
+                categories=categories.filter(category=>!String(category.id+' '+category.name+' '+(category.nameEn||'')).toLowerCase().includes('motel'));
                 scheduleSubscriptionRefresh();
                 renderEverything();
                 checkLiveEventsBanner();
@@ -5575,39 +5596,40 @@
             if (select) {
                 const currentValue = select.value || 'all';
                 select.innerHTML = `<option value="all">${currentLang === 'en' ? 'A little of everything' : 'Un poco de todo'}</option>`;
-                categories.forEach(category => {
+                categories.filter(category=>!String(category.id+' '+category.name+' '+(category.nameEn||'')).toLowerCase().includes('motel')).forEach(category => {
                     const option = document.createElement('option');
                     option.value = category.id;
                     option.textContent = currentLang === 'en' && category.nameEn ? category.nameEn : category.name;
                     select.appendChild(option);
                 });
+                const dateInput=document.getElementById('smartRouteDate');
+                if(dateInput&&!dateInput.value){const today=new Date();dateInput.value=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Guayaquil'}).format(today);dateInput.min=dateInput.value;}
                 if ([...select.options].some(option => option.value === currentValue)) select.value = currentValue;
             }
             openModal('smartRouteModal');
         }
 
-        function openWhatToDoNow(){openModal('whatToDoNowModal');refreshWhatToDoNow(60);setMascotMessage('¡Vamos a descubrir qué puedes hacer ahora mismo en Loja!');}
-
-        function refreshWhatToDoNow(minutes=60){
-            document.querySelectorAll('.now-time-btn').forEach(button=>{const active=Number(button.dataset.nowMinutes)===Number(minutes);button.className=`now-time-btn border rounded-xl py-3 text-xs font-black transition ${active?'bg-sky-600 text-white border-sky-600':'border-sky-300 text-brandDark hover:bg-sky-50'}`;});
-            const results=document.getElementById('whatToDoNowResults'),empty=document.getElementById('whatToDoNowEmpty'),subtitle=document.getElementById('whatToDoNowSubtitle');
+        let whatToDoNowMinutes=60;
+        function openWhatToDoNow(){openModal('whatToDoNowModal');refreshWhatToDoNow(60);setMascotMessage('¡Dime qué te provoca y encontraré tu mejor opción para este momento!');}
+        function nowInterestMatches(location,interest){if(interest==='all')return true;const text=[location.category,location.tag,location.title,location.dish].join(' ').toLowerCase();if(interest==='food')return /hueca|restaurant|comida|gastronom|urbana/.test(text);if(interest==='cafe')return /cafe|café|cafeter/.test(text);if(interest==='culture')return /turismo|cultura|museo|iglesia|parque|histori|fotograf/.test(text);if(interest==='stay')return /hotel|hostal|hospeda/.test(text);return true;}
+        function locateForWhatToDoNow(){if(!navigator.geolocation){showToast('Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};refreshWhatToDoNow(whatToDoNowMinutes);showToast('📍 Recomendaciones ordenadas por cercanía');},()=>showToast('No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
+        function refreshWhatToDoNow(minutes=whatToDoNowMinutes){
+            whatToDoNowMinutes=Number(minutes)||60;
+            document.querySelectorAll('.now-time-btn').forEach(button=>{const active=Number(button.dataset.nowMinutes)===whatToDoNowMinutes;button.className=`now-time-btn border rounded-xl py-3 text-xs font-black transition ${active?'bg-sky-600 text-white border-sky-600':'border-sky-300 text-brandDark hover:bg-sky-50'}`;});
+            const results=document.getElementById('whatToDoNowResults'),empty=document.getElementById('whatToDoNowEmpty'),subtitle=document.getElementById('whatToDoNowSubtitle'),interest=document.getElementById('whatToDoNowInterest')?.value||'all';
             if(!results||!empty)return;
             const currentHour=new Intl.DateTimeFormat('es-EC',{timeZone:'America/Guayaquil',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
-            if(subtitle)subtitle.textContent=`Opciones abiertas a las ${currentHour} en Loja`;
-            const limit=minutes<=30?2:minutes<=60?3:4;
-            let openLocations=locations.map((location,index)=>({location,index})).filter(item=>isLocOpenNow(item.location));
-            if(userCoords){openLocations.sort((a,b)=>calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(a.location.lat),Number(a.location.lng))-calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(b.location.lat),Number(b.location.lng)));}
-            const selected=[],usedCategories=new Set();
-            openLocations.forEach(item=>{if(selected.length>=limit)return;if(!usedCategories.has(item.location.category)){selected.push(item);usedCategories.add(item.location.category);}});
-            openLocations.forEach(item=>{if(selected.length<limit&&!selected.some(chosen=>chosen.index===item.index))selected.push(item);});
-            const recommendations=selected.slice(0,limit);empty.classList.toggle('hidden',recommendations.length>0);
+            if(subtitle)subtitle.textContent=`Tu mejor opción abierta a las ${currentHour}`;
+            let options=locations.map((location,index)=>({location,index})).filter(item=>isLocOpenNow(item.location)&&nowInterestMatches(item.location,interest));
+            options.forEach(item=>{const loc=item.location;item.distance=userCoords?calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(loc.lat),Number(loc.lng)):null;item.score=(visitedLocations.includes(loc.id)?0:20)+(placePromotionIsVisible(loc)?15:0)+(item.distance===null?0:Math.max(0,20-item.distance*4))+(favoriteLocations.includes(loc.id)?4:0);});
+            options.sort((a,b)=>b.score-a.score);
+            const recommendations=options.slice(0,3);empty.classList.toggle('hidden',recommendations.length>0);
             if(!recommendations.length){results.innerHTML='';return;}
-            results.innerHTML=recommendations.map(({location,index})=>{
-                const title=escapeHTML(currentLang==='en'&&location.titleEn?location.titleEn:location.title),description=escapeHTML(currentLang==='en'&&location.dishEn?location.dishEn:(location.dish||location.tag||'Experiencia recomendada')),address=escapeHTML(location.address||'Loja, Ecuador'),icon=escapeHTML(location.iconClass||'fa-location-dot');
-                return `<article class="bg-white border border-sky-200 rounded-2xl p-4 shadow-sm"><div class="flex items-start gap-3"><span class="w-11 h-11 flex-shrink-0 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid ${icon}"></i></span><div class="min-w-0 flex-grow"><div class="flex items-center justify-between gap-2"><h4 class="font-black truncate">${title}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 rounded-full px-2 py-1 font-black flex-shrink-0"><i class="fa-solid fa-circle text-[6px] mr-1"></i>ABIERTO</span></div><p class="text-xs text-gray-600 mt-1">${description}</p><p class="text-[11px] text-gray-500 mt-1 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${address}</p></div></div><div class="grid grid-cols-2 gap-2 mt-3"><button type="button" onclick="selectNowRecommendation(${index})" class="bg-sky-600 text-white rounded-xl py-2.5 text-xs font-black"><i class="fa-solid fa-eye mr-1"></i>Ver detalle</button><button type="button" onclick="openNowDirections(${index})" class="border border-sky-500 text-sky-700 rounded-xl py-2.5 text-xs font-black"><i class="fa-solid fa-location-arrow mr-1"></i>Cómo llegar</button></div></article>`;
+            results.innerHTML=recommendations.map(({location,index,distance},position)=>{
+                const title=escapeHTML(currentLang==='en'&&location.titleEn?location.titleEn:location.title),description=escapeHTML(currentLang==='en'&&location.dishEn?location.dishEn:(location.dish||location.tag||'Experiencia recomendada')),address=escapeHTML(location.address||'Loja, Ecuador'),icon=escapeHTML(location.iconClass||'fa-location-dot'),distanceLabel=Number.isFinite(distance)?` · ${distance<1?Math.round(distance*1000)+' m':distance.toFixed(1)+' km'}`:'',passportLabel=!visitedLocations.includes(location.id)&&['hotel','hueca','cafe','urbana'].includes(location.category)?'<span class="text-[10px] text-amber-700 font-bold"><i class="fa-solid fa-stamp mr-1"></i>Suma a tu pasaporte</span>':'';
+                return `<article class="${position===0?'bg-gradient-to-br from-sky-50 to-cyan-50 border-2 border-sky-500':'bg-white border border-sky-200'} rounded-2xl p-4 shadow-sm">${position===0?'<p class="text-[10px] uppercase tracking-widest text-sky-700 font-black mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Tu mejor opción ahora</p>':''}<div class="flex items-start gap-3"><span class="w-11 h-11 flex-shrink-0 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid ${icon}"></i></span><div class="min-w-0 flex-grow"><div class="flex items-center justify-between gap-2"><h4 class="font-black truncate">${title}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 rounded-full px-2 py-1 font-black">ABIERTO</span></div><p class="text-xs text-gray-600 mt-1">${description}</p><p class="text-[11px] text-gray-500 mt-1 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${address}${distanceLabel}</p>${passportLabel}</div></div><div class="grid grid-cols-2 gap-2 mt-3"><button type="button" onclick="selectNowRecommendation(${index})" class="bg-sky-600 text-white rounded-xl py-2.5 text-xs font-black">Ver detalle</button><button type="button" onclick="openNowDirections(${index})" class="border border-sky-500 text-sky-700 rounded-xl py-2.5 text-xs font-black">Cómo llegar</button></div></article>`;
             }).join('');
         }
-
         function selectNowRecommendation(index){closeModal('whatToDoNowModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
         function openNowDirections(index){const location=locations[index];if(!location)return;const query=Number.isFinite(Number(location.lat))&&Number.isFinite(Number(location.lng))?`${location.lat},${location.lng}`:`${location.title||''} ${location.address||'Loja Ecuador'}`;window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,'_blank','noopener,noreferrer');}
 
@@ -5618,7 +5640,11 @@
                 category: document.getElementById('smartRouteCategory').value,
                 transport: document.getElementById('smartRouteTransport').value,
                 intensity: document.getElementById('smartRouteBudget').value,
-                openNow: document.getElementById('smartRouteOpenNow').checked
+                openNow: document.getElementById('smartRouteOpenNow').checked,
+                date: document.getElementById('smartRouteDate')?.value || '',
+                startTime: document.getElementById('smartRouteStartTime')?.value || '10:00',
+                group: document.getElementById('smartRouteGroup')?.value || 'solo',
+                goal: document.getElementById('smartRouteGoal')?.value || 'explore'
             };
             const useGps = document.getElementById('smartRouteUseGps').checked;
 
@@ -5642,8 +5668,10 @@
             let candidates = locations.filter(location =>
                 Number.isFinite(Number(location.lat)) && Number.isFinite(Number(location.lng)) &&
                 (preferences.category === 'all' || location.category === preferences.category) &&
-                (!preferences.openNow || isLocOpenNow(location))
+                (!preferences.openNow || isLocOpenNow(location)) &&
+                ![location.category,location.tag,location.title,location.type].join(' ').toLowerCase().includes('motel')
             );
+            if(preferences.goal==='passport')candidates.sort((a,b)=>Number(visitedLocations.includes(a.id))-Number(visitedLocations.includes(b.id)));
 
             if (!candidates.length) {
                 currentSmartRoute = [];
@@ -5693,14 +5721,19 @@
             const summary = document.getElementById('smartRouteSummary');
             const stops = document.getElementById('smartRouteStops');
             const distanceText = totalDistance < 1 ? `${Math.round(totalDistance * 1000)} m` : `${totalDistance.toFixed(1)} km`;
-            if (summary) summary.textContent = `${currentSmartRoute.length} paradas · ${distanceText} · ${Math.round(totalMinutes)} min`;
+            const dateValue=document.getElementById('smartRouteDate')?.value||'',startValue=document.getElementById('smartRouteStartTime')?.value||'10:00';
+            if (summary) summary.textContent = `${dateValue?new Date(dateValue+'T12:00:00').toLocaleDateString('es-EC',{weekday:'short',day:'numeric',month:'short'})+' · ':''}${startValue} · ${currentSmartRoute.length} paradas · ${distanceText} · ${Math.round(totalMinutes)} min`;
+            let itineraryMinutes=(Number(startValue.split(':')[0])||10)*60+(Number(startValue.split(':')[1])||0);
             if (!stops) return;
             stops.innerHTML = currentSmartRoute.map((stop, index) => {
+                itineraryMinutes+=stop.travelMinutes;
+                const itineraryTime=`${String(Math.floor(itineraryMinutes/60)%24).padStart(2,'0')}:${String(itineraryMinutes%60).padStart(2,'0')}`;
+                itineraryMinutes+=stop.visitMinutes;
                 const title = escapeHTML(currentLang === 'en' && stop.titleEn ? stop.titleEn : stop.title);
                 const address = escapeHTML(stop.address || 'Loja, Ecuador');
                 const modeIcon = transport === 'drive' ? 'fa-car' : 'fa-person-walking';
                 return `<button type="button" onclick="focusSmartRouteStop(${index})" class="w-full text-left bg-white border border-gray-200 rounded-xl p-3 flex items-center gap-3 hover:border-brandGold transition shadow-sm">
-                    <span class="w-9 h-9 rounded-full bg-brandGold text-white flex items-center justify-center font-black flex-shrink-0">${index + 1}</span>
+                    <span class="w-12 h-9 rounded-full bg-brandGold text-white flex items-center justify-center font-black flex-shrink-0">${itineraryTime}</span>
                     <span class="min-w-0 flex-grow"><b class="block text-sm truncate">${title}</b><span class="block text-[11px] text-gray-500 truncate">${address}</span></span>
                     <span class="text-[10px] text-gray-500 flex-shrink-0"><i class="fa-solid ${modeIcon} text-brandGold mr-1"></i>${stop.travelMinutes} min</span>
                 </button>`;
