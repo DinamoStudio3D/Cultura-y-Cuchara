@@ -2292,6 +2292,7 @@
         }
 
         async function handleVisitorAuthState(user) {
+            if (!user && visitorAuth?.currentUser) user = visitorAuth.currentUser;
             currentVisitorProfile = null;
             updateVisitorAccountLabels(user);
             if (!user || !db) {
@@ -2345,7 +2346,6 @@
                 accountModalKeepOpenUntil = Date.now() + 6000;
                 accountAuthFlowActive = true;
                 updateVisitorAccountLabels(result.user);
-                await handleVisitorAuthState(result.user);
                 openModal('accountModal');
                 setTimeout(() => {
                     if (visitorAuth?.currentUser?.uid === result.user.uid) openModal('accountModal');
