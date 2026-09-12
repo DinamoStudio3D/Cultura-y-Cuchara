@@ -3448,6 +3448,13 @@
         let activeMapGroup='all';
         function toggleMapLegend(){const panel=document.getElementById('mapLegendPanel'),button=document.getElementById('mapLegendToggle');if(!panel||!button)return;const willOpen=panel.classList.contains('hidden');panel.classList.toggle('hidden',!willOpen);button.setAttribute('aria-expanded',String(willOpen));}
         function mapGroupMatches(location,group){if(group==='all')return true;if(group==='food')return ['hueca','cafe','urbana','heladeria','panaderia','bar'].includes(location.category);if(group==='stay')return location.category==='hotel';if(group==='tourism')return ['turismo','entretenimiento','artesania'].includes(location.category);if(group==='partners')return location.category==='aliado';return true;}
+        function mapMarkerPalette(category){
+            if(['hueca','cafe','urbana','heladeria','panaderia','bar'].includes(category))return{color:'#f97316',glow:'rgba(249,115,22,.30)'};
+            if(category==='hotel')return{color:'#0ea5e9',glow:'rgba(14,165,233,.30)'};
+            if(['turismo','entretenimiento','artesania'].includes(category))return{color:'#10b981',glow:'rgba(16,185,129,.30)'};
+            if(category==='aliado')return{color:'#7c3aed',glow:'rgba(124,58,237,.30)'};
+            return{color:'#f59e0b',glow:'rgba(245,158,11,.30)'};
+        }
         function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels=currentLang==='en'?{all:'All points',food:'Food & dining',stay:'Accommodation',tourism:'Attractions',partners:'Partner brands'}:{all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;document.getElementById('mapLegendPanel')?.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
 
         function renderMapAndGrid() {
@@ -3487,16 +3494,17 @@
                 const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
                 const isOpen = isLocOpenNow(loc);
                 const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasCustomLogo=Boolean(loc.customLogoUrl&&loc.customLogoUrl.trim()!==''),hasPaidLogoStyle=hasCustomLogo&&paidBenefits.logoPin===true;
+                const markerPalette=mapMarkerPalette(loc.category);
 
                 if(loc.lat && loc.lng) {
                     let pinHtml = "";
                     if (hasCustomLogo) {
-                        pinHtml = `<div class="${hasPaidLogoStyle?'w-14 h-14 border-[4px] border-teal-400 shadow-[0_0_0_5px_rgba(234,88,12,.28),0_12px_25px_rgba(0,0,0,.35)]':'w-12 h-12 border-[3px] border-brandGold shadow-2xl'} rounded-full overflow-hidden bg-white hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action: none;">
+                        pinHtml = `<div class="${hasPaidLogoStyle?'w-14 h-14 border-[4px]':'w-12 h-12 border-[3px]'} rounded-full overflow-hidden bg-white hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action:none;border-color:${markerPalette.color};box-shadow:0 0 0 ${hasPaidLogoStyle?'5px':'3px'} ${markerPalette.glow},0 12px 25px rgba(0,0,0,.35);">
                                      <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}">
                                    </div>`;
                     } else {
                         const partnerPin=loc.category==='aliado';
-                        pinHtml = `<div class="${partnerPin?'bg-violet-700 text-white border-violet-300':'bg-brandDark text-brandGold border-brandGold'} w-12 h-12 rounded-full border-[3px] flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
+                        pinHtml = `<div class="${partnerPin?'bg-violet-700 text-white':'bg-brandDark'} w-12 h-12 rounded-full border-[3px] flex items-center justify-center hover:scale-110 transition-transform pointer-events-auto" style="touch-action:none;border-color:${markerPalette.color};color:${partnerPin?'#ffffff':markerPalette.color};box-shadow:0 0 0 3px ${markerPalette.glow},0 12px 25px rgba(0,0,0,.35);">
                                      <i class="fa-solid ${partnerPin?'fa-handshake':(loc.iconClass || 'fa-utensils')} text-lg pointer-events-none"></i>
                                    </div>`;
                     }
