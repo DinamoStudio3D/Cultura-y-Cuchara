@@ -2278,6 +2278,19 @@
             showVisitorAccountView('visitorProfileForm');
         }
 
+        async function readVisitorProfileWithRetry(user) {
+            const profileRef = db.collection('userProfiles').doc(user.uid);
+            try {
+                await user.getIdToken(true);
+                return await profileRef.get();
+            } catch (firstError) {
+                if (firstError?.code !== 'permission-denied') throw firstError;
+                await new Promise(resolve => setTimeout(resolve, 700));
+                await user.getIdToken(true);
+                return await profileRef.get();
+            }
+        }
+
         async function handleVisitorAuthState(user) {
             currentVisitorProfile = null;
             updateVisitorAccountLabels(user);
@@ -2286,7 +2299,7 @@
                 return;
             }
             try {
-                const snapshot = await db.collection('userProfiles').doc(user.uid).get();
+                const snapshot = await readVisitorProfileWithRetry(user);
                 if (snapshot.exists && snapshot.data().profileComplete === true) {
                     currentVisitorProfile = snapshot.data();
                     renderVisitorReady(user, currentVisitorProfile);
@@ -2300,7 +2313,9 @@
             } catch (error) {
                 fillVisitorProfileForm(user);
                 showVisitorAccountView('visitorProfileForm');
-                setVisitorMessage('visitorProfileMessage', 'No pudimos consultar tu perfil. Verifica que las reglas de usuarios estén activadas en Firebase.', true);
+                const code = error?.code || 'desconocido';
+                setVisitorMessage('visitorProfileMessage', 'Firebase no permitió consultar tu perfil (' + code + '). Verifica que las reglas estén publicadas en Firestore.', true);
+                console.warn('No se pudo consultar el perfil del visitante:', error);
             }
         }
 
