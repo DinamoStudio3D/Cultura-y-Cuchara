@@ -2419,10 +2419,12 @@
         let visitorAuth = null;
         let currentVisitorProfile = null;
         try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            visitorAuth = firebase.auth();
-            visitorAuth.onAuthStateChanged(handleVisitorAuthState);
+            const visitorFirebaseApp = firebase.initializeApp(firebaseConfig, 'viveLojaPublic');
+            db = visitorFirebaseApp.firestore();
+            visitorAuth = visitorFirebaseApp.auth();
+            visitorAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .catch(error => console.warn('No se pudo conservar la sesión del visitante:', error))
+                .finally(() => visitorAuth.onAuthStateChanged(handleVisitorAuthState));
 
             const editableQrId = new URLSearchParams(window.location.search).get('qr');
             if (editableQrId) {
