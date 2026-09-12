@@ -2233,11 +2233,9 @@
             const floatingInvite=document.getElementById('accountFloatingInvite');if(floatingInvite){floatingInvite.classList.add('hidden');floatingInvite.style.display='none';}
             if (passportRewardIntent) {
                 passportRewardIntent = false;
-                closeModal('accountModal');
-                setTimeout(() => beginPassportRewardClaim(), 150);
-            } else if (typeof updatePassportUI === 'function') {
-                updatePassportUI();
+                showToast(currentLang === 'en' ? 'Your account is ready. Continue from the Passport section.' : 'Tu cuenta está lista. Continúa desde la sección Pasaporte.');
             }
+            if (typeof updatePassportUI === 'function') updatePassportUI();
         }
 
         function renderVisitorExperience() {
@@ -2311,7 +2309,8 @@
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await visitorAuth.signInWithPopup(provider);
-                await handleVisitorAuthState(result.user);
+                if (!result?.user) throw new Error('auth/no-user-returned');
+                updateVisitorAccountLabels(result.user);
                 openModal('accountModal');
             } catch (error) {
                 const blocked = error?.code === 'auth/popup-blocked';
@@ -6264,7 +6263,9 @@
         }
 
         let lastFocusedElement = null;
-        function openModal(id) { 
+        function openModal(id) {
+            const accountModal = document.getElementById('accountModal');
+            if (id === 'promoPopupModal' && accountModal && !accountModal.classList.contains('hidden')) return;
             const m = document.getElementById(id);
             if(m) {
                 lastFocusedElement = document.activeElement;
