@@ -2658,19 +2658,22 @@
         }
 
         const defaultCategories = [
-            { id: 'hotel', name: 'Hoteles & Hospedaje', nameEn: 'Hotels & Lodging', icon: '🏨' },
-            { id: 'hueca', name: 'Huecas', nameEn: 'Local Eateries', icon: '🥘' },
+            { id: 'hotel', name: 'Hoteles y hospedaje', nameEn: 'Hotels & Lodging', icon: '🏨' },
+            { id: 'hueca', name: 'Huecas tradicionales', nameEn: 'Traditional Eateries', icon: '🥘' },
+            { id: 'urbana', name: 'Restaurantes', nameEn: 'Restaurants', icon: '🍽️' },
             { id: 'cafe', name: 'Cafeterías', nameEn: 'Coffee Shops', icon: '☕' },
-            { id: 'urbana', name: 'Urbana', nameEn: 'Urban', icon: '🍔' },
-            { id: 'turismo', name: 'Atractivos', nameEn: 'Attractions', icon: '📍' },
+            { id: 'heladeria', name: 'Heladerías', nameEn: 'Ice Cream Shops', icon: '🍦' },
+            { id: 'panaderia', name: 'Panaderías y reposterías', nameEn: 'Bakeries & Pastry Shops', icon: '🥐' },
+            { id: 'bar', name: 'Bares y vida nocturna', nameEn: 'Bars & Nightlife', icon: '🍹' },
+            { id: 'entretenimiento', name: 'Entretenimiento', nameEn: 'Entertainment', icon: '🎳' },
+            { id: 'turismo', name: 'Atractivos turísticos', nameEn: 'Tourist Attractions', icon: '📍' },
+            { id: 'artesania', name: 'Artesanías y comercios locales', nameEn: 'Crafts & Local Shops', icon: '🧵' },
             { id: 'aliado', name: 'Marcas aliadas', nameEn: 'Partner Brands', icon: '🤝' }
         ];
 
         let categories = safeReadJSON('cyc_dynamic_cats', defaultCategories);
-        if (!categories.some(category => category.id === 'aliado')) {
-            categories.push({ id: 'aliado', name: 'Marcas aliadas', nameEn: 'Partner Brands', icon: '🤝' });
-            localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
-        }
+        defaultCategories.forEach(defaultCategory=>{const existing=categories.find(category=>category.id===defaultCategory.id);if(existing)Object.assign(existing,defaultCategory);else categories.push({...defaultCategory});});
+        localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
         let locations = [
             {
                 id: "dinamo_studio",
@@ -3337,7 +3340,7 @@
                         <i class="fa-solid fa-border-all"></i> <span class="text-xs sm:text-sm font-bold text-white">${todosLabel}</span>
                     </button>
                 `;
-                categories.forEach(cat => {
+                categories.filter(cat=>locations.some(location=>location.category===cat.id)).forEach(cat => {
                     const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
                     catScroll.innerHTML += `
                         <button type="button" onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
@@ -3420,7 +3423,7 @@
 
         let activeMapGroup='all';
         function toggleMapLegend(){const panel=document.getElementById('mapLegendPanel'),button=document.getElementById('mapLegendToggle');if(!panel||!button)return;const willOpen=panel.classList.contains('hidden');panel.classList.toggle('hidden',!willOpen);button.setAttribute('aria-expanded',String(willOpen));}
-        function mapGroupMatches(location,group){if(group==='all')return true;if(group==='food')return ['hueca','cafe','urbana'].includes(location.category);if(group==='stay')return location.category==='hotel';if(group==='tourism')return location.category==='turismo';if(group==='partners')return location.category==='aliado';return true;}
+        function mapGroupMatches(location,group){if(group==='all')return true;if(group==='food')return ['hueca','cafe','urbana','heladeria','panaderia','bar'].includes(location.category);if(group==='stay')return location.category==='hotel';if(group==='tourism')return ['turismo','entretenimiento','artesania'].includes(location.category);if(group==='partners')return location.category==='aliado';return true;}
         function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels=currentLang==='en'?{all:'All points',food:'Food & dining',stay:'Accommodation',tourism:'Attractions',partners:'Partner brands'}:{all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;document.getElementById('mapLegendPanel')?.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
 
         function renderMapAndGrid() {
@@ -3431,8 +3434,8 @@
             const grid = document.getElementById('localesGrid');
             if(!grid) return;
             grid.innerHTML = '';
-            const mapCounts={mapCountAll:locations.length,mapCountFood:locations.filter(item=>['hueca','cafe','urbana'].includes(item.category)).length,mapCountStay:locations.filter(item=>item.category==='hotel').length,mapCountTourism:locations.filter(item=>item.category==='turismo').length,mapCountPartners:locations.filter(item=>item.category==='aliado').length};
-            Object.entries(mapCounts).forEach(([id,value])=>{const element=document.getElementById(id);if(element)element.textContent=value;});
+            const mapCounts={mapCountAll:locations.length,mapCountFood:locations.filter(item=>['hueca','cafe','urbana','heladeria','panaderia','bar'].includes(item.category)).length,mapCountStay:locations.filter(item=>item.category==='hotel').length,mapCountTourism:locations.filter(item=>['turismo','entretenimiento','artesania'].includes(item.category)).length,mapCountPartners:locations.filter(item=>item.category==='aliado').length};
+            Object.entries(mapCounts).forEach(([id,value])=>{const element=document.getElementById(id);if(element){element.textContent=value;if(id!=='mapCountAll')element.closest('button')?.classList.toggle('hidden',value===0);}});
 
             const aliadoCountEl = document.getElementById('totalAliadosCount');
             if(aliadoCountEl) {
@@ -3531,7 +3534,7 @@
                                 ${loc.category==='aliado'?'':openBadge}
                             </div>
                             <div class="absolute bottom-3 right-3 flex gap-1.5 z-20">
-                                ${['hotel','hueca','cafe','urbana'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)"><i class="fa-solid fa-qrcode"></i></button>`:''}
+                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)"><i class="fa-solid fa-qrcode"></i></button>`:''}
                                 <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
                                     <i class="fa-solid fa-diamond-turn-right"></i>
                                 </a>
@@ -3597,7 +3600,7 @@
             const loc = locations.find(l => l.id === localId);
             const button=document.getElementById('stampValidationButton'),notice=document.getElementById('stampValidationMessage'),attemptKey=`cyc_stamp_attempts_${localId}`,attempts=safeReadJSON(attemptKey,{count:0,lockedUntil:0});
             if(!loc) { showToast('Local no encontrado'); return; }
-            if(!['hotel','hueca','cafe','urbana'].includes(loc.category)){showToast('Esta parada informativa no participa en los sellos del pasaporte.');closeModal('qrClaimModal');return;}
+            if(!['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)){showToast('Esta parada informativa no participa en los sellos del pasaporte.');closeModal('qrClaimModal');return;}
             if(!/^\d{4,6}$/.test(enteredPin)){notice.textContent='El PIN debe contener entre 4 y 6 números.';notice.className='text-xs rounded-xl p-2 bg-red-50 text-red-700';return;}
             if(Number(attempts.lockedUntil)>Date.now()){const minutes=Math.max(1,Math.ceil((attempts.lockedUntil-Date.now())/60000));notice.textContent=`Espera ${minutes} minuto${minutes===1?'':'s'} antes de intentarlo nuevamente.`;notice.className='text-xs rounded-xl p-2 bg-amber-50 text-amber-800';return;}
             button.disabled=true;button.innerHTML='<i class="fa-solid fa-shield-halved fa-spin mr-1"></i>Validando de forma segura…';notice.textContent='Comprobando el PIN privado de esta parada…';notice.className='text-xs rounded-xl p-2 bg-blue-50 text-blue-700';
@@ -4046,7 +4049,7 @@
             const text=[location.category,location.tag,location.title,location.type].join(' ').toLowerCase();
             if(/hotel|hostal|hospeda/.test(text)) return 'stay';
             if(/cafe|café|cafeter/.test(text)) return 'cafe';
-            if(/hueca|restaurant|comida|gastronom|urbana/.test(text)) return 'food';
+            if(/hueca|restaurant|comida|gastronom|urbana|helader|panader|reposter|bar|coctel/.test(text)) return 'food';
             return 'other';
         }
 
@@ -5429,7 +5432,7 @@
                         ? (currentLang === 'en' ? 'Experience: ' : 'Experiencia: ')
                         : (currentLang === 'en' ? 'Dish: ' : 'Plato: ');
             document.getElementById('previewDish').innerText = detailPrefix + (dishText || '');
-            const previewStampButton=document.getElementById('previewStampButton');if(previewStampButton)previewStampButton.classList.toggle('hidden',!['hotel','hueca','cafe','urbana'].includes(loc.category));
+            const previewStampButton=document.getElementById('previewStampButton');if(previewStampButton)previewStampButton.classList.toggle('hidden',!['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category));
             document.getElementById('previewHours').innerText = loc.hours || "Lun - Dom: 08:00 - 20:00";
             document.getElementById('previewAddress').innerText = loc.address;
             
@@ -5536,7 +5539,7 @@
             const totalToWin = 6;
             const ruleDesc = document.getElementById('passportRuleDesc');
             if(ruleDesc) ruleDesc.innerText = passportMode === 'turista' ? 'Meta: 1 Hotel + 5 Gastronomía (6 casillas)' : 'Meta: 6 Paradas Gastronómicas (6 casillas)';
-            const gastronomicCategories=new Set(['hueca','cafe','urbana']);
+            const gastronomicCategories=new Set(['hueca','cafe','urbana','heladeria','panaderia','bar']);
             const visited=visitedLocations.map(id=>locations.find(location=>location.id===id)).filter(Boolean);
             const visitedHotels=visited.filter(location=>location.category==='hotel');
             const visitedFood=visited.filter(location=>gastronomicCategories.has(location.category));
@@ -5590,7 +5593,7 @@
 
         function renderPassportBenefit(passportComplete){const box=document.getElementById('passportBenefitReward'),scheduled=passportCampaignIsActive(),configured=passportCampaignLoaded?(passportMode==='turista'?passportCampaignConfig.tourist:passportCampaignConfig.local):explorerBenefitConfig,active=passportComplete&&scheduled&&configured.active!==false;if(!box)return;box.classList.toggle('hidden',!active);if(!active)return;document.getElementById('passportBenefitTitle').textContent=configured.title||'Recompensa del Pasaporte';document.getElementById('passportBenefitDescription').textContent=configured.description||'';const image=document.getElementById('passportBenefitImage');image.classList.toggle('hidden',!configured.imageUrl);if(configured.imageUrl)image.src=configured.imageUrl;document.getElementById('passportBenefitCodeBox').classList.add('hidden');document.getElementById('passportRewardRegistration').classList.remove('hidden');const button=document.getElementById('passportRewardClaimButton');if(button)button.innerHTML=visitorAuth?.currentUser&&currentVisitorProfile?.profileComplete?'<i class="fa-solid fa-ticket mr-2"></i>Registrar y generar mi código':'<i class="fa-brands fa-google mr-2"></i>Registrarme y reclamar';const validity=[];if(passportCampaignConfig.startAt)validity.push(`Desde ${new Date(passportCampaignConfig.startAt).toLocaleString('es-EC')}`);if(passportCampaignConfig.endAt)validity.push(`hasta ${new Date(passportCampaignConfig.endAt).toLocaleString('es-EC')}`);document.getElementById('passportBenefitValidity').textContent=validity.join(' ');const link=document.getElementById('passportBenefitLink');link.classList.add('hidden');link.href=configured.url||'#';const label=link.querySelector('span');if(label)label.textContent=configured.buttonText||'Solicitar mi premio';}
 
-        function renderPassportNextStops(visitedHotels=[],visitedFood=[]){const container=document.getElementById('passportNextStops');if(!container)return;const gastronomicCategories=new Set(['hueca','cafe','urbana']);let candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&(passportMode==='turista'?(visitedHotels.length<1?item.location.category==='hotel':gastronomicCategories.has(item.location.category)):gastronomicCategories.has(item.location.category)));if(!candidates.length&&passportMode==='turista')candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&gastronomicCategories.has(item.location.category));if(userCoords)candidates.sort((a,b)=>calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(a.location.lat),Number(a.location.lng))-calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(b.location.lat),Number(b.location.lng)));const next=candidates.slice(0,2);container.innerHTML=next.length?next.map(({location,index})=>`<button type="button" onclick="openPassportNextStop(${index})" class="w-full bg-white border border-brandGold/30 rounded-xl p-3 text-left flex items-center gap-3 hover:border-brandGold"><span class="w-9 h-9 rounded-full bg-brandGold/15 text-brandGold grid place-items-center"><i class="fa-solid ${escapeHTML(location.iconClass||'fa-location-dot')}"></i></span><span class="min-w-0 flex-grow"><b class="block text-xs truncate">${escapeHTML(location.title||'Parada Vive Loja')}</b><span class="text-[10px] text-gray-500">${location.category==='hotel'?'Parada de hospedaje':'Parada gastronómica'} · Ver ubicación</span></span><i class="fa-solid fa-chevron-right text-brandGold"></i></button>`).join(''):'<p class="text-xs text-gray-500 bg-gray-100 rounded-xl p-3">Ya visitaste todas las paradas disponibles para este modo.</p>';}
+        function renderPassportNextStops(visitedHotels=[],visitedFood=[]){const container=document.getElementById('passportNextStops');if(!container)return;const gastronomicCategories=new Set(['hueca','cafe','urbana','heladeria','panaderia','bar']);let candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&(passportMode==='turista'?(visitedHotels.length<1?item.location.category==='hotel':gastronomicCategories.has(item.location.category)):gastronomicCategories.has(item.location.category)));if(!candidates.length&&passportMode==='turista')candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&gastronomicCategories.has(item.location.category));if(userCoords)candidates.sort((a,b)=>calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(a.location.lat),Number(a.location.lng))-calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(b.location.lat),Number(b.location.lng)));const next=candidates.slice(0,2);container.innerHTML=next.length?next.map(({location,index})=>`<button type="button" onclick="openPassportNextStop(${index})" class="w-full bg-white border border-brandGold/30 rounded-xl p-3 text-left flex items-center gap-3 hover:border-brandGold"><span class="w-9 h-9 rounded-full bg-brandGold/15 text-brandGold grid place-items-center"><i class="fa-solid ${escapeHTML(location.iconClass||'fa-location-dot')}"></i></span><span class="min-w-0 flex-grow"><b class="block text-xs truncate">${escapeHTML(location.title||'Parada Vive Loja')}</b><span class="text-[10px] text-gray-500">${location.category==='hotel'?'Parada de hospedaje':'Parada gastronómica'} · Ver ubicación</span></span><i class="fa-solid fa-chevron-right text-brandGold"></i></button>`).join(''):'<p class="text-xs text-gray-500 bg-gray-100 rounded-xl p-3">Ya visitaste todas las paradas disponibles para este modo.</p>';}
 
         function openPassportNextStop(index){closeModal('pasaporteModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});showToast('📍 Visita esta parada y escanea su QR para obtener el sello.');}
 
@@ -5653,7 +5656,7 @@
         function searchItems() {
             const input=document.getElementById('searchInput'),query=normalizeSmartSearch(input?.value),terms=smartSearchTerms(query),cards=[...document.querySelectorAll('.local-item')],status=document.getElementById('smartSearchStatus');
             const wantsOpen=/abierto|ahora|open|now/.test(query),wantsNear=/cerca|proximo|mi ubicacion|near|location/.test(query),wantsPassport=/pasaporte|sello|passport|stamp/.test(query);
-            const ranked=cards.map((card,order)=>{const location=locations.find(loc=>String(loc.id)===String(card.dataset.locationId))||locations[order],haystack=normalizeSmartSearch([location?.title,location?.titleEn,location?.tag,location?.tagEn,location?.desc,location?.descEn,location?.dish,location?.dishEn,location?.category,location?.address,location?.services,location?.keywords].flat().join(' '));let score=terms.reduce((total,term)=>total+(haystack.includes(term)?12:0),0);if(wantsOpen&&location&&isLocOpenNow(location))score+=30;if(wantsOpen&&location&&!isLocOpenNow(location))score-=100;if(wantsPassport&&location&&!visitedLocations.includes(location.id)&&['hotel','hueca','cafe','urbana'].includes(location.category))score+=25;let distance=null;if(wantsNear&&userCoords&&location){distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(location.lat),Number(location.lng));if(Number.isFinite(distance))score+=Math.max(0,30-distance*6);}if(!query)score=1;return{card,score,order,distance};});
+            const ranked=cards.map((card,order)=>{const location=locations.find(loc=>String(loc.id)===String(card.dataset.locationId))||locations[order],haystack=normalizeSmartSearch([location?.title,location?.titleEn,location?.tag,location?.tagEn,location?.desc,location?.descEn,location?.dish,location?.dishEn,location?.category,location?.address,location?.services,location?.keywords].flat().join(' '));let score=terms.reduce((total,term)=>total+(haystack.includes(term)?12:0),0);if(wantsOpen&&location&&isLocOpenNow(location))score+=30;if(wantsOpen&&location&&!isLocOpenNow(location))score-=100;if(wantsPassport&&location&&!visitedLocations.includes(location.id)&&['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(location.category))score+=25;let distance=null;if(wantsNear&&userCoords&&location){distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(location.lat),Number(location.lng));if(Number.isFinite(distance))score+=Math.max(0,30-distance*6);}if(!query)score=1;return{card,score,order,distance};});
             ranked.sort((a,b)=>b.score-a.score||a.order-b.order);
             let visible=0;ranked.forEach(item=>{const matches=!query||item.score>0;item.card.classList.toggle('hidden-item',!matches);item.card.style.opacity=matches?'1':'0';item.card.style.order=matches?String(-Math.round(item.score)):'999';if(matches)visible++;});
             const noRes=document.getElementById('noResults');if(noRes)noRes.classList.toggle('hidden',visible>0);
@@ -5873,7 +5876,7 @@
 
         let whatToDoNowMinutes=60;
         function openWhatToDoNow(){openModal('whatToDoNowModal');refreshWhatToDoNow(60);setMascotMessage('¡Dime qué te provoca y encontraré tu mejor opción para este momento!');}
-        function nowInterestMatches(location,interest){if(interest==='all')return true;const text=[location.category,location.tag,location.title,location.dish].join(' ').toLowerCase();if(interest==='food')return /hueca|restaurant|comida|gastronom|urbana/.test(text);if(interest==='cafe')return /cafe|café|cafeter/.test(text);if(interest==='culture')return /turismo|cultura|museo|iglesia|parque|histori|fotograf/.test(text);if(interest==='stay')return /hotel|hostal|hospeda/.test(text);return true;}
+        function nowInterestMatches(location,interest){if(interest==='all')return true;const text=[location.category,location.tag,location.title,location.dish].join(' ').toLowerCase();if(interest==='food')return /hueca|restaurant|comida|gastronom|urbana|helader|panader|reposter|bar|coctel/.test(text);if(interest==='cafe')return /cafe|café|cafeter/.test(text);if(interest==='culture')return /turismo|cultura|museo|iglesia|parque|histori|fotograf/.test(text);if(interest==='stay')return /hotel|hostal|hospeda/.test(text);return true;}
         function locateForWhatToDoNow(){if(!navigator.geolocation){showToast('Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};refreshWhatToDoNow(whatToDoNowMinutes);showToast('📍 Recomendaciones ordenadas por cercanía');},()=>showToast('No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
         function refreshWhatToDoNow(minutes=whatToDoNowMinutes){
             whatToDoNowMinutes=Number(minutes)||60;
@@ -5888,7 +5891,7 @@
             const recommendations=options.slice(0,3);empty.classList.toggle('hidden',recommendations.length>0);
             if(!recommendations.length){results.innerHTML='';return;}
             results.innerHTML=recommendations.map(({location,index,distance},position)=>{
-                const title=escapeHTML(currentLang==='en'&&location.titleEn?location.titleEn:location.title),description=escapeHTML(currentLang==='en'&&location.dishEn?location.dishEn:(location.dish||location.tag||'Experiencia recomendada')),address=escapeHTML(location.address||'Loja, Ecuador'),icon=escapeHTML(location.iconClass||'fa-location-dot'),distanceLabel=Number.isFinite(distance)?` · ${distance<1?Math.round(distance*1000)+' m':distance.toFixed(1)+' km'}`:'',passportLabel=!visitedLocations.includes(location.id)&&['hotel','hueca','cafe','urbana'].includes(location.category)?'<span class="text-[10px] text-amber-700 font-bold"><i class="fa-solid fa-stamp mr-1"></i>Suma a tu pasaporte</span>':'';
+                const title=escapeHTML(currentLang==='en'&&location.titleEn?location.titleEn:location.title),description=escapeHTML(currentLang==='en'&&location.dishEn?location.dishEn:(location.dish||location.tag||'Experiencia recomendada')),address=escapeHTML(location.address||'Loja, Ecuador'),icon=escapeHTML(location.iconClass||'fa-location-dot'),distanceLabel=Number.isFinite(distance)?` · ${distance<1?Math.round(distance*1000)+' m':distance.toFixed(1)+' km'}`:'',passportLabel=!visitedLocations.includes(location.id)&&['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(location.category)?'<span class="text-[10px] text-amber-700 font-bold"><i class="fa-solid fa-stamp mr-1"></i>Suma a tu pasaporte</span>':'';
                 return `<article class="${position===0?'bg-gradient-to-br from-sky-50 to-cyan-50 border-2 border-sky-500':'bg-white border border-sky-200'} rounded-2xl p-4 shadow-sm">${position===0?'<p class="text-[10px] uppercase tracking-widest text-sky-700 font-black mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Tu mejor opción ahora</p>':''}<div class="flex items-start gap-3"><span class="w-11 h-11 flex-shrink-0 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid ${icon}"></i></span><div class="min-w-0 flex-grow"><div class="flex items-center justify-between gap-2"><h4 class="font-black truncate">${title}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 rounded-full px-2 py-1 font-black">ABIERTO</span></div><p class="text-xs text-gray-600 mt-1">${description}</p><p class="text-[11px] text-gray-500 mt-1 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${address}${distanceLabel}</p>${passportLabel}</div></div><div class="grid grid-cols-2 gap-2 mt-3"><button type="button" onclick="selectNowRecommendation(${index})" class="bg-sky-600 text-white rounded-xl py-2.5 text-xs font-black">Ver detalle</button><button type="button" onclick="openNowDirections(${index})" class="border border-sky-500 text-sky-700 rounded-xl py-2.5 text-xs font-black">Cómo llegar</button></div></article>`;
             }).join('');
         }
