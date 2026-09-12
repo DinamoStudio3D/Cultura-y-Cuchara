@@ -2288,6 +2288,7 @@
                 const snapshot = await db.collection('userProfiles').doc(user.uid).get();
                 if (snapshot.exists && snapshot.data().profileComplete === true) {
                     currentVisitorProfile = snapshot.data();
+                    await loadCloudVisitorProgress(user);
                     renderVisitorReady(user, currentVisitorProfile);
                 } else {
                     fillVisitorProfileForm(user, snapshot.exists ? snapshot.data() : {});
@@ -2355,6 +2356,8 @@
                 }
                 await profileRef.set(data, { merge: true });
                 currentVisitorProfile = { ...(existing.exists ? existing.data() : {}), ...data, consentAt: existing.data()?.consentAt || true };
+                cloudProgressReady = true;
+                await saveCloudVisitorProgress();
                 renderVisitorReady(user, currentVisitorProfile);
                 showToast('¡Tu cuenta Vive Loja está lista!');
             } catch (error) {
@@ -2366,6 +2369,8 @@
 
         async function signOutVisitor() {
             if (!visitorAuth) return;
+            await saveCloudVisitorProgress();
+            clearSyncedProgressFromDevice();
             await visitorAuth.signOut();
             currentVisitorProfile = null;
             updateVisitorAccountLabels(null);
@@ -2375,6 +2380,8 @@
         async function switchVisitorGoogleAccount() {
             if (!visitorAuth) return;
             try {
+                await saveCloudVisitorProgress();
+                clearSyncedProgressFromDevice();
                 await visitorAuth.signOut();
                 currentVisitorProfile = null;
                 showVisitorAccountView('accountSignedOut');
@@ -2398,6 +2405,88 @@
         let db = null;
         let visitorAuth = null;
         let currentVisitorProfile = null;
+        let cloudProgressReady = false;
+        let cloudProgressHydrating = false;
+        let cloudProgressSaveTimer = null;
+        const CLOUD_PROGRESS_KEYS = ['cyc_favorites', 'cyc_saved_agenda_events', 'cyc_saved_festival_events', 'cyc_passport_mode'];
+
+        function normalizedProgressIds(value, limit = 150) {
+            if (!Array.isArray(value)) return [];
+            return [...new Set(value.filter(item => typeof item === 'string' && item.length > 0 && item.length <= 160))].slice(0, limit);
+        }
+
+        function buildCloudProgressPayload(user) {
+            return {
+                uid: user.uid,
+                favorites: normalizedProgressIds(favoriteLocations),
+                savedAgendaEvents: normalizedProgressIds(safeReadJSON('cyc_saved_agenda_events', [])),
+                savedFestivalEvents: normalizedProgressIds(safeReadJSON('cyc_saved_festival_events', [])),
+                routeLocationIds: normalizedProgressIds(currentSmartRoute.map(location => String(location.id)), 20),
+                passportMode: passportMode === 'lojano' ? 'lojano' : 'turista',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+        }
+
+        async function saveCloudVisitorProgress() {
+            const user = visitorAuth?.currentUser;
+            if (!db || !user || !currentVisitorProfile?.profileComplete || cloudProgressHydrating) return;
+            try {
+                await db.collection('userProgress').doc(user.uid).set(buildCloudProgressPayload(user), { merge: true });
+                cloudProgressReady = true;
+            } catch (error) {
+                console.warn('No se pudo sincronizar el progreso del visitante:', error);
+            }
+        }
+
+        function scheduleCloudVisitorProgressSave() {
+            if (!cloudProgressReady || cloudProgressHydrating || !visitorAuth?.currentUser) return;
+            clearTimeout(cloudProgressSaveTimer);
+            cloudProgressSaveTimer = setTimeout(saveCloudVisitorProgress, 650);
+        }
+
+        async function loadCloudVisitorProgress(user) {
+            if (!db || !user) return;
+            cloudProgressHydrating = true;
+            try {
+                const snapshot = await db.collection('userProgress').doc(user.uid).get();
+                if (snapshot.exists) {
+                    const data = snapshot.data();
+                    favoriteLocations = normalizedProgressIds([...favoriteLocations, ...normalizedProgressIds(data.favorites)]);
+                    localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            scheduleCloudVisitorProgressSave();
+                    const agenda = normalizedProgressIds([...safeReadJSON('cyc_saved_agenda_events', []), ...normalizedProgressIds(data.savedAgendaEvents)]);
+                    const festival = normalizedProgressIds([...safeReadJSON('cyc_saved_festival_events', []), ...normalizedProgressIds(data.savedFestivalEvents)]);
+                    localStorage.setItem('cyc_saved_agenda_events', JSON.stringify(agenda));
+                    localStorage.setItem('cyc_saved_festival_events', JSON.stringify(festival));
+                    if (data.passportMode === 'turista' || data.passportMode === 'lojano') {
+                        passportMode = data.passportMode;
+                        localStorage.setItem('cyc_passport_mode', passportMode);
+                    }
+                    const routeIds = normalizedProgressIds(data.routeLocationIds, 20);
+                    if (routeIds.length) currentSmartRoute = routeIds.map(id => locations.find(location => String(location.id) === id)).filter(Boolean);
+                }
+                cloudProgressReady = true;
+                if (typeof updateItineraryUI === 'function') updateItineraryUI();
+                if (typeof renderAgendaUI === 'function') renderAgendaUI();
+                if (typeof renderFestivalAgenda === 'function') renderFestivalAgenda();
+                if (typeof updatePassportUI === 'function') updatePassportUI();
+            } catch (error) {
+                cloudProgressReady = false;
+                console.warn('No se pudo cargar el progreso del visitante:', error);
+            } finally {
+                cloudProgressHydrating = false;
+            }
+            if (cloudProgressReady) await saveCloudVisitorProgress();
+        }
+
+        function clearSyncedProgressFromDevice() {
+            CLOUD_PROGRESS_KEYS.forEach(key => localStorage.removeItem(key));
+            favoriteLocations = [];
+            currentSmartRoute = [];
+            passportMode = 'turista';
+            cloudProgressReady = false;
+            clearTimeout(cloudProgressSaveTimer);
+        }
         try {
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
@@ -2568,6 +2657,7 @@
             const saved = safeReadJSON(key, []);
             const next = saved.includes(eventId) ? saved.filter(id => id !== eventId) : [...saved, eventId];
             localStorage.setItem(key, JSON.stringify(next));
+            scheduleCloudVisitorProgressSave();
             renderFestivalAgenda();
             showToast(next.includes(eventId)?(currentLang==='en'?'Activity saved to your agenda':'Actividad guardada en tu agenda'):(currentLang==='en'?'Activity removed from your agenda':'Actividad retirada de tu agenda'));
         }
@@ -3737,6 +3827,7 @@
                 completeChabaquitoMission('ruta');
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            scheduleCloudVisitorProgressSave();
             updateItineraryUI();
             renderTrendingUI();
             
@@ -3773,6 +3864,7 @@
                 completeChabaquitoMission('ruta');
             }
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            scheduleCloudVisitorProgressSave();
             updateItineraryUI();
             renderTrendingUI();
             
@@ -3852,6 +3944,7 @@
         function removeFavorite(id) {
             favoriteLocations = favoriteLocations.filter(favId => favId !== id);
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            scheduleCloudVisitorProgressSave();
             renderMapAndGrid();
             renderTrendingUI();
             updateItineraryUI();
@@ -3878,6 +3971,7 @@
             if(favoriteLocations.length === 0) return;
             favoriteLocations = [];
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            scheduleCloudVisitorProgressSave();
             renderMapAndGrid();
             renderTrendingUI();
             updateItineraryUI();
@@ -3921,6 +4015,7 @@
                 ? saved.filter(id => id !== String(eventId))
                 : [...saved, String(eventId)];
             localStorage.setItem('cyc_saved_agenda_events', JSON.stringify(next));
+            scheduleCloudVisitorProgressSave();
             renderAgendaUI();
             showToast(next.includes(String(eventId))?(currentLang==='en'?'Event saved to your agenda':'Evento guardado en tu agenda'):(currentLang==='en'?'Event removed from your agenda':'Evento retirado de tu agenda'));
         }
@@ -5519,6 +5614,7 @@
         function switchPassportMode(mode) {
             passportMode = mode;
             localStorage.setItem('cyc_passport_mode', mode);
+            scheduleCloudVisitorProgressSave();
             const btnT = document.getElementById('btnTurista');
             const btnL = document.getElementById('btnLojano');
             if (mode === 'turista') {
@@ -5970,6 +6066,7 @@
             }
 
             currentSmartRoute = selected;
+            scheduleCloudVisitorProgressSave();
             if (!selected.length) {
                 if (results) results.classList.add('hidden');
                 if (empty) empty.classList.remove('hidden');
@@ -6030,6 +6127,7 @@
                 if (!favoriteLocations.includes(stop.id)) favoriteLocations.push(stop.id);
             });
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            scheduleCloudVisitorProgressSave();
             updateItineraryUI();
             renderTrendingUI();
             completeChabaquitoMission('ruta');
