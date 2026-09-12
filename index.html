@@ -2199,6 +2199,9 @@
         function openAccountModal() {
             const modal = document.getElementById('accountModal');
             if (!modal) return;
+            accountAuthFlowActive = true;
+            const promoModal = document.getElementById('promoPopupModal');
+            if (promoModal) promoModal.classList.add('hidden');
             openModal('accountModal');
             if (!visitorAuth || !visitorAuth.currentUser) showVisitorAccountView('accountSignedOut');
         }
@@ -2306,6 +2309,9 @@
                 setVisitorMessage('visitorAuthMessage', 'El acceso todavía no está disponible. Inténtalo nuevamente.', true);
                 return;
             }
+            accountAuthFlowActive = true;
+            const promoModal = document.getElementById('promoPopupModal');
+            if (promoModal) promoModal.classList.add('hidden');
             const button = document.getElementById('googleSignInButton');
             const originalButtonHTML = button.innerHTML;
             button.disabled = true;
@@ -2321,7 +2327,8 @@
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await visitorAuth.signInWithPopup(provider);
                 if (!result?.user) throw new Error('auth/no-user-returned');
-                accountModalKeepOpenUntil = Date.now() + 4000;
+                accountModalKeepOpenUntil = Date.now() + 6000;
+                accountAuthFlowActive = true;
                 updateVisitorAccountLabels(result.user);
                 await handleVisitorAuthState(result.user);
                 openModal('accountModal');
@@ -2435,6 +2442,7 @@
         let cloudProgressHydrating = false;
         let cloudProgressSaveTimer = null;
         let accountModalKeepOpenUntil = 0;
+        let accountAuthFlowActive = false;
         const CLOUD_PROGRESS_KEYS = ['cyc_favorites', 'cyc_saved_agenda_events', 'cyc_saved_festival_events', 'cyc_passport_mode'];
 
         function normalizedProgressIds(value, limit = 150) {
@@ -6378,7 +6386,10 @@
         }
 
         let lastFocusedElement = null;
-        function openModal(id) { 
+        function openModal(id) {
+            const accountModal = document.getElementById('accountModal');
+            const accountIsOpen = accountModal && !accountModal.classList.contains('hidden');
+            if (id === 'promoPopupModal' && (accountAuthFlowActive || accountIsOpen)) return;
             const m = document.getElementById(id);
             if(m) {
                 lastFocusedElement = document.activeElement;
@@ -6395,8 +6406,9 @@
                 if (focusTarget) setTimeout(() => focusTarget.focus(), 0);
             }
         }
-        function closeModal(id) { 
+        function closeModal(id) {
             if (id === 'accountModal' && Date.now() < accountModalKeepOpenUntil) return;
+            if (id === 'accountModal') accountAuthFlowActive = false;
             const m = document.getElementById('adminModal');
             if(id === 'adminModal' && m) {
                 stopDragBg();
