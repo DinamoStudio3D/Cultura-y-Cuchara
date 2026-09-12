@@ -2275,6 +2275,22 @@
             showVisitorAccountView('visitorProfileForm');
         }
 
+        async function readVisitorProfileSecurely(user) {
+            const profileRef = db.collection('userProfiles').doc(user.uid);
+            let lastError = null;
+            for (let attempt = 0; attempt < 2; attempt += 1) {
+                try {
+                    if (attempt > 0) await user.getIdToken(true);
+                    return await profileRef.get({ source: 'server' });
+                } catch (error) {
+                    lastError = error;
+                    if (!['permission-denied', 'unavailable', 'unknown'].includes(error?.code) || attempt === 1) throw error;
+                    await new Promise(resolve => setTimeout(resolve, 700));
+                }
+            }
+            throw lastError;
+        }
+
         async function handleVisitorAuthState(user) {
             currentVisitorProfile = null;
             updateVisitorAccountLabels(user);
@@ -2283,7 +2299,7 @@
                 return;
             }
             try {
-                const snapshot = await db.collection('userProfiles').doc(user.uid).get();
+                const snapshot = await readVisitorProfileSecurely(user);
                 if (snapshot.exists && snapshot.data().profileComplete === true) {
                     currentVisitorProfile = snapshot.data();
                     renderVisitorReady(user, currentVisitorProfile);
@@ -2294,7 +2310,12 @@
             } catch (error) {
                 fillVisitorProfileForm(user);
                 showVisitorAccountView('visitorProfileForm');
-                setVisitorMessage('visitorProfileMessage', 'No pudimos consultar tu perfil. Verifica que las reglas de usuarios estén activadas en Firebase.', true);
+                const code = error?.code || 'error-desconocido';
+                const detail = code === 'permission-denied'
+                    ? 'Firebase rechazó la lectura del perfil. Comprueba que las reglas de userProfiles estén publicadas.'
+                    : 'No pudimos consultar tu perfil por un fallo temporal de conexión.';
+                setVisitorMessage('visitorProfileMessage', detail + ' Código: ' + code, true);
+                console.warn('Error al consultar userProfiles:', error);
             }
         }
 
