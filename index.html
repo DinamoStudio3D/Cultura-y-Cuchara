@@ -498,13 +498,13 @@
             <div class="lg:col-span-2 rounded-2xl h-[460px] md:h-[500px] lg:h-[520px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
                 <div class="absolute top-4 right-4 z-[910]">
-                    <button id="mapLegendToggle" type="button" onclick="toggleMapLegend()" aria-expanded="false" class="ml-auto bg-white/95 backdrop-blur text-brandDark border border-gray-200 rounded-full px-3 py-2 shadow-xl text-xs font-black flex items-center gap-2 hover:border-brandGold"><i class="fa-solid fa-layer-group text-brandGold"></i> Tipos de puntos</button>
+                    <button id="mapLegendToggle" type="button" onclick="toggleMapLegend()" aria-expanded="false" class="ml-auto bg-white/95 backdrop-blur text-brandDark border border-gray-200 rounded-full px-3 py-2 shadow-xl text-xs font-black flex items-center gap-2 hover:border-brandGold"><i class="fa-solid fa-layer-group text-brandGold"></i> <span data-i18n="mapPointTypes">Tipos de puntos</span></button>
                     <div id="mapLegendPanel" class="hidden mt-2 w-52 bg-white/95 backdrop-blur rounded-2xl border border-gray-200 shadow-2xl p-2 space-y-1">
-                        <button type="button" data-map-group="all" onclick="filterMapGroup('all')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold bg-brandDark text-white"><span class="w-7 h-7 rounded-full bg-brandDark text-brandGold grid place-items-center"><i class="fa-solid fa-border-all"></i></span>Todos los puntos <b id="mapCountAll" class="ml-auto bg-white/15 rounded-full px-2 py-0.5">0</b></button>
-                        <button type="button" data-map-group="food" onclick="filterMapGroup('food')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-orange-50"><span class="w-7 h-7 rounded-full bg-orange-100 text-orange-600 grid place-items-center"><i class="fa-solid fa-utensils"></i></span>Gastronomía <b id="mapCountFood" class="ml-auto bg-orange-100 text-orange-700 rounded-full px-2 py-0.5">0</b></button>
-                        <button type="button" data-map-group="stay" onclick="filterMapGroup('stay')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-sky-50"><span class="w-7 h-7 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid fa-hotel"></i></span>Hospedaje <b id="mapCountStay" class="ml-auto bg-sky-100 text-sky-700 rounded-full px-2 py-0.5">0</b></button>
-                        <button type="button" data-map-group="tourism" onclick="filterMapGroup('tourism')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-emerald-50"><span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 grid place-items-center"><i class="fa-solid fa-landmark"></i></span>Atractivos <b id="mapCountTourism" class="ml-auto bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5">0</b></button>
-                        <button type="button" data-map-group="partners" onclick="filterMapGroup('partners')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-violet-50"><span class="w-7 h-7 rounded-full bg-violet-700 text-white grid place-items-center"><i class="fa-solid fa-handshake"></i></span>Marcas aliadas <b id="mapCountPartners" class="ml-auto bg-violet-100 text-violet-700 rounded-full px-2 py-0.5">0</b></button>
+                        <button type="button" data-map-group="all" onclick="filterMapGroup('all')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold bg-brandDark text-white"><span class="w-7 h-7 rounded-full bg-brandDark text-brandGold grid place-items-center"><i class="fa-solid fa-border-all"></i></span><span data-i18n="mapAllPoints">Todos los puntos</span> <b id="mapCountAll" class="ml-auto bg-white/15 rounded-full px-2 py-0.5">0</b></button>
+                        <button type="button" data-map-group="food" onclick="filterMapGroup('food')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-orange-50"><span class="w-7 h-7 rounded-full bg-orange-100 text-orange-600 grid place-items-center"><i class="fa-solid fa-utensils"></i></span><span data-i18n="mapFood">Gastronomía</span> <b id="mapCountFood" class="ml-auto bg-orange-100 text-orange-700 rounded-full px-2 py-0.5">0</b></button>
+                        <button type="button" data-map-group="stay" onclick="filterMapGroup('stay')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-sky-50"><span class="w-7 h-7 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid fa-hotel"></i></span><span data-i18n="mapStay">Hospedaje</span> <b id="mapCountStay" class="ml-auto bg-sky-100 text-sky-700 rounded-full px-2 py-0.5">0</b></button>
+                        <button type="button" data-map-group="tourism" onclick="filterMapGroup('tourism')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-emerald-50"><span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 grid place-items-center"><i class="fa-solid fa-landmark"></i></span><span data-i18n="mapAttractions">Atractivos</span> <b id="mapCountTourism" class="ml-auto bg-emerald-100 text-emerald-700 rounded-full px-2 py-0.5">0</b></button>
+                        <button type="button" data-map-group="partners" onclick="filterMapGroup('partners')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-violet-50"><span class="w-7 h-7 rounded-full bg-violet-700 text-white grid place-items-center"><i class="fa-solid fa-handshake"></i></span><span data-i18n="mapPartners">Marcas aliadas</span> <b id="mapCountPartners" class="ml-auto bg-violet-100 text-violet-700 rounded-full px-2 py-0.5">0</b></button>
                     </div>
                 </div>
                 
@@ -607,7 +607,7 @@
                     <button type="button" onclick="runSmartSearch('café')" class="flex-shrink-0 bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-3 py-1.5 text-[11px] font-bold">☕ Café</button>
                     <button type="button" onclick="runSmartSearch('comida lojana')" class="flex-shrink-0 bg-orange-50 text-orange-700 border border-orange-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🥘 Comida lojana</button>
                     <button type="button" onclick="runSmartSearch('hotel hostal')" class="flex-shrink-0 bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🏨 Hospedaje</button>
-                    <button type="button" onclick="runSmartSearch('aliado')" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-handshake mr-1"></i>Marcas aliadas</button>
+                    <button type="button" onclick="runSmartSearch('aliado')" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-handshake mr-1"></i><span data-i18n="mapPartners">Marcas aliadas</span></button>
                     <button type="button" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Cerca de mí</button>
                     <button type="button" onclick="runSmartSearch('pasaporte')" class="flex-shrink-0 bg-rose-50 text-rose-700 border border-rose-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-stamp mr-1"></i>Para mi pasaporte</button>
                 </div>
@@ -1050,10 +1050,10 @@
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-7 p-2.5 bg-orange-50 border border-orange-100 rounded-2xl">
                 <div class="flex items-center gap-2" role="group" aria-label="Filtrar agenda">
                     <button id="agendaAllButton" type="button" onclick="setAgendaView('all')" class="px-4 py-2 rounded-xl text-xs font-black transition">
-                        <i class="fa-solid fa-calendar-days mr-1.5"></i>Todos
+                        <i class="fa-solid fa-calendar-days mr-1.5"></i><span data-i18n="agendaAll">Todos</span>
                     </button>
                     <button id="agendaSavedButton" type="button" onclick="setAgendaView('saved')" class="px-4 py-2 rounded-xl text-xs font-black transition">
-                        <i class="fa-solid fa-bookmark mr-1.5"></i>Mis guardados
+                        <i class="fa-solid fa-bookmark mr-1.5"></i><span data-i18n="agendaSaved">Mis guardados</span>
                     </button>
                 </div>
                 <p id="agendaSavedCount" class="text-xs font-bold text-gray-600 px-3"></p>
@@ -1918,6 +1918,7 @@
                 sugDesc: "Elige un recorrido especializado para tu viaje.",
                 mapTitle: "Mapa Interactivo de Loja",
                 mapDesc: "Desliza libremente por el mapa o pulsa los pines para explorar los sitios.",
+                mapPointTypes: "Tipos de puntos", mapAllPoints: "Todos los puntos", mapFood: "Gastronomía", mapStay: "Hospedaje", mapAttractions: "Atractivos", mapPartners: "Marcas aliadas", agendaAll: "Todos", agendaSaved: "Mis guardados",
                 btnGps: "Cerca de mí",
                 btnCenter: "Centrar Loja",
                 btnMedia: "Ver Vídeo y Galería de Fotos",
@@ -2041,6 +2042,7 @@
                 sugDesc: "Choose a specialized tour for your trip.",
                 mapTitle: "Interactive Map of Loja",
                 mapDesc: "Drag freely with one finger on the map or tap the pins to explore spots.",
+                mapPointTypes: "Point types", mapAllPoints: "All points", mapFood: "Food & dining", mapStay: "Accommodation", mapAttractions: "Attractions", mapPartners: "Partner brands", agendaAll: "All", agendaSaved: "My saved events",
                 btnGps: "Near me",
                 btnCenter: "Center Loja",
                 btnMedia: "View Video & Photo Gallery",
@@ -3415,7 +3417,7 @@
         let activeMapGroup='all';
         function toggleMapLegend(){const panel=document.getElementById('mapLegendPanel'),button=document.getElementById('mapLegendToggle');if(!panel||!button)return;const willOpen=panel.classList.contains('hidden');panel.classList.toggle('hidden',!willOpen);button.setAttribute('aria-expanded',String(willOpen));}
         function mapGroupMatches(location,group){if(group==='all')return true;if(group==='food')return ['hueca','cafe','urbana'].includes(location.category);if(group==='stay')return location.category==='hotel';if(group==='tourism')return location.category==='turismo';if(group==='partners')return location.category==='aliado';return true;}
-        function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels={all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;document.getElementById('mapLegendPanel')?.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
+        function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels=currentLang==='en'?{all:'All points',food:'Food & dining',stay:'Accommodation',tourism:'Attractions',partners:'Partner brands'}:{all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;document.getElementById('mapLegendPanel')?.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
 
         function renderMapAndGrid() {
             if(!markersLayer) return;
@@ -3987,7 +3989,7 @@
             const countLabel = document.getElementById('agendaSavedCount');
             if (allButton) allButton.className = 'px-4 py-2 rounded-xl text-xs font-black transition ' + (agendaViewMode === 'all' ? 'bg-brandDark text-white shadow' : 'text-gray-600 hover:bg-white');
             if (savedButton) savedButton.className = 'px-4 py-2 rounded-xl text-xs font-black transition ' + (agendaViewMode === 'saved' ? 'bg-brandGold text-white shadow' : 'text-gray-600 hover:bg-white');
-            if (countLabel) countLabel.textContent = saved.length === 1 ? '1 evento guardado' : saved.length + ' eventos guardados';
+            if (countLabel) countLabel.textContent = currentLang==='en'?(saved.length===1?'1 saved event':saved.length+' saved events'):(saved.length===1?'1 evento guardado':saved.length+' eventos guardados');
 
             if (!visibleEvents.length) {
                 agendaContainer.innerHTML = agendaViewMode === 'saved'
@@ -4020,13 +4022,13 @@
                             <p class="text-xs text-gray-500 truncate mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location || 'Ubicación por confirmar'}</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <button type="button" onclick="buildEventDayPlan(decodeURIComponent('${safeId}'))" class="col-span-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-3 py-2.5 rounded-xl font-black hover:opacity-90 transition text-xs shadow">
-                                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Armar mi día alrededor del evento
+                                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> ${currentLang==='en'?'Build my day around this event':'Armar mi día alrededor del evento'}
                                 </button>
                                 <button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold hover:bg-orange-50 transition text-xs">
-                                    <i class="fa-regular fa-calendar-plus mr-1"></i> Calendario
+                                    <i class="fa-regular fa-calendar-plus mr-1"></i> ${currentLang==='en'?'Calendar':'Calendario'}
                                 </button>
                                 <button type="button" onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${String(evTitle || '').replace(/'/g, "\\'")}', '${ev.date || ''}', '${String(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold hover:bg-black transition text-xs">
-                                    <i class="fa-solid fa-map-pin mr-1"></i> Ver mapa
+                                    <i class="fa-solid fa-map-pin mr-1"></i> ${currentLang==='en'?'View map':'Ver mapa'}
                                 </button>
                             </div>
                         </div>
