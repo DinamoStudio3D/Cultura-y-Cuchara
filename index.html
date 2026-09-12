@@ -2281,17 +2281,16 @@
         async function readVisitorProfileWithRetry(user) {
             const profileRef = db.collection('userProfiles').doc(user.uid);
             try {
-                await user.getIdToken(true);
                 return await profileRef.get();
             } catch (firstError) {
                 if (firstError?.code !== 'permission-denied') throw firstError;
                 await new Promise(resolve => setTimeout(resolve, 700));
-                await user.getIdToken(true);
                 return await profileRef.get();
             }
         }
 
         async function handleVisitorAuthState(user) {
+            const stateVersion = ++visitorAuthStateVersion;
             if (!user && visitorAuth?.currentUser) user = visitorAuth.currentUser;
             currentVisitorProfile = null;
             updateVisitorAccountLabels(user);
@@ -2301,6 +2300,7 @@
             }
             try {
                 const snapshot = await readVisitorProfileWithRetry(user);
+                if (stateVersion !== visitorAuthStateVersion || visitorAuth?.currentUser?.uid !== user.uid) return;
                 if (snapshot.exists && snapshot.data().profileComplete === true) {
                     currentVisitorProfile = snapshot.data();
                     renderVisitorReady(user, currentVisitorProfile);
@@ -2334,11 +2334,6 @@
             button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Abriendo Google...</span>';
             setVisitorMessage('visitorAuthMessage', 'Selecciona tu cuenta en la ventana segura de Google.', false);
             try {
-                try {
-                    await visitorAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-                } catch (persistenceError) {
-                    await visitorAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-                }
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await visitorAuth.signInWithPopup(provider);
@@ -2458,6 +2453,7 @@
         let cloudProgressSaveTimer = null;
         let accountModalKeepOpenUntil = 0;
         let accountAuthFlowActive = false;
+        let visitorAuthStateVersion = 0;
         const CLOUD_PROGRESS_KEYS = ['cyc_favorites', 'cyc_saved_agenda_events', 'cyc_saved_festival_events', 'cyc_passport_mode'];
 
         function normalizedProgressIds(value, limit = 150) {
@@ -2498,12 +2494,13 @@
             if (!db || !user) return;
             cloudProgressHydrating = true;
             try {
-                const snapshot = await db.collection('userProgress').doc(user.uid).get();
+                const progressUserId = user.uid;
+                const snapshot = await db.collection('userProgress').doc(progressUserId).get();
+                if (visitorAuth?.currentUser?.uid !== progressUserId) return;
                 if (snapshot.exists) {
                     const data = snapshot.data();
                     favoriteLocations = normalizedProgressIds([...favoriteLocations, ...normalizedProgressIds(data.favorites)]);
                     localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
-            scheduleCloudVisitorProgressSave();
                     const agenda = normalizedProgressIds([...safeReadJSON('cyc_saved_agenda_events', []), ...normalizedProgressIds(data.savedAgendaEvents)]);
                     const festival = normalizedProgressIds([...safeReadJSON('cyc_saved_festival_events', []), ...normalizedProgressIds(data.savedFestivalEvents)]);
                     localStorage.setItem('cyc_saved_agenda_events', JSON.stringify(agenda));
@@ -2541,7 +2538,9 @@
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
             visitorAuth = firebase.auth();
-            visitorAuth.onAuthStateChanged(handleVisitorAuthState);
+            visitorAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .catch(error => console.warn('No se pudo fijar la persistencia local:', error))
+                .finally(() => visitorAuth.onAuthStateChanged(handleVisitorAuthState));
 
             const editableQrId = new URLSearchParams(window.location.search).get('qr');
             if (editableQrId) {
