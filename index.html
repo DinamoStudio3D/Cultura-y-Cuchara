@@ -551,7 +551,7 @@
                         <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
                     </button>
                     
-                    <button type="button" onclick="openQrClaimForCurrent()" class="w-full bg-brandGold text-white py-2.5 rounded-xl font-bold text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-1.5">
+                    <button id="previewStampButton" type="button" onclick="openQrClaimForCurrent()" class="w-full bg-brandGold text-white py-2.5 rounded-xl font-bold text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-qrcode"></i> Obtener sello de esta parada
                     </button>
 
@@ -3358,7 +3358,7 @@
             if(!container || locations.length === 0) return;
             container.innerHTML = '';
 
-            let trendingList = [...locations].map(loc => {
+            let trendingList = locations.filter(loc => loc.category !== 'aliado').map(loc => {
                 let score = favoriteLocations.includes(loc.id) ? 100 : 10;
                 return { ...loc, score };
             });
@@ -3444,8 +3444,9 @@
                                      <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}">
                                    </div>`;
                     } else {
-                        pinHtml = `<div class="bg-brandDark text-brandGold w-12 h-12 rounded-full border-[3px] border-brandGold flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
-                                     <i class="fa-solid ${loc.iconClass || 'fa-utensils'} text-lg pointer-events-none"></i>
+                        const partnerPin=loc.category==='aliado';
+                        pinHtml = `<div class="${partnerPin?'bg-violet-700 text-white border-violet-300':'bg-brandDark text-brandGold border-brandGold'} w-12 h-12 rounded-full border-[3px] flex items-center justify-center shadow-2xl hover:scale-110 transition-transform pointer-events-auto" style="touch-action: none;">
+                                     <i class="fa-solid ${partnerPin?'fa-handshake':(loc.iconClass || 'fa-utensils')} text-lg pointer-events-none"></i>
                                    </div>`;
                     }
 
@@ -3502,13 +3503,11 @@
                         <div class="h-52 overflow-hidden relative">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
-                                <span class="bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${locTag}</span>${hasPaidBadge?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Parada aliada</span>':''}
-                                ${openBadge}
+                                <span class="${loc.category==='aliado'?'bg-violet-700 text-white':'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${loc.category==='aliado'?'<i class="fa-solid fa-handshake mr-1"></i>Marca aliada':locTag}</span>${hasPaidBadge&&loc.category!=='aliado'?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Parada aliada</span>':''}
+                                ${loc.category==='aliado'?'':openBadge}
                             </div>
                             <div class="absolute bottom-3 right-3 flex gap-1.5 z-20">
-                                <button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)">
-                                    <i class="fa-solid fa-qrcode"></i>
-                                </button>
+                                ${['hotel','hueca','cafe','urbana'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)"><i class="fa-solid fa-qrcode"></i></button>`:''}
                                 <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
                                     <i class="fa-solid fa-diamond-turn-right"></i>
                                 </a>
@@ -4033,7 +4032,7 @@
             if(eventIndex<0)return showToast('No se pudo encontrar el evento');
             const ev=eventsList[eventIndex];
             const origin={lat:Number(ev.lat)||-3.9931,lng:Number(ev.lng)||-79.2042};
-            const eligible=locations.filter(location=>Number.isFinite(Number(location.lat))&&Number.isFinite(Number(location.lng))&&![location.category,location.tag,location.title,location.type].join(' ').toLowerCase().includes('motel'));
+            const eligible=locations.filter(location=>location.category!=='aliado'&&Number.isFinite(Number(location.lat))&&Number.isFinite(Number(location.lng))&&![location.category,location.tag,location.title,location.type].join(' ').toLowerCase().includes('motel'));
             const selected=[];
             ['food','cafe','stay'].forEach(category=>{
                 const candidates=eligible.filter(location=>eventPlanCategory(location)===category&&!selected.some(item=>item.id===location.id));
@@ -5401,6 +5400,7 @@
                         ? (currentLang === 'en' ? 'Experience: ' : 'Experiencia: ')
                         : (currentLang === 'en' ? 'Dish: ' : 'Plato: ');
             document.getElementById('previewDish').innerText = detailPrefix + (dishText || '');
+            const previewStampButton=document.getElementById('previewStampButton');if(previewStampButton)previewStampButton.classList.toggle('hidden',!['hotel','hueca','cafe','urbana'].includes(loc.category));
             document.getElementById('previewHours').innerText = loc.hours || "Lun - Dom: 08:00 - 20:00";
             document.getElementById('previewAddress').innerText = loc.address;
             
@@ -5853,7 +5853,7 @@
             if(!results||!empty)return;
             const currentHour=new Intl.DateTimeFormat('es-EC',{timeZone:'America/Guayaquil',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
             if(subtitle)subtitle.textContent=`Tu mejor opción abierta a las ${currentHour}`;
-            let options=locations.map((location,index)=>({location,index})).filter(item=>isLocOpenNow(item.location)&&nowInterestMatches(item.location,interest));
+            let options=locations.map((location,index)=>({location,index})).filter(item=>item.location.category!=='aliado'&&isLocOpenNow(item.location)&&nowInterestMatches(item.location,interest));
             options.forEach(item=>{const loc=item.location;item.distance=userCoords?calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(loc.lat),Number(loc.lng)):null;item.score=(visitedLocations.includes(loc.id)?0:20)+(placePromotionIsVisible(loc)?15:0)+(item.distance===null?0:Math.max(0,20-item.distance*4))+(favoriteLocations.includes(loc.id)?4:0);});
             options.sort((a,b)=>b.score-a.score);
             const recommendations=options.slice(0,3);empty.classList.toggle('hidden',recommendations.length>0);
@@ -5900,6 +5900,7 @@
             const empty = document.getElementById('smartRouteEmpty');
             let candidates = locations.filter(location =>
                 Number.isFinite(Number(location.lat)) && Number.isFinite(Number(location.lng)) &&
+                location.category !== 'aliado' &&
                 (preferences.category === 'all' || location.category === preferences.category) &&
                 (!preferences.openNow || isLocOpenNow(location)) &&
                 ![location.category,location.tag,location.title,location.type].join(' ').toLowerCase().includes('motel')
