@@ -272,10 +272,21 @@
                     <p id="visitorProfileMessage" class="hidden text-sm rounded-xl p-3" role="alert"></p>
                     <button id="saveVisitorProfileButton" type="submit" class="w-full bg-brandGold hover:bg-brandGoldHover text-white font-black rounded-xl px-5 py-3.5"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar y continuar</button>
                 </form>
-                <div id="accountReady" class="hidden text-center">
-                    <img id="accountReadyAvatar" class="w-20 h-20 mx-auto rounded-full object-cover border-4 border-orange-100" alt="Foto de perfil">
-                    <h3 id="accountReadyName" class="font-black text-2xl mt-4"></h3><p id="accountReadyEmail" class="text-sm text-gray-500 mt-1"></p>
-                    <div class="grid sm:grid-cols-3 gap-3 mt-5"><a href="#pasaporte" onclick="closeModal('accountModal')" class="bg-orange-50 text-brandGold font-black rounded-xl px-4 py-3"><i class="fa-solid fa-passport mr-2"></i>Pasaporte</a><button type="button" onclick="editVisitorProfile()" class="bg-gray-100 text-gray-700 font-black rounded-xl px-4 py-3"><i class="fa-solid fa-pen mr-2"></i>Editar</button><button type="button" onclick="signOutVisitor()" class="bg-gray-100 text-gray-700 font-black rounded-xl px-4 py-3"><i class="fa-solid fa-right-from-bracket mr-2"></i>Salir</button></div>
+                <div id="accountReady" class="hidden">
+                    <div class="flex items-center gap-4">
+                        <img id="accountReadyAvatar" class="w-16 h-16 rounded-full object-cover border-4 border-orange-100" alt="Foto de perfil">
+                        <div class="min-w-0"><p class="text-[10px] text-brandGold font-black uppercase tracking-widest">Mi experiencia Vive Loja</p><h3 id="accountReadyName" class="font-black text-xl truncate"></h3><p id="accountReadyEmail" class="text-xs text-gray-500 truncate"></p></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mt-5">
+                        <button type="button" onclick="openExperiencePassport()" class="bg-orange-50 border border-orange-100 rounded-2xl p-3 text-center"><i class="fa-solid fa-stamp text-brandGold"></i><strong id="experienceStampCount" class="block text-2xl mt-1">0</strong><span class="text-[10px] text-gray-500">Sellos</span></button>
+                        <button type="button" onclick="openExperienceFavorites()" class="bg-rose-50 border border-rose-100 rounded-2xl p-3 text-center"><i class="fa-solid fa-seedling text-rose-500"></i><strong id="experienceFavoriteCount" class="block text-2xl mt-1">0</strong><span class="text-[10px] text-gray-500">Favoritos</span></button>
+                        <button type="button" onclick="openExperiencePlanner()" class="bg-sky-50 border border-sky-100 rounded-2xl p-3 text-center"><i class="fa-solid fa-route text-sky-600"></i><strong id="experienceRouteCount" class="block text-2xl mt-1">0</strong><span class="text-[10px] text-gray-500">En mi ruta</span></button>
+                    </div>
+                    <div id="experienceProgressCard" class="mt-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-400 text-white p-4"><div class="flex justify-between gap-3"><div><p class="text-[10px] uppercase tracking-widest font-black">Pasaporte</p><h4 id="experienceProgressTitle" class="font-black mt-1">Comienza tu recorrido</h4><p id="experienceProgressText" class="text-xs text-white/85 mt-1"></p></div><i class="fa-solid fa-passport text-3xl text-white/70"></i></div><div class="h-2 bg-black/15 rounded-full mt-3 overflow-hidden"><div id="experienceProgressBar" class="h-full bg-white rounded-full" style="width:0%"></div></div></div>
+                    <div class="mt-4 bg-gray-50 border border-gray-200 rounded-2xl p-4"><div class="flex items-center justify-between"><div><p class="text-[10px] uppercase tracking-widest text-teal-700 font-black">Siguiente sugerencia</p><h4 id="experienceNextTitle" class="font-black text-sm mt-1">Explora una nueva parada</h4><p id="experienceNextMeta" class="text-[11px] text-gray-500 mt-1"></p></div><button id="experienceNextButton" type="button" class="w-10 h-10 rounded-full bg-teal-500 text-white"><i class="fa-solid fa-chevron-right"></i></button></div></div>
+                    <div class="mt-4"><div class="flex items-center justify-between mb-2"><h4 class="font-black text-sm">Mis lugares guardados</h4><button type="button" onclick="openExperienceFavorites()" class="text-[11px] font-bold text-brandGold">Ver todos</button></div><div id="experienceFavoritePreview" class="space-y-2"></div></div>
+                    <div class="grid grid-cols-2 gap-2 mt-5"><button type="button" onclick="openExperiencePlanner()" class="bg-brandDark text-white font-black rounded-xl px-3 py-3 text-xs"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Planificar ruta</button><button type="button" onclick="editVisitorProfile()" class="bg-gray-100 text-gray-700 font-black rounded-xl px-3 py-3 text-xs"><i class="fa-solid fa-pen mr-1"></i>Editar perfil</button></div>
+                    <button type="button" onclick="signOutVisitor()" class="w-full mt-3 text-xs text-gray-500 hover:text-red-600 py-2"><i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión</button>
                 </div>
                 <p id="visitorAuthMessage" class="hidden text-sm rounded-xl p-3 mt-4" role="alert"></p>
             </div>
@@ -2174,6 +2185,7 @@
             document.getElementById('accountReadyEmail').textContent = user.email || '';
             showVisitorAccountView('accountReady');
             updateVisitorAccountLabels(user, profile);
+            renderVisitorExperience();
             const floatingInvite=document.getElementById('accountFloatingInvite');if(floatingInvite){floatingInvite.classList.add('hidden');floatingInvite.style.display='none';}
             if (passportRewardIntent) {
                 passportRewardIntent = false;
@@ -2183,6 +2195,27 @@
                 updatePassportUI();
             }
         }
+
+        function renderVisitorExperience() {
+            if (!visitorAuth?.currentUser || !currentVisitorProfile?.profileComplete) return;
+            const stampCount=visitedLocations.length,favoriteCount=favoriteLocations.length,routeCount=currentSmartRoute.length,total=6,percentage=Math.min(100,Math.round((stampCount/total)*100));
+            const setText=(id,value)=>{const element=document.getElementById(id);if(element)element.textContent=value;};
+            setText('experienceStampCount',stampCount);setText('experienceFavoriteCount',favoriteCount);setText('experienceRouteCount',routeCount);
+            setText('experienceProgressTitle',stampCount>=total?'¡Pasaporte completado!':stampCount?`${stampCount} de ${total} sellos`:'Comienza tu recorrido');
+            setText('experienceProgressText',stampCount>=total?'Ya puedes registrar y reclamar tu recompensa.':stampCount?`Te faltan ${total-stampCount} paradas para desbloquear tu premio.`:'Visita una parada y valida tu primer sello.');
+            const bar=document.getElementById('experienceProgressBar');if(bar)bar.style.width=`${percentage}%`;
+            const nextIndex=locations.findIndex(location=>!visitedLocations.includes(location.id)&&isLocOpenNow(location));
+            const fallbackIndex=locations.findIndex(location=>!visitedLocations.includes(location.id));
+            const selectedIndex=nextIndex>=0?nextIndex:fallbackIndex,next=locations[selectedIndex];
+            setText('experienceNextTitle',next?.title||'Ya conociste todas las paradas');
+            setText('experienceNextMeta',next?(isLocOpenNow(next)?'Abierto ahora · Nueva parada para tu pasaporte':'Descubre esta parada en tu próximo recorrido'):'Muy pronto agregaremos nuevos destinos.');
+            const nextButton=document.getElementById('experienceNextButton');if(nextButton){nextButton.disabled=!next;nextButton.onclick=()=>{if(!next)return;closeModal('accountModal');selectLocation(selectedIndex);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});};}
+            const preview=document.getElementById('experienceFavoritePreview');if(preview){const favorites=favoriteLocations.map(id=>locations.find(location=>location.id===id)).filter(Boolean).slice(0,3);preview.innerHTML=favorites.length?favorites.map(location=>`<button type="button" onclick="openExperienceLocation('${String(location.id).replace(/'/g,"\\'")}')" class="w-full text-left bg-white border border-gray-200 rounded-xl p-2.5 flex items-center gap-3"><span class="w-8 h-8 rounded-full bg-orange-50 text-brandGold grid place-items-center"><i class="fa-solid fa-location-dot"></i></span><span class="min-w-0"><b class="block text-xs truncate">${escapeHTML(location.title||'Parada Vive Loja')}</b><small class="text-[10px] text-gray-500 truncate block">${escapeHTML(location.tag||location.address||'Loja')}</small></span></button>`).join(''):'<p class="text-xs text-gray-500 bg-gray-50 rounded-xl p-3">Todavía no guardaste lugares. Toca la hoja en una parada para añadirla.</p>';}
+        }
+        function openExperiencePassport(){closeModal('accountModal');openModal('pasaporteModal');}
+        function openExperienceFavorites(){closeModal('accountModal');openModal('itineraryModal');}
+        function openExperiencePlanner(){closeModal('accountModal');openSmartRoutePlanner();}
+        function openExperienceLocation(id){const index=locations.findIndex(location=>String(location.id)===String(id));if(index<0)return;closeModal('accountModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
 
         function editVisitorProfile() {
             const user = visitorAuth?.currentUser;
@@ -3692,6 +3725,7 @@
         }
 
         function updateItineraryUI() {
+            renderVisitorExperience();
             const container = document.getElementById('itineraryListContainer');
             const badge = document.getElementById('itineraryBadge');
             const navBadge = document.getElementById('navStampBadge');
@@ -5271,6 +5305,7 @@
         }
 
         function updatePassportUI() {
+            renderVisitorExperience();
             const grid = document.getElementById('passportStampsGrid');
             if(!grid) return;
             grid.innerHTML = '';
@@ -5715,6 +5750,7 @@
             if (results) results.classList.remove('hidden');
             setMascotMessage(`¡Ruta lista! Preparé ${selected.length} paradas para tu aventura.`);
             showToast(`🗺️ Ruta creada con ${selected.length} paradas`);
+            renderVisitorExperience();
         }
 
         function renderSmartRoute(totalDistance, totalMinutes, transport) {
