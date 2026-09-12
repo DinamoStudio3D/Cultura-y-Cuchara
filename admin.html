@@ -411,9 +411,11 @@ const firebaseConfig = {
     messagingSenderId: "974351327730",
     appId: "1:974351327730:web:08573026a46d1bb6598b6b"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const adminFirebaseApp = firebase.initializeApp(firebaseConfig, 'viveLojaAdmin');
+const auth = adminFirebaseApp.auth();
+const db = adminFirebaseApp.firestore();
+auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    .catch(error => console.warn('No se pudo aislar la sesión administrativa:', error));
 const ADMIN_EMAIL = 'sukogames1996@gmail.com';
 const loginView = document.getElementById('loginView');
 const adminView = document.getElementById('adminView');
