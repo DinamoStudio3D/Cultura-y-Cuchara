@@ -2233,11 +2233,9 @@
             const floatingInvite=document.getElementById('accountFloatingInvite');if(floatingInvite){floatingInvite.classList.add('hidden');floatingInvite.style.display='none';}
             if (passportRewardIntent) {
                 passportRewardIntent = false;
-                closeModal('accountModal');
-                setTimeout(() => beginPassportRewardClaim(), 150);
-            } else if (typeof updatePassportUI === 'function') {
-                updatePassportUI();
+                showToast(currentLang === 'en' ? 'Your account is ready. You can continue from your passport.' : 'Tu cuenta está lista. Puedes continuar desde tu pasaporte.');
             }
+            if (typeof updatePassportUI === 'function') updatePassportUI();
         }
 
         function renderVisitorExperience() {
