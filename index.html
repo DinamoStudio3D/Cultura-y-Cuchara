@@ -1034,6 +1034,18 @@
                 </p>
             </div>
 
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-7 p-2.5 bg-orange-50 border border-orange-100 rounded-2xl">
+                <div class="flex items-center gap-2" role="group" aria-label="Filtrar agenda">
+                    <button id="agendaAllButton" type="button" onclick="setAgendaView('all')" class="px-4 py-2 rounded-xl text-xs font-black transition">
+                        <i class="fa-solid fa-calendar-days mr-1.5"></i>Todos
+                    </button>
+                    <button id="agendaSavedButton" type="button" onclick="setAgendaView('saved')" class="px-4 py-2 rounded-xl text-xs font-black transition">
+                        <i class="fa-solid fa-bookmark mr-1.5"></i>Mis guardados
+                    </button>
+                </div>
+                <p id="agendaSavedCount" class="text-xs font-bold text-gray-600 px-3"></p>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="agendaGridContainer"></div>
         </div>
     </section>
@@ -3845,39 +3857,144 @@
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
         }
 
+        let agendaViewMode = 'all';
+
+        function agendaEventKey(ev, index) {
+            return String(ev.id || [ev.title || 'evento', ev.date || '', index].join('|'));
+        }
+
+        function getSavedAgendaEvents() {
+            const saved = safeReadJSON('cyc_saved_agenda_events', []);
+            return Array.isArray(saved) ? saved.map(String) : [];
+        }
+
+        function setAgendaView(mode) {
+            agendaViewMode = mode === 'saved' ? 'saved' : 'all';
+            renderAgendaUI();
+        }
+
+        function toggleAgendaEventSaved(eventId) {
+            const saved = getSavedAgendaEvents();
+            const next = saved.includes(String(eventId))
+                ? saved.filter(id => id !== String(eventId))
+                : [...saved, String(eventId)];
+            localStorage.setItem('cyc_saved_agenda_events', JSON.stringify(next));
+            renderAgendaUI();
+            showToast(next.includes(String(eventId)) ? 'Evento guardado en tu agenda' : 'Evento retirado de tu agenda');
+        }
+
+        function escapeCalendarText(value) {
+            return String(value || '')
+                .replace(/\\/g, '\\\\')
+                .replace(/\n/g, '\\n')
+                .replace(/,/g, '\\,')
+                .replace(/;/g, '\\;');
+        }
+
+        function downloadAgendaEventCalendar(eventId) {
+            const eventIndex = eventsList.findIndex((ev, index) => agendaEventKey(ev, index) === String(eventId));
+            if (eventIndex < 0) return showToast('No se pudo encontrar el evento');
+            const ev = eventsList[eventIndex];
+            const cleanDate = String(ev.date || '').replace(/-/g, '');
+            if (!/^\d{8}$/.test(cleanDate)) return showToast('Este evento todavía no tiene una fecha válida');
+            const title = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
+            const desc = (currentLang === 'en' && ev.descEn) ? ev.descEn : ev.desc;
+            const startDate = new Date(String(ev.date) + 'T12:00:00');
+            startDate.setDate(startDate.getDate() + 1);
+            const endDate = [
+                startDate.getFullYear(),
+                String(startDate.getMonth() + 1).padStart(2, '0'),
+                String(startDate.getDate()).padStart(2, '0')
+            ].join('');
+            const uid = encodeURIComponent(String(eventId)) + '@viveloja';
+            const ics = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Vive Loja//Agenda Cultural//ES',
+                'CALSCALE:GREGORIAN',
+                'BEGIN:VEVENT',
+                'UID:' + uid,
+                'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z'),
+                'DTSTART;VALUE=DATE:' + cleanDate,
+                'DTEND;VALUE=DATE:' + endDate,
+                'SUMMARY:' + escapeCalendarText(title),
+                'DESCRIPTION:' + escapeCalendarText(desc),
+                'LOCATION:' + escapeCalendarText(ev.location),
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+            const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'vive-loja-' + String(title || 'evento').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.ics';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast('Evento listo para añadir a tu calendario');
+        }
+
         function renderAgendaUI() {
             const agendaContainer = document.getElementById('agendaGridContainer');
             if(!agendaContainer) return;
             agendaContainer.innerHTML = '';
 
-            let todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = new Date().toISOString().split('T')[0];
+            const saved = getSavedAgendaEvents();
+            const upcomingEvents = eventsList
+                .map((ev, index) => ({ ev, eventId: agendaEventKey(ev, index) }))
+                .filter(item => !item.ev.date || item.ev.date >= todayStr);
+            const visibleEvents = agendaViewMode === 'saved'
+                ? upcomingEvents.filter(item => saved.includes(item.eventId))
+                : upcomingEvents;
 
-            eventsList.forEach((ev) => {
-                if (ev.date && ev.date < todayStr) return;
+            const allButton = document.getElementById('agendaAllButton');
+            const savedButton = document.getElementById('agendaSavedButton');
+            const countLabel = document.getElementById('agendaSavedCount');
+            if (allButton) allButton.className = 'px-4 py-2 rounded-xl text-xs font-black transition ' + (agendaViewMode === 'all' ? 'bg-brandDark text-white shadow' : 'text-gray-600 hover:bg-white');
+            if (savedButton) savedButton.className = 'px-4 py-2 rounded-xl text-xs font-black transition ' + (agendaViewMode === 'saved' ? 'bg-brandGold text-white shadow' : 'text-gray-600 hover:bg-white');
+            if (countLabel) countLabel.textContent = saved.length === 1 ? '1 evento guardado' : saved.length + ' eventos guardados';
+
+            if (!visibleEvents.length) {
+                agendaContainer.innerHTML = agendaViewMode === 'saved'
+                    ? '<div class="sm:col-span-2 lg:col-span-3 text-center py-12 px-5 bg-gray-50 border border-dashed border-gray-300 rounded-2xl"><i class="fa-regular fa-bookmark text-3xl text-brandGold mb-3"></i><h3 class="font-black text-brandDark">Tu agenda está lista para empezar</h3><p class="text-sm text-gray-500 mt-1">Guarda actividades que te interesen y aparecerán aquí.</p><button type="button" onclick="setAgendaView(\'all\')" class="mt-4 bg-brandDark text-white px-5 py-2.5 rounded-xl text-xs font-bold">Explorar eventos</button></div>'
+                    : '<p class="sm:col-span-2 lg:col-span-3 text-center text-sm text-gray-500 py-10">No hay próximos eventos publicados por ahora.</p>';
+            }
+
+            visibleEvents.forEach(({ ev, eventId }) => {
                 const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
                 const evDesc = (currentLang === 'en' && ev.descEn) ? ev.descEn : ev.desc;
                 const evImg = ev.img || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80';
+                const isSaved = saved.includes(eventId);
+                const safeId = encodeURIComponent(eventId);
 
                 agendaContainer.innerHTML += `
-                    <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
+                    <article class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
                         <div class="h-48 md:h-52 overflow-hidden relative">
-                            <img src="${evImg}" alt="" class="w-full h-full object-cover">
-                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${ev.type}</span>
-                        </div>
-                        <div class="p-5">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date}</span>
-                            </div>
-                            <h3 class="font-bold text-base sm:text-lg text-brandDark mb-2">${evTitle}</h3>
-                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed mb-4 line-clamp-2">${evDesc}</p>
-                        </div>
-                        <div class="px-5 pb-5 pt-0 flex items-center justify-between border-t border-gray-200/60 pt-3 text-xs">
-                            <span class="text-gray-500 truncate max-w-[180px]"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location}</span>
-                            <button type="button" onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}', '${ev.date || ''}', '${(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')" class="bg-brandDark text-brandGold px-3 py-1.5 rounded-lg font-bold hover:bg-black transition flex-shrink-0">
-                                <i class="fa-solid fa-map-pin mr-1"></i> Ver en Mapa
+                            <img src="${evImg}" alt="" class="w-full h-full object-cover" loading="lazy">
+                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${ev.type || 'Evento'}</span>
+                            <button type="button" onclick="toggleAgendaEventSaved(decodeURIComponent('${safeId}'))" aria-label="${isSaved ? 'Quitar de mis guardados' : 'Guardar evento'}" class="absolute top-3 right-3 w-10 h-10 rounded-full border border-white/70 shadow-lg transition ${isSaved ? 'bg-brandGold text-white' : 'bg-white/95 text-brandDark hover:text-brandGold'}">
+                                <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
                             </button>
                         </div>
-                    </div>
+                        <div class="p-5">
+                            <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ev.date || 'Fecha por confirmar'}</span>
+                            <h3 class="font-bold text-base sm:text-lg text-brandDark mt-2 mb-2">${evTitle}</h3>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">${evDesc || ''}</p>
+                        </div>
+                        <div class="px-5 pb-5 pt-3 border-t border-gray-200/60">
+                            <p class="text-xs text-gray-500 truncate mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location || 'Ubicación por confirmar'}</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold hover:bg-orange-50 transition text-xs">
+                                    <i class="fa-regular fa-calendar-plus mr-1"></i> Calendario
+                                </button>
+                                <button type="button" onclick="focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${String(evTitle || '').replace(/'/g, "\\'")}', '${ev.date || ''}', '${String(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold hover:bg-black transition text-xs">
+                                    <i class="fa-solid fa-map-pin mr-1"></i> Ver mapa
+                                </button>
+                            </div>
+                        </div>
+                    </article>
                 `;
             });
             renderAdminEventsList();
