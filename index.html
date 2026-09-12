@@ -595,7 +595,7 @@
                     <div class="relative">
                         <input type="search" id="searchInput" oninput="searchItems()" data-i18n-placeholder="smartSearchPlaceholder" placeholder="Ej.: cafetería abierta, hotel cerca, comida lojana…" class="w-full bg-gray-100 border border-gray-200 rounded-full py-3 px-12 text-xs sm:text-sm focus:ring-2 focus:ring-brandGold outline-none transition" autocomplete="off">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-brandGold text-sm"></i>
-                        <button type="button" onclick="clearSmartSearch()" class="absolute right-3 top-2.5 w-7 h-7 rounded-full text-gray-400 hover:bg-gray-200" aria-label="Limpiar búsqueda"><i class="fa-solid fa-xmark"></i></button>
+                        <button id="smartSearchClearButton" type="button" onclick="clearSmartSearch()" class="hidden absolute right-3 top-2.5 w-7 h-7 rounded-full text-gray-400 hover:bg-gray-200" aria-label="Limpiar búsqueda"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                     <p id="smartSearchStatus" class="text-[10px] text-gray-500 mt-2 pl-3" data-i18n="smartSearchHelp">Busca por nombre, actividad, horario o cercanía.</p>
                 </div>
@@ -5756,6 +5756,8 @@
             ranked.sort((a,b)=>b.score-a.score||a.order-b.order);
             let visible=0;ranked.forEach(item=>{const matches=!query||item.score>0;item.card.classList.toggle('hidden-item',!matches);item.card.style.opacity=matches?'1':'0';item.card.style.order=matches?String(-Math.round(item.score)):'999';if(matches)visible++;});
             const noRes=document.getElementById('noResults');if(noRes)noRes.classList.toggle('hidden',visible>0);
+            const clearSearchButton=document.getElementById('smartSearchClearButton');
+            if(clearSearchButton)clearSearchButton.classList.toggle('hidden',!query);
             updateClearFiltersButton(Boolean(query));
             if(status){if(!query)status.textContent=currentLang==='en'?'Search by name, activity, opening hours or proximity.':'Busca por nombre, actividad, horario o cercanía.';else if(wantsNear&&!userCoords)status.textContent=currentLang==='en'?'Tap “Near me” to sort using your location.':'Pulsa “Cerca de mí” para ordenar usando tu ubicación.';else status.textContent=currentLang==='en'?(visible===1?'We found 1 place for you.':`We found ${visible} places sorted by relevance.`):(visible===1?'Encontramos 1 parada para ti.':`Encontramos ${visible} paradas ordenadas por relevancia.`);}
         }
