@@ -263,6 +263,7 @@
                 </div>
                 <form id="visitorProfileForm" class="hidden space-y-4" onsubmit="saveVisitorProfile(event)">
                     <div class="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl p-3"><img id="visitorAvatar" class="w-12 h-12 rounded-full object-cover bg-white" alt="Foto de perfil"><div class="min-w-0"><p id="visitorWelcome" class="font-black truncate">Completa tu perfil</p><p id="visitorGoogleEmail" class="text-xs text-gray-600 truncate"></p></div></div>
+                    <div class="rounded-xl border border-blue-100 bg-blue-50 p-3 text-sm text-blue-900"><p><i class="fa-brands fa-google mr-2"></i><strong>Ya ingresaste con Google.</strong></p><p class="text-xs mt-1 text-blue-700">Completa estos datos para finalizar tu registro en Vive Loja.</p><button type="button" onclick="switchVisitorGoogleAccount()" class="mt-3 text-xs font-black underline hover:text-blue-600"><i class="fa-solid fa-repeat mr-1"></i>Ingresar con otra cuenta de Google</button></div>
                     <label class="block"><span class="text-sm font-bold block mb-2">Nombre completo *</span><input id="visitorFullName" type="text" maxlength="100" autocomplete="name" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"></label>
                     <label class="block"><span class="text-sm font-bold block mb-2">Correo electrónico</span><input id="visitorEmail" type="email" readonly class="w-full border border-gray-200 bg-gray-100 text-gray-600 rounded-xl px-4 py-3"></label>
                     <label class="block"><span class="text-sm font-bold block mb-2">Número de WhatsApp *</span><div class="flex"><span class="bg-gray-100 border border-r-0 border-gray-300 rounded-l-xl px-3 py-3 text-sm font-bold">+593</span><input id="visitorWhatsapp" type="tel" inputmode="numeric" autocomplete="tel" maxlength="10" pattern="0?9[0-9]{8}" placeholder="0991234567" required class="w-full border border-gray-300 rounded-r-xl px-4 py-3 focus:border-brandGold outline-none"></div><span class="text-xs text-gray-500 mt-1 block">Ingresa un celular ecuatoriano de 10 dígitos.</span></label>
@@ -2264,6 +2265,19 @@
             currentVisitorProfile = null;
             updateVisitorAccountLabels(null);
             showVisitorAccountView('accountSignedOut');
+        }
+
+        async function switchVisitorGoogleAccount() {
+            if (!visitorAuth) return;
+            try {
+                await visitorAuth.signOut();
+                currentVisitorProfile = null;
+                showVisitorAccountView('accountSignedOut');
+                await signInVisitorWithGoogle();
+            } catch (error) {
+                showVisitorAccountView('accountSignedOut');
+                setVisitorMessage('visitorAuthMessage', 'No pudimos cambiar la cuenta de Google. Inténtalo nuevamente.', true);
+            }
         }
 
         const firebaseConfig = {
