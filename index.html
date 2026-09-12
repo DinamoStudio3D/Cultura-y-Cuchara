@@ -592,24 +592,24 @@
                 </div>
                 <div class="w-full lg:w-[430px]">
                     <div class="relative">
-                        <input type="search" id="searchInput" oninput="searchItems()" placeholder="Ej.: cafetería abierta, hotel cerca, comida lojana…" class="w-full bg-gray-100 border border-gray-200 rounded-full py-3 px-12 text-xs sm:text-sm focus:ring-2 focus:ring-brandGold outline-none transition" autocomplete="off">
+                        <input type="search" id="searchInput" oninput="searchItems()" data-i18n-placeholder="smartSearchPlaceholder" placeholder="Ej.: cafetería abierta, hotel cerca, comida lojana…" class="w-full bg-gray-100 border border-gray-200 rounded-full py-3 px-12 text-xs sm:text-sm focus:ring-2 focus:ring-brandGold outline-none transition" autocomplete="off">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-brandGold text-sm"></i>
                         <button type="button" onclick="clearSmartSearch()" class="absolute right-3 top-2.5 w-7 h-7 rounded-full text-gray-400 hover:bg-gray-200" aria-label="Limpiar búsqueda"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                    <p id="smartSearchStatus" class="text-[10px] text-gray-500 mt-2 pl-3">Busca por nombre, actividad, horario o cercanía.</p>
+                    <p id="smartSearchStatus" class="text-[10px] text-gray-500 mt-2 pl-3" data-i18n="smartSearchHelp">Busca por nombre, actividad, horario o cercanía.</p>
                 </div>
             </div>
 
             <div class="flex flex-col gap-3 mb-6 pb-4 border-b border-gray-100">
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full" id="categoryScroll"></div>
                 <div class="flex overflow-x-auto hide-scrollbar gap-2 w-full">
-                    <button type="button" onclick="runSmartSearch('abierto ahora')" class="flex-shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-clock mr-1"></i>Abierto ahora</button>
+                    <button type="button" onclick="runSmartSearch(currentLang==='en'?'open now':'abierto ahora')" class="flex-shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-clock mr-1"></i><span data-i18n="smartOpenNow">Abierto ahora</span></button>
                     <button type="button" onclick="runSmartSearch('café')" class="flex-shrink-0 bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-3 py-1.5 text-[11px] font-bold">☕ Café</button>
-                    <button type="button" onclick="runSmartSearch('comida lojana')" class="flex-shrink-0 bg-orange-50 text-orange-700 border border-orange-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🥘 Comida lojana</button>
-                    <button type="button" onclick="runSmartSearch('hotel hostal')" class="flex-shrink-0 bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🏨 Hospedaje</button>
+                    <button type="button" onclick="runSmartSearch(currentLang==='en'?'Loja food':'comida lojana')" class="flex-shrink-0 bg-orange-50 text-orange-700 border border-orange-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🥘 <span data-i18n="smartLojaFood">Comida lojana</span></button>
+                    <button type="button" onclick="runSmartSearch('hotel hostal')" class="flex-shrink-0 bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🏨 <span data-i18n="smartAccommodation">Hospedaje</span></button>
                     <button type="button" onclick="runSmartSearch('aliado')" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-handshake mr-1"></i><span data-i18n="mapPartners">Marcas aliadas</span></button>
-                    <button type="button" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i>Cerca de mí</button>
-                    <button type="button" onclick="runSmartSearch('pasaporte')" class="flex-shrink-0 bg-rose-50 text-rose-700 border border-rose-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-stamp mr-1"></i>Para mi pasaporte</button>
+                    <button type="button" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i><span data-i18n="btnGps">Cerca de mí</span></button>
+                    <button type="button" onclick="runSmartSearch('pasaporte')" class="flex-shrink-0 bg-rose-50 text-rose-700 border border-rose-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-stamp mr-1"></i><span data-i18n="smartPassport">Para mi pasaporte</span></button>
                 </div>
             </div>
 
@@ -1919,6 +1919,7 @@
                 mapTitle: "Mapa Interactivo de Loja",
                 mapDesc: "Desliza libremente por el mapa o pulsa los pines para explorar los sitios.",
                 mapPointTypes: "Tipos de puntos", mapAllPoints: "Todos los puntos", mapFood: "Gastronomía", mapStay: "Hospedaje", mapAttractions: "Atractivos", mapPartners: "Marcas aliadas", agendaAll: "Todos", agendaSaved: "Mis guardados",
+                smartSearchPlaceholder: "Ej.: cafetería abierta, hotel cerca, comida lojana…", smartSearchHelp: "Busca por nombre, actividad, horario o cercanía.", smartOpenNow: "Abierto ahora", smartLojaFood: "Comida lojana", smartAccommodation: "Hospedaje", smartPassport: "Para mi pasaporte",
                 expTitle: "Mi experiencia Vive Loja", expStamps: "Sellos", expFavorites: "Favoritos", expRoute: "En mi ruta", expAgenda: "Mi agenda", expPassport: "Pasaporte", expNext: "Siguiente sugerencia", expSavedPlaces: "Mis lugares guardados", expViewAll: "Ver todos", expCulturalAgenda: "Mi agenda cultural", expViewAgenda: "Ver agenda", expPlanRoute: "Planificar ruta", expEditProfile: "Editar perfil", expSignOut: "Cerrar sesión",
                 btnGps: "Cerca de mí",
                 btnCenter: "Centrar Loja",
@@ -2044,6 +2045,7 @@
                 mapTitle: "Interactive Map of Loja",
                 mapDesc: "Drag freely with one finger on the map or tap the pins to explore spots.",
                 mapPointTypes: "Point types", mapAllPoints: "All points", mapFood: "Food & dining", mapStay: "Accommodation", mapAttractions: "Attractions", mapPartners: "Partner brands", agendaAll: "All", agendaSaved: "My saved events",
+                smartSearchPlaceholder: "E.g. open coffee shop, nearby hotel, Loja food…", smartSearchHelp: "Search by name, activity, opening hours or proximity.", smartOpenNow: "Open now", smartLojaFood: "Loja food", smartAccommodation: "Accommodation", smartPassport: "For my passport",
                 expTitle: "My Vive Loja experience", expStamps: "Stamps", expFavorites: "Favorites", expRoute: "My route", expAgenda: "My agenda", expPassport: "Passport", expNext: "Next suggestion", expSavedPlaces: "My saved places", expViewAll: "View all", expCulturalAgenda: "My cultural agenda", expViewAgenda: "View agenda", expPlanRoute: "Plan route", expEditProfile: "Edit profile", expSignOut: "Sign out",
                 btnGps: "Near me",
                 btnCenter: "Center Loja",
@@ -5647,15 +5649,15 @@
         }
         function runSmartSearch(query){const input=document.getElementById('searchInput');if(input){input.value=query;searchItems();input.focus();}}
         function clearSmartSearch(){const input=document.getElementById('searchInput');if(input)input.value='';searchItems();}
-        function searchPlacesNearMe(){if(!navigator.geolocation){showToast('Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};runSmartSearch('cerca de mí');},()=>showToast('No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
+        function searchPlacesNearMe(){if(!navigator.geolocation){showToast(currentLang==='en'?'Your browser does not support location.':'Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};runSmartSearch(currentLang==='en'?'near me':'cerca de mí');},()=>showToast(currentLang==='en'?'We could not get your location.':'No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
         function searchItems() {
             const input=document.getElementById('searchInput'),query=normalizeSmartSearch(input?.value),terms=smartSearchTerms(query),cards=[...document.querySelectorAll('.local-item')],status=document.getElementById('smartSearchStatus');
-            const wantsOpen=/abierto|ahora/.test(query),wantsNear=/cerca|proximo|mi ubicacion|mi/.test(query),wantsPassport=/pasaporte|sello/.test(query);
+            const wantsOpen=/abierto|ahora|open|now/.test(query),wantsNear=/cerca|proximo|mi ubicacion|near|location/.test(query),wantsPassport=/pasaporte|sello|passport|stamp/.test(query);
             const ranked=cards.map((card,order)=>{const location=locations.find(loc=>String(loc.id)===String(card.dataset.locationId))||locations[order],haystack=normalizeSmartSearch([location?.title,location?.titleEn,location?.tag,location?.tagEn,location?.desc,location?.descEn,location?.dish,location?.dishEn,location?.category,location?.address,location?.services,location?.keywords].flat().join(' '));let score=terms.reduce((total,term)=>total+(haystack.includes(term)?12:0),0);if(wantsOpen&&location&&isLocOpenNow(location))score+=30;if(wantsOpen&&location&&!isLocOpenNow(location))score-=100;if(wantsPassport&&location&&!visitedLocations.includes(location.id)&&['hotel','hueca','cafe','urbana'].includes(location.category))score+=25;let distance=null;if(wantsNear&&userCoords&&location){distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(location.lat),Number(location.lng));if(Number.isFinite(distance))score+=Math.max(0,30-distance*6);}if(!query)score=1;return{card,score,order,distance};});
             ranked.sort((a,b)=>b.score-a.score||a.order-b.order);
             let visible=0;ranked.forEach(item=>{const matches=!query||item.score>0;item.card.classList.toggle('hidden-item',!matches);item.card.style.opacity=matches?'1':'0';item.card.style.order=matches?String(-Math.round(item.score)):'999';if(matches)visible++;});
             const noRes=document.getElementById('noResults');if(noRes)noRes.classList.toggle('hidden',visible>0);
-            if(status){if(!query)status.textContent='Busca por nombre, actividad, horario o cercanía.';else if(wantsNear&&!userCoords)status.textContent='Pulsa “Cerca de mí” para ordenar usando tu ubicación.';else status.textContent=visible===1?'Encontramos 1 parada para ti.':`Encontramos ${visible} paradas ordenadas por relevancia.`;}
+            if(status){if(!query)status.textContent=currentLang==='en'?'Search by name, activity, opening hours or proximity.':'Busca por nombre, actividad, horario o cercanía.';else if(wantsNear&&!userCoords)status.textContent=currentLang==='en'?'Tap “Near me” to sort using your location.':'Pulsa “Cerca de mí” para ordenar usando tu ubicación.';else status.textContent=currentLang==='en'?(visible===1?'We found 1 place for you.':`We found ${visible} places sorted by relevance.`):(visible===1?'Encontramos 1 parada para ti.':`Encontramos ${visible} paradas ordenadas por relevancia.`);}
         }
 
         function filterItems(category, btnElement) {
