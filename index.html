@@ -2321,8 +2321,13 @@
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await visitorAuth.signInWithPopup(provider);
                 if (!result?.user) throw new Error('auth/no-user-returned');
+                accountModalKeepOpenUntil = Date.now() + 4000;
                 updateVisitorAccountLabels(result.user);
                 await handleVisitorAuthState(result.user);
+                openModal('accountModal');
+                setTimeout(() => {
+                    if (visitorAuth?.currentUser?.uid === result.user.uid) openModal('accountModal');
+                }, 500);
             } catch (error) {
                 const code = error?.code || error?.message || 'auth/unknown';
                 const blocked = code === 'auth/popup-blocked';
@@ -2429,6 +2434,7 @@
         let cloudProgressReady = false;
         let cloudProgressHydrating = false;
         let cloudProgressSaveTimer = null;
+        let accountModalKeepOpenUntil = 0;
         const CLOUD_PROGRESS_KEYS = ['cyc_favorites', 'cyc_saved_agenda_events', 'cyc_saved_festival_events', 'cyc_passport_mode'];
 
         function normalizedProgressIds(value, limit = 150) {
@@ -6390,6 +6396,7 @@
             }
         }
         function closeModal(id) { 
+            if (id === 'accountModal' && Date.now() < accountModalKeepOpenUntil) return;
             const m = document.getElementById('adminModal');
             if(id === 'adminModal' && m) {
                 stopDragBg();
