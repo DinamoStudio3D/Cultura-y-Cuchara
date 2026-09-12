@@ -547,7 +547,7 @@
                     <p id="previewDesc" class="text-gray-600 text-xs sm:text-sm mb-3 h-12 overflow-hidden">Tradición familiar preparando el mejor repe lojano.</p>
                     
                     <div class="space-y-2 text-xs sm:text-sm text-gray-700 border-t border-gray-100 pt-3">
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
+                        <div class="flex items-center gap-2"><i id="previewDetailIcon" class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours">Lun - Sáb: 08:00 - 16:00</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress">Mercado Central / Local 14</span></div>
                     </div>
@@ -5381,15 +5381,21 @@
             const dishText = (currentLang === 'en' && loc.dishEn) ? loc.dishEn : loc.dish;
             const isOpen = isLocOpenNow(loc);
 
-            document.getElementById('previewTag').innerText = tagText || '';
+            const tagEl=document.getElementById('previewTag');
+            tagEl.innerText = loc.category==='aliado'?(currentLang==='en'?'Partner brand':'Marca aliada'):(tagText || '');
+            tagEl.className=loc.category==='aliado'?'bg-violet-100 text-violet-800 font-bold px-3 py-1 rounded-lg text-xs uppercase':'bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded-lg text-xs uppercase';
             const statusEl = document.getElementById('previewOpenStatus');
-            if(isOpen) {
+            if(loc.category==='aliado'){
+                statusEl.className="bg-violet-700 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]";
+                statusEl.innerHTML='<i class="fa-solid fa-handshake mr-1"></i> '+(currentLang==='en'?'Project partner':'Marca vinculada');
+            } else if(isOpen) {
                 statusEl.className = "bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded-md text-[10px]";
                 statusEl.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> ' + (currentLang === 'en' ? 'Open now' : 'Abierto ahora');
             } else {
                 statusEl.className = "bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded-md text-[10px]";
                 statusEl.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> ' + (currentLang === 'en' ? 'Closed' : 'Cerrado');
             }
+            const detailIcon=document.getElementById('previewDetailIcon');if(detailIcon)detailIcon.className=`fa-solid ${loc.category==='aliado'?'fa-handshake':loc.category==='hotel'?'fa-gift':loc.category==='turismo'?'fa-camera':'fa-utensils'} text-brandGold w-4`;
 
             // Distancia en tiempo real en la tarjeta de previsualización
             const distBadge = document.getElementById('previewDistanceBadge');
