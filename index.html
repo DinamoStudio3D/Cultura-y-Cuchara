@@ -2314,15 +2314,32 @@
             button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Abriendo Google...</span>';
             setVisitorMessage('visitorAuthMessage', 'Selecciona tu cuenta en la ventana segura de Google.', false);
             try {
+                try {
+                    await visitorAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                } catch (persistenceError) {
+                    await visitorAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+                }
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await visitorAuth.signInWithPopup(provider);
+                if (!result?.user) throw new Error('auth/no-user-returned');
+                updateVisitorAccountLabels(result.user);
                 await handleVisitorAuthState(result.user);
-                openModal('accountModal');
             } catch (error) {
-                const blocked = error?.code === 'auth/popup-blocked';
-                const domain = error?.code === 'auth/unauthorized-domain';
-                setVisitorMessage('visitorAuthMessage', domain ? 'Debes autorizar este dominio en Firebase Authentication para activar el ingreso con Google.' : blocked ? 'El navegador bloqueó la ventana de Google. Permite ventanas emergentes e inténtalo nuevamente.' : 'No se pudo iniciar sesión con Google. Inténtalo nuevamente.', true);
+                const code = error?.code || error?.message || 'auth/unknown';
+                const blocked = code === 'auth/popup-blocked';
+                const domain = code === 'auth/unauthorized-domain';
+                const storage = code === 'auth/web-storage-unsupported';
+                const message = domain
+                    ? 'Este dominio todavía no está autorizado en Firebase. Agrégalo en Authentication → Configuración → Dominios autorizados.'
+                    : blocked
+                        ? 'El navegador bloqueó la ventana de Google. Habilita las ventanas emergentes e inténtalo otra vez.'
+                        : storage
+                            ? 'El navegador está bloqueando el almacenamiento de la sesión. Habilita cookies y almacenamiento para este sitio.'
+                            : `No se pudo conservar la sesión de Google. Código: ${code}`;
+                setVisitorMessage('visitorAuthMessage', message, true);
+                showToast(message);
+                console.error('Error de acceso Vive Loja:', error);
             } finally {
                 button.disabled = false;
                 button.innerHTML = originalButtonHTML;
