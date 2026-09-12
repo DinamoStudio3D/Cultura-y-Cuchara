@@ -1805,7 +1805,7 @@
     </div>
 
     <!-- Botón flotante de cuenta: visible solo cuando el administrador lo activa -->
-    <button id="accountFloatingInvite" type="button" onclick="openAccountFromFloatingInvite()" class="fixed bottom-[100px] right-4 sm:right-5 z-[95] group rounded-full bg-gradient-to-r from-orange-500 via-amber-400 to-teal-400 p-[2px] shadow-2xl hover:scale-105 transition-transform" style="display:block" aria-label="Únete gratis a Vive Loja">
+    <button id="accountFloatingInvite" type="button" onclick="openAccountFromFloatingInvite()" class="fixed bottom-[100px] right-4 sm:right-5 z-[95] group rounded-full bg-gradient-to-r from-orange-500 via-amber-400 to-teal-400 p-[2px] shadow-2xl hover:scale-105 transition-transform" style="position:fixed;right:20px;bottom:100px;z-index:9999;display:block" aria-label="Únete gratis a Vive Loja">
         <span class="flex items-center gap-2 rounded-full bg-brandDark text-white px-2.5 py-2 sm:px-3.5">
             <span class="relative w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-amber-400 grid place-items-center text-white shadow"><span class="absolute inset-0 rounded-full bg-amber-300/30 animate-ping"></span><i class="fa-solid fa-user-plus relative"></i></span>
             <span class="hidden sm:block text-left leading-tight pr-1"><strong class="block text-xs">Únete gratis</strong><small class="text-[10px] text-gray-300">Guarda tu aventura</small></span>
@@ -3008,7 +3008,7 @@
         }
 
         function applySettings(s) {
-            showAccountFloatingInvite(s.showAccountFloatingButton !== false);
+            showAccountFloatingInvite(s.showRegistrationButton !== false);
             const nowButton=document.getElementById('nowRecommendationBtn');if(nowButton)nowButton.classList.toggle('hidden',s.showNowPlanner===false);
             document.querySelectorAll('.subscription-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false));document.querySelectorAll('.business-signup-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false||s.showBusinessSignup===false));
             const badgeEl = document.getElementById('heroBadge');
