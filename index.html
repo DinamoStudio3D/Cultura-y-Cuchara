@@ -1247,6 +1247,7 @@
                 </form>
 
                 <div id="smartRouteResults" class="hidden mt-6 border-t border-gray-200 pt-5">
+                    <div id="eventDayAnchor" class="hidden mb-4 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white p-4 shadow-lg"></div>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                         <div><p class="text-[10px] uppercase tracking-widest text-brandGold font-black">Ruta recomendada</p><h4 id="smartRouteSummary" class="text-lg font-black"></h4></div>
                         <div class="flex gap-2">
@@ -3997,6 +3998,9 @@
                         <div class="px-5 pb-5 pt-3 border-t border-gray-200/60">
                             <p class="text-xs text-gray-500 truncate mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${ev.location || 'Ubicación por confirmar'}</p>
                             <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="buildEventDayPlan(decodeURIComponent('${safeId}'))" class="col-span-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-3 py-2.5 rounded-xl font-black hover:opacity-90 transition text-xs shadow">
+                                    <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Armar mi día alrededor del evento
+                                </button>
                                 <button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold hover:bg-orange-50 transition text-xs">
                                     <i class="fa-regular fa-calendar-plus mr-1"></i> Calendario
                                 </button>
@@ -4009,6 +4013,45 @@
                 `;
             });
             renderAdminEventsList();
+        }
+
+        function eventPlanCategory(location) {
+            const text=[location.category,location.tag,location.title,location.type].join(' ').toLowerCase();
+            if(/hotel|hostal|hospeda/.test(text)) return 'stay';
+            if(/cafe|café|cafeter/.test(text)) return 'cafe';
+            if(/hueca|restaurant|comida|gastronom|urbana/.test(text)) return 'food';
+            return 'other';
+        }
+
+        function buildEventDayPlan(eventId) {
+            const eventIndex=eventsList.findIndex((ev,index)=>agendaEventKey(ev,index)===String(eventId));
+            if(eventIndex<0)return showToast('No se pudo encontrar el evento');
+            const ev=eventsList[eventIndex];
+            const origin={lat:Number(ev.lat)||-3.9931,lng:Number(ev.lng)||-79.2042};
+            const eligible=locations.filter(location=>Number.isFinite(Number(location.lat))&&Number.isFinite(Number(location.lng))&&![location.category,location.tag,location.title,location.type].join(' ').toLowerCase().includes('motel'));
+            const selected=[];
+            ['food','cafe','stay'].forEach(category=>{
+                const candidates=eligible.filter(location=>eventPlanCategory(location)===category&&!selected.some(item=>item.id===location.id));
+                candidates.sort((a,b)=>calcularDistanciaKm(origin.lat,origin.lng,Number(a.lat),Number(a.lng))-calcularDistanciaKm(origin.lat,origin.lng,Number(b.lat),Number(b.lng)));
+                if(candidates[0])selected.push(candidates[0]);
+            });
+            if(selected.length<3){
+                eligible.filter(location=>!selected.some(item=>item.id===location.id)).sort((a,b)=>calcularDistanciaKm(origin.lat,origin.lng,Number(a.lat),Number(a.lng))-calcularDistanciaKm(origin.lat,origin.lng,Number(b.lat),Number(b.lng))).slice(0,3-selected.length).forEach(location=>selected.push(location));
+            }
+            if(!selected.length)return showToast('Todavía no hay lugares cercanos suficientes para crear este plan');
+            currentSmartRoute=selected.map(location=>{const distance=calcularDistanciaKm(origin.lat,origin.lng,Number(location.lat),Number(location.lng));return {...location,routeDistance:distance,travelMinutes:Math.max(3,Math.round(distance/18*60)),visitMinutes:eventPlanCategory(location)==='stay'?20:40};});
+            openSmartRoutePlanner();
+            const dateInput=document.getElementById('smartRouteDate');if(dateInput&&ev.date)dateInput.value=ev.date;
+            const anchor=document.getElementById('eventDayAnchor');
+            const title=(currentLang==='en'&&ev.titleEn)?ev.titleEn:ev.title;
+            if(anchor){anchor.innerHTML=`<p class="text-[10px] uppercase tracking-widest font-black text-white/75"><i class="fa-solid fa-star mr-1"></i>Evento principal</p><h4 class="font-black text-lg mt-1">${escapeHTML(title||'Evento Vive Loja')}</h4><p class="text-xs text-white/85 mt-1"><i class="fa-regular fa-calendar mr-1"></i>${escapeHTML(ev.date||'Fecha por confirmar')} <span class="mx-1">·</span> <i class="fa-solid fa-location-dot mr-1"></i>${escapeHTML(ev.location||'Loja')}</p>`;anchor.classList.remove('hidden');}
+            const results=document.getElementById('smartRouteResults'),empty=document.getElementById('smartRouteEmpty');if(empty)empty.classList.add('hidden');
+            const totalDistance=currentSmartRoute.reduce((sum,stop)=>sum+stop.routeDistance,0),totalMinutes=currentSmartRoute.reduce((sum,stop)=>sum+stop.travelMinutes+stop.visitMinutes,0);
+            renderSmartRoute(totalDistance,totalMinutes,'drive');drawSmartRouteOnMap(origin);if(results)results.classList.remove('hidden');
+            const summary=document.getElementById('smartRouteSummary');if(summary)summary.textContent=`${currentSmartRoute.length} recomendaciones cerca del evento · ${totalDistance<1?Math.round(totalDistance*1000)+' m':totalDistance.toFixed(1)+' km'}`;
+            setMascotMessage('¡Plan listo! Combiné tu evento con sabores, café y hospedaje cercanos.');
+            showToast('✨ Tu día en Loja está listo');
+            renderVisitorExperience();
         }
 
         function focusEventOnMap(lat, lng, eventTitle, eventDate, eventLoc, eventType) {
@@ -5769,6 +5812,7 @@
         }
 
         function openSmartRoutePlanner() {
+            const anchor=document.getElementById('eventDayAnchor');if(anchor)anchor.classList.add('hidden');
             const select = document.getElementById('smartRouteCategory');
             if (select) {
                 const currentValue = select.value || 'all';
