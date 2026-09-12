@@ -2288,8 +2288,10 @@
                 const snapshot = await db.collection('userProfiles').doc(user.uid).get();
                 if (snapshot.exists && snapshot.data().profileComplete === true) {
                     currentVisitorProfile = snapshot.data();
-                    await loadCloudVisitorProgress(user);
                     renderVisitorReady(user, currentVisitorProfile);
+                    loadCloudVisitorProgress(user).then(() => {
+                        if (visitorAuth?.currentUser?.uid === user.uid) renderVisitorReady(user, currentVisitorProfile);
+                    }).catch(error => console.warn('La cuenta ingresó, pero la sincronización quedó pendiente:', error));
                 } else {
                     fillVisitorProfileForm(user, snapshot.exists ? snapshot.data() : {});
                     showVisitorAccountView('visitorProfileForm');
@@ -2307,7 +2309,10 @@
                 return;
             }
             const button = document.getElementById('googleSignInButton');
+            const originalButtonHTML = button.innerHTML;
             button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Abriendo Google...</span>';
+            setVisitorMessage('visitorAuthMessage', 'Selecciona tu cuenta en la ventana segura de Google.', false);
             try {
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
@@ -2320,6 +2325,7 @@
                 setVisitorMessage('visitorAuthMessage', domain ? 'Debes autorizar este dominio en Firebase Authentication para activar el ingreso con Google.' : blocked ? 'El navegador bloqueó la ventana de Google. Permite ventanas emergentes e inténtalo nuevamente.' : 'No se pudo iniciar sesión con Google. Inténtalo nuevamente.', true);
             } finally {
                 button.disabled = false;
+                button.innerHTML = originalButtonHTML;
             }
         }
 
