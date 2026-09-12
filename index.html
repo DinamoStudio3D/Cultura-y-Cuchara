@@ -1803,23 +1803,13 @@
         </div>
     </div>
 
-    <!-- Invitación flotante de cuenta -->
-    <aside id="accountFloatingInvite" class="hidden fixed bottom-20 sm:bottom-6 left-1/2 sm:left-auto sm:right-5 -translate-x-1/2 sm:translate-x-0 z-[90] w-[calc(100%-2rem)] max-w-sm overflow-hidden rounded-2xl border border-amber-300/60 bg-brandDark text-white shadow-2xl" role="dialog" aria-label="Guardar mi aventura en Vive Loja">
-        <div class="h-1.5 bg-gradient-to-r from-orange-500 via-amber-400 to-teal-400"></div>
-        <button type="button" onclick="dismissAccountFloatingInvite()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white" aria-label="Cerrar invitación"><i class="fa-solid fa-xmark"></i></button>
-        <div class="p-5 pr-12">
-            <div class="flex items-start gap-3">
-                <span class="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-400 text-white grid place-items-center text-xl shadow-lg"><i class="fa-solid fa-passport"></i></span>
-                <div>
-                    <p class="text-[10px] font-black uppercase tracking-[.2em] text-teal-300">Vive Loja contigo</p>
-                    <h3 class="font-black text-xl leading-tight mt-1">Guarda tu aventura</h3>
-                    <p class="text-xs text-gray-300 mt-2 leading-relaxed">Crea tu cuenta gratuita, conserva tu pasaporte y reclama tus premios en Vive Loja.</p>
-                </div>
-            </div>
-            <button id="accountFloatingInviteButton" type="button" onclick="openAccountFromFloatingInvite()" class="w-full mt-4 rounded-xl bg-gradient-to-r from-orange-500 via-amber-400 to-teal-400 hover:brightness-110 text-brandDark font-black px-4 py-3 text-sm transition"><i class="fa-solid fa-cloud-arrow-up mr-2"></i>Guardar mi progreso</button>
-            <p class="text-[10px] text-center text-gray-400 mt-2">Puedes seguir explorando sin registrarte.</p>
-        </div>
-    </aside>
+    <!-- Botón flotante de cuenta: visible solo cuando el administrador lo activa -->
+    <button id="accountFloatingInvite" type="button" onclick="openAccountFromFloatingInvite()" class="hidden fixed bottom-20 sm:bottom-6 right-4 sm:right-5 z-[90] group rounded-full bg-gradient-to-r from-orange-500 via-amber-400 to-teal-400 p-[2px] shadow-2xl hover:scale-105 transition-transform" aria-label="Guardar mi progreso en Vive Loja">
+        <span class="flex items-center gap-2 rounded-full bg-brandDark text-white px-3 py-2.5 sm:px-4">
+            <span class="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-amber-400 grid place-items-center text-white shadow"><i class="fa-solid fa-user-plus"></i></span>
+            <span class="hidden sm:block text-left leading-tight"><strong class="block text-xs">Únete a Vive Loja</strong><small class="text-[10px] text-gray-300">Guarda tu aventura</small></span>
+        </span>
+    </button>
 
     <!-- Toast Notification -->
     <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
@@ -2195,12 +2185,10 @@
                     renderVisitorReady(user, currentVisitorProfile);
                 } else {
                     fillVisitorProfileForm(user, snapshot.exists ? snapshot.data() : {});
-                    openModal('accountModal');
                     showVisitorAccountView('visitorProfileForm');
                 }
             } catch (error) {
                 fillVisitorProfileForm(user);
-                openModal('accountModal');
                 showVisitorAccountView('visitorProfileForm');
                 setVisitorMessage('visitorProfileMessage', 'No pudimos consultar tu perfil. Verifica que las reglas de usuarios estén activadas en Firebase.', true);
             }
@@ -3005,6 +2993,7 @@
         }
 
         function applySettings(s) {
+            showAccountFloatingInvite(s.showAccountFloatingButton !== false);
             const nowButton=document.getElementById('nowRecommendationBtn');if(nowButton)nowButton.classList.toggle('hidden',s.showNowPlanner===false);
             document.querySelectorAll('.subscription-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false));document.querySelectorAll('.business-signup-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false||s.showBusinessSignup===false));
             const badgeEl = document.getElementById('heroBadge');
@@ -5355,7 +5344,6 @@
         });
 
         setTimeout(forceRemoveSplash, 1500);
-        setTimeout(showAccountFloatingInvite, 3000);
 
         function searchItems() {
             let input = document.getElementById('searchInput').value.toLowerCase();
@@ -5401,18 +5389,8 @@
             });
         }
 
-        function showAccountFloatingInvite() {
-            const invite = document.getElementById('accountFloatingInvite');
-            if (!invite) return;
-            const button = document.getElementById('accountFloatingInviteButton');
-            if (visitorAuth?.currentUser && currentVisitorProfile?.profileComplete) {
-                button.innerHTML = '<i class="fa-solid fa-passport mr-2"></i>Ver mi pasaporte';
-            }
-            invite.classList.remove('hidden');
-            invite.animate([
-                { opacity: 0, transform: window.innerWidth < 640 ? 'translate(-50%, 28px) scale(.96)' : 'translateY(28px) scale(.96)' },
-                { opacity: 1, transform: window.innerWidth < 640 ? 'translate(-50%, 0) scale(1)' : 'translateY(0) scale(1)' }
-            ], { duration: 450, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        function showAccountFloatingInvite(enabled = true) {
+            document.getElementById('accountFloatingInvite')?.classList.toggle('hidden', enabled !== true);
         }
 
         function dismissAccountFloatingInvite() {
