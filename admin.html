@@ -981,10 +981,9 @@ auth.onAuthStateChanged(async user => {
         return;
     }
     if ((user.email || '').toLowerCase() !== ADMIN_EMAIL) {
-        await auth.signOut();
         loginView.classList.remove('hidden');
         adminView.classList.add('hidden');
-        message(document.getElementById('loginMessage'), 'Este correo no está autorizado para administrar Vive Loja.');
+        message(document.getElementById('loginMessage'), 'Este correo no está autorizado para administrar Vive Loja. Ingresa con la cuenta administrativa.');
         return;
     }
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
