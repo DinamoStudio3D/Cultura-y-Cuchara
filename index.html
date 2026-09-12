@@ -612,6 +612,12 @@
                     <button type="button" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i><span data-i18n="btnGps">Cerca de mí</span></button>
                     <button type="button" onclick="runSmartSearch('pasaporte')" class="flex-shrink-0 bg-rose-50 text-rose-700 border border-rose-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-stamp mr-1"></i><span data-i18n="smartPassport">Para mi pasaporte</span></button>
                 </div>
+                <div class="flex justify-end">
+                    <button id="clearFiltersButton" type="button" onclick="clearAllPlaceFilters()" class="hidden items-center gap-2 rounded-full border border-brandGold/30 bg-orange-50 px-3 py-1.5 text-[11px] font-bold text-brandGold hover:bg-brandGold hover:text-white transition-colors">
+                        <i class="fa-solid fa-filter-circle-xmark"></i>
+                        <span id="clearFiltersLabel">Limpiar filtros</span>
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="localesGrid"></div>
@@ -5725,6 +5731,21 @@
             Object.entries(aliases).forEach(([from,to])=>{normalized=normalized.replace(new RegExp('\\b'+from+'\\b','g'),to);});
             return normalized.split(/\s+/).filter(term=>term.length>1&&!['de','en','un','una','para','con','que','quiero','busco','lugar'].includes(term));
         }
+        function updateClearFiltersButton(isActive) {
+            const button = document.getElementById('clearFiltersButton');
+            const label = document.getElementById('clearFiltersLabel');
+            if (!button) return;
+            button.classList.toggle('hidden', !isActive);
+            button.classList.toggle('flex', isActive);
+            if (label) label.textContent = currentLang === 'en' ? 'Clear filters' : 'Limpiar filtros';
+        }
+
+        function clearAllPlaceFilters() {
+            const allButton = document.querySelector('.filter-btn[onclick*="\'all\'"]');
+            filterItems('all', allButton);
+            updateClearFiltersButton(false);
+        }
+
         function runSmartSearch(query){const input=document.getElementById('searchInput');if(input){input.value=query;searchItems();input.focus();}}
         function clearSmartSearch(){const input=document.getElementById('searchInput');if(input)input.value='';searchItems();}
         function searchPlacesNearMe(){if(!navigator.geolocation){showToast(currentLang==='en'?'Your browser does not support location.':'Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};runSmartSearch(currentLang==='en'?'near me':'cerca de mí');},()=>showToast(currentLang==='en'?'We could not get your location.':'No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
@@ -5735,6 +5756,7 @@
             ranked.sort((a,b)=>b.score-a.score||a.order-b.order);
             let visible=0;ranked.forEach(item=>{const matches=!query||item.score>0;item.card.classList.toggle('hidden-item',!matches);item.card.style.opacity=matches?'1':'0';item.card.style.order=matches?String(-Math.round(item.score)):'999';if(matches)visible++;});
             const noRes=document.getElementById('noResults');if(noRes)noRes.classList.toggle('hidden',visible>0);
+            updateClearFiltersButton(Boolean(query));
             if(status){if(!query)status.textContent=currentLang==='en'?'Search by name, activity, opening hours or proximity.':'Busca por nombre, actividad, horario o cercanía.';else if(wantsNear&&!userCoords)status.textContent=currentLang==='en'?'Tap “Near me” to sort using your location.':'Pulsa “Cerca de mí” para ordenar usando tu ubicación.';else status.textContent=currentLang==='en'?(visible===1?'We found 1 place for you.':`We found ${visible} places sorted by relevance.`):(visible===1?'Encontramos 1 parada para ti.':`Encontramos ${visible} paradas ordenadas por relevancia.`);}
         }
 
@@ -5762,6 +5784,7 @@
                     item.classList.add('hidden-item'); 
                 }
             });
+            updateClearFiltersButton(category !== 'all');
         }
 
         function showAccountFloatingInvite(enabled = true) {
