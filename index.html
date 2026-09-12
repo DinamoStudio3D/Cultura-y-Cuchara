@@ -5355,7 +5355,7 @@
         });
 
         setTimeout(forceRemoveSplash, 1500);
-        setTimeout(showAccountFloatingInvite, 9000);
+        setTimeout(showAccountFloatingInvite, 3000);
 
         function searchItems() {
             let input = document.getElementById('searchInput').value.toLowerCase();
@@ -5403,17 +5403,20 @@
 
         function showAccountFloatingInvite() {
             const invite = document.getElementById('accountFloatingInvite');
-            if (!invite || sessionStorage.getItem('cyc_account_invite_dismissed') === '1') return;
+            if (!invite) return;
             const button = document.getElementById('accountFloatingInviteButton');
             if (visitorAuth?.currentUser && currentVisitorProfile?.profileComplete) {
                 button.innerHTML = '<i class="fa-solid fa-passport mr-2"></i>Ver mi pasaporte';
             }
             invite.classList.remove('hidden');
+            invite.animate([
+                { opacity: 0, transform: window.innerWidth < 640 ? 'translate(-50%, 28px) scale(.96)' : 'translateY(28px) scale(.96)' },
+                { opacity: 1, transform: window.innerWidth < 640 ? 'translate(-50%, 0) scale(1)' : 'translateY(0) scale(1)' }
+            ], { duration: 450, easing: 'cubic-bezier(.2,.8,.2,1)' });
         }
 
         function dismissAccountFloatingInvite() {
             document.getElementById('accountFloatingInvite')?.classList.add('hidden');
-            sessionStorage.setItem('cyc_account_invite_dismissed', '1');
         }
 
         function openAccountFromFloatingInvite() {
