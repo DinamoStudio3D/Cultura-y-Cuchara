@@ -257,9 +257,9 @@
             <div class="p-6">
                 <div id="accountSignedOut" class="text-center">
                     <div class="w-16 h-16 mx-auto rounded-full bg-orange-50 text-brandGold grid place-items-center text-2xl"><i class="fa-solid fa-user"></i></div>
-                    <h3 class="font-black text-xl mt-4">Ingresa con Google</h3>
-                    <p class="text-sm text-gray-600 mt-2">No necesitas crear ni recordar otra contraseña.</p>
-                    <button id="googleSignInButton" type="button" onclick="signInVisitorWithGoogle()" class="w-full mt-6 border-2 border-gray-200 hover:border-brandGold rounded-xl px-5 py-3.5 font-black flex items-center justify-center gap-3 transition"><span class="w-7 h-7 rounded-full bg-white shadow grid place-items-center text-sm font-black text-blue-600">G</span>Continuar con Google</button>
+                    <h3 class="font-black text-xl mt-4">Ingresa o crea tu cuenta</h3>
+                    <p class="text-sm text-gray-600 mt-2">Usa tu cuenta de Google. Si ya te registraste, entrarás directamente con tus datos guardados.</p>
+                    <button id="googleSignInButton" type="button" onclick="signInVisitorWithGoogle()" class="w-full mt-6 border-2 border-gray-200 hover:border-brandGold rounded-xl px-5 py-3.5 font-black flex items-center justify-center gap-3 transition"><span class="w-7 h-7 rounded-full bg-white shadow grid place-items-center text-sm font-black text-blue-600">G</span>Ingresar o registrarme con Google</button>
                 </div>
                 <form id="visitorProfileForm" class="hidden space-y-4" onsubmit="saveVisitorProfile(event)">
                     <div class="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl p-3"><img id="visitorAvatar" class="w-12 h-12 rounded-full object-cover bg-white" alt="Foto de perfil"><div class="min-w-0"><p id="visitorWelcome" class="font-black truncate">Completa tu perfil</p><p id="visitorGoogleEmail" class="text-xs text-gray-600 truncate"></p></div></div>
@@ -1807,7 +1807,7 @@
     <button id="accountFloatingInvite" type="button" onclick="openAccountFromFloatingInvite()" class="hidden fixed bottom-20 sm:bottom-6 right-4 sm:right-5 z-[90] group rounded-full bg-gradient-to-r from-orange-500 via-amber-400 to-teal-400 p-[2px] shadow-2xl hover:scale-105 transition-transform" aria-label="Guardar mi progreso en Vive Loja">
         <span class="flex items-center gap-2 rounded-full bg-brandDark text-white px-3 py-2.5 sm:px-4">
             <span class="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-amber-400 grid place-items-center text-white shadow"><i class="fa-solid fa-user-plus"></i></span>
-            <span class="hidden sm:block text-left leading-tight"><strong class="block text-xs">Únete a Vive Loja</strong><small class="text-[10px] text-gray-300">Guarda tu aventura</small></span>
+            <span class="hidden sm:block text-left leading-tight"><strong class="block text-xs">Ingresar o registrarme</strong><small class="text-[10px] text-gray-300">Guarda tu aventura</small></span>
         </span>
     </button>
 
