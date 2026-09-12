@@ -5777,15 +5777,27 @@
                 btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
             }
 
+            let visibleCount = 0;
             document.querySelectorAll('.local-item').forEach(item => {
                 if (category === 'all' || item.classList.contains(category)) { 
                     item.style.opacity = '1';
-                    item.classList.remove('hidden-item'); 
+                    item.classList.remove('hidden-item');
+                    visibleCount++;
                 } else { 
                     item.style.opacity = '0';
                     item.classList.add('hidden-item'); 
                 }
             });
+            const clearSearchButton = document.getElementById('smartSearchClearButton');
+            if (clearSearchButton) clearSearchButton.classList.add('hidden');
+            const status = document.getElementById('smartSearchStatus');
+            if (status) {
+                status.textContent = category === 'all'
+                    ? (currentLang === 'en' ? 'Explore all available stops.' : 'Explora todas las paradas disponibles.')
+                    : (currentLang === 'en'
+                        ? (visibleCount === 1 ? '1 stop in this category.' : visibleCount + ' stops in this category.')
+                        : (visibleCount === 1 ? '1 parada en esta categoría.' : visibleCount + ' paradas en esta categoría.'));
+            }
             updateClearFiltersButton(category !== 'all');
         }
 
