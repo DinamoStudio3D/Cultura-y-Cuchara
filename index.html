@@ -497,6 +497,16 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
             <div class="lg:col-span-2 rounded-2xl h-[460px] md:h-[500px] lg:h-[520px] shadow-warm-glow border border-gray-300 overflow-hidden relative">
                 <div id="lojaMap" class="w-full h-full bg-gray-200"></div>
+                <div class="absolute top-4 right-4 z-[910]">
+                    <button id="mapLegendToggle" type="button" onclick="toggleMapLegend()" aria-expanded="false" class="ml-auto bg-white/95 backdrop-blur text-brandDark border border-gray-200 rounded-full px-3 py-2 shadow-xl text-xs font-black flex items-center gap-2 hover:border-brandGold"><i class="fa-solid fa-layer-group text-brandGold"></i> Tipos de puntos</button>
+                    <div id="mapLegendPanel" class="hidden mt-2 w-52 bg-white/95 backdrop-blur rounded-2xl border border-gray-200 shadow-2xl p-2 space-y-1">
+                        <button type="button" data-map-group="all" onclick="filterMapGroup('all')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold bg-brandDark text-white"><span class="w-7 h-7 rounded-full bg-brandDark text-brandGold grid place-items-center"><i class="fa-solid fa-border-all"></i></span>Todos los puntos</button>
+                        <button type="button" data-map-group="food" onclick="filterMapGroup('food')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-orange-50"><span class="w-7 h-7 rounded-full bg-orange-100 text-orange-600 grid place-items-center"><i class="fa-solid fa-utensils"></i></span>Gastronomía</button>
+                        <button type="button" data-map-group="stay" onclick="filterMapGroup('stay')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-sky-50"><span class="w-7 h-7 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid fa-hotel"></i></span>Hospedaje</button>
+                        <button type="button" data-map-group="tourism" onclick="filterMapGroup('tourism')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-emerald-50"><span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 grid place-items-center"><i class="fa-solid fa-landmark"></i></span>Atractivos</button>
+                        <button type="button" data-map-group="partners" onclick="filterMapGroup('partners')" class="map-legend-option w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:bg-violet-50"><span class="w-7 h-7 rounded-full bg-violet-700 text-white grid place-items-center"><i class="fa-solid fa-handshake"></i></span>Marcas aliadas</button>
+                    </div>
+                </div>
                 
                 <div id="mapSpotlightIndicator" class="absolute top-4 left-4 right-4 sm:right-auto z-[900] bg-brandDark/90 backdrop-blur border border-brandGold text-white px-4 py-2 rounded-2xl shadow-xl flex items-center justify-between gap-3 hidden">
                     <div class="flex items-center gap-2 truncate">
@@ -3401,6 +3411,11 @@
             return R * c;
         }
 
+        let activeMapGroup='all';
+        function toggleMapLegend(){const panel=document.getElementById('mapLegendPanel'),button=document.getElementById('mapLegendToggle');if(!panel||!button)return;const willOpen=panel.classList.contains('hidden');panel.classList.toggle('hidden',!willOpen);button.setAttribute('aria-expanded',String(willOpen));}
+        function mapGroupMatches(location,group){if(group==='all')return true;if(group==='food')return ['hueca','cafe','urbana'].includes(location.category);if(group==='stay')return location.category==='hotel';if(group==='tourism')return location.category==='turismo';if(group==='partners')return location.category==='aliado';return true;}
+        function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels={all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;document.getElementById('mapLegendPanel')?.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
+
         function renderMapAndGrid() {
             if(!markersLayer) return;
             markersLayer.clearLayers();
@@ -3527,9 +3542,8 @@
                 `;
             });
 
-            if(userMarkerInstance) {
-                userMarkerInstance.addTo(markersLayer);
-            }
+            if(activeMapGroup!=='all')filterMapGroup(activeMapGroup);
+            else if(userMarkerInstance) userMarkerInstance.addTo(markersLayer);
 
             renderAdminLocationsList();
             updatePassportUI();
