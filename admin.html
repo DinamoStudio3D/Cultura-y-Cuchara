@@ -56,7 +56,7 @@
         <section id="adminView" class="hidden">
             <div class="panel rounded-2xl px-4 py-3 sm:px-5 flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div class="min-w-0"><p class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Módulo actual</p><div class="flex flex-wrap items-center gap-2"><h2 id="currentModuleName" class="font-black text-lg">Audios y Podcast</h2><span id="adminSaveGuard" class="hidden items-center gap-1.5 text-[10px] font-black text-amber-200 bg-amber-500/10 border border-amber-500/25 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle text-[6px]"></i>Cambios sin guardar</span><span class="hidden sm:inline text-gray-700">•</span><p id="sessionEmail" class="hidden sm:block text-xs text-gray-400 truncate"></p></div></div>
-                <div class="flex items-center gap-2"><button id="mobileAdminNavToggle" type="button" onclick="toggleAdminSidebar()" class="border border-amber-500/30 text-amber-200 rounded-xl px-3 py-2 text-sm font-bold" aria-expanded="false"><i class="fa-solid fa-bars mr-1"></i>Menú</button><button id="logoutBtn" type="button" class="border border-gray-700 hover:border-red-400 hover:text-red-300 rounded-xl px-3 py-2 text-sm"><i class="fa-solid fa-arrow-right-from-bracket mr-1"></i><span class="hidden sm:inline">Cerrar sesión</span></button></div>
+                <div class="flex items-center gap-2"><button type="button" onclick="openAdminGlobalSearch()" class="border border-gray-700 hover:border-amber-400 hover:text-amber-200 rounded-xl px-3 py-2 text-sm" title="Buscar en todo el panel (Ctrl + K)"><i class="fa-solid fa-magnifying-glass mr-1"></i><span class="hidden sm:inline">Buscar</span><span class="hidden xl:inline ml-2 text-[10px] text-gray-500 border border-gray-700 rounded px-1.5 py-0.5">Ctrl K</span></button><button id="mobileAdminNavToggle" type="button" onclick="toggleAdminSidebar()" class="border border-amber-500/30 text-amber-200 rounded-xl px-3 py-2 text-sm font-bold" aria-expanded="false"><i class="fa-solid fa-bars mr-1"></i>Menú</button><button id="logoutBtn" type="button" class="border border-gray-700 hover:border-red-400 hover:text-red-300 rounded-xl px-3 py-2 text-sm"><i class="fa-solid fa-arrow-right-from-bracket mr-1"></i><span class="hidden sm:inline">Cerrar sesión</span></button></div>
             </div>
 
             <div class="grid lg:grid-cols-[270px_minmax(0,1fr)] gap-5 lg:gap-6">
@@ -435,6 +435,19 @@
                 </div>
             </div>
         </section>
+
+    <div id="adminGlobalSearchModal" class="hidden fixed inset-0 z-[90] bg-black/75 backdrop-blur-sm p-4 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="adminGlobalSearchTitle" onclick="if(event.target===this)closeAdminGlobalSearch()">
+        <div class="max-w-2xl mx-auto panel rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-4 border-b border-white/10">
+                <div class="flex items-center justify-between gap-3 mb-3"><div><p class="text-[10px] uppercase tracking-widest text-amber-300 font-black">Acceso rápido</p><h3 id="adminGlobalSearchTitle" class="font-black text-lg">Buscar en todo el panel</h3></div><button type="button" onclick="closeAdminGlobalSearch()" class="w-10 h-10 rounded-xl border border-gray-700 text-gray-300 hover:text-white" aria-label="Cerrar buscador"><i class="fa-solid fa-xmark"></i></button></div>
+                <label class="sr-only" for="adminGlobalSearchInput">Buscar contenido o módulo</label>
+                <div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-amber-300"></i><input id="adminGlobalSearchInput" class="field !pl-11 !py-3" placeholder="Ej.: Dinamo, evento, audio, pasaporte…" autocomplete="off" oninput="renderAdminGlobalSearch(this.value)"></div>
+            </div>
+            <div id="adminGlobalSearchResults" class="max-h-[60vh] overflow-y-auto p-2" aria-live="polite"></div>
+            <p class="px-4 py-3 border-t border-white/10 text-[11px] text-gray-500">Usa <strong class="text-gray-300">Ctrl + K</strong> para abrir y <strong class="text-gray-300">Esc</strong> para cerrar.</p>
+        </div>
+    </div>
+
     </main>
 
     <div id="placePreviewModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="placePreviewHeading" onclick="if(event.target===this)closePlacePreview()">
@@ -560,6 +573,48 @@ window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;ev
 const ADMIN_MODULE_LABELS={dashboard:'Resumen y respaldo',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Modo Festival',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('button').forEach(button=>{const show=!query||button.textContent.toLowerCase().includes(query);button.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);});}
+
+
+let adminGlobalSearchResults=[];
+function adminGlobalSearchItems(){
+    const modules=Object.entries(ADMIN_MODULE_LABELS).map(([module,label])=>({module,label,type:'Módulo',detail:'Abrir sección del panel'}));
+    const records=[
+        ...adminPlaces.map(item=>({module:'places',label:item.title||item.titleEn||'Parada sin nombre',type:'Parada',detail:[item.tag,item.category,item.address].filter(Boolean).join(' · '),query:item.title||''})),
+        ...generalEvents.map(item=>({module:'events',label:item.title||'Evento sin título',type:'Evento',detail:[item.date,item.location].filter(Boolean).join(' · ')})),
+        ...adminEntrepreneurs.map(item=>({module:'entrepreneurs',label:item.name||'Emprendimiento sin nombre',type:'Emprendimiento',detail:item.category||''})),
+        ...adminTimeSpots.map(item=>({module:'time',label:item.title||'Punto histórico',type:'Loja en el Tiempo',detail:[item.labelPast,item.labelPresent].filter(Boolean).join(' → ')})),
+        ...adminPostcardFrames.map(item=>({module:'postcards',label:item.name||'Marco de postal',type:'Postal',detail:item.img||''})),
+        ...festivalDraftEvents.map(item=>({module:'festival',label:item.title||item.name||'Actividad del festival',type:'Festival',detail:[item.date,item.location].filter(Boolean).join(' · ')})),
+        ...adminQrCodes.map(item=>({module:'qr',label:item.name||item.title||item.label||'Código QR',type:'Código QR',detail:item.url||item.link||''}))
+    ];
+    return [...modules,...records];
+}
+function openAdminGlobalSearch(){
+    const modal=document.getElementById('adminGlobalSearchModal'),input=document.getElementById('adminGlobalSearchInput');
+    if(!modal||!input)return;
+    modal.classList.remove('hidden');document.body.classList.add('overflow-hidden');input.value='';renderAdminGlobalSearch('');setTimeout(()=>input.focus(),30);
+}
+function closeAdminGlobalSearch(){
+    document.getElementById('adminGlobalSearchModal')?.classList.add('hidden');document.body.classList.remove('overflow-hidden');
+}
+function renderAdminGlobalSearch(value){
+    const box=document.getElementById('adminGlobalSearchResults'),query=String(value||'').trim().toLowerCase();
+    if(!box)return;
+    adminGlobalSearchResults=adminGlobalSearchItems().filter(item=>!query||[item.label,item.type,item.detail,ADMIN_MODULE_LABELS[item.module]].some(part=>String(part||'').toLowerCase().includes(query))).slice(0,40);
+    if(!adminGlobalSearchResults.length){box.innerHTML='<p class="text-center text-sm text-gray-500 p-8">No encontramos coincidencias.</p>';return;}
+    box.innerHTML=adminGlobalSearchResults.map((item,index)=>`<button type="button" onclick="openAdminGlobalSearchResult(${index})" class="w-full text-left rounded-xl px-4 py-3 hover:bg-white/5 flex items-center gap-3"><span class="w-10 h-10 shrink-0 rounded-xl bg-amber-500/10 text-amber-300 grid place-items-center"><i class="fa-solid ${item.type==='Módulo'?'fa-table-cells-large':'fa-file-lines'}"></i></span><span class="min-w-0 flex-1"><span class="block font-bold truncate">${escapeAdminHtml(item.label)}</span><span class="block text-xs text-gray-500 truncate">${escapeAdminHtml(item.type)}${item.detail?' · '+escapeAdminHtml(item.detail):''}</span></span><i class="fa-solid fa-arrow-right text-gray-600"></i></button>`).join('');
+}
+function openAdminGlobalSearchResult(index){
+    const item=adminGlobalSearchResults[index];if(!item)return;
+    if(showAdminModule(item.module)===false)return;
+    closeAdminGlobalSearch();
+    if(item.module==='places'&&item.query){const input=document.getElementById('placesSearch');if(input){input.value=item.query;renderAdminPlaces();}}
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+document.addEventListener('keydown',event=>{
+    if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();openAdminGlobalSearch();}
+    else if(event.key==='Escape'&&!document.getElementById('adminGlobalSearchModal')?.classList.contains('hidden'))closeAdminGlobalSearch();
+});
 
 function showAdminModule(moduleName) {
     if(moduleName!==currentAdminModule&&adminUnsavedChanges&&!window.confirm('Tienes cambios sin guardar. ¿Quieres salir de este módulo y descartarlos?'))return false;
