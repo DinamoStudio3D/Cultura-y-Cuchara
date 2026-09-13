@@ -283,6 +283,17 @@ assert(index.includes('function applyMissionPresentation'), 'La web aplica la pr
 assert(index.includes("section.classList.toggle('hidden',config.active===false)"), 'El módulo público puede ocultarse sin borrar progreso');
 assert(index.includes('id="missionPublicRewardTitle"'), 'La recompensa pública recibe el texto administrativo');
 
+
+assert(index.includes('id="missionCommercialReward"'), 'La web muestra la recompensa comercial al completar misiones');
+assert(index.includes('function claimMissionReward'), 'El visitante puede registrar su recompensa');
+assert(index.includes("'CHABA-'"), 'Los códigos de misión usan un formato reconocible');
+assert(index.includes("db.collection('missionRewardClaims')"), 'Los códigos se guardan en su colección protegida');
+assert(admin.includes('id="missionBenefitCampaignId"'), 'El panel configura campañas de recompensa');
+assert(admin.includes('id="missionRewardClaimsList"'), 'El panel muestra ganadores y códigos');
+assert(admin.includes('function updateMissionRewardClaim'), 'El administrador puede entregar o anular códigos');
+assert(firestoreRules.includes('match /missionRewardClaims/{claimId}'), 'Firestore protege los códigos de misiones');
+assert(firestoreRules.includes("request.resource.data.completedMissions == 5"), 'Firestore exige las cinco misiones');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
