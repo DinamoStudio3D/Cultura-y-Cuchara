@@ -2875,6 +2875,7 @@
         let currentSmartRoute = [];
         let activeSpeechUtterance = null;
         let activeSpeechButton = null;
+        let activeAudioGuide = null;
         let handledLocationUrl = false;
         let subscriptionScheduleTimer=null;
         const businessAnalyticsSession=localStorage.getItem('cyc_analytics_session')||(`visit_${Date.now()}_${Math.random().toString(36).slice(2,9)}`);localStorage.setItem('cyc_analytics_session',businessAnalyticsSession);
@@ -5912,38 +5913,73 @@
 
         function stopAudioGuide() {
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            if (activeAudioGuide) {
+                activeAudioGuide.pause();
+                activeAudioGuide.currentTime = 0;
+                activeAudioGuide = null;
+            }
             resetAudioGuideButton();
         }
 
-        function speakWithChabaquito(text, button) {
-            if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
-                showToast('La audioguía no está disponible en este navegador.');
-                return;
-            }
-            if (activeSpeechButton === button && window.speechSynthesis.speaking) {
+        function speakWithChabaquito(text, button, audioUrl = '') {
+            const speechIsActive = 'speechSynthesis' in window && window.speechSynthesis.speaking;
+            const fileIsActive = activeAudioGuide && !activeAudioGuide.paused;
+            if (activeSpeechButton === button && (speechIsActive || fileIsActive)) {
                 stopAudioGuide();
                 return;
             }
 
             stopAudioGuide();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = currentLang === 'en' ? 'en-US' : 'es-EC';
-            utterance.rate = 0.94;
-            utterance.pitch = 1.02;
-            const voices = window.speechSynthesis.getVoices();
-            const preferred = voices.find(voice => voice.lang.toLowerCase() === utterance.lang.toLowerCase()) || voices.find(voice => voice.lang.toLowerCase().startsWith(currentLang === 'en' ? 'en' : 'es'));
-            if (preferred) utterance.voice = preferred;
-            activeSpeechUtterance = utterance;
             activeSpeechButton = button;
             button.classList.add('bg-red-600', 'text-white', 'border-red-500');
             const icon = button.querySelector('i');
             const label = button.querySelector('span');
             if (icon) icon.className = 'fa-solid fa-stop';
             if (label) label.textContent = currentLang === 'en' ? 'Stop audio' : 'Detener audio';
-            utterance.onend = resetAudioGuideButton;
-            utterance.onerror = resetAudioGuideButton;
             setMascotMessage(currentLang === 'en' ? 'Listen carefully, I will tell you this story.' : 'Escucha con atención, te contaré esta historia.');
-            window.speechSynthesis.speak(utterance);
+
+            const speakWithBrowserVoice = () => {
+                if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+                    showToast('La audioguía no está disponible en este navegador.');
+                    resetAudioGuideButton();
+                    return;
+                }
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = currentLang === 'en' ? 'en-US' : 'es-EC';
+                utterance.rate = 0.94;
+                utterance.pitch = 1.02;
+                const voices = window.speechSynthesis.getVoices();
+                const preferred = voices.find(voice => voice.lang.toLowerCase() === utterance.lang.toLowerCase()) || voices.find(voice => voice.lang.toLowerCase().startsWith(currentLang === 'en' ? 'en' : 'es'));
+                if (preferred) utterance.voice = preferred;
+                activeSpeechUtterance = utterance;
+                utterance.onend = resetAudioGuideButton;
+                utterance.onerror = resetAudioGuideButton;
+                window.speechSynthesis.speak(utterance);
+            };
+
+            const customAudioUrl = String(audioUrl || '').trim();
+            if (!customAudioUrl) {
+                speakWithBrowserVoice();
+                return;
+            }
+
+            const audio = new Audio(customAudioUrl);
+            let fallbackStarted = false;
+            activeAudioGuide = audio;
+            audio.preload = 'auto';
+            audio.onended = () => {
+                if (activeAudioGuide === audio) activeAudioGuide = null;
+                resetAudioGuideButton();
+            };
+            const useFallback = () => {
+                if (fallbackStarted || activeAudioGuide !== audio) return;
+                fallbackStarted = true;
+                activeAudioGuide = null;
+                showToast(currentLang === 'en' ? 'The recorded audio could not be loaded. Using the automatic voice.' : 'No se pudo cargar el audio grabado. Usaremos la voz automática.');
+                speakWithBrowserVoice();
+            };
+            audio.onerror = useFallback;
+            audio.play().catch(useFallback);
         }
 
         function toggleLocationAudioGuide() {
@@ -5955,7 +5991,7 @@
             const specialty = currentLang === 'en' && location.dishEn ? location.dishEn : location.dish;
             const intro = currentLang === 'en' ? `Welcome to ${title}.` : `Bienvenido a ${title}.`;
             const detail = specialty ? (currentLang === 'en' ? `Its featured experience is ${specialty}.` : `Su experiencia destacada es ${specialty}.`) : '';
-            speakWithChabaquito(`${intro} ${description || ''} ${detail}`, button);
+            speakWithChabaquito(`${intro} ${description || ''} ${detail}`, button, location.audioUrl);
         }
 
         function toggleTimeAudioGuide() {
@@ -5965,7 +6001,7 @@
             const title = currentLang === 'en' && place.titleEn ? place.titleEn : place.title;
             const description = currentLang === 'en' && place.descEn ? place.descEn : place.desc;
             const intro = currentLang === 'en' ? `This is ${title}.` : `Esta es la historia de ${title}.`;
-            speakWithChabaquito(`${intro} ${description || ''}`, button);
+            speakWithChabaquito(`${intro} ${description || ''}`, button, place.audioUrl);
         }
 
         function escapeHTML(value) {
