@@ -15,6 +15,10 @@
     <link rel="preconnect" href="https://i.imgur.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
 
     <link rel="icon" href="https://i.imgur.com/xaiFpa1.png" type="image/png">
@@ -136,7 +140,7 @@
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(234,88,12,.28),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,.22),transparent_45%)]"></div>
         <div class="relative min-h-full flex items-center justify-center p-6">
             <div class="max-w-2xl w-full text-center">
-                <div class="relative inline-block"><div class="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-white border-4 border-brandGold overflow-hidden shadow-2xl p-2"><img id="maintenanceLogo" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain"></div><img src="mascota-vive-loja.png" alt="Chabaquito" class="absolute -right-20 -bottom-8 w-28 sm:w-36 drop-shadow-2xl"></div>
+                <div class="relative inline-block"><div class="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-white border-4 border-brandGold overflow-hidden shadow-2xl p-2"><img id="maintenanceLogo" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" decoding="async"></div><img src="mascota-vive-loja.png" alt="Chabaquito" width="1122" height="1402" class="absolute -right-20 -bottom-8 w-28 sm:w-36 h-auto drop-shadow-2xl" decoding="async"></div>
                 <p id="maintenancePublicBadge" class="text-brandGold text-xs font-black tracking-[.22em] mt-10 uppercase">Estamos preparando algo especial</p>
                 <h1 id="maintenancePublicTitle" class="text-3xl sm:text-5xl font-black mt-4 leading-tight">Estamos trabajando en algo bonito</h1>
                 <p id="maintenancePublicText" class="text-gray-300 text-sm sm:text-lg leading-relaxed mt-5 max-w-xl mx-auto">Muy pronto descubrirás una nueva experiencia para conocer, saborear y vivir Loja.</p>
@@ -149,7 +153,7 @@
 
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
         <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl animate-pulse flex items-center justify-center p-2">
-            <img id="splashLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" width="144" height="144" fetchpriority="high" class="w-full h-full object-contain">
+            <img id="splashLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" width="144" height="144" fetchpriority="high" class="w-full h-full object-contain" decoding="async">
         </div>
         <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">✨ Preparando los mejores sabores de Loja para ti...</div>
     </div>
@@ -173,7 +177,7 @@
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="#" class="flex items-center gap-3 group">
                 <div class="w-12 h-12 rounded-full border-2 border-brandGold overflow-hidden bg-white shadow-warm-glow flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
-                    <img id="navLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" width="48" height="48" class="w-full h-full object-contain">
+                    <img id="navLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" width="48" height="48" class="w-full h-full object-contain" decoding="async">
                 </div>
                 <div>
                     <span id="brandNameText" class="text-white font-black text-sm tracking-wide block leading-none">VIVE LOJA</span>
@@ -262,7 +266,7 @@
                     <button id="googleSignInButton" type="button" onclick="signInVisitorWithGoogle()" class="w-full mt-6 border-2 border-gray-200 hover:border-brandGold rounded-xl px-5 py-3.5 font-black flex items-center justify-center gap-3 transition"><span class="w-7 h-7 rounded-full bg-white shadow grid place-items-center text-sm font-black text-blue-600">G</span>Ingresar o registrarme con Google</button>
                 </div>
                 <form id="visitorProfileForm" class="hidden space-y-4" onsubmit="saveVisitorProfile(event)">
-                    <div class="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl p-3"><img id="visitorAvatar" class="w-12 h-12 rounded-full object-cover bg-white" alt="Foto de perfil"><div class="min-w-0"><p id="visitorWelcome" class="font-black truncate">Completa tu perfil</p><p id="visitorGoogleEmail" class="text-xs text-gray-600 truncate"></p></div></div>
+                    <div class="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl p-3"><img id="visitorAvatar" class="w-12 h-12 rounded-full object-cover bg-white" alt="Foto de perfil" decoding="async"><div class="min-w-0"><p id="visitorWelcome" class="font-black truncate">Completa tu perfil</p><p id="visitorGoogleEmail" class="text-xs text-gray-600 truncate"></p></div></div>
                     <div class="rounded-xl border border-blue-100 bg-blue-50 p-3 text-sm text-blue-900"><p><i class="fa-brands fa-google mr-2"></i><strong>Ya ingresaste con Google.</strong></p><p class="text-xs mt-1 text-blue-700">Completa estos datos para finalizar tu registro en Vive Loja.</p><button type="button" onclick="switchVisitorGoogleAccount()" class="mt-3 text-xs font-black underline hover:text-blue-600"><i class="fa-solid fa-repeat mr-1"></i>Ingresar con otra cuenta de Google</button></div>
                     <label class="block"><span class="text-sm font-bold block mb-2">Nombre completo *</span><input id="visitorFullName" type="text" maxlength="100" autocomplete="name" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"></label>
                     <label class="block"><span class="text-sm font-bold block mb-2">Correo electrónico</span><input id="visitorEmail" type="email" readonly class="w-full border border-gray-200 bg-gray-100 text-gray-600 rounded-xl px-4 py-3"></label>
@@ -274,7 +278,7 @@
                 </form>
                 <div id="accountReady" class="hidden">
                     <div class="flex items-center gap-4">
-                        <img id="accountReadyAvatar" class="w-16 h-16 rounded-full object-cover border-4 border-orange-100" alt="Foto de perfil">
+                        <img id="accountReadyAvatar" class="w-16 h-16 rounded-full object-cover border-4 border-orange-100" alt="Foto de perfil" decoding="async">
                         <div class="min-w-0"><p class="text-[10px] text-brandGold font-black uppercase tracking-widest" data-i18n="expTitle">Mi experiencia Vive Loja</p><h3 id="accountReadyName" class="font-black text-xl truncate"></h3><p id="accountReadyEmail" class="text-xs text-gray-500 truncate"></p></div>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-5">
@@ -303,7 +307,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="h-48 relative overflow-hidden bg-brandDark">
-                <img id="popupImgEl" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Promoción" class="w-full h-full object-cover">
+                <img id="popupImgEl" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Promoción" class="w-full h-full object-cover" decoding="async">
                 <div class="absolute inset-0 bg-gradient-to-t from-brandDark/90 via-transparent to-transparent flex items-end p-4">
                     <span id="popupBadgeText" class="bg-brandGold text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow">✨ Promoción Exclusiva</span>
                 </div>
@@ -335,7 +339,7 @@
             
             <div class="bg-brandCream p-4 rounded-2xl border border-brandGold/40 mb-4 flex flex-col items-center">
                 <div class="w-24 h-24 bg-white p-2 rounded-xl border border-gray-300 shadow-inner flex items-center justify-center mb-2 overflow-hidden">
-                    <img id="qrLocalAvatarImg" src="https://i.imgur.com/xaiFpa1.png" class="w-full h-full object-cover rounded-lg" alt="Local">
+                    <img id="qrLocalAvatarImg" src="https://i.imgur.com/xaiFpa1.png" class="w-full h-full object-cover rounded-lg" alt="Local" decoding="async">
                 </div>
                 <span id="qrLocalNameDisplay" class="text-xs font-bold text-brandDark">Local Aliado</span>
             </div>
@@ -377,7 +381,7 @@
         </div>
         <div class="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center reveal active">
             <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
-                <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" loading="lazy" decoding="async">
+                <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" decoding="async" fetchpriority="high">
             </div>
             <span id="heroBadge" class="bg-black/40 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-brandGold/70 inline-block mb-4 shadow-warm-glow" data-i18n="heroBadge">
                 LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA
@@ -805,14 +809,14 @@
             <div class="max-w-4xl mx-auto bg-black/60 rounded-3xl p-3 sm:p-5 border-2 border-brandGold/40 shadow-2xl">
                 <div id="beforeAfterViewer" class="before-after-container w-full h-[320px] sm:h-[420px] md:h-[480px] rounded-2xl relative shadow-inner overflow-hidden cursor-ew-resize">
                     <!-- Imagen Después (Presente - Fondo) -->
-                    <img id="timeImgAfter" src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80" alt="Loja Presente" class="absolute inset-0 w-full h-full object-cover pointer-events-none">
+                    <img id="timeImgAfter" src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80" alt="Loja Presente" class="absolute inset-0 w-full h-full object-cover pointer-events-none" decoding="async" loading="lazy">
                     <span id="timeLabelAfter" class="absolute bottom-4 right-4 bg-brandDark/85 backdrop-blur text-brandGold border border-brandGold/50 text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow z-10">
                         Presente (Hoy)
                     </span>
 
                     <!-- Imagen Antes (Pasado - Overlay recortado) -->
                     <div id="timeOverlayBefore" class="before-img-overlay pointer-events-none" style="width: 50%;">
-                        <img id="timeImgBefore" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" alt="Loja Pasado" class="absolute inset-0 w-full h-full object-cover max-w-none" style="filter: grayscale(100%) contrast(110%);">
+                        <img id="timeImgBefore" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" alt="Loja Pasado" class="absolute inset-0 w-full h-full object-cover max-w-none" style="filter: grayscale(100%) contrast(110%);" decoding="async" loading="lazy">
                         <span id="timeLabelBefore" class="absolute bottom-4 left-4 bg-black/85 backdrop-blur text-white border border-gray-600 text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow z-10">
                             Ayer (1945)
                         </span>
@@ -1130,7 +1134,7 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full border border-brandGold bg-white flex items-center justify-center overflow-hidden p-0.5 shadow-warm-glow">
-                    <img id="footerLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain">
+                    <img id="footerLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" decoding="async" loading="lazy">
                 </div>
                 <div>
                     <span class="text-white font-bold tracking-wide block">VIVE LOJA</span>
@@ -1290,7 +1294,7 @@
             </div>
             <div class="p-6 text-center space-y-4">
                 <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30 relative flex flex-col items-center justify-center group cursor-pointer" onclick="openYouTubeDirectLink()">
-                    <img id="modalVideoThumbImg" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Vídeo Estreno" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition duration-500">
+                    <img id="modalVideoThumbImg" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Vídeo Estreno" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition duration-500" decoding="async" loading="lazy">
                     <div class="absolute inset-0 bg-black/40"></div>
                     <div class="relative z-10 flex flex-col items-center p-6">
                         <div class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-warm-glow mb-3 group-hover:scale-110 transition">
@@ -1746,7 +1750,7 @@
                                 <p class="text-[10px] text-gray-300">Haz clic y arrastra con el mouse (o desliza con el dedo) para encuadrar la imagen de fondo principal.</p>
                                 
                                 <div id="interactivePreviewBox" class="w-full h-48 rounded-lg overflow-hidden relative border-2 border-brandGold bg-black shadow-inner cursor-grab active:cursor-grabbing select-none" onmousedown="startDragBg(event)" ontouchstart="startDragBg(event)">
-                                    <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="absolute w-full h-auto min-h-full pointer-events-none transition-none" style="object-fit: cover; left: 0px; top: 0px;">
+                                    <img id="previewHeroImg" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="Preview" class="absolute w-full h-auto min-h-full pointer-events-none transition-none" style="object-fit: cover; left: 0px; top: 0px;" decoding="async" loading="lazy">
                                     <div class="absolute inset-0 bg-black/20 pointer-events-none flex items-center justify-center">
                                         <span class="text-[10px] bg-black/70 text-brandGold font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-brandGold/40 shadow">Arrastra para encuadrar</span>
                                     </div>
@@ -1872,7 +1876,7 @@
                         <div id="passportProgressBar" class="bg-gradient-to-r from-brandGold to-amber-600 h-3 rounded-full transition-all duration-1000" style="width: 0%"></div>
                     </div>
                 </div>
-                <div id="passportBenefitReward" class="hidden mt-4 bg-emerald-950 text-white border border-emerald-500 rounded-2xl p-4 overflow-hidden"><img id="passportBenefitImage" class="hidden w-full h-32 object-cover rounded-xl mb-3" alt="Recompensa del pasaporte"><p class="text-[10px] uppercase tracking-widest text-emerald-300 font-black"><i class="fa-solid fa-gift mr-1"></i>Recompensa desbloqueada</p><h4 id="passportBenefitTitle" class="font-black mt-1"></h4><p id="passportBenefitDescription" class="text-xs text-gray-300 mt-1"></p><div id="passportRewardRegistration" class="mt-3 bg-white/10 border border-white/15 rounded-xl p-3"><p class="text-xs text-gray-200">Para proteger tu premio y evitar reclamos duplicados, identifica tu cuenta antes de generar el código.</p><button id="passportRewardClaimButton" type="button" onclick="beginPassportRewardClaim()" class="w-full mt-3 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 rounded-xl px-4 py-3 text-xs font-black"><i class="fa-brands fa-google mr-2"></i>Registrarme y reclamar</button></div><div id="passportBenefitCodeBox" class="hidden mt-3 bg-black/40 border border-dashed border-emerald-400 rounded-xl p-3 text-center"><span class="text-[9px] text-gray-400 uppercase">Código de canje</span><strong id="passportBenefitCode" class="block text-lg tracking-widest text-emerald-300"></strong></div><p id="passportRewardMessage" class="hidden text-xs rounded-xl p-3 mt-3"></p><p id="passportBenefitValidity" class="text-[10px] text-amber-200 mt-2"></p><a id="passportBenefitLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden mt-3 bg-emerald-500 text-white rounded-xl px-4 py-3 text-xs font-black text-center"><i class="fa-solid fa-ticket mr-1"></i><span>Solicitar beneficio</span></a></div>
+                <div id="passportBenefitReward" class="hidden mt-4 bg-emerald-950 text-white border border-emerald-500 rounded-2xl p-4 overflow-hidden"><img id="passportBenefitImage" class="hidden w-full h-32 object-cover rounded-xl mb-3" alt="Recompensa del pasaporte" decoding="async" loading="lazy"><p class="text-[10px] uppercase tracking-widest text-emerald-300 font-black"><i class="fa-solid fa-gift mr-1"></i>Recompensa desbloqueada</p><h4 id="passportBenefitTitle" class="font-black mt-1"></h4><p id="passportBenefitDescription" class="text-xs text-gray-300 mt-1"></p><div id="passportRewardRegistration" class="mt-3 bg-white/10 border border-white/15 rounded-xl p-3"><p class="text-xs text-gray-200">Para proteger tu premio y evitar reclamos duplicados, identifica tu cuenta antes de generar el código.</p><button id="passportRewardClaimButton" type="button" onclick="beginPassportRewardClaim()" class="w-full mt-3 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 rounded-xl px-4 py-3 text-xs font-black"><i class="fa-brands fa-google mr-2"></i>Registrarme y reclamar</button></div><div id="passportBenefitCodeBox" class="hidden mt-3 bg-black/40 border border-dashed border-emerald-400 rounded-xl p-3 text-center"><span class="text-[9px] text-gray-400 uppercase">Código de canje</span><strong id="passportBenefitCode" class="block text-lg tracking-widest text-emerald-300"></strong></div><p id="passportRewardMessage" class="hidden text-xs rounded-xl p-3 mt-3"></p><p id="passportBenefitValidity" class="text-[10px] text-amber-200 mt-2"></p><a id="passportBenefitLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden mt-3 bg-emerald-500 text-white rounded-xl px-4 py-3 text-xs font-black text-center"><i class="fa-solid fa-ticket mr-1"></i><span>Solicitar beneficio</span></a></div>
                 <div class="mt-5 border-t border-gray-300 pt-4"><div class="flex justify-between items-center gap-3 mb-3"><div><p class="text-[10px] uppercase tracking-widest text-brandGold font-black">Continúa la aventura</p><h4 class="text-sm font-black">Tu siguiente parada</h4></div><i class="fa-solid fa-route text-2xl text-brandGold"></i></div><div id="passportNextStops" class="space-y-2"></div></div>
             </div>
         </div>
@@ -3525,7 +3529,7 @@
                     let pinHtml = "";
                     if (hasCustomLogo) {
                         pinHtml = `<div class="${hasPaidLogoStyle?'w-14 h-14 border-[4px]':'w-12 h-12 border-[3px]'} rounded-full overflow-hidden bg-white hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action:none;border-color:${markerPalette.color};box-shadow:0 0 0 ${hasPaidLogoStyle?'5px':'3px'} ${markerPalette.glow},0 12px 25px rgba(0,0,0,.35);">
-                                     <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}">
+                                     <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}" decoding="async" loading="lazy">
                                    </div>`;
                     } else {
                         const partnerPin=loc.category==='aliado';
@@ -3885,7 +3889,7 @@
                         <div class="bg-white border border-brandGold/30 rounded-xl p-3.5 flex items-center justify-between gap-3 shadow-sm hover:border-brandGold transition">
                             <div class="flex items-center gap-3">
                                 <span class="w-6 h-6 rounded-full bg-brandGold text-white font-bold text-xs flex items-center justify-center flex-shrink-0">${idx + 1}</span>
-                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
+                                <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : ''}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0" decoding="async" loading="lazy">
                                 <div>
                                     <h4 class="font-bold text-xs text-brandDark">${locTitle}</h4>
                                     <span class="text-[10px] text-brandGold font-bold block">${locTag}</span>
@@ -4108,7 +4112,7 @@
                 agendaContainer.innerHTML += `
                     <article class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between ${isPast ? 'opacity-70 grayscale-[25%]' : ''}">
                         <div class="h-48 md:h-52 overflow-hidden relative">
-                            <img src="${escapeHTML(image)}" alt="" class="w-full h-full object-cover" loading="lazy">
+                            <img src="${escapeHTML(image)}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
                             <span class="absolute top-3 left-3 ${isFestival ? 'bg-fuchsia-700 text-white' : 'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${escapeHTML(badge)}</span>
                             <button type="button" onclick="${toggleAction}" aria-label="${isSaved ? 'Quitar de mis guardados' : 'Guardar evento'}" class="absolute top-3 right-3 w-10 h-10 rounded-full border border-white/70 shadow-lg transition ${isSaved ? 'bg-brandGold text-white' : 'bg-white/95 text-brandDark hover:text-brandGold'}"><i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i></button>
                         </div>
@@ -4195,7 +4199,7 @@
                 container.innerHTML += `
                     <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
                         <div class="h-48 md:h-52 overflow-hidden relative">
-                            <img src="${emp.img}" alt="" class="w-full h-full object-cover">
+                            <img src="${emp.img}" alt="" class="w-full h-full object-cover" decoding="async" loading="lazy">
                             <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow">${emp.category}</span>
                         </div>
                         <div class="p-5">
@@ -4975,7 +4979,7 @@
                 list.innerHTML += `
                     <div class="bg-[#121212] p-3 rounded-xl flex justify-between items-center text-xs border border-gray-800">
                         <div class="flex items-center gap-2">
-                            <img src="${frame.img}" class="w-8 h-12 object-contain bg-black rounded border border-gray-700" alt="${frame.name}">
+                            <img src="${frame.img}" class="w-8 h-12 object-contain bg-black rounded border border-gray-700" alt="${frame.name}" decoding="async" loading="lazy">
                             <span class="text-brandGold font-bold">${frame.icon || '🖼️'} ${frame.name}</span>
                         </div>
                         <button type="button" onclick="deleteCustomFrame('${frame.id}')" class="text-red-400 hover:text-red-300 p-1.5" title="Eliminar marco">
