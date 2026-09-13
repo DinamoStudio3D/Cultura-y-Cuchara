@@ -2932,9 +2932,10 @@
             if(!panel)return;
             if(!placePromotionIsVisible(loc)){panel.classList.add('hidden');panel.innerHTML='';return;}
             const promo=loc.subscription.promotion;
-            const title=promo.title||'Promoción vigente';
-            const description=promo.description||'Consulta el beneficio disponible en esta parada.';
-            const action=promo.buttonUrl?`<a href="${escapeHTML(promo.buttonUrl)}" target="_blank" rel="noopener noreferrer" onclick="trackBusinessEvent('${String(loc.id).replace(/'/g,"\\'")}','promo')" class="mt-2 inline-flex items-center font-black text-orange-700 underline">${escapeHTML(promo.buttonText||'Conocer promoción')} <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>`:'';
+            const title=currentLang==='en'?(promo.titleEn||promo.title||'Current promotion'):(promo.title||promo.titleEn||'Promoción vigente');
+            const description=currentLang==='en'?(promo.descriptionEn||promo.description||'Check the benefit available at this stop.'):(promo.description||promo.descriptionEn||'Consulta el beneficio disponible en esta parada.');
+            const buttonText=currentLang==='en'?(promo.buttonTextEn||'View promotion'):(promo.buttonText||'Conocer promoción');
+            const action=promo.buttonUrl?`<a href="${escapeHTML(promo.buttonUrl)}" target="_blank" rel="noopener noreferrer" onclick="trackBusinessEvent('${String(loc.id).replace(/'/g,"\\'")}','promo')" class="mt-2 inline-flex items-center font-black text-orange-700 underline">${escapeHTML(buttonText)} <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>`:'';
             panel.innerHTML=`<div class="flex items-start gap-2"><i class="fa-solid fa-gift text-orange-600 mt-0.5"></i><div><strong class="block">${escapeHTML(title)}</strong><span class="block mt-0.5">${escapeHTML(description)}</span>${action}</div></div>`;
             panel.classList.remove('hidden');
         }
