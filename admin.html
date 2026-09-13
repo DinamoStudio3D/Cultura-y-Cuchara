@@ -273,7 +273,7 @@
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Latitud *</span><input id="generalEventLat" class="field" required type="number" step="any" placeholder="-3.9931"></label><label><span class="text-sm font-semibold block mb-2">Longitud *</span><input id="generalEventLng" class="field" required type="number" step="any" placeholder="-79.2042"></label></div>
                         <p class="text-xs text-gray-400 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3"><i class="fa-solid fa-map-pin text-blue-300 mr-2"></i>Estas coordenadas crearán el acceso del evento dentro del mapa.</p>
                         <div id="generalEventMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
-                        <div class="flex flex-col sm:flex-row gap-3"><button id="generalEventSaveBtn" type="submit" class="bg-blue-500 hover:bg-blue-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar evento</button><button type="button" onclick="resetGeneralEventForm()" class="border border-gray-700 hover:border-gray-500 rounded-xl px-5 py-3 text-sm font-bold">Cancelar edición</button></div>
+                        <div class="flex flex-col sm:flex-row gap-3"><button type="button" onclick="openEventPreview()" class="border border-blue-500/40 text-blue-200 hover:bg-blue-500/10 font-black rounded-xl px-6 py-3"><i class="fa-solid fa-eye mr-2"></i>Vista previa</button><button id="generalEventSaveBtn" type="submit" class="bg-blue-500 hover:bg-blue-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar evento</button><button type="button" onclick="resetGeneralEventForm()" class="border border-gray-700 hover:border-gray-500 rounded-xl px-5 py-3 text-sm font-bold">Cancelar edición</button></div>
                     </form>
                     <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Eventos registrados</h3><span id="generalEventsCount" class="text-xs text-gray-400">0 eventos</span></div>
                     <div id="generalEventsList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando eventos…</p></div>
@@ -462,6 +462,14 @@
             <div class="bg-[#111827] text-white px-5 py-4 flex items-center justify-between gap-4"><div><p class="text-[10px] uppercase tracking-[.18em] text-violet-300 font-black">Vista del visitante</p><h2 id="placePreviewHeading" class="font-black text-lg">Vista previa de la parada</h2></div><button type="button" onclick="closePlacePreview()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20" aria-label="Cerrar vista previa"><i class="fa-solid fa-xmark"></i></button></div>
             <div id="placePreviewContent"></div>
             <div class="bg-white border-t border-gray-200 px-5 py-4 flex flex-col sm:flex-row justify-between gap-3"><p class="text-xs text-gray-500 self-center"><i class="fa-solid fa-circle-info mr-1"></i>Esta vista no guarda ni publica cambios.</p><button type="button" onclick="closePlacePreview()" class="bg-gray-900 text-white font-black rounded-xl px-5 py-2.5">Volver a editar</button></div>
+        </div>
+    </div>
+
+    <div id="eventPreviewModal" class="hidden fixed inset-0 z-[101] bg-black/80 backdrop-blur-sm p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="eventPreviewHeading" onclick="if(event.target===this)closeEventPreview()">
+        <div class="max-w-2xl mx-auto my-6 sm:my-12 bg-[#f8fafc] text-gray-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+            <div class="bg-[#111827] text-white px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"><div><p class="text-[10px] uppercase tracking-[.18em] text-blue-300 font-black">Vista del visitante</p><h2 id="eventPreviewHeading" class="font-black text-lg">Vista previa del evento</h2></div><div class="flex items-center gap-2"><label class="text-xs text-gray-300" for="eventPreviewLanguage">Idioma</label><select id="eventPreviewLanguage" class="bg-black/30 border border-gray-600 rounded-lg px-3 py-2 text-sm" onchange="renderEventPreview()"><option value="es">Español</option><option value="en">English</option></select><button type="button" onclick="closeEventPreview()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20" aria-label="Cerrar vista previa"><i class="fa-solid fa-xmark"></i></button></div></div>
+            <div id="eventPreviewContent"></div>
+            <div class="bg-white border-t border-gray-200 px-5 py-4 flex flex-col sm:flex-row justify-between gap-3"><p class="text-xs text-gray-500 self-center"><i class="fa-solid fa-circle-info mr-1"></i>Esta vista no guarda ni publica cambios.</p><button type="button" onclick="closeEventPreview()" class="bg-gray-900 text-white font-black rounded-xl px-5 py-2.5">Volver a editar</button></div>
         </div>
     </div>
 
@@ -988,6 +996,24 @@ function openPlacePreview(){
     document.getElementById('placePreviewModal').classList.remove('hidden');
 }
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('placePreviewModal')?.classList.contains('hidden'))closePlacePreview();});
+
+function closeEventPreview(){document.getElementById('eventPreviewModal')?.classList.add('hidden');}
+function eventPreviewValue(id){return document.getElementById(id)?.value.trim()||'';}
+function renderEventPreview(){
+    const language=document.getElementById('eventPreviewLanguage')?.value||'es',english=language==='en';
+    const title=(english?eventPreviewValue('generalEventTitleEn'):eventPreviewValue('generalEventTitle'))||eventPreviewValue('generalEventTitle')||(english?'Event title':'Título del evento');
+    const description=(english?eventPreviewValue('generalEventDescEn'):eventPreviewValue('generalEventDesc'))||eventPreviewValue('generalEventDesc')||(english?'Event description will appear here.':'Aquí aparecerá la descripción del evento.');
+    const dateValue=eventPreviewValue('generalEventDate'),type=document.getElementById('generalEventType')?.selectedOptions?.[0]?.textContent||'Evento',image=eventPreviewValue('generalEventImage'),location=eventPreviewValue('generalEventLocation')||(english?'Location to be confirmed':'Lugar por confirmar'),lat=eventPreviewValue('generalEventLat'),lng=eventPreviewValue('generalEventLng'),status=adminPublicationMeta({publicationStatus:document.getElementById('generalEventPublicationStatus')?.value});
+    let formattedDate=english?'Date to be confirmed':'Fecha por confirmar';
+    if(dateValue){const date=new Date(`${dateValue}T12:00:00`);if(!Number.isNaN(date.getTime()))formattedDate=date.toLocaleDateString(english?'en-US':'es-EC',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+    const media=image?`<img src="${escapeAdminHtml(image)}" alt="" class="w-full h-56 sm:h-72 object-cover" onerror="this.classList.add('hidden');this.nextElementSibling.classList.remove('hidden')"><div class="hidden h-56 sm:h-72 bg-gradient-to-br from-blue-700 via-violet-600 to-orange-500 place-items-center text-white text-6xl"><i class="fa-solid fa-calendar-days"></i></div>`:`<div class="h-56 sm:h-72 bg-gradient-to-br from-blue-700 via-violet-600 to-orange-500 grid place-items-center text-white text-6xl"><i class="fa-solid fa-calendar-days"></i></div>`;
+    const mapUrl=lat&&lng?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lat+','+lng)}`:'';
+    document.getElementById('eventPreviewContent').innerHTML=`<div class="relative">${media}<div class="absolute left-4 bottom-4 flex flex-wrap gap-2"><span class="bg-black/75 text-white backdrop-blur rounded-full px-3 py-1.5 text-xs font-black">${escapeAdminHtml(type)}</span><span class="border rounded-full px-3 py-1.5 text-xs font-black ${status.tone}"><i class="fa-solid ${status.icon} mr-1"></i>${status.label}</span></div></div><div class="p-5 sm:p-7"><p class="text-blue-700 text-xs font-black uppercase tracking-wider"><i class="fa-regular fa-calendar mr-2"></i>${escapeAdminHtml(formattedDate)}</p><h3 class="text-2xl sm:text-3xl font-black mt-2">${escapeAdminHtml(title)}</h3><p class="text-gray-600 leading-relaxed mt-4">${escapeAdminHtml(description)}</p><div class="mt-5 rounded-xl bg-blue-50 border border-blue-200 p-4"><p class="font-black text-sm"><i class="fa-solid fa-location-dot text-blue-600 mr-2"></i>${escapeAdminHtml(location)}</p>${mapUrl?`<a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="inline-block text-xs text-blue-700 font-bold mt-2">Ver coordenadas en el mapa <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>`:`<p class="text-xs text-gray-500 mt-2">${english?'Add coordinates to enable the map.':'Agrega las coordenadas para habilitar el mapa.'}</p>`}</div></div>`;
+}
+function openEventPreview(){
+    document.getElementById('eventPreviewLanguage').value='es';renderEventPreview();document.getElementById('eventPreviewModal').classList.remove('hidden');
+}
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!document.getElementById('eventPreviewModal')?.classList.contains('hidden'))closeEventPreview();});
 
 function clearAdminAudioPreview(previewId){const audio=document.getElementById(previewId);if(!audio)return;audio.pause();audio.removeAttribute('src');audio.load();audio.classList.add('hidden');}
 function syncAdminAudioPreview(fieldId,previewId){const field=document.getElementById(fieldId),audio=document.getElementById(previewId);if(!field||!audio)return;const url=field.value.trim();if(!url){clearAdminAudioPreview(previewId);return;}audio.src=url;audio.classList.remove('hidden');}
