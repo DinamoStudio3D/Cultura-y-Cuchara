@@ -1018,6 +1018,19 @@
                             <i class="fa-solid fa-award text-4xl text-brandGold mb-2"></i>
                             <p id="missionPublicRewardTitle" class="font-black text-brandGold" data-i18n="missionRewardTitle">¡Insignia Explorador de Loja desbloqueada!</p>
                             <p id="missionPublicRewardDescription" class="text-xs text-gray-300 mt-1" data-i18n="missionRewardDesc">Completaste las cinco misiones de Chabaquito.</p>
+                            <div id="missionCommercialReward" class="hidden mt-4 max-w-xl mx-auto bg-white text-brandDark rounded-2xl overflow-hidden border border-emerald-300 text-left shadow-xl">
+                                <img id="missionRewardImage" class="hidden w-full h-36 object-cover" alt="Recompensa de las misiones" loading="lazy" decoding="async">
+                                <div class="p-4">
+                                    <p id="missionRewardSponsor" class="text-[10px] uppercase tracking-widest text-emerald-700 font-black"></p>
+                                    <h3 id="missionRewardOfferTitle" class="font-black text-lg mt-1"></h3>
+                                    <p id="missionRewardOfferDescription" class="text-xs text-gray-600 mt-2 leading-relaxed"></p>
+                                    <div class="flex flex-wrap gap-2 mt-3 text-[10px] font-bold text-gray-600"><span id="missionRewardValidity" class="hidden bg-gray-100 rounded-full px-2.5 py-1"></span><span id="missionRewardAvailability" class="hidden bg-emerald-50 text-emerald-700 rounded-full px-2.5 py-1"></span></div>
+                                    <div id="missionRewardClaimPrompt" class="mt-4"><p class="text-xs text-gray-600">Registra tu cuenta para proteger la recompensa y evitar códigos duplicados.</p><button id="missionRewardClaimButton" type="button" onclick="claimMissionReward()" class="w-full mt-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-4 py-3 text-xs font-black"><i class="fa-solid fa-ticket mr-2"></i><span>Registrar y generar mi código</span></button></div>
+                                    <div id="missionRewardCodeBox" class="hidden mt-4 bg-brandDark text-white border-2 border-dashed border-emerald-400 rounded-xl p-4 text-center"><p class="text-[9px] uppercase tracking-widest text-gray-400">Código único de canje</p><strong id="missionRewardCode" class="block text-2xl tracking-[.15em] text-emerald-300 mt-1"></strong><span id="missionRewardClaimStatus" class="inline-block mt-2 text-[10px] font-black uppercase rounded-full px-2.5 py-1 bg-amber-500/20 text-amber-200">Pendiente</span><p class="text-[10px] text-gray-400 mt-2">Presenta este código en el establecimiento patrocinador.</p></div>
+                                    <a id="missionRewardSponsorLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden w-full mt-3 bg-green-500 text-white rounded-xl px-4 py-3 text-xs font-black text-center"><i class="fa-brands fa-whatsapp mr-2"></i>Contactar al patrocinador</a>
+                                    <p id="missionRewardNotice" class="hidden text-xs rounded-xl p-3 mt-3"></p>
+                                </div>
+                            </div>
                             <div id="certificateRewardControls" class="mt-4 max-w-md mx-auto flex flex-col sm:flex-row gap-2"><input id="certificateVisitorName" class="flex-1 bg-white text-brandDark border border-brandGold/40 rounded-xl px-4 py-3 text-sm font-bold outline-none" maxlength="45" placeholder="Escribe tu nombre"><button type="button" onclick="downloadExplorerCertificate()" class="bg-brandGold hover:bg-orange-500 text-white font-black rounded-xl px-5 py-3 text-xs whitespace-nowrap"><i class="fa-solid fa-certificate mr-1"></i>Descargar certificado</button></div>
                             <button type="button" onclick="resetChabaquitoMissions()" class="mt-4 text-[11px] text-gray-400 hover:text-white underline">Reiniciar misiones</button>
                         </div>
@@ -2507,6 +2520,11 @@
             updateVisitorAccountLabels(user, profile);
             renderVisitorExperience();
             const floatingInvite=document.getElementById('accountFloatingInvite');if(floatingInvite){floatingInvite.classList.add('hidden');floatingInvite.style.display='none';}
+            if (missionRewardIntent) {
+                missionRewardIntent = false;
+                showToast(currentLang === 'en' ? 'Your account is ready. Return to Chabaquito missions to claim your reward.' : 'Tu cuenta está lista. Regresa a las misiones para reclamar tu recompensa.');
+                document.getElementById('misiones')?.scrollIntoView({behavior:'smooth'});
+            }
             if (passportRewardIntent) {
                 passportRewardIntent = false;
                 showToast(currentLang === 'en' ? 'Your account is ready. Continue from the Passport section.' : 'Tu cuenta está lista. Continúa desde la sección Pasaporte.');
@@ -6703,11 +6721,66 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             Object.entries(values).forEach(([id,value])=>{const element=document.getElementById(id);if(element&&value)element.textContent=value;});
         }
         let explorerCertificateConfig = { active:true, title:'Explorador de Loja', text:'Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.', signature:'Vive Loja' };
-        let explorerBenefitConfig = {active:false,title:'Beneficio de Explorador',description:'Presenta tu pasaporte completado para conocer el beneficio disponible.',code:'EXPLORADOR',validity:'',buttonText:'Solicitar beneficio',url:''};
+        let explorerBenefitConfig = {active:false,campaignId:'misiones-2026',sponsorName:'',title:'Beneficio de Explorador',titleEn:'Explorer reward',description:'Presenta tu código para reclamar el beneficio disponible.',descriptionEn:'Show your code to claim the available reward.',startAt:'',endAt:'',stock:100,imageUrl:'',buttonText:'Registrar y generar mi código',url:''};
         let passportCampaignLoaded=false;
         let passportCampaignConfig={active:true,campaignName:'Pasaporte de Sabores de Loja',campaignId:'pasaporte-2026',startAt:'',endAt:'',introText:'Visita las paradas participantes, consigue seis sellos y desbloquea una recompensa especial.',tourist:{active:true,title:'Explorador de Sabores de Loja',description:'¡Completaste tu recorrido! Presenta este pasaporte para recibir la recompensa disponible.',imageUrl:'',code:'TURISTA-LOJA',buttonText:'Solicitar mi premio',url:''},local:{active:true,title:'Embajador de los Sabores Lojanos',description:'¡Redescubriste nuestra ciudad! Presenta este pasaporte para recibir la recompensa disponible.',imageUrl:'',code:'SOY-LOJANO',buttonText:'Solicitar mi premio',url:''}};
 
-        function renderMissionBenefit(){if(document.getElementById('passportStampsGrid'))updatePassportUI();}
+        let missionRewardIntent=false;
+        let missionRewardLoadedKey='';
+        function missionRewardCampaignActive(){
+            if(explorerBenefitConfig.active!==true)return false;
+            const now=Date.now(),start=explorerBenefitConfig.startAt?new Date(explorerBenefitConfig.startAt).getTime():0,end=explorerBenefitConfig.endAt?new Date(explorerBenefitConfig.endAt).getTime():0;
+            return (!start||Number.isNaN(start)||now>=start)&&(!end||Number.isNaN(end)||now<=end);
+        }
+        function missionRewardClaimId(user,campaignId){return `${user.uid}_${campaignId}`;}
+        function newMissionRewardCode(){
+            const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',bytes=new Uint8Array(6);if(window.crypto?.getRandomValues)window.crypto.getRandomValues(bytes);else bytes.forEach((_,index)=>bytes[index]=Math.floor(Math.random()*256));
+            return 'CHABA-'+Array.from(bytes,value=>alphabet[value%alphabet.length]).join('');
+        }
+        function showMissionRewardNotice(text,isError=false){const notice=document.getElementById('missionRewardNotice');if(!notice)return;notice.textContent=text;notice.className=`text-xs rounded-xl p-3 mt-3 ${isError?'bg-red-50 text-red-700':'bg-emerald-50 text-emerald-700'}`;}
+        function displayMissionRewardClaim(data){
+            const box=document.getElementById('missionRewardCodeBox'),prompt=document.getElementById('missionRewardClaimPrompt'),code=document.getElementById('missionRewardCode'),status=document.getElementById('missionRewardClaimStatus');if(!box)return;
+            box.classList.remove('hidden');prompt?.classList.add('hidden');if(code)code.textContent=data.claimCode||'';
+            const labels=currentLang==='en'?{pending:'Pending',delivered:'Delivered',cancelled:'Cancelled'}:{pending:'Pendiente',delivered:'Entregado',cancelled:'Anulado'},tones={pending:'bg-amber-500/20 text-amber-200',delivered:'bg-emerald-500/20 text-emerald-200',cancelled:'bg-red-500/20 text-red-200'};
+            if(status){status.textContent=labels[data.status]||labels.pending;status.className=`inline-block mt-2 text-[10px] font-black uppercase rounded-full px-2.5 py-1 ${tones[data.status]||tones.pending}`;}
+        }
+        async function loadExistingMissionRewardClaim(){
+            const user=visitorAuth?.currentUser,campaignId=String(explorerBenefitConfig.campaignId||'misiones-2026').replace(/[^a-zA-Z0-9_-]/g,'-');if(!user||!db)return;
+            const key=`${user.uid}_${campaignId}`;if(missionRewardLoadedKey===key)return;missionRewardLoadedKey=key;
+            try{const snapshot=await db.collection('missionRewardClaims').doc(key).get();if(snapshot.exists)displayMissionRewardClaim(snapshot.data());}
+            catch(error){missionRewardLoadedKey='';if(error?.code!=='permission-denied')console.warn('No se pudo consultar la recompensa:',error);}
+        }
+        function renderMissionCommercialReward(){
+            const container=document.getElementById('missionCommercialReward');if(!container)return;
+            const complete=chabaquitoMissionIds.every(id=>completedChabaquitoMissions.includes(id)),active=complete&&missionRewardCampaignActive();container.classList.toggle('hidden',!active);if(!active)return;
+            const en=currentLang==='en',config=explorerBenefitConfig;
+            document.getElementById('missionRewardSponsor').textContent=config.sponsorName?(en?`Sponsored by ${config.sponsorName}`:`Patrocina: ${config.sponsorName}`):(en?'Mission reward':'Recompensa de las misiones');
+            document.getElementById('missionRewardOfferTitle').textContent=(en&&config.titleEn)||config.title||'Beneficio de Explorador';
+            document.getElementById('missionRewardOfferDescription').textContent=(en&&config.descriptionEn)||config.description||'';
+            const image=document.getElementById('missionRewardImage');image.classList.toggle('hidden',!config.imageUrl);if(config.imageUrl)image.src=config.imageUrl;
+            const validity=document.getElementById('missionRewardValidity'),parts=[];if(config.startAt)parts.push((en?'From ':'Desde ')+new Date(config.startAt).toLocaleDateString(en?'en-US':'es-EC'));if(config.endAt)parts.push((en?'until ':'hasta ')+new Date(config.endAt).toLocaleDateString(en?'en-US':'es-EC'));validity.textContent=parts.join(' ');validity.classList.toggle('hidden',!parts.length);
+            const availability=document.getElementById('missionRewardAvailability');availability.textContent=config.stock?(en?`Up to ${config.stock} rewards`:`Hasta ${config.stock} recompensas`):'';availability.classList.toggle('hidden',!config.stock);
+            const button=document.querySelector('#missionRewardClaimButton span');if(button)button.textContent=config.buttonText||(en?'Register and create my code':'Registrar y generar mi código');
+            const link=document.getElementById('missionRewardSponsorLink');link.classList.toggle('hidden',!config.url);link.href=config.url||'#';
+            loadExistingMissionRewardClaim();
+        }
+        async function claimMissionReward(){
+            if(!chabaquitoMissionIds.every(id=>completedChabaquitoMissions.includes(id))){showMissionRewardNotice(currentLang==='en'?'Complete all five missions first.':'Completa primero las cinco misiones.',true);return;}
+            if(!missionRewardCampaignActive()){showMissionRewardNotice(currentLang==='en'?'This reward campaign is not currently active.':'Esta campaña de recompensa no está activa.',true);return;}
+            const user=visitorAuth?.currentUser;if(!user){missionRewardIntent=true;openAccountModal();showToast(currentLang==='en'?'Sign in to protect your reward.':'Inicia sesión para proteger tu recompensa.');return;}
+            if(!currentVisitorProfile?.profileComplete){missionRewardIntent=true;openModal('accountModal');fillVisitorProfileForm(user,currentVisitorProfile||{});showVisitorAccountView('visitorProfileForm');return;}
+            const config=explorerBenefitConfig,campaignId=String(config.campaignId||'misiones-2026').replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,60),id=missionRewardClaimId(user,campaignId),button=document.getElementById('missionRewardClaimButton');
+            if(button){button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generando código…';}
+            try{
+                const ref=db.collection('missionRewardClaims').doc(id),existing=await ref.get();
+                if(existing.exists){displayMissionRewardClaim(existing.data());showMissionRewardNotice(currentLang==='en'?'This reward was already registered to your account.':'Esta recompensa ya estaba registrada en tu cuenta.');return;}
+                const data={campaignId,userId:user.uid,userName:currentVisitorProfile.fullName||user.displayName||'Visitante',userEmail:user.email||'',userWhatsapp:currentVisitorProfile.whatsapp||'',rewardTitle:config.title||'Beneficio de Explorador',sponsorName:config.sponsorName||'',claimCode:newMissionRewardCode(),status:'pending',completedMissions:5,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+                await ref.set(data);displayMissionRewardClaim(data);missionRewardLoadedKey=id;showMissionRewardNotice(currentLang==='en'?'Reward registered. Show this code to the sponsor.':'Recompensa registrada. Presenta este código al patrocinador.');
+            }catch(error){showMissionRewardNotice(error?.code==='permission-denied'?'Debes publicar las nuevas reglas de Firestore para activar los códigos.':(currentLang==='en'?'We could not generate the code. Try again.':'No pudimos generar el código. Inténtalo nuevamente.'),true);}
+            finally{if(button){button.disabled=false;button.innerHTML='<i class="fa-solid fa-ticket mr-2"></i><span>Registrar y generar mi código</span>';renderMissionCommercialReward();}}
+        }
+
+        function renderMissionBenefit(){if(document.getElementById('passportStampsGrid'))updatePassportUI();renderMissionCommercialReward();}
 
         function applyChabaquitoConfig(data = {}) {
             chabaquitoEnabled = data.active !== false;
