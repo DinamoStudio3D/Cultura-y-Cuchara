@@ -2718,6 +2718,7 @@
                 iconClass: "fa-seedling", category: "urbana", customLogoUrl: "",
                 youtubeUrl: "",
                 audioUrl: "audios/dinamo-the-weight-of-one-note.mp3",
+                audioUrlEn: "",
                 gallery: [
                     { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Dínamo Studio" }
                 ]
@@ -5994,7 +5995,8 @@
             const specialty = currentLang === 'en' && location.dishEn ? location.dishEn : location.dish;
             const intro = currentLang === 'en' ? `Welcome to ${title}.` : `Bienvenido a ${title}.`;
             const detail = specialty ? (currentLang === 'en' ? `Its featured experience is ${specialty}.` : `Su experiencia destacada es ${specialty}.`) : '';
-            speakWithChabaquito(`${intro} ${description || ''} ${detail}`, button, location.audioUrl);
+            const audioUrl = currentLang === 'en' ? location.audioUrlEn : location.audioUrl;
+            speakWithChabaquito(`${intro} ${description || ''} ${detail}`, button, audioUrl);
         }
 
         function toggleTimeAudioGuide() {
@@ -6004,7 +6006,8 @@
             const title = currentLang === 'en' && place.titleEn ? place.titleEn : place.title;
             const description = currentLang === 'en' && place.descEn ? place.descEn : place.desc;
             const intro = currentLang === 'en' ? `This is ${title}.` : `Esta es la historia de ${title}.`;
-            speakWithChabaquito(`${intro} ${description || ''}`, button, place.audioUrl);
+            const audioUrl = currentLang === 'en' ? place.audioUrlEn : place.audioUrl;
+            speakWithChabaquito(`${intro} ${description || ''}`, button, audioUrl);
         }
 
         function escapeHTML(value) {
