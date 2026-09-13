@@ -69,6 +69,9 @@ assert(index.includes("item.publicationStatus === 'published'"), 'Solo el conten
 assert(admin.includes('id="placePublicationStatus"'), 'El panel permite definir el estado de cada parada');
 assert(admin.includes('id="generalEventPublicationStatus"'), 'El panel permite definir el estado de cada evento');
 assert(admin.includes('id="placesPublicationFilter"'), 'El panel permite filtrar paradas por estado');
+assert(admin.includes('id="eventPreviewModal"'), 'El panel conserva la vista previa de eventos');
+assert(admin.includes('function renderEventPreview'), 'La vista previa de eventos puede renderizarse');
+assert(admin.includes('id="eventPreviewLanguage"'), 'La vista previa permite alternar español e inglés');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
