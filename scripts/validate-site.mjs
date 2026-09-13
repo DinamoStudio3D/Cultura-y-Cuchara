@@ -93,6 +93,17 @@ assert(admin.includes('id="subscriptionsApplyToPlaces"'), 'La sincronización ma
 assert(admin.includes('function applyPlanServicesToCurrentPlaces'), 'El panel puede aplicar servicios a negocios existentes');
 assert(admin.includes("key:'menu'"), 'El menú visual permanece dentro del catálogo comercial');
 
+
+assert(admin.includes('id="placeSubscriptionAmount"'), 'El panel permite registrar el valor de la mensualidad');
+assert(admin.includes('id="placeSubscriptionPaymentMethod"'), 'El panel permite registrar el método de pago');
+assert(admin.includes('function renewPlaceSubscription'), 'El panel conserva las renovaciones rápidas');
+assert(admin.includes('placePaymentHistoryDraft'), 'El historial de pagos permanece disponible');
+assert(admin.includes('paymentHistory:placePaymentHistoryDraft.slice(-120)'), 'El historial se guarda con un límite seguro');
+assert(admin.includes('addMonthsSafe'), 'La renovación calcula correctamente los meses');
+assert(admin.includes('<option value="expired">Vencido</option>'), 'El administrador puede marcar una suscripción vencida');
+assert(admin.includes('<option value="paused">Suspendido</option>'), 'El administrador puede suspender una suscripción');
+assert(index.includes("'expired','suspended'"), 'La web pública bloquea beneficios vencidos o suspendidos');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
