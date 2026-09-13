@@ -3164,7 +3164,7 @@
         }
 
         function applySettings(s) {
-            showAccountFloatingInvite(s.showRegistrationButton !== false);
+            showAccountFloatingInvite(s.showAccountFloatingButton !== false);
             const nowButton=document.getElementById('nowRecommendationBtn');if(nowButton)nowButton.classList.toggle('hidden',s.showNowPlanner===false);
             document.querySelectorAll('.subscription-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false));document.querySelectorAll('.business-signup-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false||s.showBusinessSignup===false));
             const badgeEl = document.getElementById('heroBadge');
