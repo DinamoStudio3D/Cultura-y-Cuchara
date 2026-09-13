@@ -1826,31 +1826,32 @@
         </div>
     </template>
 
-    <!-- Menu & Gallery Modal -->
-    <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-4">
-        <div class="bg-brandDark text-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[85vh] md:h-[720px]">
-            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-black/50">
-                <div>
-                    <h3 class="text-xl font-bold text-brandGold" id="galleryTitle">Vídeo y Galería del Establecimiento</h3>
-                    <p class="text-xs text-gray-400">Contenido multimedia oficial</p>
-                </div>
-                <button type="button" onclick="closeModal('menuGalleryModal')" class="text-gray-400 hover:text-white transition text-xl w-8 h-8 flex items-center justify-center bg-white/10 rounded-full">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+    <!-- Immersive Gallery Modal -->
+    <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
+        <div class="bg-brandDark text-white w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[94vh]">
+            <div class="px-4 py-3 border-b border-gray-800 flex justify-between items-center gap-3 bg-black/60">
+                <div class="min-w-0"><p class="text-[9px] text-gray-500 uppercase tracking-widest font-black">Galería inmersiva</p><h3 class="text-lg sm:text-xl font-bold text-brandGold truncate" id="galleryTitle">Galería del establecimiento</h3></div>
+                <div class="flex items-center gap-2"><button id="galleryFullscreenBtn" type="button" onclick="toggleGalleryFullscreen()" class="hidden sm:flex text-gray-300 hover:text-white w-9 h-9 items-center justify-center bg-white/10 rounded-full" aria-label="Pantalla completa" title="Pantalla completa"><i class="fa-solid fa-expand"></i></button><button type="button" onclick="closeModal('menuGalleryModal')" class="text-gray-300 hover:text-white w-9 h-9 flex items-center justify-center bg-white/10 rounded-full" aria-label="Cerrar galería"><i class="fa-solid fa-xmark"></i></button></div>
             </div>
-            <div class="p-6 flex-grow overflow-y-auto space-y-6">
-                <div id="youtubeVideoContainer" class="hidden">
-                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-2"><i class="fa-brands fa-youtube mr-1"></i> Vídeo Principal</h4>
-                    <div class="w-full p-4 bg-black/60 rounded-xl border border-brandGold/30 text-center">
-                        <a id="directVideoLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition text-xs uppercase tracking-wider shadow">
-                            <i class="fa-brands fa-youtube mr-1.5 text-sm"></i> Abrir Vídeo en YouTube
-                        </a>
+            <div class="flex-grow min-h-0 grid lg:grid-cols-[minmax(0,1fr)_280px]">
+                <div class="min-h-0 flex flex-col bg-black">
+                    <div id="galleryStage" class="relative flex-grow min-h-0 grid place-items-center overflow-hidden touch-pan-y">
+                        <img id="galleryMainImage" alt="" class="max-w-full max-h-full w-full h-full object-contain select-none" decoding="async">
+                        <div id="galleryImageError" class="hidden absolute inset-0 bg-gradient-to-br from-gray-950 to-gray-800 place-items-center text-center p-8"><div><i class="fa-solid fa-image text-5xl text-gray-600"></i><p class="text-sm text-gray-400 mt-3">Esta fotografía no pudo cargarse.</p></div></div>
+                        <button id="galleryPrevBtn" type="button" onclick="moveImmersiveGallery(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/65 border border-white/20 hover:bg-brandGold grid place-items-center shadow-xl" aria-label="Fotografía anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button id="galleryNextBtn" type="button" onclick="moveImmersiveGallery(1)" class="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/65 border border-white/20 hover:bg-brandGold grid place-items-center shadow-xl" aria-label="Fotografía siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+                        <span id="galleryCounter" class="absolute top-3 left-3 bg-black/70 backdrop-blur rounded-full px-3 py-1.5 text-xs font-black">0 / 0</span>
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/70 to-transparent px-5 pt-12 pb-4"><p id="galleryCaption" class="text-sm font-bold"></p></div>
                     </div>
+                    <div id="galleryGrid" class="shrink-0 flex gap-2 overflow-x-auto p-3 bg-[#090909] border-t border-gray-800"></div>
                 </div>
-                <div>
-                    <h4 class="text-xs font-bold text-brandGold uppercase tracking-wider mb-3"><i class="fa-solid fa-images mr-1"></i> Galería de Fotos</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="galleryGrid"></div>
-                </div>
+                <aside class="p-4 sm:p-5 overflow-y-auto border-l border-gray-800 bg-brandDark">
+                    <h4 class="text-xs font-black text-brandGold uppercase tracking-wider"><i class="fa-solid fa-photo-film mr-2"></i>Contenido multimedia</h4>
+                    <p class="text-xs text-gray-400 mt-2">Selecciona una miniatura o desliza la fotografía principal.</p>
+                    <div class="grid gap-2 mt-5"><button type="button" onclick="shareGalleryImage()" class="border border-brandGold/40 hover:bg-brandGold/10 rounded-xl px-4 py-3 text-xs font-bold"><i class="fa-solid fa-share-nodes text-brandGold mr-2"></i>Compartir fotografía</button><a id="galleryOpenImage" href="#" target="_blank" rel="noopener noreferrer" class="border border-gray-700 hover:border-gray-500 rounded-xl px-4 py-3 text-xs font-bold text-center"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>Abrir imagen original</a></div>
+                    <div id="youtubeVideoContainer" class="hidden mt-6 pt-5 border-t border-gray-800"><h4 class="text-xs font-bold text-red-400 uppercase tracking-wider mb-3"><i class="fa-brands fa-youtube mr-1"></i> Vídeo principal</h4><a id="directVideoLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="block bg-red-600 text-white font-bold px-5 py-3 rounded-xl hover:bg-red-700 text-xs text-center"><i class="fa-brands fa-youtube mr-2"></i>Abrir en YouTube</a></div>
+                    <p class="hidden lg:block text-[10px] text-gray-600 mt-6"><i class="fa-solid fa-keyboard mr-1"></i>También puedes usar las flechas del teclado.</p>
+                </aside>
             </div>
         </div>
     </div>
@@ -5587,38 +5588,70 @@
             openModal('latestVideoModal');
         }
 
-        function openMenuGallery() {
-            const loc = locations[currentLocationIndex];
-            if(!loc) return;
-            const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
-            document.getElementById('galleryTitle').innerText = locTitle;
-            
-            const ytContainer = document.getElementById('youtubeVideoContainer');
-            const directBtn = document.getElementById('directVideoLinkBtn');
-            if (loc.youtubeUrl && loc.youtubeUrl.trim() !== "") {
-                directBtn.href = loc.youtubeUrl;
-                ytContainer.classList.remove('hidden');
-            } else {
-                directBtn.href = '#';
-                ytContainer.classList.add('hidden');
-            }
+        let immersiveGalleryImages = [];
+        let immersiveGalleryIndex = 0;
+        let immersiveGalleryTouchStart = 0;
 
+        function renderImmersiveGallery(index) {
+            if (!immersiveGalleryImages.length) return;
+            immersiveGalleryIndex = (index + immersiveGalleryImages.length) % immersiveGalleryImages.length;
+            const item = immersiveGalleryImages[immersiveGalleryIndex], image = document.getElementById('galleryMainImage'), error = document.getElementById('galleryImageError');
+            error.classList.add('hidden'); error.classList.remove('grid'); image.classList.remove('hidden');
+            image.onerror = () => { image.classList.add('hidden'); error.classList.remove('hidden'); error.classList.add('grid'); };
+            image.src = item.img; image.alt = item.title || document.getElementById('galleryTitle').textContent;
+            document.getElementById('galleryCaption').textContent = item.title || '';
+            document.getElementById('galleryCounter').textContent = `${immersiveGalleryIndex + 1} / ${immersiveGalleryImages.length}`;
+            document.getElementById('galleryOpenImage').href = item.img;
+            const multiple = immersiveGalleryImages.length > 1;
+            document.getElementById('galleryPrevBtn').classList.toggle('hidden', !multiple);
+            document.getElementById('galleryNextBtn').classList.toggle('hidden', !multiple);
+            document.querySelectorAll('#galleryGrid [data-gallery-index]').forEach((button, buttonIndex) => {
+                button.classList.toggle('border-brandGold', buttonIndex === immersiveGalleryIndex);
+                button.classList.toggle('opacity-60', buttonIndex !== immersiveGalleryIndex);
+                if (buttonIndex === immersiveGalleryIndex) button.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            });
+        }
+
+        function moveImmersiveGallery(direction) { renderImmersiveGallery(immersiveGalleryIndex + direction); }
+
+        function openMenuGallery() {
+            const loc = locations[currentLocationIndex]; if(!loc) return;
+            const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
+            document.getElementById('galleryTitle').textContent = locTitle;
+            immersiveGalleryImages = (Array.isArray(loc.gallery) ? loc.gallery : []).filter(item => item?.img).map(item => ({ img: item.img, title: item.title || locTitle }));
+            if (!immersiveGalleryImages.length && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }];
+            const video = document.getElementById('youtubeVideoContainer'), direct = document.getElementById('directVideoLinkBtn');
+            if (loc.youtubeUrl?.trim()) { direct.href = loc.youtubeUrl; video.classList.remove('hidden'); } else { direct.href = '#'; video.classList.add('hidden'); }
             const grid = document.getElementById('galleryGrid');
-            grid.innerHTML = '';
-            if (loc.gallery && loc.gallery.length > 0) {
-                loc.gallery.forEach(item => {
-                    grid.innerHTML += `
-                        <div class="rounded-xl overflow-hidden shadow-lg border border-gray-800 bg-black relative group h-48">
-                            <img src="${item.img}" alt="" class="w-full h-full object-cover opacity-90" loading="lazy" decoding="async">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <span class="text-white font-bold text-xs">${item.title || ''}</span>
-                            </div>
-                        </div>
-                    `;
-                });
+            if (immersiveGalleryImages.length) {
+                grid.innerHTML = immersiveGalleryImages.map((item,index) => `<button type="button" data-gallery-index="${index}" onclick="renderImmersiveGallery(${index})" class="shrink-0 w-20 h-16 sm:w-24 sm:h-16 rounded-lg overflow-hidden border-2 border-transparent opacity-60 transition" aria-label="Ver fotografía ${index+1}"><img src="${escapeHTML(item.img)}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async"></button>`).join('');
+                renderImmersiveGallery(0);
+            } else {
+                grid.innerHTML = '<p class="text-xs text-gray-500 p-3">Esta parada todavía no tiene fotografías.</p>';
+                document.getElementById('galleryMainImage').removeAttribute('src');
+                document.getElementById('galleryMainImage').classList.add('hidden');
+                const error=document.getElementById('galleryImageError');error.classList.remove('hidden');error.classList.add('grid');
+                document.getElementById('galleryCounter').textContent='0 / 0';document.getElementById('galleryCaption').textContent='';document.getElementById('galleryOpenImage').href='#';
+                document.getElementById('galleryPrevBtn').classList.add('hidden');document.getElementById('galleryNextBtn').classList.add('hidden');
             }
             openModal('menuGalleryModal');
         }
+
+        async function shareGalleryImage() {
+            const item=immersiveGalleryImages[immersiveGalleryIndex];if(!item)return;
+            const data={title:document.getElementById('galleryTitle').textContent,text:item.title||'',url:item.img};
+            if(navigator.share){try{await navigator.share(data);return;}catch(error){if(error?.name==='AbortError')return;}}
+            try{await navigator.clipboard.writeText(item.img);showToast(currentLang==='en'?'Image link copied':'Enlace de la imagen copiado');}catch(_){window.open(item.img,'_blank','noopener');}
+        }
+
+        function toggleGalleryFullscreen() {
+            const modal=document.getElementById('menuGalleryModal');
+            if(!document.fullscreenElement) modal.requestFullscreen?.(); else document.exitFullscreen?.();
+        }
+
+        document.getElementById('galleryStage')?.addEventListener('touchstart',event=>{immersiveGalleryTouchStart=event.changedTouches[0].clientX;},{passive:true});
+        document.getElementById('galleryStage')?.addEventListener('touchend',event=>{const distance=event.changedTouches[0].clientX-immersiveGalleryTouchStart;if(Math.abs(distance)>55)moveImmersiveGallery(distance<0?1:-1);},{passive:true});
+        document.addEventListener('keydown',event=>{if(document.getElementById('menuGalleryModal')?.classList.contains('hidden'))return;if(event.key==='ArrowLeft')moveImmersiveGallery(-1);else if(event.key==='ArrowRight')moveImmersiveGallery(1);});
 
         function initPassport() {
             const storedVisits = localStorage.getItem('cyc_visited_locations');
