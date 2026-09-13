@@ -160,6 +160,19 @@ assert(index.includes('function openCommerceWhatsapp'), 'Los botones preparan el
 assert(index.includes("replace(/\\{negocio\\}/gi,business)"), 'El mensaje incluye automáticamente el negocio');
 assert(index.includes('commerce.orderActive===true&&!!phone'), 'Los pedidos se ocultan cuando no están configurados');
 
+
+assert(admin.includes('function menuDishTemplate'), 'El editor conserva la plantilla completa de platos');
+assert(admin.includes('function renderPlaceMenuDishes'), 'El panel puede renderizar y editar los platos');
+assert(admin.includes("recommended:false"), 'Cada plato permite marcarse como recomendado');
+assert(admin.includes("isNew:false"), 'Cada plato permite marcarse como nuevo');
+assert(admin.includes("vegetarian:false"), 'Cada plato permite marcarse como vegetariano');
+assert(admin.includes("spicy:false"), 'Cada plato permite marcarse como picante');
+assert(admin.includes("available:true"), 'Cada plato conserva su disponibilidad');
+assert(admin.includes("typeof value==='boolean'?value"), 'Las etiquetas se guardan como valores booleanos');
+assert(index.includes('function menuDishTags'), 'La web muestra las etiquetas de los platos');
+assert(index.includes("en?'Sold out':'Agotado'"), 'Los platos agotados se identifican en ambos idiomas');
+assert(index.includes("b.recommended===true"), 'Los platos recomendados aparecen primero');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
