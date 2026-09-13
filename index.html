@@ -566,6 +566,7 @@
                     <button id="previewAudioGuideBtn" type="button" onclick="toggleLocationAudioGuide()" class="w-full bg-brandGold/10 text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-brandGold hover:text-white transition border border-brandGold/40 flex items-center justify-center gap-2" aria-label="Escuchar audioguía del lugar seleccionado">
                         <i class="fa-solid fa-volume-high"></i> <span id="previewAudioGuideLabel">Escuchar audioguía</span>
                     </button>
+                    <button id="previewRestaurantMenuBtn" type="button" onclick="openRestaurantMenu()" class="hidden w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white py-3 rounded-xl font-black text-xs hover:from-orange-500 hover:to-amber-400 transition shadow-lg items-center justify-center gap-2"><i class="fa-solid fa-book-open"></i><span id="previewRestaurantMenuLabel">Ver menú del restaurante</span></button>
                     <button type="button" onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
                         <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
                     </button>
@@ -5492,6 +5493,8 @@
             if(!loc) return;
             trackBusinessEvent(loc.id,'view');
             maybeShowPlacePromotion(loc);
+            const restaurantMenu=restaurantMenuFor(loc),menuButton=document.getElementById('previewRestaurantMenuBtn');
+            if(menuButton){menuButton.classList.toggle('hidden',!restaurantMenu);menuButton.classList.toggle('flex',!!restaurantMenu);const label=document.getElementById('previewRestaurantMenuLabel');if(label)label.textContent=currentLang==='en'?'View restaurant menu':'Ver menú del restaurante';}
             completeChabaquitoMission('mapa');
             
             const tagText = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
@@ -5586,6 +5589,26 @@
 
         function openLatestVideoModal() {
             openModal('latestVideoModal');
+        }
+
+        function restaurantMenuFor(loc) {
+            if(!loc)return null;
+            const configured=loc.menu||{},images=Array.isArray(configured.images)?configured.images.filter(Boolean):[];
+            if(configured.active===true&&images.length&&paidPlaceBenefits(loc).menu===true)return{title:configured.title||`Menú de ${loc.title||'la parada'}`,images:images.map((img,index)=>({img,title:`${configured.title||'Menú'} · Página ${index+1}`})),demo:false};
+            const normalized=String(loc.title||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+            if(normalized.includes('mama lola'))return{title:'Menú de muestra · Mamá Lola',images:[{img:'menus/mama-lola-menu-muestra-1.svg',title:'Tradición lojana · Página demostrativa 1'},{img:'menus/mama-lola-menu-muestra-2.svg',title:'Café y dulces · Página demostrativa 2'}],demo:true};
+            return null;
+        }
+
+        function openRestaurantMenu(){
+            const loc=locations[currentLocationIndex],menu=restaurantMenuFor(loc);if(!menu)return;
+            immersiveGalleryImages=menu.images;immersiveGalleryIndex=0;
+            document.getElementById('galleryTitle').textContent=menu.title;
+            document.getElementById('youtubeVideoContainer').classList.add('hidden');
+            const grid=document.getElementById('galleryGrid');
+            grid.innerHTML=immersiveGalleryImages.map((item,index)=>`<button type="button" data-gallery-index="${index}" onclick="renderImmersiveGallery(${index})" class="shrink-0 w-20 h-16 sm:w-24 sm:h-16 rounded-lg overflow-hidden border-2 border-transparent opacity-60 transition" aria-label="Ver página ${index+1} del menú"><img src="${escapeHTML(item.img)}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async"></button>`).join('');
+            renderImmersiveGallery(0);openModal('menuGalleryModal');
+            if(menu.demo)showToast(currentLang==='en'?'Demo menu: replace with the official menu':'Menú demostrativo: reemplázalo con la carta oficial');
         }
 
         let immersiveGalleryImages = [];
