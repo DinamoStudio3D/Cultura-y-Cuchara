@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isViveLojaAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'sukogames1996@gmail.com';
+    }
+
+    match /audioguias/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isViveLojaAdmin()
+        && request.resource.size < 20 * 1024 * 1024
+        && request.resource.contentType.matches('audio/.*');
+      allow delete: if isViveLojaAdmin();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
