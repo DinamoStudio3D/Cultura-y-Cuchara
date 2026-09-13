@@ -201,6 +201,21 @@ assert(admin.includes("document.getElementById('placeBenefitPromo').checked=true
 assert(admin.includes("document.getElementById('placePromoButtonUrl').value"), 'El panel prepara el enlace de WhatsApp cuando existe');
 assert(admin.includes('Define las fechas y revisa todo antes de guardar.'), 'La promoción requiere revisión antes de guardarse');
 
+
+assert(admin.includes('id="settingsPremiumVisual"'), 'El panel permite activar o desactivar la apariencia premium');
+assert(admin.includes('id="settingsHeroStyle"'), 'El panel permite elegir el estilo de portada');
+assert(admin.includes('id="settingsHeroHeight"'), 'El panel permite elegir la altura de portada');
+assert(admin.includes('id="settingsCardStyle"'), 'El panel permite elegir el estilo de tarjetas');
+assert(admin.includes('id="settingsCornerStyle"'), 'El panel permite configurar las esquinas');
+assert(admin.includes('id="settingsHeroImageOpacity"'), 'El panel permite ajustar la visibilidad de fotografías');
+assert(admin.includes('id="settingsPremiumAnimations"'), 'El panel permite controlar las animaciones');
+assert(index.includes('body.visual-premium'), 'La web conserva los estilos premium aislados');
+assert(index.includes("body?.classList.toggle('visual-premium'"), 'La apariencia premium puede revertirse');
+assert(index.includes("--premium-radius"), 'Las esquinas premium se aplican mediante una variable segura');
+assert(index.includes('@media (prefers-reduced-motion:reduce)'), 'La apariencia respeta el movimiento reducido');
+assert(index.includes("['cinematic','classic','clean'].includes"), 'La web valida los estilos de portada permitidos');
+assert(index.includes("['elevated','bordered','soft'].includes"), 'La web valida los estilos de tarjetas permitidos');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
