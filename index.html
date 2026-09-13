@@ -276,7 +276,23 @@
             #mapa .lg\:col-span-2 { height: 340px !important; min-height: 340px; }
             #restaurantMenuGrid { padding: .55rem !important; }
             #storyModal > article > header { height: 12rem; }
-            .web-mascot-bubble { display: none !important; }
+            .web-mascot { width: 76px; }
+            .web-mascot-bubble {
+                display: block !important;
+                left: 49px;
+                bottom: calc(61px + env(safe-area-inset-bottom));
+                width: min(142px, 43vw);
+                max-height: 34vh;
+                overflow-y: auto;
+                font-size: 10px;
+                line-height: 1.3;
+                padding: 8px 24px 8px 9px;
+            }
+            .web-mascot-bubble.is-quiet {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
         }
 
     </style>
