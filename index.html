@@ -484,6 +484,13 @@
         </div>
     </section>
 
+    <section id="promociones" class="hidden py-16 px-4 md:px-8 lg:px-12 bg-gradient-to-br from-orange-50 via-white to-amber-50 border-b border-orange-100 reveal">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8"><div><span class="bg-orange-500/10 text-orange-700 font-black px-3 py-1 rounded-full text-xs uppercase tracking-widest border border-orange-500/20 inline-block mb-2"><i class="fa-solid fa-gift mr-1"></i><span id="promotionsBadge">Beneficios por tiempo limitado</span></span><h2 id="promotionsTitle" class="text-2xl sm:text-3xl lg:text-4xl font-black text-brandDark">Promociones vigentes</h2><p id="promotionsDescription" class="text-gray-600 text-sm mt-1">Descubre beneficios disponibles ahora en nuestros negocios aliados.</p></div><span id="promotionsCount" class="text-xs font-black text-orange-700 bg-white border border-orange-200 rounded-full px-4 py-2"></span></div>
+            <div id="promotionsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </div>
+    </section>
+
     <!-- Suggested Routes -->
     <section class="py-10 px-4 md:px-8 bg-brandCream border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -3396,10 +3403,14 @@
             }
         }
 
+function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===id);if(index<0)return;selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth',block:'start'});}
+        function renderPromotionsUI(){const section=document.getElementById('promociones'),grid=document.getElementById('promotionsGrid');if(!section||!grid)return;const items=locations.filter(placePromotionIsVisible);section.classList.toggle('hidden',!items.length);if(!items.length){grid.innerHTML='';return;}document.getElementById('promotionsBadge').textContent=currentLang==='en'?'Limited-time benefits':'Beneficios por tiempo limitado';document.getElementById('promotionsTitle').textContent=currentLang==='en'?'Current promotions':'Promociones vigentes';document.getElementById('promotionsDescription').textContent=currentLang==='en'?'Discover benefits available now from our partner businesses.':'Descubre beneficios disponibles ahora en nuestros negocios aliados.';document.getElementById('promotionsCount').textContent=currentLang==='en'?`${items.length} available`:`${items.length} ${items.length===1?'disponible':'disponibles'}`;grid.innerHTML=items.map(loc=>{const promo=loc.subscription.promotion||{},title=currentLang==='en'?(promo.titleEn||promo.title):(promo.title||promo.titleEn),description=currentLang==='en'?(promo.descriptionEn||promo.description):(promo.description||promo.descriptionEn),buttonText=currentLang==='en'?(promo.buttonTextEn||'View promotion'):(promo.buttonText||'Ver promoción'),placeTitle=currentLang==='en'?(loc.titleEn||loc.title):loc.title,image=promo.image||loc.gallery?.[0]?.img||loc.customLogoUrl||'',end=scheduleTime(promo.endAt||promo.endDate,true),endText=end?new Date(end).toLocaleDateString(currentLang==='en'?'en-US':'es-EC'):'';return`<article class="overflow-hidden rounded-2xl bg-white border border-orange-100 shadow-lg hover:-translate-y-1 transition-transform"><button type="button" onclick="openPromotionPlace('${String(loc.id).replace(/'/g,"\\'")}')" class="block w-full text-left">${image?`<img src="${escapeHTML(image)}" alt="${escapeHTML(title||placeTitle)}" class="w-full aspect-[4/3] object-cover" loading="lazy" decoding="async">`:`<div class="w-full aspect-[4/3] bg-gradient-to-br from-orange-500 to-amber-400 grid place-items-center text-white text-5xl"><i class="fa-solid fa-gift"></i></div>`}<div class="p-5"><div class="flex items-center justify-between gap-2"><span class="text-[10px] font-black uppercase tracking-widest text-orange-600">${escapeHTML(placeTitle)}</span>${endText?`<span class="text-[10px] text-gray-500"><i class="fa-regular fa-clock mr-1"></i>${escapeHTML(endText)}</span>`:''}</div><h3 class="font-black text-xl text-brandDark mt-2">${escapeHTML(title||'Promoción vigente')}</h3><p class="text-sm text-gray-600 mt-2 line-clamp-3">${escapeHTML(description||'Consulta este beneficio especial.')}</p><span class="inline-flex items-center mt-4 text-orange-700 font-black text-sm">${escapeHTML(buttonText)} <i class="fa-solid fa-arrow-right ml-2"></i></span></div></button></article>`;}).join('');}
+
         function renderEverything() {
             renderCategoriesUI();
             renderMapAndGrid();
             renderTrendingUI();
+            renderPromotionsUI();
             renderAgendaUI();
             renderEmprendedoresUI();
             renderLojaTimeUI();
