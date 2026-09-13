@@ -291,6 +291,9 @@ assert(index.includes("chabaquitoMissionIds.every(id=>completedChabaquitoMission
 assert(index.includes('function claimMissionReward'), 'El visitante puede registrar su recompensa');
 assert(index.includes('currentVisitorProfile?.profileComplete'), 'El visitante debe completar su perfil antes de reclamar');
 assert(index.includes('function missionRewardClaimId'), 'Cada cuenta recibe un único registro por campaña');
+assert(index.includes("await ref.set(data);displayMissionRewardClaim(data)"), 'El primer reclamo se crea sin consultar un documento inexistente');
+assert(index.includes("const existing=await db.collection('missionRewardClaims').doc(id).get()"), 'Un código previamente registrado puede recuperarse tras impedir su reemplazo');
+assert(!index.includes("const ref=db.collection('missionRewardClaims').doc(id),existing=await ref.get()"), 'La creación no requiere permiso de lectura sobre un código inexistente');
 assert(index.includes("'CHABA-'"), 'Los códigos de misión usan un formato reconocible');
 assert(index.includes("db.collection('missionRewardClaims')"), 'Los códigos se guardan en su colección protegida');
 assert(admin.includes('id="missionBenefitCampaignId"'), 'El panel configura campañas de recompensa');
