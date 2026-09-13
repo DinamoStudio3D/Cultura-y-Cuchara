@@ -106,6 +106,16 @@ assert(admin.includes('<option value="expired">Vencido</option>'), 'El administr
 assert(admin.includes('<option value="paused">Suspendido</option>'), 'El administrador puede suspender una suscripción');
 assert(index.includes("'expired','suspended'"), 'La web pública bloquea beneficios vencidos o suspendidos');
 
+
+assert(admin.includes('id="subscriptionCenterList"'), 'El panel conserva el centro comercial de suscripciones');
+assert(admin.includes('id="subscriptionCenterFilter"'), 'El centro comercial permite filtrar por estado');
+assert(admin.includes('id="subscriptionCenterIncome"'), 'El centro comercial calcula el ingreso mensual activo');
+assert(admin.includes('function renderSubscriptionCenter'), 'El centro comercial puede renderizar sus clientes');
+assert(admin.includes('function openSubscriptionReminder'), 'El panel prepara recordatorios por WhatsApp');
+assert(admin.includes('https://wa.me/'), 'Los recordatorios abren WhatsApp para revisión manual');
+assert(admin.includes('id="placeSubscriptionContactWhatsapp"'), 'Cada suscripción permite guardar su WhatsApp');
+assert(admin.includes("window.prompt('Este negocio no tiene WhatsApp registrado."), 'Los negocios sin número permiten copiar el mensaje');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
