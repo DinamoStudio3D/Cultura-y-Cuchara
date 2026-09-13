@@ -260,6 +260,11 @@ assert(index.includes('function syncFloatingAccountInviteVisibility'), 'La invit
 assert(index.includes('interface-layer-hidden'), 'La invitación flotante se oculta dentro de submenús');
 assert(index.includes("querySelectorAll('[role=\"dialog\"], #mobileMenu')"), 'Se vigilan tanto ventanas como el menú móvil');
 
+
+assert(index.includes("rawDesc=String("), 'Las descripciones vacías activan un texto de respaldo');
+assert(index.includes('menu-dish-description'), 'Cada tarjeta conserva un espacio visible para su descripción');
+assert(index.includes('grid-auto-rows: max-content'), 'Las filas del menú crecen según todo su contenido');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
