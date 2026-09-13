@@ -64,6 +64,11 @@ assert(dependencyOrder.every((position, i) => i === 0 || position > dependencyOr
 assert(serviceWorker.includes("request.mode === 'navigate'"), 'El modo sin conexión reconoce las navegaciones');
 assert(serviceWorker.indexOf('fetch(request)') < serviceWorker.indexOf("caches.match('./index.html')"), 'La aplicación solicita primero la versión nueva por internet');
 assert(serviceWorker.includes('url.origin !== self.location.origin'), 'El caché se limita a archivos del mismo sitio');
+assert(index.includes('function isPublicContent'), 'La web pública conserva el filtro de publicación');
+assert(index.includes("item.publicationStatus === 'published'"), 'Solo el contenido publicado puede mostrarse al público');
+assert(admin.includes('id="placePublicationStatus"'), 'El panel permite definir el estado de cada parada');
+assert(admin.includes('id="generalEventPublicationStatus"'), 'El panel permite definir el estado de cada evento');
+assert(admin.includes('id="placesPublicationFilter"'), 'El panel permite filtrar paradas por estado');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
