@@ -216,6 +216,26 @@ assert(index.includes('@media (prefers-reduced-motion:reduce)'), 'La apariencia 
 assert(index.includes("['cinematic','classic','clean'].includes"), 'La web valida los estilos de portada permitidos');
 assert(index.includes("['elevated','bordered','soft'].includes"), 'La web valida los estilos de tarjetas permitidos');
 
+
+assert(admin.includes('id="storiesNavBtn"'), 'El panel conserva el acceso a Historias de Loja');
+assert(admin.includes('id="storiesModule"'), 'El panel conserva el módulo completo de historias');
+assert(admin.includes("doc('stories')"), 'Las historias usan siteContent autorizado por las reglas actuales');
+assert(admin.includes('id="storiesSectionActive"'), 'La sección de historias puede activarse o desactivarse');
+assert(admin.includes('id="storyStatus"'), 'Cada historia conserva su estado de publicación');
+assert(admin.includes('id="storyPublishAt"'), 'Las historias pueden programarse');
+assert(admin.includes('id="storyBodyEn"'), 'Las historias conservan contenido completo en inglés');
+assert(admin.includes('id="storyAudioEn"'), 'Las historias conservan audio en inglés');
+assert(admin.includes('id="storyRelatedPlaces"'), 'Las historias pueden vincular paradas');
+assert(admin.includes('function moveStory'), 'Las historias pueden ordenarse manualmente');
+assert(index.includes('id="historias"'), 'La web conserva la sección pública de historias');
+assert(index.includes('id="storyModal"'), 'La web conserva la lectura inmersiva');
+assert(index.includes('function publicStoryItems'), 'Solo se muestran historias publicadas y programadas');
+assert(index.includes("story.status==='published'"), 'Los borradores no aparecen al público');
+assert(index.includes('function toggleStoryNarration'), 'Las historias permiten reproducir audio');
+assert(index.includes('SpeechSynthesisUtterance'), 'La voz automática permanece como respaldo');
+assert(index.includes('function openStoryPlace'), 'Las historias conectan con paradas relacionadas');
+assert(index.includes('function shareCurrentStory'), 'Las historias pueden compartirse');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
