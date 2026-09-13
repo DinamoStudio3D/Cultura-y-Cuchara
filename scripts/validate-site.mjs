@@ -148,6 +148,18 @@ assert(admin.includes("name:'Horchata'"), 'La muestra incluye horchata');
 assert(admin.includes("name:'Quesadilla lojana'"), 'La muestra incluye quesadilla lojana');
 assert(admin.includes('Se cargaron seis platos de muestra'), 'El panel confirma el menú completo de muestra');
 
+
+assert(admin.includes('id="placeCommerceWhatsapp"'), 'El panel permite configurar el WhatsApp del negocio');
+assert(admin.includes('id="placeOrderActive"'), 'El panel permite activar pedidos');
+assert(admin.includes('id="placeReservationActive"'), 'El panel permite activar reservaciones');
+assert(admin.includes('id="placeOrderMessageEn"'), 'Los pedidos conservan mensaje en inglés');
+assert(admin.includes('id="placeReservationMessageEn"'), 'Las reservaciones conservan mensaje en inglés');
+assert(index.includes('id="previewCommerceActions"'), 'La ficha conserva los botones comerciales');
+assert(index.includes('id="restaurantMenuCommerceActions"'), 'El menú conserva los botones comerciales');
+assert(index.includes('function openCommerceWhatsapp'), 'Los botones preparan el mensaje de WhatsApp');
+assert(index.includes("replace(/\\{negocio\\}/gi,business)"), 'El mensaje incluye automáticamente el negocio');
+assert(index.includes('commerce.orderActive===true&&!!phone'), 'Los pedidos se ocultan cuando no están configurados');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
