@@ -236,6 +236,17 @@ assert(index.includes('SpeechSynthesisUtterance'), 'La voz automática permanece
 assert(index.includes('function openStoryPlace'), 'Las historias conectan con paradas relacionadas');
 assert(index.includes('function shareCurrentStory'), 'Las historias pueden compartirse');
 
+
+assert(index.includes('viewport-fit=cover'), 'La web respeta las áreas seguras de móviles modernos');
+assert(index.includes('Mobile UX hardening: isolated from desktop layouts'), 'La web conserva la capa responsive móvil aislada');
+assert(index.includes('#restaurantMenuModal > div'), 'El menú gastronómico se adapta a pantalla completa en móvil');
+assert(index.includes('height: 100dvh'), 'Los modales usan la altura dinámica del dispositivo');
+assert(index.includes('#mapPreviewCard { min-height: 0'), 'La ficha del mapa evita alturas forzadas en móvil');
+assert(index.includes('input, select, textarea { font-size: 16px'), 'Los formularios públicos evitan zoom involuntario en iPhone');
+assert(admin.includes('Mobile admin UX hardening'), 'El panel conserva su adaptación móvil');
+assert(admin.includes('viewport-fit=cover'), 'El panel respeta las áreas seguras del dispositivo');
+assert(admin.includes('.admin-sidebar{position:fixed!important'), 'El menú administrativo móvil permanece navegable');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
