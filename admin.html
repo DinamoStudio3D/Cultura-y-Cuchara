@@ -631,6 +631,7 @@ function adminGlobalSearchItems(){
     const records=[
         ...adminPlaces.map(item=>({module:'places',label:item.title||item.titleEn||'Parada sin nombre',type:'Parada',detail:[item.tag,item.category,item.address].filter(Boolean).join(' · '),query:item.title||''})),
         ...generalEvents.map(item=>({module:'events',label:item.title||'Evento sin título',type:'Evento',detail:[item.date,item.location].filter(Boolean).join(' · ')})),
+        ...adminStories.map(item=>({module:'stories',label:item.title||item.titleEn||'Historia sin título',type:'Historia de Loja',detail:[item.category,item.era,item.source].filter(Boolean).join(' · ')})),
         ...adminEntrepreneurs.map(item=>({module:'entrepreneurs',label:item.name||'Emprendimiento sin nombre',type:'Emprendimiento',detail:item.category||''})),
         ...adminTimeSpots.map(item=>({module:'time',label:item.title||'Punto histórico',type:'Loja en el Tiempo',detail:[item.labelPast,item.labelPresent].filter(Boolean).join(' → ')})),
         ...adminPostcardFrames.map(item=>({module:'postcards',label:item.name||'Marco de postal',type:'Postal',detail:item.img||''})),
@@ -698,6 +699,7 @@ function showAdminModule(moduleName) {
     if(moduleName==='applications')renderBusinessApplications();
     if(moduleName==='users')renderRegisteredUsers();
     if(moduleName==='subscriptions')renderSubscriptionCenter();
+    if(moduleName==='stories'){renderStoriesAdmin();storyRelatedOptions([...document.getElementById('storyRelatedPlaces').selectedOptions].map(option=>option.value));}
 }
 
 function userProfileDate(value){if(!value)return null;if(value?.toDate)return value.toDate();const date=new Date(value);return Number.isNaN(date.getTime())?null:date;}
@@ -1416,6 +1418,7 @@ auth.onAuthStateChanged(async user => {
         placesUnsubscribe = placesRef.onSnapshot(snapshot => {
             adminPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'es'));
             renderAdminPlaces();
+            storyRelatedOptions([...document.getElementById('storyRelatedPlaces').selectedOptions].map(option=>option.value));
             renderSubscriptionCenter();
             renderControlCenter();
             populateAnalyticsPlaces();renderAnalyticsDashboard();
