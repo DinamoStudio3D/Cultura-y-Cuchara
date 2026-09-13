@@ -87,6 +87,11 @@ assert(admin.includes('id="placeMenuDishesEditor"'), 'El panel conserva el edito
 assert(admin.includes('function addPlaceMenuDish'), 'El panel permite agregar platos');
 assert(admin.includes("'descriptionEn'"), 'El editor conserva los campos bilingües');
 assert(admin.includes('function loadMamaLolaMenuSample'), 'El panel conserva la muestra de Mama Lola');
+assert(admin.includes('PLAN_SERVICE_CATALOG'), 'El panel conserva el catálogo de servicios');
+assert(admin.includes('data-plan-feature'), 'Cada plan permite configurar sus servicios');
+assert(admin.includes('id="subscriptionsApplyToPlaces"'), 'La sincronización masiva permanece opcional');
+assert(admin.includes('function applyPlanServicesToCurrentPlaces'), 'El panel puede aplicar servicios a negocios existentes');
+assert(admin.includes("key:'menu'"), 'El menú visual permanece dentro del catálogo comercial');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
