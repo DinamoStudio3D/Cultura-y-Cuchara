@@ -13,8 +13,9 @@ const index = read('index.html');
 const admin = read('admin.html');
 const manifestText = read('manifest.webmanifest');
 const serviceWorker = read('service-worker.js');
+const firestoreRules = read('firestore.rules');
 
-for (const [name, content] of [['index.html', index], ['admin.html', admin], ['service-worker.js', serviceWorker]]) {
+for (const [name, content] of [['index.html', index], ['admin.html', admin], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
     assert(!/^(<{7}|={7}|>{7})/m.test(content), `${name} no contiene conflictos de Git sin resolver`);
 }
 
@@ -285,14 +286,25 @@ assert(index.includes('id="missionPublicRewardTitle"'), 'La recompensa pública 
 
 
 assert(index.includes('id="missionCommercialReward"'), 'La web muestra la recompensa comercial al completar misiones');
+assert(index.includes('function missionRewardCampaignActive'), 'La recompensa respeta la vigencia de la campaña');
+assert(index.includes("chabaquitoMissionIds.every(id=>completedChabaquitoMissions.includes(id))"), 'La recompensa requiere completar todas las misiones');
 assert(index.includes('function claimMissionReward'), 'El visitante puede registrar su recompensa');
+assert(index.includes('currentVisitorProfile?.profileComplete'), 'El visitante debe completar su perfil antes de reclamar');
+assert(index.includes('function missionRewardClaimId'), 'Cada cuenta recibe un único registro por campaña');
 assert(index.includes("'CHABA-'"), 'Los códigos de misión usan un formato reconocible');
 assert(index.includes("db.collection('missionRewardClaims')"), 'Los códigos se guardan en su colección protegida');
 assert(admin.includes('id="missionBenefitCampaignId"'), 'El panel configura campañas de recompensa');
+assert(admin.includes('id="missionBenefitStart"') && admin.includes('id="missionBenefitEnd"'), 'El panel configura inicio y fin de campaña');
+assert(admin.includes('id="missionBenefitStock"'), 'El panel comunica la cantidad disponible');
 assert(admin.includes('id="missionRewardClaimsList"'), 'El panel muestra ganadores y códigos');
 assert(admin.includes('function updateMissionRewardClaim'), 'El administrador puede entregar o anular códigos');
+assert(admin.includes("status!=='delivered'") && admin.includes("status!=='cancelled'"), 'El panel conserva las acciones según el estado del código');
 assert(firestoreRules.includes('match /missionRewardClaims/{claimId}'), 'Firestore protege los códigos de misiones');
+assert(firestoreRules.includes("request.resource.data.keys().hasOnly(["), 'Firestore rechaza campos inesperados en los reclamos');
+assert(firestoreRules.includes("claimId == request.auth.uid + '_' + request.resource.data.campaignId"), 'Firestore impide más de un reclamo por cuenta y campaña');
+assert(firestoreRules.includes("request.resource.data.claimCode.matches('^CHABA-[A-Z0-9]{6}$')"), 'Firestore valida el formato de los códigos');
 assert(firestoreRules.includes("request.resource.data.completedMissions == 5"), 'Firestore exige las cinco misiones');
+assert(firestoreRules.includes('allow update, delete: if isViveLojaAdmin();'), 'Solo un administrador puede procesar o eliminar códigos');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
