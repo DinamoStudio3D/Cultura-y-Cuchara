@@ -55,7 +55,7 @@
 
         <section id="adminView" class="hidden">
             <div class="panel rounded-2xl px-4 py-3 sm:px-5 flex flex-wrap items-center justify-between gap-3 mb-5">
-                <div class="min-w-0"><p class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Módulo actual</p><div class="flex items-center gap-2"><h2 id="currentModuleName" class="font-black text-lg">Audios y Podcast</h2><span class="hidden sm:inline text-gray-700">•</span><p id="sessionEmail" class="hidden sm:block text-xs text-gray-400 truncate"></p></div></div>
+                <div class="min-w-0"><p class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Módulo actual</p><div class="flex flex-wrap items-center gap-2"><h2 id="currentModuleName" class="font-black text-lg">Audios y Podcast</h2><span id="adminSaveGuard" class="hidden items-center gap-1.5 text-[10px] font-black text-amber-200 bg-amber-500/10 border border-amber-500/25 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle text-[6px]"></i>Cambios sin guardar</span><span class="hidden sm:inline text-gray-700">•</span><p id="sessionEmail" class="hidden sm:block text-xs text-gray-400 truncate"></p></div></div>
                 <div class="flex items-center gap-2"><button id="mobileAdminNavToggle" type="button" onclick="toggleAdminSidebar()" class="border border-amber-500/30 text-amber-200 rounded-xl px-3 py-2 text-sm font-bold" aria-expanded="false"><i class="fa-solid fa-bars mr-1"></i>Menú</button><button id="logoutBtn" type="button" class="border border-gray-700 hover:border-red-400 hover:text-red-300 rounded-xl px-3 py-2 text-sm"><i class="fa-solid fa-arrow-right-from-bracket mr-1"></i><span class="hidden sm:inline">Cerrar sesión</span></button></div>
             </div>
 
@@ -522,6 +522,7 @@ function message(element, text, success = false) {
     element.textContent = text;
     element.className = `text-sm rounded-xl p-3 ${success ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-200' : 'bg-red-500/10 border border-red-500/30 text-red-200'}`;
     element.classList.remove('hidden');
+    if(success&&element.closest('form'))setAdminUnsavedChanges(false);
 }
 
 function friendlyAuthError(error) {
@@ -545,13 +546,25 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
     } finally { button.disabled = false; }
 });
 
-document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+document.getElementById('logoutBtn').addEventListener('click', () => {if(adminUnsavedChanges&&!window.confirm('Tienes cambios sin guardar. ¿Quieres cerrar la sesión y descartarlos?'))return;setAdminUnsavedChanges(false);auth.signOut();});
+
+let adminUnsavedChanges=false;
+let currentAdminModule='podcast';
+function setAdminUnsavedChanges(value){adminUnsavedChanges=Boolean(value);const badge=document.getElementById('adminSaveGuard');if(badge){badge.classList.toggle('hidden',!adminUnsavedChanges);badge.classList.toggle('inline-flex',adminUnsavedChanges);}}
+function adminFieldChangesContent(target){if(!target?.closest('#adminView form'))return false;if(target.matches('input[type="search"],input[type="password"][autocomplete="current-password"]'))return false;if(target.closest('#loginForm'))return false;return true;}
+document.addEventListener('input',event=>{if(adminFieldChangesContent(event.target))setAdminUnsavedChanges(true);});
+document.addEventListener('change',event=>{if(adminFieldChangesContent(event.target))setAdminUnsavedChanges(true);});
+document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
+window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
 const ADMIN_MODULE_LABELS={dashboard:'Resumen y respaldo',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Modo Festival',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('button').forEach(button=>{const show=!query||button.textContent.toLowerCase().includes(query);button.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);});}
 
 function showAdminModule(moduleName) {
+    if(moduleName!==currentAdminModule&&adminUnsavedChanges&&!window.confirm('Tienes cambios sin guardar. ¿Quieres salir de este módulo y descartarlos?'))return false;
+    if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
+    currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
     ['dashboard','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'chabaquito', 'passport', 'subscriptions', 'settings', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
