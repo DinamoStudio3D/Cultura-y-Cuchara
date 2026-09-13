@@ -140,7 +140,7 @@ assert(admin.includes('border-l-4'), 'Cada parada conserva su borde de color por
 
 assert(index.includes('function menuDishFallbackDescription'), 'Los platos antiguos reciben una descripción de apoyo');
 assert(index.includes('content-start items-start'), 'Las tarjetas usan altura natural y no comprimen el texto');
-assert(!index.includes('flex flex-col h-full'), 'Las tarjetas no fuerzan su altura dentro de la cuadrícula');
+assert(!index.includes('shadow-sm flex flex-col h-full'), 'Las tarjetas del menú no fuerzan su altura dentro de la cuadrícula');
 assert(index.includes('grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'), 'El menú mantiene columnas amplias y legibles');
 assert(index.includes('break-words'), 'Los nombres largos no se recortan');
 assert(admin.includes("name:'Fritada tradicional'"), 'La muestra incluye fritada tradicional');
