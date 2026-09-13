@@ -191,6 +191,16 @@ assert(index.includes('function renderBusinessProfile'), 'La ficha puede renderi
 assert(index.includes('function safeBusinessProfileUrl'), 'Los enlaces comerciales requieren una URL segura');
 assert(index.includes("container.classList.add('hidden')"), 'Los perfiles vacíos no dejan espacios visibles');
 
+
+assert(admin.includes('function promoteMenuDish'), 'El panel puede crear una promoción desde un plato');
+assert(admin.includes('onclick="promoteMenuDish('), 'Cada plato conserva el botón Crear promoción');
+assert(admin.includes('id="placePromotionEditor"'), 'El editor de promoción puede localizarse desde el plato');
+assert(admin.includes("document.getElementById('placePromoTitleEn').value"), 'La promoción copia el título en inglés');
+assert(admin.includes("document.getElementById('placePromoDescriptionEn').value"), 'La promoción copia la descripción en inglés');
+assert(admin.includes("document.getElementById('placeBenefitPromo').checked=true"), 'El beneficio de promoción se activa al preparar el contenido');
+assert(admin.includes("document.getElementById('placePromoButtonUrl').value"), 'El panel prepara el enlace de WhatsApp cuando existe');
+assert(admin.includes('Define las fechas y revisa todo antes de guardar.'), 'La promoción requiere revisión antes de guardarse');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
