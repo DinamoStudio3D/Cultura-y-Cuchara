@@ -127,6 +127,16 @@ assert(admin.includes('id="placePromoTitleEn"'), 'Las promociones permiten títu
 assert(admin.includes('id="placePromoDescriptionEn"'), 'Las promociones permiten mensaje en inglés');
 assert(admin.includes('id="placePromoButtonTextEn"'), 'Las promociones permiten botón en inglés');
 
+
+assert(admin.includes('PLACE_CATEGORY_META'), 'El panel conserva los colores de cada categoría');
+assert(admin.includes('id="placesCategorySummary"'), 'La lista conserva sus accesos rápidos por categoría');
+assert(admin.includes('id="placesSort"'), 'Las paradas pueden ordenarse');
+assert(admin.includes('<option value="hueca">Huecas tradicionales</option>'), 'Las huecas tienen filtro propio');
+assert(admin.includes('<option value="urbana">Restaurantes</option>'), 'Los restaurantes tienen filtro propio');
+assert(admin.includes('<option value="cafe">Cafeterías</option>'), 'Las cafeterías tienen filtro propio');
+assert(admin.includes('function setPlacesCategoryFilter'), 'Los indicadores de categoría funcionan como filtros');
+assert(admin.includes('border-l-4'), 'Cada parada conserva su borde de color por categoría');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
