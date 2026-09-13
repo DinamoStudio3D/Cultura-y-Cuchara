@@ -326,6 +326,13 @@
             }
         }
 
+
+        /* Registration invite belongs only to the main browsing layer */
+        #accountFloatingInvite.interface-layer-hidden {
+            display: none !important;
+            pointer-events: none !important;
+        }
+
 </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -6143,6 +6150,18 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             }
             updateClearFiltersButton(category !== 'all');
         }
+
+        function syncFloatingAccountInviteVisibility() {
+            const invite=document.getElementById('accountFloatingInvite');
+            if(!invite)return;
+            const dialogOpen=Array.from(document.querySelectorAll('[role="dialog"]')).some(dialog=>!dialog.classList.contains('hidden'));
+            const mobileMenu=document.getElementById('mobileMenu');
+            const submenuOpen=mobileMenu&&!mobileMenu.classList.contains('hidden');
+            invite.classList.toggle('interface-layer-hidden',dialogOpen||submenuOpen);
+        }
+        const floatingInviteVisibilityObserver=new MutationObserver(syncFloatingAccountInviteVisibility);
+        document.querySelectorAll('[role="dialog"], #mobileMenu').forEach(element=>floatingInviteVisibilityObserver.observe(element,{attributes:true,attributeFilter:['class','aria-hidden']}));
+        syncFloatingAccountInviteVisibility();
 
         function showAccountFloatingInvite(enabled = true) {
             const invite=document.getElementById('accountFloatingInvite');
