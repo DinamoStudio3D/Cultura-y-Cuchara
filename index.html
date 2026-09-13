@@ -333,6 +333,34 @@
             pointer-events: none !important;
         }
 
+
+        /* Every dish keeps its complete information visible */
+        #restaurantMenuGrid {
+            grid-auto-rows: max-content;
+            align-items: start;
+        }
+        #restaurantMenuGrid > article {
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            min-height: 0;
+            overflow: hidden;
+        }
+        #restaurantMenuGrid > article > div:last-child {
+            position: relative;
+            display: block;
+            flex: 0 0 auto;
+            min-height: 104px;
+            background: #fff;
+            z-index: 2;
+        }
+        #restaurantMenuGrid .menu-dish-description {
+            display: block !important;
+            visibility: visible !important;
+            min-height: 2.6em;
+            overflow: visible;
+        }
+
 </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -5862,7 +5890,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
     document.getElementById('restaurantMenuTitle').textContent=(en?menu.titleEn:menu.title)||menu.title;
     document.getElementById('restaurantMenuBadge').textContent=menu.demo?(en?'Sample content · Reference prices':'Contenido de muestra · Valores referenciales'):(en?'Restaurant menu':'Carta del restaurante');
     document.getElementById('restaurantMenuCategories').innerHTML=[{value:'all',label:en?'All':'Todos'},...categories.map(x=>({value:x,label:x}))].map(x=>`<button type="button" data-menu-category="${escapeHTML(encodeURIComponent(String(x.value)))}" onclick="selectRestaurantMenuCategory(this.dataset.menuCategory)" class="menu-category-button rounded-full px-3 py-2 text-xs font-bold border ${x.value===category?'bg-brandGold text-white border-brandGold':'bg-white border-gray-200'}" aria-pressed="${x.value===category?'true':'false'}">${escapeHTML(x.label)}</button>`).join('');
-    document.getElementById('restaurantMenuGrid').innerHTML=items.map(item=>{const name=(en&&item.nameEn)||item.name,desc=(en&&item.descriptionEn)||item.description||menuDishFallbackDescription(item,en),cat=(en&&item.categoryEn)||item.category,available=item.available!==false&&item.available!=='false',tags=menuDishTags(item,en);return`<article class="bg-white rounded-2xl overflow-hidden border ${available?'border-gray-200':'border-gray-300'} shadow-sm relative"><div class="aspect-[4/3] bg-gray-100 overflow-hidden relative flex-shrink-0"><img src="${escapeHTML(item.image||'')}" alt="${escapeHTML(name)}" class="w-full h-full object-cover ${available?'hover:scale-105':'grayscale opacity-55'} transition duration-500" loading="lazy" decoding="async"><button type="button" data-menu-category="${escapeHTML(encodeURIComponent(String(cat||'Otros')))}" onclick="selectRestaurantMenuCategory(this.dataset.menuCategory)" class="absolute top-3 left-3 bg-black/80 hover:bg-brandGold text-white rounded-full px-3 py-1 text-[10px] font-black border border-white/20 shadow transition z-10" aria-label="${en?'View category':'Ver categoría'}: ${escapeHTML(cat||'')}">${escapeHTML(cat||'')}</button>${available?`<strong class="absolute bottom-3 right-3 bg-brandGold text-white rounded-full px-3.5 py-1.5 text-sm shadow-lg">${escapeHTML(item.price)}</strong>`:`<span class="absolute inset-0 grid place-items-center"><strong class="bg-black/80 text-white rounded-full px-5 py-2 text-sm uppercase tracking-wider">${en?'Sold out':'Agotado'}</strong></span>`}</div><div class="p-4 sm:p-5"><div class="flex items-start justify-between gap-3"><h3 class="font-black text-base sm:text-lg leading-tight break-words">${escapeHTML(name)}</h3>${!available?`<span class="text-xs font-black text-gray-500">${escapeHTML(item.price)}</span>`:''}</div>${tags.length?`<div class="flex flex-wrap gap-1.5 mt-2">${tags.map(tag=>`<span class="${tag.tone} rounded-full px-2 py-1 text-[9px] font-black"><i class="fa-solid ${tag.icon} mr-1"></i>${tag.label}</span>`).join('')}</div>`:''}<p class="text-xs sm:text-sm ${available?'text-gray-600':'text-gray-400'} mt-2 leading-relaxed">${escapeHTML(desc)}</p></div></article>`}).join('');
+    document.getElementById('restaurantMenuGrid').innerHTML=items.map(item=>{const name=(en&&item.nameEn)||item.name,rawDesc=String((en&&item.descriptionEn)||item.description||'').trim(),desc=rawDesc||menuDishFallbackDescription(item,en),cat=(en&&item.categoryEn)||item.category,available=item.available!==false&&item.available!=='false',tags=menuDishTags(item,en);return`<article class="bg-white rounded-2xl overflow-hidden border ${available?'border-gray-200':'border-gray-300'} shadow-sm relative"><div class="aspect-[4/3] bg-gray-100 overflow-hidden relative flex-shrink-0"><img src="${escapeHTML(item.image||'')}" alt="${escapeHTML(name)}" class="w-full h-full object-cover ${available?'hover:scale-105':'grayscale opacity-55'} transition duration-500" loading="lazy" decoding="async"><button type="button" data-menu-category="${escapeHTML(encodeURIComponent(String(cat||'Otros')))}" onclick="selectRestaurantMenuCategory(this.dataset.menuCategory)" class="absolute top-3 left-3 bg-black/80 hover:bg-brandGold text-white rounded-full px-3 py-1 text-[10px] font-black border border-white/20 shadow transition z-10" aria-label="${en?'View category':'Ver categoría'}: ${escapeHTML(cat||'')}">${escapeHTML(cat||'')}</button>${available?`<strong class="absolute bottom-3 right-3 bg-brandGold text-white rounded-full px-3.5 py-1.5 text-sm shadow-lg">${escapeHTML(item.price)}</strong>`:`<span class="absolute inset-0 grid place-items-center"><strong class="bg-black/80 text-white rounded-full px-5 py-2 text-sm uppercase tracking-wider">${en?'Sold out':'Agotado'}</strong></span>`}</div><div class="p-4 sm:p-5"><div class="flex items-start justify-between gap-3"><h3 class="font-black text-base sm:text-lg leading-tight break-words">${escapeHTML(name)}</h3>${!available?`<span class="text-xs font-black text-gray-500">${escapeHTML(item.price)}</span>`:''}</div>${tags.length?`<div class="flex flex-wrap gap-1.5 mt-2">${tags.map(tag=>`<span class="${tag.tone} rounded-full px-2 py-1 text-[9px] font-black"><i class="fa-solid ${tag.icon} mr-1"></i>${tag.label}</span>`).join('')}</div>`:''}<p class="menu-dish-description text-xs sm:text-sm ${available?'text-gray-600':'text-gray-400'} mt-2 leading-relaxed">${escapeHTML(desc)}</p></div></article>`}).join('');
 }
         function selectRestaurantMenuCategory(encodedCategory){
             const category=decodeURIComponent(encodedCategory||'all');
