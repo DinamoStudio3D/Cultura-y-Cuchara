@@ -247,6 +247,8 @@ assert(admin.includes('Mobile admin UX hardening'), 'El panel conserva su adapta
 assert(admin.includes('viewport-fit=cover'), 'El panel respeta las áreas seguras del dispositivo');
 assert(admin.includes('.admin-sidebar{position:fixed!important'), 'El menú administrativo móvil permanece navegable');
 
+assert(!index.includes('.web-mascot-bubble { display: none !important; }'), 'Los mensajes de Chabaquito permanecen visibles en móviles pequeños');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
