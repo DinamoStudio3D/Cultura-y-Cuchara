@@ -265,6 +265,15 @@ assert(index.includes("rawDesc=String("), 'Las descripciones vacías activan un 
 assert(index.includes('menu-dish-description'), 'Cada tarjeta conserva un espacio visible para su descripción');
 assert(index.includes('grid-auto-rows: max-content'), 'Las filas del menú crecen según todo su contenido');
 
+
+assert(index.includes("completeChabaquitoMission('mapa')"), 'Explorar una parada completa la misión del mapa');
+assert(index.includes("completeChabaquitoMission('ruta')"), 'Guardar una parada completa la misión de ruta');
+assert(index.includes("completeChabaquitoMission('postal')"), 'Descargar una postal completa su misión');
+assert(index.includes("completeChabaquitoMission('fiavl')"), 'Explorar FIAVL completa su misión');
+assert(index.includes("activeStoryAudio.play().then(()=>{label.textContent=en?'Stop audio':'Detener audio';completeChabaquitoMission('podcast')"), 'Escuchar una historia grabada completa la misión de audio');
+assert(index.includes("window.speechSynthesis?.speak(utterance);completeChabaquitoMission('podcast')"), 'La narración automática también completa la misión de audio');
+assert(index.includes("currentLang==='en'?(isComplete?'Completed':'Go now')"), 'Los estados de misión se traducen al inglés');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
