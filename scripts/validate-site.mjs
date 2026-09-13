@@ -72,6 +72,11 @@ assert(admin.includes('id="placesPublicationFilter"'), 'El panel permite filtrar
 assert(admin.includes('id="eventPreviewModal"'), 'El panel conserva la vista previa de eventos');
 assert(admin.includes('function renderEventPreview'), 'La vista previa de eventos puede renderizarse');
 assert(admin.includes('id="eventPreviewLanguage"'), 'La vista previa permite alternar español e inglés');
+assert(index.includes('id="galleryMainImage"'), 'La galería conserva su imagen inmersiva principal');
+assert(index.includes('function renderImmersiveGallery'), 'La galería puede navegar entre fotografías');
+assert(index.includes("event.key==='ArrowLeft'"), 'La galería conserva la navegación por teclado');
+assert(index.includes("addEventListener('touchstart'"), 'La galería conserva los gestos táctiles');
+assert(index.includes('function shareGalleryImage'), 'La galería permite compartir fotografías');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
