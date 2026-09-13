@@ -566,7 +566,7 @@
                         <div class="flex items-center gap-2"><i id="previewDetailIcon" class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours">Lun - Sáb: 08:00 - 16:00</span></div>
                         <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress">Mercado Central / Local 14</span></div>
-                    </div>
+                    </div><div id="previewBusinessProfile" class="hidden mt-3 pt-3 border-t border-gray-100"></div>
                 </div>
 
                 <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
@@ -5502,6 +5502,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             window.location.href = 'admin.html';
         }
 
+        function safeBusinessProfileUrl(value){const url=String(value||'').trim();return/^https?:\/\//i.test(url)?url:'';}
+        function renderBusinessProfile(loc){const container=document.getElementById('previewBusinessProfile');if(!container)return;const profile=loc?.businessProfile||{},amenities=profile.amenities||{},payments=Array.isArray(profile.paymentMethods)?profile.paymentMethods:[],en=currentLang==='en',features=[['wifi','fa-wifi',en?'Wi-Fi':'Wi‑Fi'],['parking','fa-square-parking',en?'Parking':'Estacionamiento'],['accessible','fa-wheelchair',en?'Accessible':'Accesibilidad'],['familyFriendly','fa-people-roof',en?'Family friendly':'Para familias'],['petFriendly','fa-paw',en?'Pet friendly':'Acepta mascotas'],['takeaway','fa-bag-shopping',en?'Takeaway':'Para llevar'],['delivery','fa-motorcycle',en?'Delivery':'Entrega'],['outdoorSeating','fa-umbrella-beach',en?'Outdoor seating':'Mesas exteriores']].filter(([key])=>amenities[key]===true),paymentLabels={cash:en?'Cash':'Efectivo',card:en?'Card':'Tarjeta',transfer:en?'Bank transfer':'Transferencia',qr:en?'QR payment':'Pago QR'},links=[['website','fa-globe','Web'],['instagram','fa-brands fa-instagram','Instagram'],['facebook','fa-brands fa-facebook-f','Facebook'],['tiktok','fa-brands fa-tiktok','TikTok']].map(([key,icon,label])=>({url:safeBusinessProfileUrl(profile[key]),icon,label})).filter(item=>item.url),phone=String(profile.phone||'').trim(),whatsapp=String(profile.whatsapp||'').replace(/\D/g,''),hasContent=features.length||payments.length||links.length||phone||whatsapp||profile.priceRange;if(!hasContent){container.classList.add('hidden');container.innerHTML='';return;}const chips=[...(profile.priceRange?[{icon:'fa-wallet',label:`${en?'Price':'Precio'} ${profile.priceRange}`}]:[]),...payments.map(key=>({icon:key==='cash'?'fa-money-bill-wave':key==='card'?'fa-credit-card':key==='transfer'?'fa-building-columns':'fa-qrcode',label:paymentLabels[key]||key})),...features.map(([,icon,label])=>({icon,label}))];container.innerHTML=`${chips.length?`<div class="flex flex-wrap gap-1.5">${chips.map(item=>`<span class="bg-violet-50 text-violet-800 border border-violet-100 rounded-full px-2.5 py-1 text-[9px] font-bold"><i class="fa-solid ${item.icon} mr-1"></i>${escapeHTML(item.label)}</span>`).join('')}</div>`:''}${phone||whatsapp||links.length?`<div class="flex flex-wrap gap-2 mt-3">${phone?`<a href="tel:${escapeHTML(phone.replace(/[^\d+]/g,''))}" class="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-[10px] font-black"><i class="fa-solid fa-phone mr-1"></i>${en?'Call':'Llamar'}</a>`:''}${whatsapp?`<a href="https://wa.me/${whatsapp}" target="_blank" rel="noopener noreferrer" class="bg-emerald-500 text-white rounded-lg px-3 py-2 text-[10px] font-black"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a>`:''}${links.map(item=>`<a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer" class="bg-violet-50 text-violet-800 rounded-lg px-3 py-2 text-[10px] font-black"><i class="${item.icon} mr-1"></i>${item.label}</a>`).join('')}</div>`:''}`;container.classList.remove('hidden');}
+
         window.handlePopupClick = function(index) {
             selectLocation(index);
             document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -5571,6 +5574,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const previewStampButton=document.getElementById('previewStampButton');if(previewStampButton)previewStampButton.classList.toggle('hidden',!['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category));
             document.getElementById('previewHours').innerText = loc.hours || "Lun - Dom: 08:00 - 20:00";
             document.getElementById('previewAddress').innerText = loc.address;
+            renderBusinessProfile(loc);
             
             let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
             document.getElementById('previewGps').href = previewGpsUrl;document.getElementById('previewGps').onclick=()=>trackBusinessEvent(loc.id,'directions');
