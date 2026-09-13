@@ -255,6 +255,11 @@ assert(index.includes('data-menu-category='), 'Los filtros de categorías usan v
 assert(index.includes('Restaurant menu categories: compact, complete and tappable on mobile'), 'Las categorías del menú se organizan correctamente en móvil');
 assert(index.includes('restaurantMenuModal" class="fixed inset-0 z-[100]'), 'El menú permanece sobre los botones flotantes');
 
+
+assert(index.includes('function syncFloatingAccountInviteVisibility'), 'La invitación de registro responde al estado de menús y diálogos');
+assert(index.includes('interface-layer-hidden'), 'La invitación flotante se oculta dentro de submenús');
+assert(index.includes("querySelectorAll('[role=\"dialog\"], #mobileMenu')"), 'Se vigilan tanto ventanas como el menú móvil');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
