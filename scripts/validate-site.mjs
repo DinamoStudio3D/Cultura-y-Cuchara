@@ -116,6 +116,17 @@ assert(admin.includes('https://wa.me/'), 'Los recordatorios abren WhatsApp para 
 assert(admin.includes('id="placeSubscriptionContactWhatsapp"'), 'Cada suscripción permite guardar su WhatsApp');
 assert(admin.includes("window.prompt('Este negocio no tiene WhatsApp registrado."), 'Los negocios sin número permiten copiar el mensaje');
 
+
+assert(index.includes('id="promociones"'), 'La portada conserva la sección de promociones');
+assert(index.includes('id="promotionsGrid"'), 'La portada conserva la cuadrícula de promociones');
+assert(index.includes('function renderPromotionsUI'), 'Las promociones vigentes pueden renderizarse');
+assert(index.includes('locations.filter(placePromotionIsVisible)'), 'Solo aparecen promociones vigentes y autorizadas');
+assert(index.includes("section.classList.toggle('hidden',!items.length)"), 'La sección se oculta cuando no hay promociones');
+assert(index.includes('function openPromotionPlace'), 'Cada promoción abre la ficha de su negocio');
+assert(admin.includes('id="placePromoTitleEn"'), 'Las promociones permiten título en inglés');
+assert(admin.includes('id="placePromoDescriptionEn"'), 'Las promociones permiten mensaje en inglés');
+assert(admin.includes('id="placePromoButtonTextEn"'), 'Las promociones permiten botón en inglés');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
