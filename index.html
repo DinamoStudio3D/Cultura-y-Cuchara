@@ -2758,6 +2758,10 @@
             }
         ];
 
+        function isPublicContent(item) {
+            return !item?.publicationStatus || item.publicationStatus === 'published';
+        }
+
         let eventsList = safeReadJSON('cyc_dynamic_events', [
             { 
                 id: 'ev_1', 
@@ -2772,12 +2776,12 @@
                 lat: -3.9910, 
                 lng: -79.2030 
             }
-        ]);
+        ]).filter(isPublicContent);
 
         if (db) {
             db.collection('siteContent').doc('events').onSnapshot(snapshot => {
                 if (!snapshot.exists || !Array.isArray(snapshot.data().events)) return;
-                eventsList = snapshot.data().events.map(event => ({ ...event }));
+                eventsList = snapshot.data().events.map(event => ({ ...event })).filter(isPublicContent);
                 localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
                 renderEverything();
                 checkLiveEventsBanner();
@@ -3052,7 +3056,7 @@
                         const normalizedLocationName = String(location.title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
                         if (!location.audioUrl && (doc.id === 'dinamo_studio' || normalizedLocationName.includes('dinamo'))) location.audioUrl = 'audios/dinamo-the-weight-of-one-note.mp3';
                         const searchable=[location.category,location.tag,location.title,location.type].join(' ').toLowerCase();
-                        if(!searchable.includes('motel')) locations.push(location);
+                        if(isPublicContent(location) && !searchable.includes('motel')) locations.push(location);
                     });
                 }
                 categories=categories.filter(category=>!String(category.id+' '+category.name+' '+(category.nameEn||'')).toLowerCase().includes('motel'));
