@@ -2717,6 +2717,7 @@
                 address: "Loja, Ecuador", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
                 iconClass: "fa-seedling", category: "urbana", customLogoUrl: "",
                 youtubeUrl: "",
+                audioUrl: "audios/dinamo-the-weight-of-one-note.mp3",
                 gallery: [
                     { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Dínamo Studio" }
                 ]
@@ -3028,6 +3029,8 @@
                     locations = [];
                     snapshot.forEach((doc) => {
                         const location={ id: doc.id, ...doc.data() };
+                        const normalizedLocationName = String(location.title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                        if (!location.audioUrl && (doc.id === 'dinamo_studio' || normalizedLocationName.includes('dinamo'))) location.audioUrl = 'audios/dinamo-the-weight-of-one-note.mp3';
                         const searchable=[location.category,location.tag,location.title,location.type].join(' ').toLowerCase();
                         if(!searchable.includes('motel')) locations.push(location);
                     });
