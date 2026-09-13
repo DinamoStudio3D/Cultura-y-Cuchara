@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="robots" content="noindex,nofollow">
     <title>Administración | Vive Loja</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,7 +30,49 @@
         @media(max-width:1023px){.admin-sidebar{position:static;max-height:none}.admin-sidebar.mobile-closed{display:none}}
         @media(min-width:1024px){#mobileAdminNavToggle{display:none!important}}
         @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.admin-content>section{animation:none}.admin-sidebar button{transition:none}}
-    </style>
+    
+        /* Mobile admin UX hardening */
+        @media(max-width:767px){
+            html,body{max-width:100%;overflow-x:clip;-webkit-text-size-adjust:100%}
+            body{padding-bottom:env(safe-area-inset-bottom)}
+            header{padding-top:env(safe-area-inset-top)}
+            header>div{padding:.65rem .75rem;gap:.5rem}
+            header .w-11.h-11{width:2.35rem;height:2.35rem;flex:none}
+            header h1{font-size:.95rem;max-width:42vw;line-height:1.1}
+            header p{letter-spacing:.12em}
+            #mobileAdminNavToggle{min-height:44px;padding-left:.7rem;padding-right:.7rem}
+            #logoutBtn{min-width:44px;min-height:44px;padding-left:.65rem;padding-right:.65rem}
+            main{padding:1rem .75rem 2rem!important}
+            .admin-sidebar{position:fixed!important;inset:calc(4.2rem + env(safe-area-inset-top)) .75rem auto .75rem!important;z-index:60;max-height:calc(100dvh - 5rem - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain;box-shadow:0 24px 70px rgba(0,0,0,.7)}
+            .admin-sidebar:not(.mobile-closed){display:block}
+            .admin-content>section,.panel{min-width:0}
+            .admin-content>section{border-radius:1rem}
+            .field,input,select,textarea{font-size:16px!important}
+            button,[role="button"],a{touch-action:manipulation}
+            button{min-height:44px}
+            h1,h2,h3,h4,p,span,label,button,a{overflow-wrap:anywhere}
+            img,video,iframe{max-width:100%}
+            .grid{min-width:0}
+            .overflow-x-auto{-webkit-overflow-scrolling:touch}
+            table{min-width:680px}
+            #adminGlobalSearchModal,
+            #placePreviewModal,
+            #eventPreviewModal{padding:0!important}
+            #adminGlobalSearchModal>div,
+            #placePreviewModal>div,
+            #eventPreviewModal>div{width:100%;max-width:none;margin:0!important;min-height:100dvh;border-radius:0!important}
+            #adminGlobalSearchModal>div{height:100dvh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
+            #placePreviewModal>div,#eventPreviewModal>div{padding-bottom:env(safe-area-inset-bottom)}
+            .flex.justify-between{min-width:0}
+        }
+        @media(max-width:389px){
+            header h1{font-size:.85rem;max-width:34vw}
+            header .w-11.h-11{display:none}
+            main{padding-left:.55rem!important;padding-right:.55rem!important}
+            .admin-sidebar{left:.55rem!important;right:.55rem!important}
+        }
+
+</style>
 </head>
 <body class="min-h-screen text-white antialiased">
     <header class="sticky top-0 z-50 border-b border-white/10 bg-[#080b10]/90 backdrop-blur-xl">
