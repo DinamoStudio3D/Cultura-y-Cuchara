@@ -249,6 +249,12 @@ assert(admin.includes('.admin-sidebar{position:fixed!important'), 'El menú admi
 
 assert(!index.includes('.web-mascot-bubble { display: none !important; }'), 'Los mensajes de Chabaquito permanecen visibles en móviles pequeños');
 
+
+assert(index.includes('function selectRestaurantMenuCategory'), 'Las etiquetas de platos permiten filtrar su categoría');
+assert(index.includes('data-menu-category='), 'Los filtros de categorías usan valores seguros y configurables');
+assert(index.includes('Restaurant menu categories: compact, complete and tappable on mobile'), 'Las categorías del menú se organizan correctamente en móvil');
+assert(index.includes('restaurantMenuModal" class="fixed inset-0 z-[100]'), 'El menú permanece sobre los botones flotantes');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
