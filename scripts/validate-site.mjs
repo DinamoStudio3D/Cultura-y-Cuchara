@@ -171,7 +171,11 @@ assert(admin.includes("available:true"), 'Cada plato conserva su disponibilidad'
 assert(admin.includes("typeof value==='boolean'?value"), 'Las etiquetas se guardan como valores booleanos');
 assert(index.includes('function menuDishTags'), 'La web muestra las etiquetas de los platos');
 assert(index.includes("en?'Sold out':'Agotado'"), 'Los platos agotados se identifican en ambos idiomas');
-assert(index.includes("b.recommended===true"), 'Los platos recomendados aparecen primero');
+assert(index.includes("items=category==='all'?menu.dishes"), 'La web respeta el orden manual de los platos');
+assert(admin.includes('function movePlaceMenuDish'), 'El panel permite cambiar la posición de un plato');
+assert(admin.includes("movePlaceMenuDish(${index},-1)"), 'Cada plato conserva el botón Subir');
+assert(admin.includes("movePlaceMenuDish(${index},1)"), 'Cada plato conserva el botón Bajar');
+assert(admin.includes('Orden del menú actualizado.'), 'El panel avisa que debe guardarse el nuevo orden');
 
 
 assert(admin.includes('id="placeProfilePhone"'), 'El perfil comercial permite guardar teléfono');
