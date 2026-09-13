@@ -274,6 +274,15 @@ assert(index.includes("activeStoryAudio.play().then(()=>{label.textContent=en?'S
 assert(index.includes("window.speechSynthesis?.speak(utterance);completeChabaquitoMission('podcast')"), 'La narración automática también completa la misión de audio');
 assert(index.includes("currentLang==='en'?(isComplete?'Completed':'Go now')"), 'Los estados de misión se traducen al inglés');
 
+
+assert(admin.includes('id="missionsActive"'), 'El panel permite mostrar u ocultar las misiones');
+assert(admin.includes('id="missionsTitleEn"'), 'El panel configura el título de misiones en inglés');
+assert(admin.includes('id="missionsRewardDescriptionEn"'), 'El panel configura la recompensa en ambos idiomas');
+assert(admin.includes('missions:{active:document.getElementById'), 'La configuración de misiones se guarda en Firestore');
+assert(index.includes('function applyMissionPresentation'), 'La web aplica la presentación configurable de misiones');
+assert(index.includes("section.classList.toggle('hidden',config.active===false)"), 'El módulo público puede ocultarse sin borrar progreso');
+assert(index.includes('id="missionPublicRewardTitle"'), 'La recompensa pública recibe el texto administrativo');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
