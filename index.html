@@ -974,8 +974,8 @@
                         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_#EA580C_0,_transparent_65%)]"></div>
                         <img src="mascota-vive-loja.png" alt="Chabaquito presenta las misiones de Vive Loja" width="1122" height="1402" class="relative w-36 sm:w-44 h-auto drop-shadow-2xl" loading="lazy" decoding="async">
                         <span class="relative mt-2 text-brandGold text-xs font-black uppercase tracking-widest" data-i18n="missionBadge">Aventura interactiva</span>
-                        <h2 class="relative text-2xl font-black mt-2" data-i18n="missionTitle">Retos digitales de Chabaquito</h2>
-                        <p class="relative text-xs text-gray-300 mt-2 leading-relaxed" data-i18n="missionDesc">Explora las funciones de la web y obtén tu certificado digital.</p>
+                        <h2 id="missionPublicTitle" class="relative text-2xl font-black mt-2" data-i18n="missionTitle">Retos digitales de Chabaquito</h2>
+                        <p id="missionPublicDescription" class="relative text-xs text-gray-300 mt-2 leading-relaxed" data-i18n="missionDesc">Explora las funciones de la web y obtén tu certificado digital.</p>
                     </div>
 
                     <div class="p-6 sm:p-8">
@@ -1016,8 +1016,8 @@
 
                         <div id="missionReward" class="hidden mt-5 bg-brandGold/15 border border-brandGold/50 rounded-2xl p-4 text-center">
                             <i class="fa-solid fa-award text-4xl text-brandGold mb-2"></i>
-                            <p class="font-black text-brandGold" data-i18n="missionRewardTitle">¡Insignia Explorador de Loja desbloqueada!</p>
-                            <p class="text-xs text-gray-300 mt-1" data-i18n="missionRewardDesc">Completaste las cinco misiones de Chabaquito.</p>
+                            <p id="missionPublicRewardTitle" class="font-black text-brandGold" data-i18n="missionRewardTitle">¡Insignia Explorador de Loja desbloqueada!</p>
+                            <p id="missionPublicRewardDescription" class="text-xs text-gray-300 mt-1" data-i18n="missionRewardDesc">Completaste las cinco misiones de Chabaquito.</p>
                             <div id="certificateRewardControls" class="mt-4 max-w-md mx-auto flex flex-col sm:flex-row gap-2"><input id="certificateVisitorName" class="flex-1 bg-white text-brandDark border border-brandGold/40 rounded-xl px-4 py-3 text-sm font-bold outline-none" maxlength="45" placeholder="Escribe tu nombre"><button type="button" onclick="downloadExplorerCertificate()" class="bg-brandGold hover:bg-orange-500 text-white font-black rounded-xl px-5 py-3 text-xs whitespace-nowrap"><i class="fa-solid fa-certificate mr-1"></i>Descargar certificado</button></div>
                             <button type="button" onclick="resetChabaquitoMissions()" class="mt-4 text-[11px] text-gray-400 hover:text-white underline">Reiniciar misiones</button>
                         </div>
@@ -6586,6 +6586,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         let completedChabaquitoMissions = safeReadJSON('vive_loja_chabaquito_missions', []);
 
         function renderChabaquitoMissions() {
+            applyMissionPresentation();
             const completed = chabaquitoMissionIds.filter(id => completedChabaquitoMissions.includes(id));
             const count = completed.length;
             const percentage = (count / chabaquitoMissionIds.length) * 100;
@@ -6694,6 +6695,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         };
 
         let chabaquitoEnabled = true;
+        let chabaquitoMissionsConfig={active:true,title:'Retos digitales de Chabaquito',titleEn:"Chabaquito's digital challenges",description:'Explora las funciones de la web y obtén tu certificado digital.',descriptionEn:'Explore the website features and earn your digital certificate.',rewardTitle:'¡Insignia Explorador de Loja desbloqueada!',rewardTitleEn:'Loja Explorer badge unlocked!',rewardDescription:'Completaste las cinco misiones de Chabaquito.',rewardDescriptionEn:'You completed all five Chabaquito missions.'};
+        function applyMissionPresentation(){
+            const config=chabaquitoMissionsConfig,en=currentLang==='en',section=document.getElementById('misiones');
+            if(section)section.classList.toggle('hidden',config.active===false);
+            const values={missionPublicTitle:en?(config.titleEn||config.title):(config.title||config.titleEn),missionPublicDescription:en?(config.descriptionEn||config.description):(config.description||config.descriptionEn),missionPublicRewardTitle:en?(config.rewardTitleEn||config.rewardTitle):(config.rewardTitle||config.rewardTitleEn),missionPublicRewardDescription:en?(config.rewardDescriptionEn||config.rewardDescription):(config.rewardDescription||config.rewardDescriptionEn)};
+            Object.entries(values).forEach(([id,value])=>{const element=document.getElementById(id);if(element&&value)element.textContent=value;});
+        }
         let explorerCertificateConfig = { active:true, title:'Explorador de Loja', text:'Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.', signature:'Vive Loja' };
         let explorerBenefitConfig = {active:false,title:'Beneficio de Explorador',description:'Presenta tu pasaporte completado para conocer el beneficio disponible.',code:'EXPLORADOR',validity:'',buttonText:'Solicitar beneficio',url:''};
         let passportCampaignLoaded=false;
@@ -6703,6 +6711,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function applyChabaquitoConfig(data = {}) {
             chabaquitoEnabled = data.active !== false;
+            chabaquitoMissionsConfig={...chabaquitoMissionsConfig,...(data.missions||{})};
+            applyMissionPresentation();
             explorerCertificateConfig = { ...explorerCertificateConfig, ...(data.certificate || {}) };
             if(explorerCertificateConfig.signature==='Vive Loja · Cultura y Cuchara')explorerCertificateConfig.signature='Vive Loja';
             explorerBenefitConfig = { ...explorerBenefitConfig, ...(data.benefit || {}) };
