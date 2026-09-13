@@ -173,6 +173,20 @@ assert(index.includes('function menuDishTags'), 'La web muestra las etiquetas de
 assert(index.includes("en?'Sold out':'Agotado'"), 'Los platos agotados se identifican en ambos idiomas');
 assert(index.includes("b.recommended===true"), 'Los platos recomendados aparecen primero');
 
+
+assert(admin.includes('id="placeProfilePhone"'), 'El perfil comercial permite guardar teléfono');
+assert(admin.includes('id="placeProfileWhatsapp"'), 'El perfil comercial permite guardar WhatsApp');
+assert(admin.includes('id="placeProfileInstagram"'), 'El perfil comercial permite guardar redes sociales');
+assert(admin.includes('id="placeProfilePriceRange"'), 'El perfil comercial permite indicar precios');
+assert(admin.includes('id="placePaymentCard"'), 'El perfil comercial permite indicar métodos de pago');
+assert(admin.includes('id="placeAmenityAccessible"'), 'El perfil comercial permite indicar accesibilidad');
+assert(admin.includes('id="placeAmenityPets"'), 'El perfil comercial permite indicar si acepta mascotas');
+assert(admin.includes('businessProfile:{phone:'), 'El perfil comercial se guarda con la parada');
+assert(index.includes('id="previewBusinessProfile"'), 'La ficha pública conserva el perfil comercial');
+assert(index.includes('function renderBusinessProfile'), 'La ficha puede renderizar servicios y contactos');
+assert(index.includes('function safeBusinessProfileUrl'), 'Los enlaces comerciales requieren una URL segura');
+assert(index.includes("container.classList.add('hidden')"), 'Los perfiles vacíos no dejan espacios visibles');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
