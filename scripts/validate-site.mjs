@@ -137,6 +137,16 @@ assert(admin.includes('<option value="cafe">Cafeterías</option>'), 'Las cafeter
 assert(admin.includes('function setPlacesCategoryFilter'), 'Los indicadores de categoría funcionan como filtros');
 assert(admin.includes('border-l-4'), 'Cada parada conserva su borde de color por categoría');
 
+
+assert(index.includes('function menuDishFallbackDescription'), 'Los platos antiguos reciben una descripción de apoyo');
+assert(index.includes('min-h-[126px]'), 'Las tarjetas reservan espacio suficiente para nombre y descripción');
+assert(index.includes('grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'), 'El menú mantiene columnas amplias y legibles');
+assert(index.includes('break-words'), 'Los nombres largos no se recortan');
+assert(admin.includes("name:'Fritada tradicional'"), 'La muestra incluye fritada tradicional');
+assert(admin.includes("name:'Horchata'"), 'La muestra incluye horchata');
+assert(admin.includes("name:'Quesadilla lojana'"), 'La muestra incluye quesadilla lojana');
+assert(admin.includes('Se cargaron seis platos de muestra'), 'El panel confirma el menú completo de muestra');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
