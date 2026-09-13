@@ -1827,6 +1827,15 @@
         </div>
     </template>
 
+    <div id="restaurantMenuModal" class="fixed inset-0 z-[72] bg-black/90 backdrop-blur hidden flex items-center justify-center p-3 sm:p-5" role="dialog" aria-modal="true" aria-labelledby="restaurantMenuTitle">
+        <div class="bg-[#f8f5ef] text-brandDark w-full max-w-6xl h-[92vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+            <header class="bg-brandDark text-white px-5 py-4 flex items-center justify-between gap-4"><div class="min-w-0"><p id="restaurantMenuBadge" class="text-[9px] uppercase tracking-widest text-brandGold font-black">Carta del restaurante</p><h2 id="restaurantMenuTitle" class="text-xl sm:text-2xl font-black truncate">Menú</h2></div><button type="button" onclick="closeModal('restaurantMenuModal')" class="w-10 h-10 rounded-full bg-white/10" aria-label="Cerrar menú"><i class="fa-solid fa-xmark"></i></button></header>
+            <div id="restaurantMenuCategories" class="flex gap-2 overflow-x-auto p-4 border-b border-gray-200 bg-white"></div>
+            <div id="restaurantMenuGrid" class="flex-grow overflow-y-auto p-4 sm:p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 content-start"></div>
+            <footer class="px-5 py-3 bg-white border-t border-gray-200 text-center text-[10px] text-gray-500">Precios e información proporcionados por cada establecimiento.</footer>
+        </div>
+    </div>
+
     <!-- Immersive Gallery Modal -->
     <div id="menuGalleryModal" class="fixed inset-0 z-[70] bg-black/95 backdrop-blur hidden flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
         <div class="bg-brandDark text-white w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl border border-brandGold/30 relative flex flex-col h-[94vh]">
@@ -5591,25 +5600,29 @@
             openModal('latestVideoModal');
         }
 
-        function restaurantMenuFor(loc) {
-            if(!loc)return null;
-            const configured=loc.menu||{},images=Array.isArray(configured.images)?configured.images.filter(Boolean):[];
-            if(configured.active===true&&images.length&&paidPlaceBenefits(loc).menu===true)return{title:configured.title||`Menú de ${loc.title||'la parada'}`,images:images.map((img,index)=>({img,title:`${configured.title||'Menú'} · Página ${index+1}`})),demo:false};
+        let currentRestaurantMenu=null;
+        function mamaLolaDemoDishes(){return[
+            {name:'Repe lojano',nameEn:'Traditional Loja repe',price:'$3.50',category:'Tradición',categoryEn:'Traditional',description:'Sopa cremosa de guineo verde, leche y quesillo.',descriptionEn:'Creamy green banana soup with milk and fresh cheese.',image:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=82'},
+            {name:'Cecina lojana',nameEn:'Loja-style cecina',price:'$8.50',category:'Platos fuertes',categoryEn:'Main dishes',description:'Cecina asada acompañada de yuca y curtido.',descriptionEn:'Grilled cecina served with cassava and pickled onion.',image:'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=700&q=82'},
+            {name:'Fritada tradicional',nameEn:'Traditional fritada',price:'$8.00',category:'Platos fuertes',categoryEn:'Main dishes',description:'Preparación tradicional para compartir en familia.',descriptionEn:'A traditional dish made for sharing with family.',image:'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=700&q=82'},
+            {name:'Café lojano',nameEn:'Loja coffee',price:'$2.25',category:'Bebidas',categoryEn:'Drinks',description:'Café aromático cultivado en la provincia de Loja.',descriptionEn:'Aromatic coffee grown in the province of Loja.',image:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=700&q=82'},
+            {name:'Horchata',nameEn:'Herbal horchata',price:'$1.75',category:'Bebidas',categoryEn:'Drinks',description:'Infusión tradicional de hierbas y flores.',descriptionEn:'Traditional infusion of local herbs and flowers.',image:'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=700&q=82'},
+            {name:'Quesadilla lojana',nameEn:'Loja quesadilla',price:'$2.50',category:'Postres',categoryEn:'Desserts',description:'Dulce tradicional ideal para acompañar el café.',descriptionEn:'Traditional sweet, perfect alongside coffee.',image:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=82'}
+        ];}
+        function restaurantMenuFor(loc){
+            if(!loc)return null;const configured=loc.menu||{},dishes=Array.isArray(configured.dishes)?configured.dishes.filter(item=>item?.name&&item?.price):[];
+            if(configured.active===true&&dishes.length&&paidPlaceBenefits(loc).menu===true)return{title:configured.title||`Menú de ${loc.title}`,titleEn:configured.titleEn||`Menu at ${loc.titleEn||loc.title}`,dishes,demo:false};
             const normalized=String(loc.title||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-            if(normalized.includes('mama lola'))return{title:'Menú de muestra · Mamá Lola',images:[{img:'menus/mama-lola-menu-muestra-1.svg',title:'Tradición lojana · Página demostrativa 1'},{img:'menus/mama-lola-menu-muestra-2.svg',title:'Café y dulces · Página demostrativa 2'}],demo:true};
-            return null;
+            return normalized.includes('mama lola')?{title:'Menú demostrativo · Mamá Lola',titleEn:'Sample menu · Mamá Lola',dishes:mamaLolaDemoDishes(),demo:true}:null;
         }
-
-        function openRestaurantMenu(){
-            const loc=locations[currentLocationIndex],menu=restaurantMenuFor(loc);if(!menu)return;
-            immersiveGalleryImages=menu.images;immersiveGalleryIndex=0;
-            document.getElementById('galleryTitle').textContent=menu.title;
-            document.getElementById('youtubeVideoContainer').classList.add('hidden');
-            const grid=document.getElementById('galleryGrid');
-            grid.innerHTML=immersiveGalleryImages.map((item,index)=>`<button type="button" data-gallery-index="${index}" onclick="renderImmersiveGallery(${index})" class="shrink-0 w-20 h-16 sm:w-24 sm:h-16 rounded-lg overflow-hidden border-2 border-transparent opacity-60 transition" aria-label="Ver página ${index+1} del menú"><img src="${escapeHTML(item.img)}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async"></button>`).join('');
-            renderImmersiveGallery(0);openModal('menuGalleryModal');
-            if(menu.demo)showToast(currentLang==='en'?'Demo menu: replace with the official menu':'Menú demostrativo: reemplázalo con la carta oficial');
+        function renderRestaurantMenu(category='all'){
+            const menu=currentRestaurantMenu;if(!menu)return;const en=currentLang==='en',categories=[...new Set(menu.dishes.map(item=>(en?item.categoryEn:item.category)||item.category||'Otros'))],items=category==='all'?menu.dishes:menu.dishes.filter(item=>((en?item.categoryEn:item.category)||item.category||'Otros')===category);
+            document.getElementById('restaurantMenuTitle').textContent=(en?menu.titleEn:menu.title)||menu.title;
+            document.getElementById('restaurantMenuBadge').textContent=menu.demo?(en?'Sample content · Reference prices':'Contenido de muestra · Valores referenciales'):(en?'Restaurant menu':'Carta del restaurante');
+            document.getElementById('restaurantMenuCategories').innerHTML=[{value:'all',label:en?'All':'Todos'},...categories.map(x=>({value:x,label:x}))].map(x=>`<button type="button" onclick="renderRestaurantMenu('${String(x.value).replace(/'/g,"\\'")}')" class="shrink-0 rounded-full px-4 py-2 text-xs font-bold border ${x.value===category?'bg-brandGold text-white border-brandGold':'bg-white border-gray-200'}">${escapeHTML(x.label)}</button>`).join('');
+            document.getElementById('restaurantMenuGrid').innerHTML=items.map(item=>{const name=(en&&item.nameEn)||item.name,desc=(en&&item.descriptionEn)||item.description,cat=(en&&item.categoryEn)||item.category;return`<article class="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm"><div class="aspect-square bg-gray-100 overflow-hidden relative"><img src="${escapeHTML(item.image||'')}" alt="${escapeHTML(name)}" class="w-full h-full object-cover hover:scale-105 transition duration-500" loading="lazy" decoding="async"><span class="absolute top-2 left-2 bg-black/70 text-white rounded-full px-2.5 py-1 text-[9px] font-black">${escapeHTML(cat||'')}</span><strong class="absolute bottom-2 right-2 bg-brandGold text-white rounded-full px-3 py-1.5 text-sm shadow">${escapeHTML(item.price)}</strong></div><div class="p-3 sm:p-4"><h3 class="font-black text-sm sm:text-base">${escapeHTML(name)}</h3><p class="text-[11px] sm:text-xs text-gray-500 mt-1 leading-relaxed">${escapeHTML(desc||'')}</p></div></article>`}).join('');
         }
+        function openRestaurantMenu(){const loc=locations[currentLocationIndex];currentRestaurantMenu=restaurantMenuFor(loc);if(!currentRestaurantMenu)return;renderRestaurantMenu();openModal('restaurantMenuModal');}
 
         let immersiveGalleryImages = [];
         let immersiveGalleryIndex = 0;
