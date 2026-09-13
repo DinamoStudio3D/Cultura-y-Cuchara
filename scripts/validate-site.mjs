@@ -94,6 +94,8 @@ assert(admin.includes('function applyPlanServicesToCurrentPlaces'), 'El panel pu
 assert(admin.includes("key:'menu'"), 'El menú visual permanece dentro del catálogo comercial');
 
 
+assert(admin.includes('function adminSubscriptionBadge'), 'La lista de paradas muestra alertas de vencimiento');
+assert(admin.includes('Vence en ${Math.max(0,days)} días'), 'El panel avisa cuando faltan siete días o menos');
 assert(admin.includes('id="placeSubscriptionAmount"'), 'El panel permite registrar el valor de la mensualidad');
 assert(admin.includes('id="placeSubscriptionPaymentMethod"'), 'El panel permite registrar el método de pago');
 assert(admin.includes('function renewPlaceSubscription'), 'El panel conserva las renovaciones rápidas');
