@@ -135,6 +135,24 @@
             .reveal { opacity: 1; transform: none; }
             .web-mascot-character { animation: none; }
         }
+        /* Apariencia premium configurable */
+        #inicio { transition:min-height .35s ease,padding .35s ease; }
+        body.visual-premium { --premium-radius:1.25rem; }
+        body.visual-premium #inicio { isolation:isolate; }
+        body.visual-premium #inicio::after { content:'';position:absolute;inset:auto 8% 0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.75),transparent);z-index:25; }
+        body.visual-premium #heroTitle { text-shadow:0 5px 30px rgba(0,0,0,.58); }
+        body.visual-premium #heroSubtitle { text-shadow:0 2px 14px rgba(0,0,0,.72); }
+        body.visual-premium #heroLogoImg { filter:drop-shadow(0 12px 28px rgba(0,0,0,.25)); }
+        body.visual-premium main article, body.visual-premium .glass-card { border-radius:var(--premium-radius) !important; transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease; }
+        body.visual-premium[data-card-style="elevated"] main article, body.visual-premium[data-card-style="elevated"] .glass-card { box-shadow:0 18px 45px rgba(31,41,55,.11); }
+        body.visual-premium[data-card-style="bordered"] main article, body.visual-premium[data-card-style="bordered"] .glass-card { box-shadow:none;border-width:2px; }
+        body.visual-premium[data-card-style="soft"] main article, body.visual-premium[data-card-style="soft"] .glass-card { box-shadow:0 8px 24px rgba(31,41,55,.08); }
+        body.visual-premium.visual-motion main article:hover { transform:translateY(-4px);box-shadow:0 22px 50px rgba(234,88,12,.14); }
+        body.visual-premium.visual-motion .hero-slide.active-slide { animation:premium-hero-zoom 9s ease-out both; }
+        body.visual-premium[data-hero-style="clean"] #heroBadge { background:rgba(255,255,255,.92);color:#121212;border-color:rgba(255,255,255,.9); }
+        body.visual-premium[data-hero-style="classic"] #heroTitle { font-family:Georgia,serif;letter-spacing:-.025em; }
+        @keyframes premium-hero-zoom { from{transform:scale(1)} to{transform:scale(1.045)} }
+        @media (prefers-reduced-motion:reduce){body.visual-premium.visual-motion .hero-slide.active-slide{animation:none}body.visual-premium.visual-motion main article:hover{transform:none}}
     </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -3042,6 +3060,7 @@
                 heroBgUrls: ["https://i.imgur.com/0QSbhqQ.jpeg"],
                 heroBgPosition: "50% 50%",
                 heroIntervalSeconds: 6,
+                premiumVisual:true,heroStyle:'cinematic',heroHeight:'immersive',cardStyle:'elevated',cornerStyle:'large',heroImageOpacity:55,premiumAnimations:true,
                 latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
                 latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
@@ -3211,6 +3230,7 @@
         }
 
         function applySettings(s) {
+            const premium=s.premiumVisual!==false,body=document.body,root=document.documentElement,hero=document.getElementById('inicio'),heroBg=document.getElementById('heroBgWrapper'),heroShade=heroBg?.firstElementChild,heroStyle=['cinematic','classic','clean'].includes(s.heroStyle)?s.heroStyle:'cinematic',heroHeight=['compact','standard','immersive'].includes(s.heroHeight)?s.heroHeight:'immersive',cardStyle=['elevated','bordered','soft'].includes(s.cardStyle)?s.cardStyle:'elevated',cornerStyle=['medium','large','extra'].includes(s.cornerStyle)?s.cornerStyle:'large',radius={medium:'1rem',large:'1.25rem',extra:'1.75rem'}[cornerStyle];body?.classList.toggle('visual-premium',premium);body?.classList.toggle('visual-motion',premium&&s.premiumAnimations!==false);if(body){body.dataset.heroStyle=heroStyle;body.dataset.cardStyle=cardStyle;}root.style.setProperty('--premium-radius',radius);if(hero){hero.classList.remove('py-12','lg:py-16','py-20','lg:py-24','lg:py-32','min-h-[78vh]');const classes=heroHeight==='compact'?['py-12','lg:py-16']:heroHeight==='standard'?['py-20','lg:py-24']:['py-20','lg:py-32','min-h-[78vh]'];hero.classList.add(...classes);}if(heroBg)heroBg.style.opacity=String(Math.min(85,Math.max(25,Number(s.heroImageOpacity)||55))/100);if(heroShade)heroShade.style.opacity=heroStyle==='cinematic'?'0.92':heroStyle==='classic'?'0.78':'0.58';
             showAccountFloatingInvite(s.showAccountFloatingButton !== false);
             const nowButton=document.getElementById('nowRecommendationBtn');if(nowButton)nowButton.classList.toggle('hidden',s.showNowPlanner===false);
             document.querySelectorAll('.subscription-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false));document.querySelectorAll('.business-signup-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false||s.showBusinessSignup===false));
