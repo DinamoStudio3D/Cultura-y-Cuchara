@@ -22,6 +22,10 @@
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
 
     <link rel="icon" href="https://i.imgur.com/xaiFpa1.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/xaiFpa1.png">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -1894,6 +1898,10 @@
     <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
+
+    <aside id="installAppBanner" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[110] w-[calc(100%-2rem)] max-w-md bg-brandDark text-white border border-brandGold/50 rounded-2xl p-3 shadow-2xl" aria-live="polite">
+        <div class="flex items-center gap-3"><span class="w-11 h-11 shrink-0 rounded-xl bg-brandGold text-white grid place-items-center"><i class="fa-solid fa-mobile-screen-button"></i></span><div class="min-w-0 flex-1"><strong class="block text-sm">Instala Vive Loja</strong><p class="text-[11px] text-gray-400">Accede más rápido desde tu pantalla principal.</p></div><button id="installAppBtn" type="button" class="bg-brandGold hover:bg-brandGoldHover text-white text-xs font-black rounded-xl px-4 py-2.5">Instalar</button><button type="button" onclick="dismissInstallApp()" class="text-gray-400 hover:text-white w-8 h-8" aria-label="Cerrar invitación"><i class="fa-solid fa-xmark"></i></button></div>
+    </aside>
 
     <!-- Bibliotecas funcionales: se ejecutan al terminar de construir la interfaz -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -6460,6 +6468,41 @@
             const openDialog = Array.from(document.querySelectorAll('[role="dialog"]')).find(el => !el.classList.contains('hidden'));
             if (openDialog) closeModal(openDialog.id);
         });
+        let deferredInstallPrompt = null;
+        const installBanner = document.getElementById('installAppBanner');
+        const installButton = document.getElementById('installAppBtn');
+
+        function dismissInstallApp() {
+            installBanner?.classList.add('hidden');
+            deferredInstallPrompt = null;
+        }
+
+        window.addEventListener('beforeinstallprompt', event => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+            installBanner?.classList.remove('hidden');
+        });
+
+        installButton?.addEventListener('click', async () => {
+            if (!deferredInstallPrompt) return;
+            installBanner.classList.add('hidden');
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installBanner?.classList.add('hidden');
+            deferredInstallPrompt = null;
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js').catch(error => {
+                    console.warn('No se pudo activar el modo instalable:', error);
+                });
+            });
+        }
     </script>
 </body>
 </html>
