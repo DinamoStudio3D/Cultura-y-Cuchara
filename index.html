@@ -2,7 +2,7 @@
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Vive Loja - Ruta Gastronómica y Turística</title>
     <meta name="description" content="Descubre la gastronomía, hoteles, emprendimientos, eventos y destinos turísticos de Loja en una ruta interactiva.">
     <meta name="theme-color" content="#121212">
@@ -153,6 +153,132 @@
         body.visual-premium[data-hero-style="classic"] #heroTitle { font-family:Georgia,serif;letter-spacing:-.025em; }
         @keyframes premium-hero-zoom { from{transform:scale(1)} to{transform:scale(1.045)} }
         @media (prefers-reduced-motion:reduce){body.visual-premium.visual-motion .hero-slide.active-slide{animation:none}body.visual-premium.visual-motion main article:hover{transform:none}}
+    
+        /* Mobile UX hardening: isolated from desktop layouts */
+        @media (max-width: 767px) {
+            html, body { max-width: 100%; overflow-x: clip; }
+            body { -webkit-text-size-adjust: 100%; }
+            main, section, article, header, footer, nav, div { min-width: 0; }
+            img, video, iframe { max-width: 100%; }
+            h1, h2, h3, h4, p, a, button, span { overflow-wrap: anywhere; }
+            input, select, textarea { font-size: 16px !important; }
+            button, [role="button"], nav a { touch-action: manipulation; }
+            button:where(:not(.mapboxgl-ctrl button)), nav a { min-height: 44px; }
+            section[id] { scroll-margin-top: 5.5rem; }
+
+            nav { padding-top: env(safe-area-inset-top); }
+            #mobileMenu {
+                max-height: calc(100dvh - 5.25rem - env(safe-area-inset-top));
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+            }
+            #mobileMenu .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            #mobileMenu a { line-height: 1.2; }
+            #mobileMenuButton { min-width: 44px; min-height: 44px; }
+
+            #inicio { min-height: auto !important; padding-top: 7.5rem !important; padding-bottom: 4rem !important; }
+            #heroLogoImg { max-width: min(68vw, 250px); max-height: 22vh; object-fit: contain; }
+            #heroTitle { font-size: clamp(1.85rem, 9vw, 3rem) !important; line-height: 1.03 !important; }
+            #heroSubtitle { font-size: .95rem !important; line-height: 1.55; }
+            #inicio .flex { max-width: 100%; }
+            #inicio a, #inicio button { white-space: normal; }
+
+            #mapa .grid { gap: 1rem; }
+            #mapa .lg\:col-span-2 { height: 390px !important; min-height: 390px; }
+            #mapPreviewCard { min-height: 0 !important; height: auto !important; position: static !important; padding: 1rem !important; }
+            #mapPreviewCard #previewDesc { -webkit-line-clamp: 5; }
+            #mapLegendPanel { width: min(13rem, calc(100vw - 2rem)); max-height: 58vh; overflow-y: auto; }
+            #mapLegendToggle { max-width: calc(100vw - 2rem); }
+            .leaflet-control-attribution { max-width: 78vw; white-space: normal; font-size: 8px; }
+
+            #restaurantMenuModal,
+            #storyModal,
+            #menuGalleryModal,
+            #accountModal,
+            #promoPopupModal,
+            #qrClaimModal,
+            #itineraryModal,
+            #whatToDoNowModal,
+            #smartRouteModal,
+            #latestVideoModal,
+            #pasaporteModal {
+                padding: 0 !important;
+                align-items: stretch !important;
+            }
+            #restaurantMenuModal > div,
+            #menuGalleryModal > div,
+            #accountModal > div,
+            #promoPopupModal > div,
+            #qrClaimModal > div,
+            #itineraryModal > div,
+            #whatToDoNowModal > div,
+            #smartRouteModal > div,
+            #latestVideoModal > div,
+            #pasaporteModal > div {
+                width: 100%;
+                max-width: none;
+                height: 100dvh !important;
+                max-height: 100dvh !important;
+                border-radius: 0 !important;
+                border-left: 0 !important;
+                border-right: 0 !important;
+            }
+            #storyModal > article {
+                width: 100%;
+                max-width: none;
+                height: 100dvh;
+                max-height: 100dvh;
+                border-radius: 0;
+            }
+            #restaurantMenuModal header,
+            #menuGalleryModal > div > div:first-child {
+                padding-top: calc(.75rem + env(safe-area-inset-top));
+            }
+            #restaurantMenuTitle, #galleryTitle {
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                line-height: 1.15;
+            }
+            #restaurantMenuCategories {
+                padding: .65rem .75rem;
+                scroll-snap-type: x proximity;
+                overscroll-behavior-x: contain;
+            }
+            #restaurantMenuCategories > * { flex: 0 0 auto; scroll-snap-align: start; }
+            #restaurantMenuGrid { padding: .75rem !important; gap: .85rem !important; }
+            #restaurantMenuCommerceActions {
+                padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
+            }
+            #restaurantMenuModal footer { display: none; }
+            #storyModal > article > header { height: 13.5rem; }
+            #storyModal > article > div { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+            #storyModalGallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            #galleryStage { min-height: 52vh; }
+            #pasaporteModal > div { overflow-y: auto; }
+            #pasaporteModal > div > .p-6 { padding: 1rem; }
+
+            .fab-whatsapp { right: max(12px, env(safe-area-inset-right)); bottom: calc(12px + env(safe-area-inset-bottom)); }
+            .web-mascot { width: 84px; left: max(4px, env(safe-area-inset-left)); bottom: calc(2px + env(safe-area-inset-bottom)); }
+            .web-mascot-bubble { left: 58px; bottom: calc(68px + env(safe-area-inset-bottom)); width: min(148px, 42vw); }
+            .web-mascot-restore { left: max(10px, env(safe-area-inset-left)); bottom: calc(10px + env(safe-area-inset-bottom)); }
+            #toast { bottom: calc(5.5rem + env(safe-area-inset-bottom)) !important; }
+
+            .grid { min-width: 0; }
+            table { min-width: 620px; }
+            .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+        }
+        @media (max-width: 389px) {
+            #mobileMenu { padding-left: .6rem; padding-right: .6rem; }
+            #mobileMenu .grid { grid-template-columns: minmax(0, 1fr); }
+            #inicio { padding-top: 6.75rem !important; }
+            #mapa .lg\:col-span-2 { height: 340px !important; min-height: 340px; }
+            #restaurantMenuGrid { padding: .55rem !important; }
+            #storyModal > article > header { height: 12rem; }
+            .web-mascot-bubble { display: none !important; }
+        }
+
     </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
