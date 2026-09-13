@@ -77,6 +77,12 @@ assert(index.includes('function renderImmersiveGallery'), 'La galería puede nav
 assert(index.includes("event.key==='ArrowLeft'"), 'La galería conserva la navegación por teclado');
 assert(index.includes("addEventListener('touchstart'"), 'La galería conserva los gestos táctiles');
 assert(index.includes('function shareGalleryImage'), 'La galería permite compartir fotografías');
+assert(index.includes('id="previewRestaurantMenuBtn"'), 'La ficha pública conserva el botón de menú');
+assert(index.includes('function restaurantMenuFor'), 'La web controla el acceso al menú por suscripción');
+assert(index.includes("paidPlaceBenefits(loc).menu===true"), 'Los menús configurados requieren el beneficio activo');
+assert(admin.includes('id="placeBenefitMenu"'), 'El panel conserva el beneficio Menú visual');
+assert(admin.includes('id="placeMenuImages"'), 'El panel permite administrar imágenes del menú');
+assert(admin.includes('function loadMamaLolaMenuSample'), 'El panel conserva la muestra de Mama Lola');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
