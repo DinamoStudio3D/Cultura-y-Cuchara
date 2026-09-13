@@ -1,0 +1,20 @@
+{
+  "name": "Cultura y Cuchara · Vive Loja",
+  "short_name": "Vive Loja",
+  "description": "Ruta gastronómica, cultural y turística interactiva de Loja.",
+  "lang": "es-EC",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121212",
+  "theme_color": "#EA580C",
+  "icons": [
+    {
+      "src": "https://i.imgur.com/xaiFpa1.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
