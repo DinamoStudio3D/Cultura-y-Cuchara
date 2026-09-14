@@ -404,16 +404,20 @@ service cloud.firestore {
         || (request.auth != null && resource.data.userId == request.auth.uid)
         || isAssignedVisitMerchant(resource.data.placeId);
       allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
-        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userEmail', 'placeId', 'placeName', 'visitCount', 'rewardCycles', 'lastVisitDay', 'lastVisitAt', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userEmail', 'placeId', 'placeName', 'visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitAt', 'updatedAt'])
         && request.resource.data.visitCount == 1
         && request.resource.data.rewardCycles == 0
+        && request.resource.data.dailyVisitCount == 1
         && request.resource.data.lastVisitAt == request.time
         && request.resource.data.updatedAt == request.time;
       allow update: if isAssignedVisitMerchant(resource.data.placeId)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitCount', 'rewardCycles', 'lastVisitDay', 'lastVisitAt', 'updatedAt'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitAt', 'updatedAt'])
         && request.resource.data.visitCount == resource.data.visitCount + 1
         && request.resource.data.rewardCycles >= resource.data.rewardCycles
         && request.resource.data.rewardCycles <= resource.data.rewardCycles + 1
+        && request.resource.data.dailyVisitCount is int
+        && request.resource.data.dailyVisitCount >= 1
+        && request.resource.data.dailyVisitCount <= 3
         && request.resource.data.lastVisitAt == request.time
         && request.resource.data.updatedAt == request.time;
       allow delete: if isViveLojaAdmin();
