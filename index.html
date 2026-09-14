@@ -641,32 +641,32 @@
 
 
     <!-- World Tourism Day 2026 -->
-    <section id="dia-turismo" class="relative overflow-hidden bg-gradient-to-br from-[#071f1b] via-[#0b3028] to-[#121212] text-white py-16 px-4 border-y border-emerald-400/25">
-        <div class="absolute inset-0 pointer-events-none opacity-30" style="background:radial-gradient(circle at 15% 20%,#10b981 0,transparent 28%),radial-gradient(circle at 85% 80%,#ea580c 0,transparent 30%)"></div>
-        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] rotate-12 pointer-events-none"><i class="fa-solid fa-earth-americas"></i></div>
+    <section id="dia-turismo" class="relative overflow-hidden text-white py-16 px-4 border-y border-emerald-400/25" style="background:linear-gradient(135deg,#071f1b,#0b3028,#121212)">
+        <div id="tourismCampaignGlow" class="absolute inset-0 pointer-events-none opacity-30" style="background:radial-gradient(circle at 15% 20%,#10b981 0,transparent 28%),radial-gradient(circle at 85% 80%,#ea580c 0,transparent 30%)"></div>
+        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] rotate-12 pointer-events-none" aria-hidden="true"><i id="tourismCampaignIcon" class="fa-solid fa-earth-americas"></i></div>
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-stretch">
                 <div class="reveal">
                     <div class="flex flex-wrap items-center gap-3 mb-5">
-                        <span class="bg-emerald-400 text-emerald-950 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[.18em]"><i class="fa-solid fa-calendar-day mr-2"></i>27 de septiembre</span>
-                        <span class="border border-white/20 bg-white/5 px-4 py-1.5 rounded-full text-xs font-bold">Día Mundial del Turismo</span>
+                        <span class="bg-emerald-400 text-emerald-950 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[.18em]"><i class="fa-solid fa-calendar-day mr-2"></i><span id="tourismCampaignDateLabel">27 de septiembre</span></span>
+                        <span id="tourismCampaignName" class="border border-white/20 bg-white/5 px-4 py-1.5 rounded-full text-xs font-bold">Día Mundial del Turismo</span>
                     </div>
-                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight">Celebremos a Loja: <span class="text-emerald-300">cada sabor cuenta una historia</span></h2>
-                    <p class="text-sm sm:text-base text-emerald-50/80 leading-relaxed mt-5 max-w-3xl">El turismo conecta personas, cultura, sabores y comunidades. Este 27 de septiembre te invitamos a recorrer Loja, apoyar a sus negocios locales y descubrir los lugares que hacen única a nuestra ciudad.</p>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight"><span id="tourismCampaignTitle">Celebremos a Loja:</span> <span id="tourismCampaignHighlight" class="text-emerald-300">cada sabor cuenta una historia</span></h2>
+                    <p id="tourismCampaignDescription" class="text-sm sm:text-base text-emerald-50/80 leading-relaxed mt-5 max-w-3xl">El turismo conecta personas, cultura, sabores y comunidades. Este 27 de septiembre te invitamos a recorrer Loja, apoyar a sus negocios locales y descubrir los lugares que hacen única a nuestra ciudad.</p>
                     <div class="grid sm:grid-cols-3 gap-3 mt-7">
-                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-utensils text-orange-300 text-xl"></i><strong class="block mt-2">Saborea Loja</strong><span class="text-xs text-white/60">Visita cafeterías y restaurantes.</span></div>
-                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-landmark text-emerald-300 text-xl"></i><strong class="block mt-2">Vive su cultura</strong><span class="text-xs text-white/60">Conoce historias y tradiciones.</span></div>
-                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-store text-amber-300 text-xl"></i><strong class="block mt-2">Apoya lo local</strong><span class="text-xs text-white/60">Elige emprendimientos lojanos.</span></div>
+                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-utensils text-orange-300 text-xl"></i><strong id="tourismCard1Title" class="block mt-2">Saborea Loja</strong><span id="tourismCard1Text" class="text-xs text-white/60">Visita cafeterías y restaurantes.</span></div>
+                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-landmark text-emerald-300 text-xl"></i><strong id="tourismCard2Title" class="block mt-2">Vive su cultura</strong><span id="tourismCard2Text" class="text-xs text-white/60">Conoce historias y tradiciones.</span></div>
+                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-store text-amber-300 text-xl"></i><strong id="tourismCard3Title" class="block mt-2">Apoya lo local</strong><span id="tourismCard3Text" class="text-xs text-white/60">Elige emprendimientos lojanos.</span></div>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3 mt-7">
-                        <a href="#mapa" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black rounded-xl px-6 py-3.5 text-sm text-center transition"><i class="fa-solid fa-map-location-dot mr-2"></i>Explorar Loja</a>
-                        <a href="#pasaporte" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-black rounded-xl px-6 py-3.5 text-sm text-center transition"><i class="fa-solid fa-passport mr-2"></i>Iniciar mi Pasaporte</a>
-                        <button type="button" onclick="shareTourismDay()" class="bg-orange-500 hover:bg-orange-400 text-white font-black rounded-xl px-6 py-3.5 text-sm transition"><i class="fa-brands fa-whatsapp mr-2"></i>Compartir</button>
+                        <a id="tourismPrimaryButton" href="#mapa" class="bg-emerald-400 hover:brightness-110 text-emerald-950 font-black rounded-xl px-6 py-3.5 text-sm text-center transition"><i class="fa-solid fa-map-location-dot mr-2"></i><span>Explorar Loja</span></a>
+                        <a id="tourismSecondaryButton" href="#pasaporte" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-black rounded-xl px-6 py-3.5 text-sm text-center transition"><i class="fa-solid fa-passport mr-2"></i><span>Iniciar mi Pasaporte</span></a>
+                        <button id="tourismShareButton" type="button" onclick="shareTourismDay()" class="bg-orange-500 hover:brightness-110 text-white font-black rounded-xl px-6 py-3.5 text-sm transition"><i class="fa-brands fa-whatsapp mr-2"></i>Compartir</button>
                     </div>
                 </div>
                 <aside class="reveal rounded-3xl bg-black/35 border border-emerald-300/25 p-6 sm:p-8 flex flex-col justify-between shadow-2xl">
                     <div>
-                        <p class="text-emerald-300 text-xs font-black uppercase tracking-[.2em]"><i class="fa-solid fa-route mr-2"></i>Vive Loja</p>
+                        <p id="tourismCampaignBrand" class="text-emerald-300 text-xs font-black uppercase tracking-[.2em]"><i class="fa-solid fa-route mr-2"></i>Vive Loja</p>
                         <h3 id="tourismDayCountdownTitle" class="text-2xl sm:text-3xl font-black mt-3">Faltan</h3>
                         <div id="tourismDayCountdown" class="grid grid-cols-4 gap-2 mt-5" aria-live="polite">
                             <div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong id="tourismDays" class="block text-2xl sm:text-3xl text-emerald-300">--</strong><span class="text-[10px] uppercase text-white/55">Días</span></div>
@@ -677,7 +677,7 @@
                     </div>
                     <div class="mt-6 pt-6 border-t border-white/10 flex items-start gap-4">
                         <div class="w-14 h-14 shrink-0 rounded-2xl bg-orange-500 text-white grid place-items-center text-2xl shadow-lg"><i class="fa-solid fa-face-smile-beam"></i></div>
-                        <div><p class="font-black text-orange-300">Mensaje de Chabaquito</p><p class="text-sm text-white/70 mt-1">“Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!”</p></div>
+                        <div><p id="tourismChabaquitoLabel" class="font-black text-orange-300">Mensaje de Chabaquito</p><p id="tourismCampaignMessage" class="text-sm text-white/70 mt-1">“Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!”</p></div>
                     </div>
                 </aside>
             </div>
@@ -685,37 +685,49 @@
     </section>
     <script>
     (function(){
-        const target=new Date('2026-09-27T00:00:00-05:00').getTime();
-        const end=new Date('2026-09-28T00:00:00-05:00').getTime();
-        function updateTourismDayCountdown(){
-            const now=Date.now(),title=document.getElementById('tourismDayCountdownTitle');
-            if(!title)return;
-            if(now>=target&&now<end){title.textContent='¡Hoy celebramos el turismo!';['tourismDays','tourismHours','tourismMinutes','tourismSeconds'].forEach(id=>document.getElementById(id).textContent='00');return;}
-            if(now>=end){title.textContent='Seguimos celebrando y viviendo Loja';document.getElementById('tourismDayCountdown').classList.add('hidden');return;}
-            let remaining=Math.max(0,target-now);
-            const days=Math.floor(remaining/86400000);remaining%=86400000;
-            const hours=Math.floor(remaining/3600000);remaining%=3600000;
-            const minutes=Math.floor(remaining/60000),seconds=Math.floor((remaining%60000)/1000);
-            document.getElementById('tourismDays').textContent=String(days).padStart(2,'0');
-            document.getElementById('tourismHours').textContent=String(hours).padStart(2,'0');
-            document.getElementById('tourismMinutes').textContent=String(minutes).padStart(2,'0');
-            document.getElementById('tourismSeconds').textContent=String(seconds).padStart(2,'0');
+        const allowedIcons=new Set(['fa-earth-americas','fa-map-location-dot','fa-route','fa-mountain-sun','fa-camera-retro']);
+        const defaults={active:true,startDate:'2026-09-27T00:00:00-05:00',endDate:'2026-09-27T23:59:59-05:00',dateLabel:'27 de septiembre',name:'Día Mundial del Turismo',title:'Celebremos a Loja:',highlight:'cada sabor cuenta una historia',description:'El turismo conecta personas, cultura, sabores y comunidades. Este 27 de septiembre te invitamos a recorrer Loja, apoyar a sus negocios locales y descubrir los lugares que hacen única a nuestra ciudad.',chabaquitoMessage:'Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!',card1Title:'Saborea Loja',card1Text:'Visita cafeterías y restaurantes.',card2Title:'Vive su cultura',card2Text:'Conoce historias y tradiciones.',card3Title:'Apoya lo local',card3Text:'Elige emprendimientos lojanos.',primaryButtonLabel:'Explorar Loja',primaryButtonUrl:'#mapa',secondaryButtonLabel:'Iniciar mi Pasaporte',secondaryButtonUrl:'#pasaporte',badgeBefore:'Faltan',badgeLive:'¡Hoy celebramos el turismo!',badgeAfter:'Seguimos celebrando y viviendo Loja',afterTitle:'Loja se vive todo el año',afterDescription:'Continúa descubriendo sus sabores, cultura, emprendimientos y destinos.',shareText:'Este 27 de septiembre celebremos el Día Mundial del Turismo recorriendo, saboreando y viviendo Loja con Vive Loja.',icon:'fa-earth-americas',primaryColor:'#34d399',secondaryColor:'#f97316',backgroundColor:'#071f1b'};
+        let config={...defaults},timer=null;
+        const setText=(id,value)=>{const element=document.getElementById(id);if(element)element.textContent=value;};
+        const safeColor=(value,fallback)=>/^#[0-9a-f]{6}$/i.test(String(value||''))?value:fallback;
+        const safeUrl=(value,fallback)=>{try{const url=new URL(value||fallback,location.href);return ['http:','https:'].includes(url.protocol)||String(value||fallback).startsWith('#')?(value||fallback):fallback;}catch(_){return fallback;}};
+        function render(){
+            const section=document.getElementById('dia-turismo');if(!section)return;
+            section.classList.toggle('hidden',config.active===false);
+            const primary=safeColor(config.primaryColor,defaults.primaryColor),secondary=safeColor(config.secondaryColor,defaults.secondaryColor),background=safeColor(config.backgroundColor,defaults.backgroundColor);
+            section.style.background=`linear-gradient(135deg,${background},${primary}33,#121212)`;
+            section.style.borderColor=primary+'55';
+            const glow=document.getElementById('tourismCampaignGlow');if(glow)glow.style.background=`radial-gradient(circle at 15% 20%,${primary} 0,transparent 28%),radial-gradient(circle at 85% 80%,${secondary} 0,transparent 30%)`;
+            const icon=document.getElementById('tourismCampaignIcon');if(icon)icon.className=`fa-solid ${allowedIcons.has(config.icon)?config.icon:defaults.icon}`;
+            setText('tourismCampaignDateLabel',config.dateLabel);setText('tourismCampaignName',config.name);setText('tourismCampaignTitle',config.title);setText('tourismCampaignHighlight',config.highlight);setText('tourismCampaignDescription',config.description);
+            setText('tourismCard1Title',config.card1Title);setText('tourismCard1Text',config.card1Text);setText('tourismCard2Title',config.card2Title);setText('tourismCard2Text',config.card2Text);setText('tourismCard3Title',config.card3Title);setText('tourismCard3Text',config.card3Text);
+            setText('tourismCampaignMessage','“'+config.chabaquitoMessage+'”');
+            const highlight=document.getElementById('tourismCampaignHighlight'),brand=document.getElementById('tourismCampaignBrand'),messageLabel=document.getElementById('tourismChabaquitoLabel');if(highlight)highlight.style.color=primary;if(brand)brand.style.color=primary;if(messageLabel)messageLabel.style.color=secondary;
+            const main=document.getElementById('tourismPrimaryButton'),secondaryButton=document.getElementById('tourismSecondaryButton'),share=document.getElementById('tourismShareButton');
+            if(main){main.href=safeUrl(config.primaryButtonUrl,defaults.primaryButtonUrl);main.querySelector('span').textContent=config.primaryButtonLabel;main.style.backgroundColor=primary;}
+            if(secondaryButton){secondaryButton.href=safeUrl(config.secondaryButtonUrl,defaults.secondaryButtonUrl);}
+            if(share)share.style.backgroundColor=secondary;
+            updateClock();
         }
-        window.shareTourismDay=function(){
-            const text='Este 27 de septiembre celebremos el Día Mundial del Turismo recorriendo, saboreando y viviendo Loja con Vive Loja.';
-            const url='https://cultura-y-cuchara.vercel.app/#dia-turismo';
-            if(navigator.share){navigator.share({title:'Día Mundial del Turismo en Loja',text,url}).catch(()=>{});return;}
-            window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');
-        };
-        updateTourismDayCountdown();
-        setInterval(updateTourismDayCountdown,1000);
+        function updateClock(){
+            const now=Date.now(),start=new Date(config.startDate).getTime(),end=new Date(config.endDate).getTime(),title=document.getElementById('tourismDayCountdownTitle'),countdown=document.getElementById('tourismDayCountdown');
+            if(!title||!Number.isFinite(start)||!Number.isFinite(end))return;
+            if(now>=start&&now<=end){title.textContent=config.badgeLive;countdown.classList.remove('hidden');['tourismDays','tourismHours','tourismMinutes','tourismSeconds'].forEach(id=>setText(id,'00'));return;}
+            if(now>end){title.textContent=config.badgeAfter;countdown.classList.add('hidden');setText('tourismCampaignTitle',config.afterTitle);setText('tourismCampaignHighlight','');setText('tourismCampaignDescription',config.afterDescription);return;}
+            title.textContent=config.badgeBefore;countdown.classList.remove('hidden');
+            let remaining=Math.max(0,start-now),days=Math.floor(remaining/86400000);remaining%=86400000;const hours=Math.floor(remaining/3600000);remaining%=3600000;const minutes=Math.floor(remaining/60000),seconds=Math.floor((remaining%60000)/1000);
+            setText('tourismDays',String(days).padStart(2,'0'));setText('tourismHours',String(hours).padStart(2,'0'));setText('tourismMinutes',String(minutes).padStart(2,'0'));setText('tourismSeconds',String(seconds).padStart(2,'0'));
+        }
+        window.applyTourismDayConfiguration=function(data){config={...defaults,...(data&&typeof data==='object'?data:{})};render();if(timer)clearInterval(timer);timer=setInterval(updateClock,1000);};
+        window.shareTourismDay=function(){const url=location.origin+location.pathname+'#dia-turismo';if(navigator.share){navigator.share({title:config.name,text:config.shareText,url}).catch(()=>{});return;}window.open('https://wa.me/?text='+encodeURIComponent(config.shareText+' '+url),'_blank','noopener');};
+        window.applyTourismDayConfiguration(defaults);
     })();
     </script>
 
     <!-- FIAVL Live Mode -->
     <section id="festival-live" class="bg-[#090914] text-white py-12 px-4 border-y border-fuchsia-500/30 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
-        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] -rotate-12 pointer-events-none" aria-hidden="true"><i class="fa-solid fa-masks-theater"></i></div>
+        <div id="festivalCampaignGlow" class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
+        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] -rotate-12 pointer-events-none" aria-hidden="true"><i id="festivalCampaignIcon" class="fa-solid fa-masks-theater"></i></div>
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
                 <div>
@@ -2880,6 +2892,15 @@
             demo: true,
             title: 'Loja se convierte en escenario',
             subtitle: 'Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.',
+            badgeBefore: 'Próximo Festival',
+            badgeLive: 'Festival en vivo',
+            badgeAfter: 'Revive el Festival',
+            afterTitle: 'Gracias por vivir el Festival en Loja',
+            afterSubtitle: 'Muy pronto compartiremos nuevas experiencias culturales.',
+            icon: 'fa-masks-theater',
+            primaryColor: '#d946ef',
+            secondaryColor: '#06b6d4',
+            backgroundColor: '#090914',
             startDate: '2026-11-12T18:00:00-05:00',
             endDate: '2026-11-22T23:59:59-05:00',
             events: [
@@ -2912,14 +2933,16 @@
             let target = start;
             if (now >= start && now <= end) {
                 target = end;
-                if (badge) badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Festival en vivo';
+                if (badge) badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> '+escapeHTML(festivalConfig.badgeLive || defaultFestivalConfig.badgeLive);
             } else if (now > end) {
                 if (countdown) countdown.classList.add('hidden');
-                if (badge) badge.innerHTML = '<i class="fa-solid fa-star"></i> Revive el Festival';
+                if (badge) badge.innerHTML = '<i class="fa-solid fa-star"></i> '+escapeHTML(festivalConfig.badgeAfter || defaultFestivalConfig.badgeAfter);
+                document.getElementById('festivalModeTitle').textContent=festivalConfig.afterTitle||defaultFestivalConfig.afterTitle;
+                document.getElementById('festivalModeSubtitle').textContent=festivalConfig.afterSubtitle||defaultFestivalConfig.afterSubtitle;
                 updateFestivalNow();
                 return;
             } else if (badge) {
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> ${festivalConfig.demo ? 'Modo Festival · Demostración' : 'Próximo Festival'}`;
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> ${festivalConfig.demo ? 'Modo Festival · Demostración' : escapeHTML(festivalConfig.badgeBefore || defaultFestivalConfig.badgeBefore)}`;
             }
             if (countdown) countdown.classList.remove('hidden');
             const distance = Math.max(0, target - now);
@@ -3031,6 +3054,13 @@
             section.classList.toggle('hidden', festivalConfig.active === false);
             document.getElementById('festivalModeTitle').textContent = festivalConfig.title || defaultFestivalConfig.title;
             document.getElementById('festivalModeSubtitle').textContent = festivalConfig.subtitle || defaultFestivalConfig.subtitle;
+            const festivalPrimary=/^#[0-9a-f]{6}$/i.test(festivalConfig.primaryColor||'')?festivalConfig.primaryColor:defaultFestivalConfig.primaryColor;
+            const festivalSecondary=/^#[0-9a-f]{6}$/i.test(festivalConfig.secondaryColor||'')?festivalConfig.secondaryColor:defaultFestivalConfig.secondaryColor;
+            const festivalBackground=/^#[0-9a-f]{6}$/i.test(festivalConfig.backgroundColor||'')?festivalConfig.backgroundColor:defaultFestivalConfig.backgroundColor;
+            section.style.backgroundColor=festivalBackground;section.style.borderColor=festivalPrimary+'55';
+            const festivalGlow=document.getElementById('festivalCampaignGlow');if(festivalGlow)festivalGlow.style.background=`radial-gradient(circle at 15% 20%,${festivalPrimary} 0,transparent 30%),radial-gradient(circle at 85% 70%,${festivalSecondary} 0,transparent 32%)`;
+            const festivalIcons=new Set(['fa-masks-theater','fa-music','fa-landmark','fa-star','fa-palette']),festivalIcon=document.getElementById('festivalCampaignIcon');if(festivalIcon)festivalIcon.className=`fa-solid ${festivalIcons.has(festivalConfig.icon)?festivalConfig.icon:defaultFestivalConfig.icon}`;
+            document.querySelectorAll('#festivalCountdown strong').forEach((element,index)=>element.style.color=index%2?festivalSecondary:festivalPrimary);
             const events = festivalConfig.events || [];
             const days = [...new Set(events.map(event => event.date))].sort();
             if (!days.includes(selectedFestivalDay)) selectedFestivalDay = days[0] || '';
@@ -3050,6 +3080,10 @@
         }
 
         if (db) {
+            db.collection('siteContent').doc('tourismDay').onSnapshot(
+                snapshot => window.applyTourismDayConfiguration?.(snapshot.exists ? snapshot.data() : null),
+                () => window.applyTourismDayConfiguration?.(null)
+            );
             db.collection('siteContent').doc('festival').onSnapshot(
                 snapshot => applyFestivalConfiguration(snapshot.exists ? snapshot.data() : defaultFestivalConfig),
                 () => applyFestivalConfiguration(defaultFestivalConfig)
