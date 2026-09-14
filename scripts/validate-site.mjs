@@ -325,6 +325,12 @@ assert(merchantRewards.includes('signInWithPopup'), 'Google permanece como forma
 assert(merchantRewards.includes('function verifyRewardCode'), 'El portal permite verificar un código');
 assert(merchantRewards.includes('function deliverReward'), 'El portal permite confirmar una entrega');
 assert(merchantRewards.includes('function loadMerchantInventory'), 'El negocio ve las existencias exactas de sus campañas');
+assert(admin.includes('id="passportTouristMerchant"') && admin.includes('id="passportLocalMerchant"'), 'El pasaporte asigna un negocio por modalidad');
+assert(admin.includes('function prepareExistingPassportRewardCodes'), 'Los códigos anteriores del pasaporte pueden prepararse');
+assert(index.includes("db.collection('passportRewardClaimCodes').doc(claimCode)"), 'Cada premio del pasaporte crea un índice seguro');
+assert(merchantRewards.includes("type='passport'"), 'El portal verifica también códigos del pasaporte');
+assert(firestoreRules.includes('function hasPassportMerchantGrant'), 'Firestore limita cada negocio a la modalidad autorizada');
+assert(firestoreRules.includes('match /passportRewardClaimCodes/{claimCode}'), 'Firestore protege los códigos del pasaporte');
 assert(merchantRewards.includes('${remaining} de ${stock} disponibles'), 'Las cantidades exactas permanecen en el portal autorizado');
 assert(firestoreRules.includes('function hasMissionMerchantCampaign'), 'Firestore limita al negocio a sus campañas autorizadas');
 assert(firestoreRules.includes('match /missionRewardClaimCodes/{claimCode}'), 'Firestore protege el índice privado de códigos');
