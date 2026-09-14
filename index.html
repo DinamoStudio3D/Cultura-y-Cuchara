@@ -2587,6 +2587,21 @@
             throw lastError;
         }
 
+        async function syncSecurePassportStamps(user) {
+            if (!user || !db) return;
+            try {
+                const snapshot = await db.collection('securePassportStamps').where('userId', '==', user.uid).get();
+                const secureIds = snapshot.docs.map(doc => doc.data().placeId).filter(Boolean);
+                if (secureIds.length) {
+                    visitedLocations = [...new Set([...visitedLocations, ...secureIds])];
+                    localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
+                    updatePassportUI();
+                }
+            } catch (error) {
+                console.warn('No se pudieron sincronizar los sellos seguros:', error);
+            }
+        }
+
         async function handleVisitorAuthState(user) {
             currentVisitorProfile = null;
             updateVisitorAccountLabels(user);
@@ -2595,6 +2610,7 @@
                 return;
             }
             try {
+                await syncSecurePassportStamps(user);
                 const snapshot = await readVisitorProfileSecurely(user);
                 if (snapshot.exists && snapshot.data().profileComplete === true) {
                     currentVisitorProfile = snapshot.data();
