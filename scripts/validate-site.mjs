@@ -307,6 +307,12 @@ assert(admin.includes("const campaignId=data.benefit.campaignId,claims=await mis
 assert(admin.includes('missionRewardCampaignsRef.doc(campaignId)'), 'Cada campaña conserva su propio inventario');
 assert(admin.includes('id="missionRewardClaimsList"'), 'El panel muestra ganadores y códigos');
 assert(admin.includes('function updateMissionRewardClaim'), 'El administrador puede entregar o anular códigos');
+assert(admin.includes('id="missionStatAvailable"') && admin.includes('id="missionStatRedemption"'), 'Chabaquito muestra existencias y porcentaje de canje');
+assert(admin.includes('function updateMissionRewardStats'), 'Las estadísticas de recompensa se actualizan con la campaña seleccionada');
+assert(admin.includes('missionRewardCampaignsRef.onSnapshot'), 'El panel escucha el inventario real de las campañas');
+assert(admin.includes('function downloadMissionRewardsCsv'), 'El administrador puede descargar el informe de recompensas');
+assert(admin.includes("const csv='\\uFEFF'"), 'El CSV incluye codificación compatible con Excel');
+assert(admin.includes("join(';')"), 'El CSV usa columnas compatibles con Excel en español');
 assert(admin.includes("status!=='delivered'") && admin.includes("status!=='cancelled'"), 'El panel conserva las acciones según el estado del código');
 assert(firestoreRules.includes('match /missionRewardClaims/{claimId}'), 'Firestore protege los códigos de misiones');
 assert(firestoreRules.includes('match /missionRewardCampaigns/{campaignId}'), 'Firestore protege las existencias de las campañas');
