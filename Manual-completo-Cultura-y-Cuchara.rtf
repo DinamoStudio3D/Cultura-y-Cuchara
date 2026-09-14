@@ -1,0 +1,428 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang3082
+{\fonttbl{\f0 Aptos;}{\f1 Aptos Display;}{\f2 Consolas;}}
+{\colortbl;\red234\green88\blue12;\red20\green184\blue166;\red255\green248\blue237;\red17\green24\blue39;\red107\green114\blue128;\red245\green158\blue11;}
+{\stylesheet
+{\s0\f0\fs22\cf4 Normal;}
+{\s1\f1\fs44\b\cf1 Title;}
+{\s2\f1\fs32\b\cf1\sb300\sa160 H1;}
+{\s3\f1\fs26\b\cf2\sb240\sa120 H2;}
+{\s4\f1\fs23\b\cf4\sb180\sa90 H3;}
+}
+{\footer\pard\qc\fs18\cf5 Cultura y Cuchara  |  Manual completo  |  Página {\field{\*\fldinst PAGE}{\fldrslt 1}} de {\field{\*\fldinst NUMPAGES}{\fldrslt 1}}\par}
+\paperw12240\paperh15840\margl1260\margr1260\margt1080\margb1080
+\pard\qc\sa260\f1\fs26\b\cf2 CULTURA Y CUCHARA / VIVE LOJA\par
+\pard\qc\sa240\f1\fs52\b\cf1 MANUAL COMPLETO DE LA WEB\par
+\pard\qc\sa200\f0\fs26\cf4 Visitantes, administración, Chabaquito, Pasaporte, recompensas, portal de negocios, Firebase y solución de problemas\par
+\pard\qc\sa180\f0\fs22\cf5 Repositorio: DinamoStudio3D/Cultura-y-Cuchara · Rama: main\par
+\pard\qc\sa180\f0\fs22\cf5 Versión revisada: 4e70e98e5d4f320a11d5d4f5a465ca2ea50692c2 · 14 de septiembre de 2026\par
+\vfill
+\pard\qc\sa120\f0\fs20\cf5 Documento operativo y técnico. Mantener las contraseñas, códigos PIN y datos personales fuera de copias públicas.\par
+\page
+\pard\s2 C\u243?mo usar este manual\par
+\pard\sa120\sl276\slmult1\qj Este documento explica toda la plataforma desde dos puntos de vista: el uso cotidiano por visitantes y negocios, y la operaci\u243?n interna por administraci\u243?n. Los nombres de botones y m\u243?dulos corresponden a la versi\u243?n actual de la rama main.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b \u205?ndice autom\u225?tico:\b0  Al abrir el archivo en Microsoft Word, haga clic dentro del \u237?ndice y elija Actualizar tabla > Actualizar toda la tabla. Si Word no actualiza los campos autom\u225?ticamente, presione Ctrl+A y luego F9. As\u237? se mostrar\u225?n las p\u225?ginas exactas.\par
+\pard\s2 \u205?ndice\par
+\pard\sa120 {\field{\*\fldinst TOC \\o "1-3" \\h \\z \\u}{\fldrslt Haga clic aquí y actualice la tabla en Word.}}\par
+\page
+\pard\s2 1. Gu\u237?a r\u225?pida: d\u243?nde est\u225? cada funci\u243?n\par
+\pard\sa120\sl276\slmult1\qj La plataforma se compone de un sitio p\u250?blico y cinco p\u225?ginas operativas. Esta gu\u237?a sirve como mapa inicial para encontrar r\u225?pidamente cada tarea.\par
+\pard\s3 Visitantes y ruta p\u250?blica\par
+\pard\sa120\sl276\slmult1\qj Archivo: index.html. Inicio, Festival, tendencias, promociones, historias, mapa, paradas, emprendedores, Pasaporte, misiones, Loja en el Tiempo, postales, agenda, podcast, cuenta y planificador.\par
+\pard\s3 Administraci\u243?n\par
+\pard\sa120\sl276\slmult1\qj Archivo: admin.html. Usuarios, tablero, revisi\u243?n, estad\u237?sticas, paradas, solicitudes, eventos, historias, Chabaquito, Pasaporte, QR, suscripciones, identidad, mantenimiento y respaldos.\par
+\pard\s3 Validaci\u243?n de recompensas\par
+\pard\sa120\sl276\slmult1\qj Archivo: merchant-rewards.html. Ingreso de negocios autorizados, consulta de c\u243?digos y confirmaci\u243?n de entrega.\par
+\pard\s3 Solicitud de negocios\par
+\pard\sa120\sl276\slmult1\qj Archivo: sumar-negocio.html. Formulario p\u250?blico para postular una nueva Parada y obtener c\u243?digo de seguimiento.\par
+\pard\s3 Estado de solicitud\par
+\pard\sa120\sl276\slmult1\qj Archivo: estado-solicitud.html. Consulta privada del estado mediante c\u243?digo SOL-XXXXXXXXXX.\par
+\pard\s3 Planes comerciales\par
+\pard\sa120\sl276\slmult1\qj Archivo: planes.html. Beneficios, planes, comparaci\u243?n, preguntas frecuentes y acceso al formulario.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Atajo de ubicaci\u243?n:\b0  Chabaquito est\u225? en Administraci\u243?n > Chabaquito. Pasaporte est\u225? en Administraci\u243?n > Pasaporte. Los canjes se controlan en Administraci\u243?n > Pasaporte y Recompensas, mientras los encargados usan Validar recompensas.\par
+\pard\s2 2. Roles y permisos\par
+\pard\s3 2.1 Visitante sin cuenta\par
+\pard\sa120\sl276\slmult1\qj Puede explorar contenido p\u250?blico, buscar paradas, consultar mapa, agenda, historias, promociones y planes. Algunas preferencias pueden existir localmente en el navegador, pero los avances protegidos y los reclamos de recompensa requieren autenticaci\u243?n.\par
+\pard\s3 2.2 Visitante registrado\par
+\pard\sa120\sl276\slmult1\qj Ingresa con Google, completa su perfil y puede sincronizar perfil, favoritos, agenda, ruta, modo de Pasaporte, sellos y reclamos permitidos. El perfil solicita nombre, correo, WhatsApp ecuatoriano, ciudad, tipo de visitante y consentimiento.\par
+\pard\s3 2.3 Administrador\par
+\pard\sa120\sl276\slmult1\qj Accede a admin.html con la cuenta administrativa autorizada. Puede leer y modificar el contenido central, revisar solicitudes, gestionar campa\u241?as, controlar premios, generar QR, ver m\u233?tricas y descargar respaldos.\par
+\pard\s3 2.4 Negocio solicitante\par
+\pard\sa120\sl276\slmult1\qj Env\u237?a una postulaci\u243?n sin ingresar al panel administrativo. Recibe un c\u243?digo de seguimiento que permite consultar \u250?nicamente el estado, sin revelar datos personales.\par
+\pard\s3 2.5 Negocio validador\par
+\pard\sa120\sl276\slmult1\qj Ingresa a merchant-rewards.html con correo y contrase\u241?a o Google. Su cuenta debe ser autorizada y vinculada a campa\u241?as concretas por administraci\u243?n. Puede verificar c\u243?digos y confirmar entregas, pero no administrar el resto del sitio.\par
+\page
+\pard\s2 3. Manual para visitantes\par
+\pard\s3 3.1 Inicio y navegaci\u243?n\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Abra index.html o la direcci\u243?n p\u250?blica del proyecto.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Use el men\u250? superior o m\u243?vil para ir a Inicio, mapa, establecimientos, Pasaporte, agenda, podcast y otras secciones.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Cambie el idioma desde el selector disponible en escritorio o m\u243?vil.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Si aparece un aviso de mantenimiento, lea el mensaje y utilice el bot\u243?n configurado por administraci\u243?n.\par
+\pard\s3 3.2 Cuenta del visitante\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Pulse el bot\u243?n de cuenta o el peque\u241?o acceso flotante de registro.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Seleccione Ingresar con Google y elija la cuenta correcta.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Complete nombre, WhatsApp, ciudad y tipo de visitante: turista o lojano.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Acepte el consentimiento y guarde el perfil.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Compruebe el resumen de experiencia: sellos, favoritos, ruta y agenda.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b WhatsApp:\b0  El sistema espera un n\u250?mero celular ecuatoriano v\u225?lido. Internamente conserva el formato +5939XXXXXXXX y una versi\u243?n visible 09XXXXXXXX.\par
+\pard\s3 3.3 B\u250?squeda, filtros y mapa\par
+\pard\sa120\sl276\slmult1\qj El buscador inteligente encuentra paradas por nombre, categor\u237?a, descripci\u243?n, plato y t\u233?rminos relacionados. Los filtros permiten separar comida, hospedaje, turismo y aliados. El mapa muestra marcadores por grupo, ubicaci\u243?n estimada, detalle de la parada y accesos a GPS.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Escriba una palabra en Buscar paradas.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Elija una categor\u237?a o use Buscar cerca de m\u237?, si el navegador permite ubicaci\u243?n.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Abra una tarjeta para ver horario, direcci\u243?n, promoci\u243?n, men\u250?, galer\u237?a, audiogu\u237?a y datos comerciales.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Use C\u243?mo llegar para abrir navegaci\u243?n y Compartir para enviar el enlace espec\u237?fico.\par
+\pard\s3 3.4 Favoritos, agenda y Mi Ruta\par
+\pard\sa120\sl276\slmult1\qj El coraz\u243?n guarda establecimientos. La agenda permite marcar eventos y descargar un evento al calendario. Mi Ruta Organizada re\u250?ne favoritos y permite quitar uno, limpiar la lista o compartir un itinerario estructurado.\par
+\pard\s3 3.5 Planificador de Chabaquito\par
+\pard\sa120\sl276\slmult1\qj \u191?Qu\u233? hacer ahora? recomienda opciones seg\u250?n inter\u233?s y cercan\u237?a. Ruta Inteligente solicita tiempo disponible, categor\u237?a, transporte, presupuesto, fecha, hora, grupo y objetivo; puede priorizar lugares abiertos y usar GPS. El resultado muestra paradas ordenadas, mapa, resumen, opci\u243?n de guardar y compartir.\par
+\pard\s3 3.6 Instalaci\u243?n y modo sin conexi\u243?n\par
+\pard\sa120\sl276\slmult1\qj La web es instalable como aplicaci\u243?n. El bot\u243?n de instalaci\u243?n aparece cuando el navegador lo permite. El servicio sin conexi\u243?n conserva la portada principal, el manifiesto y la imagen local de Chabaquito. El contenido din\u225?mico de Firebase y recursos externos puede requerir internet.\par
+\page
+\pard\s2 4. Contenidos p\u250?blicos\par
+\pard\s3 Festival Internacional de Artes Vivas\par
+\pard\sa120\sl276\slmult1\qj Muestra cuenta regresiva, agenda por d\u237?a, actividades actuales y marcadores especiales. Los visitantes pueden guardar eventos y abrirlos en el mapa.\par
+\pard\s3 Tendencias y promociones\par
+\pard\sa120\sl276\slmult1\qj Presenta lugares destacados y promociones vigentes seg\u250?n fechas y configuraci\u243?n. Cada interacci\u243?n puede registrarse para estad\u237?sticas.\par
+\pard\s3 Historias de Loja\par
+\pard\sa120\sl276\slmult1\qj Incluye portada, introducci\u243?n, cuerpo, galer\u237?a, audio en espa\u241?ol o ingl\u233?s, video, fuente y lugares relacionados.\par
+\pard\s3 Paradas\par
+\pard\sa120\sl276\slmult1\qj Agrupa hoteles, huecas, caf\u233?s, atractivos urbanos, helader\u237?as, panader\u237?as y bares, adem\u225?s de categor\u237?as complementarias.\par
+\pard\s3 Emprendedores\par
+\pard\sa120\sl276\slmult1\qj Publica nombre, categor\u237?a, tel\u233?fono, imagen y descripci\u243?n de emprendimientos locales.\par
+\pard\s3 Loja en el Tiempo\par
+\pard\sa120\sl276\slmult1\qj Compara im\u225?genes del pasado y presente mediante deslizador; puede incluir ubicaci\u243?n, descripci\u243?n y audiogu\u237?as.\par
+\pard\s3 Postales\par
+\pard\sa120\sl276\slmult1\qj Permite cargar una foto, elegir marco, ajustar zoom y posici\u243?n, agregar nombre, lugar y mensaje, descargar o compartir.\par
+\pard\s3 Agenda cultural\par
+\pard\sa120\sl276\slmult1\qj Lista eventos generales, permite filtrar guardados, guardar, ubicar en mapa y descargar al calendario.\par
+\pard\s3 Podcast\par
+\pard\sa120\sl276\slmult1\qj Reproduce el episodio o audio de muestra configurado por administraci\u243?n.\par
+\pard\s2 5. Pasaporte de Paradas\par
+\pard\s3 5.1 Objetivo\par
+\pard\sa120\sl276\slmult1\qj El Pasaporte registra visitas reales a paradas habilitadas. El usuario puede elegir Modo Turista o Modo Lojano. Cada modo tiene beneficio, imagen, descripci\u243?n, vigencia, enlace, negocio entregador y condiciones configurables.\par
+\pard\s3 5.2 Obtener un sello\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Inicie sesi\u243?n y complete el perfil.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Abra una parada habilitada o escanee su QR de registro.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Pulse Registrar esta parada.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Escriba el PIN entregado f\u237?sicamente por el negocio.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab El sistema verifica que el PIN corresponda a la parada y que la categor\u237?a sea apta.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 6.\tab Si la validaci\u243?n es correcta, el sello se registra una sola vez y el progreso se actualiza.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Control antifraude:\b0  El PIN no debe publicarse ni imprimirse junto al QR. El QR identifica la parada; el PIN confirma presencia y lo entrega el encargado.\par
+\pard\s3 5.3 Completar y reclamar beneficio\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Cuando se cumplen las condiciones, el bot\u243?n de recompensa se habilita.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab El visitante registra su reclamo. El sistema crea o recupera un c\u243?digo \u250?nico.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab La pantalla muestra beneficio, vigencia, negocio asociado y estado.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab El visitante presenta el c\u243?digo en el negocio autorizado.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab El encargado valida y marca Entregado; el mismo c\u243?digo no debe volver a canjearse.\par
+\pard\s3 5.4 Lo que ve el visitante\par
+\pard\sa120\sl276\slmult1\qj El visitante ve su progreso, beneficio y pr\u243?ximos lugares sugeridos. No se muestra p\u250?blicamente el inventario exacto ni la lista completa de premios disponibles; solo la disponibilidad o el estado necesario para orientar el reclamo.\par
+\page
+\pard\s2 6. Retos digitales de Chabaquito\par
+\pard\s3 6.1 Funcionamiento\par
+\pard\sa120\sl276\slmult1\qj Las misiones gu\u237?an al visitante hacia acciones concretas de exploraci\u243?n. El m\u243?dulo muestra t\u237?tulo, descripci\u243?n, barra de progreso, tarjetas de retos, certificado y, cuando existe, una recompensa comercial.\par
+\pard\s3 6.2 Completar misiones\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Abra Retos digitales de Chabaquito.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Revise los retos pendientes y use el bot\u243?n de cada tarjeta para ir a la secci\u243?n correspondiente.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Complete la acci\u243?n indicada. El progreso se actualiza en el navegador y, cuando corresponde, en la cuenta.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Al completar el conjunto, descargue el Certificado de Explorador si est\u225? activo.\par
+\pard\s3 6.3 Recompensa comercial\par
+\pard\sa120\sl276\slmult1\qj Administraci\u243?n puede activar una campa\u241?a con patrocinador, t\u237?tulo, descripci\u243?n, fechas, stock, imagen, bot\u243?n, enlace, c\u243?digo base y vigencia. El usuario autenticado solicita un c\u243?digo individual. La plataforma controla estados pendiente, entregado y cancelado.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Diferencia clave:\b0  El Pasaporte se basa en sellos de visitas a paradas. Las misiones de Chabaquito se basan en retos digitales. Cada sistema tiene campa\u241?a, c\u243?digos y colecciones separadas.\par
+\pard\s2 7. Chabaquito en la web\par
+\pard\sa120\sl276\slmult1\qj Chabaquito funciona como gu\u237?a y mascota. Puede aparecer animado o est\u225?tico y mostrar mensajes espec\u237?ficos para Inicio, Mapa, Establecimientos, Festival, Postales, Pasaporte, Misiones y Podcast.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab El visitante toca la mascota para abrir o cerrar su burbuja.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Puede ocultarla temporalmente.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab El bot\u243?n de restauraci\u243?n permite volver a mostrarla.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Las audiogu\u237?as pueden usar narraci\u243?n del navegador con la voz de Chabaquito cuando no existe audio grabado.\par
+\page
+\pard\s2 8. Acceso a Administraci\u243?n\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Abra /admin.html.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Ingrese el correo y contrase\u241?a de la cuenta administrativa.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Compruebe que en el encabezado aparezca la sesi\u243?n correcta.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Use el men\u250? lateral. En m\u243?vil, abra el bot\u243?n de navegaci\u243?n.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Cierre sesi\u243?n al terminar, especialmente en equipos compartidos.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Seguridad:\b0  La autorizaci\u243?n real no depende de ocultar la URL. Firestore valida la identidad del administrador. No comparta la cuenta ni guarde la contrase\u241?a en computadores p\u250?blicos.\par
+\pard\s3 8.1 Protecci\u243?n de cambios\par
+\pard\sa120\sl276\slmult1\qj El panel detecta formularios con cambios sin guardar. Antes de cambiar de m\u243?dulo, cerrar o recargar, revise el aviso de protecci\u243?n. Espere la confirmaci\u243?n visual de guardado.\par
+\pard\s3 8.2 B\u250?squeda global\par
+\pard\sa120\sl276\slmult1\qj El buscador general localiza m\u243?dulos y elementos administrables. \u218?selo para saltar a una parada, evento, historia, marco, punto hist\u243?rico, emprendimiento o solicitud.\par
+\pard\s2 9. Tablero, usuarios, revisi\u243?n y respaldos\par
+\pard\s3 9.1 Tablero\par
+\pard\sa120\sl276\slmult1\qj Resume cantidades de paradas, eventos, emprendimientos, puntos hist\u243?ricos, marcos, QR y estado del Festival. Actualice cuando necesite cifras recientes.\par
+\pard\s3 9.2 Usuarios registrados\par
+\pard\sa120\sl276\slmult1\qj Permite buscar perfiles, filtrar por turista o lojano, ver totales y recientes, y descargar CSV. Trate los datos personales con confidencialidad.\par
+\pard\s3 9.3 Centro de revisi\u243?n\par
+\pard\sa120\sl276\slmult1\qj Clasifica hallazgos cr\u237?ticos, advertencias, mejoras y elementos saludables. Revisa audiogu\u237?as por idioma y puede comprobar si los archivos publicados realmente responden.\par
+\pard\s3 9.4 Copia de seguridad\par
+\pard\sa120\sl276\slmult1\qj El respaldo re\u250?ne el contenido administrable de Firebase y lo descarga como archivo. Genere una copia antes de cambios masivos, campa\u241?as nuevas o migraciones.\par
+\page
+\pard\s2 10. Estad\u237?sticas y reportes\par
+\pard\sa120\sl276\slmult1\qj El m\u243?dulo consolida visualizaciones, solicitudes de ruta, favoritos, sellos y clics de promociones. Permite seleccionar periodo, parada y rango personalizado; muestra ranking e indicadores de Pasaporte y premios.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Seleccione el periodo o active fechas personalizadas.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Filtre una parada o mantenga la vista global.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Revise totales y ranking.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Descargue CSV para an\u225?lisis o entrega al negocio.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Interpretaci\u243?n:\b0  Las m\u233?tricas representan interacciones registradas por la web. No deben presentarse autom\u225?ticamente como ventas confirmadas.\par
+\pard\s2 11. Gesti\u243?n de paradas\par
+\pard\s3 11.1 Crear o editar\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Entre a Administraci\u243?n > Paradas y pulse Registrar una parada.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Defina estado de publicaci\u243?n, nombre en espa\u241?ol e ingl\u233?s, categor\u237?a, etiqueta, descripci\u243?n y plato destacado.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Complete horario, hora de apertura/cierre, direcci\u243?n, latitud y longitud.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Agregue logo, video, galer\u237?a y audiogu\u237?as en espa\u241?ol/ingl\u233?s.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Complete perfil comercial: tel\u233?fono, WhatsApp, web, redes, rango de precio, pagos y servicios.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 6.\tab Configure men\u250?, pedidos, reservas y promoci\u243?n si el plan los permite.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 7.\tab Asigne plan, estado, fechas, contacto, valor y notas de pago.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 8.\tab Si participa en Pasaporte, establezca un PIN privado.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 9.\tab Guarde, abra Vista previa y revise el enlace p\u250?blico.\par
+\pard\s3 11.2 Publicaci\u243?n y beneficios por plan\par
+\pard\sa120\sl276\slmult1\qj El estado de publicaci\u243?n controla si la parada aparece al p\u250?blico. Los beneficios comerciales pueden habilitar logo en marcador, distintivo, prioridad, promociones, estad\u237?sticas, video, men\u250?, pedidos y reservas. El panel puede aplicar servicios del plan a las paradas.\par
+\pard\s3 11.3 Men\u250? digital\par
+\pard\sa120\sl276\slmult1\qj Active el men\u250?, escriba t\u237?tulos biling\u252?es y agregue platos con nombre, descripci\u243?n, precio, imagen y etiquetas. Puede reordenar o destacar platos. La muestra de Mama Lola sirve para previsualizar la estructura.\par
+\pard\s3 11.4 Pagos y renovaci\u243?n\par
+\pard\sa120\sl276\slmult1\qj Registre plan, vigencia, renovaci\u243?n, valor, m\u233?todo y observaciones. El historial ayuda a verificar pagos. Renueve con cuidado para no reemplazar fechas incorrectamente.\par
+\page
+\pard\s2 12. Solicitudes de negocios\par
+\pard\s3 12.1 Flujo p\u250?blico\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab El interesado abre sumar-negocio.html desde Planes o la web.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Elige plan y completa propietario, tel\u233?fono, correo, negocio, categor\u237?a, descripci\u243?n, direcci\u243?n, horario, mapa, redes e imagen.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Acepta el consentimiento y env\u237?a.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Recibe c\u243?digo de seguimiento y enlace a estado-solicitud.html.\par
+\pard\s3 12.2 Revisi\u243?n administrativa\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Abra Administraci\u243?n > Solicitudes de paradas.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Filtre por pendiente, en revisi\u243?n, aprobada o rechazada.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Revise la informaci\u243?n y cambie a En revisi\u243?n antes de solicitar aclaraciones.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Use Preparar como parada para trasladar datos al formulario de Paradas.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Complete la ficha, plan, coordenadas y recursos; luego publique.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 6.\tab Actualice el estado final de la solicitud.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Privacidad:\b0  El portal de estado muestra solo la situaci\u243?n y mensajes generales. No expone nombre, tel\u233?fono, correo ni informaci\u243?n comercial detallada.\par
+\pard\s2 13. Eventos, Festival, historias y otros contenidos\par
+\pard\s3 13.1 Agenda y eventos\par
+\pard\sa120\sl276\slmult1\qj Cree t\u237?tulo biling\u252?e, fecha/hora, tipo, imagen, ubicaci\u243?n, descripci\u243?n y coordenadas. Mantenga como borrador hasta revisar, use Vista previa y luego publique.\par
+\pard\s3 13.2 Festival\par
+\pard\sa120\sl276\slmult1\qj Active o desactive el modo Festival, defina t\u237?tulo, subt\u237?tulo, inicio y fin, y edite actividades. Compruebe cronolog\u237?a, im\u225?genes, ubicaciones y mapa.\par
+\pard\s3 13.3 Historias\par
+\pard\sa120\sl276\slmult1\qj Configure la secci\u243?n general. Para cada historia defina estado, categor\u237?a, fecha programada, textos biling\u252?es, portada, galer\u237?a, audios, video, fuente, \u233?poca, coordenadas y lugares relacionados.\par
+\pard\s3 13.4 Postales\par
+\pard\sa120\sl276\slmult1\qj Configure marca de agua, imagen de muestra y mensaje predeterminado. Agregue marcos PNG con transparencia mediante nombre, icono y URL; previsualice antes de guardar.\par
+\pard\s3 13.5 Loja en el Tiempo\par
+\pard\sa120\sl276\slmult1\qj Registre t\u237?tulo, etiquetas pasado/presente, ambas im\u225?genes, descripci\u243?n biling\u252?e, audio en ambos idiomas y ubicaci\u243?n.\par
+\pard\s3 13.6 Emprendedores\par
+\pard\sa120\sl276\slmult1\qj Registre nombre, categor\u237?a, tel\u233?fono, imagen y descripci\u243?n. Verifique consentimiento para publicar el contacto.\par
+\pard\s3 13.7 Podcast\par
+\pard\sa120\sl276\slmult1\qj Configure etiqueta, duraci\u243?n, t\u237?tulo, descripci\u243?n, audio, portada y visibilidad. Reproduzca el audio actual antes de guardar.\par
+\page
+\pard\s2 14. Administraci\u243?n de Chabaquito\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Abra Administraci\u243?n > Chabaquito.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Active o desactive la mascota y el modo animado.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Indique la imagen autorizada.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Escriba mensajes para Inicio, Mapa, Establecimientos, Festival, Postales, Pasaporte, Misiones y Podcast.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Configure t\u237?tulo y descripci\u243?n de las misiones en espa\u241?ol e ingl\u233?s.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 6.\tab Configure certificado: activo, t\u237?tulo, texto y firma.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 7.\tab Para premio comercial, defina campa\u241?a, patrocinador, textos, fechas, stock, imagen, bot\u243?n, URL, c\u243?digo y vigencia.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 8.\tab Guarde y revise la experiencia p\u250?blica en escritorio y m\u243?vil.\par
+\pard\s3 14.1 Control de la campa\u241?a de misiones\par
+\pard\sa120\sl276\slmult1\qj El panel muestra disponibles, generados, pendientes, entregados, cancelados y tasa de canje. Tambi\u233?n administra solicitudes de acceso de negocios, negocios autorizados y c\u243?digos/ganadores.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Stock:\b0  No aumente o reduzca el stock durante una campa\u241?a sin comparar previamente c\u243?digos generados, pendientes y entregados.\par
+\pard\s2 15. Administraci\u243?n del Pasaporte y recompensas\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Abra Administraci\u243?n > Pasaporte.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Active la campa\u241?a, escriba nombre, identificador, inicio, fin e introducci\u243?n.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Configure por separado Modo Turista y Modo Lojano.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Para cada modo defina activo, t\u237?tulo, descripci\u243?n, imagen, c\u243?digo, texto de bot\u243?n, URL y negocio entregador.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Revise estad\u237?sticas de turistas, lojanos, total, pendientes y entregados.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 6.\tab Busque reclamos por c\u243?digo, visitante o estado.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 7.\tab Marque Entregado \u250?nicamente despu\u233?s de confirmar identidad/c\u243?digo y entrega f\u237?sica.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Campa\u241?as separadas:\b0  Utilice un identificador de campa\u241?a nuevo cuando cambien las reglas o el beneficio. As\u237? se conserva el historial y se evitan cruces con reclamos anteriores.\par
+\pard\s3 15.1 PIN de cada parada\par
+\pard\sa120\sl276\slmult1\qj El PIN se administra dentro de la ficha de Parada y se guarda en passportPins. Puede migrarse desde datos antiguos con la herramienta administrativa. Debe mantenerse reservado.\par
+\page
+\pard\s2 16. Portal de negocios para validar recompensas\par
+\pard\s3 16.1 Solicitar y obtener acceso\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Abra merchant-rewards.html.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Ingrese con correo/contrase\u241?a o Google.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Si no existe autorizaci\u243?n, el sistema registra una solicitud y muestra Acceso pendiente.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Administraci\u243?n abre Chabaquito > Accesos de negocios, revisa la solicitud, vincula el negocio y las campa\u241?as y autoriza.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Si la autorizaci\u243?n est\u225? inactiva, el encargado ver\u225? Acceso suspendido.\par
+\pard\s3 16.2 Validar un c\u243?digo\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Inicie sesi\u243?n con la cuenta autorizada.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Revise el inventario resumido de campa\u241?as asignadas.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Escriba exactamente el c\u243?digo presentado por el visitante.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Pulse Verificar.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Compruebe campa\u241?a, beneficio, visitante, fecha y estado.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 6.\tab Entregue el premio y solo despu\u233?s pulse Entregado.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Acci\u243?n irreversible operativamente:\b0  No marque un c\u243?digo como entregado antes de dar el beneficio. Si existe un error, el administrador debe revisar el reclamo y el historial.\par
+\pard\s3 16.3 Qu\u233? no puede hacer el negocio\par
+\pard\li540\fi-270\sa80\sl240\slmult1 \bullet\tab No puede ver ni editar paradas, usuarios, reglas o configuraci\u243?n general.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 \bullet\tab No puede validar campa\u241?as que no le fueron asignadas.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 \bullet\tab No debe compartir su cuenta con otros locales.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 \bullet\tab No debe fotografiar ni conservar datos personales innecesarios.\par
+\pard\s2 17. QR\par
+\pard\sa120\sl276\slmult1\qj El Centro de c\u243?digos QR crea c\u243?digos con nombre, tipo, slug, destino, explicaci\u243?n, colores, logo, tama\u241?o y correcci\u243?n. Permite previsualizar, editar, eliminar y descargar.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Prueba obligatoria:\b0  Antes de imprimir, escanee el QR con al menos dos tel\u233?fonos y confirme que abre la URL p\u250?blica correcta. El QR de Pasaporte no debe contener el PIN.\par
+\pard\s2 18. Planes y suscripciones\par
+\pard\sa120\sl276\slmult1\qj El centro comercial permite configurar visibilidad del registro de negocios, WhatsApp, distintivo, promoci\u243?n, t\u237?tulo, subt\u237?tulo, planes y preguntas frecuentes. El panel de suscripciones clasifica activas, por vencer, vencidas y pendientes y calcula ingresos registrados.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Defina cada plan con nombre, precio mensual/anual, beneficios y presentaci\u243?n.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Revise la comparaci\u243?n p\u250?blica en planes.html.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Use recordatorios de contacto para renovaciones.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Mantenga fechas, valor y m\u233?todo de pago en la ficha de cada parada.\par
+\page
+\pard\s2 19. Identidad, video, popup y mantenimiento\par
+\pard\s3 19.1 Portada e identidad\par
+\pard\sa120\sl276\slmult1\qj Configure t\u237?tulo, subt\u237?tulo, logo, carrusel de im\u225?genes, intervalo, posici\u243?n y estilo visual. La vista previa ayuda a corregir encuadre y legibilidad.\par
+\pard\s3 19.2 Apariencia premium\par
+\pard\sa120\sl276\slmult1\qj Controle estilo de portada, altura, tarjetas, esquinas, opacidad y animaciones. Pruebe m\u243?vil antes de publicar cambios fuertes.\par
+\pard\s3 19.3 Video destacado\par
+\pard\sa120\sl276\slmult1\qj Indique t\u237?tulo, URL y miniatura. Confirme que el video es p\u250?blico y permite reproducci\u243?n o enlace directo.\par
+\pard\s3 19.4 Anuncio emergente\par
+\pard\sa120\sl276\slmult1\qj Active solo cuando sea necesario. Configure t\u237?tulo, descripci\u243?n, imagen y WhatsApp. Evite dejar campa\u241?as vencidas.\par
+\pard\s3 19.5 Modo en construcci\u243?n\par
+\pard\sa120\sl276\slmult1\qj Muestra una pantalla p\u250?blica con distintivo, t\u237?tulo, texto, bot\u243?n, URL y texto de retorno. El panel administrativo contin\u250?a disponible. Desactive el modo despu\u233?s de verificar la publicaci\u243?n.\par
+\pard\s2 20. Firebase: estructura y operaci\u243?n\par
+\pard\s3 20.1 Servicios usados\par
+\pard\li540\fi-270\sa80\sl240\slmult1 \bullet\tab Firebase Authentication: inicio de sesi\u243?n de administraci\u243?n, visitantes y validadores.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 \bullet\tab Cloud Firestore: contenido, perfiles, avances, campa\u241?as, c\u243?digos, solicitudes, m\u233?tricas y configuraciones.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 \bullet\tab Firebase Storage: reservado para audiogu\u237?as bajo la carpeta audioguias, con l\u237?mites y permisos definidos.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 \bullet\tab Archivos del repositorio y URLs externas: im\u225?genes, audios de muestra y recursos p\u250?blicos seg\u250?n la configuraci\u243?n actual.\par
+\pard\s3 20.2 Colecciones principales\par
+\pard\s4 userProfiles\par
+\pard\sa120\sl276\slmult1\qj Perfil privado de visitantes.\par
+\pard\s4 userProgress\par
+\pard\sa120\sl276\slmult1\qj Favoritos, agenda, ruta y modo de Pasaporte.\par
+\pard\s4 siteContent\par
+\pard\sa120\sl276\slmult1\qj Contenido general administrable.\par
+\pard\s4 locales\par
+\pard\sa120\sl276\slmult1\qj Paradas publicadas y fichas comerciales.\par
+\pard\s4 passportPins\par
+\pard\sa120\sl276\slmult1\qj PIN reservado por parada.\par
+\pard\s4 stampClaims\par
+\pard\sa120\sl276\slmult1\qj Registro inmutable de sellos.\par
+\pard\s4 passportCompletions\par
+\pard\sa120\sl276\slmult1\qj Finalizaci\u243?n/reclamo del Pasaporte.\par
+\pard\s4 passportRewardClaimCodes\par
+\pard\sa120\sl276\slmult1\qj \u205?ndice de c\u243?digos de recompensa del Pasaporte.\par
+\pard\s4 missionRewardCampaigns\par
+\pard\sa120\sl276\slmult1\qj Campa\u241?as comerciales de misiones.\par
+\pard\s4 missionRewardClaims\par
+\pard\sa120\sl276\slmult1\qj Reclamos de misiones.\par
+\pard\s4 missionRewardClaimCodes\par
+\pard\sa120\sl276\slmult1\qj \u205?ndice de c\u243?digos de misiones.\par
+\pard\s4 missionRewardMerchantRequests\par
+\pard\sa120\sl276\slmult1\qj Solicitudes de validadores.\par
+\pard\s4 missionRewardMerchants\par
+\pard\sa120\sl276\slmult1\qj Negocios validadores autorizados.\par
+\pard\s4 settings\par
+\pard\sa120\sl276\slmult1\qj Configuraci\u243?n de identidad, campa\u241?as, planes y secciones.\par
+\pard\s4 loja_tiempo\par
+\pard\sa120\sl276\slmult1\qj Puntos hist\u243?ricos comparativos.\par
+\pard\s4 qrCodes\par
+\pard\sa120\sl276\slmult1\qj Dise\u241?os y destinos de QR.\par
+\pard\s4 businessEvents\par
+\pard\sa120\sl276\slmult1\qj Eventos de interacci\u243?n/m\u233?tricas.\par
+\pard\s4 businessApplications\par
+\pard\sa120\sl276\slmult1\qj Solicitudes completas de negocios.\par
+\pard\s4 businessApplicationStatus\par
+\pard\sa120\sl276\slmult1\qj Estado p\u250?blico limitado por c\u243?digo.\par
+\pard\s3 20.3 Reglas de seguridad\par
+\pard\sa120\sl276\slmult1\qj La lectura p\u250?blica se limita a contenido necesario como siteContent, locales, settings, loja_tiempo y qrCodes. Las escrituras administrativas requieren la identidad autorizada. Los perfiles y avances pertenecen a su usuario. Los reclamos verifican campos, identidad, campa\u241?a, stock y transiciones permitidas. Todo acceso no contemplado termina denegado.\par
+\pard\sa120\li240\ri240\brdrs\brdrw12\brdrcf2\brsp60\cb3\b Reglas sensibles:\b0  No cambie el correo administrativo, nombres de colecciones ni validaciones sin probar en un proyecto de prueba. Las reglas son la barrera real contra modificaciones no autorizadas.\par
+\pard\s3 20.4 Storage\par
+\pard\sa120\sl276\slmult1\qj Solo audioguias permite lectura p\u250?blica. Crear o actualizar exige administraci\u243?n, archivo menor de 20 MB y tipo de contenido audio. Todo otro acceso a Storage est\u225? denegado.\par
+\page
+\pard\s2 21. Publicaci\u243?n y actualizaci\u243?n\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Realice los cambios en la rama correspondiente y revise las diferencias.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Ejecute la validaci\u243?n del sitio. El proyecto incluye scripts/validate-site.mjs y un flujo de GitHub Actions.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Compruebe que no existan conflictos de Git, errores de JavaScript, IDs obligatorios ausentes ni reglas incompletas.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Pruebe index.html, admin.html, merchant-rewards.html, sumar-negocio.html, estado-solicitud.html y planes.html.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Pruebe escritorio y m\u243?vil, autenticaci\u243?n, mapa, QR, Pasaporte y canje.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 6.\tab Publique solo cuando la validaci\u243?n sea satisfactoria.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 7.\tab Despu\u233?s de publicar, haga una prueba real desde una ventana privada.\par
+\pard\s3 21.1 Lista previa a una campa\u241?a\par
+\pard\s2 22. Soluci\u243?n de problemas\par
+\pard\s3 No puedo iniciar sesi\u243?n en administraci\u243?n\par
+\pard\sa120\sl276\slmult1\qj Confirme correo y contrase\u241?a, conexi\u243?n, proveedor habilitado en Firebase Authentication y que el correo coincide exactamente con la identidad administrativa de las reglas. Cierre otras sesiones de Google y pruebe ventana privada.\par
+\pard\s3 Ingreso correcto pero aparece permiso denegado\par
+\pard\sa120\sl276\slmult1\qj Las reglas publicadas pueden no coincidir con el c\u243?digo o la cuenta no tiene autorizaci\u243?n. Revise la consola del navegador y confirme colecci\u243?n, documento y correo administrativo.\par
+\pard\s3 No puedo guardar reglas de Firestore\par
+\pard\sa120\sl276\slmult1\qj Revise sintaxis, comillas, llaves y funciones. Publique el archivo firestore.rules completo, no fragmentos mezclados. Si la consola marca una l\u237?nea, revise tambi\u233?n el bloque anterior.\par
+\pard\s3 La parada no aparece\par
+\pard\sa120\sl276\slmult1\qj Compruebe estado publicado, datos obligatorios, categor\u237?a y filtros activos. Limpie b\u250?squeda, recargue y verifique que locales permita lectura p\u250?blica.\par
+\pard\s3 El mapa no carga\par
+\pard\sa120\sl276\slmult1\qj Revise internet, librer\u237?a Leaflet, bloqueo de contenido, coordenadas num\u233?ricas y permisos de ubicaci\u243?n. Una parada sin coordenadas v\u225?lidas no puede ubicarse.\par
+\pard\s3 El PIN no acepta el sello\par
+\pard\sa120\sl276\slmult1\qj Confirme sesi\u243?n completa, parada habilitada, PIN exacto y documento en passportPins. El usuario no puede reclamar dos veces la misma parada.\par
+\pard\s3 El Pasaporte no habilita la recompensa\par
+\pard\sa120\sl276\slmult1\qj Revise campa\u241?a activa, fechas, modo del usuario, cantidad de sellos, configuraci\u243?n del beneficio y si ya existe completion/reclamo.\par
+\pard\s3 El c\u243?digo de recompensa no aparece\par
+\pard\sa120\sl276\slmult1\qj Confirme autenticaci\u243?n, campa\u241?a, stock y que no exista un reclamo previo con c\u243?digo. Revise passportRewardClaimCodes o missionRewardClaimCodes seg\u250?n el sistema.\par
+\pard\s3 El negocio ve Acceso pendiente\par
+\pard\sa120\sl276\slmult1\qj Administraci\u243?n debe autorizar la solicitud, vincular negocio/campa\u241?a y activar el permiso.\par
+\pard\s3 El c\u243?digo figura inv\u225?lido en el negocio\par
+\pard\sa120\sl276\slmult1\qj Verifique may\u250?sculas, espacios, campa\u241?a asignada y colecci\u243?n correcta. Pasaporte y misiones usan \u237?ndices de c\u243?digos distintos.\par
+\pard\s3 El c\u243?digo ya fue entregado\par
+\pard\sa120\sl276\slmult1\qj No entregue de nuevo. Busque el reclamo en administraci\u243?n, revise fecha y negocio validador y documente cualquier incidencia.\par
+\pard\s3 No quedan recompensas\par
+\pard\sa120\sl276\slmult1\qj Pause reclamos o desactive la campa\u241?a; no aumente stock sin autorizaci\u243?n. Mantenga visibles condiciones claras para usuarios.\par
+\pard\s3 El audio no reproduce\par
+\pard\sa120\sl276\slmult1\qj Pruebe URL p\u250?blica, HTTPS, tipo de archivo y pol\u237?tica CORS. Use Comprobaci\u243?n real de archivos y confirme audiogu\u237?a por idioma.\par
+\pard\s3 La imagen no carga\par
+\pard\sa120\sl276\slmult1\qj Abra la URL directamente, revise HTTPS y permisos. Sustituya enlaces temporales y compruebe tama\u241?o.\par
+\pard\s3 Los cambios no se ven\par
+\pard\sa120\sl276\slmult1\qj Espere confirmaci\u243?n de guardado, recargue sin cach\u233? y compruebe la publicaci\u243?n. El service worker puede conservar recursos; cierre/reabra o borre datos del sitio en pruebas.\par
+\pard\s3 La aplicaci\u243?n no se instala\par
+\pard\sa120\sl276\slmult1\qj Use navegador compatible y HTTPS; compruebe manifest.webmanifest, iconos y registro del service worker.\par
+\pard\s3 El modo mantenimiento sigue activo\par
+\pard\sa120\sl276\slmult1\qj Entre a Administraci\u243?n > Modo en construcci\u243?n, desactive, guarde y verifique desde una ventana privada.\par
+\pard\s3 No aparece el bot\u243?n flotante de registro\par
+\pard\sa120\sl276\slmult1\qj Compruebe settingsShowAccountFloatingButton, que el usuario est\u233? desconectado y que no haya sido descartado previamente en ese navegador.\par
+\pard\s3 Una solicitud no se encuentra\par
+\pard\sa120\sl276\slmult1\qj Use el c\u243?digo exacto SOL-XXXXXXXXXX. Compruebe businessApplicationStatus y que el documento p\u250?blico limitado haya sido creado.\par
+\pard\s3 Error despu\u233?s de editar una campa\u241?a\par
+\pard\sa120\sl276\slmult1\qj Restaure valores usando el respaldo m\u225?s reciente, verifique identificador/fechas y pruebe reglas antes de reanudar reclamos.\par
+\page
+\pard\s2 23. Procedimientos de emergencia\par
+\pard\s3 23.1 Pausar temporalmente el sitio\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Active Modo en construcci\u243?n.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Explique brevemente la causa y canal de contacto.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab No elimine contenido mientras investiga.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Descargue respaldo y registre la hora del incidente.\par
+\pard\s3 23.2 Sospecha de acceso no autorizado\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Cambie inmediatamente la contrase\u241?a de la cuenta afectada y cierre sesiones.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Suspenda accesos de negocios relacionados.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Revise c\u243?digos entregados, eventos y cambios recientes.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab No publique capturas con datos personales.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Restaure solo despu\u233?s de entender el alcance.\par
+\pard\s3 23.3 Campa\u241?a con errores\par
+\pard\li540\fi-270\sa80\sl240\slmult1 1.\tab Desactive la campa\u241?a para detener nuevos reclamos.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 2.\tab Conserve reclamos existentes y exporte CSV.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 3.\tab Corrija configuraci\u243?n o reglas en pruebas.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 4.\tab Informe a negocios validadores qu\u233? c\u243?digos siguen siendo v\u225?lidos.\par
+\pard\li540\fi-270\sa80\sl240\slmult1 5.\tab Reactive con el mismo identificador solo si las condiciones no cambiaron; de lo contrario cree una campa\u241?a nueva.\par
+\pard\s2 24. Buenas pr\u225?cticas operativas\par
+\pard\s2 25. Glosario\par
+\pard\s3 Parada\par
+\pard\sa120\sl276\slmult1\qj Establecimiento o lugar publicado dentro de la ruta.\par
+\pard\s3 Sello\par
+\pard\sa120\sl276\slmult1\qj Registro de visita validado con QR/PIN.\par
+\pard\s3 Pasaporte\par
+\pard\sa120\sl276\slmult1\qj Programa de visitas que acumula sellos y habilita un beneficio.\par
+\pard\s3 Misi\u243?n\par
+\pard\sa120\sl276\slmult1\qj Reto digital guiado por Chabaquito.\par
+\pard\s3 Campa\u241?a\par
+\pard\sa120\sl276\slmult1\qj Configuraci\u243?n con vigencia, stock, premio y reglas propias.\par
+\pard\s3 Reclamo\par
+\pard\sa120\sl276\slmult1\qj Solicitud de un visitante para recibir una recompensa.\par
+\pard\s3 C\u243?digo de canje\par
+\pard\sa120\sl276\slmult1\qj Clave \u250?nica presentada al negocio.\par
+\pard\s3 Entregado\par
+\pard\sa120\sl276\slmult1\qj Estado final cuando el beneficio ya fue dado.\par
+\pard\s3 Negocio validador\par
+\pard\sa120\sl276\slmult1\qj Cuenta autorizada para comprobar c\u243?digos y confirmar entregas.\par
+\pard\s3 Borrador\par
+\pard\sa120\sl276\slmult1\qj Contenido guardado que a\u250?n no debe mostrarse p\u250?blicamente.\par
+\pard\s3 Firestore\par
+\pard\sa120\sl276\slmult1\qj Base de datos en la nube usada por la plataforma.\par
+\pard\s3 Reglas\par
+\pard\sa120\sl276\slmult1\qj Pol\u237?tica que determina qui\u233?n puede leer o escribir cada documento.\par
+\pard\s2 26. Checklist de entrega diaria\par
+\pard\s2 Anexo A. Archivos del proyecto\par
+\pard\s2 Anexo B. Control de versi\u243?n del manual\par
+\pard\sa120\sl276\slmult1\qj Este manual se elabor\u243? a partir de la rama main y del \u225?rbol Git identificado por 4e70e98e5d4f320a11d5d4f5a465ca2ea50692c2. Si la web cambia, actualice las secciones afectadas y regenere el \u237?ndice y las p\u225?ginas en Word.\par
+}
