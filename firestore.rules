@@ -351,6 +351,121 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    function isAssignedVisitMerchant(placeId) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid))
+        && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.active == true
+        && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds is list
+        && placeId in get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds;
+    }
+
+    match /loyaltyPrograms/{placeId} {
+      allow read: if true;
+      allow create, delete: if isViveLojaAdmin();
+      allow update: if isViveLojaAdmin() || (
+        isAssignedVisitMerchant(placeId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedCount', 'updatedAt'])
+        && request.resource.data.claimedCount is int
+        && request.resource.data.claimedCount >= 0
+        && request.resource.data.updatedAt == request.time
+      );
+    }
+
+    match /visitCodes/{requestId} {
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['code', 'userId', 'userName', 'userEmail', 'placeId', 'placeName', 'status', 'createdAt', 'expiresAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.code is string
+        && request.resource.data.code.size() == 6
+        && request.resource.data.code.matches('^[0-9]+')
+        && request.resource.data.placeId is string
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.expiresAt > request.time
+        && request.resource.data.expiresAt <= request.time + duration.value(10, 'm')
+        && exists(/databases/$(database)/documents/locales/$(request.resource.data.placeId));
+      allow read: if isViveLojaAdmin()
+        || (request.auth != null && resource.data.userId == request.auth.uid)
+        || isAssignedVisitMerchant(resource.data.placeId);
+      allow update: if isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.status == 'pending'
+        && resource.data.expiresAt >= request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'confirmedAt', 'confirmedBy', 'confirmedByName', 'passportAdded', 'updatedAt'])
+        && request.resource.data.status in ['confirmed', 'rejected']
+        && request.resource.data.confirmedBy == request.auth.uid
+        && request.resource.data.confirmedAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isViveLojaAdmin()
+        || (request.auth != null && resource.data.userId == request.auth.uid && resource.data.status == 'pending');
+    }
+
+    match /loyaltyCounters/{counterId} {
+      allow read: if isViveLojaAdmin()
+        || (request.auth != null && resource.data.userId == request.auth.uid)
+        || isAssignedVisitMerchant(resource.data.placeId);
+      allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
+        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userEmail', 'placeId', 'placeName', 'visitCount', 'rewardCycles', 'lastVisitDay', 'lastVisitAt', 'updatedAt'])
+        && request.resource.data.visitCount == 1
+        && request.resource.data.rewardCycles == 0
+        && request.resource.data.lastVisitAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isAssignedVisitMerchant(resource.data.placeId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitCount', 'rewardCycles', 'lastVisitDay', 'lastVisitAt', 'updatedAt'])
+        && request.resource.data.visitCount == resource.data.visitCount + 1
+        && request.resource.data.rewardCycles >= resource.data.rewardCycles
+        && request.resource.data.rewardCycles <= resource.data.rewardCycles + 1
+        && request.resource.data.lastVisitAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isViveLojaAdmin();
+    }
+
+    match /loyaltyVisits/{requestId} {
+      allow read: if isViveLojaAdmin()
+        || (request.auth != null && resource.data.userId == request.auth.uid)
+        || isAssignedVisitMerchant(resource.data.placeId);
+      allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
+        && request.resource.data.requestId == requestId
+        && request.resource.data.confirmedBy == request.auth.uid
+        && request.resource.data.confirmedAt == request.time
+        && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.userId == request.resource.data.userId
+        && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.placeId == request.resource.data.placeId;
+      allow update: if false;
+      allow delete: if isViveLojaAdmin();
+    }
+
+    match /securePassportStamps/{stampId} {
+      allow read: if isViveLojaAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
+        && request.resource.data.confirmedBy == request.auth.uid
+        && request.resource.data.confirmedAt == request.time
+        && get(/databases/$(database)/documents/visitCodes/$(request.resource.data.requestId)).data.userId == request.resource.data.userId
+        && get(/databases/$(database)/documents/visitCodes/$(request.resource.data.requestId)).data.placeId == request.resource.data.placeId;
+      allow update: if false;
+      allow delete: if isViveLojaAdmin();
+    }
+
+    match /loyaltyRewardClaims/{claimId} {
+      allow read: if isViveLojaAdmin()
+        || (request.auth != null && resource.data.userId == request.auth.uid)
+        || isAssignedVisitMerchant(resource.data.placeId);
+      allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.claimCode is string
+        && request.resource.data.claimCode.size() == 10
+        && request.resource.data.claimCode.matches('^FID-[A-Z0-9]+')
+        && request.resource.data.createdAt == request.time;
+      allow update: if isViveLojaAdmin() || (
+        isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'deliveredAt', 'deliveredBy', 'updatedAt'])
+        && request.resource.data.status == 'delivered'
+        && request.resource.data.deliveredBy == request.auth.uid
+        && request.resource.data.deliveredAt == request.time
+        && request.resource.data.updatedAt == request.time
+      );
+      allow delete: if isViveLojaAdmin();
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
