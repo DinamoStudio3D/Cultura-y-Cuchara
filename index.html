@@ -697,7 +697,7 @@
             const section=document.getElementById('dia-turismo');if(!section)return;
             section.classList.toggle('hidden',config.active===false);
             const primary=safeColor(config.primaryColor,defaults.primaryColor),secondary=safeColor(config.secondaryColor,defaults.secondaryColor),background=safeColor(config.backgroundColor,defaults.backgroundColor);
-            section.style.background=`linear-gradient(135deg,${background},${primary}33,#121212)`;
+            section.style.background=`linear-gradient(135deg,${background},#0b3028,#121212)`;
             section.style.borderColor=primary+'55';
             const glow=document.getElementById('tourismCampaignGlow');if(glow)glow.style.background=`radial-gradient(circle at 15% 20%,${primary} 0,transparent 28%),radial-gradient(circle at 85% 80%,${secondary} 0,transparent 30%)`;
             const icon=document.getElementById('tourismCampaignIcon');if(icon)icon.className=`fa-solid ${allowedIcons.has(config.icon)?config.icon:defaults.icon}`;
