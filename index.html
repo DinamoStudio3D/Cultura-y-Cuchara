@@ -639,6 +639,79 @@
         </div>
     </section>
 
+
+    <!-- World Tourism Day 2026 -->
+    <section id="dia-turismo" class="relative overflow-hidden bg-gradient-to-br from-[#071f1b] via-[#0b3028] to-[#121212] text-white py-16 px-4 border-y border-emerald-400/25">
+        <div class="absolute inset-0 pointer-events-none opacity-30" style="background:radial-gradient(circle at 15% 20%,#10b981 0,transparent 28%),radial-gradient(circle at 85% 80%,#ea580c 0,transparent 30%)"></div>
+        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] rotate-12 pointer-events-none"><i class="fa-solid fa-earth-americas"></i></div>
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-stretch">
+                <div class="reveal">
+                    <div class="flex flex-wrap items-center gap-3 mb-5">
+                        <span class="bg-emerald-400 text-emerald-950 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[.18em]"><i class="fa-solid fa-calendar-day mr-2"></i>27 de septiembre</span>
+                        <span class="border border-white/20 bg-white/5 px-4 py-1.5 rounded-full text-xs font-bold">Día Mundial del Turismo</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight">Celebremos a Loja: <span class="text-emerald-300">cada sabor cuenta una historia</span></h2>
+                    <p class="text-sm sm:text-base text-emerald-50/80 leading-relaxed mt-5 max-w-3xl">El turismo conecta personas, cultura, sabores y comunidades. Este 27 de septiembre te invitamos a recorrer Loja, apoyar a sus negocios locales y descubrir los lugares que hacen única a nuestra ciudad.</p>
+                    <div class="grid sm:grid-cols-3 gap-3 mt-7">
+                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-utensils text-orange-300 text-xl"></i><strong class="block mt-2">Saborea Loja</strong><span class="text-xs text-white/60">Visita cafeterías y restaurantes.</span></div>
+                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-landmark text-emerald-300 text-xl"></i><strong class="block mt-2">Vive su cultura</strong><span class="text-xs text-white/60">Conoce historias y tradiciones.</span></div>
+                        <div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid fa-store text-amber-300 text-xl"></i><strong class="block mt-2">Apoya lo local</strong><span class="text-xs text-white/60">Elige emprendimientos lojanos.</span></div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 mt-7">
+                        <a href="#mapa" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black rounded-xl px-6 py-3.5 text-sm text-center transition"><i class="fa-solid fa-map-location-dot mr-2"></i>Explorar Loja</a>
+                        <a href="#pasaporte" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-black rounded-xl px-6 py-3.5 text-sm text-center transition"><i class="fa-solid fa-passport mr-2"></i>Iniciar mi Pasaporte</a>
+                        <button type="button" onclick="shareTourismDay()" class="bg-orange-500 hover:bg-orange-400 text-white font-black rounded-xl px-6 py-3.5 text-sm transition"><i class="fa-brands fa-whatsapp mr-2"></i>Compartir</button>
+                    </div>
+                </div>
+                <aside class="reveal rounded-3xl bg-black/35 border border-emerald-300/25 p-6 sm:p-8 flex flex-col justify-between shadow-2xl">
+                    <div>
+                        <p class="text-emerald-300 text-xs font-black uppercase tracking-[.2em]"><i class="fa-solid fa-route mr-2"></i>Cultura y Cuchara</p>
+                        <h3 id="tourismDayCountdownTitle" class="text-2xl sm:text-3xl font-black mt-3">Faltan</h3>
+                        <div id="tourismDayCountdown" class="grid grid-cols-4 gap-2 mt-5" aria-live="polite">
+                            <div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong id="tourismDays" class="block text-2xl sm:text-3xl text-emerald-300">--</strong><span class="text-[10px] uppercase text-white/55">Días</span></div>
+                            <div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong id="tourismHours" class="block text-2xl sm:text-3xl text-emerald-300">--</strong><span class="text-[10px] uppercase text-white/55">Horas</span></div>
+                            <div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong id="tourismMinutes" class="block text-2xl sm:text-3xl text-emerald-300">--</strong><span class="text-[10px] uppercase text-white/55">Min.</span></div>
+                            <div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong id="tourismSeconds" class="block text-2xl sm:text-3xl text-emerald-300">--</strong><span class="text-[10px] uppercase text-white/55">Seg.</span></div>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-white/10 flex items-start gap-4">
+                        <div class="w-14 h-14 shrink-0 rounded-2xl bg-orange-500 text-white grid place-items-center text-2xl shadow-lg"><i class="fa-solid fa-face-smile-beam"></i></div>
+                        <div><p class="font-black text-orange-300">Mensaje de Chabaquito</p><p class="text-sm text-white/70 mt-1">“Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!”</p></div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+    <script>
+    (function(){
+        const target=new Date('2026-09-27T00:00:00-05:00').getTime();
+        const end=new Date('2026-09-28T00:00:00-05:00').getTime();
+        function updateTourismDayCountdown(){
+            const now=Date.now(),title=document.getElementById('tourismDayCountdownTitle');
+            if(!title)return;
+            if(now>=target&&now<end){title.textContent='¡Hoy celebramos el turismo!';['tourismDays','tourismHours','tourismMinutes','tourismSeconds'].forEach(id=>document.getElementById(id).textContent='00');return;}
+            if(now>=end){title.textContent='Seguimos celebrando y viviendo Loja';document.getElementById('tourismDayCountdown').classList.add('hidden');return;}
+            let remaining=Math.max(0,target-now);
+            const days=Math.floor(remaining/86400000);remaining%=86400000;
+            const hours=Math.floor(remaining/3600000);remaining%=3600000;
+            const minutes=Math.floor(remaining/60000),seconds=Math.floor((remaining%60000)/1000);
+            document.getElementById('tourismDays').textContent=String(days).padStart(2,'0');
+            document.getElementById('tourismHours').textContent=String(hours).padStart(2,'0');
+            document.getElementById('tourismMinutes').textContent=String(minutes).padStart(2,'0');
+            document.getElementById('tourismSeconds').textContent=String(seconds).padStart(2,'0');
+        }
+        window.shareTourismDay=function(){
+            const text='Este 27 de septiembre celebremos el Día Mundial del Turismo recorriendo, saboreando y viviendo Loja con Cultura y Cuchara.';
+            const url='https://cultura-y-cuchara.vercel.app/#dia-turismo';
+            if(navigator.share){navigator.share({title:'Día Mundial del Turismo en Loja',text,url}).catch(()=>{});return;}
+            window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');
+        };
+        updateTourismDayCountdown();
+        setInterval(updateTourismDayCountdown,1000);
+    })();
+    </script>
+
     <!-- FIAVL Live Mode -->
     <section id="festival-live" class="bg-[#090914] text-white py-12 px-4 border-y border-fuchsia-500/30 relative overflow-hidden">
         <div class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
