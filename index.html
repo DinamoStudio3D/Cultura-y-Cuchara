@@ -6727,6 +6727,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         let missionRewardIntent=false;
         let missionRewardLoadedKey='';
+        let missionRewardCampaignStock=null;
+        let missionRewardCampaignUnsubscribe=null;
         function missionRewardCampaignActive(){
             if(explorerBenefitConfig.active!==true)return false;
             const now=Date.now(),start=explorerBenefitConfig.startAt?new Date(explorerBenefitConfig.startAt).getTime():0,end=explorerBenefitConfig.endAt?new Date(explorerBenefitConfig.endAt).getTime():0;
@@ -6744,6 +6746,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const labels=currentLang==='en'?{pending:'Pending',delivered:'Delivered',cancelled:'Cancelled'}:{pending:'Pendiente',delivered:'Entregado',cancelled:'Anulado'},tones={pending:'bg-amber-500/20 text-amber-200',delivered:'bg-emerald-500/20 text-emerald-200',cancelled:'bg-red-500/20 text-red-200'};
             if(status){status.textContent=labels[data.status]||labels.pending;status.className=`inline-block mt-2 text-[10px] font-black uppercase rounded-full px-2.5 py-1 ${tones[data.status]||tones.pending}`;}
         }
+        function watchMissionRewardCampaignStock(){
+            if(missionRewardCampaignUnsubscribe){missionRewardCampaignUnsubscribe();missionRewardCampaignUnsubscribe=null;}
+            missionRewardCampaignStock=null;if(!db)return;
+            const campaignId=String(explorerBenefitConfig.campaignId||'misiones-2026').replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,60);
+            missionRewardCampaignUnsubscribe=db.collection('missionRewardCampaigns').doc(campaignId).onSnapshot(snapshot=>{missionRewardCampaignStock=snapshot.exists?snapshot.data():null;renderMissionCommercialReward();},()=>{missionRewardCampaignStock=null;renderMissionCommercialReward();});
+        }
         async function loadExistingMissionRewardClaim(){
             const user=visitorAuth?.currentUser,campaignId=String(explorerBenefitConfig.campaignId||'misiones-2026').replace(/[^a-zA-Z0-9_-]/g,'-');if(!user||!db)return;
             const key=`${user.uid}_${campaignId}`;if(missionRewardLoadedKey===key)return;missionRewardLoadedKey=key;
@@ -6759,8 +6767,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             document.getElementById('missionRewardOfferDescription').textContent=(en&&config.descriptionEn)||config.description||'';
             const image=document.getElementById('missionRewardImage');image.classList.toggle('hidden',!config.imageUrl);if(config.imageUrl)image.src=config.imageUrl;
             const validity=document.getElementById('missionRewardValidity'),parts=[];if(config.startAt)parts.push((en?'From ':'Desde ')+new Date(config.startAt).toLocaleDateString(en?'en-US':'es-EC'));if(config.endAt)parts.push((en?'until ':'hasta ')+new Date(config.endAt).toLocaleDateString(en?'en-US':'es-EC'));validity.textContent=parts.join(' ');validity.classList.toggle('hidden',!parts.length);
-            const availability=document.getElementById('missionRewardAvailability');availability.textContent=config.stock?(en?`Up to ${config.stock} rewards`:`Hasta ${config.stock} recompensas`):'';availability.classList.toggle('hidden',!config.stock);
+            const stock=Math.max(0,Number(missionRewardCampaignStock?.stock??config.stock)||0),issued=Math.max(0,Number(missionRewardCampaignStock?.issuedCount)||0),remaining=Math.max(0,stock-issued),availability=document.getElementById('missionRewardAvailability');availability.textContent=remaining>0?(en?`${remaining} of ${stock} rewards left`:`Quedan ${remaining} de ${stock} recompensas`):(en?'Rewards sold out':'Recompensas agotadas');availability.classList.remove('hidden');
             const button=document.querySelector('#missionRewardClaimButton span');if(button)button.textContent=config.buttonText||(en?'Register and create my code':'Registrar y generar mi código');
+            const claimButton=document.getElementById('missionRewardClaimButton');if(claimButton){claimButton.disabled=remaining<=0;claimButton.classList.toggle('opacity-50',remaining<=0);claimButton.classList.toggle('cursor-not-allowed',remaining<=0);}
             const link=document.getElementById('missionRewardSponsorLink');link.classList.toggle('hidden',!config.url);link.href=config.url||'#';
             loadExistingMissionRewardClaim();
         }
@@ -6772,10 +6781,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const config=explorerBenefitConfig,campaignId=String(config.campaignId||'misiones-2026').replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,60),id=missionRewardClaimId(user,campaignId),button=document.getElementById('missionRewardClaimButton');
             if(button){button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generando código…';}
             try{
-                const ref=db.collection('missionRewardClaims').doc(id);
+                const ref=db.collection('missionRewardClaims').doc(id),campaignRef=db.collection('missionRewardCampaigns').doc(campaignId);
                 const data={campaignId,userId:user.uid,userName:currentVisitorProfile.fullName||user.displayName||'Visitante',userEmail:user.email||'',userWhatsapp:currentVisitorProfile.whatsapp||'',rewardTitle:config.title||'Beneficio de Explorador',sponsorName:config.sponsorName||'',claimCode:newMissionRewardCode(),status:'pending',completedMissions:5,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
-                await ref.set(data);displayMissionRewardClaim(data);missionRewardLoadedKey=id;showMissionRewardNotice(currentLang==='en'?'Reward registered. Show this code to the sponsor.':'Recompensa registrada. Presenta este código al patrocinador.');
+                await db.runTransaction(async transaction=>{const campaign=await transaction.get(campaignRef);if(!campaign.exists)throw Object.assign(new Error('campaign-not-ready'),{code:'campaign-not-ready'});const inventory=campaign.data(),stock=Math.max(0,Number(inventory.stock)||0),issued=Math.max(0,Number(inventory.issuedCount)||0);if(inventory.active!==true||issued>=stock)throw Object.assign(new Error('reward-stock-empty'),{code:'reward-stock-empty'});transaction.update(campaignRef,{issuedCount:issued+1,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});transaction.set(ref,data);});
+                displayMissionRewardClaim(data);missionRewardLoadedKey=id;showMissionRewardNotice(currentLang==='en'?'Reward registered. Show this code to the sponsor.':'Recompensa registrada. Presenta este código al patrocinador.');
             }catch(error){
+                if(error?.code==='reward-stock-empty'){showMissionRewardNotice(currentLang==='en'?'Rewards are sold out.':'Las recompensas se agotaron.',true);return;}
+                if(error?.code==='campaign-not-ready'){showMissionRewardNotice(currentLang==='en'?'The campaign inventory is not ready yet.':'Las existencias de la campaña todavía no están configuradas.',true);return;}
                 if(error?.code==='permission-denied'){
                     try{const existing=await db.collection('missionRewardClaims').doc(id).get();if(existing.exists){displayMissionRewardClaim(existing.data());missionRewardLoadedKey=id;showMissionRewardNotice(currentLang==='en'?'This reward was already registered to your account.':'Esta recompensa ya estaba registrada en tu cuenta.');return;}}catch(_){}
                 }
@@ -6793,6 +6805,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             explorerCertificateConfig = { ...explorerCertificateConfig, ...(data.certificate || {}) };
             if(explorerCertificateConfig.signature==='Vive Loja · Cultura y Cuchara')explorerCertificateConfig.signature='Vive Loja';
             explorerBenefitConfig = { ...explorerBenefitConfig, ...(data.benefit || {}) };
+            watchMissionRewardCampaignStock();
             const certificateControls = document.getElementById('certificateRewardControls');
             if (certificateControls) certificateControls.classList.toggle('hidden', explorerCertificateConfig.active === false);
             renderMissionBenefit();
