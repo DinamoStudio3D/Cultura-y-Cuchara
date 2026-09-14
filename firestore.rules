@@ -99,6 +99,14 @@ service cloud.firestore {
         && campaignId in get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.campaignIds;
     }
 
+    function hasPassportMerchantGrant(campaignId, mode) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid))
+        && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.active == true
+        && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.passportGrants is list
+        && campaignId + ':' + mode in get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.passportGrants;
+    }
+
     match /siteContent/{documentId} {
       allow read: if true;
       allow create, update, delete: if isViveLojaAdmin();
@@ -167,7 +175,8 @@ service cloud.firestore {
 
     match /passportCompletions/{completionId} {
       allow read: if isViveLojaAdmin()
-        || (request.auth != null && resource.data.userId == request.auth.uid);
+        || (request.auth != null && resource.data.userId == request.auth.uid)
+        || hasPassportMerchantGrant(resource.data.campaignId, resource.data.mode);
       allow delete: if isViveLojaAdmin();
       allow create: if request.auth != null
         && exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid))
@@ -190,8 +199,36 @@ service cloud.firestore {
         && request.resource.data.claimCode.size() >= 6
         && request.resource.data.claimCode.size() <= 20
         && request.resource.data.status == 'pending'
-        && request.resource.data.completedAt == request.time;
-      allow update: if isViveLojaAdmin();
+        && request.resource.data.completedAt == request.time
+        && existsAfter(/databases/$(database)/documents/passportRewardClaimCodes/$(request.resource.data.claimCode))
+        && getAfter(/databases/$(database)/documents/passportRewardClaimCodes/$(request.resource.data.claimCode)).data.completionId == completionId;
+      allow update: if isViveLojaAdmin() || (
+        hasPassportMerchantGrant(resource.data.campaignId, resource.data.mode)
+        && resource.data.status == 'pending'
+        && request.resource.data.status == 'delivered'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'deliveredAt', 'deliveredBy'
+        ])
+        && request.resource.data.deliveredAt == request.time
+        && request.resource.data.deliveredBy == request.auth.token.email
+      );
+    }
+
+    match /passportRewardClaimCodes/{claimCode} {
+      allow read: if isViveLojaAdmin()
+        || hasPassportMerchantGrant(resource.data.campaignId, resource.data.mode);
+      allow create: if isViveLojaAdmin() || (
+        request.auth != null
+        && request.resource.data.keys().hasOnly([
+          'completionId', 'campaignId', 'mode', 'userId', 'createdAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.completionId == request.auth.uid + '_' + request.resource.data.campaignId + '_' + request.resource.data.mode
+        && request.resource.data.createdAt == request.time
+        && existsAfter(/databases/$(database)/documents/passportCompletions/$(request.resource.data.completionId))
+        && getAfter(/databases/$(database)/documents/passportCompletions/$(request.resource.data.completionId)).data.claimCode == claimCode
+      );
+      allow update, delete: if isViveLojaAdmin();
     }
 
     // Existencias reales de las recompensas de Chabaquito
