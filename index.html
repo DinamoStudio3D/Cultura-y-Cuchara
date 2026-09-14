@@ -724,6 +724,9 @@
     })();
     </script>
 
+    <!-- Campaigns created from Administration -->
+    <div id="customCampaignsPublic" aria-live="polite"></div>
+
     <!-- FIAVL Live Mode -->
     <section id="festival-live" class="bg-[#090914] text-white py-12 px-4 border-y border-fuchsia-500/30 relative overflow-hidden">
         <div id="festivalCampaignGlow" class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
@@ -2887,6 +2890,35 @@
             );
         }
 
+
+        const CUSTOM_CAMPAIGN_ICONS=new Set(['fa-star','fa-landmark','fa-masks-theater','fa-earth-americas','fa-music','fa-mountain-sun','fa-camera-retro','fa-gift']);
+        const CUSTOM_CARD_ICONS=new Set(['fa-star','fa-utensils','fa-landmark','fa-store','fa-music','fa-camera-retro']);
+        let publicCustomCampaigns=[],customCampaignClockTimer=null;
+        function customCampaignColor(value,fallback){return /^#[0-9a-f]{6}$/i.test(String(value||''))?value:fallback;}
+        function customCampaignUrl(value,fallback='#'){try{const raw=String(value||fallback),url=new URL(raw,location.href);return raw.startsWith('#')||['http:','https:'].includes(url.protocol)?raw:fallback;}catch(_){return fallback;}}
+        function customCampaignPhase(item,now=Date.now()){const start=new Date(item.startDate).getTime(),end=new Date(item.endDate).getTime();if(!Number.isFinite(start)||!Number.isFinite(end))return 'invalid';return now<start?'before':now<=end?'live':'after';}
+        function customCampaignTime(distance){let remaining=Math.max(0,distance);const days=Math.floor(remaining/86400000);remaining%=86400000;const hours=Math.floor(remaining/3600000);remaining%=3600000;return[days,hours,Math.floor(remaining/60000),Math.floor((remaining%60000)/1000)].map(value=>String(value).padStart(2,'0'));}
+        function renderCustomCampaignsPublic(){
+            const container=document.getElementById('customCampaignsPublic');if(!container)return;
+            const items=publicCustomCampaigns.filter(item=>item&&item.status==='published'&&item.active!==false).sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+            container.innerHTML=items.map(item=>{
+                const phase=customCampaignPhase(item),primary=customCampaignColor(item.primaryColor,'#38bdf8'),secondary=customCampaignColor(item.secondaryColor,'#f97316'),background=customCampaignColor(item.backgroundColor,'#081b29'),icon=CUSTOM_CAMPAIGN_ICONS.has(item.icon)?item.icon:'fa-star',slug=String(item.slug||item.id||'campana').replace(/[^a-z0-9-]/gi,'-');
+                const after=phase==='after',title=after?(item.afterTitle||item.title):(item.title||item.name||'Campaña Vive Loja'),description=after?(item.afterDescription||item.description):(item.description||''),highlight=after?'':(item.highlight||''),status=phase==='live'?(item.badgeLive||'¡Estamos celebrando!'):after?(item.badgeAfter||'Revive esta celebración'):(item.badgeBefore||'Próximamente');
+                const cards=(Array.isArray(item.cards)?item.cards:[]).filter(card=>card&&(card.title||card.text)).slice(0,3);
+                const cardsHtml=cards.length?`<div class="grid sm:grid-cols-${Math.min(3,cards.length)} gap-3 mt-7">${cards.map(card=>`<div class="rounded-2xl bg-white/[.07] border border-white/10 p-4"><i class="fa-solid ${CUSTOM_CARD_ICONS.has(card.icon)?card.icon:'fa-star'} text-xl" style="color:${primary}"></i><strong class="block mt-2">${escapeHTML(card.title||'')}</strong><span class="text-xs text-white/60">${escapeHTML(card.text||'')}</span></div>`).join('')}</div>`:''; 
+                const button=(label,url,main)=>label?`<a href="${escapeHTML(customCampaignUrl(url))}" class="${main?'text-slate-950':'bg-white/10 border border-white/25 text-white'} font-black rounded-xl px-6 py-3.5 text-sm text-center transition hover:brightness-110" ${main?`style="background:${primary}"`:''}>${escapeHTML(label)}</a>`:'';
+                return `<section id="campana-${escapeHTML(slug)}" data-custom-campaign-id="${escapeHTML(item.id)}" data-campaign-phase="${phase}" class="relative overflow-hidden text-white py-16 px-4 border-y" style="background:linear-gradient(135deg,${background},${primary}33,#121212);border-color:${primary}55"><div class="absolute inset-0 opacity-25 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,${primary} 0,transparent 28%),radial-gradient(circle at 85% 80%,${secondary} 0,transparent 30%)"></div><div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] rotate-12 pointer-events-none" aria-hidden="true"><i class="fa-solid ${icon}"></i></div><div class="max-w-7xl mx-auto relative z-10"><div class="grid lg:grid-cols-[1.15fr_.85fr] gap-8 items-stretch"><div class="reveal active"><div class="flex flex-wrap items-center gap-3 mb-5"><span class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[.18em] text-slate-950" style="background:${primary}"><i class="fa-solid fa-calendar-day mr-2"></i>${escapeHTML(item.dateLabel||item.publicName||'Campaña especial')}</span><span class="border border-white/20 bg-white/5 px-4 py-1.5 rounded-full text-xs font-bold">${escapeHTML(item.publicName||item.name||'Vive Loja')}</span></div><h2 class="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight">${escapeHTML(title)} ${highlight?`<span style="color:${primary}">${escapeHTML(highlight)}</span>`:''}</h2><p class="text-sm sm:text-base text-white/75 leading-relaxed mt-5 max-w-3xl">${escapeHTML(description)}</p>${cardsHtml}<div class="flex flex-col sm:flex-row gap-3 mt-7">${button(item.primaryButtonLabel,item.primaryButtonUrl,true)}${button(item.secondaryButtonLabel,item.secondaryButtonUrl,false)}${item.shareText?`<button type="button" onclick="shareCustomCampaign('${escapeHTML(item.id)}')" class="text-white font-black rounded-xl px-6 py-3.5 text-sm hover:brightness-110" style="background:${secondary}"><i class="fa-brands fa-whatsapp mr-2"></i>Compartir</button>`:''}</div></div><aside class="reveal active rounded-3xl bg-black/35 border border-white/15 p-6 sm:p-8 flex flex-col justify-between shadow-2xl"><div><p class="text-xs font-black uppercase tracking-[.2em]" style="color:${primary}"><i class="fa-solid fa-route mr-2"></i>Vive Loja</p><h3 class="custom-campaign-status text-2xl sm:text-3xl font-black mt-3">${escapeHTML(status)}</h3><div class="custom-campaign-countdown ${after?'hidden':''} grid grid-cols-4 gap-2 mt-5"><div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong class="block text-2xl sm:text-3xl" style="color:${primary}" data-unit="days">--</strong><span class="text-[10px] uppercase text-white/55">Días</span></div><div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong class="block text-2xl sm:text-3xl" style="color:${primary}" data-unit="hours">--</strong><span class="text-[10px] uppercase text-white/55">Horas</span></div><div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong class="block text-2xl sm:text-3xl" style="color:${primary}" data-unit="minutes">--</strong><span class="text-[10px] uppercase text-white/55">Min.</span></div><div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong class="block text-2xl sm:text-3xl" style="color:${primary}" data-unit="seconds">--</strong><span class="text-[10px] uppercase text-white/55">Seg.</span></div></div></div>${item.chabaquitoMessage?`<div class="mt-6 pt-6 border-t border-white/10 flex items-start gap-4"><div class="w-14 h-14 shrink-0 rounded-2xl text-white grid place-items-center text-2xl" style="background:${secondary}"><i class="fa-solid fa-face-smile-beam"></i></div><div><p class="font-black" style="color:${secondary}">Mensaje de Chabaquito</p><p class="text-sm text-white/70 mt-1">“${escapeHTML(item.chabaquitoMessage)}”</p></div></div>`:''}</aside></div></div></section>`;
+            }).join('');
+            updateCustomCampaignClocks();
+        }
+        function updateCustomCampaignClocks(){
+            const now=Date.now();let phaseChanged=false;
+            document.querySelectorAll('[data-custom-campaign-id]').forEach(section=>{const item=publicCustomCampaigns.find(campaign=>campaign.id===section.dataset.customCampaignId);if(!item)return;const phase=customCampaignPhase(item,now);if(phase!==section.dataset.campaignPhase){phaseChanged=true;return;}if(phase==='after')return;const target=phase==='before'?new Date(item.startDate).getTime():new Date(item.endDate).getTime(),values=customCampaignTime(target-now);['days','hours','minutes','seconds'].forEach((unit,index)=>{const element=section.querySelector(`[data-unit="${unit}"]`);if(element)element.textContent=values[index];});});
+            if(phaseChanged)renderCustomCampaignsPublic();
+        }
+        function applyCustomCampaigns(data){publicCustomCampaigns=Array.isArray(data?.items)?data.items:[];renderCustomCampaignsPublic();if(customCampaignClockTimer)clearInterval(customCampaignClockTimer);customCampaignClockTimer=setInterval(updateCustomCampaignClocks,1000);}
+        function shareCustomCampaign(id){const item=publicCustomCampaigns.find(campaign=>campaign.id===id);if(!item)return;const url=location.origin+location.pathname+'#campana-'+String(item.slug||item.id).replace(/[^a-z0-9-]/gi,'-'),text=item.shareText||item.description||item.title;if(navigator.share){navigator.share({title:item.publicName||item.name,text,url}).catch(()=>{});return;}window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');}
+
         const defaultFestivalConfig = {
             active: true,
             demo: true,
@@ -3083,6 +3115,10 @@
             db.collection('siteContent').doc('tourismDay').onSnapshot(
                 snapshot => window.applyTourismDayConfiguration?.(snapshot.exists ? snapshot.data() : null),
                 () => window.applyTourismDayConfiguration?.(null)
+            );
+            db.collection('siteContent').doc('customCampaigns').onSnapshot(
+                snapshot => applyCustomCampaigns(snapshot.exists ? snapshot.data() : {}),
+                () => applyCustomCampaigns({})
             );
             db.collection('siteContent').doc('festival').onSnapshot(
                 snapshot => applyFestivalConfiguration(snapshot.exists ? snapshot.data() : defaultFestivalConfig),
