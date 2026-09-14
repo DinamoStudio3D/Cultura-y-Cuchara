@@ -397,6 +397,10 @@
                                 <div class="bg-orange-500/10 rounded-xl p-3 sm:p-4"><b id="missionStatRedemption" class="text-2xl text-orange-300">0%</b><span class="block text-xs text-gray-400">Porcentaje de canje</span></div>
                             </div>
                         </div>
+                        <div class="bg-cyan-500/10 border border-cyan-500/25 rounded-2xl p-4 sm:p-5">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><div><h3 class="font-black text-lg text-cyan-100">Accesos de negocios</h3><p class="text-xs text-gray-400">Autoriza quién puede validar y entregar recompensas de la campaña.</p></div><div class="flex flex-wrap gap-2"><a href="merchant-rewards.html" target="_blank" class="border border-cyan-500/40 text-cyan-200 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Abrir portal</a><button type="button" onclick="prepareExistingMissionRewardCodes()" class="border border-gray-600 text-gray-200 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Preparar códigos anteriores</button></div></div>
+                            <div class="grid xl:grid-cols-2 gap-4"><div><h4 class="text-sm font-black mb-2">Solicitudes pendientes</h4><div id="missionMerchantRequestsList" class="space-y-3"><p class="text-sm text-gray-500">No hay solicitudes.</p></div></div><div><h4 class="text-sm font-black mb-2">Negocios autorizados</h4><div id="missionMerchantsList" class="space-y-3"><p class="text-sm text-gray-500">No hay negocios autorizados.</p></div></div></div>
+                        </div>
                         <div class="bg-black/30 border border-white/10 rounded-2xl p-4 sm:p-5">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><div><h3 class="font-black text-lg">Ganadores y códigos</h3><p id="missionClaimsSummary" class="text-xs text-gray-400">0 códigos registrados</p></div><input id="missionClaimSearch" oninput="renderMissionRewardClaims()" class="field sm:max-w-xs" placeholder="Buscar código o visitante"></div>
                             <div id="missionRewardClaimsList" class="space-y-3"><p class="text-sm text-gray-500">Todavía no existen códigos.</p></div>
@@ -616,6 +620,9 @@ const maintenanceRef = db.collection('siteContent').doc('maintenance');
 const chabaquitoRef = db.collection('siteContent').doc('chabaquito');
 const missionRewardClaimsRef = db.collection('missionRewardClaims');
 const missionRewardCampaignsRef = db.collection('missionRewardCampaigns');
+const missionRewardClaimCodesRef = db.collection('missionRewardClaimCodes');
+const missionRewardMerchantRequestsRef = db.collection('missionRewardMerchantRequests');
+const missionRewardMerchantsRef = db.collection('missionRewardMerchants');
 const passportRef = db.collection('siteContent').doc('passport');
 const settingsRef = db.collection('settings').doc('main');
 const subscriptionsRef = db.collection('settings').doc('subscriptions');
@@ -649,6 +656,8 @@ let adminBusinessEvents=[];let businessEventsUnsubscribe=null;
 let adminPassportCompletions=[];let passportCompletionsUnsubscribe=null;
 let adminMissionRewardClaims=[];let missionRewardClaimsUnsubscribe=null;
 let adminMissionRewardCampaigns=[];let missionRewardCampaignsUnsubscribe=null;
+let adminMissionMerchantRequests=[];let missionMerchantRequestsUnsubscribe=null;
+let adminMissionMerchants=[];let missionMerchantsUnsubscribe=null;
 let adminPassportPins={};let passportPinsUnsubscribe=null;let legacyPinMigrationRunning=false;
 let adminBusinessApplications=[];let businessApplicationsUnsubscribe=null;
 let adminUserProfiles=[];let userProfilesUnsubscribe=null;
@@ -1468,6 +1477,8 @@ auth.onAuthStateChanged(async user => {
         if (passportCompletionsUnsubscribe) passportCompletionsUnsubscribe();
         if (missionRewardClaimsUnsubscribe) missionRewardClaimsUnsubscribe();
         if (missionRewardCampaignsUnsubscribe) missionRewardCampaignsUnsubscribe();
+        if (missionMerchantRequestsUnsubscribe) missionMerchantRequestsUnsubscribe();
+        if (missionMerchantsUnsubscribe) missionMerchantsUnsubscribe();
         if (passportPinsUnsubscribe) passportPinsUnsubscribe();
         if (businessApplicationsUnsubscribe) businessApplicationsUnsubscribe();
         if (userProfilesUnsubscribe) userProfilesUnsubscribe();
@@ -1478,6 +1489,8 @@ auth.onAuthStateChanged(async user => {
         passportCompletionsUnsubscribe = null;
         missionRewardClaimsUnsubscribe = null;
         missionRewardCampaignsUnsubscribe = null;
+        missionMerchantRequestsUnsubscribe = null;
+        missionMerchantsUnsubscribe = null;
         passportPinsUnsubscribe = null;
         businessApplicationsUnsubscribe = null;
         userProfilesUnsubscribe = null;
@@ -1541,6 +1554,8 @@ auth.onAuthStateChanged(async user => {
         if(passportCompletionsUnsubscribe)passportCompletionsUnsubscribe();passportCompletionsUnsubscribe=passportCompletionsRef.orderBy('completedAt','desc').limit(5000).onSnapshot(snapshot=>{adminPassportCompletions=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));refreshPassportStats();renderAnalyticsDashboard();},()=>{adminPassportCompletions=[];refreshPassportStats();renderAnalyticsDashboard();});
         if(missionRewardClaimsUnsubscribe)missionRewardClaimsUnsubscribe();missionRewardClaimsUnsubscribe=missionRewardClaimsRef.orderBy('createdAt','desc').limit(2000).onSnapshot(snapshot=>{adminMissionRewardClaims=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderMissionRewardClaims();},()=>{adminMissionRewardClaims=[];renderMissionRewardClaims();message(document.getElementById('chabaquitoMessage'),'No fue posible cargar los códigos. Publica las reglas nuevas de Firestore.');});
         if(missionRewardCampaignsUnsubscribe)missionRewardCampaignsUnsubscribe();missionRewardCampaignsUnsubscribe=missionRewardCampaignsRef.onSnapshot(snapshot=>{adminMissionRewardCampaigns=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderMissionRewardClaims();},()=>{adminMissionRewardCampaigns=[];renderMissionRewardClaims();});
+        if(missionMerchantRequestsUnsubscribe)missionMerchantRequestsUnsubscribe();missionMerchantRequestsUnsubscribe=missionRewardMerchantRequestsRef.onSnapshot(snapshot=>{adminMissionMerchantRequests=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderMissionMerchantAccess();},()=>{adminMissionMerchantRequests=[];renderMissionMerchantAccess();});
+        if(missionMerchantsUnsubscribe)missionMerchantsUnsubscribe();missionMerchantsUnsubscribe=missionRewardMerchantsRef.onSnapshot(snapshot=>{adminMissionMerchants=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderMissionMerchantAccess();},()=>{adminMissionMerchants=[];renderMissionMerchantAccess();});
         if(passportPinsUnsubscribe)passportPinsUnsubscribe();passportPinsUnsubscribe=passportPinsRef.onSnapshot(snapshot=>{adminPassportPins={};snapshot.docs.forEach(doc=>{adminPassportPins[doc.id]=doc.data().pin||'';});renderControlCenter();},()=>{adminPassportPins={};renderControlCenter();});
         if(businessApplicationsUnsubscribe)businessApplicationsUnsubscribe();businessApplicationsUnsubscribe=businessApplicationsRef.orderBy('submittedAt','desc').limit(500).onSnapshot(snapshot=>{adminBusinessApplications=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderBusinessApplications();renderSubscriptionCenter();renderControlCenter();},()=>{adminBusinessApplications=[];renderBusinessApplications();renderControlCenter();message(document.getElementById('applicationsMessage'),'No fue posible cargar las solicitudes. Publica las reglas actualizadas de Firestore.');});
         if(userProfilesUnsubscribe)userProfilesUnsubscribe();userProfilesUnsubscribe=userProfilesRef.onSnapshot(snapshot=>{adminUserProfiles=snapshot.docs.map(doc=>({id:doc.id,...doc.data()})).sort((a,b)=>(userProfileDate(b.createdAt)?.getTime()||0)-(userProfileDate(a.createdAt)?.getTime()||0));renderRegisteredUsers();},()=>{adminUserProfiles=[];renderRegisteredUsers();message(document.getElementById('usersMessage'),'No fue posible cargar los usuarios registrados. Revisa las reglas de Firestore.');});
@@ -1657,6 +1672,22 @@ function downloadMissionRewardsCsv(){
     claims.forEach(item=>rows.push([item.claimCode||item.id,item.campaignId||'',item.userName||'',item.userEmail||'',item.userWhatsapp||'',item.rewardTitle||'',item.sponsorName||'',labels[item.status]||item.status||'Pendiente',missionRewardClaimDate(item.createdAt),item.processedAt?missionRewardClaimDate(item.processedAt):'',item.processedBy||'']));
     const csv='\uFEFF'+rows.map(row=>row.map(missionRewardCsvValue).join(';')).join('\r\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');
     link.href=url;link.download=`recompensas-${(campaign||'todas').replace(/[^a-zA-Z0-9_-]/g,'-')}.csv`;document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+}
+function renderMissionMerchantAccess(){
+    const requestsBox=document.getElementById('missionMerchantRequestsList'),merchantsBox=document.getElementById('missionMerchantsList');if(!requestsBox||!merchantsBox)return;
+    const pending=adminMissionMerchantRequests.filter(item=>item.status!=='approved');
+    requestsBox.innerHTML=pending.length?pending.map(item=>`<article class="bg-black/25 border border-cyan-500/20 rounded-xl p-3"><p class="text-sm font-black">${escapeAdminHtml(item.displayName||'Encargado del negocio')}</p><p class="text-xs text-gray-400 break-all">${escapeAdminHtml(item.email||'')}</p><label class="block mt-3"><span class="text-xs text-gray-400">Nombre del negocio</span><input id="merchantBusiness_${item.id}" class="field !py-2 mt-1" placeholder="Ej. Mamá Lola"></label><button type="button" onclick="authorizeMissionMerchant('${item.id}')" class="w-full mt-2 bg-cyan-400 text-cyan-950 rounded-lg px-3 py-2 text-xs font-black">Autorizar para esta campaña</button></article>`).join(''):'<p class="text-sm text-gray-500 border border-dashed border-gray-700 rounded-xl p-4">No hay solicitudes pendientes.</p>';
+    merchantsBox.innerHTML=adminMissionMerchants.length?adminMissionMerchants.map(item=>`<article class="bg-black/25 border ${item.active===false?'border-red-500/25':'border-emerald-500/25'} rounded-xl p-3"><div class="flex items-start justify-between gap-3"><div class="min-w-0"><p class="text-sm font-black">${escapeAdminHtml(item.businessName||item.displayName||'Negocio')}</p><p class="text-xs text-gray-400 break-all">${escapeAdminHtml(item.email||'')}</p><p class="text-[11px] text-cyan-200 mt-1">${escapeAdminHtml((item.campaignIds||[]).join(', '))}</p></div><span class="text-[10px] font-black rounded-full px-2 py-1 ${item.active===false?'bg-red-500/15 text-red-200':'bg-emerald-500/15 text-emerald-200'}">${item.active===false?'Suspendido':'Activo'}</span></div><button type="button" onclick="toggleMissionMerchant('${item.id}',${item.active===false?'true':'false'})" class="mt-3 border ${item.active===false?'border-emerald-500/40 text-emerald-200':'border-red-500/40 text-red-200'} rounded-lg px-3 py-2 text-xs font-bold">${item.active===false?'Reactivar acceso':'Suspender acceso'}</button></article>`).join(''):'<p class="text-sm text-gray-500 border border-dashed border-gray-700 rounded-xl p-4">No hay negocios autorizados.</p>';
+}
+async function authorizeMissionMerchant(uid){
+    const request=adminMissionMerchantRequests.find(item=>item.id===uid),businessName=document.getElementById(`merchantBusiness_${uid}`)?.value.trim(),campaignId=document.getElementById('missionBenefitCampaignId').value.trim().replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,60);
+    if(!request||!businessName||!campaignId){message(document.getElementById('chabaquitoMessage'),'Escribe el nombre del negocio y verifica el identificador de campaña.');return;}
+    try{const batch=db.batch(),now=firebase.firestore.FieldValue.serverTimestamp();batch.set(missionRewardMerchantsRef.doc(uid),{uid,email:request.email||'',displayName:request.displayName||'',businessName,campaignIds:[campaignId],active:true,createdAt:now,updatedAt:now},{merge:true});batch.set(missionRewardMerchantRequestsRef.doc(uid),{status:'approved',approvedAt:now,approvedBy:auth.currentUser.email},{merge:true});await batch.commit();message(document.getElementById('chabaquitoMessage'),`${businessName} ya puede validar recompensas de ${campaignId}.`,true);}catch(_){message(document.getElementById('chabaquitoMessage'),'No se pudo autorizar el negocio. Revisa las reglas de Firestore.');}
+}
+async function toggleMissionMerchant(uid,active){try{await missionRewardMerchantsRef.doc(uid).update({active,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email});message(document.getElementById('chabaquitoMessage'),active?'Acceso reactivado.':'Acceso suspendido.',true);}catch(_){message(document.getElementById('chabaquitoMessage'),'No se pudo cambiar el acceso.');}}
+async function prepareExistingMissionRewardCodes(){
+    const missing=adminMissionRewardClaims.filter(item=>item.claimCode&&item.campaignId);if(!missing.length){message(document.getElementById('chabaquitoMessage'),'No existen códigos para preparar.');return;}if(!confirm(`Se prepararán ${missing.length} códigos para el portal de negocios. ¿Continuar?`))return;
+    try{for(let offset=0;offset<missing.length;offset+=400){const batch=db.batch();missing.slice(offset,offset+400).forEach(item=>batch.set(missionRewardClaimCodesRef.doc(item.claimCode),{claimId:item.id,campaignId:item.campaignId,userId:item.userId||'',createdAt:item.createdAt||firebase.firestore.FieldValue.serverTimestamp()},{merge:true}));await batch.commit();}message(document.getElementById('chabaquitoMessage'),`${missing.length} códigos quedaron preparados para los negocios.`,true);}catch(_){message(document.getElementById('chabaquitoMessage'),'No se pudieron preparar todos los códigos. Publica primero las reglas nuevas.');}
 }
 async function updateMissionRewardClaim(id,status){
     const item=adminMissionRewardClaims.find(entry=>entry.id===id);if(!item)return;
