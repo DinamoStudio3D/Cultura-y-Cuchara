@@ -308,6 +308,57 @@
                         <div id="tourismCampaignMessageBox" class="hidden text-sm rounded-xl p-3" role="alert"></div>
                         <button id="tourismCampaignSaveBtn" type="submit" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Día del Turismo</button>
                     </form>
+
+                    <div class="border-t border-gray-800 my-8"></div>
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
+                        <div><p class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Campañas adicionales</p><h3 class="text-xl font-black mt-1">Crea tus propias campañas</h3><p class="text-sm text-gray-400 mt-1">Publica temporadas, fiestas, aniversarios o promociones sin modificar el código.</p></div>
+                        <button type="button" onclick="openNewCustomCampaign()" class="bg-cyan-500 hover:bg-cyan-400 text-black font-black rounded-xl px-5 py-3 text-sm whitespace-nowrap"><i class="fa-solid fa-plus mr-2"></i>Nueva campaña</button>
+                    </div>
+                    <div id="customCampaignsEmpty" class="hidden border border-dashed border-gray-700 rounded-2xl p-7 text-center text-sm text-gray-400">Todavía no existen campañas adicionales. Presiona <strong class="text-white">Nueva campaña</strong> para crear la primera.</div>
+                    <div id="customCampaignsList" class="space-y-3"></div>
+
+                    <form id="customCampaignForm" class="hidden mt-6 bg-cyan-500/[.06] border border-cyan-500/25 rounded-2xl p-4 sm:p-6 space-y-5">
+                        <div class="flex items-start justify-between gap-4"><div><p class="text-cyan-300 text-xs font-black uppercase tracking-widest">Editor</p><h4 id="customCampaignEditorTitle" class="text-xl font-black mt-1">Nueva campaña</h4></div><button type="button" onclick="closeCustomCampaignEditor()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10" aria-label="Cerrar editor"><i class="fa-solid fa-xmark"></i></button></div>
+                        <input id="customCampaignEditingId" type="hidden">
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <label><span class="text-sm font-semibold block mb-2">Estado</span><select id="customCampaignStatus" class="field"><option value="draft">Borrador</option><option value="published">Publicada</option></select></label>
+                            <label><span class="text-sm font-semibold block mb-2">Orden en la portada</span><input id="customCampaignOrder" class="field" type="number" min="1" max="999" value="1"></label>
+                            <label class="flex items-center justify-between gap-3 bg-black/30 rounded-xl p-4 border border-gray-800 mt-0 md:mt-7"><span class="text-sm font-bold">Campaña activa</span><input id="customCampaignActive" class="w-5 h-5 accent-cyan-500" type="checkbox" checked></label>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <label><span class="text-sm font-semibold block mb-2">Nombre interno *</span><input id="customCampaignName" class="field" maxlength="100" required placeholder="Fiestas de Loja 2026"></label>
+                            <label><span class="text-sm font-semibold block mb-2">Identificador *</span><input id="customCampaignSlug" class="field" maxlength="80" required placeholder="fiestas-loja-2026"></label>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Inicio *</span><input id="customCampaignStart" class="field" type="datetime-local" required></label><label><span class="text-sm font-semibold block mb-2">Finalización *</span><input id="customCampaignEnd" class="field" type="datetime-local" required></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Etiqueta superior</span><input id="customCampaignDateLabel" class="field" maxlength="80" placeholder="18 de noviembre"></label><label><span class="text-sm font-semibold block mb-2">Nombre visible</span><input id="customCampaignPublicName" class="field" maxlength="100" placeholder="Fiestas de Independencia de Loja"></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Título principal *</span><input id="customCampaignTitle" class="field" maxlength="140" required></label><label><span class="text-sm font-semibold block mb-2">Texto destacado</span><input id="customCampaignHighlight" class="field" maxlength="120"></label></div>
+                        <label><span class="text-sm font-semibold block mb-2">Descripción</span><textarea id="customCampaignDescription" class="field min-h-24" maxlength="600"></textarea></label>
+                        <label><span class="text-sm font-semibold block mb-2">Mensaje de Chabaquito</span><textarea id="customCampaignChabaquito" class="field min-h-20" maxlength="350"></textarea></label>
+                        <details class="bg-black/25 border border-gray-800 rounded-2xl p-4" open>
+                            <summary class="font-black cursor-pointer"><i class="fa-solid fa-layer-group text-cyan-300 mr-2"></i>Tres tarjetas informativas</summary>
+                            <div class="grid md:grid-cols-3 gap-4 mt-4">
+                                <div><label><span class="text-xs text-gray-400 block mb-1">Tarjeta 1 · título</span><input id="customCard1Title" class="field" maxlength="70"></label><label><span class="text-xs text-gray-400 block mt-2 mb-1">Descripción</span><input id="customCard1Text" class="field" maxlength="140"></label><label><span class="text-xs text-gray-400 block mt-2 mb-1">Icono</span><select id="customCard1Icon" class="field"><option value="fa-star">Estrella</option><option value="fa-utensils">Gastronomía</option><option value="fa-landmark">Cultura</option><option value="fa-store">Negocios</option><option value="fa-music">Música</option><option value="fa-camera-retro">Fotografía</option></select></label></div>
+                                <div><label><span class="text-xs text-gray-400 block mb-1">Tarjeta 2 · título</span><input id="customCard2Title" class="field" maxlength="70"></label><label><span class="text-xs text-gray-400 block mt-2 mb-1">Descripción</span><input id="customCard2Text" class="field" maxlength="140"></label><label><span class="text-xs text-gray-400 block mt-2 mb-1">Icono</span><select id="customCard2Icon" class="field"><option value="fa-landmark">Cultura</option><option value="fa-star">Estrella</option><option value="fa-utensils">Gastronomía</option><option value="fa-store">Negocios</option><option value="fa-music">Música</option><option value="fa-camera-retro">Fotografía</option></select></label></div>
+                                <div><label><span class="text-xs text-gray-400 block mb-1">Tarjeta 3 · título</span><input id="customCard3Title" class="field" maxlength="70"></label><label><span class="text-xs text-gray-400 block mt-2 mb-1">Descripción</span><input id="customCard3Text" class="field" maxlength="140"></label><label><span class="text-xs text-gray-400 block mt-2 mb-1">Icono</span><select id="customCard3Icon" class="field"><option value="fa-store">Negocios</option><option value="fa-star">Estrella</option><option value="fa-utensils">Gastronomía</option><option value="fa-landmark">Cultura</option><option value="fa-music">Música</option><option value="fa-camera-retro">Fotografía</option></select></label></div>
+                            </div>
+                        </details>
+                        <details class="bg-black/25 border border-gray-800 rounded-2xl p-4" open>
+                            <summary class="font-black cursor-pointer"><i class="fa-solid fa-arrow-pointer text-cyan-300 mr-2"></i>Botones y compartir</summary>
+                            <div class="grid md:grid-cols-2 gap-4 mt-4"><label><span class="text-sm font-semibold block mb-2">Botón principal</span><input id="customPrimaryButtonLabel" class="field" maxlength="50" value="Explorar Loja"></label><label><span class="text-sm font-semibold block mb-2">Destino</span><input id="customPrimaryButtonUrl" class="field" maxlength="300" value="#mapa"></label><label><span class="text-sm font-semibold block mb-2">Segundo botón</span><input id="customSecondaryButtonLabel" class="field" maxlength="50" value="Ver agenda"></label><label><span class="text-sm font-semibold block mb-2">Destino</span><input id="customSecondaryButtonUrl" class="field" maxlength="300" value="#agenda"></label></div>
+                            <label class="block mt-4"><span class="text-sm font-semibold block mb-2">Texto para compartir</span><textarea id="customCampaignShareText" class="field min-h-20" maxlength="400"></textarea></label>
+                        </details>
+                        <details class="bg-black/25 border border-gray-800 rounded-2xl p-4" open>
+                            <summary class="font-black cursor-pointer"><i class="fa-solid fa-clock text-cyan-300 mr-2"></i>Estados y contenido final</summary>
+                            <div class="grid md:grid-cols-3 gap-4 mt-4"><label><span class="text-sm font-semibold block mb-2">Antes de iniciar</span><input id="customBadgeBefore" class="field" maxlength="80" value="Próximamente"></label><label><span class="text-sm font-semibold block mb-2">Durante</span><input id="customBadgeLive" class="field" maxlength="80" value="¡Estamos celebrando!"></label><label><span class="text-sm font-semibold block mb-2">Después</span><input id="customBadgeAfter" class="field" maxlength="100" value="Revive esta celebración"></label></div>
+                            <div class="grid md:grid-cols-2 gap-4 mt-4"><label><span class="text-sm font-semibold block mb-2">Título después de finalizar</span><input id="customAfterTitle" class="field" maxlength="140"></label><label><span class="text-sm font-semibold block mb-2">Mensaje después de finalizar</span><input id="customAfterDescription" class="field" maxlength="300"></label></div>
+                        </details>
+                        <details class="bg-black/25 border border-gray-800 rounded-2xl p-4" open>
+                            <summary class="font-black cursor-pointer"><i class="fa-solid fa-palette text-cyan-300 mr-2"></i>Apariencia</summary>
+                            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4"><label><span class="text-sm font-semibold block mb-2">Icono de fondo</span><select id="customCampaignIcon" class="field"><option value="fa-star">Estrella</option><option value="fa-landmark">Cultura</option><option value="fa-masks-theater">Artes</option><option value="fa-earth-americas">Turismo</option><option value="fa-music">Música</option><option value="fa-mountain-sun">Naturaleza</option><option value="fa-camera-retro">Fotografía</option><option value="fa-gift">Celebración</option></select></label><label><span class="text-sm font-semibold block mb-2">Color principal</span><input id="customPrimaryColor" class="field h-12 p-1" type="color" value="#38bdf8"></label><label><span class="text-sm font-semibold block mb-2">Color secundario</span><input id="customSecondaryColor" class="field h-12 p-1" type="color" value="#f97316"></label><label><span class="text-sm font-semibold block mb-2">Color de fondo</span><input id="customBackgroundColor" class="field h-12 p-1" type="color" value="#081b29"></label></div>
+                        </details>
+                        <div id="customCampaignMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
+                        <div class="flex flex-col sm:flex-row gap-3"><button id="customCampaignSaveBtn" type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar campaña</button><button type="button" onclick="closeCustomCampaignEditor()" class="border border-gray-700 hover:bg-white/5 font-bold rounded-xl px-6 py-3">Cancelar</button></div>
+                    </form>
                 </section>
 
                 <section id="applicationsModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
@@ -692,6 +743,7 @@ const adminView = document.getElementById('adminView');
 const podcastRef = db.collection('siteContent').doc('podcast');
 const festivalRef = db.collection('siteContent').doc('festival');
 const tourismDayRef = db.collection('siteContent').doc('tourismDay');
+const customCampaignsRef = db.collection('siteContent').doc('customCampaigns');
 const generalEventsRef = db.collection('siteContent').doc('events');
 const storiesRef = db.collection('siteContent').doc('stories');
 const entrepreneursRef = db.collection('siteContent').doc('entrepreneurs');
@@ -719,6 +771,7 @@ const businessApplicationStatusRef = db.collection('businessApplicationStatus');
 const userProfilesRef = db.collection('userProfiles');
 let currentData = {};
 let festivalDraftEvents = [];
+let customCampaigns = [];
 let adminPlaces = [];
 let placeMenuDraftDishes = [];
 let placePaymentHistoryDraft = [];
@@ -1592,6 +1645,55 @@ function loadFestivalForm(data = {}) {
 }
 
 
+
+function customCampaignSlug(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80);}
+function newCustomCampaignData(){
+    const now=new Date(),end=new Date(now.getTime()+7*86400000),local=date=>new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    return{id:'',name:'',slug:'',status:'draft',active:true,order:customCampaigns.length+1,startDate:local(now),endDate:local(end),dateLabel:'',publicName:'',title:'',highlight:'',description:'',chabaquitoMessage:'',cards:[{title:'',text:'',icon:'fa-star'},{title:'',text:'',icon:'fa-landmark'},{title:'',text:'',icon:'fa-store'}],primaryButtonLabel:'Explorar Loja',primaryButtonUrl:'#mapa',secondaryButtonLabel:'Ver agenda',secondaryButtonUrl:'#agenda',shareText:'',badgeBefore:'Próximamente',badgeLive:'¡Estamos celebrando!',badgeAfter:'Revive esta celebración',afterTitle:'',afterDescription:'',icon:'fa-star',primaryColor:'#38bdf8',secondaryColor:'#f97316',backgroundColor:'#081b29'};
+}
+function renderCustomCampaignsAdmin(){
+    const list=document.getElementById('customCampaignsList'),empty=document.getElementById('customCampaignsEmpty');if(!list||!empty)return;
+    const sorted=[...customCampaigns].sort((x,y)=>(Number(x.order)||0)-(Number(y.order)||0));
+    empty.classList.toggle('hidden',sorted.length>0);
+    list.innerHTML=sorted.map(item=>{
+        const state=item.status==='published'&&item.active!==false?{label:'Publicada',tone:'bg-emerald-500/15 text-emerald-200'}:item.status==='published'?{label:'Oculta',tone:'bg-amber-500/15 text-amber-200'}:{label:'Borrador',tone:'bg-gray-500/20 text-gray-300'};
+        const date=value=>value?new Date(value).toLocaleDateString('es-EC'):'Sin fecha';
+        return `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><span class="w-9 h-9 rounded-xl grid place-items-center" style="background:${escapeAdminHtml(item.primaryColor||'#38bdf8')}22;color:${escapeAdminHtml(item.primaryColor||'#38bdf8')}"><i class="fa-solid ${escapeAdminHtml(item.icon||'fa-star')}"></i></span><h4 class="font-black text-lg">${escapeAdminHtml(item.name||item.title||'Campaña sin nombre')}</h4><span class="text-[10px] font-black uppercase rounded-full px-2.5 py-1 ${state.tone}">${state.label}</span></div><p class="text-xs text-gray-500 mt-2">Orden ${Number(item.order)||0} · ${date(item.startDate)} — ${date(item.endDate)} · #${escapeAdminHtml(item.slug||'sin-identificador')}</p></div><div class="flex flex-wrap gap-2"><button type="button" onclick="moveCustomCampaign('${escapeAdminHtml(item.id)}',-1)" class="border border-gray-700 rounded-lg px-3 py-2 text-xs" title="Subir"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="moveCustomCampaign('${escapeAdminHtml(item.id)}',1)" class="border border-gray-700 rounded-lg px-3 py-2 text-xs" title="Bajar"><i class="fa-solid fa-arrow-down"></i></button><button type="button" onclick="editCustomCampaign('${escapeAdminHtml(item.id)}')" class="bg-cyan-500/15 text-cyan-200 border border-cyan-500/30 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-pen mr-1"></i>Editar</button><button type="button" onclick="duplicateCustomCampaign('${escapeAdminHtml(item.id)}')" class="bg-violet-500/15 text-violet-200 border border-violet-500/30 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-regular fa-copy mr-1"></i>Duplicar</button><button type="button" onclick="deleteCustomCampaign('${escapeAdminHtml(item.id)}')" class="bg-red-500/10 text-red-200 border border-red-500/25 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-trash"></i></button></div></div></article>`;
+    }).join('');
+}
+function populateCustomCampaignForm(data){
+    const item={...newCustomCampaignData(),...data,cards:Array.isArray(data?.cards)?data.cards:newCustomCampaignData().cards};
+    const set=(id,value)=>{const element=document.getElementById(id);if(element)element.value=value??'';};
+    set('customCampaignEditingId',item.id);set('customCampaignStatus',item.status);set('customCampaignOrder',item.order);document.getElementById('customCampaignActive').checked=item.active!==false;
+    set('customCampaignName',item.name);set('customCampaignSlug',item.slug);set('customCampaignStart',String(item.startDate||'').slice(0,16));set('customCampaignEnd',String(item.endDate||'').slice(0,16));set('customCampaignDateLabel',item.dateLabel);set('customCampaignPublicName',item.publicName);set('customCampaignTitle',item.title);set('customCampaignHighlight',item.highlight);set('customCampaignDescription',item.description);set('customCampaignChabaquito',item.chabaquitoMessage);
+    for(let index=1;index<=3;index++){const card=item.cards[index-1]||{};set(`customCard${index}Title`,card.title);set(`customCard${index}Text`,card.text);set(`customCard${index}Icon`,card.icon||['fa-star','fa-landmark','fa-store'][index-1]);}
+    ['PrimaryButtonLabel','PrimaryButtonUrl','SecondaryButtonLabel','SecondaryButtonUrl','CampaignShareText','BadgeBefore','BadgeLive','BadgeAfter','AfterTitle','AfterDescription','CampaignIcon','PrimaryColor','SecondaryColor','BackgroundColor'].forEach(suffix=>{const key={CampaignShareText:'shareText',CampaignIcon:'icon'}[suffix]||suffix[0].toLowerCase()+suffix.slice(1);set('custom'+suffix,item[key]);});
+    document.getElementById('customCampaignEditorTitle').textContent=item.id?'Editar campaña':'Nueva campaña';document.getElementById('customCampaignForm').classList.remove('hidden');document.getElementById('customCampaignForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function openNewCustomCampaign(){populateCustomCampaignForm(newCustomCampaignData());}
+function editCustomCampaign(id){const item=customCampaigns.find(campaign=>campaign.id===id);if(item)populateCustomCampaignForm(item);}
+function closeCustomCampaignEditor(){document.getElementById('customCampaignForm').classList.add('hidden');document.getElementById('customCampaignForm').reset();setAdminUnsavedChanges(false);}
+async function persistCustomCampaigns(successText){
+    await customCampaignsRef.set({items:customCampaigns.map((item,index)=>({...item,order:index+1})),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email},{merge:true});
+    customCampaigns=customCampaigns.map((item,index)=>({...item,order:index+1}));renderCustomCampaignsAdmin();if(successText)message(document.getElementById('customCampaignMessage'),successText,true);
+}
+async function duplicateCustomCampaign(id){
+    const original=customCampaigns.find(item=>item.id===id);if(!original)return;
+    const copy=JSON.parse(JSON.stringify(original)),uid='campaign-'+Date.now();copy.id=uid;copy.name=(original.name||'Campaña')+' — copia';copy.slug=customCampaignSlug((original.slug||original.name||'campaña')+'-copia-'+Date.now().toString().slice(-4));copy.status='draft';copy.order=customCampaigns.length+1;customCampaigns.push(copy);
+    try{await persistCustomCampaigns();renderCustomCampaignsAdmin();}catch(error){message(document.getElementById('customCampaignMessage'),'No se pudo duplicar la campaña.');}
+}
+async function deleteCustomCampaign(id){
+    const item=customCampaigns.find(campaign=>campaign.id===id);if(!item||!confirm(`¿Eliminar definitivamente la campaña “${item.name||item.title}”?`))return;
+    const previous=[...customCampaigns];customCampaigns=customCampaigns.filter(campaign=>campaign.id!==id);
+    try{await persistCustomCampaigns();if(document.getElementById('customCampaignEditingId').value===id)closeCustomCampaignEditor();}catch(error){customCampaigns=previous;renderCustomCampaignsAdmin();alert('No se pudo eliminar la campaña.');}
+}
+async function moveCustomCampaign(id,direction){
+    const ordered=[...customCampaigns].sort((x,y)=>(Number(x.order)||0)-(Number(y.order)||0)),index=ordered.findIndex(item=>item.id===id),target=index+direction;if(index<0||target<0||target>=ordered.length)return;
+    [ordered[index],ordered[target]]=[ordered[target],ordered[index]];customCampaigns=ordered;
+    try{await persistCustomCampaigns();}catch(error){alert('No se pudo cambiar el orden.');}
+}
+function loadCustomCampaigns(data={}){customCampaigns=Array.isArray(data.items)?data.items.map(item=>({...item})):[];renderCustomCampaignsAdmin();}
+
 function loadTourismCampaignForm(data={}){
     const value=(id,fallback)=>{const element=document.getElementById(id);if(element)element.value=data[id.replace(/^tourism(Campaign)?/,'').replace(/^./,letter=>letter.toLowerCase())]??fallback;};
     document.getElementById('tourismCampaignActive').checked=data.active!==false;
@@ -1642,7 +1744,7 @@ auth.onAuthStateChanged(async user => {
     }
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
     try {
-        const [snapshot, festivalSnapshot, tourismDaySnapshot, generalEventsSnapshot, chabaquitoSnapshot, passportSnapshot, settingsSnapshot, postcardsSnapshot, framesSnapshot, entrepreneursSnapshot, maintenanceSnapshot, subscriptionsSnapshot, storiesSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), tourismDayRef.get(), generalEventsRef.get(), chabaquitoRef.get(), passportRef.get(), settingsRef.get(), postcardsRef.get(), postcardFramesRef.get(), entrepreneursRef.get(), maintenanceRef.get(), subscriptionsRef.get(), storiesRef.get()]);
+        const [snapshot, festivalSnapshot, tourismDaySnapshot, customCampaignsSnapshot, generalEventsSnapshot, chabaquitoSnapshot, passportSnapshot, settingsSnapshot, postcardsSnapshot, framesSnapshot, entrepreneursSnapshot, maintenanceSnapshot, subscriptionsSnapshot, storiesSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), tourismDayRef.get(), customCampaignsRef.get(), generalEventsRef.get(), chabaquitoRef.get(), passportRef.get(), settingsRef.get(), postcardsRef.get(), postcardFramesRef.get(), entrepreneursRef.get(), maintenanceRef.get(), subscriptionsRef.get(), storiesRef.get()]);
         if (snapshot.exists) {
             currentData = snapshot.data();
             document.getElementById('podcastLabel').value = currentData.label || 'Canción de muestra';
@@ -1659,6 +1761,7 @@ auth.onAuthStateChanged(async user => {
         }
         loadFestivalForm(festivalSnapshot.exists ? festivalSnapshot.data() : {});
         loadTourismCampaignForm(tourismDaySnapshot.exists ? tourismDaySnapshot.data() : {});
+        loadCustomCampaigns(customCampaignsSnapshot.exists ? customCampaignsSnapshot.data() : {});
         loadStoriesAdmin(storiesSnapshot.exists?storiesSnapshot.data():{});
         generalEvents = generalEventsSnapshot.exists && Array.isArray(generalEventsSnapshot.data().events) ? generalEventsSnapshot.data().events.map(item => ({ ...item })) : DEFAULT_GENERAL_EVENTS.map(item => ({ ...item }));
         renderGeneralEvents();
@@ -2004,6 +2107,26 @@ document.getElementById('festivalForm').addEventListener('submit', async event =
     } finally { saveButton.disabled = false; }
 });
 
+
+
+document.getElementById('customCampaignName').addEventListener('input',event=>{const slug=document.getElementById('customCampaignSlug');if(!document.getElementById('customCampaignEditingId').value&&!slug.dataset.manual)slug.value=customCampaignSlug(event.target.value);});
+document.getElementById('customCampaignSlug').addEventListener('input',event=>{event.target.dataset.manual='1';event.target.value=customCampaignSlug(event.target.value);});
+document.getElementById('customCampaignForm').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const button=document.getElementById('customCampaignSaveBtn'),notice=document.getElementById('customCampaignMessage'),field=id=>document.getElementById(id).value.trim();
+    const editingId=field('customCampaignEditingId'),slug=customCampaignSlug(field('customCampaignSlug')),start=field('customCampaignStart'),end=field('customCampaignEnd');
+    button.disabled=true;
+    try{
+        if(!slug)throw new Error('Escribe un identificador válido.');
+        if(!start||!end||new Date(start)>=new Date(end))throw new Error('La fecha final debe ser posterior a la fecha inicial.');
+        if(customCampaigns.some(item=>item.slug===slug&&item.id!==editingId))throw new Error('Ya existe una campaña con ese identificador.');
+        const id=editingId||'campaign-'+Date.now(),cards=[1,2,3].map(index=>({title:field(`customCard${index}Title`),text:field(`customCard${index}Text`),icon:field(`customCard${index}Icon`)}));
+        const item={id,name:field('customCampaignName'),slug,status:field('customCampaignStatus'),active:document.getElementById('customCampaignActive').checked,order:Number(field('customCampaignOrder'))||customCampaigns.length+1,startDate:`${start}:00-05:00`,endDate:`${end}:00-05:00`,dateLabel:field('customCampaignDateLabel'),publicName:field('customCampaignPublicName'),title:field('customCampaignTitle'),highlight:field('customCampaignHighlight'),description:field('customCampaignDescription'),chabaquitoMessage:field('customCampaignChabaquito'),cards,primaryButtonLabel:field('customPrimaryButtonLabel'),primaryButtonUrl:field('customPrimaryButtonUrl'),secondaryButtonLabel:field('customSecondaryButtonLabel'),secondaryButtonUrl:field('customSecondaryButtonUrl'),shareText:field('customCampaignShareText'),badgeBefore:field('customBadgeBefore'),badgeLive:field('customBadgeLive'),badgeAfter:field('customBadgeAfter'),afterTitle:field('customAfterTitle'),afterDescription:field('customAfterDescription'),icon:field('customCampaignIcon'),primaryColor:field('customPrimaryColor'),secondaryColor:field('customSecondaryColor'),backgroundColor:field('customBackgroundColor')};
+        const existing=customCampaigns.findIndex(campaign=>campaign.id===id);if(existing>=0)customCampaigns[existing]=item;else customCampaigns.push(item);
+        customCampaigns.sort((x,y)=>(Number(x.order)||0)-(Number(y.order)||0));await persistCustomCampaigns('Campaña guardada correctamente.');document.getElementById('customCampaignEditingId').value=id;document.getElementById('customCampaignSlug').dataset.manual='1';document.getElementById('customCampaignEditorTitle').textContent='Editar campaña';setAdminUnsavedChanges(false);
+    }catch(error){message(notice,error.code==='permission-denied'?'Firebase no permitió guardar la campaña.':(error.message||'No se pudo guardar la campaña.'));}
+    finally{button.disabled=false;}
+});
 
 document.getElementById('tourismCampaignForm').addEventListener('submit',async event=>{
     event.preventDefault();
