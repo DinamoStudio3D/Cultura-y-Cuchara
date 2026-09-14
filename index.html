@@ -6772,11 +6772,15 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const config=explorerBenefitConfig,campaignId=String(config.campaignId||'misiones-2026').replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,60),id=missionRewardClaimId(user,campaignId),button=document.getElementById('missionRewardClaimButton');
             if(button){button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generando código…';}
             try{
-                const ref=db.collection('missionRewardClaims').doc(id),existing=await ref.get();
-                if(existing.exists){displayMissionRewardClaim(existing.data());showMissionRewardNotice(currentLang==='en'?'This reward was already registered to your account.':'Esta recompensa ya estaba registrada en tu cuenta.');return;}
+                const ref=db.collection('missionRewardClaims').doc(id);
                 const data={campaignId,userId:user.uid,userName:currentVisitorProfile.fullName||user.displayName||'Visitante',userEmail:user.email||'',userWhatsapp:currentVisitorProfile.whatsapp||'',rewardTitle:config.title||'Beneficio de Explorador',sponsorName:config.sponsorName||'',claimCode:newMissionRewardCode(),status:'pending',completedMissions:5,createdAt:firebase.firestore.FieldValue.serverTimestamp()};
                 await ref.set(data);displayMissionRewardClaim(data);missionRewardLoadedKey=id;showMissionRewardNotice(currentLang==='en'?'Reward registered. Show this code to the sponsor.':'Recompensa registrada. Presenta este código al patrocinador.');
-            }catch(error){showMissionRewardNotice(error?.code==='permission-denied'?'Debes publicar las nuevas reglas de Firestore para activar los códigos.':(currentLang==='en'?'We could not generate the code. Try again.':'No pudimos generar el código. Inténtalo nuevamente.'),true);}
+            }catch(error){
+                if(error?.code==='permission-denied'){
+                    try{const existing=await db.collection('missionRewardClaims').doc(id).get();if(existing.exists){displayMissionRewardClaim(existing.data());missionRewardLoadedKey=id;showMissionRewardNotice(currentLang==='en'?'This reward was already registered to your account.':'Esta recompensa ya estaba registrada en tu cuenta.');return;}}catch(_){}
+                }
+                showMissionRewardNotice(currentLang==='en'?'We could not generate the code. Verify your profile and try again.':'No pudimos generar el código. Verifica tu perfil e inténtalo nuevamente.',true);
+            }
             finally{if(button){button.disabled=false;button.innerHTML='<i class="fa-solid fa-ticket mr-2"></i><span>Registrar y generar mi código</span>';renderMissionCommercialReward();}}
         }
 
