@@ -91,6 +91,14 @@ service cloud.firestore {
         in ['hotel', 'hueca', 'cafe', 'urbana', 'heladeria', 'panaderia', 'bar'];
     }
 
+    function hasMissionMerchantCampaign(campaignId) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid))
+        && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.active == true
+        && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.campaignIds is list
+        && campaignId in get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.campaignIds;
+    }
+
     match /siteContent/{documentId} {
       allow read: if true;
       allow create, update, delete: if isViveLojaAdmin();
@@ -212,7 +220,8 @@ service cloud.firestore {
     match /missionRewardClaims/{claimId} {
       allow read: if isViveLojaAdmin()
         || (request.auth != null
-          && resource.data.userId == request.auth.uid);
+          && resource.data.userId == request.auth.uid)
+        || hasMissionMerchantCampaign(resource.data.campaignId);
 
       allow create: if request.auth != null
         && exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid))
@@ -247,9 +256,62 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.issuedCount
           == get(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.issuedCount + 1
         && getAfter(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.issuedCount
-          <= get(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.stock;
+          <= get(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.stock
+        && existsAfter(/databases/$(database)/documents/missionRewardClaimCodes/$(request.resource.data.claimCode))
+        && getAfter(/databases/$(database)/documents/missionRewardClaimCodes/$(request.resource.data.claimCode)).data.claimId == claimId;
 
+      allow update: if isViveLojaAdmin() || (
+        hasMissionMerchantCampaign(resource.data.campaignId)
+        && resource.data.status == 'pending'
+        && request.resource.data.status == 'delivered'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'processedAt', 'processedBy'
+        ])
+        && request.resource.data.processedAt == request.time
+        && request.resource.data.processedBy == request.auth.token.email
+      );
+      allow delete: if isViveLojaAdmin();
+    }
+
+    // Índice privado para localizar un código sin exponer otras campañas
+    match /missionRewardClaimCodes/{claimCode} {
+      allow read: if isViveLojaAdmin()
+        || hasMissionMerchantCampaign(resource.data.campaignId);
+      allow create: if isViveLojaAdmin() || (
+        request.auth != null
+        && request.resource.data.keys().hasOnly([
+          'claimId', 'campaignId', 'userId', 'createdAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.claimId == request.auth.uid + '_' + request.resource.data.campaignId
+        && request.resource.data.createdAt == request.time
+        && existsAfter(/databases/$(database)/documents/missionRewardClaims/$(request.resource.data.claimId))
+        && getAfter(/databases/$(database)/documents/missionRewardClaims/$(request.resource.data.claimId)).data.claimCode == claimCode
+        && getAfter(/databases/$(database)/documents/missionRewardClaims/$(request.resource.data.claimId)).data.campaignId == request.resource.data.campaignId
+      );
       allow update, delete: if isViveLojaAdmin();
+    }
+
+    // Solicitud que aparece en Chabaquito después del primer ingreso
+    match /missionRewardMerchantRequests/{userId} {
+      allow read: if isViveLojaAdmin() || isProfileOwner(userId);
+      allow create: if isProfileOwner(userId)
+        && request.resource.data.keys().hasOnly([
+          'uid', 'email', 'displayName', 'status', 'requestedAt'
+        ])
+        && request.resource.data.uid == userId
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 100
+        && request.resource.data.status == 'pending'
+        && request.resource.data.requestedAt == request.time;
+      allow update, delete: if isViveLojaAdmin();
+    }
+
+    // Permisos otorgados por el administrador a cada negocio
+    match /missionRewardMerchants/{userId} {
+      allow read: if isViveLojaAdmin() || isProfileOwner(userId);
+      allow create, update, delete: if isViveLojaAdmin();
     }
 
     match /{document=**} {
