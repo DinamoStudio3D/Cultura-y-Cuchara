@@ -36,6 +36,24 @@ service cloud.firestore {
         && request.resource.data.profileComplete == true;
     }
 
+    function validUserProgress(userId) {
+      return request.resource.data.keys().hasOnly([
+          'uid', 'favorites', 'savedAgendaEvents', 'savedFestivalEvents',
+          'routeLocationIds', 'passportMode', 'updatedAt'
+        ])
+        && request.resource.data.uid == userId
+        && request.resource.data.favorites is list
+        && request.resource.data.favorites.size() <= 150
+        && request.resource.data.savedAgendaEvents is list
+        && request.resource.data.savedAgendaEvents.size() <= 150
+        && request.resource.data.savedFestivalEvents is list
+        && request.resource.data.savedFestivalEvents.size() <= 150
+        && request.resource.data.routeLocationIds is list
+        && request.resource.data.routeLocationIds.size() <= 20
+        && request.resource.data.passportMode in ['turista', 'lojano']
+        && request.resource.data.updatedAt == request.time;
+    }
+
     match /userProfiles/{userId} {
       allow read: if isProfileOwner(userId) || isViveLojaAdmin();
       allow create: if isProfileOwner(userId)
@@ -53,6 +71,13 @@ service cloud.firestore {
       allow delete: if isProfileOwner(userId) || isViveLojaAdmin();
     }
 
+    match /userProgress/{userId} {
+      allow read: if isProfileOwner(userId) || isViveLojaAdmin();
+      allow create, update: if isViveLojaAdmin()
+        || (isProfileOwner(userId) && validUserProgress(userId));
+      allow delete: if isProfileOwner(userId) || isViveLojaAdmin();
+    }
+
     function passportPinExists(placeId) {
       return exists(/databases/$(database)/documents/passportPins/$(placeId));
     }
@@ -63,7 +88,7 @@ service cloud.firestore {
 
     function isStampPlace(placeId) {
       return get(/databases/$(database)/documents/locales/$(placeId)).data.category
-        in ['hotel', 'hueca', 'cafe', 'urbana'];
+        in ['hotel', 'hueca', 'cafe', 'urbana', 'heladeria', 'panaderia', 'bar'];
     }
 
     match /siteContent/{documentId} {
@@ -161,7 +186,29 @@ service cloud.firestore {
       allow update: if isViveLojaAdmin();
     }
 
-    // Recompensas de las Misiones de Chabaquito
+    // Existencias reales de las recompensas de Chabaquito
+    match /missionRewardCampaigns/{campaignId} {
+      allow read: if true;
+      allow create, delete: if isViveLojaAdmin();
+      allow update: if isViveLojaAdmin() || (
+        request.auth != null
+        && resource.data.campaignId == campaignId
+        && resource.data.active == true
+        && resource.data.stock is int
+        && resource.data.issuedCount is int
+        && resource.data.issuedCount < resource.data.stock
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'issuedCount', 'updatedAt'
+        ])
+        && request.resource.data.issuedCount == resource.data.issuedCount + 1
+        && request.resource.data.issuedCount <= resource.data.stock
+        && request.resource.data.updatedAt == request.time
+        && existsAfter(/databases/$(database)/documents/missionRewardClaims/$(request.auth.uid + '_' + campaignId))
+        && getAfter(/databases/$(database)/documents/missionRewardClaims/$(request.auth.uid + '_' + campaignId)).data.userId == request.auth.uid
+      );
+    }
+
+    // Códigos de las recompensas de Chabaquito
     match /missionRewardClaims/{claimId} {
       allow read: if isViveLojaAdmin()
         || (request.auth != null
@@ -194,7 +241,13 @@ service cloud.firestore {
         && request.resource.data.claimCode.matches('^CHABA-[A-Z0-9]{6}$')
         && request.resource.data.status == 'pending'
         && request.resource.data.completedMissions == 5
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt == request.time
+        && exists(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId))
+        && get(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.active == true
+        && getAfter(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.issuedCount
+          == get(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.issuedCount + 1
+        && getAfter(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.issuedCount
+          <= get(/databases/$(database)/documents/missionRewardCampaigns/$(request.resource.data.campaignId)).data.stock;
 
       allow update, delete: if isViveLojaAdmin();
     }
