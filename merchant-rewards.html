@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Validar recompensas | Vive Loja</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
+    <style>
+        :root{color-scheme:dark}html,body{min-height:100%;background:#07100e}body{background:radial-gradient(circle at 15% 0,rgba(16,185,129,.2),transparent 32rem),radial-gradient(circle at 100% 20%,rgba(14,165,233,.15),transparent 28rem),#07100e}.card{background:linear-gradient(145deg,rgba(16,31,28,.97),rgba(7,16,14,.98));border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 70px rgba(0,0,0,.4)}.field{width:100%;border:1px solid #334155;background:#091613;border-radius:.85rem;padding:.85rem 1rem;color:#fff;outline:none}.field:focus{border-color:#34d399;box-shadow:0 0 0 3px rgba(52,211,153,.14)}button,a{touch-action:manipulation}@media(max-width:640px){.field,input{font-size:16px!important}button,a{min-height:44px}body{padding-bottom:env(safe-area-inset-bottom)}header{padding-top:env(safe-area-inset-top)}}
+    </style>
+</head>
+<body class="text-white antialiased">
+    <header class="border-b border-white/10 bg-black/20 backdrop-blur-xl">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+            <div><p class="text-emerald-400 text-xs font-black uppercase tracking-[.18em]">Vive Loja</p><h1 class="font-black text-lg sm:text-xl">Validar recompensas</h1></div>
+            <a href="./" class="border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-200"><i class="fa-solid fa-house mr-1"></i><span class="hidden sm:inline">Volver al sitio</span></a>
+        </div>
+    </header>
+
+    <main class="max-w-xl mx-auto px-4 py-7 sm:py-12">
+        <section id="loginView" class="card rounded-3xl p-5 sm:p-8">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-500/15 text-emerald-300 grid place-items-center text-2xl mb-5"><i class="fa-solid fa-store"></i></div>
+            <h2 class="text-2xl font-black">Acceso para negocios</h2>
+            <p class="text-sm text-gray-400 mt-2 mb-6">Ingresa con el correo y la contraseña entregados al encargado.</p>
+            <form id="merchantLoginForm" class="space-y-4">
+                <label class="block"><span class="text-sm font-bold block mb-2">Correo</span><input id="merchantEmail" class="field" type="email" autocomplete="username" required></label>
+                <label class="block"><span class="text-sm font-bold block mb-2">Contraseña</span><span class="relative block"><input id="merchantPassword" class="field pr-12" type="password" autocomplete="current-password" minlength="6" required><button type="button" onclick="togglePassword()" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 text-gray-400" aria-label="Mostrar u ocultar contraseña"><i class="fa-solid fa-eye"></i></button></span></label>
+                <button id="merchantLoginButton" class="w-full bg-emerald-400 hover:bg-emerald-300 text-emerald-950 rounded-xl py-3 font-black" type="submit"><i class="fa-solid fa-right-to-bracket mr-2"></i>Ingresar</button>
+            </form>
+            <div class="flex items-center gap-3 my-5"><span class="h-px bg-white/10 flex-1"></span><span class="text-xs text-gray-500">o</span><span class="h-px bg-white/10 flex-1"></span></div>
+            <button id="merchantGoogleButton" type="button" class="w-full border border-white/15 hover:border-white/30 rounded-xl py-3 font-bold"><i class="fa-brands fa-google mr-2"></i>Continuar con Google</button>
+            <button type="button" onclick="resetMerchantPassword()" class="w-full mt-3 text-sm text-cyan-300">¿Olvidaste tu contraseña?</button>
+            <p id="loginMessage" class="hidden mt-4 rounded-xl p-3 text-sm" role="alert"></p>
+        </section>
+
+        <section id="pendingView" class="hidden card rounded-3xl p-5 sm:p-8 text-center">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/15 text-amber-300 grid place-items-center text-2xl"><i class="fa-solid fa-clock"></i></div>
+            <h2 class="text-2xl font-black mt-5">Acceso pendiente</h2>
+            <p class="text-gray-400 mt-2">Tu solicitud ya aparece en Chabaquito. El administrador debe asociarla con el negocio y la campaña.</p>
+            <p id="pendingEmail" class="text-sm text-cyan-200 mt-4 break-all"></p>
+            <button type="button" onclick="merchantAuth.signOut()" class="mt-6 border border-white/15 rounded-xl px-4 py-2 text-sm font-bold">Cerrar sesión</button>
+        </section>
+
+        <section id="suspendedView" class="hidden card rounded-3xl p-5 sm:p-8 text-center">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-red-500/15 text-red-300 grid place-items-center text-2xl"><i class="fa-solid fa-ban"></i></div>
+            <h2 class="text-2xl font-black mt-5">Acceso suspendido</h2>
+            <p class="text-gray-400 mt-2">Comunícate con el administrador de Vive Loja para reactivar esta cuenta.</p>
+            <button type="button" onclick="merchantAuth.signOut()" class="mt-6 border border-white/15 rounded-xl px-4 py-2 text-sm font-bold">Cerrar sesión</button>
+        </section>
+
+        <section id="verifierView" class="hidden space-y-4">
+            <div class="card rounded-3xl p-5 sm:p-7">
+                <div class="flex items-start justify-between gap-3"><div><p class="text-xs text-emerald-300 font-black uppercase tracking-widest">Negocio autorizado</p><h2 id="merchantBusinessName" class="text-2xl font-black mt-1">Negocio</h2><p id="merchantSessionEmail" class="text-xs text-gray-400 mt-1 break-all"></p></div><button type="button" onclick="merchantAuth.signOut()" class="border border-white/10 rounded-xl px-3 py-2 text-sm" aria-label="Cerrar sesión"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></div>
+                <form id="verifyCodeForm" class="mt-6 space-y-3">
+                    <label class="block"><span class="text-sm font-bold block mb-2">Código presentado por el visitante</span><input id="rewardCode" class="field text-center text-lg font-black uppercase tracking-widest" maxlength="12" placeholder="CHABA-XXXXXX" autocomplete="off" required></label>
+                    <button id="verifyButton" class="w-full bg-cyan-400 hover:bg-cyan-300 text-cyan-950 rounded-xl py-3 font-black" type="submit"><i class="fa-solid fa-magnifying-glass mr-2"></i>Verificar código</button>
+                </form>
+                <p id="verifyMessage" class="hidden mt-4 rounded-xl p-3 text-sm" role="alert"></p>
+            </div>
+
+            <article id="rewardResult" class="hidden card rounded-3xl overflow-hidden">
+                <div id="rewardStatusBar" class="bg-amber-400 text-amber-950 px-5 py-3 font-black"><i class="fa-solid fa-ticket mr-2"></i><span id="rewardStatus">Pendiente</span></div>
+                <div class="p-5 sm:p-7">
+                    <p class="text-xs text-gray-500 uppercase font-black tracking-widest">Código</p><p id="resultCode" class="text-2xl font-black text-cyan-200 tracking-wider mt-1"></p>
+                    <div class="grid sm:grid-cols-2 gap-4 mt-5"><div><p class="text-xs text-gray-500">Visitante</p><p id="resultVisitor" class="font-bold"></p></div><div><p class="text-xs text-gray-500">Campaña</p><p id="resultCampaign" class="font-bold"></p></div><div class="sm:col-span-2"><p class="text-xs text-gray-500">Recompensa</p><p id="resultReward" class="font-bold"></p></div></div>
+                    <p id="resultDate" class="text-xs text-gray-500 mt-4"></p>
+                    <button id="deliverButton" type="button" onclick="deliverReward()" class="w-full mt-6 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 text-emerald-950 rounded-xl py-3 font-black"><i class="fa-solid fa-check mr-2"></i>Confirmar entrega</button>
+                </div>
+            </article>
+        </section>
+    </main>
+
+<script>
+const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};
+const merchantApp=firebase.initializeApp(firebaseConfig,'viveLojaMerchant'),merchantAuth=merchantApp.auth(),merchantDb=merchantApp.firestore();
+merchantAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+let merchantAccess=null,currentRewardClaim=null,accessUnsubscribe=null;
+const views=['loginView','pendingView','suspendedView','verifierView'];
+function showView(id){views.forEach(view=>document.getElementById(view).classList.toggle('hidden',view!==id));}
+function showNotice(id,text,success=false){const box=document.getElementById(id);box.textContent=text;box.className=`mt-4 rounded-xl p-3 text-sm ${success?'bg-emerald-500/15 text-emerald-200 border border-emerald-500/25':'bg-red-500/15 text-red-200 border border-red-500/25'}`;}
+function authMessage(error){return ({'auth/invalid-credential':'Correo o contraseña incorrectos.','auth/user-disabled':'Esta cuenta fue desactivada.','auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','auth/popup-closed-by-user':'Se cerró la ventana de Google antes de ingresar.'})[error?.code]||'No se pudo iniciar sesión. Revisa los datos e inténtalo nuevamente.';}
+function togglePassword(){const field=document.getElementById('merchantPassword');field.type=field.type==='password'?'text':'password';}
+document.getElementById('merchantLoginForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('merchantLoginButton');button.disabled=true;try{await merchantAuth.signInWithEmailAndPassword(document.getElementById('merchantEmail').value.trim(),document.getElementById('merchantPassword').value);}catch(error){showNotice('loginMessage',authMessage(error));}finally{button.disabled=false;}});
+document.getElementById('merchantGoogleButton').addEventListener('click',async()=>{try{await merchantAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());}catch(error){showNotice('loginMessage',authMessage(error));}});
+async function resetMerchantPassword(){const email=document.getElementById('merchantEmail').value.trim();if(!email){showNotice('loginMessage','Escribe primero el correo de acceso.');return;}try{await merchantAuth.sendPasswordResetEmail(email);showNotice('loginMessage','Enviamos las instrucciones para cambiar la contraseña.',true);}catch(error){showNotice('loginMessage',authMessage(error));}}
+async function ensureMerchantRequest(user){const ref=merchantDb.collection('missionRewardMerchantRequests').doc(user.uid),snapshot=await ref.get();if(!snapshot.exists)await ref.set({uid:user.uid,email:user.email||'',displayName:user.displayName||'',status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()});document.getElementById('pendingEmail').textContent=user.email||'';showView('pendingView');}
+function applyMerchantAccess(user,data){merchantAccess=data;if(data.active===false){showView('suspendedView');return;}document.getElementById('merchantBusinessName').textContent=data.businessName||data.displayName||'Negocio autorizado';document.getElementById('merchantSessionEmail').textContent=user.email||'';showView('verifierView');}
+merchantAuth.onAuthStateChanged(async user=>{if(accessUnsubscribe){accessUnsubscribe();accessUnsubscribe=null;}merchantAccess=null;currentRewardClaim=null;document.getElementById('rewardResult').classList.add('hidden');if(!user){showView('loginView');return;}const accessRef=merchantDb.collection('missionRewardMerchants').doc(user.uid);accessUnsubscribe=accessRef.onSnapshot(snapshot=>{if(snapshot.exists)applyMerchantAccess(user,snapshot.data());else ensureMerchantRequest(user).catch(()=>{showView('pendingView');});},()=>showView('pendingView'));});
+document.getElementById('verifyCodeForm').addEventListener('submit',event=>{event.preventDefault();verifyRewardCode();});
+function rewardDate(value){const date=value?.toDate?value.toDate():new Date(value||0);return Number.isNaN(date.getTime())?'':date.toLocaleString('es-EC');}
+async function verifyRewardCode(){
+    const code=document.getElementById('rewardCode').value.trim().toUpperCase().replace(/\s/g,''),button=document.getElementById('verifyButton');currentRewardClaim=null;document.getElementById('rewardResult').classList.add('hidden');
+    if(!/^CHABA-[A-Z0-9]{6}$/.test(code)){showNotice('verifyMessage','El código debe tener el formato CHABA-XXXXXX.');return;}button.disabled=true;
+    try{const index=await merchantDb.collection('missionRewardClaimCodes').doc(code).get();if(!index.exists)throw new Error('not-found');const pointer=index.data();if(!merchantAccess?.campaignIds?.includes(pointer.campaignId))throw new Error('not-authorized');const claim=await merchantDb.collection('missionRewardClaims').doc(pointer.claimId).get();if(!claim.exists)throw new Error('not-found');currentRewardClaim={id:claim.id,...claim.data()};renderRewardResult();}
+    catch(_){showNotice('verifyMessage','Código inexistente o no autorizado para este negocio.');}finally{button.disabled=false;}
+}
+function renderRewardResult(){
+    const item=currentRewardClaim;if(!item)return;const labels={pending:'Pendiente por entregar',delivered:'Ya entregado',cancelled:'Anulado'},bar=document.getElementById('rewardStatusBar');document.getElementById('rewardStatus').textContent=labels[item.status]||item.status;bar.className=`px-5 py-3 font-black ${item.status==='pending'?'bg-amber-400 text-amber-950':item.status==='delivered'?'bg-emerald-400 text-emerald-950':'bg-red-400 text-red-950'}`;document.getElementById('resultCode').textContent=item.claimCode;document.getElementById('resultVisitor').textContent=item.userName||'Visitante';document.getElementById('resultCampaign').textContent=item.campaignId||'';document.getElementById('resultReward').textContent=`${item.rewardTitle||'Recompensa'}${item.sponsorName?` · ${item.sponsorName}`:''}`;document.getElementById('resultDate').textContent=`Generado: ${rewardDate(item.createdAt)}`;const button=document.getElementById('deliverButton');button.disabled=item.status!=='pending';button.innerHTML=item.status==='pending'?'<i class="fa-solid fa-check mr-2"></i>Confirmar entrega':'<i class="fa-solid fa-lock mr-2"></i>Este código ya no puede entregarse';document.getElementById('verifyMessage').classList.add('hidden');document.getElementById('rewardResult').classList.remove('hidden');
+}
+async function deliverReward(){
+    if(!currentRewardClaim||currentRewardClaim.status!=='pending')return;if(!confirm(`¿Confirmas la entrega de ${currentRewardClaim.rewardTitle||'la recompensa'}? Esta acción no se puede repetir.`))return;const button=document.getElementById('deliverButton');button.disabled=true;
+    try{const ref=merchantDb.collection('missionRewardClaims').doc(currentRewardClaim.id);await merchantDb.runTransaction(async transaction=>{const snapshot=await transaction.get(ref);if(!snapshot.exists||snapshot.data().status!=='pending')throw new Error('already-used');transaction.update(ref,{status:'delivered',processedAt:firebase.firestore.FieldValue.serverTimestamp(),processedBy:merchantAuth.currentUser.email});});currentRewardClaim.status='delivered';currentRewardClaim.processedAt=new Date();renderRewardResult();showNotice('verifyMessage','Recompensa entregada correctamente.',true);}
+    catch(_){await verifyRewardCode();showNotice('verifyMessage','El código ya fue utilizado o no tienes permiso para entregarlo.');}
+}
+</script>
+</body>
+</html>
