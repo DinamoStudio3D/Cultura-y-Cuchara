@@ -179,6 +179,7 @@ Probar, como mínimo:
 | 2026-09-14 | Marca pública unificada como Vive Loja | Portada, administración y aplicación instalable | Pendiente |
 | 2026-09-14 | Icono decorativo de máscaras en Artes Vivas | index.html#festival-live | Pendiente |
 | 2026-09-14 | Centro administrativo de campañas, temas visuales y estados automáticos | admin.html, index.html y Firebase siteContent | Pendiente |
+| 2026-09-14 | Creación, edición, duplicación, orden, publicación y eliminación de campañas adicionales | admin.html, index.html y siteContent/customCampaigns | Pendiente |
 | Previo | Optimización de carga al sellar QR | Flujo de Pasaporte | Pendiente |
 | Previo | PIN visible para administradores | Centro de QR | Pendiente |
 | Previo | Fidelidad por negocio | fidelidad.html, confirmar-visitas.html y gestion-fidelidad.html | Pendiente |
