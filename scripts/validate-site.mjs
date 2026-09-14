@@ -12,11 +12,14 @@ const assert = (condition, message) => condition ? pass(message) : fail(message)
 const index = read('index.html');
 const admin = read('admin.html');
 const merchantRewards = read('merchant-rewards.html');
+const loyaltyVisitor = read('fidelidad.html');
+const loyaltyMerchant = read('confirmar-visitas.html');
+const loyaltyAdmin = read('gestion-fidelidad.html');
 const manifestText = read('manifest.webmanifest');
 const serviceWorker = read('service-worker.js');
 const firestoreRules = read('firestore.rules');
 
-for (const [name, content] of [['index.html', index], ['admin.html', admin], ['merchant-rewards.html', merchantRewards], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
+for (const [name, content] of [['index.html', index], ['admin.html', admin], ['merchant-rewards.html', merchantRewards], ['fidelidad.html', loyaltyVisitor], ['confirmar-visitas.html', loyaltyMerchant], ['gestion-fidelidad.html', loyaltyAdmin], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
     assert(!/^(<{7}|={7}|>{7})/m.test(content), `${name} no contiene conflictos de Git sin resolver`);
 }
 
@@ -33,6 +36,9 @@ function validateInlineScripts(name, html) {
 validateInlineScripts('index.html', index);
 validateInlineScripts('admin.html', admin);
 validateInlineScripts('merchant-rewards.html', merchantRewards);
+validateInlineScripts('fidelidad.html', loyaltyVisitor);
+validateInlineScripts('confirmar-visitas.html', loyaltyMerchant);
+validateInlineScripts('gestion-fidelidad.html', loyaltyAdmin);
 try { new Function(serviceWorker); pass('service-worker.js tiene JavaScript válido'); }
 catch (error) { fail(`service-worker.js contiene JavaScript inválido: ${error.message}`); }
 
@@ -349,6 +355,15 @@ assert(firestoreRules.includes("claimId == request.auth.uid + '_' + request.reso
 assert(firestoreRules.includes("request.resource.data.claimCode.matches('^CHABA-[A-Z0-9]{6}$')"), 'Firestore valida el formato de los códigos');
 assert(firestoreRules.includes("request.resource.data.completedMissions == 5"), 'Firestore exige las cinco misiones');
 assert(firestoreRules.includes('allow update, delete: if isViveLojaAdmin();'), 'Solo un administrador puede procesar o eliminar códigos');
+
+
+[
+    ['match /visitCodes/{requestId}', 'Códigos temporales de visita'],
+    ['match /loyaltyPrograms/{placeId}', 'Programas de fidelidad'],
+    ['match /loyaltyCounters/{counterId}', 'Contadores privados de fidelidad'],
+    ['match /loyaltyRewardClaims/{claimId}', 'Recompensas de fidelidad'],
+    ['function isAssignedVisitMerchant(placeId)', 'Autorización por establecimiento']
+].forEach(([needle, label]) => assert(firestoreRules.includes(needle), `firestore.rules conserva: ${label}`));
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
