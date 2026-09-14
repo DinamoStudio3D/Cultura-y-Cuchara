@@ -295,7 +295,8 @@ assert(index.includes('currentVisitorProfile?.profileComplete'), 'El visitante d
 assert(index.includes('function missionRewardClaimId'), 'Cada cuenta recibe un único registro por campaña');
 assert(index.includes("db.runTransaction(async transaction=>{const campaign=await transaction.get(campaignRef)"), 'La reserva de existencias y el código se crean en una transacción');
 assert(index.includes("error?.code==='reward-stock-empty'"), 'La web informa cuando se agotan las recompensas');
-assert(index.includes("Quedan ${remaining} de ${stock} recompensas"), 'La web muestra las existencias restantes');
+assert(index.includes("Últimas recompensas disponibles") && index.includes("Recompensa disponible"), 'La web pública muestra disponibilidad sin revelar cantidades');
+assert(!index.includes("Quedan ${remaining} de ${stock} recompensas"), 'La web pública oculta las existencias exactas');
 assert(index.includes("transaction.set(ref,data)"), 'El primer reclamo se crea dentro de la reserva atómica de existencias');
 assert(index.includes("const existing=await db.collection('missionRewardClaims').doc(id).get()"), 'Un código previamente registrado puede recuperarse tras impedir su reemplazo');
 assert(!index.includes("const ref=db.collection('missionRewardClaims').doc(id),existing=await ref.get()"), 'La creación no requiere permiso de lectura sobre un código inexistente');
@@ -323,6 +324,8 @@ assert(merchantRewards.includes('sendPasswordResetEmail'), 'El negocio puede rec
 assert(merchantRewards.includes('signInWithPopup'), 'Google permanece como forma alternativa de ingreso');
 assert(merchantRewards.includes('function verifyRewardCode'), 'El portal permite verificar un código');
 assert(merchantRewards.includes('function deliverReward'), 'El portal permite confirmar una entrega');
+assert(merchantRewards.includes('function loadMerchantInventory'), 'El negocio ve las existencias exactas de sus campañas');
+assert(merchantRewards.includes('${remaining} de ${stock} disponibles'), 'Las cantidades exactas permanecen en el portal autorizado');
 assert(firestoreRules.includes('function hasMissionMerchantCampaign'), 'Firestore limita al negocio a sus campañas autorizadas');
 assert(firestoreRules.includes('match /missionRewardClaimCodes/{claimCode}'), 'Firestore protege el índice privado de códigos');
 assert(firestoreRules.includes("resource.data.status == 'pending'"), 'Un negocio solo puede entregar códigos pendientes');
