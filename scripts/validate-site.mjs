@@ -11,11 +11,12 @@ const assert = (condition, message) => condition ? pass(message) : fail(message)
 
 const index = read('index.html');
 const admin = read('admin.html');
+const merchantRewards = read('merchant-rewards.html');
 const manifestText = read('manifest.webmanifest');
 const serviceWorker = read('service-worker.js');
 const firestoreRules = read('firestore.rules');
 
-for (const [name, content] of [['index.html', index], ['admin.html', admin], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
+for (const [name, content] of [['index.html', index], ['admin.html', admin], ['merchant-rewards.html', merchantRewards], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
     assert(!/^(<{7}|={7}|>{7})/m.test(content), `${name} no contiene conflictos de Git sin resolver`);
 }
 
@@ -31,6 +32,7 @@ function validateInlineScripts(name, html) {
 
 validateInlineScripts('index.html', index);
 validateInlineScripts('admin.html', admin);
+validateInlineScripts('merchant-rewards.html', merchantRewards);
 try { new Function(serviceWorker); pass('service-worker.js tiene JavaScript válido'); }
 catch (error) { fail(`service-worker.js contiene JavaScript inválido: ${error.message}`); }
 
@@ -313,6 +315,20 @@ assert(admin.includes('missionRewardCampaignsRef.onSnapshot'), 'El panel escucha
 assert(admin.includes('function downloadMissionRewardsCsv'), 'El administrador puede descargar el informe de recompensas');
 assert(admin.includes("const csv='\\uFEFF'"), 'El CSV incluye codificación compatible con Excel');
 assert(admin.includes("join(';')"), 'El CSV usa columnas compatibles con Excel en español');
+assert(admin.includes('id="missionMerchantRequestsList"'), 'Chabaquito muestra solicitudes de acceso de negocios');
+assert(admin.includes('function authorizeMissionMerchant'), 'El administrador puede autorizar un negocio por campaña');
+assert(admin.includes('function prepareExistingMissionRewardCodes'), 'Los códigos anteriores pueden prepararse para el verificador');
+assert(merchantRewards.includes('signInWithEmailAndPassword'), 'El negocio puede ingresar con correo y contraseña');
+assert(merchantRewards.includes('sendPasswordResetEmail'), 'El negocio puede recuperar su contraseña');
+assert(merchantRewards.includes('signInWithPopup'), 'Google permanece como forma alternativa de ingreso');
+assert(merchantRewards.includes('function verifyRewardCode'), 'El portal permite verificar un código');
+assert(merchantRewards.includes('function deliverReward'), 'El portal permite confirmar una entrega');
+assert(firestoreRules.includes('function hasMissionMerchantCampaign'), 'Firestore limita al negocio a sus campañas autorizadas');
+assert(firestoreRules.includes('match /missionRewardClaimCodes/{claimCode}'), 'Firestore protege el índice privado de códigos');
+assert(firestoreRules.includes("resource.data.status == 'pending'"), 'Un negocio solo puede entregar códigos pendientes');
+assert(firestoreRules.includes("affectedKeys().hasOnly([\n          'status', 'processedAt', 'processedBy'"), 'El negocio no puede modificar los datos de la recompensa');
+assert(index.includes("db.collection('missionRewardClaimCodes').doc(claimCode)"), 'Cada recompensa nueva crea su índice seguro');
+assert(index.includes("if(error?.code!=='permission-denied')throw error;await reserveReward(false)"), 'La publicación gradual no interrumpe la generación de recompensas');
 assert(admin.includes("status!=='delivered'") && admin.includes("status!=='cancelled'"), 'El panel conserva las acciones según el estado del código');
 assert(firestoreRules.includes('match /missionRewardClaims/{claimId}'), 'Firestore protege los códigos de misiones');
 assert(firestoreRules.includes('match /missionRewardCampaigns/{campaignId}'), 'Firestore protege las existencias de las campañas');
