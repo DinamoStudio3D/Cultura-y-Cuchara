@@ -3170,6 +3170,7 @@
         let activeSpeechButton = null;
         let activeAudioGuide = null;
         let handledLocationUrl = false;
+        let handledCheckinUrl = false;
         let subscriptionScheduleTimer=null;
         const businessAnalyticsSession=localStorage.getItem('cyc_analytics_session')||(`visit_${Date.now()}_${Math.random().toString(36).slice(2,9)}`);localStorage.setItem('cyc_analytics_session',businessAnalyticsSession);
         function scheduleTime(value,endOfDay=false){if(!value)return null;const normalized=/^\d{4}-\d{2}-\d{2}$/.test(value)?`${value}T${endOfDay?'23:59:59':'00:00:00'}`:value,time=new Date(normalized).getTime();return Number.isFinite(time)?time:null;}
@@ -3360,14 +3361,14 @@
         function checkUrlParamForCheckin() {
             const urlParams = new URLSearchParams(window.location.search);
             const checkinId = urlParams.get('checkin');
-            if (checkinId) {
-                setTimeout(() => {
-                    const normalizedCheckin=createLocationSlug(checkinId);
-                    const loc = locations.find(l => String(l.id)===String(checkinId)||getLocationSlug(l)===normalizedCheckin);
-                    if (loc) {
-                        openQrClaimModalForId(loc.id);
-                    }
-                }, 800);
+            if (checkinId && !handledCheckinUrl) {
+                const normalizedCheckin=createLocationSlug(checkinId);
+                const loc = locations.find(l => String(l.id)===String(checkinId)||getLocationSlug(l)===normalizedCheckin);
+                if (loc) {
+                    handledCheckinUrl = true;
+                    forceRemoveSplash();
+                    requestAnimationFrame(() => openQrClaimModalForId(loc.id));
+                }
             }
             openLocationFromUrl(urlParams.get('lugar'));
         }
@@ -6097,7 +6098,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             initWebMascot();
             initPostcardCanvasDragging();
             changeLanguage(currentLang);
-            setTimeout(forceRemoveSplash, 600);
+            const arrivingFromQr = new URLSearchParams(window.location.search).has('checkin');
+            setTimeout(forceRemoveSplash, arrivingFromQr ? 100 : 600);
         });
 
         // Ensure Leaflet resizes smoothly without recalculating on every pixel change
