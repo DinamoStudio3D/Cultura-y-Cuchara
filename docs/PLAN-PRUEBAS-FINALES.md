@@ -180,6 +180,10 @@ Probar, como mínimo:
 | 2026-09-14 | Icono decorativo de máscaras en Artes Vivas | index.html#festival-live | Pendiente |
 | 2026-09-14 | Centro administrativo de campañas, temas visuales y estados automáticos | admin.html, index.html y Firebase siteContent | Pendiente |
 | 2026-09-14 | Creación, edición, duplicación, orden, publicación y eliminación de campañas adicionales | admin.html, index.html y siteContent/customCampaigns | Pendiente |
+| 2026-09-14 | Panel privado del negocio con clientes, visitas, recompensas, alertas y CSV | merchant-dashboard.html | Pendiente |
+| 2026-09-14 | Vista ampliada del visitante con progreso, premios e historial | fidelidad.html | Pendiente |
+| 2026-09-14 | Historial central administrativo, filtros, alertas y exportación | gestion-fidelidad.html | Pendiente |
+| 2026-09-14 | Corrección del seguimiento del código temporal y límite diario configurable | fidelidad.html, confirmar-visitas.html y firestore.rules | Pendiente |
 | Previo | Optimización de carga al sellar QR | Flujo de Pasaporte | Pendiente |
 | Previo | PIN visible para administradores | Centro de QR | Pendiente |
 | Previo | Fidelidad por negocio | fidelidad.html, confirmar-visitas.html y gestion-fidelidad.html | Pendiente |
