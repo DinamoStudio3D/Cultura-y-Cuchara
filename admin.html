@@ -120,7 +120,7 @@
                             <button id="timeNavBtn" type="button" onclick="showAdminModule('time')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-clock-rotate-left w-6"></i>Loja en el Tiempo</button>
                             <button id="postcardsNavBtn" type="button" onclick="showAdminModule('postcards')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-camera-retro w-6"></i>Postales</button>
                             <button id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left bg-amber-500 text-black font-black rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y Podcast</button>
-                            <button id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-masks-theater w-6"></i>Modo Festival</button>
+                            <button id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-bullhorn w-6"></i>Centro de campañas</button>
                         </div>
                         <div class="nav-group"><p class="nav-group-title">Experiencia</p>
                             <button id="chabaquitoNavBtn" type="button" onclick="showAdminModule('chabaquito')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</button>
@@ -240,17 +240,73 @@
 
                 <section id="festivalModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex items-start justify-between gap-4 mb-6">
-                        <div><p class="text-fuchsia-400 text-xs font-bold uppercase tracking-widest">Módulo 2</p><h2 class="text-2xl font-black mt-1">Modo Festival</h2><p class="text-sm text-gray-400 mt-1">Administra la cuenta regresiva y la agenda que aparece en la portada.</p></div>
+                        <div><p class="text-fuchsia-400 text-xs font-bold uppercase tracking-widest">Comunicación especial</p><h2 class="text-2xl font-black mt-1">Centro de campañas</h2><p class="text-sm text-gray-400 mt-1">Controla campañas, fechas, apariencia, cuenta regresiva y el mensaje que aparecerá al finalizar.</p></div>
                         <span id="festivalSaveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Sin cambios</span>
                     </div>
+                    <div class="bg-fuchsia-500/10 border border-fuchsia-500/25 rounded-2xl p-4 mb-5"><p class="font-black text-fuchsia-200"><i class="fa-solid fa-masks-theater mr-2"></i>Festival Internacional de Artes Vivas</p><p class="text-xs text-gray-400 mt-1">Conserva la agenda cultural y permite personalizar toda la presentación.</p></div>
                     <form id="festivalForm" class="space-y-5">
                         <label class="flex items-center justify-between gap-4 bg-black/35 rounded-xl p-4 border border-gray-800"><span><strong class="block">Activar Modo Festival</strong><span class="text-xs text-gray-400">Oculta o muestra toda la experiencia.</span></span><input id="festivalActive" class="w-5 h-5 accent-fuchsia-500" type="checkbox" checked></label>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Título</span><input id="festivalTitle" class="field" maxlength="100" value="Loja se convierte en escenario"></label><label><span class="text-sm font-semibold block mb-2">Texto breve</span><input id="festivalSubtitle" class="field" maxlength="220" value="Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas."></label></div>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Inicio del Festival</span><input id="festivalStart" class="field" type="datetime-local" value="2026-11-12T18:00"></label><label><span class="text-sm font-semibold block mb-2">Final del Festival</span><input id="festivalEnd" class="field" type="datetime-local" value="2026-11-22T23:59"></label></div>
                         <label class="flex items-center justify-between gap-4 bg-fuchsia-500/10 rounded-xl p-4 border border-fuchsia-500/25"><span><strong class="block">Marcar como demostración</strong><span class="text-xs text-gray-400">Mantén esta opción activa hasta cargar la cartelera oficial.</span></span><input id="festivalDemo" class="w-5 h-5 accent-fuchsia-500" type="checkbox" checked></label>
+                        <details class="bg-black/25 border border-gray-800 rounded-2xl p-4" open>
+                            <summary class="font-black cursor-pointer"><i class="fa-solid fa-palette text-fuchsia-300 mr-2"></i>Apariencia y estados automáticos</summary>
+                            <div class="mt-4 space-y-4">
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    <label><span class="text-sm font-semibold block mb-2">Texto antes de iniciar</span><input id="festivalBadgeBefore" class="field" maxlength="70" value="Próximo Festival"></label>
+                                    <label><span class="text-sm font-semibold block mb-2">Texto durante la campaña</span><input id="festivalBadgeLive" class="field" maxlength="70" value="Festival en vivo"></label>
+                                    <label><span class="text-sm font-semibold block mb-2">Texto después de finalizar</span><input id="festivalBadgeAfter" class="field" maxlength="70" value="Revive el Festival"></label>
+                                </div>
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <label><span class="text-sm font-semibold block mb-2">Título después de finalizar</span><input id="festivalAfterTitle" class="field" maxlength="120" value="Gracias por vivir el Festival en Loja"></label>
+                                    <label><span class="text-sm font-semibold block mb-2">Mensaje después de finalizar</span><input id="festivalAfterSubtitle" class="field" maxlength="240" value="Muy pronto compartiremos nuevas experiencias culturales."></label>
+                                </div>
+                                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <label><span class="text-sm font-semibold block mb-2">Icono de fondo</span><select id="festivalIcon" class="field"><option value="fa-masks-theater">Máscaras</option><option value="fa-music">Música</option><option value="fa-landmark">Cultura</option><option value="fa-star">Estrella</option><option value="fa-palette">Arte</option></select></label>
+                                    <label><span class="text-sm font-semibold block mb-2">Color principal</span><input id="festivalPrimaryColor" class="field h-12 p-1" type="color" value="#d946ef"></label>
+                                    <label><span class="text-sm font-semibold block mb-2">Color secundario</span><input id="festivalSecondaryColor" class="field h-12 p-1" type="color" value="#06b6d4"></label>
+                                    <label><span class="text-sm font-semibold block mb-2">Color de fondo</span><input id="festivalBackgroundColor" class="field h-12 p-1" type="color" value="#090914"></label>
+                                </div>
+                                <p class="text-xs text-gray-500"><i class="fa-solid fa-clock mr-1"></i>Antes de iniciar contará hasta la fecha inicial; durante la campaña contará hasta la fecha final; después mostrará automáticamente el contenido final.</p>
+                            </div>
+                        </details>
                         <div class="border-t border-gray-800 pt-5"><div class="flex items-center justify-between gap-3 mb-4"><div><h3 class="font-black text-lg">Actividades</h3><p class="text-xs text-gray-400">Agrega horarios, lugares y enlaces de ubicación.</p></div><button type="button" onclick="addFestivalEvent()" class="bg-fuchsia-600 hover:bg-fuchsia-500 rounded-xl px-4 py-2 text-sm font-bold"><i class="fa-solid fa-plus mr-1"></i>Agregar</button></div><div id="festivalEventsEditor" class="space-y-4"></div></div>
                         <div id="festivalFormMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
-                        <button id="festivalSaveBtn" type="submit" class="w-full sm:w-auto bg-fuchsia-500 hover:bg-fuchsia-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Modo Festival</button>
+                        <button id="festivalSaveBtn" type="submit" class="w-full sm:w-auto bg-fuchsia-500 hover:bg-fuchsia-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Artes Vivas</button>
+                    </form>
+
+                    <div class="border-t border-gray-800 my-8"></div>
+                    <div class="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-4 mb-5"><p class="font-black text-emerald-200"><i class="fa-solid fa-earth-americas mr-2"></i>Día Mundial del Turismo</p><p class="text-xs text-gray-400 mt-1">Configura la celebración del 27 de septiembre y su contenido posterior.</p></div>
+                    <form id="tourismCampaignForm" class="space-y-5">
+                        <label class="flex items-center justify-between gap-4 bg-black/35 rounded-xl p-4 border border-gray-800"><span><strong class="block">Mostrar campaña en la portada</strong><span class="text-xs text-gray-400">Permite ocultarla sin borrar su configuración.</span></span><input id="tourismCampaignActive" class="w-5 h-5 accent-emerald-500" type="checkbox" checked></label>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Inicio de la campaña</span><input id="tourismCampaignStart" class="field" type="datetime-local" value="2026-09-27T00:00"></label><label><span class="text-sm font-semibold block mb-2">Finalización</span><input id="tourismCampaignEnd" class="field" type="datetime-local" value="2026-09-27T23:59"></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Etiqueta de fecha</span><input id="tourismCampaignDateLabel" class="field" maxlength="70" value="27 de septiembre"></label><label><span class="text-sm font-semibold block mb-2">Nombre de la celebración</span><input id="tourismCampaignName" class="field" maxlength="100" value="Día Mundial del Turismo"></label></div>
+                        <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Título principal</span><input id="tourismCampaignTitle" class="field" maxlength="120" value="Celebremos a Loja:"></label><label><span class="text-sm font-semibold block mb-2">Texto destacado</span><input id="tourismCampaignHighlight" class="field" maxlength="120" value="cada sabor cuenta una historia"></label></div>
+                        <label><span class="text-sm font-semibold block mb-2">Descripción</span><textarea id="tourismCampaignDescription" class="field min-h-24" maxlength="500">El turismo conecta personas, cultura, sabores y comunidades. Este 27 de septiembre te invitamos a recorrer Loja, apoyar a sus negocios locales y descubrir los lugares que hacen única a nuestra ciudad.</textarea></label>
+                        <label><span class="text-sm font-semibold block mb-2">Mensaje de Chabaquito</span><textarea id="tourismCampaignMessage" class="field min-h-20" maxlength="300">Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!</textarea></label>
+                        <details class="bg-black/25 border border-gray-800 rounded-2xl p-4" open>
+                            <summary class="font-black cursor-pointer"><i class="fa-solid fa-icons text-emerald-300 mr-2"></i>Tarjetas y botones</summary>
+                            <div class="mt-4 space-y-4">
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    <label><span class="text-xs text-gray-400 block mb-1">Tarjeta 1 · título</span><input id="tourismCard1Title" class="field" value="Saborea Loja" maxlength="70"><span class="text-xs text-gray-400 block mt-2 mb-1">Descripción</span><input id="tourismCard1Text" class="field" value="Visita cafeterías y restaurantes." maxlength="120"></label>
+                                    <label><span class="text-xs text-gray-400 block mb-1">Tarjeta 2 · título</span><input id="tourismCard2Title" class="field" value="Vive su cultura" maxlength="70"><span class="text-xs text-gray-400 block mt-2 mb-1">Descripción</span><input id="tourismCard2Text" class="field" value="Conoce historias y tradiciones." maxlength="120"></label>
+                                    <label><span class="text-xs text-gray-400 block mb-1">Tarjeta 3 · título</span><input id="tourismCard3Title" class="field" value="Apoya lo local" maxlength="70"><span class="text-xs text-gray-400 block mt-2 mb-1">Descripción</span><input id="tourismCard3Text" class="field" value="Elige emprendimientos lojanos." maxlength="120"></label>
+                                </div>
+                                <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Botón principal</span><input id="tourismPrimaryButtonLabel" class="field" value="Explorar Loja" maxlength="50"></label><label><span class="text-sm font-semibold block mb-2">Destino del botón</span><input id="tourismPrimaryButtonUrl" class="field" value="#mapa" maxlength="300"></label><label><span class="text-sm font-semibold block mb-2">Segundo botón</span><input id="tourismSecondaryButtonLabel" class="field" value="Iniciar mi Pasaporte" maxlength="50"></label><label><span class="text-sm font-semibold block mb-2">Destino del segundo botón</span><input id="tourismSecondaryButtonUrl" class="field" value="#pasaporte" maxlength="300"></label></div>
+                            </div>
+                        </details>
+                        <details class="bg-black/25 border border-gray-800 rounded-2xl p-4" open>
+                            <summary class="font-black cursor-pointer"><i class="fa-solid fa-palette text-emerald-300 mr-2"></i>Apariencia, contador y contenido final</summary>
+                            <div class="mt-4 space-y-4">
+                                <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Texto antes de iniciar</span><input id="tourismBadgeBefore" class="field" value="Faltan" maxlength="70"></label><label><span class="text-sm font-semibold block mb-2">Texto durante el día</span><input id="tourismBadgeLive" class="field" value="¡Hoy celebramos el turismo!" maxlength="90"></label><label><span class="text-sm font-semibold block mb-2">Texto después</span><input id="tourismBadgeAfter" class="field" value="Seguimos celebrando y viviendo Loja" maxlength="100"></label></div>
+                                <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Título después de finalizar</span><input id="tourismAfterTitle" class="field" value="Loja se vive todo el año" maxlength="120"></label><label><span class="text-sm font-semibold block mb-2">Mensaje después de finalizar</span><input id="tourismAfterDescription" class="field" value="Continúa descubriendo sus sabores, cultura, emprendimientos y destinos." maxlength="260"></label></div>
+                                <label><span class="text-sm font-semibold block mb-2">Texto para compartir</span><textarea id="tourismShareText" class="field min-h-20" maxlength="350">Este 27 de septiembre celebremos el Día Mundial del Turismo recorriendo, saboreando y viviendo Loja con Vive Loja.</textarea></label>
+                                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4"><label><span class="text-sm font-semibold block mb-2">Icono de fondo</span><select id="tourismCampaignIcon" class="field"><option value="fa-earth-americas">Mundo</option><option value="fa-map-location-dot">Mapa</option><option value="fa-route">Ruta</option><option value="fa-mountain-sun">Naturaleza</option><option value="fa-camera-retro">Fotografía</option></select></label><label><span class="text-sm font-semibold block mb-2">Color principal</span><input id="tourismPrimaryColor" class="field h-12 p-1" type="color" value="#34d399"></label><label><span class="text-sm font-semibold block mb-2">Color secundario</span><input id="tourismSecondaryColor" class="field h-12 p-1" type="color" value="#f97316"></label><label><span class="text-sm font-semibold block mb-2">Color de fondo</span><input id="tourismBackgroundColor" class="field h-12 p-1" type="color" value="#071f1b"></label></div>
+                                <p class="text-xs text-gray-500"><i class="fa-solid fa-clock mr-1"></i>El contador llegará a la fecha de inicio. Durante la campaña mostrará el mensaje activo y, al finalizar, cambiará automáticamente al título y mensaje posteriores.</p>
+                            </div>
+                        </details>
+                        <div id="tourismCampaignMessageBox" class="hidden text-sm rounded-xl p-3" role="alert"></div>
+                        <button id="tourismCampaignSaveBtn" type="submit" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Día del Turismo</button>
                     </form>
                 </section>
 
@@ -635,6 +691,7 @@ const loginView = document.getElementById('loginView');
 const adminView = document.getElementById('adminView');
 const podcastRef = db.collection('siteContent').doc('podcast');
 const festivalRef = db.collection('siteContent').doc('festival');
+const tourismDayRef = db.collection('siteContent').doc('tourismDay');
 const generalEventsRef = db.collection('siteContent').doc('events');
 const storiesRef = db.collection('siteContent').doc('stories');
 const entrepreneursRef = db.collection('siteContent').doc('entrepreneurs');
@@ -744,7 +801,7 @@ document.addEventListener('change',event=>{if(adminFieldChangesContent(event.tar
 document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
 window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
-const ADMIN_MODULE_LABELS={dashboard:'Resumen y respaldo',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Modo Festival',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
+const ADMIN_MODULE_LABELS={dashboard:'Resumen y respaldo',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('button').forEach(button=>{const show=!query||button.textContent.toLowerCase().includes(query);button.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);});}
 
@@ -1521,8 +1578,29 @@ function loadFestivalForm(data = {}) {
     document.getElementById('festivalSubtitle').value = data.subtitle || 'Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.';
     document.getElementById('festivalStart').value = (data.startDate || '2026-11-12T18:00:00-05:00').slice(0,16);
     document.getElementById('festivalEnd').value = (data.endDate || '2026-11-22T23:59:59-05:00').slice(0,16);
+    document.getElementById('festivalBadgeBefore').value = data.badgeBefore || 'Próximo Festival';
+    document.getElementById('festivalBadgeLive').value = data.badgeLive || 'Festival en vivo';
+    document.getElementById('festivalBadgeAfter').value = data.badgeAfter || 'Revive el Festival';
+    document.getElementById('festivalAfterTitle').value = data.afterTitle || 'Gracias por vivir el Festival en Loja';
+    document.getElementById('festivalAfterSubtitle').value = data.afterSubtitle || 'Muy pronto compartiremos nuevas experiencias culturales.';
+    document.getElementById('festivalIcon').value = data.icon || 'fa-masks-theater';
+    document.getElementById('festivalPrimaryColor').value = data.primaryColor || '#d946ef';
+    document.getElementById('festivalSecondaryColor').value = data.secondaryColor || '#06b6d4';
+    document.getElementById('festivalBackgroundColor').value = data.backgroundColor || '#090914';
     festivalDraftEvents = Array.isArray(data.events) ? data.events.map(event => ({ ...event })) : DEFAULT_ADMIN_FESTIVAL_EVENTS.map(event => ({ ...event }));
     renderFestivalEditor();
+}
+
+
+function loadTourismCampaignForm(data={}){
+    const value=(id,fallback)=>{const element=document.getElementById(id);if(element)element.value=data[id.replace(/^tourism(Campaign)?/,'').replace(/^./,letter=>letter.toLowerCase())]??fallback;};
+    document.getElementById('tourismCampaignActive').checked=data.active!==false;
+    document.getElementById('tourismCampaignStart').value=(data.startDate||'2026-09-27T00:00:00-05:00').slice(0,16);
+    document.getElementById('tourismCampaignEnd').value=(data.endDate||'2026-09-27T23:59:59-05:00').slice(0,16);
+    const fields={
+        tourismCampaignDateLabel:['dateLabel','27 de septiembre'],tourismCampaignName:['name','Día Mundial del Turismo'],tourismCampaignTitle:['title','Celebremos a Loja:'],tourismCampaignHighlight:['highlight','cada sabor cuenta una historia'],tourismCampaignDescription:['description','El turismo conecta personas, cultura, sabores y comunidades. Este 27 de septiembre te invitamos a recorrer Loja, apoyar a sus negocios locales y descubrir los lugares que hacen única a nuestra ciudad.'],tourismCampaignMessage:['chabaquitoMessage','Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!'],tourismCard1Title:['card1Title','Saborea Loja'],tourismCard1Text:['card1Text','Visita cafeterías y restaurantes.'],tourismCard2Title:['card2Title','Vive su cultura'],tourismCard2Text:['card2Text','Conoce historias y tradiciones.'],tourismCard3Title:['card3Title','Apoya lo local'],tourismCard3Text:['card3Text','Elige emprendimientos lojanos.'],tourismPrimaryButtonLabel:['primaryButtonLabel','Explorar Loja'],tourismPrimaryButtonUrl:['primaryButtonUrl','#mapa'],tourismSecondaryButtonLabel:['secondaryButtonLabel','Iniciar mi Pasaporte'],tourismSecondaryButtonUrl:['secondaryButtonUrl','#pasaporte'],tourismBadgeBefore:['badgeBefore','Faltan'],tourismBadgeLive:['badgeLive','¡Hoy celebramos el turismo!'],tourismBadgeAfter:['badgeAfter','Seguimos celebrando y viviendo Loja'],tourismAfterTitle:['afterTitle','Loja se vive todo el año'],tourismAfterDescription:['afterDescription','Continúa descubriendo sus sabores, cultura, emprendimientos y destinos.'],tourismShareText:['shareText','Este 27 de septiembre celebremos el Día Mundial del Turismo recorriendo, saboreando y viviendo Loja con Vive Loja.'],tourismCampaignIcon:['icon','fa-earth-americas'],tourismPrimaryColor:['primaryColor','#34d399'],tourismSecondaryColor:['secondaryColor','#f97316'],tourismBackgroundColor:['backgroundColor','#071f1b']
+    };
+    Object.entries(fields).forEach(([id,[key,fallback]])=>{document.getElementById(id).value=data[key]||fallback;});
 }
 
 auth.onAuthStateChanged(async user => {
@@ -1564,7 +1642,7 @@ auth.onAuthStateChanged(async user => {
     }
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
     try {
-        const [snapshot, festivalSnapshot, generalEventsSnapshot, chabaquitoSnapshot, passportSnapshot, settingsSnapshot, postcardsSnapshot, framesSnapshot, entrepreneursSnapshot, maintenanceSnapshot, subscriptionsSnapshot, storiesSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), generalEventsRef.get(), chabaquitoRef.get(), passportRef.get(), settingsRef.get(), postcardsRef.get(), postcardFramesRef.get(), entrepreneursRef.get(), maintenanceRef.get(), subscriptionsRef.get(), storiesRef.get()]);
+        const [snapshot, festivalSnapshot, tourismDaySnapshot, generalEventsSnapshot, chabaquitoSnapshot, passportSnapshot, settingsSnapshot, postcardsSnapshot, framesSnapshot, entrepreneursSnapshot, maintenanceSnapshot, subscriptionsSnapshot, storiesSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), tourismDayRef.get(), generalEventsRef.get(), chabaquitoRef.get(), passportRef.get(), settingsRef.get(), postcardsRef.get(), postcardFramesRef.get(), entrepreneursRef.get(), maintenanceRef.get(), subscriptionsRef.get(), storiesRef.get()]);
         if (snapshot.exists) {
             currentData = snapshot.data();
             document.getElementById('podcastLabel').value = currentData.label || 'Canción de muestra';
@@ -1580,6 +1658,7 @@ auth.onAuthStateChanged(async user => {
             }
         }
         loadFestivalForm(festivalSnapshot.exists ? festivalSnapshot.data() : {});
+        loadTourismCampaignForm(tourismDaySnapshot.exists ? tourismDaySnapshot.data() : {});
         loadStoriesAdmin(storiesSnapshot.exists?storiesSnapshot.data():{});
         generalEvents = generalEventsSnapshot.exists && Array.isArray(generalEventsSnapshot.data().events) ? generalEventsSnapshot.data().events.map(item => ({ ...item })) : DEFAULT_GENERAL_EVENTS.map(item => ({ ...item }));
         renderGeneralEvents();
@@ -1901,6 +1980,15 @@ document.getElementById('festivalForm').addEventListener('submit', async event =
             demo: document.getElementById('festivalDemo').checked,
             title: document.getElementById('festivalTitle').value.trim(),
             subtitle: document.getElementById('festivalSubtitle').value.trim(),
+            badgeBefore: document.getElementById('festivalBadgeBefore').value.trim(),
+            badgeLive: document.getElementById('festivalBadgeLive').value.trim(),
+            badgeAfter: document.getElementById('festivalBadgeAfter').value.trim(),
+            afterTitle: document.getElementById('festivalAfterTitle').value.trim(),
+            afterSubtitle: document.getElementById('festivalAfterSubtitle').value.trim(),
+            icon: document.getElementById('festivalIcon').value,
+            primaryColor: document.getElementById('festivalPrimaryColor').value,
+            secondaryColor: document.getElementById('festivalSecondaryColor').value,
+            backgroundColor: document.getElementById('festivalBackgroundColor').value,
             startDate: `${start}:00-05:00`,
             endDate: `${end}:00-05:00`,
             events: festivalDraftEvents.map(item => ({ ...item })),
@@ -1914,6 +2002,22 @@ document.getElementById('festivalForm').addEventListener('submit', async event =
         state.textContent = 'No guardado';
         message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar. Revisa que las reglas estén publicadas.' : (error.message || 'No se pudo guardar el Modo Festival.'));
     } finally { saveButton.disabled = false; }
+});
+
+
+document.getElementById('tourismCampaignForm').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const button=document.getElementById('tourismCampaignSaveBtn'),notice=document.getElementById('tourismCampaignMessageBox');
+    const start=document.getElementById('tourismCampaignStart').value,end=document.getElementById('tourismCampaignEnd').value;
+    button.disabled=true;
+    try{
+        if(!start||!end||new Date(start)>=new Date(end))throw new Error('La fecha final debe ser posterior a la fecha inicial.');
+        const field=(id)=>document.getElementById(id).value.trim();
+        const data={active:document.getElementById('tourismCampaignActive').checked,startDate:`${start}:00-05:00`,endDate:`${end}:00-05:00`,dateLabel:field('tourismCampaignDateLabel'),name:field('tourismCampaignName'),title:field('tourismCampaignTitle'),highlight:field('tourismCampaignHighlight'),description:field('tourismCampaignDescription'),chabaquitoMessage:field('tourismCampaignMessage'),card1Title:field('tourismCard1Title'),card1Text:field('tourismCard1Text'),card2Title:field('tourismCard2Title'),card2Text:field('tourismCard2Text'),card3Title:field('tourismCard3Title'),card3Text:field('tourismCard3Text'),primaryButtonLabel:field('tourismPrimaryButtonLabel'),primaryButtonUrl:field('tourismPrimaryButtonUrl'),secondaryButtonLabel:field('tourismSecondaryButtonLabel'),secondaryButtonUrl:field('tourismSecondaryButtonUrl'),badgeBefore:field('tourismBadgeBefore'),badgeLive:field('tourismBadgeLive'),badgeAfter:field('tourismBadgeAfter'),afterTitle:field('tourismAfterTitle'),afterDescription:field('tourismAfterDescription'),shareText:field('tourismShareText'),icon:document.getElementById('tourismCampaignIcon').value,primaryColor:document.getElementById('tourismPrimaryColor').value,secondaryColor:document.getElementById('tourismSecondaryColor').value,backgroundColor:document.getElementById('tourismBackgroundColor').value,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email};
+        await tourismDayRef.set(data,{merge:true});
+        message(notice,'La campaña del Día Mundial del Turismo se actualizó correctamente.',true);setAdminUnsavedChanges(false);
+    }catch(error){message(notice,error.code==='permission-denied'?'Firestore no permitió guardar la campaña. Revisa las reglas publicadas.':(error.message||'No se pudo guardar la campaña.'));}
+    finally{button.disabled=false;}
 });
 
 document.getElementById('passportForm').addEventListener('submit',async event=>{
