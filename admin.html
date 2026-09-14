@@ -133,6 +133,7 @@
                         </div>
                         <div class="nav-group"><p class="nav-group-title">Sistema</p>
                             <button id="settingsNavBtn" type="button" onclick="showAdminModule('settings')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-sliders w-6"></i>Configuración</button>
+                            <button id="linksNavBtn" type="button" onclick="showAdminModule('links')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-link w-6"></i>Enlaces del sistema</button>
                             <button id="maintenanceNavBtn" type="button" onclick="showAdminModule('maintenance')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-person-digging w-6"></i>Estado de la web</button>
                         </div>
                     </nav>
@@ -495,6 +496,24 @@
                     </form>
                 </section>
 
+
+                <section id="linksModule" class="hidden panel rounded-2xl p-5 sm:p-7">
+                    <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4 mb-6">
+                        <div><p class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Accesos oficiales</p><h2 class="text-2xl font-black mt-1">Enlaces del sistema</h2><p class="text-sm text-gray-400 mt-1">Copia la dirección correcta y revisa quién debe utilizarla antes de compartirla.</p></div>
+                        <a href="https://cultura-y-cuchara.vercel.app/" target="_blank" rel="noopener noreferrer" class="border border-cyan-400/40 text-cyan-200 hover:bg-cyan-500/10 rounded-xl px-4 py-2.5 text-sm font-bold whitespace-nowrap"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>Abrir web</a>
+                    </div>
+                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 mb-6 text-sm text-amber-100">
+                        <p class="font-black"><i class="fa-solid fa-shield-halved mr-2"></i>Importante</p>
+                        <p class="text-amber-100/80 mt-1">Los enlaces de administrador son privados. No los publiques como accesos para visitantes. La dirección por sí sola no concede permisos: cada área protegida exige iniciar sesión con una cuenta autorizada.</p>
+                    </div>
+                    <div id="systemLinksList" class="grid xl:grid-cols-2 gap-4"></div>
+                    <div id="systemLinkMessage" class="hidden mt-5 text-sm rounded-xl p-3" role="status" aria-live="polite"></div>
+                    <div class="mt-6 bg-black/30 border border-gray-800 rounded-2xl p-4">
+                        <h3 class="font-black"><i class="fa-solid fa-qrcode text-teal-300 mr-2"></i>Enlaces QR y códigos de visitas</h3>
+                        <p class="text-sm text-gray-400 mt-2">No existe un único enlace fijo para sellar paradas. Los QR se generan desde <strong class="text-white">Centro de QR</strong> para cada parada, y los códigos seguros de fidelidad se crean durante cada visita. No reemplaces esos enlaces dinámicos por una dirección copiada de esta lista.</p>
+                    </div>
+                </section>
+
                 <section id="maintenanceModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex items-start justify-between gap-4 mb-6"><div><p class="text-sky-400 text-xs font-bold uppercase tracking-widest">Control del sitio</p><h2 class="text-2xl font-black mt-1">Modo en construcción</h2><p class="text-sm text-gray-400 mt-1">Muestra una pantalla temporal mientras preparas novedades.</p></div><span id="maintenanceSaveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Desactivado</span></div>
                     <form id="maintenanceForm" class="space-y-5">
@@ -725,7 +744,7 @@ document.addEventListener('change',event=>{if(adminFieldChangesContent(event.tar
 document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
 window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
-const ADMIN_MODULE_LABELS={dashboard:'Resumen y respaldo',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Modo Festival',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
+const ADMIN_MODULE_LABELS={dashboard:'Resumen y respaldo',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Modo Festival',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('button').forEach(button=>{const show=!query||button.textContent.toLowerCase().includes(query);button.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);});}
 
@@ -772,12 +791,42 @@ document.addEventListener('keydown',event=>{
     else if(event.key==='Escape'&&!document.getElementById('adminGlobalSearchModal')?.classList.contains('hidden'))closeAdminGlobalSearch();
 });
 
+
+const SYSTEM_LINKS=[
+    {title:'Sitio principal',path:'/',audience:'Público',tone:'bg-emerald-500/15 text-emerald-200',description:'Inicio de Cultura y Cuchara para visitantes, turistas y lojanos.'},
+    {title:'Panel de administración',path:'/admin.html',audience:'Solo administradores',tone:'bg-rose-500/15 text-rose-200',description:'Gestión general de contenidos, paradas, Pasaporte, configuración y reportes.'},
+    {title:'Gestión de fidelidad',path:'/gestion-fidelidad.html',audience:'Solo administradores',tone:'bg-rose-500/15 text-rose-200',description:'Configura reglas, beneficios y revisa la actividad del programa de fidelidad.'},
+    {title:'Validar recompensas',path:'/merchant-rewards.html',audience:'Negocio autorizado',tone:'bg-amber-500/15 text-amber-200',description:'El negocio valida el código que presenta un visitante para entregar una recompensa.'},
+    {title:'Confirmar visitas',path:'/confirmar-visitas.html',audience:'Negocio autorizado',tone:'bg-amber-500/15 text-amber-200',description:'El personal del negocio confirma visitas seguras para el programa de fidelidad.'},
+    {title:'Mi fidelidad y beneficios',path:'/fidelidad.html',audience:'Visitante registrado',tone:'bg-cyan-500/15 text-cyan-200',description:'El visitante consulta sus visitas, avances y beneficios disponibles.'},
+    {title:'Planes para negocios',path:'/planes.html',audience:'Público / negocios',tone:'bg-emerald-500/15 text-emerald-200',description:'Información pública sobre planes y participación de establecimientos.'},
+    {title:'Postular un negocio',path:'/sumar-negocio.html',audience:'Público / negocios',tone:'bg-emerald-500/15 text-emerald-200',description:'Formulario para solicitar que un establecimiento sea parte de la plataforma.'},
+    {title:'Estado de solicitud',path:'/estado-solicitud.html',audience:'Solicitante',tone:'bg-violet-500/15 text-violet-200',description:'Consulta pública del avance de una postulación mediante su código de seguimiento.'}
+];
+function systemLinkUrl(path){return new URL(path,'https://cultura-y-cuchara.vercel.app').href;}
+function renderSystemLinks(){
+    const list=document.getElementById('systemLinksList');if(!list)return;
+    list.innerHTML=SYSTEM_LINKS.map((item,index)=>{
+        const url=systemLinkUrl(item.path);
+        return `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4 flex flex-col"><div class="flex flex-wrap items-start justify-between gap-2"><h3 class="font-black text-lg">${escapeAdminHtml(item.title)}</h3><span class="text-[10px] font-black uppercase tracking-wide rounded-full px-2.5 py-1 ${item.tone}">${escapeAdminHtml(item.audience)}</span></div><p class="text-sm text-gray-400 mt-2 flex-1">${escapeAdminHtml(item.description)}</p><label class="block mt-4"><span class="sr-only">Enlace de ${escapeAdminHtml(item.title)}</span><input class="field text-xs sm:text-sm font-mono" readonly value="${escapeAdminHtml(url)}" onclick="this.select()"></label><div class="grid grid-cols-2 gap-2 mt-3"><button type="button" onclick="copySystemLink(${index})" class="bg-cyan-500 hover:bg-cyan-400 text-black font-black rounded-xl px-3 py-2.5 text-sm"><i class="fa-regular fa-copy mr-2"></i>Copiar</button><a href="${escapeAdminHtml(url)}" target="_blank" rel="noopener noreferrer" class="border border-gray-700 hover:bg-white/5 text-center font-bold rounded-xl px-3 py-2.5 text-sm"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>Abrir</a></div></article>`;
+    }).join('');
+}
+async function copySystemLink(index){
+    const item=SYSTEM_LINKS[index];if(!item)return;
+    const url=systemLinkUrl(item.path),notice=document.getElementById('systemLinkMessage');
+    try{
+        if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(url);
+        else{const input=document.createElement('textarea');input.value=url;input.setAttribute('readonly','');input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();if(!document.execCommand('copy'))throw new Error('copy-failed');input.remove();}
+        message(notice,`Enlace copiado: ${item.title}`,true);
+    }catch(error){message(notice,'No se pudo copiar automáticamente. Selecciona el enlace y cópialo manualmente.');}
+}
+
 function showAdminModule(moduleName) {
     if(moduleName!==currentAdminModule&&adminUnsavedChanges&&!window.confirm('Tienes cambios sin guardar. ¿Quieres salir de este módulo y descartarlos?'))return false;
     if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
-    ['dashboard','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['dashboard','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('usersNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'users' ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('controlNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'control' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -793,10 +842,12 @@ function showAdminModule(moduleName) {
     document.getElementById('passportNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'passport' ? 'bg-emerald-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('subscriptionsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'subscriptions' ? 'bg-teal-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('settingsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'settings' ? 'bg-emerald-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('linksNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'links' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('maintenanceNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'maintenance' ? 'bg-sky-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('postcardsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'postcards' ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('timeNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'time' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('entrepreneursNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'entrepreneurs' ? 'bg-lime-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
+    if(moduleName==='links')renderSystemLinks();
     if(moduleName==='dashboard')loadDashboardSummary();
     if(moduleName==='control')renderControlCenter();
     if(moduleName==='analytics')renderAnalyticsDashboard();
