@@ -6054,9 +6054,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026',claimCode=passportClaimCode(configured),completionId=passportCompletionDocumentId(user,campaignId,passportMode),button=document.getElementById('passportRewardClaimButton');
             if(button){button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Registrando premio…';}
             try{
-                const ref=db.collection('passportCompletions').doc(completionId),existing=await ref.get();
-                if(!existing.exists)await ref.set({campaignId,mode:passportMode,sessionId:businessAnalyticsSession,userId:user.uid,stampsCount:6,claimCode,status:'pending',completedAt:firebase.firestore.FieldValue.serverTimestamp()});
-                const data=existing.exists?existing.data():{claimCode};
+                const ref=db.collection('passportCompletions').doc(completionId),codeRef=db.collection('passportRewardClaimCodes').doc(claimCode),claimData={campaignId,mode:passportMode,sessionId:businessAnalyticsSession,userId:user.uid,stampsCount:6,claimCode,status:'pending',completedAt:firebase.firestore.FieldValue.serverTimestamp()};
+                const createClaim=includeCodeIndex=>{const batch=db.batch();batch.set(ref,claimData);if(includeCodeIndex)batch.set(codeRef,{completionId,campaignId,mode:passportMode,userId:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});return batch.commit();};
+                let data=claimData;try{await createClaim(true);}catch(error){if(error?.code==='permission-denied'){try{await createClaim(false);}catch(_){const existing=await ref.get();if(!existing.exists)throw error;data=existing.data();}}else throw error;}
                 document.getElementById('passportBenefitCode').textContent=data.claimCode||claimCode;
                 document.getElementById('passportBenefitCodeBox').classList.remove('hidden');
                 document.getElementById('passportRewardRegistration').classList.add('hidden');
