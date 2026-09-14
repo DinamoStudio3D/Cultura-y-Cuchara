@@ -666,7 +666,7 @@
                 </div>
                 <aside class="reveal rounded-3xl bg-black/35 border border-emerald-300/25 p-6 sm:p-8 flex flex-col justify-between shadow-2xl">
                     <div>
-                        <p class="text-emerald-300 text-xs font-black uppercase tracking-[.2em]"><i class="fa-solid fa-route mr-2"></i>Cultura y Cuchara</p>
+                        <p class="text-emerald-300 text-xs font-black uppercase tracking-[.2em]"><i class="fa-solid fa-route mr-2"></i>Vive Loja</p>
                         <h3 id="tourismDayCountdownTitle" class="text-2xl sm:text-3xl font-black mt-3">Faltan</h3>
                         <div id="tourismDayCountdown" class="grid grid-cols-4 gap-2 mt-5" aria-live="polite">
                             <div class="bg-white/10 rounded-2xl px-2 py-4 text-center"><strong id="tourismDays" class="block text-2xl sm:text-3xl text-emerald-300">--</strong><span class="text-[10px] uppercase text-white/55">Días</span></div>
@@ -702,7 +702,7 @@
             document.getElementById('tourismSeconds').textContent=String(seconds).padStart(2,'0');
         }
         window.shareTourismDay=function(){
-            const text='Este 27 de septiembre celebremos el Día Mundial del Turismo recorriendo, saboreando y viviendo Loja con Cultura y Cuchara.';
+            const text='Este 27 de septiembre celebremos el Día Mundial del Turismo recorriendo, saboreando y viviendo Loja con Vive Loja.';
             const url='https://cultura-y-cuchara.vercel.app/#dia-turismo';
             if(navigator.share){navigator.share({title:'Día Mundial del Turismo en Loja',text,url}).catch(()=>{});return;}
             window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');
