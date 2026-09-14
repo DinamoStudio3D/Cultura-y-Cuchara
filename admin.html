@@ -371,7 +371,7 @@
                         <div class="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-4 sm:p-5 space-y-4">
                             <div class="flex items-center justify-between gap-4"><div><h3 class="font-black text-lg text-emerald-200">Campaña de recompensa</h3><p class="text-xs text-gray-400">Premio comercial para quienes completen las cinco misiones.</p></div><input id="missionBenefitActive" class="w-6 h-6 accent-emerald-500" type="checkbox"></div>
                             <div class="grid md:grid-cols-2 gap-4">
-                                <label><span class="text-sm font-semibold block mb-2">Identificador de campaña</span><input id="missionBenefitCampaignId" class="field" maxlength="60" placeholder="misiones-2026"><small class="text-gray-500">Usa solo letras, números, guion y guion bajo.</small></label>
+                                <label><span class="text-sm font-semibold block mb-2">Identificador de campaña</span><input id="missionBenefitCampaignId" oninput="renderMissionRewardClaims()" class="field" maxlength="60" placeholder="misiones-2026"><small class="text-gray-500">Usa solo letras, números, guion y guion bajo.</small></label>
                                 <label><span class="text-sm font-semibold block mb-2">Negocio patrocinador</span><input id="missionBenefitSponsor" class="field" maxlength="120" placeholder="Mamá Lola"></label>
                                 <label><span class="text-sm font-semibold block mb-2">Recompensa (Español)</span><input id="missionBenefitTitle" class="field" maxlength="160" placeholder="Horchata de cortesía"></label>
                                 <label><span class="text-sm font-semibold block mb-2">Reward (English)</span><input id="missionBenefitTitleEn" class="field" maxlength="160"></label>
@@ -385,6 +385,17 @@
                                 <label><span class="text-sm font-semibold block mb-2">Enlace o WhatsApp del patrocinador</span><input id="missionBenefitUrl" class="field" placeholder="https://wa.me/593..."></label>
                             </div>
                             <input id="missionBenefitCode" type="hidden"><input id="missionBenefitValidity" type="hidden">
+                        </div>
+                        <div class="bg-black/30 border border-emerald-500/20 rounded-2xl p-4 sm:p-5">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><div><h3 class="font-black text-lg">Resultados de la recompensa</h3><p class="text-xs text-gray-400">Resumen de la campaña seleccionada y sus canjes.</p></div><button type="button" onclick="downloadMissionRewardsCsv()" class="border border-emerald-500/40 text-emerald-200 hover:bg-emerald-500/10 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-file-csv mr-1"></i>Descargar informe CSV</button></div>
+                            <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+                                <div class="bg-cyan-500/10 rounded-xl p-3 sm:p-4"><b id="missionStatAvailable" class="text-2xl text-cyan-300">0</b><span class="block text-xs text-gray-400">Disponibles</span></div>
+                                <div class="bg-violet-500/10 rounded-xl p-3 sm:p-4"><b id="missionStatGenerated" class="text-2xl text-violet-300">0</b><span class="block text-xs text-gray-400">Generados</span></div>
+                                <div class="bg-amber-500/10 rounded-xl p-3 sm:p-4"><b id="missionStatPending" class="text-2xl text-amber-300">0</b><span class="block text-xs text-gray-400">Pendientes</span></div>
+                                <div class="bg-emerald-500/10 rounded-xl p-3 sm:p-4"><b id="missionStatDelivered" class="text-2xl text-emerald-300">0</b><span class="block text-xs text-gray-400">Entregados</span></div>
+                                <div class="bg-red-500/10 rounded-xl p-3 sm:p-4"><b id="missionStatCancelled" class="text-2xl text-red-300">0</b><span class="block text-xs text-gray-400">Anulados</span></div>
+                                <div class="bg-orange-500/10 rounded-xl p-3 sm:p-4"><b id="missionStatRedemption" class="text-2xl text-orange-300">0%</b><span class="block text-xs text-gray-400">Porcentaje de canje</span></div>
+                            </div>
                         </div>
                         <div class="bg-black/30 border border-white/10 rounded-2xl p-4 sm:p-5">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><div><h3 class="font-black text-lg">Ganadores y códigos</h3><p id="missionClaimsSummary" class="text-xs text-gray-400">0 códigos registrados</p></div><input id="missionClaimSearch" oninput="renderMissionRewardClaims()" class="field sm:max-w-xs" placeholder="Buscar código o visitante"></div>
@@ -637,6 +648,7 @@ let adminQrCodes=[];let qrUnsubscribe=null;let currentQrValue='';let currentQrNa
 let adminBusinessEvents=[];let businessEventsUnsubscribe=null;
 let adminPassportCompletions=[];let passportCompletionsUnsubscribe=null;
 let adminMissionRewardClaims=[];let missionRewardClaimsUnsubscribe=null;
+let adminMissionRewardCampaigns=[];let missionRewardCampaignsUnsubscribe=null;
 let adminPassportPins={};let passportPinsUnsubscribe=null;let legacyPinMigrationRunning=false;
 let adminBusinessApplications=[];let businessApplicationsUnsubscribe=null;
 let adminUserProfiles=[];let userProfilesUnsubscribe=null;
@@ -1455,6 +1467,7 @@ auth.onAuthStateChanged(async user => {
         if (businessEventsUnsubscribe) businessEventsUnsubscribe();
         if (passportCompletionsUnsubscribe) passportCompletionsUnsubscribe();
         if (missionRewardClaimsUnsubscribe) missionRewardClaimsUnsubscribe();
+        if (missionRewardCampaignsUnsubscribe) missionRewardCampaignsUnsubscribe();
         if (passportPinsUnsubscribe) passportPinsUnsubscribe();
         if (businessApplicationsUnsubscribe) businessApplicationsUnsubscribe();
         if (userProfilesUnsubscribe) userProfilesUnsubscribe();
@@ -1464,6 +1477,7 @@ auth.onAuthStateChanged(async user => {
         businessEventsUnsubscribe = null;
         passportCompletionsUnsubscribe = null;
         missionRewardClaimsUnsubscribe = null;
+        missionRewardCampaignsUnsubscribe = null;
         passportPinsUnsubscribe = null;
         businessApplicationsUnsubscribe = null;
         userProfilesUnsubscribe = null;
@@ -1526,6 +1540,7 @@ auth.onAuthStateChanged(async user => {
         if(businessEventsUnsubscribe)businessEventsUnsubscribe();businessEventsUnsubscribe=businessEventsRef.orderBy('createdAt','desc').limit(5000).onSnapshot(snapshot=>{adminBusinessEvents=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));refreshPlaceStats();renderAnalyticsDashboard();},()=>{adminBusinessEvents=[];renderAnalyticsDashboard();});
         if(passportCompletionsUnsubscribe)passportCompletionsUnsubscribe();passportCompletionsUnsubscribe=passportCompletionsRef.orderBy('completedAt','desc').limit(5000).onSnapshot(snapshot=>{adminPassportCompletions=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));refreshPassportStats();renderAnalyticsDashboard();},()=>{adminPassportCompletions=[];refreshPassportStats();renderAnalyticsDashboard();});
         if(missionRewardClaimsUnsubscribe)missionRewardClaimsUnsubscribe();missionRewardClaimsUnsubscribe=missionRewardClaimsRef.orderBy('createdAt','desc').limit(2000).onSnapshot(snapshot=>{adminMissionRewardClaims=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderMissionRewardClaims();},()=>{adminMissionRewardClaims=[];renderMissionRewardClaims();message(document.getElementById('chabaquitoMessage'),'No fue posible cargar los códigos. Publica las reglas nuevas de Firestore.');});
+        if(missionRewardCampaignsUnsubscribe)missionRewardCampaignsUnsubscribe();missionRewardCampaignsUnsubscribe=missionRewardCampaignsRef.onSnapshot(snapshot=>{adminMissionRewardCampaigns=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderMissionRewardClaims();},()=>{adminMissionRewardCampaigns=[];renderMissionRewardClaims();});
         if(passportPinsUnsubscribe)passportPinsUnsubscribe();passportPinsUnsubscribe=passportPinsRef.onSnapshot(snapshot=>{adminPassportPins={};snapshot.docs.forEach(doc=>{adminPassportPins[doc.id]=doc.data().pin||'';});renderControlCenter();},()=>{adminPassportPins={};renderControlCenter();});
         if(businessApplicationsUnsubscribe)businessApplicationsUnsubscribe();businessApplicationsUnsubscribe=businessApplicationsRef.orderBy('submittedAt','desc').limit(500).onSnapshot(snapshot=>{adminBusinessApplications=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));renderBusinessApplications();renderSubscriptionCenter();renderControlCenter();},()=>{adminBusinessApplications=[];renderBusinessApplications();renderControlCenter();message(document.getElementById('applicationsMessage'),'No fue posible cargar las solicitudes. Publica las reglas actualizadas de Firestore.');});
         if(userProfilesUnsubscribe)userProfilesUnsubscribe();userProfilesUnsubscribe=userProfilesRef.onSnapshot(snapshot=>{adminUserProfiles=snapshot.docs.map(doc=>({id:doc.id,...doc.data()})).sort((a,b)=>(userProfileDate(b.createdAt)?.getTime()||0)-(userProfileDate(a.createdAt)?.getTime()||0));renderRegisteredUsers();},()=>{adminUserProfiles=[];renderRegisteredUsers();message(document.getElementById('usersMessage'),'No fue posible cargar los usuarios registrados. Revisa las reglas de Firestore.');});
@@ -1616,14 +1631,32 @@ document.getElementById('generalEventForm').addEventListener('submit', async eve
 });
 
 function missionRewardClaimDate(value){const date=value?.toDate?value.toDate():new Date(value||0);return Number.isNaN(date.getTime())?'Fecha no disponible':date.toLocaleString('es-EC');}
+function missionRewardCampaignStats(campaign,claims){
+    const inventory=adminMissionRewardCampaigns.find(item=>item.id===campaign||item.campaignId===campaign),stock=Math.max(0,Number(inventory?.stock)||0),issued=Math.max(claims.length,Number(inventory?.issuedCount)||0);
+    return {available:Math.max(0,stock-issued),generated:claims.length,pending:claims.filter(item=>item.status==='pending').length,delivered:claims.filter(item=>item.status==='delivered').length,cancelled:claims.filter(item=>item.status==='cancelled').length};
+}
+function updateMissionRewardStats(campaign,claims){
+    const stats=missionRewardCampaignStats(campaign,claims),redemption=stats.generated?Math.round((stats.delivered/stats.generated)*100):0;
+    [['missionStatAvailable',stats.available],['missionStatGenerated',stats.generated],['missionStatPending',stats.pending],['missionStatDelivered',stats.delivered],['missionStatCancelled',stats.cancelled],['missionStatRedemption',`${redemption}%`]].forEach(([id,value])=>{const element=document.getElementById(id);if(element)element.textContent=value;});
+}
 function renderMissionRewardClaims(){
     const list=document.getElementById('missionRewardClaimsList'),summary=document.getElementById('missionClaimsSummary');if(!list)return;
     const campaign=(document.getElementById('missionBenefitCampaignId')?.value||'').trim(),search=(document.getElementById('missionClaimSearch')?.value||'').trim().toLowerCase();
     const all=adminMissionRewardClaims.filter(item=>!campaign||item.campaignId===campaign),items=all.filter(item=>!search||[item.claimCode,item.userName,item.userEmail,item.userWhatsapp].some(value=>String(value||'').toLowerCase().includes(search)));
     const pending=all.filter(item=>item.status==='pending').length,delivered=all.filter(item=>item.status==='delivered').length,cancelled=all.filter(item=>item.status==='cancelled').length;
+    updateMissionRewardStats(campaign,all);
     if(summary)summary.textContent=`${all.length} códigos · ${pending} pendientes · ${delivered} entregados · ${cancelled} anulados`;
     const statusLabel={pending:'Pendiente',delivered:'Entregado',cancelled:'Anulado'},statusTone={pending:'bg-amber-500/15 border-amber-500/30',delivered:'bg-emerald-500/15 border-emerald-500/30',cancelled:'bg-red-500/10 border-red-500/25'};
     list.innerHTML=items.length?items.map(item=>`<article class="border ${statusTone[item.status]||statusTone.pending} rounded-xl p-4"><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3"><div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><strong class="font-black text-emerald-200 tracking-wider">${escapeAdminHtml(item.claimCode||item.id)}</strong><span class="text-[10px] uppercase font-black rounded-full bg-black/30 px-2 py-1">${statusLabel[item.status]||'Pendiente'}</span></div><p class="text-sm font-bold mt-2">${escapeAdminHtml(item.userName||'Visitante')}</p><p class="text-xs text-gray-400 break-all">${escapeAdminHtml(item.userEmail||'')} · ${escapeAdminHtml(item.userWhatsapp||'Sin WhatsApp')}</p><p class="text-xs text-gray-300 mt-2">${escapeAdminHtml(item.rewardTitle||'Recompensa')} ${item.sponsorName?`· ${escapeAdminHtml(item.sponsorName)}`:''}</p><p class="text-[10px] text-gray-500 mt-1">${missionRewardClaimDate(item.createdAt)}</p></div><div class="flex flex-wrap gap-2">${item.status!=='delivered'?`<button type="button" onclick="updateMissionRewardClaim('${escapeAdminHtml(item.id)}','delivered')" class="bg-emerald-500 text-emerald-950 rounded-lg px-3 py-2 text-xs font-black"><i class="fa-solid fa-check mr-1"></i>Entregar</button>`:''}${item.status!=='cancelled'?`<button type="button" onclick="updateMissionRewardClaim('${escapeAdminHtml(item.id)}','cancelled')" class="border border-red-500/40 text-red-300 rounded-lg px-3 py-2 text-xs font-bold">Anular</button>`:''}${item.userWhatsapp?`<a href="https://wa.me/${String(item.userWhatsapp).replace(/\D/g,'')}" target="_blank" rel="noopener noreferrer" class="bg-green-500 text-white rounded-lg px-3 py-2 text-xs font-black"><i class="fa-brands fa-whatsapp"></i></a>`:''}</div></div></article>`).join(''):'<p class="text-sm text-gray-500 border border-dashed border-gray-700 rounded-xl p-5 text-center">No hay códigos que coincidan con esta campaña o búsqueda.</p>';
+}
+function missionRewardCsvValue(value){return `"${String(value??'').replace(/"/g,'""').replace(/\r?\n/g,' ')}"`;}
+function downloadMissionRewardsCsv(){
+    const campaign=(document.getElementById('missionBenefitCampaignId')?.value||'').trim(),claims=adminMissionRewardClaims.filter(item=>!campaign||item.campaignId===campaign);
+    if(!claims.length){message(document.getElementById('chabaquitoMessage'),'Todavía no hay códigos para exportar en esta campaña.');return;}
+    const labels={pending:'Pendiente',delivered:'Entregado',cancelled:'Anulado'},rows=[['Código','Campaña','Visitante','Correo','WhatsApp','Recompensa','Patrocinador','Estado','Fecha de registro','Fecha de proceso','Procesado por']];
+    claims.forEach(item=>rows.push([item.claimCode||item.id,item.campaignId||'',item.userName||'',item.userEmail||'',item.userWhatsapp||'',item.rewardTitle||'',item.sponsorName||'',labels[item.status]||item.status||'Pendiente',missionRewardClaimDate(item.createdAt),item.processedAt?missionRewardClaimDate(item.processedAt):'',item.processedBy||'']));
+    const csv='\uFEFF'+rows.map(row=>row.map(missionRewardCsvValue).join(';')).join('\r\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');
+    link.href=url;link.download=`recompensas-${(campaign||'todas').replace(/[^a-zA-Z0-9_-]/g,'-')}.csv`;document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
 }
 async function updateMissionRewardClaim(id,status){
     const item=adminMissionRewardClaims.find(entry=>entry.id===id);if(!item)return;
