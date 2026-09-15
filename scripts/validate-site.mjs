@@ -15,11 +15,12 @@ const merchantRewards = read('merchant-rewards.html');
 const loyaltyVisitor = read('fidelidad.html');
 const loyaltyMerchant = read('confirmar-visitas.html');
 const loyaltyAdmin = read('gestion-fidelidad.html');
+const merchantDashboard = read('merchant-dashboard.html');
 const manifestText = read('manifest.webmanifest');
 const serviceWorker = read('service-worker.js');
 const firestoreRules = read('firestore.rules');
 
-for (const [name, content] of [['index.html', index], ['admin.html', admin], ['merchant-rewards.html', merchantRewards], ['fidelidad.html', loyaltyVisitor], ['confirmar-visitas.html', loyaltyMerchant], ['gestion-fidelidad.html', loyaltyAdmin], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
+for (const [name, content] of [['index.html', index], ['admin.html', admin], ['merchant-rewards.html', merchantRewards], ['fidelidad.html', loyaltyVisitor], ['confirmar-visitas.html', loyaltyMerchant], ['gestion-fidelidad.html', loyaltyAdmin], ['merchant-dashboard.html', merchantDashboard], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
     assert(!/^(<{7}|={7}|>{7})/m.test(content), `${name} no contiene conflictos de Git sin resolver`);
 }
 
@@ -39,6 +40,7 @@ validateInlineScripts('merchant-rewards.html', merchantRewards);
 validateInlineScripts('fidelidad.html', loyaltyVisitor);
 validateInlineScripts('confirmar-visitas.html', loyaltyMerchant);
 validateInlineScripts('gestion-fidelidad.html', loyaltyAdmin);
+validateInlineScripts('merchant-dashboard.html', merchantDashboard);
 try { new Function(serviceWorker); pass('service-worker.js tiene JavaScript válido'); }
 catch (error) { fail(`service-worker.js contiene JavaScript inválido: ${error.message}`); }
 
@@ -364,6 +366,24 @@ assert(firestoreRules.includes('allow update, delete: if isViveLojaAdmin();'), '
     ['match /loyaltyRewardClaims/{claimId}', 'Recompensas de fidelidad'],
     ['function isAssignedVisitMerchant(placeId)', 'Autorización por establecimiento']
 ].forEach(([needle, label]) => assert(firestoreRules.includes(needle), `firestore.rules conserva: ${label}`));
+
+assert(serviceWorker.includes("const CACHE_NAME = 'vive-loja-shell-v2'"), 'El caché usa una versión nueva y controlada');
+assert(serviceWorker.includes("const isHome = url.pathname === '/'"), 'Solo la portada puede guardarse como index.html sin conexión');
+assert(loyaltyVisitor.includes("ecuadorDay()+'_'+place.id+'_'+code"), 'Los códigos temporales usan una identidad única por fecha, parada y número');
+assert(loyaltyVisitor.includes("Number(saved.expires)>Date.now()"), 'El visitante reutiliza su código vigente en vez de generar duplicados');
+assert(!loyaltyVisitor.includes('href="merchant-rewards.html"'), 'El visitante no es enviado al portal privado del negocio');
+assert(loyaltyMerchant.includes("ecuadorDay()+'_'+placeId+'_'+value"), 'El negocio busca primero el código vigente por identidad directa');
+assert(loyaltyMerchant.includes(".limit(25)"), 'La búsqueda compatible evita que pocos códigos vencidos oculten uno válido');
+assert(loyaltyAdmin.includes('id="cleanupCodes"'), 'Administración permite limpiar códigos temporales vencidos');
+assert(loyaltyAdmin.includes("pendingCodes.filter(item=>!ms(item.expiresAt)||ms(item.expiresAt)>Date.now()).length"), 'La estadística pendiente excluye códigos vencidos');
+assert(merchantDashboard.includes('missionRewardMerchants'), 'El tablero del negocio valida la cuenta autorizada');
+assert(merchantDashboard.includes('loyaltyVisits'), 'El tablero del negocio consulta visitas de fidelidad');
+assert(merchantDashboard.includes('loyaltyRewardClaims'), 'El tablero del negocio consulta recompensas de fidelidad');
+assert(merchantDashboard.includes('function exportCsv'), 'El tablero del negocio conserva la exportación de datos');
+assert(loyaltyMerchant.includes('dailyVisitCount'), 'La confirmación controla el máximo diario de visitas');
+assert(firestoreRules.includes('dailyVisitCount'), 'Firestore protege el contador diario de fidelidad');
+assert(admin.includes('customCampaigns') && index.includes('customCampaignsPublic'), 'Las campañas personalizadas siguen conectadas entre administración y la web');
+assert(admin.includes('tourismDay'), 'La campaña del Día Mundial del Turismo conserva su configuración administrativa');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
