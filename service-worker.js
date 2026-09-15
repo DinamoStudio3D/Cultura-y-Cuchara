@@ -1,5 +1,6 @@
-const CACHE_NAME = 'cultura-cuchara-shell-v1';
+const CACHE_NAME = 'vive-loja-shell-v2';
 const LOCAL_SHELL = ['./', './index.html', './manifest.webmanifest', './mascota-vive-loja.png'];
+const OFFLINE_HTML = '<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Sin conexión</title><body style="font-family:system-ui;background:#121212;color:white;text-align:center;padding:12vh 24px"><h1>Vive Loja</h1><p>No hay conexión en este momento. Inténtalo nuevamente cuando recuperes internet.</p></body></html>';
 
 self.addEventListener('install', event => {
     event.waitUntil(
@@ -24,16 +25,21 @@ self.addEventListener('fetch', event => {
     if (url.origin !== self.location.origin) return;
 
     if (request.mode === 'navigate') {
+        const isHome = url.pathname === '/' || url.pathname.endsWith('/index.html');
         event.respondWith(
             fetch(request)
                 .then(response => {
-                    if (response.ok) caches.open(CACHE_NAME).then(cache => cache.put('./index.html', response.clone()));
+                    if (isHome && response.ok) {
+                        caches.open(CACHE_NAME).then(cache => cache.put('./index.html', response.clone()));
+                    }
                     return response;
                 })
-                .catch(async () => (await caches.match('./index.html')) || (await caches.match('./')) || new Response(
-                    '<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Sin conexión</title><body style="font-family:system-ui;background:#121212;color:white;text-align:center;padding:12vh 24px"><h1>Vive Loja</h1><p>No hay conexión en este momento. Inténtalo nuevamente cuando recuperes internet.</p></body></html>',
-                    { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-                ))
+                .catch(async () => {
+                    if (isHome) {
+                        return (await caches.match('./index.html')) || (await caches.match('./')) || new Response(OFFLINE_HTML, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+                    }
+                    return new Response(OFFLINE_HTML, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+                })
         );
         return;
     }
