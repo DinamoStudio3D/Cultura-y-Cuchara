@@ -142,7 +142,7 @@
         body.visual-premium #inicio::after { content:'';position:absolute;inset:auto 8% 0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,191,36,.75),transparent);z-index:25; }
         body.visual-premium #heroTitle { text-shadow:0 5px 30px rgba(0,0,0,.58); }
         body.visual-premium #heroSubtitle { text-shadow:0 2px 14px rgba(0,0,0,.72); }
-        body.visual-premium #heroLogoImg { filter:drop-shadow(0 12px 28px rgba(0,0,0,.25)); }
+        body.visual-premium #heroLogoImg { filter:none !important; }
         /* Recorte robusto del logo principal para Safari/iPad y pantallas móviles */
         #heroLogoFrame {
             flex: 0 0 auto;
@@ -156,14 +156,15 @@
         }
         #heroLogoFrame #heroLogoImg {
             display: block;
-            width: 100% !important;
-            height: 100% !important;
+            width: 82% !important;
+            height: 82% !important;
             min-width: 0 !important;
-            max-width: 100% !important;
-            max-height: 100% !important;
+            max-width: 82% !important;
+            max-height: 82% !important;
             object-fit: contain !important;
             object-position: center !important;
             transform: none !important;
+            filter: none !important;
         }
         body.visual-premium main article, body.visual-premium .glass-card { border-radius:var(--premium-radius) !important; transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease; }
         body.visual-premium[data-card-style="elevated"] main article, body.visual-premium[data-card-style="elevated"] .glass-card { box-shadow:0 18px 45px rgba(31,41,55,.11); }
@@ -200,8 +201,8 @@
             #mobileMenuButton { min-width: 44px; min-height: 44px; }
 
             #inicio { min-height: auto !important; padding-top: 7.5rem !important; padding-bottom: 4rem !important; }
-            #heroLogoFrame { width: 9rem !important; height: 9rem !important; }
-            #heroLogoImg { width: 100% !important; height: 100% !important; max-width: 100% !important; max-height: 100% !important; object-fit: contain !important; }
+            #heroLogoFrame { width: 9rem !important; height: 9rem !important; padding: .65rem !important; }
+            #heroLogoImg { width: 82% !important; height: 82% !important; max-width: 82% !important; max-height: 82% !important; object-fit: contain !important; filter: none !important; }
             #heroTitle { font-size: clamp(1.85rem, 9vw, 3rem) !important; line-height: 1.03 !important; }
             #heroSubtitle { font-size: .95rem !important; line-height: 1.55; }
             #inicio .flex { max-width: 100%; }
