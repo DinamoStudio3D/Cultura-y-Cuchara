@@ -351,11 +351,15 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
-    function isAssignedVisitMerchant(placeId) {
+    function isActiveVisitMerchant() {
       return request.auth != null
         && exists(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid))
         && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.active == true
-        && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds is list
+        && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds is list;
+    }
+
+    function isAssignedVisitMerchant(placeId) {
+      return isActiveVisitMerchant()
         && placeId in get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds;
     }
 
@@ -439,6 +443,11 @@ service cloud.firestore {
 
     match /securePassportStamps/{stampId} {
       allow read: if isViveLojaAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow get: if isActiveVisitMerchant()
+        && (
+          !exists(/databases/$(database)/documents/securePassportStamps/$(stampId))
+          || isAssignedVisitMerchant(resource.data.placeId)
+        );
       allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
         && request.resource.data.confirmedBy == request.auth.uid
         && request.resource.data.confirmedAt == request.time
