@@ -2227,7 +2227,7 @@
                 <aside class="p-4 sm:p-5 overflow-y-auto border-l border-gray-800 bg-brandDark">
                     <h4 class="text-xs font-black text-brandGold uppercase tracking-wider"><i class="fa-solid fa-photo-film mr-2"></i>Contenido multimedia</h4>
                     <p class="text-xs text-gray-400 mt-2">Selecciona una miniatura o desliza la fotografía principal.</p>
-                    <div class="grid gap-2 mt-5"><button type="button" onclick="shareGalleryImage()" class="border border-brandGold/40 hover:bg-brandGold/10 rounded-xl px-4 py-3 text-xs font-bold"><i class="fa-solid fa-share-nodes text-brandGold mr-2"></i>Compartir fotografía</button><a id="galleryOpenImage" href="#" target="_blank" rel="noopener noreferrer" class="border border-gray-700 hover:border-gray-500 rounded-xl px-4 py-3 text-xs font-bold text-center"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>Abrir imagen original</a></div>
+                    <div class="grid gap-2 mt-5"><button type="button" onclick="shareGalleryImage()" class="border border-brandGold/40 hover:bg-brandGold/10 rounded-xl px-4 py-3 text-xs font-bold"><i class="fa-solid fa-share-nodes text-brandGold mr-2"></i>Compartir esta parada</button></div>
                     <div id="youtubeVideoContainer" class="hidden mt-6 pt-5 border-t border-gray-800"><h4 class="text-xs font-bold text-red-400 uppercase tracking-wider mb-3"><i class="fa-brands fa-youtube mr-1"></i> Vídeo principal</h4><a id="directVideoLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="block bg-red-600 text-white font-bold px-5 py-3 rounded-xl hover:bg-red-700 text-xs text-center"><i class="fa-brands fa-youtube mr-2"></i>Abrir en YouTube</a></div>
                     <p class="hidden lg:block text-[10px] text-gray-600 mt-6"><i class="fa-solid fa-keyboard mr-1"></i>También puedes usar las flechas del teclado.</p>
                 </aside>
@@ -6122,7 +6122,6 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             image.src = item.img; image.alt = item.title || document.getElementById('galleryTitle').textContent;
             document.getElementById('galleryCaption').textContent = item.title || '';
             document.getElementById('galleryCounter').textContent = `${immersiveGalleryIndex + 1} / ${immersiveGalleryImages.length}`;
-            document.getElementById('galleryOpenImage').href = item.img;
             const multiple = immersiveGalleryImages.length > 1;
             document.getElementById('galleryPrevBtn').classList.toggle('hidden', !multiple);
             document.getElementById('galleryNextBtn').classList.toggle('hidden', !multiple);
@@ -6152,17 +6151,20 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 document.getElementById('galleryMainImage').removeAttribute('src');
                 document.getElementById('galleryMainImage').classList.add('hidden');
                 const error=document.getElementById('galleryImageError');error.classList.remove('hidden');error.classList.add('grid');
-                document.getElementById('galleryCounter').textContent='0 / 0';document.getElementById('galleryCaption').textContent='';document.getElementById('galleryOpenImage').href='#';
+                document.getElementById('galleryCounter').textContent='0 / 0';document.getElementById('galleryCaption').textContent='';
                 document.getElementById('galleryPrevBtn').classList.add('hidden');document.getElementById('galleryNextBtn').classList.add('hidden');
             }
             openModal('menuGalleryModal');
         }
 
         async function shareGalleryImage() {
-            const item=immersiveGalleryImages[immersiveGalleryIndex];if(!item)return;
-            const data={title:document.getElementById('galleryTitle').textContent,text:item.title||'',url:item.img};
+            const loc=locations[currentLocationIndex];if(!loc)return;
+            const title=document.getElementById('galleryTitle').textContent;
+            const pageUrl=new URL(window.location.origin+window.location.pathname);
+            pageUrl.hash='mapa';
+            const data={title,text:currentLang==='en'?`Discover ${title} on Vive Loja`:`Descubre ${title} en Vive Loja`,url:pageUrl.href};
             if(navigator.share){try{await navigator.share(data);return;}catch(error){if(error?.name==='AbortError')return;}}
-            try{await navigator.clipboard.writeText(item.img);showToast(currentLang==='en'?'Image link copied':'Enlace de la imagen copiado');}catch(_){window.open(item.img,'_blank','noopener');}
+            try{await navigator.clipboard.writeText(pageUrl.href);showToast(currentLang==='en'?'Website link copied':'Enlace de la web copiado');}catch(_){showToast(currentLang==='en'?'Could not copy the link':'No se pudo copiar el enlace');}
         }
 
         function toggleGalleryFullscreen() {
