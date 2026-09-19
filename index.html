@@ -598,16 +598,10 @@
                 <span id="qrLocalNameDisplay" class="text-xs font-bold text-brandDark">Local Aliado</span>
             </div>
 
-            <a id="secureVisitButton" href="fidelidad.html" class="w-full bg-emerald-500 text-white font-black py-3 rounded-xl hover:bg-emerald-600 transition text-xs uppercase tracking-wider shadow flex items-center justify-center mb-3"><i class="fa-solid fa-user-check mr-2"></i>Confirmar visita con el negocio</a>
-            <div class="flex items-center gap-3 mb-3"><span class="h-px bg-gray-200 flex-1"></span><span class="text-[10px] text-gray-400 uppercase font-bold">Método anterior</span><span class="h-px bg-gray-200 flex-1"></span></div>
-            <form onsubmit="verifyBusinessPinForStamp(event)" class="space-y-3">
-                <input type="hidden" id="qrTargetLocalId">
-                <input type="password" id="inputBusinessPin" required inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" autocomplete="off" placeholder="PIN privado de la parada" class="w-full bg-gray-100 border border-gray-300 rounded-xl p-3 text-center text-lg tracking-widest text-brandDark font-bold outline-none focus:border-brandGold">
-                <p id="stampValidationMessage" class="hidden text-xs rounded-xl p-2" role="status"></p>
-                <button id="stampValidationButton" type="submit" class="w-full bg-brandGold text-white font-bold py-3 rounded-xl hover:bg-brandGoldHover disabled:opacity-50 transition text-xs uppercase tracking-wider shadow">
-                    Validar y Obtener Sello 🎯
-                </button>
-            </form>
+            <input type="hidden" id="qrTargetLocalId">
+            <a id="secureVisitButton" href="fidelidad.html" class="w-full bg-emerald-500 text-white font-black py-3 rounded-xl hover:bg-emerald-600 transition text-xs uppercase tracking-wider shadow flex items-center justify-center"><i class="fa-solid fa-user-check mr-2"></i>Registrar visita y sumar fidelidad</a>
+            <p class="text-[11px] text-gray-500 text-center mt-3"><i class="fa-solid fa-shield-halved mr-1"></i>El negocio confirmará tu presencia con un código seguro.</p>
+            <a href="fidelidad.html" class="w-full border border-emerald-500/30 text-emerald-700 font-bold py-3 rounded-xl hover:bg-emerald-50 transition text-xs flex items-center justify-center mt-3"><i class="fa-solid fa-chart-simple mr-2"></i>Ver mis visitas y beneficios</a>
         </div>
     </div>
 
