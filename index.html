@@ -143,6 +143,28 @@
         body.visual-premium #heroTitle { text-shadow:0 5px 30px rgba(0,0,0,.58); }
         body.visual-premium #heroSubtitle { text-shadow:0 2px 14px rgba(0,0,0,.72); }
         body.visual-premium #heroLogoImg { filter:drop-shadow(0 12px 28px rgba(0,0,0,.25)); }
+        /* Recorte robusto del logo principal para Safari/iPad y pantallas móviles */
+        #heroLogoFrame {
+            flex: 0 0 auto;
+            min-width: 0;
+            min-height: 0;
+            contain: paint;
+            isolation: isolate;
+            clip-path: circle(50% at 50% 50%);
+            -webkit-clip-path: circle(50% at 50% 50%);
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+        }
+        #heroLogoFrame #heroLogoImg {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            object-fit: contain !important;
+            object-position: center !important;
+            transform: none !important;
+        }
         body.visual-premium main article, body.visual-premium .glass-card { border-radius:var(--premium-radius) !important; transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease; }
         body.visual-premium[data-card-style="elevated"] main article, body.visual-premium[data-card-style="elevated"] .glass-card { box-shadow:0 18px 45px rgba(31,41,55,.11); }
         body.visual-premium[data-card-style="bordered"] main article, body.visual-premium[data-card-style="bordered"] .glass-card { box-shadow:none;border-width:2px; }
@@ -178,7 +200,8 @@
             #mobileMenuButton { min-width: 44px; min-height: 44px; }
 
             #inicio { min-height: auto !important; padding-top: 7.5rem !important; padding-bottom: 4rem !important; }
-            #heroLogoImg { max-width: min(68vw, 250px); max-height: 22vh; object-fit: contain; }
+            #heroLogoFrame { width: 9rem !important; height: 9rem !important; }
+            #heroLogoImg { width: 100% !important; height: 100% !important; max-width: 100% !important; max-height: 100% !important; object-fit: contain !important; }
             #heroTitle { font-size: clamp(1.85rem, 9vw, 3rem) !important; line-height: 1.03 !important; }
             #heroSubtitle { font-size: .95rem !important; line-height: 1.55; }
             #inicio .flex { max-width: 100%; }
@@ -612,7 +635,7 @@
             <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full"></div>
         </div>
         <div class="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center reveal active">
-            <div class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
+            <div id="heroLogoFrame" class="w-36 h-36 md:w-44 md:h-44 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-warm-glow mb-6 relative flex items-center justify-center p-2">
                 <img id="heroLogoImg" src="https://i.imgur.com/xaiFpa1.png" alt="Vive Loja" class="w-full h-full object-contain" decoding="async" fetchpriority="high">
             </div>
             <span id="heroBadge" class="bg-black/40 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-brandGold/70 inline-block mb-4 shadow-warm-glow" data-i18n="heroBadge">
