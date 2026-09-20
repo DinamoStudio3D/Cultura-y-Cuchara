@@ -501,10 +501,11 @@ service cloud.firestore {
           || isAssignedVisitMerchant(resource.data.placeId)
         );
       allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
-        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userEmail', 'placeId', 'placeName', 'visitorType', 'city', 'birthMonthDay', 'visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'firstVisitAt', 'lastVisitAt', 'totalSpend', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userEmail', 'placeId', 'placeName', 'visitorType', 'city', 'birthMonthDay', 'visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitRequestId', 'firstVisitAt', 'lastVisitAt', 'totalSpend', 'updatedAt'])
         && request.resource.data.visitCount == 1
         && request.resource.data.rewardCycles == 0
         && request.resource.data.dailyVisitCount == 1
+        && request.resource.data.lastVisitRequestId is string
         && (!('totalSpend' in request.resource.data)
           || (request.resource.data.totalSpend is number
             && request.resource.data.totalSpend >= 0))
@@ -513,22 +514,43 @@ service cloud.firestore {
         && request.resource.data.lastVisitAt == request.time
         && request.resource.data.updatedAt == request.time;
       allow update: if isAssignedVisitMerchant(resource.data.placeId)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitorType', 'city', 'birthMonthDay', 'visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitAt', 'totalSpend', 'updatedAt'])
-        && request.resource.data.visitCount == resource.data.visitCount + 1
-        && request.resource.data.rewardCycles >= resource.data.rewardCycles
-        && request.resource.data.rewardCycles <= resource.data.rewardCycles + 1
-        && request.resource.data.dailyVisitCount is int
-        && request.resource.data.dailyVisitCount >= 1
-        && request.resource.data.dailyVisitCount <= 3
-        && (!('totalSpend' in request.resource.data)
+        && (
+          (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitorType', 'city', 'birthMonthDay', 'visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitRequestId', 'lastVisitAt', 'totalSpend', 'updatedAt'])
+            && request.resource.data.visitCount == resource.data.visitCount + 1
+            && request.resource.data.rewardCycles >= resource.data.rewardCycles
+            && request.resource.data.rewardCycles <= resource.data.rewardCycles + 1
+            && request.resource.data.dailyVisitCount is int
+            && request.resource.data.dailyVisitCount >= 1
+            && request.resource.data.dailyVisitCount <= 3
+            && request.resource.data.lastVisitRequestId is string
+            && (!('totalSpend' in request.resource.data)
+              || (request.resource.data.totalSpend is number
+                && ((!('totalSpend' in resource.data)
+                    && request.resource.data.totalSpend >= 0)
+                  || (('totalSpend' in resource.data)
+                    && request.resource.data.totalSpend >= resource.data.totalSpend))))
+            && request.resource.data.lastVisitAt == request.time
+            && request.resource.data.updatedAt == request.time
+          )
           ||
-          (request.resource.data.totalSpend is number
-            && ((!('totalSpend' in resource.data)
-                && request.resource.data.totalSpend >= 0)
-              || (('totalSpend' in resource.data)
-                && request.resource.data.totalSpend >= resource.data.totalSpend))))
-        && request.resource.data.lastVisitAt == request.time
-        && request.resource.data.updatedAt == request.time;
+          (
+            resource.data.lastVisitRequestId is string
+            && getAfter(/databases/$(database)/documents/loyaltyVisits/$(resource.data.lastVisitRequestId)).data.status == 'reversed'
+            && getAfter(/databases/$(database)/documents/loyaltyVisits/$(resource.data.lastVisitRequestId)).data.reversedBy == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitRequestId', 'lastVisitAt', 'totalSpend', 'updatedAt'])
+            && request.resource.data.visitCount == resource.data.visitCount - 1
+            && request.resource.data.visitCount >= 0
+            && request.resource.data.rewardCycles <= resource.data.rewardCycles
+            && request.resource.data.rewardCycles >= 0
+            && request.resource.data.dailyVisitCount is int
+            && request.resource.data.dailyVisitCount >= 0
+            && request.resource.data.totalSpend is number
+            && request.resource.data.totalSpend >= 0
+            && request.resource.data.totalSpend <= resource.data.totalSpend
+            && request.resource.data.updatedAt == request.time
+          )
+        );
       allow delete: if isViveLojaAdmin();
     }
 
@@ -542,7 +564,14 @@ service cloud.firestore {
         && request.resource.data.confirmedAt == request.time
         && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.userId == request.resource.data.userId
         && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.placeId == request.resource.data.placeId;
-      allow update: if false;
+      allow update: if isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.status == 'confirmed'
+        && resource.data.confirmedBy == request.auth.uid
+        && request.time <= resource.data.confirmedAt + duration.value(15, 'm')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reversedAt', 'reversedBy'])
+        && request.resource.data.status == 'reversed'
+        && request.resource.data.reversedBy == request.auth.uid
+        && request.resource.data.reversedAt == request.time;
       allow delete: if isViveLojaAdmin();
     }
 
@@ -559,7 +588,11 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/visitCodes/$(request.resource.data.requestId)).data.userId == request.resource.data.userId
         && get(/databases/$(database)/documents/visitCodes/$(request.resource.data.requestId)).data.placeId == request.resource.data.placeId;
       allow update: if false;
-      allow delete: if isViveLojaAdmin();
+      allow delete: if isViveLojaAdmin() || (
+        isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.confirmedBy == request.auth.uid
+        && request.time <= resource.data.confirmedAt + duration.value(15, 'm')
+      );
     }
 
     match /loyaltyRewardClaims/{claimId} {
@@ -581,7 +614,11 @@ service cloud.firestore {
         && request.resource.data.deliveredAt == request.time
         && request.resource.data.updatedAt == request.time
       );
-      allow delete: if isViveLojaAdmin();
+      allow delete: if isViveLojaAdmin() || (
+        isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.status == 'pending'
+        && request.time <= resource.data.createdAt + duration.value(15, 'm')
+      );
     }
 
     // Beneficios de cumpleaños configurados por cada parada.
