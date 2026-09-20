@@ -177,7 +177,8 @@ service cloud.firestore {
     }
 
     match /stampClaims/{claimId} {
-      allow read, delete: if isViveLojaAdmin();
+      allow read: if isViveLojaAdmin() || isAssignedVisitMerchant(resource.data.placeId);
+      allow delete: if isViveLojaAdmin();
       allow create: if request.resource.data.keys().hasOnly([
           'placeId', 'sessionId', 'pin', 'createdAt'
         ])
@@ -220,7 +221,7 @@ service cloud.firestore {
         && request.resource.data.placeId is string
         && request.resource.data.placeId.size() > 0
         && request.resource.data.placeId.size() <= 160
-        && request.resource.data.type in ['view', 'directions', 'favorite', 'stamp', 'promo']
+        && request.resource.data.type in ['view', 'directions', 'favorite', 'stamp', 'promo', 'whatsapp', 'product', 'benefit']
         && request.resource.data.sessionId is string
         && request.resource.data.sessionId.size() > 0
         && request.resource.data.sessionId.size() <= 100
