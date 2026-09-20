@@ -920,6 +920,9 @@
                     <button type="button" onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
                         <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
                     </button>
+                    <button type="button" onclick="openBusinessPageForCurrent()" class="w-full bg-orange-50 text-orange-800 py-2.5 rounded-xl font-bold text-xs hover:bg-orange-100 transition shadow border border-orange-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-store"></i> Ver página completa
+                    </button>
                     
                     <button id="previewStampButton" type="button" onclick="openQrClaimForCurrent()" class="w-full bg-brandGold text-white py-2.5 rounded-xl font-bold text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-qrcode"></i> Obtener sello de esta parada
@@ -2559,7 +2562,7 @@
 
         const automaticEnglishText = {
             "Muy pronto descubrirás una nueva experiencia para conocer, saborear y vivir Loja.":"Very soon you will discover a new way to experience, taste and enjoy Loja.",
-            "Opiniones verificadas":"Verified reviews","Tienda":"Shop","Ingresar":"Sign in","Ingresar o crear cuenta":"Sign in or create account","Tu cuenta Vive Loja":"Your Vive Loja account",
+            "Ver página completa":"View full page","Opiniones verificadas":"Verified reviews","Tienda":"Shop","Ingresar":"Sign in","Ingresar o crear cuenta":"Sign in or create account","Tu cuenta Vive Loja":"Your Vive Loja account",
             "Personaliza tu experiencia":"Personalize your experience","Identifícate para disfrutar tu pasaporte y los beneficios de Vive Loja.":"Sign in to enjoy your passport and Vive Loja benefits.",
             "Ingresa o crea tu cuenta":"Sign in or create your account","Usa tu cuenta de Google. Si ya te registraste, entrarás directamente con tus datos guardados.":"Use your Google account. If you already registered, you will sign in with your saved information.",
             "Ingresar o registrarme con Google":"Sign in or register with Google","Completa tu perfil":"Complete your profile","Completa estos datos para finalizar tu registro en Vive Loja.":"Complete these details to finish your Vive Loja registration.",
@@ -3697,11 +3700,17 @@
         }
 
         function buildLocationShareUrl(loc) {
-            const url = new URL(window.location.href);
+            const url = new URL('negocio.html', window.location.href);
             url.search = '';
             url.hash = '';
             url.searchParams.set('lugar', getLocationSlug(loc));
             return url.toString();
+        }
+
+        function openBusinessPageForCurrent() {
+            const loc = locations[currentLocationIndex];
+            if (!loc) return;
+            window.location.href = buildLocationShareUrl(loc);
         }
 
         function openLocationFromUrl(locationReference) {
