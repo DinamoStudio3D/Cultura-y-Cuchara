@@ -2826,6 +2826,70 @@
             throw lastError;
         }
 
+        let syncedFavoritesUserId = null;
+        let favoritesSyncTimer = null;
+
+        function refreshFavoritesUI() {
+            if (typeof updateItineraryUI === 'function') updateItineraryUI();
+            if (typeof renderTrendingUI === 'function') renderTrendingUI();
+            if (typeof renderMapAndGrid === 'function' && Array.isArray(locations) && locations.length) renderMapAndGrid();
+            if (typeof updateExperienceDashboard === 'function') updateExperienceDashboard();
+        }
+
+        function userProgressPayload(user) {
+            return {
+                uid: user.uid,
+                favorites: [...new Set(favoriteLocations.map(String))].slice(0, 150),
+                savedAgendaEvents: safeReadJSON('cyc_saved_agenda_events', []).map(String).slice(0, 150),
+                savedFestivalEvents: safeReadJSON('cyc_saved_festival_events', []).map(String).slice(0, 150),
+                routeLocationIds: (Array.isArray(currentSmartRoute) ? currentSmartRoute : []).map(stop => String(stop?.id || stop)).filter(Boolean).slice(0, 20),
+                passportMode: passportMode === 'lojano' ? 'lojano' : 'turista',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+        }
+
+        async function saveFavoritesToAccount() {
+            const user = visitorAuth?.currentUser;
+            if (!user || !db) return;
+            try {
+                await db.collection('userProgress').doc(user.uid).set(userProgressPayload(user));
+            } catch (error) {
+                console.warn('No se pudieron sincronizar los favoritos con la cuenta:', error);
+            }
+        }
+
+        function persistFavorites() {
+            favoriteLocations = [...new Set(favoriteLocations.map(String))];
+            persistFavorites();
+            if (favoritesSyncTimer) clearTimeout(favoritesSyncTimer);
+            favoritesSyncTimer = setTimeout(saveFavoritesToAccount, 250);
+        }
+
+        async function syncAccountFavorites(user) {
+            if (!user || !db) return;
+            const progressRef = db.collection('userProgress').doc(user.uid);
+            try {
+                const snapshot = await progressRef.get({ source: 'server' });
+                const localFavorites = [...new Set(favoriteLocations.map(String))];
+                if (snapshot.exists) {
+                    const remoteFavorites = Array.isArray(snapshot.data().favorites) ? snapshot.data().favorites.map(String) : [];
+                    const migrationKey = `cyc_favorites_migrated_${user.uid}`;
+                    favoriteLocations = localStorage.getItem(migrationKey) === '1'
+                        ? [...new Set(remoteFavorites)]
+                        : [...new Set([...remoteFavorites, ...localFavorites])];
+                    localStorage.setItem(migrationKey, '1');
+                } else {
+                    favoriteLocations = localFavorites;
+                }
+                syncedFavoritesUserId = user.uid;
+                persistFavorites();
+                await progressRef.set(userProgressPayload(user));
+                refreshFavoritesUI();
+            } catch (error) {
+                console.warn('No se pudieron recuperar los favoritos de la cuenta:', error);
+            }
+        }
+
         async function syncSecurePassportStamps(user) {
             if (!user || !db) return;
             try {
@@ -2850,6 +2914,7 @@
             }
             try {
                 await syncSecurePassportStamps(user);
+                await syncAccountFavorites(user);
                 const snapshot = await readVisitorProfileSecurely(user);
                 if (snapshot.exists && snapshot.data().profileComplete === true) {
                     currentVisitorProfile = snapshot.data();
@@ -4385,7 +4450,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 showToast(`¡Añadido a Mi Ruta! ☕`);
                 completeChabaquitoMission('ruta');
             }
-            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            persistFavorites();
             updateItineraryUI();
             renderTrendingUI();
             
@@ -4421,7 +4486,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 showToast(`¡Añadido a Mi Ruta! ☕`);
                 completeChabaquitoMission('ruta');
             }
-            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            persistFavorites();
             updateItineraryUI();
             renderTrendingUI();
             
@@ -4500,7 +4565,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function removeFavorite(id) {
             favoriteLocations = favoriteLocations.filter(favId => favId !== id);
-            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            persistFavorites();
             renderMapAndGrid();
             renderTrendingUI();
             updateItineraryUI();
@@ -4526,7 +4591,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function clearEntireItinerary() {
             if(favoriteLocations.length === 0) return;
             favoriteLocations = [];
-            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            persistFavorites();
             renderMapAndGrid();
             renderTrendingUI();
             updateItineraryUI();
@@ -6869,7 +6934,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             currentSmartRoute.forEach(stop => {
                 if (!favoriteLocations.includes(stop.id)) favoriteLocations.push(stop.id);
             });
-            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            persistFavorites();
             updateItineraryUI();
             renderTrendingUI();
             completeChabaquitoMission('ruta');
