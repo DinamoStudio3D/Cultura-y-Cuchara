@@ -3001,7 +3001,7 @@
                 await syncSecurePassportStamps(user);
                 await syncAccountFavorites(user);
                 const snapshot = await readVisitorProfileSecurely(user);
-                if (snapshot.exists && snapshot.data().profileComplete === true) {
+                if (snapshot.exists && snapshot.data().profileComplete === true && /^\d{4}-\d{2}-\d{2}$/.test(snapshot.data().birthDate||'') && snapshot.data().documentNumber) {
                     currentVisitorProfile = snapshot.data();
                     renderVisitorReady(user, currentVisitorProfile);
                 } else {
