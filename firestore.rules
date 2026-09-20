@@ -117,6 +117,11 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    match /storeProducts/{productId} {
+      allow read: if isViveLojaAdmin() || resource.data.active == true;
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
     match /passportPins/{placeId} {
       allow read, create, update, delete: if isViveLojaAdmin();
     }
