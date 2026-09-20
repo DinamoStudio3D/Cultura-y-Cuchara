@@ -6263,7 +6263,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const categories=document.getElementById('restaurantMenuCategories');
             if(categories) categories.scrollIntoView({behavior:'smooth',block:'nearest'});
         }
-        function openRestaurantMenu(){const loc=locations[currentLocationIndex];if(loc)trackBusinessEvent(loc.id,'product');const loc=locations[currentLocationIndex];currentRestaurantMenu=restaurantMenuFor(loc);if(!currentRestaurantMenu)return;renderRestaurantMenu();renderMenuCommerceActions(loc);openModal('restaurantMenuModal');}
+        function openRestaurantMenu(){const loc=locations[currentLocationIndex];if(loc)trackBusinessEvent(loc.id,'product');currentRestaurantMenu=restaurantMenuFor(loc);if(!currentRestaurantMenu)return;renderRestaurantMenu();renderMenuCommerceActions(loc);openModal('restaurantMenuModal');}
 
         let immersiveGalleryImages = [];
         let immersiveGalleryIndex = 0;
