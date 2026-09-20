@@ -15,12 +15,16 @@
 <section id="pending" class="hidden card rounded-3xl p-8 text-center max-w-xl mx-auto"><i class="fa-solid fa-hourglass-half text-3xl text-amber-300"></i><h2 class="text-xl font-black mt-4">Acceso pendiente o sin establecimiento</h2><p class="text-gray-400 mt-2">Administración debe activar esta cuenta y asignarle al menos una parada.</p><button id="pendingLogout" class="mt-5 border border-white/15 rounded-xl px-4 py-2">Cambiar cuenta</button></section>
 <section id="app" class="hidden space-y-6">
 <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4"><div><p class="text-emerald-300 text-xs font-black tracking-widest">NEGOCIO AUTORIZADO</p><h2 id="businessName" class="text-3xl font-black mt-1"></h2><p id="updatedAt" class="text-xs text-gray-500 mt-2"></p></div><div class="flex flex-col sm:flex-row gap-2"><select id="placeFilter" class="field min-w-[240px]"></select><button id="refresh" class="bg-cyan-400 text-cyan-950 rounded-xl px-4 py-2 font-black"><i class="fa-solid fa-rotate mr-2"></i>Actualizar</button><button id="csv" class="border border-white/15 rounded-xl px-4 py-2 font-bold"><i class="fa-solid fa-file-csv mr-2"></i>CSV</button></div></div>
-<div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+<div class="card rounded-2xl p-4"><b id="statWebVisits" class="text-3xl text-sky-300">0</b><span class="block text-xs text-gray-400 mt-1">Visitas a tu ficha</span></div>
+<div class="card rounded-2xl p-4"><b id="statRecurring" class="text-3xl text-emerald-300">0</b><span class="block text-xs text-gray-400 mt-1">Clientes recurrentes</span></div>
+<div class="card rounded-2xl p-4"><b id="statWhatsapp" class="text-3xl text-green-300">0</b><span class="block text-xs text-gray-400 mt-1">Clics en WhatsApp</span></div>
+<div class="card rounded-2xl p-4"><b id="statRoutes" class="text-3xl text-cyan-300">0</b><span class="block text-xs text-gray-400 mt-1">Rutas solicitadas</span></div>
+<div class="card rounded-2xl p-4"><b id="statProducts" class="text-3xl text-orange-300">0</b><span class="block text-xs text-gray-400 mt-1">Menús y productos</span></div>
 <div class="card rounded-2xl p-4"><b id="statVisits" class="text-3xl text-cyan-300">0</b><span class="block text-xs text-gray-400 mt-1">Visitas confirmadas</span></div>
-<div class="card rounded-2xl p-4"><b id="statClients" class="text-3xl text-emerald-300">0</b><span class="block text-xs text-gray-400 mt-1">Clientes</span></div>
-<div class="card rounded-2xl p-4"><b id="statPending" class="text-3xl text-amber-300">0</b><span class="block text-xs text-gray-400 mt-1">Premios pendientes</span></div>
-<div class="card rounded-2xl p-4"><b id="statDelivered" class="text-3xl text-violet-300">0</b><span class="block text-xs text-gray-400 mt-1">Premios entregados</span></div>
-<div class="card rounded-2xl p-4 col-span-2 lg:col-span-1"><b id="statMonth" class="text-3xl text-orange-300">0</b><span class="block text-xs text-gray-400 mt-1">Visitas últimos 30 días</span></div>
+<div class="card rounded-2xl p-4"><b id="statDelivered" class="text-3xl text-violet-300">0</b><span class="block text-xs text-gray-400 mt-1">Beneficios entregados</span></div>
+<div class="card rounded-2xl p-4"><b id="statPending" class="text-3xl text-amber-300">0</b><span class="block text-xs text-gray-400 mt-1">Beneficios pendientes</span></div>
+<div class="hidden"><b id="statClients">0</b><b id="statMonth">0</b></div>
 </div>
 <div id="alertBox" class="hidden bg-amber-500/10 border border-amber-500/30 text-amber-100 rounded-2xl p-4"></div>
 <div class="card rounded-3xl p-5">
@@ -34,7 +38,7 @@
 </section></main>
 <script>
 const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};
-firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore();let merchant=null,places=[],programs=[],counters=[],visits=[],rewards=[];
+firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore();let merchant=null,places=[],programs=[],counters=[],visits=[],rewards=[],webEvents=[];
 const el=id=>document.getElementById(id),safe=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])),millis=value=>value?.toMillis?.()||new Date(value||0).getTime()||0,dt=value=>millis(value)?new Date(millis(value)).toLocaleString('es-EC'):'Sin fecha';
 function show(id){['loading','login','pending','app'].forEach(name=>el(name).classList.toggle('hidden',name!==id))}
 function statusOf(reward){if(reward.status==='delivered')return{label:'Entregada',tone:'text-emerald-300'};if(millis(reward.expiresAt)&&millis(reward.expiresAt)<Date.now())return{label:'Vencida',tone:'text-red-300'};return{label:'Pendiente',tone:'text-amber-300'}}
@@ -43,20 +47,23 @@ async function loadDashboard(){
  try{
   const ids=(merchant.placeIds||[]).slice(0,20);
   const placeDocs=await Promise.all(ids.map(id=>db.collection('locales').doc(id).get()));places=placeDocs.filter(doc=>doc.exists).map(doc=>({id:doc.id,...doc.data()}));
-  const [programDocs,counterDocs,visitDocs,rewardDocs]=await Promise.all([
+  const [programDocs,counterDocs,visitDocs,rewardDocs,eventDocs]=await Promise.all([
    Promise.all(ids.map(id=>db.collection('loyaltyPrograms').doc(id).get())),
    Promise.all(ids.map(id=>db.collection('loyaltyCounters').where('placeId','==',id).get())),
    Promise.all(ids.map(id=>db.collection('loyaltyVisits').where('placeId','==',id).get())),
-   Promise.all(ids.map(id=>db.collection('loyaltyRewardClaims').where('placeId','==',id).get()))
+   Promise.all(ids.map(id=>db.collection('loyaltyRewardClaims').where('placeId','==',id).get())),
+   Promise.all(ids.map(id=>db.collection('businessEvents').where('placeId','==',id).get()))
   ]);
-  programs=programDocs.filter(doc=>doc.exists).map(doc=>({id:doc.id,...doc.data()}));counters=counterDocs.flatMap(snapshot=>snapshot.docs.map(doc=>({id:doc.id,...doc.data()})));visits=visitDocs.flatMap(snapshot=>snapshot.docs.map(doc=>({id:doc.id,...doc.data()}))).sort((a,b)=>millis(b.confirmedAt)-millis(a.confirmedAt));rewards=rewardDocs.flatMap(snapshot=>snapshot.docs.map(doc=>({id:doc.id,...doc.data()}))).sort((a,b)=>millis(b.createdAt)-millis(a.createdAt));
+  programs=programDocs.filter(doc=>doc.exists).map(doc=>({id:doc.id,...doc.data()}));counters=counterDocs.flatMap(snapshot=>snapshot.docs.map(doc=>({id:doc.id,...doc.data()})));visits=visitDocs.flatMap(snapshot=>snapshot.docs.map(doc=>({id:doc.id,...doc.data()}))).sort((a,b)=>millis(b.confirmedAt)-millis(a.confirmedAt));rewards=rewardDocs.flatMap(snapshot=>snapshot.docs.map(doc=>({id:doc.id,...doc.data()}))).sort((a,b)=>millis(b.createdAt)-millis(a.createdAt));webEvents=eventDocs.flatMap(snapshot=>snapshot.docs.map(doc=>({id:doc.id,...doc.data()})));
   el('placeFilter').innerHTML='<option value="all">Todos mis establecimientos</option>'+places.map(place=>'<option value="'+safe(place.id)+'">'+safe(place.title||place.id)+'</option>').join('');render();el('updatedAt').textContent='Información actualizada: '+new Date().toLocaleString('es-EC');
  }catch(error){el('alertBox').classList.remove('hidden');el('alertBox').textContent='No se pudo cargar la información. Verifica que las reglas actualizadas de Firebase estén publicadas.'}
  finally{el('refresh').disabled=false}
 }
 function filtered(data){const place=el('placeFilter').value;return place==='all'?data:data.filter(item=>item.placeId===place)}
 function render(){
- const visibleVisits=filtered(visits),visibleCounters=filtered(counters),visibleRewards=filtered(rewards),monthAgo=Date.now()-30*86400000;
+ const visibleVisits=filtered(visits),visibleCounters=filtered(counters),visibleRewards=filtered(rewards),visibleEvents=filtered(webEvents),monthAgo=Date.now()-30*86400000;
+ const metric=type=>visibleEvents.filter(item=>item.type===type).length,recurringClients=visibleCounters.filter(item=>Number(item.visitCount||0)>=2).length;
+ el('statWebVisits').textContent=metric('view');el('statRecurring').textContent=recurringClients;el('statWhatsapp').textContent=metric('whatsapp');el('statRoutes').textContent=metric('directions');el('statProducts').textContent=metric('product');
  el('statVisits').textContent=visibleVisits.length;el('statClients').textContent=new Set(visibleCounters.map(item=>item.userId)).size;el('statPending').textContent=visibleRewards.filter(item=>statusOf(item).label==='Pendiente').length;el('statDelivered').textContent=visibleRewards.filter(item=>item.status==='delivered').length;el('statMonth').textContent=visibleVisits.filter(item=>millis(item.confirmedAt)>=monthAgo).length;
  const suspicious=[];const groups={};visibleVisits.forEach(item=>{const day=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Guayaquil'}).format(new Date(millis(item.confirmedAt))),key=item.userId+'|'+item.placeId+'|'+day;groups[key]=(groups[key]||0)+1});Object.entries(groups).forEach(([key,count])=>{const placeId=key.split('|')[1],program=programs.find(item=>item.id===placeId),max=Number(program?.maxVisitsPerDay||1);if(count>max)suspicious.push(count+' visitas del mismo cliente en un día en '+(places.find(item=>item.id===placeId)?.title||placeId))});el('alertBox').classList.toggle('hidden',!suspicious.length);el('alertBox').innerHTML=suspicious.length?'<b><i class="fa-solid fa-triangle-exclamation mr-2"></i>Revisar actividad</b><ul class="list-disc pl-5 mt-2 text-sm">'+suspicious.map(text=>'<li>'+safe(text)+'</li>').join('')+'</ul>':'';
  renderClients(visibleCounters);renderVisits(visibleVisits);renderRewards(visibleRewards);
