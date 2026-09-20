@@ -122,6 +122,56 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    match /verifiedReviews/{reviewId} {
+      allow read: if isViveLojaAdmin()
+        || resource.data.status == 'published'
+        || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null
+        && reviewId == request.auth.uid + '_' + request.resource.data.placeId
+        && request.resource.data.keys().hasOnly([
+          'userId', 'userName', 'placeId', 'placeName', 'rating',
+          'comment', 'status', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userName is string
+        && request.resource.data.userName.size() > 0
+        && request.resource.data.userName.size() <= 100
+        && request.resource.data.placeId is string
+        && request.resource.data.placeId.size() > 0
+        && request.resource.data.placeName is string
+        && request.resource.data.placeName.size() <= 160
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() >= 3
+        && request.resource.data.comment.size() <= 600
+        && request.resource.data.status == 'published'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && exists(/databases/$(database)/documents/loyaltyCounters/$(reviewId))
+        && get(/databases/$(database)/documents/loyaltyCounters/$(reviewId)).data.userId == request.auth.uid
+        && get(/databases/$(database)/documents/loyaltyCounters/$(reviewId)).data.placeId == request.resource.data.placeId;
+      allow update: if isViveLojaAdmin() || (
+        request.auth != null
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'userName', 'rating', 'comment', 'updatedAt'
+        ])
+        && request.resource.data.userName is string
+        && request.resource.data.userName.size() > 0
+        && request.resource.data.userName.size() <= 100
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() >= 3
+        && request.resource.data.comment.size() <= 600
+        && request.resource.data.updatedAt == request.time
+      );
+      allow delete: if isViveLojaAdmin();
+    }
+
     match /passportPins/{placeId} {
       allow read, create, update, delete: if isViveLojaAdmin();
     }
