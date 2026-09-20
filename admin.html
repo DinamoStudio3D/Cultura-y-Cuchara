@@ -24,7 +24,7 @@
         .admin-sidebar button:hover { transform:translateX(2px); }
         .nav-group { border-top:1px solid rgba(255,255,255,.07); padding-top:.7rem; margin-top:.7rem; }
         .nav-group:first-of-type { border-top:0; padding-top:0; margin-top:0; }
-        .nav-group-title { padding:.25rem 1rem .45rem; color:#6b7280; font-size:.65rem; font-weight:900; letter-spacing:.16em; text-transform:uppercase; }
+        .nav-group-title { padding:.45rem 1rem; color:#9ca3af; font-size:.68rem; font-weight:900; letter-spacing:.13em; text-transform:uppercase; border-radius:.7rem; } .nav-group-title:hover{background:rgba(255,255,255,.05);color:#f3f4f6}.nav-group-title i{transition:transform .2s}.nav-group.collapsed .nav-group-title i{transform:rotate(-90deg)}.nav-group.collapsed .nav-items{display:none}.nav-items>[data-nav-item]{margin-top:.2rem}
         .admin-content > section { animation:admin-in .22s ease-out; }
         @keyframes admin-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
         @media(max-width:1023px){.admin-sidebar{position:static;max-height:none}.admin-sidebar.mobile-closed{display:none}}
@@ -97,7 +97,7 @@
 
         <section id="adminView" class="hidden">
             <div class="panel rounded-2xl px-4 py-3 sm:px-5 flex flex-wrap items-center justify-between gap-3 mb-5">
-                <div class="min-w-0"><p class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Módulo actual</p><div class="flex flex-wrap items-center gap-2"><h2 id="currentModuleName" class="font-black text-lg">Audios y Podcast</h2><span id="adminSaveGuard" class="hidden items-center gap-1.5 text-[10px] font-black text-amber-200 bg-amber-500/10 border border-amber-500/25 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle text-[6px]"></i>Cambios sin guardar</span><span class="hidden sm:inline text-gray-700">•</span><p id="sessionEmail" class="hidden sm:block text-xs text-gray-400 truncate"></p></div></div>
+                <div class="min-w-0"><p class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Módulo actual</p><div class="flex flex-wrap items-center gap-2"><h2 id="currentModuleName" class="font-black text-lg">Inicio y resumen</h2><span id="adminSaveGuard" class="hidden items-center gap-1.5 text-[10px] font-black text-amber-200 bg-amber-500/10 border border-amber-500/25 rounded-full px-2.5 py-1"><i class="fa-solid fa-circle text-[6px]"></i>Cambios sin guardar</span><span class="hidden sm:inline text-gray-700">•</span><p id="sessionEmail" class="hidden sm:block text-xs text-gray-400 truncate"></p></div></div>
                 <div class="flex items-center gap-2"><button type="button" onclick="openAdminGlobalSearch()" class="border border-gray-700 hover:border-amber-400 hover:text-amber-200 rounded-xl px-3 py-2 text-sm" title="Buscar en todo el panel (Ctrl + K)"><i class="fa-solid fa-magnifying-glass mr-1"></i><span class="hidden sm:inline">Buscar</span><span class="hidden xl:inline ml-2 text-[10px] text-gray-500 border border-gray-700 rounded px-1.5 py-0.5">Ctrl K</span></button><button id="mobileAdminNavToggle" type="button" onclick="toggleAdminSidebar()" class="border border-amber-500/30 text-amber-200 rounded-xl px-3 py-2 text-sm font-bold" aria-expanded="false"><i class="fa-solid fa-bars mr-1"></i>Menú</button><button id="logoutBtn" type="button" class="border border-gray-700 hover:border-red-400 hover:text-red-300 rounded-xl px-3 py-2 text-sm"><i class="fa-solid fa-arrow-right-from-bracket mr-1"></i><span class="hidden sm:inline">Cerrar sesión</span></button></div>
             </div>
 
@@ -106,39 +106,40 @@
                 <aside id="adminSidebar" class="admin-sidebar mobile-closed panel rounded-2xl p-3 h-fit">
                     <div class="px-2 pb-2"><label class="sr-only" for="adminNavSearch">Buscar módulo</label><div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i><input id="adminNavSearch" class="field !py-2 !pl-9 text-sm" placeholder="Buscar módulo…" oninput="filterAdminNavigation(this.value)"></div></div>
                     <nav aria-label="Módulos administrativos">
-                        <div class="nav-group"><p class="nav-group-title">Inicio y control</p>
-                            <button id="dashboardNavBtn" type="button" onclick="showAdminModule('dashboard')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-chart-pie w-6"></i>Resumen y respaldo</button>
-                            <button id="controlNavBtn" type="button" onclick="showAdminModule('control')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-list-check w-6"></i>Control de paradas <span id="controlNavCount" class="hidden float-right bg-amber-500 text-black text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
-                            <button id="analyticsNavBtn" type="button" onclick="showAdminModule('analytics')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-chart-line w-6"></i>Estadísticas</button>
-                            <button id="usersNavBtn" type="button" onclick="showAdminModule('users')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-users w-6"></i>Usuarios <span id="usersNavCount" class="hidden float-right bg-violet-500 text-white text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
-                        </div>
-                        <div class="nav-group"><p class="nav-group-title">Contenido turístico</p>
-                            <button id="placesNavBtn" type="button" onclick="showAdminModule('places')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-location-dot w-6"></i>Paradas</button>
-                            <button id="applicationsNavBtn" type="button" onclick="showAdminModule('applications')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-inbox w-6"></i>Solicitudes <span id="applicationsNavCount" class="hidden float-right bg-rose-500 text-white text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
-                            <button id="eventsNavBtn" type="button" onclick="showAdminModule('events')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-calendar w-6"></i>Eventos</button><button id="storiesNavBtn" type="button" onclick="showAdminModule('stories')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-book-open-reader w-6"></i>Historias de Loja</button>
-                            <button id="entrepreneursNavBtn" type="button" onclick="showAdminModule('entrepreneurs')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-store w-6"></i>Emprendedores</button>
-                            <button id="timeNavBtn" type="button" onclick="showAdminModule('time')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-clock-rotate-left w-6"></i>Loja en el Tiempo</button>
-                            <button id="postcardsNavBtn" type="button" onclick="showAdminModule('postcards')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-camera-retro w-6"></i>Postales</button>
-                            <button id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left bg-amber-500 text-black font-black rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y Podcast</button>
-                            <button id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-bullhorn w-6"></i>Centro de campañas</button>
-                        </div>
-                        <div class="nav-group"><p class="nav-group-title">Experiencia</p>
-                            <button id="chabaquitoNavBtn" type="button" onclick="showAdminModule('chabaquito')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</button>
-                            <button id="passportNavBtn" type="button" onclick="showAdminModule('passport')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-passport w-6"></i>Pasaporte y premios</button>
-                            <a href="gestion-fidelidad.html" class="block w-full text-left text-violet-200 hover:bg-violet-500/10 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-repeat w-6"></i>Fidelidad y beneficios <span class="text-[9px] bg-violet-500/20 px-2 py-1 rounded-full">NUEVO</span></a>
-                            <a href="gestion-opiniones.html" class="block w-full text-left text-amber-200 hover:bg-amber-500/10 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-star w-6"></i>Opiniones verificadas <span class="text-[9px] bg-amber-500/20 px-2 py-1 rounded-full">NUEVO</span></a>
-                            <a href="gestion-tienda.html" class="block w-full text-left text-orange-200 hover:bg-orange-500/10 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-bag-shopping w-6"></i>Tienda virtual <span class="text-[9px] bg-orange-500/20 px-2 py-1 rounded-full">NUEVO</span></a>
-                            <button id="qrNavBtn" type="button" onclick="showAdminModule('qr')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-qrcode w-6"></i>Centro de QR</button>
-                        </div>
-                        <div class="nav-group"><p class="nav-group-title">Comercial</p>
-                            <button id="subscriptionsNavBtn" type="button" onclick="showAdminModule('subscriptions')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-handshake w-6"></i>Planes y suscripciones</button>
-                        </div>
-                        <div class="nav-group"><p class="nav-group-title">Sistema</p>
-                            <button id="settingsNavBtn" type="button" onclick="showAdminModule('settings')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-sliders w-6"></i>Configuración</button>
-                            <button id="linksNavBtn" type="button" onclick="showAdminModule('links')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-link w-6"></i>Enlaces del sistema</button>
-                            <button id="maintenanceNavBtn" type="button" onclick="showAdminModule('maintenance')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-person-digging w-6"></i>Estado de la web</button>
-                        </div>
-                    </nav>
+<div class="nav-group"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="true"><span>Inicio</span><i class="fa-solid fa-chevron-down"></i></button><div class="nav-items">
+<button data-nav-item id="dashboardNavBtn" type="button" onclick="showAdminModule('dashboard')" class="w-full text-left bg-indigo-500 text-white font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-house w-6"></i>Inicio y resumen</button>
+<button data-nav-item id="controlNavBtn" type="button" onclick="showAdminModule('control')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-list-check w-6"></i>Pendientes por revisar <span id="controlNavCount" class="hidden float-right bg-amber-500 text-black text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
+<button data-nav-item id="analyticsNavBtn" type="button" onclick="showAdminModule('analytics')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-chart-line w-6"></i>Estadísticas generales</button>
+</div></div>
+<div class="nav-group"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="true"><span>Negocios</span><i class="fa-solid fa-chevron-down"></i></button><div class="nav-items">
+<button data-nav-item id="placesNavBtn" type="button" onclick="showAdminModule('places')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-location-dot w-6"></i>Paradas y negocios</button>
+<button data-nav-item id="applicationsNavBtn" type="button" onclick="showAdminModule('applications')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-inbox w-6"></i>Solicitudes nuevas <span id="applicationsNavCount" class="hidden float-right bg-rose-500 text-white text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
+<button data-nav-item id="subscriptionsNavBtn" type="button" onclick="showAdminModule('subscriptions')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-handshake w-6"></i>Planes, pagos y vencimientos</button>
+<button data-nav-item id="usersNavBtn" type="button" onclick="showAdminModule('users')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-users w-6"></i>Usuarios registrados <span id="usersNavCount" class="hidden float-right bg-violet-500 text-white text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
+</div></div>
+<div class="nav-group"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="true"><span>Clientes y ventas</span><i class="fa-solid fa-chevron-down"></i></button><div class="nav-items">
+<button data-nav-item id="passportNavBtn" type="button" onclick="showAdminModule('passport')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-passport w-6"></i>Pasaporte y premios</button>
+<a data-nav-item href="gestion-fidelidad.html" class="block w-full text-left text-violet-200 hover:bg-violet-500/10 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-stamp w-6"></i>Fidelidad, clientes y sellos</a>
+<a data-nav-item href="gestion-opiniones.html" class="block w-full text-left text-amber-200 hover:bg-amber-500/10 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-star w-6"></i>Opiniones verificadas</a>
+<a data-nav-item href="gestion-tienda.html" class="block w-full text-left text-orange-200 hover:bg-orange-500/10 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-bag-shopping w-6"></i>Tienda virtual</a>
+<button data-nav-item id="qrNavBtn" type="button" onclick="showAdminModule('qr')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-qrcode w-6"></i>Códigos QR</button>
+</div></div>
+<div class="nav-group collapsed"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="false"><span>Contenido de la web</span><i class="fa-solid fa-chevron-down"></i></button><div class="nav-items">
+<button data-nav-item id="eventsNavBtn" type="button" onclick="showAdminModule('events')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-calendar w-6"></i>Eventos y agenda</button>
+<button data-nav-item id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-bullhorn w-6"></i>Campañas y festivales</button>
+<button data-nav-item id="storiesNavBtn" type="button" onclick="showAdminModule('stories')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-book-open-reader w-6"></i>Historias de Loja</button>
+<button data-nav-item id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y podcast</button>
+<button data-nav-item id="chabaquitoNavBtn" type="button" onclick="showAdminModule('chabaquito')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</button>
+<button data-nav-item id="entrepreneursNavBtn" type="button" onclick="showAdminModule('entrepreneurs')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-store w-6"></i>Emprendedores</button>
+<button data-nav-item id="timeNavBtn" type="button" onclick="showAdminModule('time')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-clock-rotate-left w-6"></i>Loja en el Tiempo</button>
+<button data-nav-item id="postcardsNavBtn" type="button" onclick="showAdminModule('postcards')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-camera-retro w-6"></i>Postales</button>
+</div></div>
+<div class="nav-group collapsed"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="false"><span>Sistema</span><i class="fa-solid fa-chevron-down"></i></button><div class="nav-items">
+<button data-nav-item id="settingsNavBtn" type="button" onclick="showAdminModule('settings')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-sliders w-6"></i>Configuración general</button>
+<button data-nav-item id="linksNavBtn" type="button" onclick="showAdminModule('links')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-link w-6"></i>Enlaces para compartir</button>
+<button data-nav-item id="maintenanceNavBtn" type="button" onclick="showAdminModule('maintenance')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-person-digging w-6"></i>Estado y mantenimiento</button>
+</div></div>
+</nav>
                 </aside>
 
                 <div class="admin-content min-w-0">
@@ -150,7 +151,7 @@
                     <p id="usersMessage" class="hidden text-sm rounded-xl p-3 mt-4" role="alert"></p>
                 </section>
 
-                <section id="dashboardModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                <section id="dashboardModule" class="panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6"><div><p class="text-indigo-400 text-xs font-bold uppercase tracking-widest">Control general</p><h2 class="text-2xl font-black mt-1">Resumen y respaldo</h2><p class="text-sm text-gray-400 mt-1">Comprueba el contenido publicado y descarga una copia de seguridad.</p></div><button id="dashboardRefreshBtn" type="button" onclick="loadDashboardSummary()" class="border border-indigo-400/40 text-indigo-200 hover:bg-indigo-500/15 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-rotate mr-1"></i>Actualizar</button></div>
                     <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
                         <div class="bg-cyan-500/10 border border-cyan-500/25 rounded-2xl p-4"><i class="fa-solid fa-location-dot text-cyan-300"></i><strong id="dashboardPlaces" class="block text-3xl mt-2">—</strong><span class="text-xs text-gray-400">Paradas</span></div>
@@ -209,7 +210,7 @@
                     <div class="flex items-center justify-between mt-7 mb-3"><h3 class="font-black text-lg">Códigos registrados</h3><span id="qrCount" class="text-xs text-gray-400">0 códigos</span></div><div id="qrList" class="space-y-3"></div>
                 </section>
 
-                <section id="podcastModule" class="panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                <section id="podcastModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex items-start justify-between gap-4 mb-6">
                         <div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Módulo 1</p><h2 class="text-2xl font-black mt-1">Audio de muestra</h2><p class="text-sm text-gray-400 mt-1">Los cambios guardados aparecerán en “El Podcast de Loja”.</p></div>
                         <span id="saveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Sin cambios</span>
@@ -848,7 +849,7 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
 document.getElementById('logoutBtn').addEventListener('click', () => {if(adminUnsavedChanges&&!window.confirm('Tienes cambios sin guardar. ¿Quieres cerrar la sesión y descartarlos?'))return;setAdminUnsavedChanges(false);auth.signOut();});
 
 let adminUnsavedChanges=false;
-let currentAdminModule='podcast';
+let currentAdminModule='dashboard';
 function setAdminUnsavedChanges(value){adminUnsavedChanges=Boolean(value);const badge=document.getElementById('adminSaveGuard');if(badge){badge.classList.toggle('hidden',!adminUnsavedChanges);badge.classList.toggle('inline-flex',adminUnsavedChanges);}}
 function adminFieldChangesContent(target){if(!target?.closest('#adminView form'))return false;if(target.matches('input[type="search"],input[type="password"][autocomplete="current-password"]'))return false;if(target.closest('#loginForm'))return false;return true;}
 document.addEventListener('input',event=>{if(adminFieldChangesContent(event.target))setAdminUnsavedChanges(true);});
@@ -858,7 +859,8 @@ window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;ev
 
 const ADMIN_MODULE_LABELS={dashboard:'Resumen y respaldo',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
-function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('button').forEach(button=>{const show=!query||button.textContent.toLowerCase().includes(query);button.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);});}
+function toggleAdminNavGroup(button){const group=button.closest('.nav-group'),collapsed=!group.classList.contains('collapsed');group.classList.toggle('collapsed',collapsed);button.setAttribute('aria-expanded',String(!collapsed));}
+function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('[data-nav-item]').forEach(item=>{const show=!query||item.textContent.toLowerCase().includes(query);item.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);if(query&&visible){group.classList.remove('collapsed');group.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}});}
 
 
 let adminGlobalSearchResults=[];
