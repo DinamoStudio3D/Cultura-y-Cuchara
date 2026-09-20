@@ -4,7 +4,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
 <style>body{background:radial-gradient(circle at 10% 0,rgba(20,184,166,.2),transparent 35rem),#07100e}.card{background:linear-gradient(145deg,rgba(16,31,28,.98),rgba(7,16,14,.98));border:1px solid rgba(255,255,255,.1)}button,a{touch-action:manipulation;min-height:44px}.code{letter-spacing:.25em;font-variant-numeric:tabular-nums}</style></head>
-<body class="min-h-screen text-white antialiased"><header class="border-b border-white/10"><div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center"><div><p class="text-emerald-400 text-xs font-black tracking-widest">VIVE LOJA</p><h1 class="font-black text-xl">Confirmar visita</h1></div><a href="./" class="border border-white/15 rounded-xl px-3 py-2 text-sm">Volver</a></div></header>
+<body class="min-h-screen text-white antialiased"><header class="border-b border-white/10"><div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center gap-3"><div><p class="text-emerald-400 text-xs font-black tracking-widest">VIVE LOJA</p><h1 class="font-black text-xl">Confirmar visita</h1></div><div class="flex items-center gap-2"><select id="loyaltyLanguage" onchange="setLoyaltyLanguage(this.value)" class="bg-black/30 border border-white/15 rounded-xl px-2 py-2 text-xs font-bold"><option value="es">ES</option><option value="en">EN</option></select><a href="./" class="border border-white/15 rounded-xl px-3 py-2 text-sm">Volver</a></div></div></header>
 <main class="max-w-xl mx-auto px-4 py-8">
 <section id="loading" class="card rounded-3xl p-7 text-center"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-300"></i><p class="mt-4 text-gray-300">Preparando la visita…</p></section>
 <section id="error" class="hidden card rounded-3xl p-7 text-center"><i class="fa-solid fa-triangle-exclamation text-3xl text-amber-300"></i><h2 class="text-xl font-black mt-4">No pudimos abrir esta parada</h2><p id="errorText" class="text-gray-400 mt-2"></p><a href="./" class="inline-flex mt-5 bg-white/10 rounded-xl px-5 py-3">Volver al sitio</a></section>
@@ -22,6 +22,37 @@
 </section>
 </main>
 <script>
+const loyaltyEnglish={
+"Confirmar visita":"Confirm visit","Volver":"Back","Preparando la visita…":"Preparing your visit…","No pudimos abrir esta parada":"We could not open this stop","Volver al sitio":"Return to the website",
+"VISITA A":"VISIT TO","Ingresa con tu cuenta para solicitar un código temporal. El encargado confirmará que estás en el establecimiento.":"Sign in to request a temporary code. A staff member will confirm that you are at the business.",
+"Ingresar con Google":"Sign in with Google","VISITA PRESENCIAL":"IN-PERSON VISIT","TU FIDELIDAD EN ESTA PARADA":"YOUR LOYALTY AT THIS STOP","Has registrado":"You have registered",
+"El código será válido durante 10 minutos y solo puede utilizarse para esta parada.":"The code is valid for 10 minutes and can only be used at this stop.",
+"Muéstralo directamente al encargado. No lo compartas ni envíes capturas.":"Show it directly to the staff member. Do not share it or send screenshots.","Generar código de visita":"Generate visit code",
+"Código temporal para":"Temporary code for","Muestra esta pantalla directamente al encargado.":"Show this screen directly to the staff member.","No compartas el código ni envíes capturas.":"Do not share the code or send screenshots.",
+"¡Visita registrada correctamente!":"Visit registered successfully!","Ver todas mis visitas":"View all my visits","MI EXPERIENCIA":"MY EXPERIENCE","Mi fidelidad en Vive Loja":"My Vive Loja loyalty",
+"Consulta tu progreso por establecimiento, recompensas e historial.":"View your progress by business, rewards and history.","Cerrar sesión":"Sign out","VISITAS":"VISITS","LOCALES":"BUSINESSES","PREMIOS":"REWARDS",
+"Mis visitas recientes":"My recent visits","Ingresa para consultar tu progreso.":"Sign in to view your progress.","Cargando beneficios…":"Loading benefits…","RECOMPENSA":"REWARD",
+"Beneficio":"Benefit","Establecimiento":"Business","Presenta este código al personal del negocio.":"Show this code to the business staff.","TARJETA DE FIDELIDAD":"LOYALTY CARD",
+"Parada":"Stop","Beneficio de fidelidad":"Loyalty benefit","Aún no tienes visitas de fidelidad.":"You do not have any loyalty visits yet.","Sumó Pasaporte y fidelidad":"Added to Passport and loyalty",
+"Sumó fidelidad":"Added to loyalty","No se pudo consultar el progreso. Verifica las reglas publicadas.":"We could not load your progress. Please check the published rules.","Sin fecha":"No date",
+"El código no corresponde a una parada publicada.":"This code does not match a published stop.","Parada Vive Loja":"Vive Loja stop","No se pudo iniciar sesión.":"Sign-in failed.",
+"Recupera la conexión antes de generar el código.":"Restore your connection before generating the code.","Creando código seguro…":"Creating secure code…","esta parada":"this stop",
+"La visita sumó al programa de fidelidad.":"The visit was added to the loyalty program.","El negocio no pudo confirmar esta visita.":"The business could not confirm this visit.",
+"El código venció. Puedes generar uno nuevo.":"The code expired. You can generate a new one.","No se pudo cargar la parada. Revisa tu conexión.":"The stop could not be loaded. Check your connection."
+};
+let loyaltyLang=localStorage.getItem('cyc_lang')==='en'?'en':'es';const loyaltyOriginalText=new WeakMap();
+function loyaltyTranslateValue(value){if(loyaltyEnglish[value])return loyaltyEnglish[value];return value
+.replace(/^(\d+) visitas?$/,(_,n)=>n+' '+(n==='1'?'visit':'visits'))
+.replace(/^(\d+) de (\d+) para el próximo beneficio$/,(_,a,b)=>a+' of '+b+' toward the next benefit')
+.replace(/^Faltan (\d+)$/,(_,n)=>n+' remaining')
+.replace(/^Última visita: /,'Last visit: ')
+.replace(/^Entregada: /,'Delivered: ').replace(/^Venció: /,'Expired: ').replace(/^Válida hasta: /,'Valid until: ')
+.replace(/^Te faltan (\d+) visitas? para (.+)\.$/,(_,n,reward)=>'You need '+n+' more '+(n==='1'?'visit':'visits')+' for '+reward+'.')
+.replace(/^Esta es tu visita registrada número (\d+) en esta parada\.$/,(_,n)=>'This is your registered visit number '+n+' at this stop.');}
+function applyLoyaltyLanguage(root=document.body){if(!root)return;const apply=node=>{if(!loyaltyOriginalText.has(node))loyaltyOriginalText.set(node,node.nodeValue);const original=loyaltyOriginalText.get(node),trimmed=original.trim(),translated=loyaltyTranslateValue(trimmed),desired=loyaltyLang==='en'?original.replace(trimmed,translated):original;if(node.nodeValue!==desired)node.nodeValue=desired;};if(root.nodeType===Node.TEXT_NODE){apply(root);return;}const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);while(walker.nextNode()){const node=walker.currentNode;if(node.parentElement&&!['SCRIPT','STYLE'].includes(node.parentElement.tagName))apply(node);}document.documentElement.lang=loyaltyLang;document.title=loyaltyLang==='en'?'Confirm visit | Vive Loja':'Confirmar visita | Vive Loja';}
+function setLoyaltyLanguage(lang){loyaltyLang=lang==='en'?'en':'es';localStorage.setItem('cyc_lang',loyaltyLang);document.getElementById('loyaltyLanguage').value=loyaltyLang;applyLoyaltyLanguage(document.body);}
+const loyaltyLanguageObserver=new MutationObserver(mutations=>{if(loyaltyLang!=='en')return;mutations.forEach(m=>m.addedNodes.forEach(node=>{if(node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE)applyLoyaltyLanguage(node)}));});loyaltyLanguageObserver.observe(document.body,{childList:true,subtree:true});
+
 const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore();
 const placeRef=new URLSearchParams(location.search).get('place')||new URLSearchParams(location.search).get('checkin')||'';let place=null,user=null,unsub=null,timer=null;
 const show=id=>['loading','error','login','ready','wallet'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id));
@@ -49,5 +80,5 @@ historyCard.classList.toggle('hidden',!visits.length);document.getElementById('w
 function formatDate(value){return value?.toDate?value.toDate().toLocaleString('es-EC'):'Sin fecha'}
 function escapeText(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 document.getElementById('walletGoogle').onclick=()=>auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());document.getElementById('walletLogout').onclick=()=>auth.signOut();
-loadPlace().catch(()=>fail('No se pudo cargar la parada. Revisa tu conexión.'));
+setLoyaltyLanguage(loyaltyLang);loadPlace().catch(()=>fail('No se pudo cargar la parada. Revisa tu conexión.'));
 </script></body></html>
