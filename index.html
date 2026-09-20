@@ -2636,8 +2636,11 @@
                 const desired = currentLang === 'en' && translated ? original.replace(trimmed, translated) : original;
                 if (node.nodeValue !== desired) node.nodeValue = desired;
             };
-            if (root.nodeType === Node.TEXT_NODE) translateTextNode(root);
-            const walker = document.createTreeWalker(root.nodeType === Node.ELEMENT_NODE ? root : document.body, NodeFilter.SHOW_TEXT);
+            if (root.nodeType === Node.TEXT_NODE) {
+                translateTextNode(root);
+                return;
+            }
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
             while (walker.nextNode()) {
                 const node = walker.currentNode;
                 if (!node.parentElement || ['SCRIPT','STYLE'].includes(node.parentElement.tagName)) continue;
