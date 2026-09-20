@@ -2860,7 +2860,7 @@
 
         function persistFavorites() {
             favoriteLocations = [...new Set(favoriteLocations.map(String))];
-            persistFavorites();
+            localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
             if (favoritesSyncTimer) clearTimeout(favoritesSyncTimer);
             favoritesSyncTimer = setTimeout(saveFavoritesToAccount, 250);
         }
@@ -2882,7 +2882,7 @@
                     favoriteLocations = localFavorites;
                 }
                 syncedFavoritesUserId = user.uid;
-                persistFavorites();
+                localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
                 await progressRef.set(userProgressPayload(user));
                 refreshFavoritesUI();
             } catch (error) {
