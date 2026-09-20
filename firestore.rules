@@ -214,7 +214,9 @@ service cloud.firestore {
     }
 
     match /businessEvents/{eventId} {
-      allow read, delete: if isViveLojaAdmin();
+      allow read: if isViveLojaAdmin()
+        || isAssignedVisitMerchant(resource.data.placeId);
+      allow delete: if isViveLojaAdmin();
       allow create: if request.resource.data.keys().hasOnly([
           'placeId', 'type', 'sessionId', 'createdAt'
         ])
