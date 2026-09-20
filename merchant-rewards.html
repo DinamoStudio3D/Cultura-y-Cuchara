@@ -126,7 +126,7 @@ async function deliverReward(){
     try{
         const type=currentRewardClaim.type,collection=type==='passport'?'passportCompletions':type==='loyalty'?'loyaltyRewardClaims':'missionRewardClaims',ref=merchantDb.collection(collection).doc(currentRewardClaim.id);
         await merchantDb.runTransaction(async transaction=>{const snapshot=await transaction.get(ref);if(!snapshot.exists||snapshot.data().status!=='pending')throw new Error('already-used');if(type==='passport')transaction.update(ref,{status:'delivered',deliveredAt:firebase.firestore.FieldValue.serverTimestamp(),deliveredBy:merchantAuth.currentUser.email});else if(type==='loyalty')transaction.update(ref,{status:'delivered',deliveredAt:firebase.firestore.FieldValue.serverTimestamp(),deliveredBy:merchantAuth.currentUser.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});else transaction.update(ref,{status:'delivered',processedAt:firebase.firestore.FieldValue.serverTimestamp(),processedBy:merchantAuth.currentUser.email});});
-        currentRewardClaim.status='delivered';renderRewardResult();showNotice('verifyMessage','Recompensa entregada correctamente.',true);
+        currentRewardClaim.status='delivered';if(currentRewardClaim.placeId)merchantDb.collection('businessEvents').add({placeId:String(currentRewardClaim.placeId),type:'benefit',sessionId:'merchant_'+merchantAuth.currentUser.uid.slice(0,60),createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});renderRewardResult();showNotice('verifyMessage','Recompensa entregada correctamente.',true);
     }catch(_){await verifyRewardCode();showNotice('verifyMessage','El código ya fue utilizado o no tienes permiso para entregarlo.');}
 }
 </script>
