@@ -6,6 +6,14 @@
     <title>Vive Loja - Ruta Gastronómica y Turística</title>
     <meta name="description" content="Descubre la gastronomía, hoteles, emprendimientos, eventos y destinos turísticos de Loja en una ruta interactiva.">
     <meta name="theme-color" content="#121212">
+    <script>
+        (() => {
+            const saved = localStorage.getItem('cyc_low_data_mode');
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const automatic = Boolean(connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType));
+            if (saved === 'on' || (saved !== 'off' && automatic)) document.documentElement.classList.add('low-data-mode');
+        })();
+    </script>
     
     <meta property="og:title" content="Vive Loja - Sabores, Historias y Destinos">
     <meta property="og:description" content="Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles de Loja.">
@@ -386,6 +394,11 @@
         }
 
 </style>
+    <style>
+        html.low-data-mode *, html.low-data-mode *::before, html.low-data-mode *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+        html.low-data-mode .hero-slide:not(.active-slide), html.low-data-mode [data-low-data-decorative="true"] { display: none !important; }
+        .low-data-active { color: #86efac !important; border-color: rgba(74,222,128,.55) !important; background: rgba(22,101,52,.22) !important; }
+    </style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -465,6 +478,7 @@
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
                 </select>
+                <button id="lowDataToggleDesktop" type="button" onclick="toggleLowDataMode()" class="border border-white/20 bg-white/5 text-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-bold flex items-center gap-1.5" title="Ahorrar datos"><i class="fa-solid fa-leaf"></i><span class="low-data-label">Ahorro</span></button>
 
                 <button type="button" onclick="openModal('itineraryModal')" class="bg-brandGold/20 text-brandGold border border-brandGold/50 px-3 py-1.5 rounded-xl font-bold hover:bg-brandGold hover:text-white transition-all text-xs flex items-center gap-1.5 relative shadow-warm-glow">
                     <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta</span> <span id="itineraryBadge" class="bg-red-500 text-white text-[9px] px-1.5 rounded-full hidden">0</span>
@@ -502,6 +516,7 @@
                     <option value="en">🇺🇸 English</option>
                 </select>
             </div>
+            <button id="lowDataToggleMobile" type="button" onclick="toggleLowDataMode()" class="w-full mt-2 border border-emerald-500/30 text-emerald-200 bg-emerald-500/10 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-leaf"></i><span class="low-data-label">Modo ahorro de datos</span></button>
             <button type="button" onclick="openModal('itineraryModal'); toggleMobileMenu()" class="w-full mt-2 bg-brandGold text-white font-bold py-2.5 rounded-xl text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-2">
                 <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span>
             </button>
@@ -542,6 +557,7 @@
                         <div id="expiringBenefitsList" class="p-3 space-y-2"></div>
                         <a href="fidelidad.html" class="mx-3 mb-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-4 py-3 text-xs font-black flex items-center justify-center"><i class="fa-solid fa-gift mr-2"></i><span id="expiringBenefitsButton">Ver y usar mis beneficios</span></a>
                     </section>
+                    <button id="lowDataToggleAccount" type="button" onclick="toggleLowDataMode()" class="w-full mt-4 border border-emerald-200 bg-emerald-50 text-emerald-800 rounded-2xl p-3 flex items-center justify-between gap-3 text-left"><span class="flex items-center gap-3"><span class="w-9 h-9 rounded-full bg-emerald-100 grid place-items-center"><i class="fa-solid fa-leaf"></i></span><span><b class="block text-xs">Modo de bajo consumo</b><small id="lowDataAccountStatus" class="text-[10px] text-emerald-700">Automático según tu conexión</small></span></span><i class="fa-solid fa-toggle-off text-xl low-data-toggle-icon"></i></button>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-5">
                         <button type="button" onclick="openExperiencePassport()" class="bg-orange-50 border border-orange-100 rounded-2xl p-3 text-center"><i class="fa-solid fa-stamp text-brandGold"></i><strong id="experienceStampCount" class="block text-2xl mt-1">0</strong><span class="text-[10px] text-gray-500" data-i18n="expStamps">Sellos</span></button>
                         <button type="button" onclick="openExperienceFavorites()" class="bg-rose-50 border border-rose-100 rounded-2xl p-3 text-center"><i class="fa-solid fa-seedling text-rose-500"></i><strong id="experienceFavoriteCount" class="block text-2xl mt-1">0</strong><span class="text-[10px] text-gray-500" data-i18n="expFavorites">Favoritos</span></button>
@@ -3595,12 +3611,75 @@
         let postcardPhotoOffsetY = 0;
         let postcardDragState = null;
 
+        function lowDataConnectionRecommended() {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            return Boolean(connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType));
+        }
+        function isLowDataMode() { return document.documentElement.classList.contains('low-data-mode'); }
+        function lowDataImageUrl(value) {
+            if (!isLowDataMode() || !value) return value;
+            try {
+                const url = new URL(value, window.location.href);
+                if (url.hostname.includes('images.unsplash.com')) {
+                    url.searchParams.set('auto', 'format');
+                    url.searchParams.set('fit', 'crop');
+                    url.searchParams.set('w', '720');
+                    url.searchParams.set('q', '55');
+                }
+                return url.href;
+            } catch (_) { return value; }
+        }
+        function prepareLowDataMedia(root = document) {
+            root.querySelectorAll?.('img').forEach((image, index) => {
+                if (!image.hasAttribute('loading') && index > 1) image.loading = 'lazy';
+                image.decoding = 'async';
+                if (isLowDataMode() && image.src) {
+                    const optimized = lowDataImageUrl(image.src);
+                    if (optimized !== image.src) image.src = optimized;
+                }
+            });
+            root.querySelectorAll?.('video,audio').forEach(media => media.preload = 'none');
+            root.querySelectorAll?.('iframe').forEach(frame => frame.loading = 'lazy');
+        }
+        function updateLowDataControls() {
+            const active = isLowDataMode(), automatic = localStorage.getItem('cyc_low_data_mode') === null && lowDataConnectionRecommended();
+            document.querySelectorAll('#lowDataToggleDesktop,#lowDataToggleMobile,#lowDataToggleAccount').forEach(button => {
+                button.classList.toggle('low-data-active', active);
+                button.setAttribute('aria-pressed', String(active));
+            });
+            document.querySelectorAll('.low-data-toggle-icon').forEach(icon => icon.className = `fa-solid ${active ? 'fa-toggle-on' : 'fa-toggle-off'} text-xl low-data-toggle-icon`);
+            document.querySelectorAll('.low-data-label').forEach(label => label.textContent = currentLang === 'en' ? (active ? 'Data saver on' : 'Data saver') : (active ? 'Ahorro activo' : 'Ahorro de datos'));
+            const status = document.getElementById('lowDataAccountStatus');
+            if (status) status.textContent = currentLang === 'en' ? (active ? (automatic ? 'Enabled automatically for your connection' : 'Enabled manually') : 'Disabled manually') : (active ? (automatic ? 'Activado automáticamente por tu conexión' : 'Activado manualmente') : 'Desactivado manualmente');
+        }
+        function applyLowDataMode(active, preference = null) {
+            document.documentElement.classList.toggle('low-data-mode', active);
+            if (preference) localStorage.setItem('cyc_low_data_mode', preference);
+            if (active && heroSlideshowInterval) { clearInterval(heroSlideshowInterval); heroSlideshowInterval = null; }
+            prepareLowDataMedia();
+            updateLowDataControls();
+        }
+        function toggleLowDataMode() {
+            const active = !isLowDataMode();
+            applyLowDataMode(active, active ? 'on' : 'off');
+            showToast(currentLang === 'en' ? (active ? 'Data saver enabled.' : 'Data saver disabled.') : (active ? 'Modo ahorro de datos activado.' : 'Modo ahorro de datos desactivado.'));
+        }
+
         let currentLocationIndex = 0;
         let visitedLocations = safeReadJSON('cyc_visited_locations', []);
         let favoriteLocations = safeReadJSON('cyc_favorites', []);
         let passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
         let userCoords = null;
         let heroSlideshowInterval = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            prepareLowDataMedia();
+            updateLowDataControls();
+            const observer = new MutationObserver(mutations => mutations.forEach(mutation => mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) prepareLowDataMedia(node);
+            })));
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
 
         let map, markersLayer, userMarkerInstance = null;
         let markersMap = {};
@@ -3952,14 +4031,14 @@
                 slidesContainer.innerHTML = '';
                 urls.forEach((url, idx) => {
                     const img = document.createElement('img');
-                    img.src = url;
+                    img.src = lowDataImageUrl(url);
                     img.className = `hero-slide ${idx === 0 ? 'active-slide' : ''}`;
                     img.style.objectPosition = s.heroBgPosition || "50% 50%";
                     slidesContainer.appendChild(img);
                 });
 
                 if (heroSlideshowInterval) clearInterval(heroSlideshowInterval);
-                if (urls.length > 1) {
+                if (urls.length > 1 && !isLowDataMode()) {
                     let currentIndex = 0;
                     let intervalSec = parseInt(s.heroIntervalSeconds) || 6;
                     heroSlideshowInterval = setInterval(() => {
