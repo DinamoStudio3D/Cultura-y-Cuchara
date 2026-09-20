@@ -6250,11 +6250,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         async function shareGalleryImage() {
             const loc=locations[currentLocationIndex];if(!loc)return;
             const title=document.getElementById('galleryTitle').textContent;
-            const pageUrl=new URL(window.location.origin+window.location.pathname);
-            pageUrl.hash='mapa';
-            const data={title,text:currentLang==='en'?`Discover ${title} on Vive Loja`:`Descubre ${title} en Vive Loja`,url:pageUrl.href};
+            const pageUrl=buildLocationShareUrl(loc);
+            const data={title,text:currentLang==='en'?`Discover ${title} on Vive Loja`:`Descubre ${title} en Vive Loja`,url:pageUrl};
             if(navigator.share){try{await navigator.share(data);return;}catch(error){if(error?.name==='AbortError')return;}}
-            try{await navigator.clipboard.writeText(pageUrl.href);showToast(currentLang==='en'?'Website link copied':'Enlace de la web copiado');}catch(_){showToast(currentLang==='en'?'Could not copy the link':'No se pudo copiar el enlace');}
+            try{await navigator.clipboard.writeText(pageUrl);showToast(currentLang==='en'?'Website link copied':'Enlace de la web copiado');}catch(_){showToast(currentLang==='en'?'Could not copy the link':'No se pudo copiar el enlace');}
         }
 
         function toggleGalleryFullscreen() {
