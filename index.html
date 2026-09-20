@@ -542,7 +542,7 @@
                     <label class="block"><span class="text-sm font-bold block mb-2">Nombre completo *</span><input id="visitorFullName" type="text" maxlength="100" autocomplete="name" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"></label>
                     <label class="block"><span class="text-sm font-bold block mb-2">Correo electrónico</span><input id="visitorEmail" type="email" readonly class="w-full border border-gray-200 bg-gray-100 text-gray-600 rounded-xl px-4 py-3"></label>
                     <label class="block"><span class="text-sm font-bold block mb-2">Número de WhatsApp *</span><div class="flex"><span class="bg-gray-100 border border-r-0 border-gray-300 rounded-l-xl px-3 py-3 text-sm font-bold">+593</span><input id="visitorWhatsapp" type="tel" inputmode="numeric" autocomplete="tel" maxlength="10" pattern="0?9[0-9]{8}" placeholder="0991234567" required class="w-full border border-gray-300 rounded-r-xl px-4 py-3 focus:border-brandGold outline-none"></div><span class="text-xs text-gray-500 mt-1 block">Ingresa un celular ecuatoriano de 10 dígitos.</span></label>
-                    <div class="grid sm:grid-cols-2 gap-4"><label class="block"><span class="text-sm font-bold block mb-2">Ciudad de residencia *</span><input id="visitorCity" type="text" maxlength="80" autocomplete="address-level2" value="Loja" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"></label><label class="block"><span class="text-sm font-bold block mb-2">Tipo de visitante *</span><select id="visitorType" required class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white focus:border-brandGold outline-none"><option value="lojano">Vivo en Loja</option><option value="turista">Visito Loja</option></select></label></div>
+                    <div class="grid sm:grid-cols-2 gap-4"><label class="block"><span class="text-sm font-bold block mb-2">Ciudad de residencia *</span><input id="visitorCity" type="text" maxlength="80" autocomplete="address-level2" value="Loja" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"></label><label class="block"><span class="text-sm font-bold block mb-2">Tipo de visitante *</span><select id="visitorType" required class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white focus:border-brandGold outline-none"><option value="lojano">Vivo en Loja</option><option value="turista">Visito Loja</option></select></label></div><div class="grid sm:grid-cols-2 gap-4"><label class="block"><span class="text-sm font-bold block mb-2">Fecha de nacimiento *</span><input id="visitorBirthDate" type="date" autocomplete="bday" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"><span class="text-xs text-gray-500 mt-1 block">Se usa únicamente para beneficios de cumpleaños.</span></label><label class="block"><span id="visitorDocumentLabel" class="text-sm font-bold block mb-2">Número de cédula *</span><input id="visitorDocumentNumber" type="text" maxlength="20" autocomplete="off" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"><span class="text-xs text-gray-500 mt-1 block">Dato privado; los negocios no podrán verlo.</span></label></div>
                     <label class="flex items-start gap-3 text-sm text-gray-600 bg-gray-50 rounded-xl p-3"><input id="visitorConsent" type="checkbox" required class="mt-1 accent-orange-600"><span>Acepto que Vive Loja guarde estos datos para administrar mi cuenta, pasaporte y beneficios.</span></label>
                     <p id="visitorProfileMessage" class="hidden text-sm rounded-xl p-3" role="alert"></p>
                     <button id="saveVisitorProfileButton" type="submit" class="w-full bg-brandGold hover:bg-brandGoldHover text-white font-black rounded-xl px-5 py-3.5"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar y continuar</button>
@@ -2771,8 +2771,14 @@
             document.getElementById('visitorWhatsapp').value = profile.whatsappDisplay || '';
             document.getElementById('visitorCity').value = profile.city || 'Loja';
             document.getElementById('visitorType').value = profile.visitorType || 'lojano';
+            document.getElementById('visitorBirthDate').value = profile.birthDate || '';
+            document.getElementById('visitorDocumentNumber').value = profile.documentNumber || '';
+            updateVisitorDocumentLabel();
             document.getElementById('visitorConsent').checked = Boolean(profile.consentAt);
         }
+
+        function updateVisitorDocumentLabel(){const tourist=document.getElementById('visitorType')?.value==='turista',label=document.getElementById('visitorDocumentLabel');if(label)label.textContent=tourist?'Número de pasaporte *':'Número de cédula *';}
+        document.getElementById('visitorType')?.addEventListener('change',updateVisitorDocumentLabel);
 
         let expiringLoyaltyBenefits = [];
 
@@ -3048,6 +3054,10 @@
                 setVisitorMessage('visitorProfileMessage', 'Ingresa un número celular ecuatoriano válido, por ejemplo 0991234567.', true);
                 return;
             }
+            const visitorTypeValue=document.getElementById('visitorType').value,birthDate=document.getElementById('visitorBirthDate').value,documentNumber=document.getElementById('visitorDocumentNumber').value.trim().toUpperCase();
+            if(!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)||new Date(birthDate+'T12:00:00').getTime()>Date.now()){setVisitorMessage('visitorProfileMessage','Ingresa una fecha de nacimiento válida.',true);return;}
+            if(visitorTypeValue==='lojano'&&!/^\d{10}$/.test(documentNumber)){setVisitorMessage('visitorProfileMessage','La cédula debe contener 10 números.',true);return;}
+            if(visitorTypeValue==='turista'&&!/^[A-Z0-9-]{5,20}$/.test(documentNumber)){setVisitorMessage('visitorProfileMessage','Ingresa un número de pasaporte válido.',true);return;}
             const button = document.getElementById('saveVisitorProfileButton');
             button.disabled = true;
             try {
@@ -3060,7 +3070,10 @@
                     whatsapp: `+593${nationalWhatsapp.slice(1)}`,
                     whatsappDisplay: nationalWhatsapp,
                     city: document.getElementById('visitorCity').value.trim(),
-                    visitorType: document.getElementById('visitorType').value,
+                    visitorType: visitorTypeValue,
+                    birthDate,
+                    documentType: visitorTypeValue==='turista'?'passport':'cedula',
+                    documentNumber,
                     photoURL: user.photoURL || '',
                     profileComplete: true,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
