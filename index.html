@@ -589,7 +589,7 @@
                 <i class="fa-solid fa-qrcode"></i>
             </div>
             <h3 id="qrModalTitle" class="text-lg font-black text-brandDark mb-1">Registrar esta parada</h3>
-            <p id="qrModalSubtitle" class="text-xs text-gray-600 mb-4">Pide al anfitrión que ingrese el PIN de la parada para validar tu visita y entregarte el sello.</p>
+            <p id="qrModalSubtitle" class="text-xs text-gray-600 mb-4">Genera un código temporal y muéstralo al encargado para validar tu visita.</p>
             
             <div class="bg-brandCream p-4 rounded-2xl border border-brandGold/40 mb-4 flex flex-col items-center">
                 <div class="w-24 h-24 bg-white p-2 rounded-xl border border-gray-300 shadow-inner flex items-center justify-center mb-2 overflow-hidden">
@@ -1059,7 +1059,7 @@
                     </div>
                 </div>
                 <div class="md:w-2/3 p-8 flex flex-col justify-center">
-                    <h3 class="text-xl font-bold mb-2" data-i18n="passHowTitle">Cada lugar es una nueva parada</h3><p class="text-xs text-gray-600 mb-4">Busca el distintivo de Vive Loja en cada negocio. Escanea su QR y pide al anfitrión que valide tu sello con el PIN de la parada.</p>
+                    <h3 class="text-xl font-bold mb-2" data-i18n="passHowTitle">Cada lugar es una nueva parada</h3><p class="text-xs text-gray-600 mb-4">Busca el distintivo de Vive Loja en cada negocio. Escanea su QR, genera tu código temporal y pide al encargado que confirme la visita.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
                             <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-suitcase-rolling text-brandGold mr-1"></i> <span data-i18n="passTouristMode">Modo Turista</span></h4>
@@ -1070,7 +1070,7 @@
                             <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).</p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.</p>
+                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Seguridad: al escanear el QR, genera un código temporal y pide al personal autorizado que confirme tu visita.</p>
                 </div>
             </div>
         </div>
@@ -2383,7 +2383,7 @@
                 passTouristDesc: "Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).",
                 passLocalMode: "Modo Lojano",
                 passLocalDesc: "Requiere: <b>6 Paradas Gastronómicas</b>. Los hoteles no cuentan.",
-                passRules: "* Reglas de seguridad: Para obtener tu sello al escanear el QR, el cajero o mesero del local deberá ingresar el PIN de validación autorizado.",
+                passRules: "* Seguridad: al escanear el QR, genera un código temporal y pide al personal autorizado que confirme tu visita.",
                 missionBadge: "Aventura interactiva",
                 missionTitle: "Retos digitales de Chabaquito",
                 missionDesc: "Explora las funciones de la web y obtén tu certificado digital.",
@@ -2551,6 +2551,114 @@
 
         let currentLang = getInitialLanguage();
 
+        const automaticEnglishText = {
+            "Muy pronto descubrirás una nueva experiencia para conocer, saborear y vivir Loja.":"Very soon you will discover a new way to experience, taste and enjoy Loja.",
+            "Ingresar":"Sign in","Ingresar o crear cuenta":"Sign in or create account","Tu cuenta Vive Loja":"Your Vive Loja account",
+            "Personaliza tu experiencia":"Personalize your experience","Identifícate para disfrutar tu pasaporte y los beneficios de Vive Loja.":"Sign in to enjoy your passport and Vive Loja benefits.",
+            "Ingresa o crea tu cuenta":"Sign in or create your account","Usa tu cuenta de Google. Si ya te registraste, entrarás directamente con tus datos guardados.":"Use your Google account. If you already registered, you will sign in with your saved information.",
+            "Ingresar o registrarme con Google":"Sign in or register with Google","Completa tu perfil":"Complete your profile","Completa estos datos para finalizar tu registro en Vive Loja.":"Complete these details to finish your Vive Loja registration.",
+            "Ingresar con otra cuenta de Google":"Use another Google account","Nombre completo *":"Full name *","Correo electrónico":"Email address","Número de WhatsApp *":"WhatsApp number *",
+            "Ingresa un celular ecuatoriano de 10 dígitos.":"Enter a 10-digit Ecuadorian mobile number.","Ciudad de residencia *":"City of residence *","Tipo de visitante *":"Visitor type *",
+            "Turista":"Tourist","Lojano/a":"Loja resident","Acepto que Vive Loja guarde estos datos para administrar mi cuenta, pasaporte y beneficios.":"I agree that Vive Loja may store this information to manage my account, passport and benefits.",
+            "Guardar y continuar":"Save and continue","Comienza tu recorrido":"Start your journey","Explora una nueva parada":"Explore a new stop",
+            "Visita nuestros aliados locales para canjear promociones exclusivas.":"Visit our local partners to redeem exclusive promotions.","Continuar navegando en la web":"Continue browsing",
+            "Registrar esta parada":"Register this stop","Genera un código temporal y muéstralo al encargado para validar tu visita.":"Generate a temporary code and show it to the staff member to validate your visit.",
+            "Registrar visita y sumar fidelidad":"Register visit and earn loyalty credit","El negocio confirmará tu presencia con un código seguro.":"The business will confirm your presence with a secure code.",
+            "Ver mis visitas y beneficios":"View my visits and benefits","La Virgen del Cisne en Loja - Tradición y Fe":"The Virgin of El Cisne in Loja - Tradition and Faith",
+            "Ver Vídeo Oficial":"Watch Official Video","Misiones de Chabaquito":"Chabaquito Missions","Planificar mi recorrido":"Plan my journey",
+            "27 de septiembre":"September 27","Día Mundial del Turismo":"World Tourism Day","cada sabor cuenta una historia":"every flavor tells a story",
+            "El turismo conecta personas, cultura, sabores y comunidades. Este 27 de septiembre te invitamos a recorrer Loja, apoyar a sus negocios locales y descubrir los lugares que hacen única a nuestra ciudad.":"Tourism connects people, culture, flavors and communities. This September 27, explore Loja, support local businesses and discover the places that make our city unique.",
+            "Visita cafeterías y restaurantes.":"Visit coffee shops and restaurants.","Elige emprendimientos lojanos.":"Choose local Loja businesses.","Explorar Loja":"Explore Loja","Iniciar mi Pasaporte":"Start my Passport",
+            "Mensaje de Chabaquito":"A message from Chabaquito","“Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!”":"“Let’s celebrate our identity by exploring, tasting and caring for Loja. See you on the route!”",
+            "Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.":"Discover what is happening now and plan your experience during the International Festival of Performing Arts.",
+            "Preparando la agenda del Festival":"Preparing the Festival schedule","La próxima actividad aparecerá aquí.":"The next activity will appear here.","Agenda diaria":"Daily schedule",
+            "Contenido inicial de demostración":"Initial demo content","No hay actividades cargadas para este día.":"No activities have been added for this day.",
+            "Beneficios por tiempo limitado":"Limited-time benefits","Descubre beneficios disponibles ahora en nuestros negocios aliados.":"Discover benefits currently available at our partner businesses.",
+            "Historias de Loja":"Stories of Loja","Relatos que conectan sabores, lugares y tradiciones.":"Stories connecting flavors, places and traditions.",
+            "El Rincón Lojano":"The Loja Corner","Tradición familiar preparando el mejor repe lojano.":"A family tradition preparing the finest Loja-style repe.",
+            "Ver menú del restaurante":"View restaurant menu","Compartir enlace del lugar":"Share place link","Emprendedores Lojanos":"Loja Entrepreneurs",
+            "Apoya el talento local, la repostería artesanal, el café de autor y los productos emergentes de nuestra provincia.":"Support local talent, artisan baking, specialty coffee and emerging products from our province.",
+            "Cada lugar es una nueva parada":"Every place is a new stop","Busca el distintivo de Vive Loja en cada negocio. Escanea su QR, genera tu código temporal y pide al encargado que confirme la visita.":"Look for the Vive Loja badge at each business. Scan its QR, generate your temporary code and ask the staff member to confirm your visit.",
+            "Retos digitales de Chabaquito":"Chabaquito Digital Challenges","Explora las funciones de la web y obtén tu certificado digital.":"Explore the website features and earn your digital certificate.",
+            "Tu progreso":"Your progress","0 de 5 misiones":"0 of 5 missions","Premio de los retos digitales":"Digital challenge reward",
+            "Insignia y certificado personalizado de Explorador de Loja.":"Personalized Loja Explorer badge and certificate.","Registra tu cuenta para proteger la recompensa y evitar códigos duplicados.":"Register your account to protect the reward and prevent duplicate codes.",
+            "Registrar y generar mi código":"Register and generate my code","Código único de canje":"Unique redemption code","Presenta este código en el establecimiento patrocinador.":"Show this code at the sponsoring business.",
+            "Descargar certificado":"Download certificate","Puerta de la Ciudad":"City Gate","De entrada fortificada a ícono cultural y museo de arte vivo.":"From fortified entrance to cultural landmark and living art museum.",
+            "Vive Loja — El Podcast de Loja":"Vive Loja — The Loja Podcast","Tu navegador no puede reproducir este audio.":"Your browser cannot play this audio.",
+            "¡Hola! Soy tu guía de Vive Loja. ¿Empezamos la ruta?":"Hi! I’m your Vive Loja guide. Shall we start the route?","Mi Ruta Organizada":"My Organized Route",
+            "Compartir mi Ruta Organizada por WhatsApp":"Share my organized route on WhatsApp","Vaciar toda la ruta":"Clear the entire route",
+            "Opciones disponibles en este momento":"Options available right now","Comer algo lojano":"Eat Loja-style food","Cultura y fotografía":"Culture and photography",
+            "Usar mi ubicación":"Use my location","No encontramos lugares abiertos con los horarios registrados.":"We could not find any open places based on the registered hours.",
+            "Puedes explorar el mapa o comprobar nuevamente más tarde.":"You can explore the map or check again later.","Ver todos en el mapa":"View all on the map",
+            "Ruta Inteligente de Chabaquito":"Chabaquito’s Smart Route","Un recorrido preparado según tu tiempo e intereses":"A route prepared around your time and interests",
+            "Un poco de todo":"A little of everything","Tipo de recorrido":"Route type","Fecha del recorrido":"Route date","Hora de inicio":"Start time",
+            "Avanzar mi pasaporte":"Advance my passport","Sabores lojanos":"Loja flavors","Fotografía y recuerdos":"Photography and memories",
+            "Usar mi ubicación actual":"Use my current location","El navegador solicitará permiso solamente al generar la ruta.":"Your browser will request permission only when generating the route.",
+            "Mostrar solamente lugares abiertos ahora":"Show only places open now","Utiliza los horarios configurados para cada establecimiento.":"Uses the opening hours configured for each business.",
+            "Preparar mi recorrido":"Prepare my route","Ruta recomendada":"Recommended route","Guardar ruta":"Save route",
+            "Los tiempos son estimados y pueden variar según el tránsito, ritmo de caminata y duración de cada visita.":"Times are estimates and may vary depending on traffic, walking pace and the length of each visit.",
+            "No encontramos suficientes lugares para esa selección. Prueba con “Un poco de todo”.":"We could not find enough places for that selection. Try “A little of everything”.",
+            "Carta del restaurante":"Restaurant menu","Compartir":"Share","Ver video":"Watch video","Lugares relacionados":"Related places","Galería del establecimiento":"Business gallery",
+            "Esta fotografía no pudo cargarse.":"This photo could not be loaded.","Selecciona una miniatura o desliza la fotografía principal.":"Select a thumbnail or swipe the main photo.",
+            "Compartir esta parada":"Share this stop","Abrir en YouTube":"Open on YouTube","También puedes usar las flechas del teclado.":"You can also use the arrow keys.",
+            "Mi Pasaporte de Paradas":"My Stop Passport","Visita las paradas participantes, consigue seis sellos y desbloquea una recompensa especial.":"Visit participating stops, collect six stamps and unlock a special reward.",
+            "Meta: 1 Hotel + 5 Gastronomía":"Goal: 1 Hotel + 5 Food Stops","Progreso de Recompensa":"Reward Progress","Completa tu meta para reclamar tu kit ILE.":"Complete your goal to claim your ILE kit.",
+            "Recompensa desbloqueada":"Reward unlocked","Para proteger tu premio y evitar reclamos duplicados, identifica tu cuenta antes de generar el código.":"To protect your reward and prevent duplicate claims, sign in before generating the code.",
+            "Código de canje":"Redemption code","Solicitar beneficio":"Claim benefit","Fidelidad de negocios":"Business loyalty","Mis fichas por cada parada":"My loyalty cards by stop",
+            "Consulta cuántas visitas llevas, cuánto te falta y los beneficios ganados en cada negocio.":"See how many visits you have, how many remain and the benefits earned at each business.",
+            "Ver mis fichas de fidelidad":"View my loyalty cards","Continúa la aventura":"Continue the adventure","Tu siguiente parada":"Your next stop",
+            "Guarda tu aventura":"Save your adventure","Instala Vive Loja":"Install Vive Loja","Accede más rápido desde tu pantalla principal.":"Access it faster from your home screen."
+        };
+
+        const automaticEnglishAttributes = {
+            "Abrir menú":"Open menu","Cerrar":"Close","Cerrar indicador":"Close indicator","Centrar mapa en Loja":"Center map on Loja",
+            "Mostrar u ocultar eventos FIAVL":"Show or hide FIAVL events","Añadir a mi ruta":"Add to my route","Escuchar audioguía del lugar seleccionado":"Listen to the selected place audio guide",
+            "Compartir por WhatsApp":"Share on WhatsApp","Cómo llegar":"Get directions","Limpiar búsqueda":"Clear search","Progreso de misiones":"Mission progress",
+            "Escribe tu nombre":"Enter your name","Escuchar historia del lugar":"Listen to the place story","Filtrar agenda":"Filter agenda",
+            "Reproducir canción de muestra de El Podcast de Loja":"Play the sample song from The Loja Podcast","Mascota guía de Vive Loja":"Vive Loja guide mascot",
+            "Ocultar mascota":"Hide mascot","Escuchar consejo de la mascota":"Listen to the mascot tip","Mostrar mascota":"Show mascot",
+            "Contáctanos por WhatsApp":"Contact us on WhatsApp","Cerrar recomendaciones":"Close recommendations","Tiempo disponible":"Available time",
+            "Cerrar planificador":"Close planner","Cerrar menú":"Close menu","Cerrar historia":"Close story","Pantalla completa":"Full screen",
+            "Cerrar galería":"Close gallery","Fotografía anterior":"Previous photo","Fotografía siguiente":"Next photo","Únete gratis a Vive Loja":"Join Vive Loja for free",
+            "Cerrar invitación":"Close invitation","Ej.: cafetería abierta, hotel cerca, comida lojana…":"E.g. open coffee shop, nearby hotel, Loja food…",
+            "Ej. Alex Viajero":"E.g. Alex Traveler","Ej. Calle Lourdes, Loja":"E.g. Lourdes Street, Loja","¡Enamorándome de los sabores de Loja!":"Falling in love with the flavors of Loja!"
+        };
+
+        const automaticOriginalText = new WeakMap();
+        const automaticOriginalAttributes = new WeakMap();
+
+        function applyAutomaticUiLanguage(root = document.body) {
+            if (!root) return;
+            const translateTextNode = node => {
+                if (!automaticOriginalText.has(node)) automaticOriginalText.set(node, node.nodeValue);
+                const original = automaticOriginalText.get(node), trimmed = original.trim();
+                const translated = automaticEnglishText[trimmed];
+                const desired = currentLang === 'en' && translated ? original.replace(trimmed, translated) : original;
+                if (node.nodeValue !== desired) node.nodeValue = desired;
+            };
+            if (root.nodeType === Node.TEXT_NODE) translateTextNode(root);
+            const walker = document.createTreeWalker(root.nodeType === Node.ELEMENT_NODE ? root : document.body, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                if (!node.parentElement || ['SCRIPT','STYLE'].includes(node.parentElement.tagName)) continue;
+                translateTextNode(node);
+            }
+            const elements = root.nodeType === Node.ELEMENT_NODE ? [root, ...root.querySelectorAll('[placeholder],[title],[aria-label]')] : [];
+            elements.forEach(element => {
+                if (!automaticOriginalAttributes.has(element)) automaticOriginalAttributes.set(element, {
+                    placeholder: element.getAttribute('placeholder'), title: element.getAttribute('title'), ariaLabel: element.getAttribute('aria-label')
+                });
+                const original = automaticOriginalAttributes.get(element);
+                [['placeholder','placeholder'],['title','title'],['ariaLabel','aria-label']].forEach(([key,attribute]) => {
+                    if (original[key] == null) return;
+                    const desired = currentLang === 'en' ? (automaticEnglishAttributes[original[key]] || original[key]) : original[key];
+                    if (element.getAttribute(attribute) !== desired) element.setAttribute(attribute, desired);
+                });
+            });
+            document.documentElement.lang = currentLang;
+            document.title = currentLang === 'en' ? 'Vive Loja - Food and Tourism Route' : 'Vive Loja - Ruta Gastronómica y Turística';
+        }
+
         function changeLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('cyc_lang', lang);
@@ -2579,7 +2687,16 @@
             renderEverything();
             if (typeof renderChabaquitoMissions === 'function') renderChabaquitoMissions();
             if (typeof refreshAudioGuideLabels === 'function') refreshAudioGuideLabels();
+            applyAutomaticUiLanguage(document.body);
         }
+
+        const uiLanguageObserver = new MutationObserver(mutations => {
+            if (currentLang !== 'en') return;
+            mutations.forEach(mutation => mutation.addedNodes.forEach(node => {
+                if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) applyAutomaticUiLanguage(node);
+            }));
+        });
+        uiLanguageObserver.observe(document.body, { childList: true, subtree: true });
 
         function setVisitorMessage(elementId, text, isError = false) {
             const element = document.getElementById(elementId);
