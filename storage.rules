@@ -4,7 +4,10 @@ service firebase.storage {
   match /b/{bucket}/o {
     function isViveLojaAdmin() {
       return request.auth != null
-        && request.auth.token.email == 'sukogames1996@gmail.com';
+        && (request.auth.token.admin == true
+          || request.auth.token.role == 'admin'
+          || request.auth.token.role == 'owner'
+          || request.auth.token.email == 'sukogames1996@gmail.com');
     }
 
     match /audioguias/{allPaths=**} {
