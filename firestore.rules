@@ -15,7 +15,8 @@ service cloud.firestore {
     function validUserProfile(userId) {
       return request.resource.data.keys().hasOnly([
           'uid', 'fullName', 'email', 'whatsapp', 'whatsappDisplay',
-          'city', 'visitorType', 'photoURL', 'profileComplete',
+          'city', 'visitorType', 'birthDate', 'documentType', 'documentNumber',
+          'photoURL', 'profileComplete',
           'createdAt', 'updatedAt', 'consentAt'
         ])
         && request.resource.data.uid == userId
@@ -31,6 +32,27 @@ service cloud.firestore {
         && request.resource.data.city.size() >= 2
         && request.resource.data.city.size() <= 80
         && request.resource.data.visitorType in ['turista', 'lojano']
+        && (
+          (!('birthDate' in request.resource.data)
+            && !('documentType' in request.resource.data)
+            && !('documentNumber' in request.resource.data))
+          ||
+          (request.resource.data.birthDate is string
+            && request.resource.data.birthDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && request.resource.data.documentType in ['cedula', 'passport']
+            && request.resource.data.documentNumber is string
+            && request.resource.data.documentNumber.size() >= 5
+            && request.resource.data.documentNumber.size() <= 20
+            && (
+              (request.resource.data.visitorType == 'lojano'
+                && request.resource.data.documentType == 'cedula'
+                && request.resource.data.documentNumber.matches('^[0-9]{10}$'))
+              ||
+              (request.resource.data.visitorType == 'turista'
+                && request.resource.data.documentType == 'passport'
+                && request.resource.data.documentNumber.matches('^[A-Z0-9-]+$'))
+            ))
+        )
         && request.resource.data.photoURL is string
         && request.resource.data.photoURL.size() <= 1000
         && request.resource.data.profileComplete == true;
@@ -435,12 +457,20 @@ service cloud.firestore {
 
     match /visitCodes/{requestId} {
       allow create: if request.auth != null
-        && request.resource.data.keys().hasOnly(['code', 'userId', 'userName', 'userEmail', 'placeId', 'placeName', 'status', 'createdAt', 'expiresAt'])
+        && request.resource.data.keys().hasOnly(['code', 'userId', 'userName', 'userEmail', 'placeId', 'placeName', 'visitorType', 'city', 'birthMonthDay', 'status', 'createdAt', 'expiresAt'])
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.code is string
         && request.resource.data.code.size() == 6
         && request.resource.data.code.matches('^[0-9]+')
         && request.resource.data.placeId is string
+        && (!('visitorType' in request.resource.data)
+          || request.resource.data.visitorType in ['turista', 'lojano', ''])
+        && (!('city' in request.resource.data)
+          || (request.resource.data.city is string
+            && request.resource.data.city.size() <= 80))
+        && (!('birthMonthDay' in request.resource.data)
+          || (request.resource.data.birthMonthDay is string
+            && request.resource.data.birthMonthDay.matches('^([0-9]{2}-[0-9]{2})?$')))
         && request.resource.data.status == 'pending'
         && request.resource.data.createdAt == request.time
         && request.resource.data.expiresAt > request.time
@@ -465,23 +495,62 @@ service cloud.firestore {
       allow read: if isViveLojaAdmin()
         || (request.auth != null && resource.data.userId == request.auth.uid)
         || isAssignedVisitMerchant(resource.data.placeId);
+      allow get: if isActiveVisitMerchant()
+        && (
+          !exists(/databases/$(database)/documents/loyaltyCounters/$(counterId))
+          || isAssignedVisitMerchant(resource.data.placeId)
+        );
       allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
-        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userEmail', 'placeId', 'placeName', 'visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitAt', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['userId', 'userName', 'userEmail', 'placeId', 'placeName', 'visitorType', 'city', 'birthMonthDay', 'visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitRequestId', 'firstVisitAt', 'lastVisitAt', 'totalSpend', 'updatedAt'])
         && request.resource.data.visitCount == 1
         && request.resource.data.rewardCycles == 0
         && request.resource.data.dailyVisitCount == 1
+        && request.resource.data.lastVisitRequestId is string
+        && (!('totalSpend' in request.resource.data)
+          || (request.resource.data.totalSpend is number
+            && request.resource.data.totalSpend >= 0))
+        && (!('firstVisitAt' in request.resource.data)
+          || request.resource.data.firstVisitAt == request.time)
         && request.resource.data.lastVisitAt == request.time
         && request.resource.data.updatedAt == request.time;
       allow update: if isAssignedVisitMerchant(resource.data.placeId)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitAt', 'updatedAt'])
-        && request.resource.data.visitCount == resource.data.visitCount + 1
-        && request.resource.data.rewardCycles >= resource.data.rewardCycles
-        && request.resource.data.rewardCycles <= resource.data.rewardCycles + 1
-        && request.resource.data.dailyVisitCount is int
-        && request.resource.data.dailyVisitCount >= 1
-        && request.resource.data.dailyVisitCount <= 3
-        && request.resource.data.lastVisitAt == request.time
-        && request.resource.data.updatedAt == request.time;
+        && (
+          (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitorType', 'city', 'birthMonthDay', 'visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitRequestId', 'lastVisitAt', 'totalSpend', 'updatedAt'])
+            && request.resource.data.visitCount == resource.data.visitCount + 1
+            && request.resource.data.rewardCycles >= resource.data.rewardCycles
+            && request.resource.data.rewardCycles <= resource.data.rewardCycles + 1
+            && request.resource.data.dailyVisitCount is int
+            && request.resource.data.dailyVisitCount >= 1
+            && request.resource.data.dailyVisitCount <= 3
+            && request.resource.data.lastVisitRequestId is string
+            && (!('totalSpend' in request.resource.data)
+              || (request.resource.data.totalSpend is number
+                && ((!('totalSpend' in resource.data)
+                    && request.resource.data.totalSpend >= 0)
+                  || (('totalSpend' in resource.data)
+                    && request.resource.data.totalSpend >= resource.data.totalSpend))))
+            && request.resource.data.lastVisitAt == request.time
+            && request.resource.data.updatedAt == request.time
+          )
+          ||
+          (
+            resource.data.lastVisitRequestId is string
+            && getAfter(/databases/$(database)/documents/loyaltyVisits/$(resource.data.lastVisitRequestId)).data.status == 'reversed'
+            && getAfter(/databases/$(database)/documents/loyaltyVisits/$(resource.data.lastVisitRequestId)).data.reversedBy == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visitCount', 'rewardCycles', 'lastVisitDay', 'dailyVisitCount', 'lastVisitRequestId', 'lastVisitAt', 'totalSpend', 'updatedAt'])
+            && request.resource.data.visitCount == resource.data.visitCount - 1
+            && request.resource.data.visitCount >= 0
+            && request.resource.data.rewardCycles <= resource.data.rewardCycles
+            && request.resource.data.rewardCycles >= 0
+            && request.resource.data.dailyVisitCount is int
+            && request.resource.data.dailyVisitCount >= 0
+            && request.resource.data.totalSpend is number
+            && request.resource.data.totalSpend >= 0
+            && request.resource.data.totalSpend <= resource.data.totalSpend
+            && request.resource.data.updatedAt == request.time
+          )
+        );
       allow delete: if isViveLojaAdmin();
     }
 
@@ -495,7 +564,14 @@ service cloud.firestore {
         && request.resource.data.confirmedAt == request.time
         && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.userId == request.resource.data.userId
         && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.placeId == request.resource.data.placeId;
-      allow update: if false;
+      allow update: if isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.status == 'confirmed'
+        && resource.data.confirmedBy == request.auth.uid
+        && request.time <= resource.data.confirmedAt + duration.value(15, 'm')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reversedAt', 'reversedBy'])
+        && request.resource.data.status == 'reversed'
+        && request.resource.data.reversedBy == request.auth.uid
+        && request.resource.data.reversedAt == request.time;
       allow delete: if isViveLojaAdmin();
     }
 
@@ -512,7 +588,11 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/visitCodes/$(request.resource.data.requestId)).data.userId == request.resource.data.userId
         && get(/databases/$(database)/documents/visitCodes/$(request.resource.data.requestId)).data.placeId == request.resource.data.placeId;
       allow update: if false;
-      allow delete: if isViveLojaAdmin();
+      allow delete: if isViveLojaAdmin() || (
+        isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.confirmedBy == request.auth.uid
+        && request.time <= resource.data.confirmedAt + duration.value(15, 'm')
+      );
     }
 
     match /loyaltyRewardClaims/{claimId} {
@@ -534,7 +614,78 @@ service cloud.firestore {
         && request.resource.data.deliveredAt == request.time
         && request.resource.data.updatedAt == request.time
       );
+      allow delete: if isViveLojaAdmin() || (
+        isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.status == 'pending'
+        && request.time <= resource.data.createdAt + duration.value(15, 'm')
+      );
+    }
+
+    // Beneficios de cumpleaños configurados por cada parada.
+    match /birthdayOffers/{placeId} {
+      allow read: if true;
+      allow create, update: if isViveLojaAdmin() || (
+        isAssignedVisitMerchant(placeId)
+        && request.resource.data.keys().hasOnly([
+          'placeId', 'placeName', 'active', 'title', 'description',
+          'daysBefore', 'daysAfter', 'minimumSpend', 'updatedAt', 'updatedBy'
+        ])
+        && request.resource.data.placeId == placeId
+        && request.resource.data.active is bool
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 500
+        && request.resource.data.daysBefore is int
+        && request.resource.data.daysBefore >= 0
+        && request.resource.data.daysBefore <= 30
+        && request.resource.data.daysAfter is int
+        && request.resource.data.daysAfter >= 0
+        && request.resource.data.daysAfter <= 30
+        && request.resource.data.minimumSpend is number
+        && request.resource.data.minimumSpend >= 0
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy == request.auth.uid
+      );
       allow delete: if isViveLojaAdmin();
+    }
+
+    // Un canje por usuario, parada y año.
+    match /birthdayRedemptions/{redemptionId} {
+      allow read: if isViveLojaAdmin()
+        || (request.auth != null && resource.data.userId == request.auth.uid)
+        || isAssignedVisitMerchant(resource.data.placeId);
+      allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
+        && request.resource.data.keys().hasOnly([
+          'userId', 'userName', 'placeId', 'placeName', 'offerTitle',
+          'year', 'purchaseAmount', 'receiptRef', 'redeemedAt', 'redeemedBy'
+        ])
+        && redemptionId == request.resource.data.userId + '_' + request.resource.data.placeId + '_' + request.resource.data.year
+        && request.resource.data.userId is string
+        && request.resource.data.userId.size() > 0
+        && request.resource.data.userName is string
+        && request.resource.data.userName.size() <= 100
+        && request.resource.data.offerTitle is string
+        && request.resource.data.offerTitle.size() <= 120
+        && request.resource.data.year is string
+        && request.resource.data.year.matches('^[0-9]{4}$')
+        && request.resource.data.purchaseAmount is number
+        && request.resource.data.purchaseAmount >= 0
+        && request.resource.data.receiptRef is string
+        && request.resource.data.receiptRef.size() <= 80
+        && request.resource.data.redeemedAt == request.time
+        && request.resource.data.redeemedBy == request.auth.uid
+        && exists(/databases/$(database)/documents/birthdayOffers/$(request.resource.data.placeId))
+        && get(/databases/$(database)/documents/birthdayOffers/$(request.resource.data.placeId)).data.active == true;
+      allow update: if false;
+      allow delete: if isViveLojaAdmin();
+    }
+
+    // Registro inmutable generado exclusivamente por funciones del servidor.
+    match /systemAudit/{eventId} {
+      allow read: if isViveLojaAdmin();
+      allow create, update, delete: if false;
     }
 
     match /{document=**} {
