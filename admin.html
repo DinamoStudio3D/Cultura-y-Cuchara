@@ -91,7 +91,8 @@
                 <label class="block"><span class="text-sm font-semibold block mb-2">Correo electrónico</span><input id="loginEmail" class="field" type="email" autocomplete="username" required></label>
                 <label class="block"><span class="text-sm font-semibold block mb-2">Contraseña</span><input id="loginPassword" class="field" type="password" autocomplete="current-password" minlength="6" required></label>
                 <button id="loginBtn" class="w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black py-3 transition" type="submit"><i class="fa-solid fa-right-to-bracket mr-2"></i>Ingresar</button>
-                <p id="loginMessage" class="hidden text-sm rounded-xl p-3" role="alert"></p>
+                <button id="resetPasswordBtn" class="w-full text-sm font-bold text-amber-300 hover:text-amber-200 underline underline-offset-4" type="button">¿Olvidaste tu contraseña?</button>
+                <p id="loginMessage" class="hidden text-sm rounded-xl p-3" role="alert" aria-live="polite"></p>
             </form>
         </section>
 
@@ -168,7 +169,7 @@
                         <div class="bg-teal-500/10 border border-teal-500/25 rounded-2xl p-4"><i class="fa-solid fa-qrcode text-teal-300"></i><strong id="dashboardQrCodes" class="block text-3xl mt-2">—</strong><span class="text-xs text-gray-400">Códigos QR</span></div>
                         <div class="bg-fuchsia-500/10 border border-fuchsia-500/25 rounded-2xl p-4"><i class="fa-solid fa-masks-theater text-fuchsia-300"></i><strong id="dashboardFestival" class="block text-lg mt-2">—</strong><span class="text-xs text-gray-400">Modo Festival</span></div>
                     </div>
-                    <div class="bg-black/30 border border-gray-800 rounded-2xl p-5"><h3 class="font-black text-lg">Copia de seguridad de contenido</h3><p class="text-sm text-gray-400 mt-2">Descarga paradas, agenda, festival, Chabaquito, configuración, postales, emprendimientos, puntos históricos, solicitudes, usuarios registrados y todos tus códigos QR en un archivo JSON. Esta operación solamente lee información.</p><div id="backupMessage" class="hidden text-sm rounded-xl p-3 mt-4" role="alert"></div><button id="backupDownloadBtn" type="button" onclick="downloadFirebaseBackup()" class="mt-5 bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-download mr-2"></i>Descargar respaldo</button></div>
+                    <div class="bg-black/30 border border-gray-800 rounded-2xl p-5"><h3 class="font-black text-lg">Copia de seguridad de contenido</h3><p class="text-sm text-gray-400 mt-2">Descarga contenido, configuración, negocios, actividad, fidelización, solicitudes y usuarios registrados en un archivo JSON. Por seguridad, no incluye PIN ni códigos temporales. El archivo contiene datos personales: consérvalo cifrado y con acceso restringido.</p><div id="backupMessage" class="hidden text-sm rounded-xl p-3 mt-4" role="alert"></div><button id="backupDownloadBtn" type="button" onclick="downloadFirebaseBackup()" class="mt-5 bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-download mr-2"></i>Descargar respaldo</button></div>
                 </section>
 
                 <section id="controlModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
@@ -746,7 +747,9 @@ const auth = adminFirebaseApp.auth();
 const db = adminFirebaseApp.firestore();
 auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
     .catch(error => console.warn('No se pudo aislar la sesión administrativa:', error));
-const ADMIN_EMAIL = 'sukogames1996@gmail.com';
+// Acceso de emergencia durante la migración. Los nuevos administradores usan
+// una reclamación admin=true o un documento activo en adminUsers/{uid}.
+const LEGACY_ADMIN_EMAIL = 'sukogames1996@gmail.com';
 const loginView = document.getElementById('loginView');
 const adminView = document.getElementById('adminView');
 const podcastRef = db.collection('siteContent').doc('podcast');
@@ -778,6 +781,8 @@ const passportPinsRef = db.collection('passportPins');
 const businessApplicationsRef = db.collection('businessApplications');
 const businessApplicationStatusRef = db.collection('businessApplicationStatus');
 const userProfilesRef = db.collection('userProfiles');
+const adminUsersRef = db.collection('adminUsers');
+const adminAuditRef = db.collection('adminAudit');
 let currentData = {};
 let festivalDraftEvents = [];
 let customCampaigns = [];
@@ -841,6 +846,31 @@ function friendlyAuthError(error) {
     return map[error.code] || 'No fue posible iniciar sesión. Revisa la configuración del acceso.';
 }
 
+async function resolveAdminAccess(user) {
+    const email = (user?.email || '').toLowerCase();
+    if (!user) return false;
+    if (email === LEGACY_ADMIN_EMAIL) return true;
+    try {
+        const token = await user.getIdTokenResult(true);
+        if (token.claims.admin === true || token.claims.role === 'admin' || token.claims.role === 'owner') return true;
+        const profile = await adminUsersRef.doc(user.uid).get();
+        return profile.exists && profile.data().active === true && ['admin', 'owner'].includes(profile.data().role);
+    } catch (error) {
+        console.warn('No se pudo comprobar el rol administrativo:', error?.code || error);
+        return false;
+    }
+}
+
+async function recordAdminAudit(action, module, summary, details = {}) {
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+        await adminAuditRef.add({action,module,summary,details,actorUid:user.uid,actorEmail:user.email||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    } catch (error) {
+        console.warn('No se pudo registrar la auditoría:', error?.code || error);
+    }
+}
+
 document.getElementById('loginForm').addEventListener('submit', async event => {
     event.preventDefault();
     const button = document.getElementById('loginBtn');
@@ -849,6 +879,22 @@ document.getElementById('loginForm').addEventListener('submit', async event => {
         await auth.signInWithEmailAndPassword(document.getElementById('loginEmail').value.trim(), document.getElementById('loginPassword').value);
     } catch (error) {
         message(document.getElementById('loginMessage'), friendlyAuthError(error));
+    } finally { button.disabled = false; }
+});
+
+document.getElementById('resetPasswordBtn').addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const notice = document.getElementById('loginMessage');
+    if (!email) { message(notice, 'Escribe primero tu correo electrónico.'); document.getElementById('loginEmail').focus(); return; }
+    const button = document.getElementById('resetPasswordBtn');
+    button.disabled = true;
+    try {
+        await auth.sendPasswordResetEmail(email);
+        message(notice, 'Si el correo está registrado, recibirás un enlace para cambiar la contraseña.', true);
+    } catch (error) {
+        if (error.code === 'auth/invalid-email') message(notice, 'Escribe un correo electrónico válido.');
+        else if (error.code === 'auth/too-many-requests') message(notice, 'Hay demasiados intentos. Espera unos minutos.');
+        else message(notice, 'No se pudo enviar el enlace. Revisa la conexión e inténtalo nuevamente.');
     } finally { button.disabled = false; }
 });
 
@@ -1135,9 +1181,13 @@ function renderControlCenter(){
 }
 
 function docsToObject(snapshot){const output={};snapshot.docs.forEach(doc=>{output[doc.id]=doc.data();});return output;}
-async function collectFirebaseBackup(){const optionalRead=reference=>reference.get().catch(error=>{console.warn('Colección omitida del respaldo:',error?.code||error);return null;});const [siteContent,settings,places,time,qrCodes,applications,applicationStatuses,userProfiles]=await Promise.all([db.collection('siteContent').get(),db.collection('settings').get(),placesRef.get(),timeRef.get(),qrRef.get(),optionalRead(businessApplicationsRef),optionalRead(businessApplicationStatusRef),optionalRead(userProfilesRef)]);return{version:4,project:'cultura-y-cuchara',createdAt:new Date().toISOString(),createdBy:auth.currentUser?.email||'',data:{siteContent:docsToObject(siteContent),settings:docsToObject(settings),locales:docsToObject(places),loja_tiempo:docsToObject(time),qrCodes:docsToObject(qrCodes),businessApplications:applications?docsToObject(applications):{},businessApplicationStatus:applicationStatuses?docsToObject(applicationStatuses):{},userProfiles:userProfiles?docsToObject(userProfiles):{}}};}
+async function collectFirebaseBackup(){
+    const collectionNames=['siteContent','settings','locales','loja_tiempo','qrCodes','businessApplications','businessApplicationStatus','userProfiles','userProgress','storeProducts','verifiedReviews','businessEvents','passportCompletions','missionRewardCampaigns','missionRewardClaims','missionRewardMerchantRequests','missionRewardMerchants','loyaltyPrograms','loyaltyCounters','loyaltyVisits','securePassportStamps','loyaltyRewardClaims','birthdayOffers','birthdayRedemptions','adminUsers','adminAudit','systemAudit'];
+    const entries=await Promise.all(collectionNames.map(async name=>{try{return[name,docsToObject(await db.collection(name).get())];}catch(error){console.warn('Colección omitida del respaldo:',name,error?.code||error);return[name,{}];}}));
+    return{version:5,project:'visita-loja',createdAt:new Date().toISOString(),createdBy:auth.currentUser?.email||'',security:{containsPersonalData:true,excludedSensitiveCollections:['passportPins','visitCodes','stampClaims','missionRewardClaimCodes','passportRewardClaimCodes']},data:Object.fromEntries(entries)};
+}
 async function loadDashboardSummary(){const button=document.getElementById('dashboardRefreshBtn');if(button)button.disabled=true;try{const backup=await collectFirebaseBackup();const site=backup.data.siteContent,settings=backup.data.settings;document.getElementById('dashboardPlaces').textContent=Object.keys(backup.data.locales).length;document.getElementById('dashboardEvents').textContent=Array.isArray(site.events?.events)?site.events.events.length:0;document.getElementById('dashboardEntrepreneurs').textContent=Array.isArray(site.entrepreneurs?.items)?site.entrepreneurs.items.length:0;document.getElementById('dashboardTime').textContent=Object.keys(backup.data.loja_tiempo).length;document.getElementById('dashboardFrames').textContent=Array.isArray(settings.postcard_frames?.frames)?settings.postcard_frames.frames.length:0;document.getElementById('dashboardQrCodes').textContent=Object.keys(backup.data.qrCodes).length;document.getElementById('dashboardFestival').textContent=site.festival?.active===false?'Inactivo':'Activo';}catch(error){message(document.getElementById('backupMessage'),'No se pudo actualizar el resumen.');}finally{if(button)button.disabled=false;}}
-async function downloadFirebaseBackup(){const button=document.getElementById('backupDownloadBtn'),notice=document.getElementById('backupMessage');button.disabled=true;try{const backup=await collectFirebaseBackup();const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`respaldo-vive-loja-${new Date().toISOString().slice(0,10)}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message(notice,'Respaldo descargado correctamente. Guárdalo en un lugar seguro.',true);}catch(error){message(notice,'No se pudo generar el respaldo. Revisa la conexión e inténtalo otra vez.');}finally{button.disabled=false;}}
+async function downloadFirebaseBackup(){const button=document.getElementById('backupDownloadBtn'),notice=document.getElementById('backupMessage');if(!window.confirm('El respaldo contiene datos personales. ¿Confirmas que lo guardarás en un lugar seguro y con acceso restringido?'))return;button.disabled=true;try{const backup=await collectFirebaseBackup();const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`respaldo-visita-loja-${new Date().toISOString().slice(0,10)}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);await recordAdminAudit('backup.download','security','Descargó un respaldo administrativo',{version:backup.version,collections:Object.keys(backup.data).length});message(notice,'Respaldo descargado correctamente. Guárdalo cifrado y con acceso restringido.',true);}catch(error){message(notice,'No se pudo generar el respaldo. Revisa la conexión e inténtalo otra vez.');}finally{button.disabled=false;}}
 
 function analyticsItemDate(item,field){const value=item?.[field];if(value?.toDate)return value.toDate();const date=new Date(value||0);return Number.isNaN(date.getTime())?null:date;}
 function analyticsDateBounds(){const period=document.getElementById('analyticsPeriod')?.value||'30',now=new Date(),end=new Date(),day=86400000;let start=null;if(period==='today'){start=new Date(now.getFullYear(),now.getMonth(),now.getDate());}else if(/^\d+$/.test(period)){start=new Date(now.getTime()-(Number(period)-1)*day);start.setHours(0,0,0,0);}else if(period==='custom'){const startValue=document.getElementById('analyticsStart').value,endValue=document.getElementById('analyticsEnd').value;start=startValue?new Date(`${startValue}T00:00:00`):null;if(endValue){const customEnd=new Date(`${endValue}T23:59:59.999`);end.setTime(customEnd.getTime());}}return{start,end,period};}
@@ -1746,12 +1796,14 @@ auth.onAuthStateChanged(async user => {
         adminUserProfiles = [];
         return;
     }
-    if ((user.email || '').toLowerCase() !== ADMIN_EMAIL) {
+    if (!(await resolveAdminAccess(user))) {
         loginView.classList.remove('hidden');
         adminView.classList.add('hidden');
-        message(document.getElementById('loginMessage'), 'Este correo no está autorizado para administrar Visita Loja. Ingresa con la cuenta administrativa.');
+        message(document.getElementById('loginMessage'), 'Esta cuenta no tiene un rol administrativo activo.');
+        await auth.signOut();
         return;
     }
+    await recordAdminAudit('admin.login', 'access', 'Inicio de sesión administrativo');
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
     try {
         const [snapshot, festivalSnapshot, tourismDaySnapshot, customCampaignsSnapshot, generalEventsSnapshot, chabaquitoSnapshot, passportSnapshot, settingsSnapshot, postcardsSnapshot, framesSnapshot, entrepreneursSnapshot, maintenanceSnapshot, subscriptionsSnapshot, storiesSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), tourismDayRef.get(), customCampaignsRef.get(), generalEventsRef.get(), chabaquitoRef.get(), passportRef.get(), settingsRef.get(), postcardsRef.get(), postcardFramesRef.get(), entrepreneursRef.get(), maintenanceRef.get(), subscriptionsRef.get(), storiesRef.get()]);
