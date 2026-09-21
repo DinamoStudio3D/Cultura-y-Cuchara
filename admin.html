@@ -139,11 +139,26 @@
 <button data-nav-item id="settingsNavBtn" type="button" onclick="showAdminModule('settings')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-sliders w-6"></i>Configuración general</button>
 <button data-nav-item id="linksNavBtn" type="button" onclick="showAdminModule('links')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-link w-6"></i>Enlaces para compartir</button>
 <button data-nav-item id="maintenanceNavBtn" type="button" onclick="showAdminModule('maintenance')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-person-digging w-6"></i>Estado y mantenimiento</button>
+<button data-nav-item id="auditNavBtn" type="button" onclick="showAdminModule('audit')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-clock-rotate-left w-6"></i>Historial de auditoría</button>
 </div></div>
 </nav>
                 </aside>
 
                 <div class="admin-content min-w-0">
+                <section id="auditModule" class="hidden panel rounded-2xl p-5 sm:p-7">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+                        <div><p class="text-rose-400 text-xs font-bold uppercase tracking-widest">Seguridad y control</p><h2 class="text-2xl font-black mt-1">Historial de auditoría</h2><p class="text-sm text-gray-400 mt-1">Consulta los accesos y acciones administrativas registradas por el sistema.</p></div>
+                        <button id="auditRefreshBtn" type="button" onclick="loadAdminAudit()" class="border border-rose-400/40 text-rose-200 hover:bg-rose-500/10 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-rotate mr-2"></i>Actualizar</button>
+                    </div>
+                    <div class="grid sm:grid-cols-[1fr_220px] gap-3 mb-5">
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Buscar</span><input id="auditSearch" class="field" placeholder="Correo, acción o detalle" oninput="renderAdminAudit()"></label>
+                        <label class="block"><span class="text-sm font-semibold block mb-2">Tipo de acción</span><select id="auditTypeFilter" class="field" onchange="renderAdminAudit()"><option value="all">Todas</option><option value="access">Accesos</option><option value="security">Seguridad y respaldos</option><option value="content">Contenido</option><option value="business">Negocios</option></select></label>
+                    </div>
+                    <div id="auditMessage" class="hidden text-sm rounded-xl p-3 mb-4" role="alert"></div>
+                    <div id="auditList" class="space-y-3"><p class="text-sm text-gray-500">Abre esta sección para cargar el historial.</p></div>
+                    <p class="text-xs text-gray-500 mt-5"><i class="fa-solid fa-shield-halved mr-1"></i>Los registros son inmutables: no pueden editarse ni eliminarse desde el panel.</p>
+                </section>
+
                 <section id="usersModule" class="hidden panel rounded-2xl p-5 sm:p-7">
                     <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6"><div><p class="text-violet-400 text-xs font-bold uppercase tracking-widest">Comunidad Visita Loja</p><h2 class="text-2xl font-black mt-1">Usuarios registrados</h2><p class="text-sm text-gray-400 mt-1">Consulta los datos entregados por las personas que crearon su cuenta.</p></div><button type="button" onclick="downloadRegisteredUsersCsv()" class="border border-violet-400/40 text-violet-200 hover:bg-violet-500/10 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-file-arrow-down mr-2"></i>Descargar CSV</button></div>
                     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-5"><div class="bg-violet-500/10 border border-violet-500/25 rounded-2xl p-4"><i class="fa-solid fa-users text-violet-300"></i><strong id="usersStatTotal" class="block text-3xl mt-2">0</strong><span class="text-xs text-gray-400">Total</span></div><div class="bg-orange-500/10 border border-orange-500/25 rounded-2xl p-4"><i class="fa-solid fa-house-user text-orange-300"></i><strong id="usersStatLocal" class="block text-3xl mt-2">0</strong><span class="text-xs text-gray-400">Lojanos</span></div><div class="bg-cyan-500/10 border border-cyan-500/25 rounded-2xl p-4"><i class="fa-solid fa-suitcase-rolling text-cyan-300"></i><strong id="usersStatTourist" class="block text-3xl mt-2">0</strong><span class="text-xs text-gray-400">Turistas</span></div><div class="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-4"><i class="fa-solid fa-user-plus text-emerald-300"></i><strong id="usersStatRecent" class="block text-3xl mt-2">0</strong><span class="text-xs text-gray-400">Últimos 30 días</span></div></div>
@@ -809,6 +824,7 @@ let adminMissionMerchants=[];let missionMerchantsUnsubscribe=null;
 let adminPassportPins={};let passportPinsUnsubscribe=null;let legacyPinMigrationRunning=false;
 let adminBusinessApplications=[];let businessApplicationsUnsubscribe=null;
 let adminUserProfiles=[];let userProfilesUnsubscribe=null;
+let adminAuditEntries=[];
 let subscriptionDraftPlans=[];let subscriptionDraftFaq=[];
 const DEFAULT_GENERAL_EVENTS = [{ id: 'ev_1', title: 'Feria de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '2026-09-20', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo profesional en vivo.', descEn: 'Open tastings for the public and barista shows.', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', lat: -3.9910, lng: -79.2030 }];
 const DEFAULT_CHABAQUITO = { active: true, animated: true, imageUrl: 'mascota-vive-loja.png', missions:{active:true,title:'Retos digitales de Chabaquito',titleEn:"Chabaquito's digital challenges",description:'Explora las funciones de la web y obtén tu certificado digital.',descriptionEn:'Explore the website features and earn your digital certificate.',rewardTitle:'¡Insignia Explorador de Loja desbloqueada!',rewardTitleEn:'Loja Explorer badge unlocked!',rewardDescription:'Completaste las cinco misiones de Chabaquito.',rewardDescriptionEn:'You completed all five Chabaquito missions.'}, messages: { inicio: '¡Hola! Soy tu guía de Visita Loja. ¿Empezamos la ruta?', mapa: 'Toca los puntos del mapa y descubre nuevos sabores y destinos.', establecimientos: 'Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.', fiavl: '¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!', postales: 'Crea una postal de tu visita y compártela con tus amigos.', pasaporte: 'Completa tu pasaporte y guarda cada parada de tu aventura.', misiones: '¡Acepta mis cinco misiones y conviértete en Explorador de Loja!', podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.' }, certificate: { active:true, title:'Explorador de Loja', text:'Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.', signature:'Visita Loja' }, benefit:{active:false,campaignId:'misiones-2026',sponsorName:'',title:'Beneficio de Explorador',titleEn:'Explorer reward',description:'Presenta tu código para reclamar el beneficio disponible.',descriptionEn:'Show your code to claim the available reward.',startAt:'',endAt:'',stock:100,imageUrl:'',code:'EXPLORADOR',validity:'',buttonText:'Registrar y generar mi código',url:''} };
@@ -909,7 +925,7 @@ document.addEventListener('change',event=>{if(adminFieldChangesContent(event.tar
 document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
 window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
-const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
+const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function toggleAdminNavGroup(button){const group=button.closest('.nav-group'),collapsed=!group.classList.contains('collapsed');group.classList.toggle('collapsed',collapsed);button.setAttribute('aria-expanded',String(!collapsed));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('[data-nav-item]').forEach(item=>{const show=!query||item.textContent.toLowerCase().includes(query);item.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);if(query&&visible){group.classList.remove('collapsed');group.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}});}
@@ -992,8 +1008,9 @@ function showAdminModule(moduleName) {
     if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
-    ['dashboard','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['dashboard','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('auditNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'audit' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('usersNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'users' ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('controlNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'control' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('analyticsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'analytics' ? 'bg-sky-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -1014,6 +1031,7 @@ function showAdminModule(moduleName) {
     document.getElementById('timeNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'time' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('entrepreneursNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'entrepreneurs' ? 'bg-lime-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     if(moduleName==='links')renderSystemLinks();
+    if(moduleName==='audit')loadAdminAudit();
     if(moduleName==='dashboard')loadDashboardSummary();
     if(moduleName==='control')renderControlCenter();
     if(moduleName==='analytics')renderAnalyticsDashboard();
@@ -1022,6 +1040,41 @@ function showAdminModule(moduleName) {
     if(moduleName==='users')renderRegisteredUsers();
     if(moduleName==='subscriptions')renderSubscriptionCenter();
     if(moduleName==='stories'){renderStoriesAdmin();storyRelatedOptions([...document.getElementById('storyRelatedPlaces').selectedOptions].map(option=>option.value));}
+}
+
+function auditDate(value){if(!value)return null;if(value?.toDate)return value.toDate();const date=new Date(value);return Number.isNaN(date.getTime())?null:date;}
+function auditActionLabel(action){
+    const labels={'admin.login':'Inicio de sesión','admin.logout':'Cierre de sesión','backup.download':'Descarga de respaldo','content.update':'Contenido actualizado','business.update':'Negocio actualizado','reward.deliver':'Premio entregado','stamp.add':'Sello agregado','stamp.remove':'Sello retirado'};
+    return labels[action]||String(action||'Acción administrativa').replaceAll('.',' · ');
+}
+function auditModuleLabel(module){return({access:'Accesos',security:'Seguridad',content:'Contenido',business:'Negocios',rewards:'Premios',loyalty:'Fidelidad'})[module]||module||'Sistema';}
+function auditDateLabel(value){const date=auditDate(value);return date?new Intl.DateTimeFormat('es-EC',{dateStyle:'medium',timeStyle:'short'}).format(date):'Procesando fecha…';}
+function renderAdminAudit(){
+    const list=document.getElementById('auditList');if(!list)return;
+    const term=(document.getElementById('auditSearch')?.value||'').trim().toLowerCase();
+    const type=document.getElementById('auditTypeFilter')?.value||'all';
+    const filtered=adminAuditEntries.filter(item=>{
+        const matchesType=type==='all'||item.module===type;
+        const haystack=[item.actorEmail,item.action,item.summary,auditActionLabel(item.action),auditModuleLabel(item.module)].join(' ').toLowerCase();
+        return matchesType&&(!term||haystack.includes(term));
+    });
+    if(!filtered.length){list.innerHTML=`<div class="border border-dashed border-gray-700 rounded-2xl p-8 text-center"><i class="fa-solid fa-clock-rotate-left text-3xl text-gray-600"></i><p class="font-bold mt-3">${adminAuditEntries.length?'No hay resultados con estos filtros.':'Todavía no existen registros.'}</p><p class="text-sm text-gray-500 mt-1">${adminAuditEntries.length?'Prueba otra búsqueda.':'Cierra sesión y vuelve a ingresar para generar el primer acceso.'}</p></div>`;return;}
+    list.innerHTML=filtered.map(item=>`<article class="bg-black/25 border border-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3"><div class="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-300 flex items-center justify-center flex-none"><i class="fa-solid fa-shield-halved"></i></div><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><strong>${escapeAdminHtml(auditActionLabel(item.action))}</strong><span class="text-[10px] font-black uppercase tracking-widest rounded-full px-2 py-1 bg-white/5 text-gray-300">${escapeAdminHtml(auditModuleLabel(item.module))}</span></div><p class="text-sm text-gray-400 mt-1">${escapeAdminHtml(item.summary||'Acción registrada')}</p><p class="text-xs text-gray-500 mt-2"><i class="fa-solid fa-user mr-1"></i>${escapeAdminHtml(item.actorEmail||'Administrador')}<span class="mx-2">•</span><i class="fa-regular fa-clock mr-1"></i>${escapeAdminHtml(auditDateLabel(item.createdAt))}</p></div></article>`).join('');
+}
+async function loadAdminAudit(){
+    const button=document.getElementById('auditRefreshBtn'),notice=document.getElementById('auditMessage'),list=document.getElementById('auditList');
+    if(button)button.disabled=true;
+    if(list)list.innerHTML='<p class="text-sm text-gray-500"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Cargando historial…</p>';
+    try{
+        const snapshot=await adminAuditRef.orderBy('createdAt','desc').limit(100).get();
+        adminAuditEntries=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+        notice?.classList.add('hidden');
+        renderAdminAudit();
+    }catch(error){
+        console.error('No se pudo cargar la auditoría:',error);
+        if(list)list.innerHTML='';
+        message(notice,'No se pudo cargar el historial. Confirma que publicaste las reglas nuevas de Firestore.');
+    }finally{if(button)button.disabled=false;}
 }
 
 function userProfileDate(value){if(!value)return null;if(value?.toDate)return value.toDate();const date=new Date(value);return Number.isNaN(date.getTime())?null:date;}
