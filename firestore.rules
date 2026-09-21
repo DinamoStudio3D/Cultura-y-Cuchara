@@ -23,8 +23,15 @@ service cloud.firestore {
       return hasAdminClaim() || hasActiveAdminProfile() || isLegacyAdmin();
     }
 
+    function hasOwnerProfile() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.active == true
+        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'owner';
+    }
+
     function canManageAdminUsers() {
-      return hasAdminClaim() || isLegacyAdmin();
+      return hasAdminClaim() || hasOwnerProfile() || isLegacyAdmin();
     }
 
     function isProfileOwner(userId) {
