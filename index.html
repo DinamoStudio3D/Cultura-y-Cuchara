@@ -1092,12 +1092,12 @@
                     <h3 class="text-xl font-bold mb-2" data-i18n="passHowTitle">Cada lugar es una nueva parada</h3><p class="text-xs text-gray-600 mb-4">Busca el distintivo de Vive Loja en cada negocio. Escanea su QR, genera tu código temporal y pide al encargado que confirme la visita.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
-                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-suitcase-rolling text-brandGold mr-1"></i> <span data-i18n="passTouristMode">Modo Turista</span></h4>
-                            <p class="text-[11px] text-gray-600" data-i18n="passTouristDesc">Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).</p>
-                        </div>
-                        <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
                             <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-house-user text-brandGold mr-1"></i> <span data-i18n="passLocalMode">Modo Lojano</span></h4>
                             <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).</p>
+                        </div>
+                        <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
+                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-suitcase-rolling text-brandGold mr-1"></i> <span data-i18n="passTouristMode">Modo Turista</span></h4>
+                            <p class="text-[11px] text-gray-600" data-i18n="passTouristDesc">Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).</p>
                         </div>
                     </div>
                     <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Seguridad: al escanear el QR, genera un código temporal y pide al personal autorizado que confirme tu visita.</p>
@@ -2268,9 +2268,10 @@
             <div class="bg-brandDark text-center py-6 border-b-2 border-brandGold relative overflow-hidden">
                 <i class="fa-solid fa-passport absolute -left-4 -bottom-4 text-6xl text-white/5"></i>
                 <h3 class="text-2xl font-black text-brandGold uppercase tracking-widest" data-i18n="passTitleModal">Mi Pasaporte de Paradas</h3>
-                <div class="flex justify-center gap-2 mt-3">
-                    <button type="button" onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded-lg text-xs font-bold bg-brandGold text-white transition" data-i18n="passTouristMode">Modo Turista</button>
-                    <button type="button" onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-800 text-gray-300 transition" data-i18n="passLocalMode">Modo Lojano</button>
+                <p class="text-xs text-gray-300 mt-3 font-bold" data-i18n="passSelectMode">Selecciona el modo</p>
+                <div class="flex justify-center gap-2 mt-2">
+                    <button type="button" onclick="switchPassportMode('lojano')" id="btnLojano" class="px-3 py-1 rounded-lg text-xs font-bold bg-brandGold text-white transition" data-i18n="passLocalMode">Modo Lojano</button>
+                    <button type="button" onclick="switchPassportMode('turista')" id="btnTurista" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-800 text-gray-300 transition" data-i18n="passTouristMode">Modo Turista</button>
                 </div>
             </div>
             <div class="p-6">
@@ -2409,6 +2410,7 @@
                 passBtnOpen: "Abrir mi Pasaporte",
                 passReset: "Borrar progreso guardado",
                 passHowTitle: "Cada lugar es una nueva parada",
+                passSelectMode: "Selecciona el modo",
                 passTouristMode: "Modo Turista",
                 passTouristDesc: "Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).",
                 passLocalMode: "Modo Lojano",
@@ -2535,6 +2537,7 @@
                 passBtnOpen: "Open my Passport",
                 passReset: "Reset saved progress",
                 passHowTitle: "Every place is a new stop",
+                passSelectMode: "Select a mode",
                 passTouristMode: "Tourist Mode",
                 passTouristDesc: "Requires: <b>1 Hotel + 5 Gastronomy</b> (6 stamps).",
                 passLocalMode: "Local Mode",
@@ -3680,7 +3683,7 @@
         let currentLocationIndex = 0;
         let visitedLocations = safeReadJSON('cyc_visited_locations', []);
         let favoriteLocations = safeReadJSON('cyc_favorites', []);
-        let passportMode = localStorage.getItem('cyc_passport_mode') || 'turista';
+        let passportMode = localStorage.getItem('cyc_passport_mode') || 'lojano';
         let userCoords = null;
         let heroSlideshowInterval = null;
 
