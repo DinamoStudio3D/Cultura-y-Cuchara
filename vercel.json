@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/parada/:slug",
+      "destination": "/negocio.html?lugar=:slug"
+    },
+    {
+      "source": "/parada/:slug/",
+      "destination": "/negocio.html?lugar=:slug"
+    }
+  ]
+}
