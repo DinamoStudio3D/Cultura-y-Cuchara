@@ -1,4 +1,4 @@
-# Cultura y Cuchara / Vive Loja
+# Cultura y Cuchara / Visit Loja
 
 Sitio estático preparado para GitHub y Vercel.
 
