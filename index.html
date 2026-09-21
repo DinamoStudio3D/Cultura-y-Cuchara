@@ -3,12 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <style>
+        /* Evita que la portada aparezca mientras un QR antiguo abre la ficha ligera. */
+        html.qr-stop-redirect,
+        html.qr-stop-redirect body {
+            background: #031b17 !important;
+        }
+        html.qr-stop-redirect body {
+            visibility: hidden !important;
+        }
+    </style>
     <script>
         // Los QR de paradas usan una pantalla ligera para evitar cargar dos veces la portada.
         (() => {
             const params = new URLSearchParams(location.search);
             const checkin = params.get('checkin');
             if (!checkin) return;
+            document.documentElement.classList.add('qr-stop-redirect');
             const target = new URL('fidelidad.html', location.href);
             target.searchParams.set('place', checkin);
             location.replace(target.href);
