@@ -140,11 +140,31 @@
 <button data-nav-item id="linksNavBtn" type="button" onclick="showAdminModule('links')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-link w-6"></i>Enlaces para compartir</button>
 <button data-nav-item id="maintenanceNavBtn" type="button" onclick="showAdminModule('maintenance')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-person-digging w-6"></i>Estado y mantenimiento</button>
 <button data-nav-item id="auditNavBtn" type="button" onclick="showAdminModule('audit')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-clock-rotate-left w-6"></i>Historial de auditoría</button>
+<button data-nav-item id="adminsNavBtn" type="button" onclick="showAdminModule('admins')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-user-shield w-6"></i>Administradores</button>
 </div></div>
 </nav>
                 </aside>
 
                 <div class="admin-content min-w-0">
+                <section id="adminsModule" class="hidden panel rounded-2xl p-5 sm:p-7">
+                    <div class="mb-6"><p class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Accesos protegidos</p><h2 class="text-2xl font-black mt-1">Administradores</h2><p class="text-sm text-gray-400 mt-1">Crea cuentas administrativas y controla quién puede ingresar al panel.</p></div>
+                    <div class="bg-cyan-500/10 border border-cyan-500/25 rounded-2xl p-4 mb-6"><p class="text-sm text-cyan-100"><i class="fa-solid fa-shield-halved mr-2"></i>Tu cuenta principal se conserva como acceso protegido y no puede bloquearse desde esta pantalla.</p></div>
+                    <form id="adminCreateForm" class="bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-6">
+                        <h3 class="font-black text-lg mb-4">Agregar administrador</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Nombre</span><input id="newAdminName" class="field" maxlength="80" required placeholder="Nombre del responsable"></label>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Correo electrónico</span><input id="newAdminEmail" class="field" type="email" autocomplete="off" required placeholder="correo@ejemplo.com"></label>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Contraseña temporal</span><input id="newAdminPassword" class="field" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo 8 caracteres"></label>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Rol</span><select id="newAdminRole" class="field"><option value="admin">Administrador</option><option value="owner">Propietario</option></select></label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3">Entrega la contraseña temporal de forma privada. La persona podrá cambiarla usando “¿Olvidaste tu contraseña?”.</p>
+                        <button id="adminCreateBtn" type="submit" class="mt-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-black rounded-xl px-5 py-3"><i class="fa-solid fa-user-plus mr-2"></i>Crear administrador</button>
+                        <p id="adminsMessage" class="hidden text-sm rounded-xl p-3 mt-4" role="alert"></p>
+                    </form>
+                    <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Personas con acceso</h3><button id="adminsRefreshBtn" type="button" onclick="loadAdminUsers()" class="border border-gray-700 hover:border-cyan-400 rounded-xl px-3 py-2 text-sm font-bold"><i class="fa-solid fa-rotate mr-1"></i>Actualizar</button></div>
+                    <div id="adminsList" class="space-y-3"><p class="text-sm text-gray-500">Abre esta sección para cargar los administradores.</p></div>
+                </section>
+
                 <section id="auditModule" class="hidden panel rounded-2xl p-5 sm:p-7">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                         <div><p class="text-rose-400 text-xs font-bold uppercase tracking-widest">Seguridad y control</p><h2 class="text-2xl font-black mt-1">Historial de auditoría</h2><p class="text-sm text-gray-400 mt-1">Consulta los accesos y acciones administrativas registradas por el sistema.</p></div>
@@ -760,6 +780,10 @@ const firebaseConfig = {
 const adminFirebaseApp = firebase.initializeApp(firebaseConfig, 'viveLojaAdmin');
 const auth = adminFirebaseApp.auth();
 const db = adminFirebaseApp.firestore();
+const provisioningFirebaseApp = firebase.initializeApp(firebaseConfig, 'visitaLojaAdminProvisioning');
+const provisioningAuth = provisioningFirebaseApp.auth();
+provisioningAuth.setPersistence(firebase.auth.Auth.Persistence.NONE)
+    .catch(error => console.warn('No se pudo aislar la creación de administradores:', error));
 auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
     .catch(error => console.warn('No se pudo aislar la sesión administrativa:', error));
 // Acceso de emergencia durante la migración. Los nuevos administradores usan
@@ -825,6 +849,7 @@ let adminPassportPins={};let passportPinsUnsubscribe=null;let legacyPinMigration
 let adminBusinessApplications=[];let businessApplicationsUnsubscribe=null;
 let adminUserProfiles=[];let userProfilesUnsubscribe=null;
 let adminAuditEntries=[];
+let adminAccessUsers=[];
 let subscriptionDraftPlans=[];let subscriptionDraftFaq=[];
 const DEFAULT_GENERAL_EVENTS = [{ id: 'ev_1', title: 'Feria de Altura Loja', titleEn: 'Loja High-Altitude Coffee Fair', date: '2026-09-20', type: 'Festival', location: 'Plaza de las Flores', desc: 'Catas abiertas al público y barismo profesional en vivo.', descEn: 'Open tastings for the public and barista shows.', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', lat: -3.9910, lng: -79.2030 }];
 const DEFAULT_CHABAQUITO = { active: true, animated: true, imageUrl: 'mascota-vive-loja.png', missions:{active:true,title:'Retos digitales de Chabaquito',titleEn:"Chabaquito's digital challenges",description:'Explora las funciones de la web y obtén tu certificado digital.',descriptionEn:'Explore the website features and earn your digital certificate.',rewardTitle:'¡Insignia Explorador de Loja desbloqueada!',rewardTitleEn:'Loja Explorer badge unlocked!',rewardDescription:'Completaste las cinco misiones de Chabaquito.',rewardDescriptionEn:'You completed all five Chabaquito missions.'}, messages: { inicio: '¡Hola! Soy tu guía de Visita Loja. ¿Empezamos la ruta?', mapa: 'Toca los puntos del mapa y descubre nuevos sabores y destinos.', establecimientos: 'Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.', fiavl: '¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!', postales: 'Crea una postal de tu visita y compártela con tus amigos.', pasaporte: 'Completa tu pasaporte y guarda cada parada de tu aventura.', misiones: '¡Acepta mis cinco misiones y conviértete en Explorador de Loja!', podcast: 'Escucha nuestra canción de muestra en El Podcast de Loja.' }, certificate: { active:true, title:'Explorador de Loja', text:'Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.', signature:'Visita Loja' }, benefit:{active:false,campaignId:'misiones-2026',sponsorName:'',title:'Beneficio de Explorador',titleEn:'Explorer reward',description:'Presenta tu código para reclamar el beneficio disponible.',descriptionEn:'Show your code to claim the available reward.',startAt:'',endAt:'',stock:100,imageUrl:'',code:'EXPLORADOR',validity:'',buttonText:'Registrar y generar mi código',url:''} };
@@ -925,7 +950,7 @@ document.addEventListener('change',event=>{if(adminFieldChangesContent(event.tar
 document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
 window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
-const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
+const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Configuración',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function toggleAdminNavGroup(button){const group=button.closest('.nav-group'),collapsed=!group.classList.contains('collapsed');group.classList.toggle('collapsed',collapsed);button.setAttribute('aria-expanded',String(!collapsed));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('[data-nav-item]').forEach(item=>{const show=!query||item.textContent.toLowerCase().includes(query);item.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);if(query&&visible){group.classList.remove('collapsed');group.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}});}
@@ -1008,9 +1033,10 @@ function showAdminModule(moduleName) {
     if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
-    ['dashboard','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('auditNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'audit' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('adminsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'admins' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('usersNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'users' ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('controlNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'control' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('analyticsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'analytics' ? 'bg-sky-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -1032,6 +1058,7 @@ function showAdminModule(moduleName) {
     document.getElementById('entrepreneursNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'entrepreneurs' ? 'bg-lime-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     if(moduleName==='links')renderSystemLinks();
     if(moduleName==='audit')loadAdminAudit();
+    if(moduleName==='admins')loadAdminUsers();
     if(moduleName==='dashboard')loadDashboardSummary();
     if(moduleName==='control')renderControlCenter();
     if(moduleName==='analytics')renderAnalyticsDashboard();
@@ -1041,6 +1068,66 @@ function showAdminModule(moduleName) {
     if(moduleName==='subscriptions')renderSubscriptionCenter();
     if(moduleName==='stories'){renderStoriesAdmin();storyRelatedOptions([...document.getElementById('storyRelatedPlaces').selectedOptions].map(option=>option.value));}
 }
+
+function adminRoleLabel(role){return role==='owner'?'Propietario':'Administrador';}
+function renderAdminUsers(){
+    const list=document.getElementById('adminsList');if(!list)return;
+    const protectedEmail=(auth.currentUser?.email||LEGACY_ADMIN_EMAIL).toLowerCase();
+    const protectedCard=`<article class="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-4 flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-300 flex items-center justify-center"><i class="fa-solid fa-crown"></i></div><div class="min-w-0 flex-1"><strong class="block">Cuenta principal protegida</strong><p class="text-sm text-gray-400 truncate">${escapeAdminHtml(protectedEmail)}</p></div><span class="text-[10px] font-black uppercase tracking-widest text-emerald-200">Propietario</span></article>`;
+    const extra=adminAccessUsers.filter(item=>(item.email||'').toLowerCase()!==protectedEmail).map(item=>`<article class="bg-black/25 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col sm:flex-row sm:items-center gap-3"><div class="w-11 h-11 rounded-xl ${item.active?'bg-cyan-500/10 text-cyan-300':'bg-gray-800 text-gray-500'} flex items-center justify-center flex-none"><i class="fa-solid fa-user-shield"></i></div><div class="min-w-0 flex-1"><strong class="block">${escapeAdminHtml(item.displayName||'Administrador')}</strong><p class="text-sm text-gray-400 truncate">${escapeAdminHtml(item.email||'Sin correo')}</p><p class="text-xs ${item.active?'text-emerald-300':'text-red-300'} mt-1">${item.active?'Acceso activo':'Acceso bloqueado'}</p></div><label class="text-xs font-bold text-gray-400">Rol<select class="field !py-2 mt-1" onchange="changeAdminRole('${item.id}',this.value)" ${item.active?'':'disabled'}><option value="admin" ${item.role==='admin'?'selected':''}>Administrador</option><option value="owner" ${item.role==='owner'?'selected':''}>Propietario</option></select></label><button type="button" onclick="toggleAdminAccess('${item.id}',${item.active!==false})" class="rounded-xl px-4 py-2.5 text-sm font-black ${item.active!==false?'border border-red-400/40 text-red-300 hover:bg-red-500/10':'bg-emerald-500 text-black hover:bg-emerald-400'}">${item.active!==false?'Bloquear':'Reactivar'}</button></div></article>`).join('');
+    list.innerHTML=protectedCard+(extra||'<p class="text-sm text-gray-500 border border-dashed border-gray-700 rounded-2xl p-6 text-center">Todavía no agregaste otros administradores.</p>');
+}
+async function loadAdminUsers(){
+    const button=document.getElementById('adminsRefreshBtn'),notice=document.getElementById('adminsMessage');
+    if(button)button.disabled=true;
+    try{
+        const snapshot=await adminUsersRef.orderBy('email').get();
+        adminAccessUsers=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+        notice?.classList.add('hidden');
+        renderAdminUsers();
+    }catch(error){console.error(error);message(notice,'No se pudieron cargar los administradores. Revisa las reglas de Firestore.');}
+    finally{if(button)button.disabled=false;}
+}
+async function toggleAdminAccess(userId,isActive){
+    const item=adminAccessUsers.find(user=>user.id===userId);if(!item)return;
+    const next=!isActive,verb=next?'reactivar':'bloquear';
+    if(!window.confirm(`¿Confirmas que deseas ${verb} el acceso de ${item.email||'esta persona'}?`))return;
+    try{
+        await adminUsersRef.doc(userId).update({active:next,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.uid});
+        await recordAdminAudit(next?'admin.access_enabled':'admin.access_disabled','access',`${next?'Reactivó':'Bloqueó'} un acceso administrativo`,{targetUid:userId,targetEmail:item.email||''});
+        await loadAdminUsers();
+    }catch(error){message(document.getElementById('adminsMessage'),'No se pudo modificar el acceso.');}
+}
+async function changeAdminRole(userId,role){
+    const item=adminAccessUsers.find(user=>user.id===userId);if(!item||!['admin','owner'].includes(role))return;
+    try{
+        await adminUsersRef.doc(userId).update({role,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.uid});
+        await recordAdminAudit('admin.role_changed','access','Cambió un rol administrativo',{targetUid:userId,targetEmail:item.email||'',role});
+        await loadAdminUsers();
+    }catch(error){message(document.getElementById('adminsMessage'),'No se pudo cambiar el rol.');await loadAdminUsers();}
+}
+document.getElementById('adminCreateForm').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const button=document.getElementById('adminCreateBtn'),notice=document.getElementById('adminsMessage');
+    const displayName=document.getElementById('newAdminName').value.trim(),email=document.getElementById('newAdminEmail').value.trim().toLowerCase(),password=document.getElementById('newAdminPassword').value,role=document.getElementById('newAdminRole').value;
+    if(email===LEGACY_ADMIN_EMAIL){message(notice,'La cuenta principal ya tiene acceso protegido.');return;}
+    button.disabled=true;let createdUser=null;
+    try{
+        const credential=await provisioningAuth.createUserWithEmailAndPassword(email,password);
+        createdUser=credential.user;
+        await createdUser.updateProfile({displayName});
+        await adminUsersRef.doc(createdUser.uid).set({email,displayName,role,active:true,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.uid});
+        await recordAdminAudit('admin.created','access','Creó un nuevo administrador',{targetUid:createdUser.uid,targetEmail:email,role});
+        event.target.reset();setAdminUnsavedChanges(false);
+        message(notice,'Administrador creado correctamente. Entrega la contraseña temporal de forma privada.',true);
+        await loadAdminUsers();
+    }catch(error){
+        console.error(error);
+        if(createdUser)await createdUser.delete().catch(()=>{});
+        const authErrors={'auth/email-already-in-use':'Ese correo ya tiene una cuenta.','auth/weak-password':'La contraseña temporal debe tener al menos 8 caracteres.','auth/invalid-email':'El correo electrónico no es válido.'};
+        message(notice,authErrors[error.code]||'No se pudo crear el administrador.');
+    }finally{await provisioningAuth.signOut().catch(()=>{});button.disabled=false;}
+});
 
 function auditDate(value){if(!value)return null;if(value?.toDate)return value.toDate();const date=new Date(value);return Number.isNaN(date.getTime())?null:date;}
 function auditActionLabel(action){
