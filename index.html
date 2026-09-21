@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <script>
+        // Los QR de paradas usan una pantalla ligera para evitar cargar dos veces la portada.
+        (() => {
+            const params = new URLSearchParams(location.search);
+            const checkin = params.get('checkin');
+            if (!checkin) return;
+            const target = new URL('fidelidad.html', location.href);
+            target.searchParams.set('place', checkin);
+            location.replace(target.href);
+        })();
+    </script>
     <title>Vive Loja - Ruta Gastronómica y Turística</title>
     <meta name="description" content="Descubre la gastronomía, hoteles, emprendimientos, eventos y destinos turísticos de Loja en una ruta interactiva.">
     <meta name="theme-color" content="#121212">
