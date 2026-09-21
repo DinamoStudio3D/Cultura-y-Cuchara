@@ -1070,10 +1070,18 @@ function showAdminModule(moduleName) {
 }
 
 function adminRoleLabel(role){return role==='owner'?'Propietario':'Administrador';}
+function maskAdminEmail(value){
+    const email=String(value||'').trim(),parts=email.split('@');
+    if(parts.length!==2)return 'Correo protegido';
+    const local=parts[0],domainParts=parts[1].split('.'),domain=domainParts.shift()||'';
+    const hiddenLocal=local?local[0]+'***':'***';
+    const hiddenDomain=domain?domain[0]+'***':'***';
+    return hiddenLocal+'@'+hiddenDomain+(domainParts.length?'.'+domainParts.join('.'):'');
+}
 function renderAdminUsers(){
     const list=document.getElementById('adminsList');if(!list)return;
     const protectedEmail=(auth.currentUser?.email||LEGACY_ADMIN_EMAIL).toLowerCase();
-    const protectedCard=`<article class="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-4 flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-300 flex items-center justify-center"><i class="fa-solid fa-crown"></i></div><div class="min-w-0 flex-1"><strong class="block">Cuenta principal protegida</strong><p class="text-sm text-gray-400 truncate">${escapeAdminHtml(protectedEmail)}</p></div><span class="text-[10px] font-black uppercase tracking-widest text-emerald-200">Propietario</span></article>`;
+    const protectedCard=`<article class="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-4 flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-emerald-500/15 text-emerald-300 flex items-center justify-center"><i class="fa-solid fa-crown"></i></div><div class="min-w-0 flex-1"><strong class="block">Cuenta principal protegida</strong><p class="text-sm text-gray-400 truncate" aria-label="Correo principal protegido">${escapeAdminHtml(maskAdminEmail(protectedEmail))}</p></div><span class="text-[10px] font-black uppercase tracking-widest text-emerald-200">Propietario</span></article>`;
     const extra=adminAccessUsers.filter(item=>(item.email||'').toLowerCase()!==protectedEmail).map(item=>`<article class="bg-black/25 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col sm:flex-row sm:items-center gap-3"><div class="w-11 h-11 rounded-xl ${item.active?'bg-cyan-500/10 text-cyan-300':'bg-gray-800 text-gray-500'} flex items-center justify-center flex-none"><i class="fa-solid fa-user-shield"></i></div><div class="min-w-0 flex-1"><strong class="block">${escapeAdminHtml(item.displayName||'Administrador')}</strong><p class="text-sm text-gray-400 truncate">${escapeAdminHtml(item.email||'Sin correo')}</p><p class="text-xs ${item.active?'text-emerald-300':'text-red-300'} mt-1">${item.active?'Acceso activo':'Acceso bloqueado'}</p></div><label class="text-xs font-bold text-gray-400">Rol<select class="field !py-2 mt-1" onchange="changeAdminRole('${item.id}',this.value)" ${item.active?'':'disabled'}><option value="admin" ${item.role==='admin'?'selected':''}>Administrador</option><option value="owner" ${item.role==='owner'?'selected':''}>Propietario</option></select></label><button type="button" onclick="toggleAdminAccess('${item.id}',${item.active!==false})" class="rounded-xl px-4 py-2.5 text-sm font-black ${item.active!==false?'border border-red-400/40 text-red-300 hover:bg-red-500/10':'bg-emerald-500 text-black hover:bg-emerald-400'}">${item.active!==false?'Bloquear':'Reactivar'}</button></div></article>`).join('');
     list.innerHTML=protectedCard+(extra||'<p class="text-sm text-gray-500 border border-dashed border-gray-700 rounded-2xl p-6 text-center">Todavía no agregaste otros administradores.</p>');
 }
