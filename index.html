@@ -568,7 +568,7 @@
                     <label class="block"><span class="text-sm font-bold block mb-2">Correo electrónico</span><input id="visitorEmail" type="email" readonly class="w-full border border-gray-200 bg-gray-100 text-gray-600 rounded-xl px-4 py-3"></label>
                     <label class="block"><span class="text-sm font-bold block mb-2">Número de WhatsApp *</span><div class="flex"><span class="bg-gray-100 border border-r-0 border-gray-300 rounded-l-xl px-3 py-3 text-sm font-bold">+593</span><input id="visitorWhatsapp" type="tel" inputmode="numeric" autocomplete="tel" maxlength="10" pattern="0?9[0-9]{8}" placeholder="0991234567" required class="w-full border border-gray-300 rounded-r-xl px-4 py-3 focus:border-brandGold outline-none"></div><span class="text-xs text-gray-500 mt-1 block">Ingresa un celular ecuatoriano de 10 dígitos.</span></label>
                     <div class="grid sm:grid-cols-2 gap-4"><label class="block"><span class="text-sm font-bold block mb-2">Ciudad de residencia *</span><input id="visitorCity" type="text" maxlength="80" autocomplete="address-level2" value="Loja" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"></label><label class="block"><span class="text-sm font-bold block mb-2">Tipo de visitante *</span><select id="visitorType" required class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white focus:border-brandGold outline-none"><option value="lojano">Vivo en Loja</option><option value="turista">Visito Loja</option></select></label></div><div class="grid sm:grid-cols-2 gap-4"><label class="block"><span class="text-sm font-bold block mb-2">Fecha de nacimiento *</span><input id="visitorBirthDate" type="date" autocomplete="bday" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"><small class="text-gray-500">Se utiliza para beneficios de cumpleaños.</small></label><label class="block"><span id="visitorDocumentLabel" class="text-sm font-bold block mb-2">Número de cédula *</span><input id="visitorDocumentNumber" type="text" maxlength="20" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:border-brandGold outline-none"><small class="text-gray-500">Dato privado; ningún negocio podrá verlo.</small></label></div>
-                    <label class="flex items-start gap-3 text-sm text-gray-600 bg-gray-50 rounded-xl p-3"><input id="visitorConsent" type="checkbox" required class="mt-1 accent-orange-600"><span>Acepto que Vive Loja guarde estos datos para administrar mi cuenta, pasaporte y beneficios.</span></label>
+                    <label class="flex items-start gap-3 text-sm text-gray-600 bg-gray-50 rounded-xl p-3"><input id="visitorConsent" type="checkbox" required class="mt-1 accent-orange-600"><span>Acepto la <a href="/privacidad.html" target="_blank" rel="noopener" class="font-bold text-orange-700 underline">Política de privacidad</a> y los <a href="/terminos.html" target="_blank" rel="noopener" class="font-bold text-orange-700 underline">Términos de uso</a>, versión 1.0. Autorizo el tratamiento de mis datos para administrar mi cuenta, Pasaporte y beneficios.</span></label>
                     <p id="visitorProfileMessage" class="hidden text-sm rounded-xl p-3" role="alert"></p>
                     <button id="saveVisitorProfileButton" type="submit" class="w-full bg-brandGold hover:bg-brandGoldHover text-white font-black rounded-xl px-5 py-3.5"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar y continuar</button>
                 </form>
@@ -594,7 +594,7 @@
                     <div class="mt-4"><div class="flex items-center justify-between mb-2"><h4 class="font-black text-sm" data-i18n="expSavedPlaces">Mis lugares guardados</h4><button type="button" onclick="openExperienceFavorites()" class="text-[11px] font-bold text-brandGold" data-i18n="expViewAll">Ver todos</button></div><div id="experienceFavoritePreview" class="space-y-2"></div></div>
                     <div class="mt-4"><div class="flex items-center justify-between mb-2"><h4 class="font-black text-sm" data-i18n="expCulturalAgenda">Mi agenda cultural</h4><button type="button" onclick="openExperienceAgenda()" class="text-[11px] font-bold text-violet-600" data-i18n="expViewAgenda">Ver agenda</button></div><div id="experienceAgendaPreview" class="space-y-2"></div></div>
                     <div class="grid grid-cols-2 gap-2 mt-5"><button type="button" onclick="openExperiencePlanner()" class="bg-brandDark text-white font-black rounded-xl px-3 py-3 text-xs"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i><span data-i18n="expPlanRoute">Planificar ruta</span></button><button type="button" onclick="editVisitorProfile()" class="bg-gray-100 text-gray-700 font-black rounded-xl px-3 py-3 text-xs"><i class="fa-solid fa-pen mr-1"></i><span data-i18n="expEditProfile">Editar perfil</span></button></div>
-                    <button type="button" onclick="signOutVisitor()" class="w-full mt-3 text-xs text-gray-500 hover:text-red-600 py-2"><i class="fa-solid fa-right-from-bracket mr-1"></i><span data-i18n="expSignOut">Cerrar sesión</span></button>
+                    <div class="mt-4 border border-gray-200 rounded-2xl p-4"><p class="text-[10px] uppercase tracking-widest text-gray-500 font-black"><i class="fa-solid fa-shield-halved mr-1"></i>Privacidad y mis datos</p><div class="flex flex-wrap gap-3 mt-2 text-xs"><a href="/privacidad.html" target="_blank" rel="noopener" class="font-bold text-orange-700 underline">Política de privacidad</a><a href="/terminos.html" target="_blank" rel="noopener" class="font-bold text-orange-700 underline">Términos de uso</a><button type="button" onclick="requestAccountDeletion()" class="font-bold text-red-600 underline">Solicitar eliminación de mi cuenta</button></div><p class="text-[10px] text-gray-500 mt-2">La solicitud se enviará desde tu correo vinculado para verificar tu identidad.</p></div><button type="button" onclick="signOutVisitor()" class="w-full mt-3 text-xs text-gray-500 hover:text-red-600 py-2"><i class="fa-solid fa-right-from-bracket mr-1"></i><span data-i18n="expSignOut">Cerrar sesión</span></button>
                 </div>
                 <p id="visitorAuthMessage" class="hidden text-sm rounded-xl p-3 mt-4" role="alert"></p>
             </div>
@@ -1564,9 +1564,9 @@
                     </p>
                 </div>
             </div>
-            <div class="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
-                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo del GAD Municipal y Mesa Turística. © 2026.</span> 
-                <span class="text-black/50 text-[16px] px-3.5 py-3 select-none inline-block -m-2" aria-hidden="true">.</span>
+            <div class="text-[11px] text-gray-500 text-center md:text-right">
+                <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo del GAD Municipal y Mesa Turística. © 2026.</span>
+                <div class="mt-2 flex flex-wrap justify-center md:justify-end gap-3"><a href="/privacidad.html" class="hover:text-brandGold underline">Privacidad</a><a href="/terminos.html" class="hover:text-brandGold underline">Términos de uso</a></div>
             </div>
         </div>
     </footer>
@@ -3118,6 +3118,25 @@
             } finally {
                 button.disabled = false;
             }
+        }
+
+        function requestAccountDeletion() {
+            const user = visitorAuth?.currentUser;
+            if (!user) {
+                setVisitorMessage('visitorAuthMessage', 'Inicia sesión para identificar la cuenta que deseas eliminar.', true);
+                return;
+            }
+            if (!window.confirm('¿Deseas preparar una solicitud para eliminar tu cuenta y tus datos? Deberás enviarla desde tu correo vinculado para verificar tu identidad.')) return;
+            const subject = 'Solicitud de eliminación de cuenta Vive Loja';
+            const body = [
+                'Solicito la eliminación de mi cuenta y datos personales de Vive Loja.',
+                '',
+                'Correo vinculado: ' + (user.email || 'No disponible'),
+                'Identificador de cuenta: ' + user.uid,
+                '',
+                'Comprendo que se verificará mi identidad y que ciertos registros podrán conservarse cuando sea necesario por seguridad, prevención de fraude u obligaciones aplicables.'
+            ].join('\n');
+            window.location.href = 'mailto:sukogames1996@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
         }
 
         async function signOutVisitor() {
