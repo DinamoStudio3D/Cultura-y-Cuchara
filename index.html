@@ -7398,7 +7398,15 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function renderMissionBenefit(){if(document.getElementById('passportStampsGrid'))updatePassportUI();renderMissionCommercialReward();}
 
+        function normalizeChabaquitoBrand(value) {
+            if (typeof value === 'string') return value.replace(/Vive Loja/gi, 'Visita Loja');
+            if (Array.isArray(value)) return value.map(normalizeChabaquitoBrand);
+            if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key,item]) => [key, normalizeChabaquitoBrand(item)]));
+            return value;
+        }
+
         function applyChabaquitoConfig(data = {}) {
+            data = normalizeChabaquitoBrand(data);
             chabaquitoEnabled = data.active !== false;
             chabaquitoMissionsConfig={...chabaquitoMissionsConfig,...(data.missions||{})};
             applyMissionPresentation();
