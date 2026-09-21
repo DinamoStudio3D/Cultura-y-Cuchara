@@ -1431,9 +1431,7 @@ function togglePlacePinRequirement() {
 }
 
 function publicPlaceUrl(place) {
-    const url = new URL('negocio.html', window.location.href);
-    url.searchParams.set('lugar', createAdminSlug(place.title));
-    return url.toString();
+    return `${window.location.origin}/parada/${encodeURIComponent(createAdminSlug(place.title))}`;
 }
 
 function adminPublicationStatus(item){return ['draft','hidden'].includes(item?.publicationStatus)?item.publicationStatus:'published';}
@@ -1863,7 +1861,7 @@ document.getElementById('placeForm').addEventListener('submit', async event => {
     button.disabled = true;
     try {
         const editId = document.getElementById('placeEditId').value,applicationId=document.getElementById('placeApplicationId').value;
-        const placeId=editId||`loc_${createAdminSlug(title)}_${Date.now()}`,batch=db.batch();batch.set(placesRef.doc(placeId),data,{merge:true});if(passportEligible)batch.set(passportPinsRef.doc(placeId),{pin:privatePin,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email},{merge:true});else batch.delete(passportPinsRef.doc(placeId));if(applicationId){const application=adminBusinessApplications.find(item=>item.id===applicationId),publicUrl=`${window.location.origin}/?lugar=${encodeURIComponent(createAdminSlug(title))}`;batch.update(businessApplicationsRef.doc(applicationId),{status:'approved',placeId,approvedAt:firebase.firestore.FieldValue.serverTimestamp(),approvedBy:auth.currentUser.email});if(application?.trackingCode)batch.set(businessApplicationStatusRef.doc(application.trackingCode),{status:'approved',trackingCode:application.trackingCode,publicUrl,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}await batch.commit();
+        const placeId=editId||`loc_${createAdminSlug(title)}_${Date.now()}`,batch=db.batch();batch.set(placesRef.doc(placeId),data,{merge:true});if(passportEligible)batch.set(passportPinsRef.doc(placeId),{pin:privatePin,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email},{merge:true});else batch.delete(passportPinsRef.doc(placeId));if(applicationId){const application=adminBusinessApplications.find(item=>item.id===applicationId),publicUrl=`${window.location.origin}/parada/${encodeURIComponent(createAdminSlug(title))}`;batch.update(businessApplicationsRef.doc(applicationId),{status:'approved',placeId,approvedAt:firebase.firestore.FieldValue.serverTimestamp(),approvedBy:auth.currentUser.email});if(application?.trackingCode)batch.set(businessApplicationStatusRef.doc(application.trackingCode),{status:'approved',trackingCode:application.trackingCode,publicUrl,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}await batch.commit();
         if (!editId) resetPlaceForm();
         message(formMessage, editId ? 'Parada actualizada correctamente.' : 'Parada registrada correctamente.', true);
     } catch (error) {
