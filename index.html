@@ -864,39 +864,13 @@
                 <div>
                     <p class="text-brandGold text-[11px] font-black uppercase tracking-[.22em] mb-2">¿Qué quieres descubrir?</p>
                     <h2 class="text-3xl sm:text-4xl font-black tracking-tight">Explora Loja por categoría</h2>
-                    <p class="text-gray-400 text-sm mt-2">Encuentra fácilmente sabores, alojamientos, atractivos y experiencias.</p>
+                    <p class="text-gray-400 text-sm mt-2">Elige una categoría para ver su lista de lugares y experiencias.</p>
                 </div>
-                <button type="button" onclick="exploreHomeCategory('all')" class="self-start sm:self-auto rounded-full border border-white/20 bg-white/5 hover:bg-brandGold hover:border-brandGold px-5 py-3 text-xs font-black transition flex items-center gap-2">
+                <button type="button" onclick="openCategoryList('all')" class="self-start sm:self-auto rounded-full border border-white/20 bg-white/5 hover:bg-brandGold hover:border-brandGold px-5 py-3 text-xs font-black transition flex items-center gap-2">
                     Ver todo <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-                <button type="button" onclick="exploreHomeCategory('food')" class="group min-h-[150px] sm:min-h-[170px] rounded-3xl border border-orange-400/15 bg-gradient-to-br from-orange-500/20 to-orange-950/20 p-5 text-left hover:-translate-y-1 hover:border-orange-400/50 hover:shadow-[0_18px_40px_rgba(249,115,22,.13)] transition">
-                    <span class="w-12 h-12 rounded-2xl bg-orange-400/10 text-orange-400 grid place-items-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-utensils"></i></span>
-                    <strong class="block text-base sm:text-lg mt-5">Gastronomía</strong>
-                    <span class="block text-xs text-gray-400 mt-1"><b id="categoryCountFood" class="text-orange-300">0</b> lugares</span>
-                </button>
-                <button type="button" onclick="exploreHomeCategory('stay')" class="group min-h-[150px] sm:min-h-[170px] rounded-3xl border border-sky-400/15 bg-gradient-to-br from-sky-500/20 to-sky-950/20 p-5 text-left hover:-translate-y-1 hover:border-sky-400/50 hover:shadow-[0_18px_40px_rgba(56,189,248,.13)] transition">
-                    <span class="w-12 h-12 rounded-2xl bg-sky-400/10 text-sky-400 grid place-items-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-bed"></i></span>
-                    <strong class="block text-base sm:text-lg mt-5">Hospedaje</strong>
-                    <span class="block text-xs text-gray-400 mt-1"><b id="categoryCountStay" class="text-sky-300">0</b> lugares</span>
-                </button>
-                <button type="button" onclick="exploreHomeCategory('tourism')" class="group min-h-[150px] sm:min-h-[170px] rounded-3xl border border-emerald-400/15 bg-gradient-to-br from-emerald-500/20 to-emerald-950/20 p-5 text-left hover:-translate-y-1 hover:border-emerald-400/50 hover:shadow-[0_18px_40px_rgba(52,211,153,.13)] transition">
-                    <span class="w-12 h-12 rounded-2xl bg-emerald-400/10 text-emerald-400 grid place-items-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-landmark"></i></span>
-                    <strong class="block text-base sm:text-lg mt-5">Atractivos</strong>
-                    <span class="block text-xs text-gray-400 mt-1"><b id="categoryCountTourism" class="text-emerald-300">0</b> lugares</span>
-                </button>
-                <button type="button" onclick="exploreHomeCategory('partners')" class="group min-h-[150px] sm:min-h-[170px] rounded-3xl border border-violet-400/15 bg-gradient-to-br from-violet-500/20 to-violet-950/20 p-5 text-left hover:-translate-y-1 hover:border-violet-400/50 hover:shadow-[0_18px_40px_rgba(167,139,250,.13)] transition">
-                    <span class="w-12 h-12 rounded-2xl bg-violet-400/10 text-violet-400 grid place-items-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-handshake"></i></span>
-                    <strong class="block text-base sm:text-lg mt-5">Marcas aliadas</strong>
-                    <span class="block text-xs text-gray-400 mt-1"><b id="categoryCountPartners" class="text-violet-300">0</b> lugares</span>
-                </button>
-                <button type="button" onclick="exploreHomeCategory('agenda')" class="group col-span-2 lg:col-span-1 min-h-[150px] sm:min-h-[170px] rounded-3xl border border-rose-400/15 bg-gradient-to-br from-rose-500/20 to-rose-950/20 p-5 text-left hover:-translate-y-1 hover:border-rose-400/50 hover:shadow-[0_18px_40px_rgba(251,113,133,.13)] transition">
-                    <span class="w-12 h-12 rounded-2xl bg-rose-400/10 text-rose-400 grid place-items-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-calendar-days"></i></span>
-                    <strong class="block text-base sm:text-lg mt-5">Agenda cultural</strong>
-                    <span class="block text-xs text-gray-400 mt-1">Eventos y actividades</span>
-                </button>
-            </div>
+            <div id="exploreCategoryGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"></div>
         </div>
     </section>
 
@@ -4327,10 +4301,36 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function renderCategoriesUI() {
             const catScroll = document.getElementById('categoryScroll');
+            const exploreGrid=document.getElementById('exploreCategoryGrid');
+            if(exploreGrid){
+                const palette=[
+                    {color:'#fb923c',background:'linear-gradient(135deg,rgba(249,115,22,.22),rgba(124,45,18,.13))'},
+                    {color:'#38bdf8',background:'linear-gradient(135deg,rgba(14,165,233,.22),rgba(12,74,110,.13))'},
+                    {color:'#34d399',background:'linear-gradient(135deg,rgba(16,185,129,.22),rgba(6,78,59,.13))'},
+                    {color:'#a78bfa',background:'linear-gradient(135deg,rgba(139,92,246,.22),rgba(76,29,149,.13))'},
+                    {color:'#fb7185',background:'linear-gradient(135deg,rgba(244,63,94,.22),rgba(136,19,55,.13))'},
+                    {color:'#facc15',background:'linear-gradient(135deg,rgba(234,179,8,.22),rgba(113,63,18,.13))'}
+                ];
+                const availableCategories=categories.filter(category=>locations.some(location=>location.category===category.id));
+                exploreGrid.innerHTML=availableCategories.map((category,index)=>{
+                    const style=palette[index%palette.length],name=(currentLang==='en'&&category.nameEn)?category.nameEn:category.name,count=locations.filter(location=>location.category===category.id).length,places=currentLang==='en'?(count===1?'place':'places'):(count===1?'lugar':'lugares');
+                    return `<button type="button" data-category="${escapeHTML(category.id)}" onclick="openCategoryList(this.dataset.category)" class="group min-h-[150px] sm:min-h-[170px] rounded-3xl border p-5 text-left hover:-translate-y-1 hover:shadow-2xl transition" style="border-color:${style.color}33;background:${style.background}">
+                        <span class="w-12 h-12 rounded-2xl grid place-items-center text-2xl group-hover:scale-110 transition" style="color:${style.color};background:${style.color}18">${escapeHTML(category.icon||'📍')}</span>
+                        <strong class="block text-sm sm:text-base mt-5 leading-tight">${escapeHTML(name)}</strong>
+                        <span class="block text-xs text-gray-400 mt-1"><b style="color:${style.color}">${count}</b> ${places}</span>
+                    </button>`;
+                }).join('');
+                exploreGrid.insertAdjacentHTML('beforeend',`<button type="button" onclick="document.getElementById('agenda')?.scrollIntoView({behavior:'smooth',block:'start'})" class="group min-h-[150px] sm:min-h-[170px] rounded-3xl border border-rose-400/20 p-5 text-left hover:-translate-y-1 hover:shadow-2xl transition" style="background:linear-gradient(135deg,rgba(244,63,94,.22),rgba(136,19,55,.13))">
+                    <span class="w-12 h-12 rounded-2xl bg-rose-400/10 text-rose-400 grid place-items-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-calendar-days"></i></span>
+                    <strong class="block text-sm sm:text-base mt-5">Agenda cultural</strong>
+                    <span class="block text-xs text-gray-400 mt-1">Eventos y actividades</span>
+                </button>`);
+            }
+
             if(catScroll) {
                 const todosLabel = currentLang === 'en' ? 'All' : 'Todos';
                 catScroll.innerHTML = `
-                    <button type="button" aria-pressed="true" onclick="filterItems('all', this)" class="filter-btn sticky left-0 z-10 flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2.5 flex items-center gap-2 transition-all shadow-md">
+                    <button type="button" aria-pressed="true" data-place-category="all" onclick="filterItems('all', this)" class="filter-btn sticky left-0 z-10 flex-shrink-0 bg-brandDark text-brandGold border-2 border-brandDark rounded-full px-5 py-2.5 flex items-center gap-2 transition-all shadow-md">
                         <i class="fa-solid fa-border-all"></i> <span class="text-xs sm:text-sm font-bold text-white">${todosLabel}</span>
                         <span class="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-black text-white">${locations.length}</span>
                     </button>
@@ -4339,7 +4339,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     const catName = (currentLang === 'en' && cat.nameEn) ? cat.nameEn : cat.name;
                     const categoryCount = locations.filter(location => location.category === cat.id).length;
                     catScroll.innerHTML += `
-                        <button type="button" aria-pressed="false" onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
+                        <button type="button" aria-pressed="false" data-place-category="${cat.id}" onclick="filterItems('${cat.id}', this)" class="filter-btn flex-shrink-0 bg-white text-gray-600 border border-gray-200 rounded-full px-5 py-2.5 flex items-center gap-2 hover:border-brandGold hover:text-brandDark transition-all shadow-sm">
                             <span class="text-base">${cat.icon}</span> <span class="text-xs sm:text-sm font-bold">${catName}</span>
                             <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-black text-gray-600">${categoryCount}</span>
                         </button>
@@ -4428,7 +4428,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(category==='aliado')return{color:'#7c3aed',glow:'rgba(124,58,237,.30)'};
             return{color:'#f59e0b',glow:'rgba(245,158,11,.30)'};
         }
-        function exploreHomeCategory(group){if(group==='agenda'){document.getElementById('agenda')?.scrollIntoView({behavior:'smooth',block:'start'});return;}filterMapGroup(group);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth',block:'start'});}
+        function openCategoryList(category){const button=[...document.querySelectorAll('.filter-btn')].find(item=>item.dataset.placeCategory===category)||null;filterItems(category,button);document.getElementById('establecimientos')?.scrollIntoView({behavior:'smooth',block:'start'});}
 
         function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels=currentLang==='en'?{all:'All points',food:'Food & dining',stay:'Accommodation',tourism:'Attractions',partners:'Partner brands'}:{all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;document.getElementById('mapLegendPanel')?.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
 
@@ -4441,7 +4441,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(!grid) return;
             grid.innerHTML = '';
             const mapCounts={mapCountAll:locations.length,mapCountFood:locations.filter(item=>['hueca','cafe','urbana','heladeria','panaderia','bar'].includes(item.category)).length,mapCountStay:locations.filter(item=>item.category==='hotel').length,mapCountTourism:locations.filter(item=>['turismo','entretenimiento','artesania'].includes(item.category)).length,mapCountPartners:locations.filter(item=>item.category==='aliado').length};
-            Object.entries(mapCounts).forEach(([id,value])=>{const element=document.getElementById(id);if(element){element.textContent=value;if(id!=='mapCountAll')element.closest('button')?.classList.toggle('hidden',value===0);}});const categoryCounts={categoryCountFood:mapCounts.mapCountFood,categoryCountStay:mapCounts.mapCountStay,categoryCountTourism:mapCounts.mapCountTourism,categoryCountPartners:mapCounts.mapCountPartners};Object.entries(categoryCounts).forEach(([id,value])=>{const element=document.getElementById(id);if(!element)return;element.textContent=value;const suffix=element.nextSibling;if(suffix&&suffix.nodeType===Node.TEXT_NODE)suffix.textContent=value===1?' lugar':' lugares';});
+            Object.entries(mapCounts).forEach(([id,value])=>{const element=document.getElementById(id);if(element){element.textContent=value;if(id!=='mapCountAll')element.closest('button')?.classList.toggle('hidden',value===0);}});
 
             const aliadoCountEl = document.getElementById('totalAliadosCount');
             if(aliadoCountEl) {
