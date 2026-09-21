@@ -3,9 +3,28 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isViveLojaAdmin() {
+    function hasAdminClaim() {
       return request.auth != null
-        && request.auth.token.email == 'sukogames1996@gmail.com';
+        && (request.auth.token.admin == true || request.auth.token.role == 'admin' || request.auth.token.role == 'owner');
+    }
+
+    function isLegacyAdmin() {
+      return request.auth != null && request.auth.token.email == 'sukogames1996@gmail.com';
+    }
+
+    function hasActiveAdminProfile() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.active == true
+        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role in ['admin', 'owner'];
+    }
+
+    function isViveLojaAdmin() {
+      return hasAdminClaim() || hasActiveAdminProfile() || isLegacyAdmin();
+    }
+
+    function canManageAdminUsers() {
+      return hasAdminClaim() || isLegacyAdmin();
     }
 
     function isProfileOwner(userId) {
@@ -74,6 +93,35 @@ service cloud.firestore {
         && request.resource.data.routeLocationIds.size() <= 20
         && request.resource.data.passportMode in ['turista', 'lojano']
         && request.resource.data.updatedAt == request.time;
+    }
+
+    // Roles administrativos: solo una reclamación segura o el acceso de
+    // emergencia puede crear, modificar o retirar administradores.
+    match /adminUsers/{userId} {
+      allow read: if isViveLojaAdmin() || (request.auth != null && request.auth.uid == userId);
+      allow create, update: if canManageAdminUsers()
+        && request.resource.data.keys().hasOnly(['email', 'displayName', 'role', 'active', 'createdAt', 'updatedAt', 'updatedBy'])
+        && request.resource.data.email is string
+        && request.resource.data.role in ['admin', 'owner']
+        && request.resource.data.active is bool
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy == request.auth.uid;
+      allow delete: if canManageAdminUsers();
+    }
+
+    // Auditoría administrativa inmutable creada por el panel.
+    match /adminAudit/{eventId} {
+      allow read: if isViveLojaAdmin();
+      allow create: if isViveLojaAdmin()
+        && request.resource.data.keys().hasOnly(['action', 'module', 'summary', 'details', 'actorUid', 'actorEmail', 'createdAt'])
+        && request.resource.data.action is string && request.resource.data.action.size() <= 80
+        && request.resource.data.module is string && request.resource.data.module.size() <= 80
+        && request.resource.data.summary is string && request.resource.data.summary.size() <= 240
+        && request.resource.data.details is map
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorEmail == request.auth.token.email
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
     }
 
     match /userProfiles/{userId} {
