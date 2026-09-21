@@ -1368,7 +1368,15 @@ function editSavedQr(id){const q=adminQrCodes.find(x=>x.id===id);if(!q)return;do
 async function deleteSavedQr(id){const q=adminQrCodes.find(x=>x.id===id);if(q&&confirm(`¿Eliminar “${q.name}”?`))await qrRef.doc(id).delete();}
 function downloadCurrentQr(){const canvas=document.querySelector('#qrPreview canvas');if(!canvas){message(document.getElementById('qrMessage'),'Primero genera o selecciona un QR.');return;}try{const link=document.createElement('a');link.download=`${createAdminSlug(currentQrName)}-qr.png`;link.href=canvas.toDataURL('image/png');link.click();}catch(_){message(document.getElementById('qrMessage'),'El logo externo bloqueó la descarga. Súbelo junto a index.html y escribe solamente el nombre del archivo.');}}
 
+function normalizeChabaquitoBrand(value) {
+    if (typeof value === 'string') return value.replace(/Vive Loja/gi, 'Visita Loja');
+    if (Array.isArray(value)) return value.map(normalizeChabaquitoBrand);
+    if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key,item]) => [key, normalizeChabaquitoBrand(item)]));
+    return value;
+}
+
 function loadChabaquitoForm(data = {}) {
+    data = normalizeChabaquitoBrand(data);
     const config = { ...DEFAULT_CHABAQUITO, ...data, messages: { ...DEFAULT_CHABAQUITO.messages, ...(data.messages || {}) }, certificate:{...DEFAULT_CHABAQUITO.certificate,...(data.certificate||{})}, benefit:{...DEFAULT_CHABAQUITO.benefit,...(data.benefit||{})}, missions:{...DEFAULT_CHABAQUITO.missions,...(data.missions||{})} };
     if(config.certificate.signature==='Visita Loja · Cultura y Cuchara')config.certificate.signature='Visita Loja';
     document.getElementById('chabaquitoActive').checked = config.active !== false;
@@ -1975,7 +1983,13 @@ auth.onAuthStateChanged(async user => {
         loadStoriesAdmin(storiesSnapshot.exists?storiesSnapshot.data():{});
         generalEvents = generalEventsSnapshot.exists && Array.isArray(generalEventsSnapshot.data().events) ? generalEventsSnapshot.data().events.map(item => ({ ...item })) : DEFAULT_GENERAL_EVENTS.map(item => ({ ...item }));
         renderGeneralEvents();
-        loadChabaquitoForm(chabaquitoSnapshot.exists ? chabaquitoSnapshot.data() : {});
+        const chabaquitoRaw = chabaquitoSnapshot.exists ? chabaquitoSnapshot.data() : {};
+        const chabaquitoNormalized = normalizeChabaquitoBrand(chabaquitoRaw);
+        loadChabaquitoForm(chabaquitoNormalized);
+        if (chabaquitoSnapshot.exists && JSON.stringify(chabaquitoRaw) !== JSON.stringify(chabaquitoNormalized)) {
+            await chabaquitoRef.set(chabaquitoNormalized, { merge: true });
+            await recordAdminAudit('content.update', 'content', 'Actualizó la marca de Chabaquito a Visita Loja', { section: 'chabaquito' });
+        }
         loadPassportForm(passportSnapshot.exists ? passportSnapshot.data() : {});
         loadSettingsForm(settingsSnapshot.exists ? settingsSnapshot.data() : {});
         loadSubscriptionsForm(subscriptionsSnapshot.exists ? subscriptionsSnapshot.data() : {}, settingsSnapshot.exists ? settingsSnapshot.data() : {});
