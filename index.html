@@ -7569,11 +7569,115 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=4', { updateViaCache: 'none' }).catch(error => {
+                navigator.serviceWorker.register('./service-worker.js?v=5', { updateViaCache: 'none' }).catch(error => {
                     console.warn('No se pudo activar el modo instalable:', error);
                 });
             });
         }
+    </script>
+    <audio id="welcomeMusic" preload="auto" loop aria-hidden="true"></audio>
+    <button id="welcomeMusicToggle" type="button" class="hidden fixed right-3 bottom-24 sm:right-5 sm:bottom-6 z-[68] w-10 h-10 rounded-full bg-black/70 hover:bg-black/85 text-white border border-white/20 shadow-lg backdrop-blur flex items-center justify-center transition" aria-label="Pausar música de bienvenida" title="Pausar música"><i class="fa-solid fa-volume-high"></i></button>
+    <script>
+        (() => {
+            const DEFAULT_WELCOME_MUSIC = {
+                enabled: true,
+                url: 'audios/cancion-visita-loja-v1.mp3',
+                volume: 0.45
+            };
+            const audio = document.getElementById('welcomeMusic');
+            const toggle = document.getElementById('welcomeMusicToggle');
+            let settings = { ...DEFAULT_WELCOME_MUSIC };
+            let visitorPaused = false;
+            let interactionFallbackArmed = false;
+
+            function normalizeVolume(value) {
+                const number = Number(value);
+                return Number.isFinite(number) ? Math.min(1, Math.max(0, number)) : DEFAULT_WELCOME_MUSIC.volume;
+            }
+
+            function updateButton() {
+                const playing = !audio.paused;
+                toggle.classList.toggle('hidden', !settings.enabled || !settings.url);
+                toggle.querySelector('i').className = `fa-solid ${playing ? 'fa-pause' : 'fa-play'}`;
+                const label = playing ? 'Pausar música de bienvenida' : 'Reanudar música de bienvenida';
+                toggle.setAttribute('aria-label', label);
+                toggle.title = label;
+            }
+
+            function removeInteractionFallback() {
+                if (!interactionFallbackArmed) return;
+                ['pointerdown', 'keydown', 'touchstart'].forEach(type => document.removeEventListener(type, startAfterInteraction, true));
+                interactionFallbackArmed = false;
+            }
+
+            async function attemptPlayback() {
+                if (!settings.enabled || !settings.url || visitorPaused) return;
+                try {
+                    await audio.play();
+                    removeInteractionFallback();
+                } catch (error) {
+                    if (!interactionFallbackArmed) {
+                        interactionFallbackArmed = true;
+                        ['pointerdown', 'keydown', 'touchstart'].forEach(type => document.addEventListener(type, startAfterInteraction, { capture: true, once: true }));
+                    }
+                }
+                updateButton();
+            }
+
+            function startAfterInteraction() {
+                attemptPlayback();
+            }
+
+            function applyWelcomeMusic(data = {}) {
+                const next = {
+                    enabled: data.welcomeMusicEnabled !== false,
+                    url: String(data.welcomeMusicUrl || DEFAULT_WELCOME_MUSIC.url).trim(),
+                    volume: normalizeVolume(data.welcomeMusicVolume ?? DEFAULT_WELCOME_MUSIC.volume)
+                };
+                const sourceChanged = audio.dataset.url !== next.url;
+                settings = next;
+                audio.volume = next.volume;
+                if (sourceChanged) {
+                    audio.pause();
+                    audio.src = next.url;
+                    audio.dataset.url = next.url;
+                    audio.load();
+                }
+                if (!next.enabled || !next.url) {
+                    audio.pause();
+                    removeInteractionFallback();
+                    updateButton();
+                    return;
+                }
+                attemptPlayback();
+            }
+
+            toggle.addEventListener('click', async () => {
+                if (!audio.paused) {
+                    visitorPaused = true;
+                    audio.pause();
+                } else {
+                    visitorPaused = false;
+                    await attemptPlayback();
+                }
+                updateButton();
+            });
+            audio.addEventListener('play', updateButton);
+            audio.addEventListener('pause', updateButton);
+            audio.addEventListener('error', () => { audio.pause(); updateButton(); });
+
+            let cached = {};
+            try { cached = JSON.parse(localStorage.getItem('cyc_settings') || '{}'); } catch (error) { cached = {}; }
+            applyWelcomeMusic(cached);
+            if (db) {
+                db.collection('settings').doc('main').onSnapshot(snapshot => {
+                    if (!snapshot.exists) return;
+                    const data = snapshot.data();
+                    try { localStorage.setItem('cyc_settings', JSON.stringify(data)); } catch (error) {}
+                    applyWelcomeMusic(data);
+                }, () => updateButton());
+            }
+        })();
     </script>
 </body>
 </html>

@@ -638,6 +638,12 @@
                             <label class="block"><span class="text-sm font-semibold block mb-2">Enlace de YouTube</span><input id="settingsVideoUrl" class="field" placeholder="https://youtube.com/..."></label>
                             <label class="block"><span class="text-sm font-semibold block mb-2">Miniatura del video</span><input id="settingsVideoThumb" class="field" placeholder="https://..."></label>
                         </div>
+                        <div class="bg-gradient-to-br from-sky-500/10 to-emerald-500/10 border border-sky-500/25 rounded-2xl p-4 sm:p-5 space-y-4"><div class="flex items-center justify-between gap-4"><div><h3 class="font-black text-lg text-sky-200"><i class="fa-solid fa-music mr-2"></i>Música de bienvenida</h3><p class="text-xs text-gray-400 mt-1">Se intenta reproducir al ingresar. Si el navegador la bloquea, comienza con la primera interacción del visitante.</p></div><input id="settingsWelcomeMusicEnabled" class="w-5 h-5 accent-sky-500" type="checkbox" checked></div>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Enlace MP3</span><input id="settingsWelcomeMusicUrl" class="field" placeholder="audios/cancion-visita-loja-v1.mp3"></label>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Volumen inicial: <b id="settingsWelcomeMusicVolumeValue">45%</b></span><input id="settingsWelcomeMusicVolume" type="range" min="0" max="100" value="45" class="w-full accent-sky-500" oninput="document.getElementById('settingsWelcomeMusicVolumeValue').textContent=this.value+'%'; syncWelcomeMusicPreviewVolume()"></label>
+                            <div class="flex flex-wrap items-center gap-3"><button id="settingsWelcomeMusicTestBtn" type="button" onclick="toggleWelcomeMusicPreview()" class="border border-sky-400/40 text-sky-100 hover:bg-sky-500/10 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-play mr-2"></i><span>Probar canción</span></button><span class="text-xs text-gray-500">La prueba usa el enlace y volumen escritos arriba.</span></div>
+                            <audio id="settingsWelcomeMusicPreview" preload="none"></audio>
+                        </div>
                         <div class="bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 space-y-4"><div class="flex items-center justify-between"><h3 class="font-black text-lg text-amber-300"><i class="fa-solid fa-bullhorn mr-2"></i>Anuncio emergente</h3><input id="settingsPopupActive" class="w-5 h-5 accent-amber-500" type="checkbox"></div>
                             <label class="block"><span class="text-sm font-semibold block mb-2">Título del anuncio</span><input id="settingsPopupTitle" class="field" maxlength="120"></label>
                             <label class="block"><span class="text-sm font-semibold block mb-2">Mensaje</span><textarea id="settingsPopupDesc" class="field min-h-20" maxlength="500"></textarea></label>
@@ -1474,11 +1480,40 @@ function loadSettingsForm(data = {}) {
     document.getElementById('settingsVideoTitle').value = settings.latestYoutubeTitle || '';
     document.getElementById('settingsVideoUrl').value = settings.latestYoutubeUrl || '';
     document.getElementById('settingsVideoThumb').value = settings.latestVideoThumbUrl || '';
+    document.getElementById('settingsWelcomeMusicEnabled').checked = settings.welcomeMusicEnabled !== false;
+    document.getElementById('settingsWelcomeMusicUrl').value = settings.welcomeMusicUrl || 'audios/cancion-visita-loja-v1.mp3';
+    const welcomeMusicVolume = Math.round(Math.min(1, Math.max(0, Number(settings.welcomeMusicVolume ?? 0.45))) * 100);
+    document.getElementById('settingsWelcomeMusicVolume').value = welcomeMusicVolume;
+    document.getElementById('settingsWelcomeMusicVolumeValue').textContent = `${welcomeMusicVolume}%`;
     document.getElementById('settingsPopupActive').checked = settings.popupActive === true;
     document.getElementById('settingsPopupTitle').value = settings.popupTitle || '';
     document.getElementById('settingsPopupDesc').value = settings.popupDesc || '';
     document.getElementById('settingsPopupImage').value = settings.popupImg || '';
     document.getElementById('settingsPopupWhatsapp').value = settings.popupWhatsapp || '';
+}
+
+function syncWelcomeMusicPreviewVolume() {
+    const preview = document.getElementById('settingsWelcomeMusicPreview');
+    if (preview) preview.volume = Math.min(1, Math.max(0, Number(document.getElementById('settingsWelcomeMusicVolume').value) / 100));
+}
+
+function resetWelcomeMusicPreviewButton() {
+    const button = document.getElementById('settingsWelcomeMusicTestBtn');
+    if (button) button.innerHTML = '<i class="fa-solid fa-play mr-2"></i><span>Probar canción</span>';
+}
+
+async function toggleWelcomeMusicPreview() {
+    const preview = document.getElementById('settingsWelcomeMusicPreview');
+    const button = document.getElementById('settingsWelcomeMusicTestBtn');
+    const url = document.getElementById('settingsWelcomeMusicUrl').value.trim();
+    if (!url) { message(document.getElementById('settingsMessage'), 'Escribe el enlace MP3 de la música de bienvenida.'); return; }
+    if (!preview.paused) { preview.pause(); resetWelcomeMusicPreviewButton(); return; }
+    if (preview.dataset.url !== url) { preview.src = url; preview.dataset.url = url; preview.load(); }
+    syncWelcomeMusicPreviewVolume();
+    preview.onended = resetWelcomeMusicPreviewButton;
+    preview.onerror = () => { resetWelcomeMusicPreviewButton(); message(document.getElementById('settingsMessage'), 'No se pudo cargar la canción desde ese enlace.'); };
+    try { await preview.play(); button.innerHTML = '<i class="fa-solid fa-pause mr-2"></i><span>Pausar prueba</span>'; }
+    catch (error) { resetWelcomeMusicPreviewButton(); message(document.getElementById('settingsMessage'), 'El navegador no permitió reproducir la canción. Revisa el enlace.'); }
 }
 
 function updateMaintenancePreview() {
@@ -2203,6 +2238,7 @@ document.getElementById('settingsForm').addEventListener('submit', async event =
         logoUrl: document.getElementById('settingsLogo').value.trim(), heroBgUrls, heroBgUrl: heroBgUrls[0],
         heroIntervalSeconds: Number(document.getElementById('settingsHeroInterval').value || 6), heroBgPosition: document.getElementById('settingsHeroPosition').value,
         latestYoutubeTitle: document.getElementById('settingsVideoTitle').value.trim(), latestYoutubeUrl: document.getElementById('settingsVideoUrl').value.trim(), latestVideoThumbUrl: document.getElementById('settingsVideoThumb').value.trim(),
+        welcomeMusicEnabled: document.getElementById('settingsWelcomeMusicEnabled').checked, welcomeMusicUrl: document.getElementById('settingsWelcomeMusicUrl').value.trim(), welcomeMusicVolume: Math.min(1, Math.max(0, Number(document.getElementById('settingsWelcomeMusicVolume').value) / 100)),
         popupActive: document.getElementById('settingsPopupActive').checked, popupTitle: document.getElementById('settingsPopupTitle').value.trim(), popupDesc: document.getElementById('settingsPopupDesc').value.trim(), popupImg: document.getElementById('settingsPopupImage').value.trim(), popupWhatsapp: document.getElementById('settingsPopupWhatsapp').value.trim(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email
     };
