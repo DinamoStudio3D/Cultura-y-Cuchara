@@ -3678,6 +3678,36 @@
                 lng: -79.2030 
             }
         ]).filter(isPublicContent);
+                if (!eventsList.length) eventsList = [
+            {
+                id: 'sample_flavors_2026',
+                title: 'Ruta de Sabores Lojanos — Evento de muestra',
+                titleEn: 'Loja Flavors Route — Sample Event',
+                date: '2026-10-04',
+                time: '15:00',
+                type: 'Muestra',
+                location: 'Plaza de San Sebastián',
+                desc: 'Evento demostrativo para visualizar la agenda. Recorrido de gastronomía, café y tradiciones lojanas.',
+                descEn: 'Sample event used to preview the agenda with Loja cuisine, coffee and traditions.',
+                img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
+                lat: -4.0007,
+                lng: -79.2019
+            },
+            {
+                id: 'sample_culture_2026',
+                title: 'Tarde Cultural en Jipiro — Evento de muestra',
+                titleEn: 'Cultural Afternoon at Jipiro — Sample Event',
+                date: '2026-10-11',
+                time: '11:00',
+                type: 'Muestra',
+                location: 'Parque Recreacional Jipiro',
+                desc: 'Evento demostrativo con música, artesanías y actividades familiares para mostrar el diseño de la agenda.',
+                descEn: 'Sample event with music, crafts and family activities to preview the agenda design.',
+                img: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80',
+                lat: -3.9744,
+                lng: -79.2043
+            }
+        ];
 
         if (db) {
             db.collection('siteContent').doc('events').onSnapshot(snapshot => {
