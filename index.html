@@ -2345,6 +2345,7 @@
     </button>
 
     <!-- Toast Notification -->
+    <div id="dataSyncStatus" role="status" aria-live="polite" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-[65] max-w-[calc(100%-2rem)] bg-brandDark/95 text-white border border-white/15 rounded-full px-4 py-2 text-xs font-bold shadow-xl backdrop-blur whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-down mr-2 text-cyan-300"></i><span>Actualizando paradas…</span></div>
     <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
@@ -3565,6 +3566,37 @@
             return !item?.publicationStatus || item.publicationStatus === 'published';
         }
 
+        const LOCATIONS_CACHE_KEY = 'visita_loja_locations_cache_v1';
+        const LOCATIONS_CACHE_TIME_KEY = 'visita_loja_locations_cache_time_v1';
+        function readLocationsCache() {
+            const cached = safeReadJSON(LOCATIONS_CACHE_KEY, []);
+            return Array.isArray(cached) ? cached.filter(item => item && item.id) : [];
+        }
+        function saveLocationsCache(items) {
+            if (!Array.isArray(items) || !items.length) return;
+            try {
+                localStorage.setItem(LOCATIONS_CACHE_KEY, JSON.stringify(items));
+                localStorage.setItem(LOCATIONS_CACHE_TIME_KEY, new Date().toISOString());
+            } catch (error) { console.warn('No se pudo actualizar la caché de paradas.'); }
+        }
+        function setLocationsSyncStatus(state, detail = '') {
+            const status = document.getElementById('dataSyncStatus');
+            if (!status) return;
+            const states = {
+                loading: ['fa-cloud-arrow-down text-cyan-300', detail || 'Actualizando paradas…'],
+                cached: ['fa-clock-rotate-left text-amber-300', detail || 'Mostrando la última información disponible'],
+                offline: ['fa-wifi text-amber-300', detail || 'Sin conexión · usando información guardada'],
+                error: ['fa-triangle-exclamation text-red-300', detail || 'No se pudo actualizar · conservamos las paradas anteriores']
+            };
+            if (state === 'ready') { status.classList.add('hidden'); return; }
+            const [icon, text] = states[state] || states.loading;
+            status.querySelector('i').className = `fa-solid ${icon} mr-2`;
+            status.querySelector('span').textContent = text;
+            status.classList.remove('hidden');
+        }
+        const cachedPublicLocations = readLocationsCache();
+        if (cachedPublicLocations.length) locations = cachedPublicLocations;
+
         let eventsList = safeReadJSON('cyc_dynamic_events', [
             { 
                 id: 'ev_1', 
@@ -3908,8 +3940,10 @@
         function cargarDatosDesdeFirestore() {
             let initial = safeReadJSON('cyc_settings', window.__initialSettings);
             applySettings(initial);
+            setLocationsSyncStatus(navigator.onLine ? 'loading' : 'offline');
 
             if (!db) {
+                setLocationsSyncStatus(cachedPublicLocations.length ? 'cached' : 'error');
                 renderEverything();
                 checkLiveEventsBanner();
                 maybeTriggerPopup(initial);
@@ -3917,28 +3951,35 @@
                 return;
             }
 
-            db.collection("locales").onSnapshot((snapshot) => {
+            db.collection("locales").onSnapshot({includeMetadataChanges:true},(snapshot) => {
                 if(!snapshot.empty) {
-                    locations = [];
+                    const nextLocations = [];
                     snapshot.forEach((doc) => {
                         const location={ id: doc.id, ...doc.data() };
                         const normalizedLocationName = String(location.title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
                         if (!location.audioUrl && (doc.id === 'dinamo_studio' || normalizedLocationName.includes('dinamo'))) location.audioUrl = 'audios/dinamo-the-weight-of-one-note.mp3';
                         const searchable=[location.category,location.tag,location.title,location.type].join(' ').toLowerCase();
-                        if(isPublicContent(location) && !searchable.includes('motel')) locations.push(location);
+                        if(isPublicContent(location) && !searchable.includes('motel')) nextLocations.push(location);
                     });
+                    if(nextLocations.length){locations=nextLocations;saveLocationsCache(nextLocations);}
                 }
                 categories=categories.filter(category=>!String(category.id+' '+category.name+' '+(category.nameEn||'')).toLowerCase().includes('motel'));
                 scheduleSubscriptionRefresh();
                 renderEverything();
                 checkLiveEventsBanner();
                 checkUrlParamForCheckin();
+                if(snapshot.metadata.fromCache&&!navigator.onLine)setLocationsSyncStatus('offline');else if(snapshot.empty)setLocationsSyncStatus(locations.length?'cached':'error');else setLocationsSyncStatus('ready');
             }, (error) => {
                 console.error("Firestore error:", error);
+                const cached=readLocationsCache();if(cached.length)locations=cached;
+                setLocationsSyncStatus(cached.length?'cached':'error');
                 renderEverything();
                 checkLiveEventsBanner();
                 checkUrlParamForCheckin();
             });
+
+            window.addEventListener('offline',()=>setLocationsSyncStatus('offline'));
+            window.addEventListener('online',()=>setLocationsSyncStatus('loading','Conexión recuperada · sincronizando…'));
 
             db.collection("siteContent").doc("stories").onSnapshot(doc=>{if(doc.exists){const data=doc.data();publicStoriesSettings={...publicStoriesSettings,...(data.settings||{})};publicStories=Array.isArray(data.items)?data.items:[];}renderStoriesUI();},()=>{renderStoriesUI();});
 
@@ -7569,7 +7610,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=8', { updateViaCache: 'none' }).catch(error => {
+                navigator.serviceWorker.register('./service-worker.js?v=9', { updateViaCache: 'none' }).catch(error => {
                     console.warn('No se pudo activar el modo instalable:', error);
                 });
             });
