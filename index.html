@@ -1630,13 +1630,11 @@
             <div class="inline-block p-3 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4 shadow-warm-glow">
                 <i class="fa-solid fa-landmark"></i>
             </div>
-            <h3 class="text-lg font-bold text-brandGold uppercase tracking-wider mb-2">Apoyo Institucional y Patrocinio Oficial</h3>
-            <p class="text-xs text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
-                Proyecto respaldado por la <b>Mesa Turística de Loja</b>, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de <b>Industria Lojana de Especerías (ILE)</b> y <b>Nettplus</b>.
-            </p>
+            <h3 id="institutionalSupportTitle" class="text-lg font-bold text-brandGold uppercase tracking-wider mb-2">Apoyo Institucional y Patrocinio Oficial</h3>
+            <p id="institutionalSupportDescription" class="text-xs text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">Proyecto respaldado por la Mesa Turística de Loja, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de Industria Lojana de Especerías (ILE) y Nettplus.</p>
             <div class="flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> Mesa Turística</span>
-                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-leaf text-brandGold mr-1.5"></i> Patrocinan: ILE y Nettplus</span>
+                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> <span id="institutionalSupportInstitution">Mesa Turística</span></span>
+                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-leaf text-brandGold mr-1.5"></i> Patrocinan: <span id="institutionalSupportSponsors">ILE y Nettplus</span></span>
             </div>
         </div>
     </section>
@@ -7845,15 +7843,26 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             audio.addEventListener('pause', updateButton);
             audio.addEventListener('error', () => { audio.pause(); updateButton(); });
 
+            function applyInstitutionalSupport(data = {}) {
+                const title = document.getElementById('institutionalSupportTitle');
+                const description = document.getElementById('institutionalSupportDescription');
+                const institution = document.getElementById('institutionalSupportInstitution');
+                const sponsors = document.getElementById('institutionalSupportSponsors');
+                if (title) title.textContent = data.institutionalTitle || 'Apoyo Institucional y Patrocinio Oficial';
+                if (description) description.textContent = data.institutionalDescription || 'Proyecto respaldado por la Mesa Turística de Loja, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de Industria Lojana de Especerías (ILE) y Nettplus.';
+                if (institution) institution.textContent = data.institutionName || 'Mesa Turística';
+                if (sponsors) sponsors.textContent = data.sponsorNames || 'ILE y Nettplus';
+            }
+
             let cached = {};
             try { cached = JSON.parse(localStorage.getItem('cyc_settings') || '{}'); } catch (error) { cached = {}; }
-            applyWelcomeMusic(cached);
+            applyWelcomeMusic(cached);\n            applyInstitutionalSupport(cached);
             if (db) {
                 db.collection('settings').doc('main').onSnapshot(snapshot => {
                     if (!snapshot.exists) return;
                     const data = snapshot.data();
                     try { localStorage.setItem('cyc_settings', JSON.stringify(data)); } catch (error) {}
-                    applyWelcomeMusic(data);
+                    applyWelcomeMusic(data);\n                    applyInstitutionalSupport(data);
                 }, () => updateButton());
             }
         })();
