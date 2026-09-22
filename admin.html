@@ -659,7 +659,7 @@
                 <section id="linksModule" class="hidden panel rounded-2xl p-5 sm:p-7">
                     <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4 mb-6">
                         <div><p class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Accesos oficiales</p><h2 class="text-2xl font-black mt-1">Enlaces del sistema</h2><p class="text-sm text-gray-400 mt-1">Copia la dirección correcta y revisa quién debe utilizarla antes de compartirla.</p></div>
-                        <a href="https://cultura-y-cuchara.vercel.app/" target="_blank" rel="noopener noreferrer" class="border border-cyan-400/40 text-cyan-200 hover:bg-cyan-500/10 rounded-xl px-4 py-2.5 text-sm font-bold whitespace-nowrap"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>Abrir web</a>
+                        <a href="https://www.visitaloja.com/" target="_blank" rel="noopener noreferrer" class="border border-cyan-400/40 text-cyan-200 hover:bg-cyan-500/10 rounded-xl px-4 py-2.5 text-sm font-bold whitespace-nowrap"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>Abrir web</a>
                     </div>
                     <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 mb-6 text-sm text-amber-100">
                         <p class="font-black"><i class="fa-solid fa-shield-halved mr-2"></i>Importante</p>
@@ -1017,7 +1017,7 @@ const SYSTEM_LINKS=[
     {title:'Postular un negocio',path:'/sumar-negocio.html',audience:'Público / negocios',tone:'bg-emerald-500/15 text-emerald-200',description:'Formulario para solicitar que un establecimiento sea parte de la plataforma.'},
     {title:'Estado de solicitud',path:'/estado-solicitud.html',audience:'Solicitante',tone:'bg-violet-500/15 text-violet-200',description:'Consulta pública del avance de una postulación mediante su código de seguimiento.'}
 ];
-function systemLinkUrl(path){return new URL(path,'https://cultura-y-cuchara.vercel.app').href;}
+function systemLinkUrl(path){return new URL(path,'https://www.visitaloja.com').href;}
 function renderSystemLinks(){
     const list=document.getElementById('systemLinksList');if(!list)return;
     list.innerHTML=SYSTEM_LINKS.map((item,index)=>{
