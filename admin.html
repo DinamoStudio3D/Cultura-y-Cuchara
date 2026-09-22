@@ -645,6 +645,15 @@
                             <div class="flex flex-wrap items-center gap-3"><button id="settingsWelcomeMusicTestBtn" type="button" onclick="toggleWelcomeMusicPreview()" class="border border-sky-400/40 text-sky-100 hover:bg-sky-500/10 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-play mr-2"></i><span>Probar canción</span></button><span class="text-xs text-gray-500">La prueba usa el enlace y volumen escritos arriba.</span></div>
                             <audio id="settingsWelcomeMusicPreview" preload="none"></audio>
                         </div>
+                        <div class="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/25 rounded-2xl p-4 sm:p-5 space-y-4">
+                            <div><h3 class="font-black text-lg text-amber-200"><i class="fa-solid fa-handshake-angle mr-2"></i>Apoyo institucional y patrocinadores</h3><p class="text-xs text-gray-400 mt-1">Edita la información que aparece al final de la página pública.</p></div>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Título de la sección</span><input id="settingsInstitutionalTitle" class="field" maxlength="140"></label>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Descripción</span><textarea id="settingsInstitutionalDescription" class="field min-h-24" maxlength="700"></textarea></label>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <label><span class="text-sm font-semibold block mb-2">Institución que respalda</span><input id="settingsInstitutionName" class="field" maxlength="120"></label>
+                                <label><span class="text-sm font-semibold block mb-2">Patrocinadores</span><input id="settingsSponsorNames" class="field" maxlength="180"></label>
+                            </div>
+                        </div>
                         <div class="bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 space-y-4"><div class="flex items-center justify-between"><h3 class="font-black text-lg text-amber-300"><i class="fa-solid fa-bullhorn mr-2"></i>Anuncio emergente</h3><input id="settingsPopupActive" class="w-5 h-5 accent-amber-500" type="checkbox"></div>
                             <label class="block"><span class="text-sm font-semibold block mb-2">Título del anuncio</span><input id="settingsPopupTitle" class="field" maxlength="120"></label>
                             <label class="block"><span class="text-sm font-semibold block mb-2">Mensaje</span><textarea id="settingsPopupDesc" class="field min-h-20" maxlength="500"></textarea></label>
@@ -1486,6 +1495,10 @@ function loadSettingsForm(data = {}) {
     const welcomeMusicVolume = Math.round(Math.min(1, Math.max(0, Number(settings.welcomeMusicVolume ?? 0.20))) * 100);
     document.getElementById('settingsWelcomeMusicVolume').value = welcomeMusicVolume;
     document.getElementById('settingsWelcomeMusicVolumeValue').textContent = `${welcomeMusicVolume}%`;
+    document.getElementById('settingsInstitutionalTitle').value = settings.institutionalTitle || 'Apoyo Institucional y Patrocinio Oficial';
+    document.getElementById('settingsInstitutionalDescription').value = settings.institutionalDescription || 'Proyecto respaldado por la Mesa Turística de Loja, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de Industria Lojana de Especerías (ILE) y Nettplus.';
+    document.getElementById('settingsInstitutionName').value = settings.institutionName || 'Mesa Turística';
+    document.getElementById('settingsSponsorNames').value = settings.sponsorNames || 'ILE y Nettplus';
     document.getElementById('settingsPopupActive').checked = settings.popupActive === true;
     document.getElementById('settingsPopupTitle').value = settings.popupTitle || '';
     document.getElementById('settingsPopupDesc').value = settings.popupDesc || '';
@@ -2240,6 +2253,7 @@ document.getElementById('settingsForm').addEventListener('submit', async event =
         heroIntervalSeconds: Number(document.getElementById('settingsHeroInterval').value || 6), heroBgPosition: document.getElementById('settingsHeroPosition').value,
         latestYoutubeTitle: document.getElementById('settingsVideoTitle').value.trim(), latestYoutubeUrl: document.getElementById('settingsVideoUrl').value.trim(), latestVideoThumbUrl: document.getElementById('settingsVideoThumb').value.trim(),
         welcomeMusicEnabled: document.getElementById('settingsWelcomeMusicEnabled').checked, welcomeMusicUrl: document.getElementById('settingsWelcomeMusicUrl').value.trim(), welcomeMusicVolume: Math.min(1, Math.max(0, Number(document.getElementById('settingsWelcomeMusicVolume').value) / 100)),
+        institutionalTitle: document.getElementById('settingsInstitutionalTitle').value.trim(), institutionalDescription: document.getElementById('settingsInstitutionalDescription').value.trim(), institutionName: document.getElementById('settingsInstitutionName').value.trim(), sponsorNames: document.getElementById('settingsSponsorNames').value.trim(),
         popupActive: document.getElementById('settingsPopupActive').checked, popupTitle: document.getElementById('settingsPopupTitle').value.trim(), popupDesc: document.getElementById('settingsPopupDesc').value.trim(), popupImg: document.getElementById('settingsPopupImage').value.trim(), popupWhatsapp: document.getElementById('settingsPopupWhatsapp').value.trim(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email
     };
