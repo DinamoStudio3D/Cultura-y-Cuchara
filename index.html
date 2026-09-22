@@ -7569,14 +7569,14 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=6', { updateViaCache: 'none' }).catch(error => {
+                navigator.serviceWorker.register('./service-worker.js?v=7', { updateViaCache: 'none' }).catch(error => {
                     console.warn('No se pudo activar el modo instalable:', error);
                 });
             });
         }
     </script>
     <audio id="welcomeMusic" preload="auto" loop aria-hidden="true"></audio>
-    <button id="welcomeMusicToggle" type="button" class="hidden fixed left-3 bottom-24 sm:left-5 sm:bottom-6 z-[68] w-10 h-10 rounded-full bg-black/70 hover:bg-black/85 text-white border border-white/20 shadow-lg backdrop-blur flex items-center justify-center transition" aria-label="Pausar música de bienvenida" title="Pausar música"><i class="fa-solid fa-volume-high"></i></button>
+    <button id="welcomeMusicToggle" type="button" class="hidden fixed right-3 top-24 sm:right-5 z-[68] w-10 h-10 rounded-full bg-black/70 hover:bg-black/85 text-white border border-white/20 shadow-lg backdrop-blur flex items-center justify-center transition" aria-label="Pausar música de bienvenida" title="Pausar música"><i class="fa-solid fa-volume-high"></i></button>
     <script>
         (() => {
             const DEFAULT_WELCOME_MUSIC = {
