@@ -1,4 +1,4 @@
-const CACHE_NAME = 'visita-loja-shell-v5';
+const CACHE_NAME = 'visita-loja-shell-v6';
 const LOCAL_SHELL = ['./', './index.html', './manifest.webmanifest?v=4', './mascota-vive-loja.png'];
 const OFFLINE_HTML = '<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Sin conexión</title><body style="font-family:system-ui;background:#121212;color:white;text-align:center;padding:12vh 24px"><h1>Visita Loja</h1><p>No hay conexión en este momento. Inténtalo nuevamente cuando recuperes internet.</p></body></html>';
 
