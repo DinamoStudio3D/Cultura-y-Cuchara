@@ -3681,8 +3681,8 @@
 
         if (db) {
             db.collection('siteContent').doc('events').onSnapshot(snapshot => {
-                if (!snapshot.exists || !Array.isArray(snapshot.data().events)) return;
-                const syncedEvents = snapshot.data().events.map(event => ({ ...event })).filter(isPublicContent);
+                const sourceEvents = snapshot.exists && Array.isArray(snapshot.data().events) ? snapshot.data().events : [];
+                const syncedEvents = sourceEvents.map(event => ({ ...event })).filter(isPublicContent);
                 eventsList = syncedEvents.length ? syncedEvents : [
                     {
                         id: 'sample_flavors_2026',
