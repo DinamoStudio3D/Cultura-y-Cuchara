@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin.html
+Disallow: /confirmar-visitas.html
+Disallow: /estado-solicitud.html
+Disallow: /gestion-fidelidad.html
+Disallow: /gestion-opiniones.html
+Disallow: /gestion-tienda.html
+
+Sitemap: https://visita-loja.vercel.app/sitemap.xml
