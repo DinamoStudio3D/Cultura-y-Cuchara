@@ -640,7 +640,7 @@
                         </div>
                         <div class="bg-gradient-to-br from-sky-500/10 to-emerald-500/10 border border-sky-500/25 rounded-2xl p-4 sm:p-5 space-y-4"><div class="flex items-center justify-between gap-4"><div><h3 class="font-black text-lg text-sky-200"><i class="fa-solid fa-music mr-2"></i>Música de bienvenida</h3><p class="text-xs text-gray-400 mt-1">Se intenta reproducir al ingresar. Si el navegador la bloquea, comienza con la primera interacción del visitante.</p></div><input id="settingsWelcomeMusicEnabled" class="w-5 h-5 accent-sky-500" type="checkbox" checked></div>
                             <label class="block"><span class="text-sm font-semibold block mb-2">Enlace MP3</span><input id="settingsWelcomeMusicUrl" class="field" placeholder="audios/cancion-visita-loja-v1.mp3"></label>
-                            <label class="block"><span class="text-sm font-semibold block mb-2">Volumen inicial: <b id="settingsWelcomeMusicVolumeValue">45%</b></span><input id="settingsWelcomeMusicVolume" type="range" min="0" max="100" value="45" class="w-full accent-sky-500" oninput="document.getElementById('settingsWelcomeMusicVolumeValue').textContent=this.value+'%'; syncWelcomeMusicPreviewVolume()"></label>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Volumen inicial: <b id="settingsWelcomeMusicVolumeValue">20%</b></span><input id="settingsWelcomeMusicVolume" type="range" min="0" max="100" value="20" class="w-full accent-sky-500" oninput="document.getElementById('settingsWelcomeMusicVolumeValue').textContent=this.value+'%'; syncWelcomeMusicPreviewVolume()"></label>
                             <div class="flex flex-wrap items-center gap-3"><button id="settingsWelcomeMusicTestBtn" type="button" onclick="toggleWelcomeMusicPreview()" class="border border-sky-400/40 text-sky-100 hover:bg-sky-500/10 rounded-xl px-4 py-2.5 text-sm font-bold"><i class="fa-solid fa-play mr-2"></i><span>Probar canción</span></button><span class="text-xs text-gray-500">La prueba usa el enlace y volumen escritos arriba.</span></div>
                             <audio id="settingsWelcomeMusicPreview" preload="none"></audio>
                         </div>
@@ -1482,7 +1482,7 @@ function loadSettingsForm(data = {}) {
     document.getElementById('settingsVideoThumb').value = settings.latestVideoThumbUrl || '';
     document.getElementById('settingsWelcomeMusicEnabled').checked = settings.welcomeMusicEnabled !== false;
     document.getElementById('settingsWelcomeMusicUrl').value = settings.welcomeMusicUrl || 'audios/cancion-visita-loja-v1.mp3';
-    const welcomeMusicVolume = Math.round(Math.min(1, Math.max(0, Number(settings.welcomeMusicVolume ?? 0.45))) * 100);
+    const welcomeMusicVolume = Math.round(Math.min(1, Math.max(0, Number(settings.welcomeMusicVolume ?? 0.20))) * 100);
     document.getElementById('settingsWelcomeMusicVolume').value = welcomeMusicVolume;
     document.getElementById('settingsWelcomeMusicVolumeValue').textContent = `${welcomeMusicVolume}%`;
     document.getElementById('settingsPopupActive').checked = settings.popupActive === true;

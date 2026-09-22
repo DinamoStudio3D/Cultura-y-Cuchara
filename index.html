@@ -7569,7 +7569,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js?v=7', { updateViaCache: 'none' }).catch(error => {
+                navigator.serviceWorker.register('./service-worker.js?v=8', { updateViaCache: 'none' }).catch(error => {
                     console.warn('No se pudo activar el modo instalable:', error);
                 });
             });
@@ -7582,7 +7582,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const DEFAULT_WELCOME_MUSIC = {
                 enabled: true,
                 url: 'audios/cancion-visita-loja-v1.mp3',
-                volume: 0.45
+                volume: 0.20
             };
             const audio = document.getElementById('welcomeMusic');
             const toggle = document.getElementById('welcomeMusicToggle');
