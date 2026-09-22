@@ -3678,7 +3678,7 @@
                 lng: -79.2030 
             }
         ]).filter(isPublicContent);
-                if (!eventsList.length) eventsList = [
+                if (!eventsList.some(event => !event.date || event.date >= new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0])) eventsList = [
             {
                 id: 'sample_flavors_2026',
                 title: 'Ruta de Sabores Lojanos — Evento de muestra',
@@ -3713,7 +3713,7 @@
             db.collection('siteContent').doc('events').onSnapshot(snapshot => {
                 const sourceEvents = snapshot.exists && Array.isArray(snapshot.data().events) ? snapshot.data().events : [];
                 const syncedEvents = sourceEvents.map(event => ({ ...event })).filter(isPublicContent);
-                eventsList = syncedEvents.length ? syncedEvents : [
+                eventsList = syncedEvents.some(event => !event.date || event.date >= new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0]) ? syncedEvents : [
                     {
                         id: 'sample_flavors_2026',
                         title: 'Ruta de Sabores Lojanos — Evento de muestra',
