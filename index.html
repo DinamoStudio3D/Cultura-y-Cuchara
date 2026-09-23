@@ -4213,24 +4213,15 @@
         }
 
         function buildLocationShareUrl(loc) {
-            const url = new URL('negocio.html', window.location.href);
-            url.search = '';
-            url.hash = '';
-            if (loc?.id) url.searchParams.set('place', String(loc.id));
-            else url.searchParams.set('lugar', getLocationSlug(loc));
-            return url.toString();
+            const slug = getLocationSlug(loc);
+            return new URL(`/parada/${encodeURIComponent(slug)}`, window.location.origin).toString();
         }
 
         function openBusinessPageForCurrent() {
             const loc = getCurrentLocation();
             if (!loc || !loc.id) return;
-            // Usar el ID real de Firestore evita cualquier colisión de slug/título.
-            // negocio.html acepta tanto ?lugar= como ?place= y resuelve primero por ID.
-            const url = new URL('negocio.html', window.location.href);
-            url.search = '';
-            url.hash = '';
-            url.searchParams.set('place', String(loc.id));
-            window.location.href = url.toString();
+            // La URL pública es legible; la selección actual sigue protegida por el ID real.
+            window.location.href = buildLocationShareUrl(loc);
         }
 
         function openLocationFromUrl(locationReference) {
