@@ -4563,8 +4563,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             let rankedIds=[];
             if(mode==='manual'&&Array.isArray(settings.trendingManualIds)) rankedIds=settings.trendingManualIds.filter(Boolean).slice(0,3);
             else if(Array.isArray(settings.trendingWeekly)) rankedIds=settings.trendingWeekly.map(item=>typeof item==='string'?item:item?.placeId).filter(Boolean).slice(0,3);
-            let topTrending=rankedIds.map(id=>locations.find(loc=>loc.id===id)).filter(loc=>loc&&loc.category!=='aliado');
-            if(!topTrending.length) topTrending=locations.filter(loc=>loc.category!=='aliado').slice(0,3);
+            let topTrending=rankedIds.map(id=>locations.find(loc=>loc.id===id)).filter(Boolean);
+            if(!topTrending.length) topTrending=locations.slice(0,3);
             topTrending.forEach((loc,index)=>{
                 const realIndex=locations.findIndex(l=>l.id===loc.id),medalIcon=index===0?"🥇":index===1?"🥈":"🥉";
                 const locTitle=(currentLang==='en'&&loc.titleEn)?loc.titleEn:loc.title,locTag=(currentLang==='en'&&loc.tagEn)?loc.tagEn:loc.tag,locDesc=(currentLang==='en'&&loc.descEn)?loc.descEn:loc.desc;
