@@ -12,7 +12,15 @@
         html.qr-stop-redirect body {
             visibility: hidden !important;
         }
-    </style>
+    
+        /* La ficha lateral del mapa debe crecer con su contenido.
+           Nunca fijar su altura: algunas paradas tienen más servicios y acciones. */
+        #mapPreviewCard { height: auto; align-self: start; }
+        #mapPreviewCard > * { min-width: 0; }
+        @media (min-width: 1024px) {
+            #mapPreviewCard { min-height: 520px; height: auto !important; }
+        }
+</style>
     <script>
         // Los QR de paradas usan una pantalla ligera para evitar cargar dos veces la portada.
         (() => {
@@ -1029,7 +1037,7 @@
                 </div>
             </div>
 
-            <div id="mapPreviewCard" class="glass-card p-4 sm:p-6 rounded-2xl shadow-warm-glow border-2 border-gray-200 flex flex-col justify-between min-h-[460px] md:min-h-[500px] lg:h-[520px] lg:sticky lg:top-24 relative transition-colors duration-300">
+            <div id="mapPreviewCard" class="glass-card p-4 sm:p-6 rounded-2xl shadow-warm-glow border-2 border-gray-200 flex flex-col gap-4 min-h-[460px] md:min-h-[500px] lg:min-h-[520px] lg:h-auto lg:sticky lg:top-24 relative transition-colors duration-300">
                 <button id="previewFavBtn" type="button" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
