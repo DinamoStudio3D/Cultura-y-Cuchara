@@ -7841,6 +7841,11 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             });
             audio.addEventListener('play', updateButton);
             audio.addEventListener('pause', updateButton);
+            audio.addEventListener('ended', () => {
+                visitorPaused = true;
+                audio.currentTime = 0;
+                updateButton();
+            });
             audio.addEventListener('error', () => { audio.pause(); updateButton(); });
 
             function applyInstitutionalSupport(data = {}) {
@@ -7856,13 +7861,15 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
             let cached = {};
             try { cached = JSON.parse(localStorage.getItem('cyc_settings') || '{}'); } catch (error) { cached = {}; }
-            applyWelcomeMusic(cached);\n            applyInstitutionalSupport(cached);
+            applyWelcomeMusic(cached);
+            applyInstitutionalSupport(cached);
             if (db) {
                 db.collection('settings').doc('main').onSnapshot(snapshot => {
                     if (!snapshot.exists) return;
                     const data = snapshot.data();
                     try { localStorage.setItem('cyc_settings', JSON.stringify(data)); } catch (error) {}
-                    applyWelcomeMusic(data);\n                    applyInstitutionalSupport(data);
+                    applyWelcomeMusic(data);
+                    applyInstitutionalSupport(data);
                 }, () => updateButton());
             }
         })();
