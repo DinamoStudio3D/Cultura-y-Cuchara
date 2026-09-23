@@ -1498,7 +1498,25 @@ function previewAdminBrandImage(inputId, imageId) { const input=document.getElem
 const TRENDING_WEIGHTS={view:1,product:2,promo:3,favorite:4,directions:5,whatsapp:6,stamp:8,benefit:8};
 let currentTrendingSettings={trendingMode:'auto',trendingManualIds:[],trendingWeekly:[]};
 function trendingEventMillis(value){if(!value)return 0;if(typeof value.toMillis==='function')return value.toMillis();if(value.seconds)return Number(value.seconds)*1000;const parsed=new Date(value).getTime();return Number.isFinite(parsed)?parsed:0;}
-function populateTrendingManualOptions(selected=[]){const places=adminPlaces.filter(p=>p&&p.id&&p.category!=='aliado'&&p.publicationStatus!=='hidden');['trendingManual1','trendingManual2','trendingManual3'].forEach((id,index)=>{const el=document.getElementById(id);if(!el)return;const wanted=selected[index]||el.value||'';el.innerHTML='<option value="">Seleccionar parada…</option>'+places.map(p=>`<option value="${escapeAdminHtml(p.id)}">${escapeAdminHtml(p.title||p.id)}</option>`).join('');el.value=wanted;});}
+function populateTrendingManualOptions(selected=[]){
+    const places=adminPlaces.filter(p=>p&&p.id&&p.category!=='aliado'&&p.publicationStatus!=='hidden');
+    const ids=['trendingManual1','trendingManual2','trendingManual3'];
+    const current=ids.map((id,index)=>document.getElementById(id)?.value||selected[index]||'');
+    ids.forEach((id,index)=>{
+        const el=document.getElementById(id);if(!el)return;
+        const wanted=current[index];
+        const used=new Set(current.filter((value,i)=>i!==index&&value));
+        el.innerHTML='<option value="">Seleccionar parada…</option>'+places
+            .filter(p=>!used.has(p.id)||p.id===wanted)
+            .map(p=>`<option value="${escapeAdminHtml(p.id)}">${escapeAdminHtml(p.title||p.id)}</option>`).join('');
+        el.value=wanted;
+    });
+}
+function refreshTrendingManualSelects(){
+    const ids=['trendingManual1','trendingManual2','trendingManual3'];
+    const selected=ids.map(id=>document.getElementById(id)?.value||'');
+    populateTrendingManualOptions(selected);
+}
 function setTrendingModeUI(mode){const manual=mode==='manual';document.getElementById('trendingModeManual').checked=manual;document.getElementById('trendingModeAuto').checked=!manual;document.getElementById('trendingAutoPanel').classList.toggle('hidden',manual);document.getElementById('trendingManualPanel').classList.toggle('hidden',!manual);}
 function computeWeeklyTrending(){const cutoff=Date.now()-7*86400000,seen=new Set(),grouped={};adminBusinessEvents.forEach(event=>{const time=trendingEventMillis(event.createdAt);if(!event.placeId||!time||time<cutoff||!TRENDING_WEIGHTS[event.type])return;const session=String(event.sessionId||event.id||'anon'),dedupe=`${session}|${event.placeId}|${event.type}`;if(seen.has(dedupe))return;seen.add(dedupe);if(!grouped[event.placeId])grouped[event.placeId]={placeId:event.placeId,score:0,actions:0,breakdown:{}};const row=grouped[event.placeId];row.score+=TRENDING_WEIGHTS[event.type];row.actions++;row.breakdown[event.type]=(row.breakdown[event.type]||0)+1;});return Object.values(grouped).filter(row=>adminPlaces.some(p=>p.id===row.placeId&&p.category!=='aliado'&&p.publicationStatus!=='hidden')).sort((a,b)=>b.score-a.score||b.actions-a.actions||String(a.placeId).localeCompare(String(b.placeId))).slice(0,3);}
 function renderTrendingAutoPreview(rows=currentTrendingSettings.trendingWeekly||[]){const box=document.getElementById('trendingAutoPreview');if(!box)return;box.innerHTML=rows.length?rows.map((row,i)=>{const medals=['🥇','🥈','🥉'],detail=row.breakdown||{},parts=[['view','visitas'],['favorite','favoritos'],['directions','rutas'],['whatsapp','WhatsApp'],['product','productos'],['promo','promos'],['stamp','sellos'],['benefit','beneficios']].filter(([k])=>detail[k]).map(([k,label])=>`${detail[k]} ${label}`).join(' · ');return `<div class="flex items-center justify-between gap-3 bg-white/5 rounded-xl p-3"><div class="min-w-0"><strong class="block truncate">${medals[i]||'#'} ${escapeAdminHtml(analyticsPlaceName(row.placeId))}</strong><span class="text-[10px] text-gray-500">${escapeAdminHtml(parts||`${row.actions||0} interacciones`)}</span></div><b class="text-orange-300">${Number(row.score)||0} pts</b></div>`;}).join(''):'<p class="text-xs text-gray-500 border border-dashed border-gray-700 rounded-xl p-4 text-center">Aún no hay suficientes interacciones registradas en los últimos 7 días.</p>';}
@@ -2095,6 +2113,14 @@ auth.onAuthStateChanged(async user => {
         if (placesUnsubscribe) placesUnsubscribe();
         placesUnsubscribe = placesRef.onSnapshot(snapshot => {
             adminPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'es'));
+            // Refrescar los selectores del Top semanal una vez que las paradas
+            // reales ya fueron cargadas desde Firestore.
+            if (typeof populateTrendingManualOptions === 'function') {
+                const savedTrendingIds = Array.isArray(currentTrendingSettings?.trendingManualIds)
+                    ? currentTrendingSettings.trendingManualIds
+                    : [];
+                populateTrendingManualOptions(savedTrendingIds);
+            }
             renderAdminPlaces();
             storyRelatedOptions([...document.getElementById('storyRelatedPlaces').selectedOptions].map(option=>option.value));
             renderSubscriptionCenter();
@@ -2286,6 +2312,9 @@ document.getElementById('subscriptionsForm').addEventListener('submit',async eve
 document.getElementById('storiesSettingsForm').addEventListener('submit',async event=>{event.preventDefault();storiesSettings={active:document.getElementById('storiesSectionActive').checked,title:document.getElementById('storiesSectionTitle').value.trim()||'Historias de Loja',titleEn:document.getElementById('storiesSectionTitleEn').value.trim()||'Stories of Loja',intro:document.getElementById('storiesSectionIntro').value.trim(),introEn:document.getElementById('storiesSectionIntroEn').value.trim()};try{await persistStories();message(document.getElementById('storyMessage'),'Configuración de la sección guardada.',true);}catch(error){message(document.getElementById('storyMessage'),'No se pudo guardar la configuración.');}});
 document.getElementById('storyForm').addEventListener('submit',async event=>{event.preventDefault();const editId=document.getElementById('storyEditId').value,title=document.getElementById('storyTitle').value.trim(),latValue=document.getElementById('storyLat').value,lngValue=document.getElementById('storyLng').value,publishValue=document.getElementById('storyPublishAt').value;const story={id:editId||`story_${Date.now()}`,status:document.getElementById('storyStatus').value,category:document.getElementById('storyCategory').value,publishAt:publishValue?new Date(publishValue).toISOString():'',title,titleEn:document.getElementById('storyTitleEn').value.trim()||title,intro:document.getElementById('storyIntro').value.trim(),introEn:document.getElementById('storyIntroEn').value.trim()||document.getElementById('storyIntro').value.trim(),body:document.getElementById('storyBody').value.trim(),bodyEn:document.getElementById('storyBodyEn').value.trim()||document.getElementById('storyBody').value.trim(),cover:document.getElementById('storyCover').value.trim(),gallery:document.getElementById('storyGallery').value.split(/[\n,]+/).map(value=>value.trim()).filter(Boolean),audioUrl:document.getElementById('storyAudio').value.trim(),audioUrlEn:document.getElementById('storyAudioEn').value.trim(),videoUrl:document.getElementById('storyVideo').value.trim(),source:document.getElementById('storySource').value.trim(),era:document.getElementById('storyEra').value.trim(),lat:latValue===''?null:Number(latValue),lng:lngValue===''?null:Number(lngValue),relatedPlaceIds:[...document.getElementById('storyRelatedPlaces').selectedOptions].map(option=>option.value)};const index=adminStories.findIndex(item=>item.id===story.id),previous=adminStories.map(item=>({...item}));if(index>=0)adminStories[index]=story;else adminStories.push(story);try{await persistStories();message(document.getElementById('storyMessage'),editId?'Historia actualizada.':'Historia creada.',true);resetStoryForm();}catch(error){adminStories=previous;renderStoriesAdmin();message(document.getElementById('storyMessage'),'No se pudo guardar la historia.');}});
 
+['trendingManual1','trendingManual2','trendingManual3'].forEach(id=>{
+    document.getElementById(id).addEventListener('change',refreshTrendingManualSelects);
+});
 document.getElementById('trendingModeAuto').addEventListener('change',()=>setTrendingModeUI('auto'));
 document.getElementById('trendingModeManual').addEventListener('change',()=>setTrendingModeUI('manual'));
 document.getElementById('settingsForm').addEventListener('submit', async event => {
