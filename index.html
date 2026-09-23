@@ -520,7 +520,7 @@
 
     <div id="splash-screen" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
         <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl animate-pulse flex items-center justify-center p-2">
-            <img id="splashLogoImg" src="https://i.imgur.com/mmWzHK4.png?visita-loja-v4" alt="Visita Loja" width="144" height="144" fetchpriority="high" class="w-full h-full object-contain" decoding="async">
+            <img id="splashLogoImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Visita Loja" width="144" height="144" fetchpriority="high" class="w-full h-full object-contain opacity-0 transition-opacity duration-200" decoding="async">
         </div>
         <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">✨ Preparando los mejores sabores de Loja para ti...</div>
     </div>
@@ -1466,7 +1466,7 @@
                     <div class="relative group mb-6">
                         <div class="absolute -inset-3 bg-gradient-to-r from-brandGold via-amber-500 to-orange-600 rounded-3xl blur-2xl opacity-40 group-hover:opacity-75 transition duration-700 animate-pulse"></div>
                         <div class="relative w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 rounded-3xl bg-black/80 border-2 border-brandGold p-4 shadow-2xl flex items-center justify-center backdrop-blur-md">
-                            <img src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL 2026 Loja" class="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(234,88,12,0.45)] group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async">
+                            <img id="fiavlFeaturedImage" src="https://i.imgur.com/wQwm8wX.png" alt="FIAVL 2026 Loja" class="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(234,88,12,0.45)] group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async">
                         </div>
                     </div>
 
@@ -4267,9 +4267,14 @@
             if (s.logoUrl) {
                 ['splashLogoImg', 'navLogoImg', 'heroLogoImg', 'podcastLogoImg', 'footerLogoImg', 'maintenanceLogo'].forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.src = s.logoUrl;
+                    if(el) {
+                        el.src = s.logoUrl;
+                        if(id === 'splashLogoImg') el.classList.remove('opacity-0');
+                    }
                 });
             }
+            const fiavlFeaturedImage = document.getElementById('fiavlFeaturedImage');
+            if (fiavlFeaturedImage && s.fiavlImageUrl) fiavlFeaturedImage.src = s.fiavlImageUrl;
 
             let urls = s.heroBgUrls || [s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg"];
             if (typeof urls === 'string') {
