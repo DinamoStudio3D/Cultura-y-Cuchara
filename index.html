@@ -20,6 +20,26 @@
         @media (min-width: 1024px) {
             #mapPreviewCard { min-height: 520px; height: auto !important; }
         }
+
+        /* Ubicación del visitante: compacta y no bloquea los pines cercanos. */
+        .user-location-leaflet-icon { background: transparent !important; border: 0 !important; pointer-events: none !important; }
+        .user-location-marker { position: relative; width: 30px; height: 30px; display: grid; place-items: center; pointer-events: none; }
+        .user-location-dot {
+            position: relative; z-index: 2; width: 24px; height: 24px; border-radius: 9999px;
+            display: grid; place-items: center; background: #2563eb; color: #fff;
+            border: 3px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,.35);
+            font-size: 11px;
+        }
+        .user-location-pulse {
+            position: absolute; z-index: 1; width: 30px; height: 30px; border-radius: 9999px;
+            background: rgba(37,99,235,.20); border: 1px solid rgba(37,99,235,.45);
+            animation: userLocationPulse 1.8s ease-out infinite;
+        }
+        @keyframes userLocationPulse {
+            0% { transform: scale(.75); opacity: .9; }
+            75%,100% { transform: scale(1.45); opacity: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) { .user-location-pulse { animation: none; } }
 </style>
     <script>
         // Los QR de paradas usan una pantalla ligera para evitar cargar dos veces la portada.
@@ -4663,7 +4683,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         iconSize: hasPaidLogoStyle?[56,56]:[48,48], iconAnchor: hasPaidLogoStyle?[28,28]:[24,24], popupAnchor: [0, -28]
                     });
 
-                    const marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
+                    const marker = L.marker([loc.lat, loc.lng], { icon: customIcon, riseOnHover: true, riseOffset: 1200 });
                     
                     let distanciaTexto = "";
                     if (userCoords) {
@@ -4783,18 +4803,23 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         userCoords = { lat, lng };
                         
                         const userAvatarIcon = L.divIcon({
-                            className: 'custom-leaflet-icon',
-                            html: `<div class="blue-600 text-white w-12 h-12 rounded-full border-4 border-white flex items-center justify-center shadow-2xl animate-bounce bg-blue-600" style="touch-action: none;">
-                                     <i class="fa-solid fa-street-view text-2xl"></i>
+                            className: 'custom-leaflet-icon user-location-leaflet-icon',
+                            html: `<div class="user-location-marker" aria-label="Tu ubicación">
+                                     <span class="user-location-pulse"></span>
+                                     <span class="user-location-dot"><i class="fa-solid fa-street-view"></i></span>
                                    </div>`,
-                            iconSize: [48, 48], iconAnchor: [24, 24], popupAnchor: [0, -26]
+                            iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -18]
                         });
                         
                         if(userMarkerInstance && markersLayer) {
                             markersLayer.removeLayer(userMarkerInstance);
                         }
-                        userMarkerInstance = L.marker([lat, lng], { icon: userAvatarIcon })
-                          .bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
+                        userMarkerInstance = L.marker([lat, lng], {
+                            icon: userAvatarIcon,
+                            zIndexOffset: 900,
+                            keyboard: false,
+                            interactive: false
+                        }).bindPopup("<b>¡Tú estás aquí!</b><br>Ruta ordenada por cercanía.");
                         if(markersLayer) markersLayer.addLayer(userMarkerInstance);
                         
                         renderMapAndGrid();
