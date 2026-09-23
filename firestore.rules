@@ -189,9 +189,32 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    function canMerchantEditLocale(documentId) {
+      return isAssignedVisitMerchant(documentId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'description',
+          'phone',
+          'whatsapp',
+          'hours',
+          'merchantUpdatedAt',
+          'merchantUpdatedBy'
+        ])
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 1200
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() <= 30
+        && request.resource.data.whatsapp is string
+        && request.resource.data.whatsapp.size() <= 30
+        && request.resource.data.hours is string
+        && request.resource.data.hours.size() <= 600
+        && request.resource.data.merchantUpdatedAt == request.time
+        && request.resource.data.merchantUpdatedBy == request.auth.uid;
+    }
+
     match /locales/{documentId} {
       allow read: if true;
-      allow create, update, delete: if isViveLojaAdmin();
+      allow create, delete: if isViveLojaAdmin();
+      allow update: if isViveLojaAdmin() || canMerchantEditLocale(documentId);
     }
 
     match /storeProducts/{productId} {

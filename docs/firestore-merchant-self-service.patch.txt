@@ -1,0 +1,1 @@
+Cambio aplicado en firestore.rules: comerciantes activos y asignados pueden actualizar exclusivamente description, phone, whatsapp, hours y campos de auditoría. Create/delete y campos administrativos continúan restringidos al administrador.
