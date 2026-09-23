@@ -4201,8 +4201,14 @@
 
         function openBusinessPageForCurrent() {
             const loc = locations[currentLocationIndex];
-            if (!loc) return;
-            window.location.href = buildLocationShareUrl(loc);
+            if (!loc || !loc.id) return;
+            // Usar el ID real de Firestore evita cualquier colisión de slug/título.
+            // negocio.html acepta tanto ?lugar= como ?place= y resuelve primero por ID.
+            const url = new URL('negocio.html', window.location.href);
+            url.search = '';
+            url.hash = '';
+            url.searchParams.set('place', String(loc.id));
+            window.location.href = url.toString();
         }
 
         function openLocationFromUrl(locationReference) {
