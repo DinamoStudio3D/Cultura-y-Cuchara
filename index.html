@@ -3940,6 +3940,20 @@
         }
 
         let currentLocationIndex = 0;
+        let currentLocationId = null;
+        function getCurrentLocation() {
+            if (currentLocationId) {
+                const byId = locations.find(loc => String(loc.id) === String(currentLocationId));
+                if (byId) {
+                    const resolvedIndex = locations.findIndex(loc => String(loc.id) === String(currentLocationId));
+                    if (resolvedIndex >= 0) currentLocationIndex = resolvedIndex;
+                    return byId;
+                }
+            }
+            const fallback = locations[currentLocationIndex] || null;
+            if (fallback?.id) currentLocationId = fallback.id;
+            return fallback;
+        }
         let visitedLocations = safeReadJSON('cyc_visited_locations', []);
         let favoriteLocations = safeReadJSON('cyc_favorites', []);
         let passportMode = localStorage.getItem('cyc_passport_mode') || 'lojano';
@@ -4126,7 +4140,14 @@
                         const searchable=[location.category,location.tag,location.title,location.type].join(' ').toLowerCase();
                         if(isPublicContent(location) && !searchable.includes('motel')) nextLocations.push(location);
                     });
-                    if(nextLocations.length){locations=nextLocations;saveLocationsCache(nextLocations);}
+                    if(nextLocations.length){
+                        locations=nextLocations;
+                        if(currentLocationId){
+                            const selectedIndex=locations.findIndex(loc=>String(loc.id)===String(currentLocationId));
+                            if(selectedIndex>=0) currentLocationIndex=selectedIndex;
+                        }
+                        saveLocationsCache(nextLocations);
+                    }
                 }
                 categories=categories.filter(category=>!String(category.id+' '+category.name+' '+(category.nameEn||'')).toLowerCase().includes('motel'));
                 scheduleSubscriptionRefresh();
@@ -4136,7 +4157,7 @@
                 if(snapshot.metadata.fromCache&&!navigator.onLine)setLocationsSyncStatus('offline');else if(snapshot.empty)setLocationsSyncStatus(locations.length?'cached':'error');else setLocationsSyncStatus('ready');
             }, (error) => {
                 console.error("Firestore error:", error);
-                const cached=readLocationsCache();if(cached.length)locations=cached;
+                const cached=readLocationsCache();if(cached.length){locations=cached;if(currentLocationId){const selectedIndex=locations.findIndex(loc=>String(loc.id)===String(currentLocationId));if(selectedIndex>=0)currentLocationIndex=selectedIndex;}}
                 setLocationsSyncStatus(cached.length?'cached':'error');
                 renderEverything();
                 checkLiveEventsBanner();
@@ -4195,12 +4216,13 @@
             const url = new URL('negocio.html', window.location.href);
             url.search = '';
             url.hash = '';
-            url.searchParams.set('lugar', getLocationSlug(loc));
+            if (loc?.id) url.searchParams.set('place', String(loc.id));
+            else url.searchParams.set('lugar', getLocationSlug(loc));
             return url.toString();
         }
 
         function openBusinessPageForCurrent() {
-            const loc = locations[currentLocationIndex];
+            const loc = getCurrentLocation();
             if (!loc || !loc.id) return;
             // Usar el ID real de Firestore evita cualquier colisión de slug/título.
             // negocio.html acepta tanto ?lugar= como ?place= y resuelve primero por ID.
@@ -4232,13 +4254,13 @@
         }
 
         function openVerifiedReviewsForCurrent() {
-            const loc = locations[currentLocationIndex];
+            const loc = getCurrentLocation();
             if (!loc) return;
             window.location.href = 'opiniones.html?place=' + encodeURIComponent(loc.id);
         }
 
         async function shareCurrentLocationLink() {
-            const loc = locations[currentLocationIndex];
+            const loc = getCurrentLocation();
             if (!loc) return;
             const title = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
             const url = buildLocationShareUrl(loc);
@@ -4798,7 +4820,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         function openQrClaimForCurrent() {
-            const loc = locations[currentLocationIndex];
+            const loc = getCurrentLocation();
             if(!loc) return;
             openQrClaimModalForId(loc.id);
         }
@@ -4890,7 +4912,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         function toggleFavoriteCurrent(btn) {
-            const loc = locations[currentLocationIndex];
+            const loc = getCurrentLocation();
             if(!loc) return;
             const index = favoriteLocations.indexOf(loc.id);
             const icon = btn.querySelector('i');
@@ -4947,7 +4969,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             updateItineraryUI();
             renderTrendingUI();
             
-            const currentLoc = locations[currentLocationIndex];
+            const currentLoc = getCurrentLocation();
             if (currentLoc && currentLoc.id === localId) {
                 const previewFavIcon = document.getElementById('previewFav');
                 const previewBtn = document.getElementById('previewFavBtn');
@@ -5034,7 +5056,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 if(parentBtn) parentBtn.className = "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 text-brandGold border-brandGold/40 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
             }
             
-            const currentLoc = locations[currentLocationIndex];
+            const currentLoc = getCurrentLocation();
             if(currentLoc && currentLoc.id === id) {
                 const previewFavIcon = document.getElementById('previewFav');
                 const previewBtn = document.getElementById('previewFavBtn');
@@ -6580,9 +6602,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function selectLocation(index, shouldCenterMap = true) {
             stopAudioGuide();
-            currentLocationIndex = index;
             const loc = locations[index];
             if(!loc) return;
+            currentLocationIndex = index;
+            currentLocationId = loc.id || null;
             trackBusinessEvent(loc.id,'view');
             maybeShowPlacePromotion(loc);
             const restaurantMenu=restaurantMenuFor(loc),menuButton=document.getElementById('previewRestaurantMenuBtn');
@@ -6702,7 +6725,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             return normalized.includes('mama lola')?{title:'Menú demostrativo · Mamá Lola',titleEn:'Sample menu · Mamá Lola',dishes:mamaLolaDemoDishes(),demo:true}:null;
         }
         function commerceConfigFor(loc){const commerce=loc?.commerce||{},phone=String(commerce.whatsapp||loc?.subscription?.contactWhatsapp||'').replace(/\D/g,'');return{phone,orderActive:commerce.orderActive===true&&!!phone,reservationActive:commerce.reservationActive===true&&!!phone,orderMessage:commerce.orderMessage||'Hola, deseo realizar un pedido en {negocio}.',orderMessageEn:commerce.orderMessageEn||'Hello, I would like to place an order at {negocio}.',reservationMessage:commerce.reservationMessage||'Hola, deseo reservar una mesa en {negocio}. Fecha: ___ Hora: ___ Personas: ___',reservationMessageEn:commerce.reservationMessageEn||'Hello, I would like to reserve a table at {negocio}. Date: ___ Time: ___ Guests: ___'};}
-        function openCommerceWhatsapp(type){const loc=locations[currentLocationIndex];if(!loc)return;const commerce=commerceConfigFor(loc),isReservation=type==='reservation',enabled=isReservation?commerce.reservationActive:commerce.orderActive;if(!enabled)return;trackBusinessEvent(loc.id,'whatsapp');const template=currentLang==='en'?(isReservation?commerce.reservationMessageEn:commerce.orderMessageEn):(isReservation?commerce.reservationMessage:commerce.orderMessage),business=(currentLang==='en'&&loc.titleEn)||loc.title||'',message=String(template||'').replace(/\{negocio\}/gi,business);window.open(`https://wa.me/${commerce.phone}?text=${encodeURIComponent(message)}`,'_blank','noopener');}
+        function openCommerceWhatsapp(type){const loc=getCurrentLocation();if(!loc)return;const commerce=commerceConfigFor(loc),isReservation=type==='reservation',enabled=isReservation?commerce.reservationActive:commerce.orderActive;if(!enabled)return;trackBusinessEvent(loc.id,'whatsapp');const template=currentLang==='en'?(isReservation?commerce.reservationMessageEn:commerce.orderMessageEn):(isReservation?commerce.reservationMessage:commerce.orderMessage),business=(currentLang==='en'&&loc.titleEn)||loc.title||'',message=String(template||'').replace(/\{negocio\}/gi,business);window.open(`https://wa.me/${commerce.phone}?text=${encodeURIComponent(message)}`,'_blank','noopener');}
         function renderCommerceActions(loc){const commerce=commerceConfigFor(loc),any=commerce.orderActive||commerce.reservationActive;const container=document.getElementById('previewCommerceActions'),order=document.getElementById('previewOrderBtn'),reservation=document.getElementById('previewReservationBtn');container?.classList.toggle('hidden',!any);if(container)container.classList.toggle('grid',any);if(order){order.classList.toggle('hidden',!commerce.orderActive);order.classList.toggle('flex',commerce.orderActive);}if(reservation){reservation.classList.toggle('hidden',!commerce.reservationActive);reservation.classList.toggle('flex',commerce.reservationActive);}const orderLabel=document.getElementById('previewOrderLabel'),reservationLabel=document.getElementById('previewReservationLabel');if(orderLabel)orderLabel.textContent=currentLang==='en'?'Order now':'Pedir ahora';if(reservationLabel)reservationLabel.textContent=currentLang==='en'?'Reserve a table':'Reservar mesa';}
         function renderMenuCommerceActions(loc){const commerce=commerceConfigFor(loc),any=commerce.orderActive||commerce.reservationActive,container=document.getElementById('restaurantMenuCommerceActions'),order=document.getElementById('restaurantMenuOrderBtn'),reservation=document.getElementById('restaurantMenuReservationBtn');container?.classList.toggle('hidden',!any);if(container)container.classList.toggle('grid',any);if(order){order.classList.toggle('hidden',!commerce.orderActive);order.classList.toggle('flex',commerce.orderActive);}if(reservation){reservation.classList.toggle('hidden',!commerce.reservationActive);reservation.classList.toggle('flex',commerce.reservationActive);}const orderLabel=document.getElementById('restaurantMenuOrderLabel'),reservationLabel=document.getElementById('restaurantMenuReservationLabel');if(orderLabel)orderLabel.textContent=currentLang==='en'?'Order via WhatsApp':'Pedir por WhatsApp';if(reservationLabel)reservationLabel.textContent=currentLang==='en'?'Reserve a table':'Reservar mesa';}
         function menuDishFallbackDescription(item,en=false){const key=String(item?.name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),samples={repe:['Sopa lojana cremosa preparada con guineo verde, leche, quesillo y un toque de cilantro.','Creamy Loja soup made with green banana, milk, fresh cheese and a touch of coriander.'],cecina:['Carne de cerdo sazonada y asada, servida con yuca, curtido de cebolla y sabores tradicionales.','Seasoned grilled pork served with cassava, pickled onion and traditional flavors.'],fritada:['Cerdo dorado lentamente, acompañado con mote, maduro, tostado y curtido fresco.','Slow-cooked golden pork served with hominy, sweet plantain, toasted corn and fresh pickled onion.'],cafe:['Café lojano aromático, preparado al momento para resaltar sus notas suaves y su sabor especial.','Aromatic Loja coffee freshly brewed to highlight its smooth notes and distinctive flavor.'],horchata:['Infusión refrescante de hierbas y flores tradicionales de Loja, servida fría o caliente.','Refreshing infusion of traditional Loja herbs and flowers, served hot or cold.'],quesadilla:['Dulce lojano suave y esponjoso, elaborado con quesillo y perfecto para acompañar el café.','Soft and fluffy Loja sweet made with fresh cheese, perfect with a cup of coffee.']};const match=Object.keys(samples).find(word=>key.includes(word));return match?samples[match][en?1:0]:(en?'A special house preparation made with carefully selected ingredients.':'Una preparación especial de la casa elaborada con ingredientes seleccionados.');}
@@ -6720,7 +6743,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const categories=document.getElementById('restaurantMenuCategories');
             if(categories) categories.scrollIntoView({behavior:'smooth',block:'nearest'});
         }
-        function openRestaurantMenu(){const loc=locations[currentLocationIndex];if(loc)trackBusinessEvent(loc.id,'product');currentRestaurantMenu=restaurantMenuFor(loc);if(!currentRestaurantMenu)return;renderRestaurantMenu();renderMenuCommerceActions(loc);openModal('restaurantMenuModal');}
+        function openRestaurantMenu(){const loc=getCurrentLocation();if(loc)trackBusinessEvent(loc.id,'product');currentRestaurantMenu=restaurantMenuFor(loc);if(!currentRestaurantMenu)return;renderRestaurantMenu();renderMenuCommerceActions(loc);openModal('restaurantMenuModal');}
 
         let immersiveGalleryImages = [];
         let immersiveGalleryIndex = 0;
@@ -6748,7 +6771,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function moveImmersiveGallery(direction) { renderImmersiveGallery(immersiveGalleryIndex + direction); }
 
         function openMenuGallery() {
-            const loc = locations[currentLocationIndex]; if(!loc) return;
+            const loc = getCurrentLocation(); if(!loc) return;
             const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
             document.getElementById('galleryTitle').textContent = locTitle;
             immersiveGalleryImages = (Array.isArray(loc.gallery) ? loc.gallery : []).filter(item => item?.img).map(item => ({ img: item.img, title: item.title || locTitle }));
@@ -6771,7 +6794,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         async function shareGalleryImage() {
-            const loc=locations[currentLocationIndex];if(!loc)return;
+            const loc=getCurrentLocation();if(!loc)return;
             const title=document.getElementById('galleryTitle').textContent;
             const pageUrl=buildLocationShareUrl(loc);
             const data={title,text:currentLang==='en'?`Discover ${title} on Visita Loja`:`Descubre ${title} en Visita Loja`,url:pageUrl};
@@ -7191,7 +7214,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         function toggleLocationAudioGuide() {
-            const location = locations[currentLocationIndex];
+            const location = getCurrentLocation();
             const button = document.getElementById('previewAudioGuideBtn');
             if (!location || !button) return;
             const title = currentLang === 'en' && location.titleEn ? location.titleEn : location.title;
