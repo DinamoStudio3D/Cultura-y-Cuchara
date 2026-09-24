@@ -1,0 +1,27 @@
+{
+  "id": "./",
+  "name": "Visita Loja",
+  "short_name": "Visita Loja",
+  "description": "Ruta gastronómica, cultural y turística interactiva de Loja.",
+  "lang": "es-EC",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121212",
+  "theme_color": "#EA580C",
+  "icons": [
+    {
+      "src": "./visita-loja-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./visita-loja-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
