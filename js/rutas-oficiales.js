@@ -47,9 +47,10 @@
       </div>
       <div class="space-y-2">${publishedRoutes.map((route) => `<article class="bg-white border border-orange-100 rounded-xl p-3 shadow-sm">
         <div class="flex gap-3">
-          ${route.image ? `<img src="${escapeHtml(route.image)}" alt="" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" loading="lazy" decoding="async">` : `<div class="w-16 h-16 rounded-xl bg-brandDark text-brandGold grid place-items-center flex-shrink-0"><i class="fa-solid fa-route text-xl"></i></div>`}
+          ${route.image ? `<img src="${escapeHtml(route.image)}" alt="" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" loading="lazy" decoding="async" onerror="this.style.display='none'">` : `<div class="w-16 h-16 rounded-xl bg-brandDark text-brandGold grid place-items-center flex-shrink-0"><i class="fa-solid fa-route text-xl"></i></div>`}
           <div class="min-w-0 flex-1"><h5 class="font-black text-brandDark text-sm">${escapeHtml(route.name || 'Ruta oficial')}</h5><p class="text-[11px] text-gray-500 mt-1 line-clamp-2">${escapeHtml(route.description || '')}</p><div class="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-[10px] font-bold text-gray-500">${route.duration ? `<span><i class="fa-regular fa-clock mr-1 text-brandGold"></i>${escapeHtml(route.duration)}</span>` : ''}<span><i class="fa-solid fa-location-dot mr-1 text-brandGold"></i>${route.stops.length} parada${route.stops.length === 1 ? '' : 's'}</span></div></div>
         </div>
+        <button type="button" data-use-official-route="${escapeHtml(route.id)}" class="mt-3 w-full rounded-xl bg-brandDark text-white py-2.5 text-xs font-black hover:bg-black transition"><i class="fa-solid fa-route mr-2 text-brandGold"></i>Usar esta ruta</button>
       </article>`).join('')}</div>
     </section>`;
   }
@@ -63,6 +64,29 @@
     return true;
   }
 
+  function useOfficialRoute(routeId) {
+    const route = publishedRoutes.find((item) => item.id === String(routeId || ''));
+    if (!route) return;
+    if (!Array.isArray(window.locations) && typeof locations === 'undefined') {
+      if (typeof showToast === 'function') showToast('No se pudieron cargar las paradas de esta ruta.');
+      return;
+    }
+    const available = typeof locations !== 'undefined' ? locations : window.locations;
+    const validIds = route.stops.map((stop) => stop.id).filter((id) => available.some((loc) => String(loc.id) === String(id)));
+    if (!validIds.length) {
+      if (typeof showToast === 'function') showToast('Esta ruta no tiene paradas disponibles actualmente.');
+      return;
+    }
+    favoriteLocations.splice(0, favoriteLocations.length, ...validIds);
+    if (typeof activeItineraryIndex !== 'undefined') activeItineraryIndex = 0;
+    if (typeof itineraryJourneyActive !== 'undefined') itineraryJourneyActive = false;
+    if (typeof persistFavorites === 'function') persistFavorites();
+    if (typeof saveItineraryJourneyState === 'function') saveItineraryJourneyState();
+    if (typeof updateItineraryUI === 'function') updateItineraryUI();
+    renderOfficialRoutes();
+    if (typeof showToast === 'function') showToast(`Ruta “${route.name || 'oficial'}” agregada a Mi Ruta.`);
+  }
+
   async function loadPublishedRoutes() {
     const snapshot = await getDb().collection(COLLECTION).where('status', '==', 'published').get();
     publishedRoutes = snapshot.docs.map(normalizeRoute).sort((a, b) => a.name.localeCompare(b.name, 'es'));
@@ -73,7 +97,12 @@
 
   function getPublishedRoutes() { return publishedRoutes.slice(); }
 
-  window.VisitaLojaOfficialRoutes = Object.freeze({ load: loadPublishedRoutes, getAll: getPublishedRoutes, render: renderOfficialRoutes });
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-use-official-route]');
+    if (button) useOfficialRoute(button.dataset.useOfficialRoute);
+  });
+
+  window.VisitaLojaOfficialRoutes = Object.freeze({ load: loadPublishedRoutes, getAll: getPublishedRoutes, render: renderOfficialRoutes, use: useOfficialRoute });
 
   loadPublishedRoutes().catch((error) => console.error('No se pudieron cargar las rutas oficiales publicadas:', error));
 })();
