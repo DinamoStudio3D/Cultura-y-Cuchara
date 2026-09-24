@@ -16,6 +16,17 @@
     return String(value || '').replace(/[&<>'"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
   }
 
+  function safeImageUrl(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    try {
+      const url = new URL(raw, window.location.href);
+      return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+    } catch (_) {
+      return '';
+    }
+  }
+
   function normalizeStops(stops) {
     if (!Array.isArray(stops)) return [];
     return stops.map((stop, index) => typeof stop === 'string'
@@ -32,7 +43,7 @@
       name: String(data.name || '').trim(),
       description: String(data.description || '').trim(),
       duration: String(data.duration || '').trim(),
-      image: String(data.image || '').trim(),
+      image: safeImageUrl(data.image),
       status: data.status === 'published' ? 'published' : 'draft',
       stops: normalizeStops(data.stops)
     };
@@ -47,7 +58,7 @@
       </div>
       <div class="space-y-2">${publishedRoutes.map((route) => `<article class="bg-white border border-orange-100 rounded-xl p-3 shadow-sm">
         <div class="flex gap-3">
-          ${route.image ? `<img src="${escapeHtml(route.image)}" alt="" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" loading="lazy" decoding="async" onerror="this.style.display='none'">` : `<div class="w-16 h-16 rounded-xl bg-brandDark text-brandGold grid place-items-center flex-shrink-0"><i class="fa-solid fa-route text-xl"></i></div>`}
+          ${route.image ? `<img src="${escapeHtml(route.image)}" alt="Portada de ${escapeHtml(route.name || 'ruta oficial')}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" loading="lazy" decoding="async" onerror="this.style.display='none'">` : `<div class="w-16 h-16 rounded-xl bg-brandDark text-brandGold grid place-items-center flex-shrink-0"><i class="fa-solid fa-route text-xl"></i></div>`}
           <div class="min-w-0 flex-1"><h5 class="font-black text-brandDark text-sm">${escapeHtml(route.name || 'Ruta oficial')}</h5><p class="text-[11px] text-gray-500 mt-1 line-clamp-2">${escapeHtml(route.description || '')}</p><div class="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-[10px] font-bold text-gray-500">${route.duration ? `<span><i class="fa-regular fa-clock mr-1 text-brandGold"></i>${escapeHtml(route.duration)}</span>` : ''}<span><i class="fa-solid fa-location-dot mr-1 text-brandGold"></i>${route.stops.length} parada${route.stops.length === 1 ? '' : 's'}</span></div></div>
         </div>
         <button type="button" data-use-official-route="${escapeHtml(route.id)}" class="mt-3 w-full rounded-xl bg-brandDark text-white py-2.5 text-xs font-black hover:bg-black transition"><i class="fa-solid fa-route mr-2 text-brandGold"></i>Usar esta ruta</button>
@@ -84,7 +95,9 @@
     if (typeof saveItineraryJourneyState === 'function') saveItineraryJourneyState();
     if (typeof updateItineraryUI === 'function') updateItineraryUI();
     renderOfficialRoutes();
-    if (typeof showToast === 'function') showToast(`Ruta “${route.name || 'oficial'}” agregada a Mi Ruta.`);
+    const skipped = route.stops.length - validIds.length;
+    const suffix = skipped > 0 ? ` ${skipped} parada${skipped === 1 ? '' : 's'} no disponible${skipped === 1 ? '' : 's'} fue${skipped === 1 ? '' : 'ron'} omitida${skipped === 1 ? '' : 's'}.` : '';
+    if (typeof showToast === 'function') showToast(`Ruta “${route.name || 'oficial'}” agregada a Mi Ruta.${suffix}`);
   }
 
   async function loadPublishedRoutes() {
