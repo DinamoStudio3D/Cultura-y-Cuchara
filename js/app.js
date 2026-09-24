@@ -27,6 +27,6 @@
   loadStylesheet('css/mobile-ui.css');
   loadScript('js/mobile-ui.js').catch(console.error);
 
-  // mi-ruta.js se activará cuando retiremos del index.html la implementación
-  // equivalente, evitando ejecutar dos versiones de la misma lógica.
+  // mi-ruta.js se activará únicamente después de retirar del index.html
+  // su implementación equivalente, para evitar declaraciones duplicadas.
 })();
