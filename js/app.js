@@ -26,5 +26,7 @@
 
   loadStylesheet('css/mobile-ui.css');
   loadScript('js/mobile-ui.js').catch(console.error);
-  loadScript('js/mi-ruta.js').catch(console.error);
+  loadScript('js/mi-ruta.js')
+    .then(() => loadScript('js/rutas-oficiales.js'))
+    .catch(console.error);
 })();
