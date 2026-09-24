@@ -127,6 +127,7 @@
 </div></div>
 <div class="nav-group collapsed"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="false"><span>Contenido de la web</span><i class="fa-solid fa-chevron-down"></i></button><div class="nav-items">
 <button data-nav-item id="eventsNavBtn" type="button" onclick="showAdminModule('events')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-calendar w-6"></i>Eventos y agenda</button>
+<button data-nav-item id="routesNavBtn" type="button" onclick="showAdminModule('routes')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-route w-6"></i>Rutas turísticas</button>
 <button data-nav-item id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-bullhorn w-6"></i>Campañas y festivales</button>
 <button data-nav-item id="storiesNavBtn" type="button" onclick="showAdminModule('stories')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-book-open-reader w-6"></i>Historias de Loja</button>
 <button data-nav-item id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y podcast</button>
@@ -763,6 +764,11 @@
                     <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Puntos históricos</h3><span id="timeCount" class="text-xs text-gray-400">0 puntos</span></div><div id="timeList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando puntos…</p></div>
                 </section>
 
+                <section id="routesModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6"><div><h2 class="text-2xl font-black mt-1">Rutas turísticas</h2><p class="text-sm text-gray-400 mt-1">Crea recorridos oficiales usando las paradas existentes de Visita Loja.</p></div><button id="newTouristRouteBtn" type="button" class="bg-blue-500 hover:bg-blue-400 text-white rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nueva ruta</button></div>
+                    <div id="touristRoutesList" class="space-y-3"></div>
+                </section>
+
                 <section id="entrepreneursModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6"><div><p class="text-lime-400 text-xs font-bold uppercase tracking-widest">Módulo 9</p><h2 class="text-2xl font-black mt-1">Emprendedores</h2><p class="text-sm text-gray-400 mt-1">Publica negocios y facilita el contacto directo por WhatsApp.</p></div><button type="button" onclick="resetEntrepreneurForm()" class="bg-lime-500 hover:bg-lime-400 text-black rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nuevo emprendimiento</button></div>
                     <form id="entrepreneurForm" class="space-y-5 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-7">
@@ -992,7 +998,7 @@ document.addEventListener('change',event=>{if(adminFieldChangesContent(event.tar
 document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
 window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
-const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Apariencia y Marca',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
+const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',routes:'Rutas turísticas',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Apariencia y Marca',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function toggleAdminNavGroup(button){const group=button.closest('.nav-group'),collapsed=!group.classList.contains('collapsed');group.classList.toggle('collapsed',collapsed);button.setAttribute('aria-expanded',String(!collapsed));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('[data-nav-item]').forEach(item=>{const show=!query||item.textContent.toLowerCase().includes(query);item.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);if(query&&visible){group.classList.remove('collapsed');group.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}});}
@@ -1075,7 +1081,7 @@ function showAdminModule(moduleName) {
     if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
-    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'routes', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('auditNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'audit' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('adminsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'admins' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -1088,6 +1094,7 @@ function showAdminModule(moduleName) {
     document.getElementById('placesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'places' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('applicationsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'applications' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('eventsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'events' ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('routesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'routes' ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('storiesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'stories' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('chabaquitoNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'chabaquito' ? 'bg-orange-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('passportNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'passport' ? 'bg-emerald-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -2513,5 +2520,6 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
     finally{button.disabled=false;}
 });
 </script>
+<script src="js/admin-rutas.js"></script>
 </body>
 </html>
