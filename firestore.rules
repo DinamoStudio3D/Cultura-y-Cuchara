@@ -189,6 +189,12 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    match /touristRoutes/{routeId} {
+      allow read: if isViveLojaAdmin()
+        || resource.data.status == 'published';
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
     function canMerchantEditLocale(documentId) {
       return isAssignedVisitMerchant(documentId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
