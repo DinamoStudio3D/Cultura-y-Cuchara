@@ -430,76 +430,11 @@
             #pasaporteModal > div > .p-6 { padding: 1rem; }
 
             /* Flotantes móviles: compactos para no tapar contenido */
-            .fab-whatsapp {
-                right: max(10px, env(safe-area-inset-right));
-                bottom: calc(10px + env(safe-area-inset-bottom));
-                animation: none !important;
-                transform: scale(.84);
-                transform-origin: bottom right;
-            }
 
             /* Chabaquito se convierte en una burbuja compacta de asistente */
-            .web-mascot {
-                width: 56px;
-                height: 56px;
-                left: max(10px, env(safe-area-inset-left));
-                bottom: calc(10px + env(safe-area-inset-bottom));
-                border-radius: 9999px;
-                background: #fff;
-                border: 2px solid #EA580C;
-                box-shadow: 0 7px 20px rgba(0,0,0,.25);
-                overflow: visible;
-            }
-            .web-mascot > button.block {
-                width: 52px !important;
-                height: 52px !important;
-                border-radius: 9999px;
-                overflow: hidden;
-                display: grid !important;
-                place-items: center;
-                background: #fff;
-            }
-            .web-mascot-character {
-                width: 48px !important;
-                height: 48px !important;
-                object-fit: contain;
-                animation: none !important;
-                filter: none;
-            }
-            .web-mascot-close {
-                width: 20px;
-                height: 20px;
-                right: -7px;
-                top: -7px;
-                font-size: 9px;
-                z-index: 3;
-            }
-            .web-mascot-bubble {
-                left: 48px;
-                bottom: 48px;
-                width: min(210px, calc(100vw - 86px));
-                max-height: 36vh;
-                overflow-y: auto;
-                font-size: 11px;
-                padding: 9px 11px;
-            }
-            .web-mascot-restore {
-                left: max(10px, env(safe-area-inset-left));
-                bottom: calc(10px + env(safe-area-inset-bottom));
-                width: 48px;
-                height: 48px;
-            }
 
             /* Registro: sigue visible, pero ocupa bastante menos espacio en móvil */
-            #accountFloatingInvite {
-                right: max(8px, env(safe-area-inset-right)) !important;
-                bottom: calc(72px + env(safe-area-inset-bottom)) !important;
-                transform: scale(.78);
-                transform-origin: bottom right;
-            }
-            #accountFloatingInvite:hover { transform: scale(.82); }
 
-            #toast { bottom: calc(5rem + env(safe-area-inset-bottom)) !important; }
 
             .grid { min-width: 0; }
             table { min-width: 620px; }
@@ -512,12 +447,6 @@
             #mapa .lg\:col-span-2 { height: 340px !important; min-height: 340px; }
             #restaurantMenuGrid { padding: .55rem !important; }
             #storyModal > article > header { height: 12rem; }
-            .web-mascot { width: 52px; height: 52px; }
-            .web-mascot > button.block { width: 48px !important; height: 48px !important; }
-            .web-mascot-character { width: 44px !important; height: 44px !important; }
-            .web-mascot-bubble { left: 44px; bottom: 44px; width: min(196px, calc(100vw - 78px)); }
-            #accountFloatingInvite { transform: scale(.72); }
-            #accountFloatingInvite:hover { transform: scale(.76); }
         }
 
     
