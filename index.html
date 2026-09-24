@@ -627,19 +627,10 @@
                 </button>
             </div>
 
-            <!-- Acceso directo a Mi Ruta en móvil/tablet: siempre visible fuera del menú -->
-            <div class="2xl:hidden ml-auto flex items-center gap-2">
-                <button id="mobileItineraryButton" type="button" onclick="openModal('itineraryModal')" class="min-h-[44px] bg-brandGold/20 text-brandGold border border-brandGold/50 px-3 py-2 rounded-xl font-bold hover:bg-brandGold hover:text-white transition-all text-xs flex items-center gap-2 relative shadow-warm-glow whitespace-nowrap" aria-label="Abrir Mi Ruta">
-                    <i class="fa-solid fa-route"></i>
-                    <span data-i18n="menuItinerary">Mi Ruta</span>
-                    <span id="mobileItineraryBadge" class="bg-red-500 text-white text-[9px] min-w-[18px] h-[18px] px-1 rounded-full hidden items-center justify-center">0</span>
-                </button>
-
-                <!-- Hamburger Button for Mobile / Tablet -->
-                <button id="mobileMenuButton" type="button" onclick="toggleMobileMenu()" class="text-white text-xl p-2 relative" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-            </div>
+            <!-- Hamburger Button for Mobile / Tablet -->
+            <button id="mobileMenuButton" type="button" onclick="toggleMobileMenu()" class="2xl:hidden text-white text-xl p-2 relative" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
 
         <!-- Single Responsive Mobile / Tablet Dropdown Menu -->
@@ -668,8 +659,10 @@
                 </select>
             </div>
             <button id="lowDataToggleMobile" type="button" onclick="toggleLowDataMode()" class="w-full mt-2 border border-emerald-500/30 text-emerald-200 bg-emerald-500/10 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-leaf"></i><span class="low-data-label">Modo ahorro de datos</span></button>
-            <button type="button" onclick="openModal('itineraryModal'); toggleMobileMenu()" class="w-full mt-2 bg-brandGold text-white font-bold py-2.5 rounded-xl text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-2">
-                <i class="fa-solid fa-mug-hot"></i> <span data-i18n="menuItinerary">Mi Ruta Guardada</span>
+            <button id="mobileItineraryButton" type="button" onclick="openModal('itineraryModal'); toggleMobileMenu()" class="w-full mt-2 bg-brandGold text-white font-bold py-2.5 rounded-xl text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-2 relative">
+                <i class="fa-solid fa-route"></i>
+                <span data-i18n="menuItinerary">Mi Ruta</span>
+                <span id="mobileItineraryBadge" class="hidden min-w-5 h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-black items-center justify-center" aria-label="Paradas guardadas">0</span>
             </button>
         </div>
     </nav>
@@ -4997,7 +4990,6 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             renderVisitorExperience();
             const container = document.getElementById('itineraryListContainer');
             const badge = document.getElementById('itineraryBadge');
-            const mobileBadge = document.getElementById('mobileItineraryBadge');
             const navBadge = document.getElementById('navStampBadge');
             if(!container) return;
             container.innerHTML = '';
@@ -5011,22 +5003,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     </div>
                 `;
                 if(badge) badge.classList.add('hidden');
-                if(mobileBadge) {
-                    mobileBadge.classList.add('hidden');
-                    mobileBadge.classList.remove('flex');
-                    mobileBadge.innerText = '0';
-                }
                 return;
             }
 
             if(badge) {
                 badge.innerText = favoriteLocations.length;
                 badge.classList.remove('hidden');
-            }
-            if(mobileBadge) {
-                mobileBadge.innerText = favoriteLocations.length;
-                mobileBadge.classList.remove('hidden');
-                mobileBadge.classList.add('flex');
             }
 
             favoriteLocations.forEach((id, idx) => {
@@ -7975,5 +7957,41 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             </a>
         </div>
     </section>
+
+<script>
+/* Sincroniza el contador móvil de Mi Ruta con el contador existente, sin duplicar la lógica de rutas. */
+(() => {
+    const syncMobileItineraryBadge = () => {
+        const desktopBadge = document.getElementById('itineraryBadge');
+        const mobileBadge = document.getElementById('mobileItineraryBadge');
+        if (!desktopBadge || !mobileBadge) return;
+
+        const count = Number.parseInt((desktopBadge.textContent || '0').trim(), 10) || 0;
+        mobileBadge.textContent = String(count);
+        mobileBadge.classList.toggle('hidden', count < 1);
+        mobileBadge.classList.toggle('inline-flex', count > 0);
+    };
+
+    const start = () => {
+        syncMobileItineraryBadge();
+        const desktopBadge = document.getElementById('itineraryBadge');
+        if (!desktopBadge) return;
+        new MutationObserver(syncMobileItineraryBadge).observe(desktopBadge, {
+            childList: true,
+            characterData: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+    } else {
+        start();
+    }
+})();
+</script>
+
 </body>
 </html>
