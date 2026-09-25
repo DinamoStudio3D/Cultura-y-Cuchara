@@ -1,10 +1,17 @@
-/* Visita Loja — comportamiento móvil
- * Extracción incremental preparada en rama de refactor.
- * Todavía no se carga desde index.html.
- */
-
+/* Visita Loja — comportamiento móvil. */
 (function () {
   'use strict';
+
+  function isEnglish() {
+    return typeof currentLang !== 'undefined' && currentLang === 'en';
+  }
+
+  function updateMobileAccessibility() {
+    if (!window.matchMedia('(max-width: 767px)').matches) return;
+    const menuButton = document.getElementById('mobileMenuButton');
+    if (!menuButton) return;
+    menuButton.setAttribute('aria-label', isEnglish() ? 'Open menu' : 'Abrir menú');
+  }
 
   function initMobileUi() {
     if (!window.matchMedia('(max-width: 767px)').matches) return;
@@ -14,9 +21,7 @@
     const bubble = document.getElementById('webMascotBubble');
     if (bubble) bubble.classList.add('is-quiet');
 
-    // Mantiene accesible el menú hamburguesa sin crear nuevos flotantes.
-    const menuButton = document.getElementById('mobileMenuButton');
-    if (menuButton) menuButton.setAttribute('aria-label', menuButton.getAttribute('aria-label') || 'Abrir menú');
+    updateMobileAccessibility();
   }
 
   if (document.readyState === 'loading') {
@@ -24,4 +29,6 @@
   } else {
     initMobileUi();
   }
+
+  window.addEventListener('languagechange', updateMobileAccessibility);
 })();
