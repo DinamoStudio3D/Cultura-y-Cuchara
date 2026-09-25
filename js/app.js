@@ -24,6 +24,17 @@
     });
   }
 
+  // Este bloque de contacto/social inferior ya no forma parte del diseño de Visita Loja.
+  function removeLegacyContactBlock() {
+    document.querySelector('section[aria-label="Contacto de Visita Loja"]')?.remove();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', removeLegacyContactBlock, { once: true });
+  } else {
+    removeLegacyContactBlock();
+  }
+
   loadStylesheet('css/mobile-ui.css');
   loadScript('js/mobile-ui.js').catch(console.error);
   loadScript('js/mi-ruta.js')
