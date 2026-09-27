@@ -79,7 +79,7 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
 
     const now = Timestamp.now();
     const newCount = Number(counter?.visitCount || 0) + 1;
-    const target = Math.max(10, Number(program?.targetVisits || 10));
+    const target = Math.max(1, Number(program?.targetVisits || 10));
     const oldCycles = Number(counter?.rewardCycles || 0);
     const newCycle = Math.floor(newCount / target);
     const earned = Boolean(program && program.active !== false && newCycle > oldCycles);
@@ -130,7 +130,7 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
     if (stampRef) tx.delete(stampRef);
     if (rewardRef && rewardSnap?.exists) { tx.delete(rewardRef); if (programSnap.exists) tx.update(programRef, { claimedCount: FieldValue.increment(-1), updatedAt: now }); }
     tx.create(auditRef(), { action: "loyalty_stamp_reversed", actorUid: merchant.uid, actorEmail: merchant.email, actorName: merchant.businessName || "", userId: visit.userId, placeId: visit.placeId, requestId, purchaseAmount: Number(visit.purchaseAmount || 0), receiptRef: visit.receiptRef || "", createdAt: now });
-    return { visitCount: Math.max(0, Number(visit.previousVisitCount || 0)), target: Math.max(10, Number(programSnap.data()?.targetVisits || 10)) };
+    return { visitCount: Math.max(0, Number(visit.previousVisitCount || 0)), target: Math.max(1, Number(programSnap.data()?.targetVisits || 10)) };
   });
 });
 
