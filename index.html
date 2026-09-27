@@ -3127,25 +3127,32 @@
             }
         }
 
-        async function syncSecurePassportStamps(user) {
-            if (!user || !db) return;
-            try {
-                const snapshot = await db.collection('securePassportStamps').where('userId', '==', user.uid).get();
-                const secureIds = snapshot.docs.map(doc => doc.data().placeId).filter(Boolean);
-                if (secureIds.length) {
-                    visitedLocations = [...new Set([...visitedLocations, ...secureIds])];
+        let passportStampUnsubscribe = null;
+        function syncSecurePassportStamps(user) {
+            if (passportStampUnsubscribe) passportStampUnsubscribe();
+            return new Promise((resolve, reject) => {
+                let initialized = false;
+                passportStampUnsubscribe = db.collection('securePassportStamps').where('userId', '==', user.uid).onSnapshot(snapshot => {
+                    if (visitorAuth.currentUser?.uid !== user.uid) return;
+                    visitedLocations = [...new Set(snapshot.docs.map(doc => doc.data().placeId).filter(Boolean))];
                     localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
                     updatePassportUI();
-                }
-            } catch (error) {
-                console.warn('No se pudieron sincronizar los sellos seguros:', error);
-            }
+                    if (!initialized) { initialized = true; resolve(); }
+                }, error => {
+                    if (!initialized) { initialized = true; reject(error); }
+                    console.warn('No se pudieron sincronizar los sellos seguros:', error);
+                });
+            });
         }
 
         async function handleVisitorAuthState(user) {
             currentVisitorProfile = null;
             updateVisitorAccountLabels(user);
             if (!user || !db) {
+                if (passportStampUnsubscribe) { passportStampUnsubscribe(); passportStampUnsubscribe = null; }
+                visitedLocations = [];
+                localStorage.removeItem('cyc_visited_locations');
+                updatePassportUI();
                 showVisitorAccountView('accountSignedOut');
                 return;
             }
