@@ -1,6 +1,28 @@
 {
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "visita-loja.vercel.app"
+        }
+      ],
+      "destination": "https://www.visitaloja.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "cultura-y-cuchara.vercel.app"
+        }
+      ],
+      "destination": "https://www.visitaloja.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/index.html",
       "destination": "/",
       "permanent": true
