@@ -26,12 +26,36 @@ function moveItineraryStop(id, direction) {
     updateItineraryUI();
 }
 
-function itineraryDirectionsUrl(loc) {
+function itineraryLocationTarget(loc) {
     const lat = Number(loc?.lat), lng = Number(loc?.lng);
-    if (Number.isFinite(lat) && Number.isFinite(lng)) {
-        return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${lat},${lng}`)}`;
+    if (Number.isFinite(lat) && Number.isFinite(lng)) return `${lat},${lng}`;
+    return loc?.address || loc?.title || 'Loja, Ecuador';
+}
+
+function itineraryDirectionsUrl(loc) {
+    const target = itineraryLocationTarget(loc);
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(target)}`;
+}
+
+function fullItineraryDirectionsUrl() {
+    const stops = favoriteLocations.map(id => locations.find(l => l.id === id)).filter(Boolean);
+    if (!stops.length) return '';
+    if (stops.length === 1) return itineraryDirectionsUrl(stops[0]);
+    const origin = itineraryLocationTarget(stops[0]);
+    const destination = itineraryLocationTarget(stops[stops.length - 1]);
+    const waypoints = stops.slice(1, -1).map(itineraryLocationTarget).join('|');
+    let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+    if (waypoints) url += `&waypoints=${encodeURIComponent(waypoints)}`;
+    return url;
+}
+
+function openFullItineraryRoute() {
+    if (!favoriteLocations.length) {
+        showToast(itineraryText('Agrega al menos una parada a Mi Ruta.','Add at least one stop to My Route.'));
+        return;
     }
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc?.address || loc?.title || 'Loja, Ecuador')}`;
+    const url = fullItineraryDirectionsUrl();
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 function startItineraryJourney() {
@@ -98,6 +122,9 @@ function updateItineraryUI() {
             ? `<i class="fa-solid fa-location-arrow"></i><span>${itineraryText('Continuar recorrido','Continue route')}</span>`
             : `<i class="fa-solid fa-route"></i><span>${itineraryText('Iniciar recorrido','Start route')}</span>`;
     }
+
+    const validStops = favoriteLocations.map(id => locations.find(l => l.id === id)).filter(Boolean);
+    container.innerHTML += `<section class="rounded-2xl border border-brandGold/30 bg-orange-50/70 p-4"><div class="flex items-center justify-between gap-3"><div><p class="text-[10px] uppercase tracking-[.18em] text-brandGold font-black">${itineraryText('Tu recorrido','Your route')}</p><p class="text-sm font-black text-brandDark mt-1">${validStops.length} ${validStops.length === 1 ? itineraryText('parada','stop') : itineraryText('paradas','stops')} ${itineraryText('en orden','in order')}</p></div><i class="fa-solid fa-map-location-dot text-brandGold text-2xl"></i></div><div class="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] font-bold text-gray-600">${validStops.map((loc,i)=>`<span class="inline-flex items-center gap-1"><span class="w-5 h-5 rounded-full bg-brandGold text-white grid place-items-center text-[9px]">${i+1}</span><span>${escapeHTML((itineraryIsEnglish()&&loc.titleEn)?loc.titleEn:loc.title)}</span>${i<validStops.length-1?'<i class="fa-solid fa-arrow-right text-gray-300 mx-1"></i>':''}</span>`).join('')}</div><button type="button" onclick="openFullItineraryRoute()" class="w-full mt-4 bg-brandDark text-white rounded-xl py-3 text-xs font-black"><i class="fa-solid fa-map mr-2 text-brandGold"></i>${itineraryText('Ver ruta completa en el mapa','View full route on map')}</button></section>`;
 
     if (itineraryJourneyActive) {
         const current = locations.find(l => l.id === favoriteLocations[activeItineraryIndex]);
