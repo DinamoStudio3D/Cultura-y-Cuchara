@@ -47,6 +47,7 @@
 </style>
     <script>
         // Los QR de paradas usan una pantalla ligera para evitar cargar dos veces la portada.
+        const PUBLIC_SITE_ORIGIN = 'https://www.visitaloja.com';
         (() => {
             const params = new URLSearchParams(location.search);
             const checkin = params.get('checkin');
@@ -55,7 +56,7 @@
             const stop = checkin || stopFromQr;
             if (!stop) return;
             document.documentElement.classList.add('qr-stop-redirect');
-            const target = new URL('fidelidad.html', location.href);
+            const target = new URL('/fidelidad.html', PUBLIC_SITE_ORIGIN);
             target.searchParams.set('checkin', stop);
             location.replace(target.href);
         })();
@@ -890,7 +891,7 @@
             setText('tourismDays',String(days).padStart(2,'0'));setText('tourismHours',String(hours).padStart(2,'0'));setText('tourismMinutes',String(minutes).padStart(2,'0'));setText('tourismSeconds',String(seconds).padStart(2,'0'));
         }
         window.applyTourismDayConfiguration=function(data){config={...defaults,...(data&&typeof data==='object'?data:{})};render();if(timer)clearInterval(timer);timer=setInterval(updateClock,1000);};
-        window.shareTourismDay=function(){const url=location.origin+location.pathname+'#dia-turismo';if(navigator.share){navigator.share({title:config.name,text:config.shareText,url}).catch(()=>{});return;}window.open('https://wa.me/?text='+encodeURIComponent(config.shareText+' '+url),'_blank','noopener');};
+        window.shareTourismDay=function(){const url=PUBLIC_SITE_ORIGIN+'/#dia-turismo';if(navigator.share){navigator.share({title:config.name,text:config.shareText,url}).catch(()=>{});return;}window.open('https://wa.me/?text='+encodeURIComponent(config.shareText+' '+url),'_blank','noopener');};
         window.applyTourismDayConfiguration(defaults);
     })();
     </script>
@@ -3308,7 +3309,8 @@
             if (editableQrId) {
                 db.collection('qrCodes').doc(editableQrId).get().then(snapshot => {
                     if (!snapshot.exists || !snapshot.data().targetUrl) return;
-                    const destination = new URL(snapshot.data().targetUrl, window.location.origin);
+                    const targetUrl = String(snapshot.data().targetUrl).replace(/^https?:\/\/cultura-y-cuchara\.vercel\.app(?=\/|\?|#|$)/i, PUBLIC_SITE_ORIGIN);
+                    const destination = new URL(targetUrl, PUBLIC_SITE_ORIGIN);
                     if (['http:', 'https:'].includes(destination.protocol)) window.location.replace(destination.href);
                 }).catch(error => console.warn('No se pudo resolver el código QR:', error));
             }
@@ -3394,7 +3396,7 @@
             if(phaseChanged)renderCustomCampaignsPublic();
         }
         function applyCustomCampaigns(data){publicCustomCampaigns=Array.isArray(data?.items)?data.items:[];renderCustomCampaignsPublic();if(customCampaignClockTimer)clearInterval(customCampaignClockTimer);customCampaignClockTimer=setInterval(updateCustomCampaignClocks,1000);}
-        function shareCustomCampaign(id){const item=publicCustomCampaigns.find(campaign=>campaign.id===id);if(!item)return;const url=location.origin+location.pathname+'#campana-'+String(item.slug||item.id).replace(/[^a-z0-9-]/gi,'-'),text=item.shareText||item.description||item.title;if(navigator.share){navigator.share({title:item.publicName||item.name,text,url}).catch(()=>{});return;}window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');}
+        function shareCustomCampaign(id){const item=publicCustomCampaigns.find(campaign=>campaign.id===id);if(!item)return;const url=PUBLIC_SITE_ORIGIN+'/#campana-'+String(item.slug||item.id).replace(/[^a-z0-9-]/gi,'-'),text=item.shareText||item.description||item.title;if(navigator.share){navigator.share({title:item.publicName||item.name,text,url}).catch(()=>{});return;}window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');}
 
         const defaultFestivalConfig = {
             active: true,
@@ -4213,7 +4215,7 @@
 
         function buildLocationShareUrl(loc) {
             const slug = getLocationSlug(loc);
-            return new URL(`/parada/${encodeURIComponent(slug)}`, window.location.origin).toString();
+            return new URL(`/parada/${encodeURIComponent(slug)}`, PUBLIC_SITE_ORIGIN).toString();
         }
 
         function openBusinessPageForCurrent() {
@@ -4514,7 +4516,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function toggleStoryNarration(){if(!currentStory)return;if(activeStoryAudio||window.speechSynthesis?.speaking){stopStoryNarration();return;}const en=currentLang==='en',audioUrl=en?(currentStory.audioUrlEn||currentStory.audioUrl):(currentStory.audioUrl||currentStory.audioUrlEn),label=document.getElementById('storyAudioLabel');if(audioUrl){activeStoryAudio=new Audio(audioUrl);activeStoryAudio.onended=stopStoryNarration;activeStoryAudio.onerror=()=>speakStoryText(en);activeStoryAudio.play().then(()=>{label.textContent=en?'Stop audio':'Detener audio';completeChabaquitoMission('podcast');}).catch(()=>speakStoryText(en));}else speakStoryText(en);}
         function speakStoryText(en){window.speechSynthesis?.cancel();const text=en?(currentStory.bodyEn||currentStory.body):(currentStory.body||currentStory.bodyEn),utterance=new SpeechSynthesisUtterance(text||'');utterance.lang=en?'en-US':'es-EC';utterance.onend=stopStoryNarration;window.speechSynthesis?.speak(utterance);completeChabaquitoMission('podcast');document.getElementById('storyAudioLabel').textContent=en?'Stop narration':'Detener narración';}
         function openStoryPlace(id){closeStoryModal();const index=locations.findIndex(loc=>loc.id===id);if(index>=0){selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}}
-        async function shareCurrentStory(){if(!currentStory)return;const title=(currentLang==='en'&&currentStory.titleEn)||currentStory.title,url=`${location.origin}${location.pathname}#historias`,data={title,text:title,url};try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(`${title} ${url}`);showToast(currentLang==='en'?'Link copied':'Enlace copiado');}}catch(_){}}
+        async function shareCurrentStory(){if(!currentStory)return;const title=(currentLang==='en'&&currentStory.titleEn)||currentStory.title,url=`${PUBLIC_SITE_ORIGIN}/#historias`,data={title,text:title,url};try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(`${title} ${url}`);showToast(currentLang==='en'?'Link copied':'Enlace copiado');}}catch(_){}}
 
         function renderEverything() {
             renderCategoriesUI();
@@ -4793,7 +4795,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(!loc) return;
             document.getElementById('qrTargetLocalId').value = loc.id;
             const secureVisitButton=document.getElementById('secureVisitButton');
-            if(secureVisitButton) secureVisitButton.href='fidelidad.html?place='+encodeURIComponent(loc.id);
+            if(secureVisitButton) secureVisitButton.href=PUBLIC_SITE_ORIGIN+'/fidelidad.html?place='+encodeURIComponent(loc.id);
             const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
             document.getElementById('qrLocalNameDisplay').innerText = locTitle;
             
@@ -5987,8 +5989,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const userName = document.getElementById('postcardUserName')?.value.trim() || "Un viajero";
             const userSpot = document.getElementById('postcardUserSpot')?.value.trim() || "Loja";
             const shareText = currentLang === 'en'
-                ? `📸 Look at my travel postcard from ${userSpot} on Visita Loja! Create yours at: ${window.location.href}`
-                : `📸 ¡Mira mi postal de viaje desde *${userSpot}* en Visita Loja! Hecha por ${userName}. Crea la tuya en: ${window.location.href}`;
+                ? `📸 Look at my travel postcard from ${userSpot} on Visita Loja! Create yours at: ${new URL(location.pathname+location.search+location.hash,PUBLIC_SITE_ORIGIN).href}`
+                : `📸 ¡Mira mi postal de viaje desde *${userSpot}* en Visita Loja! Hecha por ${userName}. Crea la tuya en: ${new URL(location.pathname+location.search+location.hash,PUBLIC_SITE_ORIGIN).href}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener,noreferrer');
         }
 
@@ -6410,8 +6412,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(!list) return;
             list.innerHTML = '';
             locations.forEach(loc => {
-                const currentBaseUrl = window.location.href.split('?')[0];
-                const checkinLink = `${currentBaseUrl}?checkin=${loc.id}`;
+                const checkinLink = `${PUBLIC_SITE_ORIGIN}/?checkin=${encodeURIComponent(loc.id)}`;
 
                 list.innerHTML += `
                     <div class="bg-[#121212] p-4 rounded-xl flex flex-col gap-2 text-xs border border-gray-800">
@@ -7365,7 +7366,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function shareSmartRoute() {
             if (!currentSmartRoute.length) return;
             const lines = currentSmartRoute.map((stop, index) => `${index + 1}. ${stop.title} — ${stop.address || 'Loja'}`);
-            const text = `🗺️ Mi Ruta Inteligente de Visita Loja\n\n${lines.join('\n')}\n\nCreada con Chabaquito en ${window.location.origin}`;
+            const text = `🗺️ Mi Ruta Inteligente de Visita Loja\n\n${lines.join('\n')}\n\nCreada con Chabaquito en ${PUBLIC_SITE_ORIGIN}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
         }
 
