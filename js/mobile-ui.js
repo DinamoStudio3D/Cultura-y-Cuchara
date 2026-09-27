@@ -56,9 +56,15 @@
     }
   }
 
+  function findDesktopNav() {
+    return Array.from(document.querySelectorAll('nav div')).find((node) =>
+      node.classList.contains('2xl:flex') && node.classList.contains('flex-1')
+    ) || null;
+  }
+
   function createDesktopExploreMenu() {
     if (document.getElementById('desktopExploreMenu')) return;
-    const desktopNav = document.querySelector('nav .hidden.\\32xl\\:flex');
+    const desktopNav = findDesktopNav();
     if (!desktopNav) return;
 
     const candidates = Array.from(desktopNav.children).filter((node) => {
@@ -85,8 +91,7 @@
       original.classList.add('vl-desktop-secondary-original');
     });
 
-    const firstSecondary = candidates[0];
-    desktopNav.insertBefore(details, firstSecondary);
+    desktopNav.insertBefore(details, candidates[0]);
 
     document.addEventListener('click', (event) => {
       if (details.open && !details.contains(event.target)) details.open = false;
