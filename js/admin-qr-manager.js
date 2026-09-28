@@ -35,6 +35,8 @@
   }
   function syncSave() {
     $('staticQrSave').disabled = busy || !authorizedUi() || !bridge.snapshot();
+    if (authorizedUi() && $('staticQrSaveState').textContent === 'Inicia sesión como administrador para guardar.')
+      state('Escribe un nombre para guardar este QR.');
     $('staticQrSave').lastChild.textContent = editing ? 'Guardar cambios' : 'Guardar QR';
     const warn = $('staticQrEditWarning');
     const changed = Boolean(editing && bridge.snapshot() && bridge.snapshot().url !== editing.url);
@@ -167,6 +169,7 @@
     const record = records.find(row => row.id === button.dataset.qrId);
     if (!record || !authorizedUi()) return;
     const type = button.dataset.qrAction;
+    if (['open', 'png', 'svg'].includes(type)) { editing = null; syncSave(); }
     if (type === 'open') {
       if (!validRecord(record)) return listState('Este QR tiene una URL inválida.', true);
       window.open(record.url, '_blank', 'noopener,noreferrer');
