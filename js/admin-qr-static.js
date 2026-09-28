@@ -85,27 +85,26 @@
     }).catch(error => { logoAssetPromise = null; throw error; });
     return logoAssetPromise;
   }
-  function logoBox(code, pixels, margin) {
-    // Sólo versiones 1 a 6: su marca de alineación nunca está en el centro.
-    if (code.getModuleCount() >= 45) throw new Error('Este destino requiere un QR demasiado grande para añadir el logo con seguridad. Desactiva el logo o acorta la URL.');
-    const side = (code.getModuleCount() + margin * 2) * pixels;
-    const symbol = Math.max(2, Math.floor(code.getModuleCount() * .14)) * pixels;
-    const patch = symbol + pixels;
-    return { side, symbol, patch, x: Math.round((side - patch) / 2), y: Math.round((side - patch) / 2) };
-  }
-  function overlayLogo(canvas, logo, code, pixels, margin) {
-    const { symbol, patch, x, y } = logoBox(code, pixels, margin);
-    const ctx = canvas.getContext('2d');
+  function brandHeight(pixels) { return pixels * 8; }
+  function brandedCanvas(image, logo, pixels) {
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight + brandHeight(pixels);
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(x, y, patch, patch);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(image, 0, 0);
     ctx.imageSmoothingEnabled = true;
-    const inset = Math.round((patch - symbol) / 2);
-    ctx.drawImage(logo.image, x + inset, y + inset, symbol, symbol);
+    ctx.drawImage(logo.image, Math.round((canvas.width - pixels * 6) / 2),
+      image.naturalHeight + pixels, pixels * 6, pixels * 6);
+    return canvas;
   }
-  function logoSvg(svg, logo, code, pixels, margin) {
-    const { symbol, patch, x, y } = logoBox(code, pixels, margin);
-    const inset = Math.round((patch - symbol) / 2);
-    return svg.replace('</svg>', `<rect x="${x}" y="${y}" width="${patch}" height="${patch}" fill="white"/><image x="${x + inset}" y="${y + inset}" width="${symbol}" height="${symbol}" href="${logo.data}"/></svg>`);
+  function brandedSvg(native, logo, code, pixels, margin) {
+    const side = (code.getModuleCount() + margin * 2) * pixels;
+    const height = side + brandHeight(pixels);
+    const x = Math.round((side - pixels * 6) / 2);
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${side}px" height="${height}px" viewBox="0 0 ${side} ${height}"><rect width="${side}" height="${height}" fill="white"/>${native}<image x="${x}" y="${side + pixels}" width="${pixels * 6}" height="${pixels * 6}" href="${logo.data}"/></svg>`;
   }
   function copyImage(image) {
     const canvas = document.createElement('canvas');
@@ -151,26 +150,29 @@
     try {
       const url = validatedUrl(destination());
       const wantsLogo = $('staticQrLogo').checked;
-      if (wantsLogo && $('staticQrLevel').value !== 'H') {
-        $('staticQrLevel').value = 'H';
-        notice('Con logo se utiliza corrección H. Comprueba el QR con tu teléfono antes de imprimir.', false);
-      }
       const code = qrCode(url, $('staticQrLevel').value);
       const margin = quietModules();
-      if (wantsLogo) logoBox(code, 1, margin);
       const preview = $('staticQrPreview');
       const available = Math.min(320, Math.max(160, (preview.clientWidth || 320) - 16));
       const pixels = modulePixels(code, available, margin);
       const [image, logo] = await Promise.all([libraryImage(code, pixels, margin), wantsLogo ? officialLogo() : Promise.resolve(null)]);
       if (token !== generation) return;
       const canvas = copyImage(image);
-      if (logo) overlayLogo(canvas, logo, code, pixels, margin);
       assertQrDestination(canvas, url);
       if (token !== generation) return;
-      if (logo) image.src = canvas.toDataURL('image/png');
       image.alt = 'QR de ' + url;
       image.className = 'static-qr-image';
       preview.replaceChildren(image);
+      if (logo) {
+        const brand = document.createElement('img');
+        brand.src = logo.data;
+        brand.alt = 'Visita Loja';
+        brand.className = 'static-qr-brand';
+        brand.width = brand.height = pixels * 6;
+        brand.style.marginTop = `${pixels}px`;
+        brand.style.marginBottom = `${pixels}px`;
+        preview.append(brand);
+      }
       $('staticQrPreviewUrl').textContent = url;
       $('staticQrPng').disabled = $('staticQrSvg').disabled = false;
       current = { url, code, margin, logo };
@@ -206,7 +208,7 @@
     if (!current) return notice('Primero genera un QR válido.');
     const pixels = modulePixels(current.code, Number($('staticQrSize').value), current.margin);
     const native = current.code.createSvgTag(pixels, pixels * current.margin);
-    const svg = current.logo ? logoSvg(native, current.logo, current.code, pixels, current.margin) : native;
+    const svg = current.logo ? brandedSvg(native, current.logo, current.code, pixels, current.margin) : native;
     saveBlob(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }), 'svg');
   }
   async function downloadPng() {
@@ -216,8 +218,7 @@
       const pixels = modulePixels(snapshot.code, Number($('staticQrSize').value), snapshot.margin);
       const image = await libraryImage(snapshot.code, pixels, snapshot.margin);
       if (snapshot !== current) return;
-      const canvas = copyImage(image);
-      if (snapshot.logo) overlayLogo(canvas, snapshot.logo, snapshot.code, pixels, snapshot.margin);
+      const canvas = snapshot.logo ? brandedCanvas(image, snapshot.logo, pixels) : copyImage(image);
       assertQrDestination(canvas, snapshot.url);
       canvas.toBlob(blob => {
         if (snapshot !== current) return;
