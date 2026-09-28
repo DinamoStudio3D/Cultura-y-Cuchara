@@ -25,7 +25,9 @@ for (const [name, content] of [['index.html', index], ['admin.html', admin], ['m
 }
 
 function validateInlineScripts(name, html) {
-    const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(match => match[1]).filter(code => code.trim());
+    const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
+        .filter(match => !/\btype=["']application\/(?:ld\+)?json["']/i.test(match[0]))
+        .map(match => match[1]).filter(code => code.trim());
     let valid = 0;
     scripts.forEach((code, index) => {
         try { new Function(code); valid++; }
@@ -56,9 +58,10 @@ if (manifest) {
 [
     ['id="inicio"', 'Inicio público'], ['id="mapa"', 'Mapa público'],
     ['id="establecimientos"', 'Listado de paradas'], ['id="pasaporte"', 'Pasaporte'],
-    ['rel="manifest"', 'Enlace al manifiesto'], ["serviceWorker.register('./service-worker.js')", 'Registro del modo instalable'],
+    ['rel="manifest"', 'Enlace al manifiesto'],
     ['id="installAppBtn"', 'Botón de instalación']
 ].forEach(([needle, label]) => assert(index.includes(needle), `index.html conserva: ${label}`));
+assert(/serviceWorker\.register\(['"]\.\/service-worker\.js(?:\?v=\d+)?['"]/.test(index), 'index.html conserva: Registro del modo instalable');
 
 [
     ['id="loginView"', 'Inicio de sesión'], ['id="adminView"', 'Vista administrativa'],
@@ -367,7 +370,7 @@ assert(firestoreRules.includes('allow update, delete: if isViveLojaAdmin();'), '
     ['function isAssignedVisitMerchant(placeId)', 'Autorización por establecimiento']
 ].forEach(([needle, label]) => assert(firestoreRules.includes(needle), `firestore.rules conserva: ${label}`));
 
-assert(serviceWorker.includes("const CACHE_NAME = 'vive-loja-shell-v2'"), 'El caché usa una versión nueva y controlada');
+assert(/const CACHE_NAME = 'visita-loja-shell-v\d+'/.test(serviceWorker), 'El caché usa una versión nueva y controlada');
 assert(serviceWorker.includes("const isHome = url.pathname === '/'"), 'Solo la portada puede guardarse como index.html sin conexión');
 assert(loyaltyVisitor.includes("ecuadorDay()+'_'+place.id+'_'+code"), 'Los códigos temporales usan una identidad única por fecha, parada y número');
 assert(loyaltyVisitor.includes("Number(saved.expires)>Date.now()"), 'El visitante reutiliza su código vigente en vez de generar duplicados');
@@ -379,7 +382,7 @@ assert(loyaltyAdmin.includes("pendingCodes.filter(item=>!ms(item.expiresAt)||ms(
 assert(merchantDashboard.includes('missionRewardMerchants'), 'El tablero del negocio valida la cuenta autorizada');
 assert(merchantDashboard.includes('loyaltyVisits'), 'El tablero del negocio consulta visitas de fidelidad');
 assert(merchantDashboard.includes('loyaltyRewardClaims'), 'El tablero del negocio consulta recompensas de fidelidad');
-assert(merchantDashboard.includes('function exportCsv'), 'El tablero del negocio conserva la exportación de datos');
+assert(merchantDashboard.includes('function downloadCsv'), 'El tablero del negocio conserva la exportación de datos');
 assert(loyaltyMerchant.includes('dailyVisitCount'), 'La confirmación controla el máximo diario de visitas');
 assert(firestoreRules.includes('dailyVisitCount'), 'Firestore protege el contador diario de fidelidad');
 assert(admin.includes('customCampaigns') && index.includes('customCampaignsPublic'), 'Las campañas personalizadas siguen conectadas entre administración y la web');
