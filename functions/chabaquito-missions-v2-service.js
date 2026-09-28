@@ -130,6 +130,30 @@ async function calculateUserMissionStatesFromFirestore(db, userId) {
   return calculateUserMissionStates({ userId: safeUserId, ...inputs });
 }
 
+async function syncUserMissionsV2(db, userId, now) {
+  const states = await calculateUserMissionStatesFromFirestore(db, userId);
+  const persistence = await persistUserMissionStates(db, states, now);
+  return {
+    missionCount: states.length,
+    completedCount: states.filter(state => state.completed).length,
+    states,
+    persistence
+  };
+}
+
+async function safeSyncUserMissionsV2({ db, userId, now, logger = console }) {
+  try {
+    const result = await syncUserMissionsV2(db, userId, now);
+    return { ok: true, ...result };
+  } catch (error) {
+    logger.error("Chabaquito Missions V2 sync failed", {
+      userId: cleanId(userId),
+      message: error?.message || String(error)
+    });
+    return { ok: false, error: error?.message || String(error) };
+  }
+}
+
 module.exports = {
   buildPersistencePlan,
   calculateUserMissionStates,
@@ -138,5 +162,7 @@ module.exports = {
   persistMissionState,
   persistUserMissionStates,
   progressDocumentId,
-  rewardDocumentId
+  rewardDocumentId,
+  safeSyncUserMissionsV2,
+  syncUserMissionsV2
 };
