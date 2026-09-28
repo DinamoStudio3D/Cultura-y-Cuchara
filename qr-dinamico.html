@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Referrer-Policy" content="no-referrer">
   <title>Visita Loja · Enlace QR</title>
   <style>
     :root{color-scheme:light;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fff7ed;color:#292524}.card{width:min(92vw,520px);padding:32px;border:1px solid #fed7aa;border-radius:22px;background:#fff;box-shadow:0 18px 55px rgba(124,45,18,.10);text-align:center}.mark{width:58px;height:58px;margin:0 auto 16px;border-radius:18px;display:grid;place-items:center;background:#f97316;color:#fff;font-size:28px;font-weight:800}h1{font-size:1.35rem;margin:0 0 10px}p{line-height:1.55;margin:0;color:#57534e}.error{color:#9a3412}.small{margin-top:18px;font-size:.85rem;color:#78716c}</style>
@@ -36,15 +37,18 @@
         appId: "1:987854136999:web:4e785f4f4ab87684553275"
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      firebase.firestore().collection('dynamicMarketingQrs').doc(qrId).get()
+
+      // Esta colección contiene exclusivamente el mínimo dato público necesario
+      // para resolver un QR. Nombre, creador, historial y configuración viven en
+      // la colección administrativa privada dynamicMarketingQrs.
+      firebase.firestore().collection('dynamicQrPublic').doc(qrId).get()
         .then((snap) => {
           if (!snap.exists) throw new Error('missing');
           const data = snap.data() || {};
           if (data.status !== 'active') { fail('Este código QR está temporalmente desactivado.'); return; }
           let destination;
           try { destination = new URL(String(data.destinationUrl || '')); } catch (_) { throw new Error('invalid'); }
-          if (destination.protocol !== 'https:') throw new Error('invalid');
-          if (destination.username || destination.password) throw new Error('invalid');
+          if (destination.protocol !== 'https:' || destination.username || destination.password) throw new Error('invalid');
           location.replace(destination.href);
         })
         .catch(() => fail('No pudimos encontrar un destino válido para este código.'));
