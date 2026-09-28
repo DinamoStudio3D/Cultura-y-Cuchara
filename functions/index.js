@@ -4,6 +4,7 @@ const crypto = require("node:crypto");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
+const { safeSyncUserMissionsV2 } = require("./chabaquito-missions-v2-service");
 
 initializeApp();
 const db = getFirestore();
@@ -48,7 +49,7 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
   const receiptRef = String(request.data?.receiptRef || "").trim().slice(0, 80);
   const codeRef = db.collection("visitCodes").doc(requestId);
 
-  return db.runTransaction(async tx => {
+  const result = await db.runTransaction(async tx => {
     const codeSnap = await tx.get(codeRef);
     if (!codeSnap.exists) throw new HttpsError("not-found", "El código no existe.");
     const code = codeSnap.data();
@@ -99,15 +100,19 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
       tx.update(programRef, { claimedCount: FieldValue.increment(1), updatedAt: now });
     }
     tx.create(auditRef(), { action: "loyalty_stamp_added", actorUid: merchant.uid, actorEmail: merchant.email, actorName: merchant.businessName || "", userId: code.userId, placeId: code.placeId, requestId, purchaseAmount, receiptRef, createdAt: now });
-    return { visitCount: newCount, target, passportAdded: !stampSnap.exists, rewardCreated: Boolean(rewardRef) };
+    return { visitCount: newCount, target, passportAdded: !stampSnap.exists, rewardCreated: Boolean(rewardRef), userId: code.userId };
   });
+
+  await safeSyncUserMissionsV2({ db, userId: result.userId, now: Timestamp.now() });
+  const { userId, ...publicResult } = result;
+  return publicResult;
 });
 
 exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false }, async request => {
   const merchant = await authorizedMerchant(request);
   const requestId = requireString(request.data?.requestId, "Visita");
   const visitRef = db.collection("loyaltyVisits").doc(requestId);
-  return db.runTransaction(async tx => {
+  const result = await db.runTransaction(async tx => {
     const visitSnap = await tx.get(visitRef);
     if (!visitSnap.exists) throw new HttpsError("not-found", "La visita no existe.");
     const visit = visitSnap.data();
@@ -130,8 +135,12 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
     if (stampRef) tx.delete(stampRef);
     if (rewardRef && rewardSnap?.exists) { tx.delete(rewardRef); if (programSnap.exists) tx.update(programRef, { claimedCount: FieldValue.increment(-1), updatedAt: now }); }
     tx.create(auditRef(), { action: "loyalty_stamp_reversed", actorUid: merchant.uid, actorEmail: merchant.email, actorName: merchant.businessName || "", userId: visit.userId, placeId: visit.placeId, requestId, purchaseAmount: Number(visit.purchaseAmount || 0), receiptRef: visit.receiptRef || "", createdAt: now });
-    return { visitCount: Math.max(0, Number(visit.previousVisitCount || 0)), target: Math.max(1, Number(programSnap.data()?.targetVisits || 10)) };
+    return { visitCount: Math.max(0, Number(visit.previousVisitCount || 0)), target: Math.max(1, Number(programSnap.data()?.targetVisits || 10)), userId: visit.userId };
   });
+
+  await safeSyncUserMissionsV2({ db, userId: result.userId, now: Timestamp.now() });
+  const { userId, ...publicResult } = result;
+  return publicResult;
 });
 
 exports.deliverRewardSecurely = onCall({ region: REGION, enforceAppCheck: false }, async request => {
