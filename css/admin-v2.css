@@ -120,3 +120,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   #adminGlobalSearchModal>div{max-height:100dvh}
 }
 @media(max-width:389px){#dashboardModule>.grid{gap:.5rem!important}}
+
+/* Generador QR de difusión: vista nítida, controles táctiles y herramientas previas. */
+#staticQrPreview svg{display:block;width:min(100%,320px);height:auto;aspect-ratio:1}
+#staticQrPreviewUrl{overflow-wrap:anywhere}
+#qrModule :is(#staticQrPng,#staticQrSvg){min-height:46px}
+#qrLegacyTools>summary{list-style:none}
+#qrLegacyTools>summary::-webkit-details-marker{display:none}
+#qrLegacyTools>summary:after{content:'⌄';float:right;color:#fbbf24}
+#qrLegacyTools[open]>summary:after{transform:rotate(180deg)}
+@media(max-width:639px){
+  #qrModule .qr-legacy-tools{padding:.8rem}
+  #qrModule .qr-legacy-tools form{padding:1rem}
+}
