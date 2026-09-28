@@ -1,0 +1,121 @@
+// PROPUESTA SOLAMENTE. NO desplegar este archivo directamente.
+// Debe integrarse en firestore.rules y probarse antes de cualquier deploy.
+//
+// Diseño:
+// - dynamicMarketingQrs: metadatos privados, solo administradores.
+// - dynamicQrPublic: resolución pública mínima para /q/{id}.
+// - dynamicQrHistory: auditoría inmutable, solo administradores.
+//
+// El mismo qrId se usa en las tres colecciones. Una vez creado, el ID no se edita.
+
+function validDynamicQrId(qrId) {
+  return qrId.matches('^[A-Za-z0-9_-]{6,64}$');
+}
+
+function validHttpsDestination(url) {
+  return url is string
+    && url.size() >= 9
+    && url.size() <= 1800
+    && url.matches('^https://[^ ]+$');
+}
+
+function validDynamicQrPublic(qrId) {
+  return validDynamicQrId(qrId)
+    && request.resource.data.keys().hasAll(['destinationUrl', 'status', 'updatedAt'])
+    && request.resource.data.keys().hasOnly(['destinationUrl', 'status', 'updatedAt'])
+    && validHttpsDestination(request.resource.data.destinationUrl)
+    && request.resource.data.status in ['active', 'inactive']
+    && request.resource.data.updatedAt == request.time;
+}
+
+match /dynamicQrPublic/{qrId} {
+  // ÚNICA colección pública del sistema dinámico. Solo expone destino/estado.
+  allow get: if validDynamicQrId(qrId);
+  allow list: if false;
+
+  allow create: if isViveLojaAdmin()
+    && validDynamicQrPublic(qrId)
+    && existsAfter(/databases/$(database)/documents/dynamicMarketingQrs/$(qrId))
+    && getAfter(/databases/$(database)/documents/dynamicMarketingQrs/$(qrId)).data.destinationUrl == request.resource.data.destinationUrl
+    && getAfter(/databases/$(database)/documents/dynamicMarketingQrs/$(qrId)).data.status == request.resource.data.status;
+
+  allow update: if isViveLojaAdmin()
+    && validDynamicQrPublic(qrId)
+    && existsAfter(/databases/$(database)/documents/dynamicMarketingQrs/$(qrId))
+    && getAfter(/databases/$(database)/documents/dynamicMarketingQrs/$(qrId)).data.destinationUrl == request.resource.data.destinationUrl
+    && getAfter(/databases/$(database)/documents/dynamicMarketingQrs/$(qrId)).data.status == request.resource.data.status;
+
+  // Evita romper impresiones físicas por borrado accidental.
+  allow delete: if false;
+}
+
+function validDynamicMarketingQr(qrId) {
+  return validDynamicQrId(qrId)
+    && request.resource.data.keys().hasAll([
+      'name', 'destinationUrl', 'destinationType', 'placeId', 'status',
+      'config', 'createdAt', 'updatedAt', 'createdByUid', 'createdByEmail', 'updatedByUid'
+    ])
+    && request.resource.data.keys().hasOnly([
+      'name', 'destinationUrl', 'destinationType', 'placeId', 'status',
+      'config', 'createdAt', 'updatedAt', 'createdByUid', 'createdByEmail', 'updatedByUid'
+    ])
+    && request.resource.data.name is string
+    && request.resource.data.name.size() > 0
+    && request.resource.data.name.size() <= 80
+    && validHttpsDestination(request.resource.data.destinationUrl)
+    && request.resource.data.destinationType in ['manual', 'home', 'place', 'routes', 'passport', 'agenda', 'shop', 'signup']
+    && request.resource.data.placeId is string
+    && request.resource.data.placeId.size() <= 200
+    && request.resource.data.status in ['active', 'inactive']
+    && request.resource.data.createdByUid is string
+    && request.resource.data.createdByEmail is string
+    && request.resource.data.createdByEmail.size() <= 200
+    && request.resource.data.updatedByUid == request.auth.uid
+    && request.resource.data.updatedAt == request.time
+    && request.resource.data.config is map;
+}
+
+match /dynamicMarketingQrs/{qrId} {
+  allow read: if isViveLojaAdmin();
+
+  allow create: if isViveLojaAdmin()
+    && validDynamicMarketingQr(qrId)
+    && request.resource.data.createdByUid == request.auth.uid
+    && request.resource.data.createdByEmail == request.auth.token.email
+    && request.resource.data.createdAt == request.time
+    && existsAfter(/databases/$(database)/documents/dynamicQrPublic/$(qrId))
+    && getAfter(/databases/$(database)/documents/dynamicQrPublic/$(qrId)).data.destinationUrl == request.resource.data.destinationUrl
+    && getAfter(/databases/$(database)/documents/dynamicQrPublic/$(qrId)).data.status == request.resource.data.status;
+
+  allow update: if isViveLojaAdmin()
+    && validDynamicMarketingQr(qrId)
+    && request.resource.data.createdByUid == resource.data.createdByUid
+    && request.resource.data.createdByEmail == resource.data.createdByEmail
+    && request.resource.data.createdAt == resource.data.createdAt
+    && existsAfter(/databases/$(database)/documents/dynamicQrPublic/$(qrId))
+    && getAfter(/databases/$(database)/documents/dynamicQrPublic/$(qrId)).data.destinationUrl == request.resource.data.destinationUrl
+    && getAfter(/databases/$(database)/documents/dynamicQrPublic/$(qrId)).data.status == request.resource.data.status;
+
+  // No se borran QR dinámicos: se desactivan.
+  allow delete: if false;
+}
+
+match /dynamicQrHistory/{eventId} {
+  allow read: if isViveLojaAdmin();
+  allow create: if isViveLojaAdmin()
+    && request.resource.data.keys().hasOnly([
+      'qrId', 'action', 'previousDestinationUrl', 'destinationUrl',
+      'previousStatus', 'status', 'actorUid', 'actorEmail', 'createdAt'
+    ])
+    && validDynamicQrId(request.resource.data.qrId)
+    && request.resource.data.action in ['created', 'destination_changed', 'activated', 'deactivated']
+    && request.resource.data.previousDestinationUrl is string
+    && request.resource.data.previousDestinationUrl.size() <= 1800
+    && validHttpsDestination(request.resource.data.destinationUrl)
+    && request.resource.data.previousStatus in ['', 'active', 'inactive']
+    && request.resource.data.status in ['active', 'inactive']
+    && request.resource.data.actorUid == request.auth.uid
+    && request.resource.data.actorEmail == request.auth.token.email
+    && request.resource.data.createdAt == request.time;
+  allow update, delete: if false;
+}
