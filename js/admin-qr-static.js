@@ -79,19 +79,16 @@
     return logoPromise;
   }
   function qrMatrix(url, level) {
-    if (typeof QRCode === 'undefined') throw new Error('La biblioteca QR no está disponible. Recarga la página.');
-    const container = document.createElement('div');
+    if (typeof qrcode !== 'function') throw new Error('La biblioteca QR no está disponible. Recarga la página.');
     let code;
     try {
-      code = new QRCode(container, { text: url, width: 256, height: 256,
-        correctLevel: QRCode.CorrectLevel[level] });
+      code = qrcode(0, level);
+      code.addData(url, 'Byte');
+      code.make();
     } catch (_) { throw new Error('El enlace es demasiado largo para este nivel de corrección QR.'); }
-    const model = code._oQRCode;
-    if (!model || typeof model.getModuleCount !== 'function' || typeof model.isDark !== 'function')
-      throw new Error('La biblioteca QR no permite exportar la matriz vectorial.');
-    const count = model.getModuleCount();
+    const count = code.getModuleCount();
     return Array.from({ length: count }, (_, row) =>
-      Array.from({ length: count }, (_, col) => Boolean(model.isDark(row, col))));
+      Array.from({ length: count }, (_, col) => Boolean(code.isDark(row, col))));
   }
   function geometry(data) {
     const length = data.matrix.length, side = length + data.margin * 2;
@@ -105,8 +102,8 @@
     for (let row = 0; row < length; row++) for (let col = 0; col < length; col++)
       if (data.matrix[row][col]) path += `M${col + data.margin} ${row + data.margin}h1v1h-1z`;
     const patch = logoSide + padding * 2;
-    const logo = data.logo ? `<rect x="${center - patch / 2}" y="${center - patch / 2}" width="${patch}" height="${patch}" rx="${padding}" fill="${data.light}"/><image x="${center - logoSide / 2}" y="${center - logoSide / 2}" width="${logoSide}" height="${logoSide}" href="${data.logo.data}"/>` : '';
-    return `<svg xmlns="${SVG_NS}" viewBox="0 0 ${side} ${side}" width="${data.size}" height="${data.size}" role="img" aria-label="Código QR"><rect width="${side}" height="${side}" fill="${data.light}"/><path d="${path}" fill="${data.dark}"/>${logo}</svg>`;
+    const logo = data.logo ? `<rect x="${center - patch / 2}" y="${center - patch / 2}" width="${patch}" height="${patch}" fill="${data.light}"/><image x="${center - logoSide / 2}" y="${center - logoSide / 2}" width="${logoSide}" height="${logoSide}" href="${data.logo.data}"/>` : '';
+    return `<svg xmlns="${SVG_NS}" viewBox="0 0 ${side} ${side}" width="${data.size}" height="${data.size}" shape-rendering="crispEdges" role="img" aria-label="Código QR"><rect width="${side}" height="${side}" fill="${data.light}"/><path d="${path}" fill="${data.dark}"/>${logo}</svg>`;
   }
   function pngCanvas(data) {
     const { length, side, logoSide, padding, center } = geometry(data);
@@ -129,6 +126,18 @@
         (center - logoSide / 2) * unit, logoSide * unit, logoSide * unit);
     }
     return canvas;
+  }
+  function decodedValue(canvas) {
+    if (typeof jsQR !== 'function') throw new Error('No se pudo cargar la verificación de lectura QR. Recarga la página.');
+    const { width, height } = canvas;
+    const pixels = canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, width, height);
+    return jsQR(pixels.data, width, height, { inversionAttempts: 'dontInvert' })?.data || '';
+  }
+  function assertQrDestination(canvas, expected) {
+    const actual = decodedValue(canvas);
+    if (actual !== expected) throw new Error(actual
+      ? `El QR codifica un destino distinto (${actual}). Cambia el diseño o inténtalo nuevamente.`
+      : 'El QR no pasó la prueba de lectura. Cambia el diseño o inténtalo nuevamente.');
   }
   function notice(text, error = true) {
     const box = $('staticQrMessage');
@@ -157,23 +166,14 @@
       const wantsLogo = $('staticQrLogo').checked;
       if (wantsLogo && level !== 'H') throw new Error('Con logo se requiere corrección máxima (H).');
       const matrix = qrMatrix(url, level);
+      if (wantsLogo && matrix.length >= 45)
+        throw new Error('El enlace requiere un QR cuyo centro puede contener una marca de alineación. Acorta la URL o desactiva el logo.');
       const logo = wantsLogo ? await logoData() : null;
       if (token !== generation) return;
       const data = { url, matrix, logo, dark, light, size: Number($('staticQrSize').value),
-        margin: Number($('staticQrMargin').value) };
-      if (logo && typeof window.BarcodeDetector === 'function') {
-        try {
-          const decoder = new BarcodeDetector({ formats: ['qr_code'] });
-          const matches = await decoder.detect(pngCanvas(data));
-          if (token !== generation) return;
-          if (!matches.some(match => match.rawValue === url))
-            throw new Error('El QR con logo no se lee con esta combinación. Cambia los colores o quita el logo.');
-          notice('El QR con logo pasó la comprobación de lectura en este navegador.', false);
-        } catch (error) {
-          if (error.message.startsWith('El QR con logo no se lee')) throw error;
-          notice('No se pudo comprobar la lectura automáticamente. Escanea el QR antes de imprimirlo.', false);
-        }
-      } else if (logo) notice('Escanea el QR con tu teléfono antes de imprimirlo.', false);
+        margin: Math.max(4, Number($('staticQrMargin').value) || 4) };
+      assertQrDestination(pngCanvas(data), url);
+      if (token !== generation) return;
       const svg = svgMarkup(data);
       const parsed = new DOMParser().parseFromString(svg, 'image/svg+xml');
       if (parsed.querySelector('parsererror')) throw new Error('No se pudo dibujar el QR vectorial.');
@@ -181,6 +181,7 @@
       $('staticQrPreviewUrl').textContent = url;
       $('staticQrPng').disabled = $('staticQrSvg').disabled = false;
       current = { ...data, svg };
+      if (logo) notice('QR con logo decodificado correctamente. Comprueba también la impresión con tu teléfono.', false);
     } catch (error) {
       if (token !== generation) return;
       notice(error.message || 'No se pudo generar el QR. Revisa el destino y los ajustes.');
