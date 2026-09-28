@@ -6,7 +6,8 @@ const {
   calculateUserMissionStates,
   persistMissionState,
   progressDocumentId,
-  rewardDocumentId
+  rewardDocumentId,
+  safeSyncUserMissionsV2
 } = require("./chabaquito-missions-v2-service");
 
 const missions = [
@@ -172,6 +173,21 @@ function createFakeDb(seed = {}) {
   assert.equal(reversed.rewardAction, "delete");
   assert.equal(db.store.get("chabaquitoMissionProgress/user_123_cafeterias_2").completed, false);
   assert.equal(db.store.has("chabaquitoDigitalRewards/user_123_cafeterias_2"), false);
+
+  const logged = [];
+  const safeFailure = await safeSyncUserMissionsV2({
+    db: {
+      collection() {
+        throw new Error("fallo simulado de Firestore");
+      }
+    },
+    userId: "user_123",
+    now,
+    logger: { error: (...args) => logged.push(args) }
+  });
+  assert.equal(safeFailure.ok, false);
+  assert.equal(safeFailure.error, "fallo simulado de Firestore");
+  assert.equal(logged.length, 1);
 
   assert.equal(progressDocumentId("user_123", "cafeterias_2"), "user_123_cafeterias_2");
   assert.equal(rewardDocumentId("user_123", "cafeterias_2"), "user_123_cafeterias_2");
