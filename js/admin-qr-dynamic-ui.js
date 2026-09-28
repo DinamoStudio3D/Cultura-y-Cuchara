@@ -1,6 +1,29 @@
 /* Interfaz administrativa de QR dinámicos. Se monta junto al gestor estático sin alterar sus funciones. */
 (() => {
   'use strict';
+
+  // Carga temporal y aislada del laboratorio de Misiones V2 desde un script que
+  // ya forma parte del Admin Preview. No escribe Firestore ni modifica admin.html.
+  function loadPreviewScript(src) {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) return resolve();
+      const script = document.createElement('script');
+      script.src = src;
+      script.defer = true;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error(`No se pudo cargar ${src}`));
+      document.head.append(script);
+    });
+  }
+  (async () => {
+    try {
+      if (!window.visitaLojaChabaquitoMissionsV2) await loadPreviewScript('js/chabaquito-missions-v2-model.js');
+      await loadPreviewScript('js/admin-chabaquito-missions-v2-preview.js');
+    } catch (error) {
+      console.warn('Misiones de Chabaquito V2 Preview no pudo cargarse:', error);
+    }
+  })();
+
   const store = window.visitaLojaDynamicQrStore;
   const staticQr = window.visitaLojaStaticQr;
   const staticRoot = document.getElementById('staticQrCreatePanel')?.parentElement;
