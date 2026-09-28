@@ -12,6 +12,7 @@
     const provider = providerApi.createProvider({
       configApi,
       imageServiceApi: opts.imageServiceApi || global.VisitaLojaImageService,
+      signUpload: opts.signUpload,
       firebaseUpload: opts.firebaseUpload
     });
 

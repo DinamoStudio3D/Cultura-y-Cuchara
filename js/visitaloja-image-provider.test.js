@@ -16,7 +16,7 @@ const configApi = require('./visitaloja-image-config.js');
 
   const cloudConfig = {
     provider: 'cloudinary',
-    cloudinary: { enabled: true, cloudName: 'demo', uploadPreset: 'merchant_images' },
+    cloudinary: { enabled: true, mode: 'signed' },
     compression: { maxWidth: 1600 }
   };
   const cloudProvider = providerApi.createProvider({

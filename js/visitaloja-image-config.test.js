@@ -10,15 +10,15 @@ assert.strictEqual(imageConfig.getPublicCloudinaryConfig(imageConfig.CONFIG), nu
 
 const enabled = {
   provider: 'cloudinary',
-  cloudinary: { enabled: true, cloudName: 'visitaloja', uploadPreset: 'merchant_images' }
+  cloudinary: { enabled: true, mode: 'signed' }
 };
 assert.strictEqual(imageConfig.cloudinaryReady(enabled), true);
 assert.deepStrictEqual(
   imageConfig.getPublicCloudinaryConfig(enabled),
-  { cloudName: 'visitaloja', uploadPreset: 'merchant_images' }
+  { mode: 'signed' }
 );
 
-assert.strictEqual(imageConfig.cloudinaryReady({ provider: 'cloudinary', cloudinary: { enabled: true, cloudName: '', uploadPreset: 'x' } }), false);
-assert.strictEqual(imageConfig.cloudinaryReady({ provider: 'firebase', cloudinary: { enabled: true, cloudName: 'x', uploadPreset: 'y' } }), false);
+assert.strictEqual(imageConfig.cloudinaryReady({ provider: 'cloudinary', cloudinary: { enabled: true, cloudName: 'x', uploadPreset: 'unsigned' } }), false);
+assert.strictEqual(imageConfig.cloudinaryReady({ provider: 'firebase', cloudinary: { enabled: true, mode: 'signed' } }), false);
 
 console.log('visitaloja-image-config tests: OK');

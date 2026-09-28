@@ -24,7 +24,7 @@
       if (cloudConfig) {
         if (!imageServiceApi) throw new Error('Falta VisitaLojaImageService.');
         try {
-          const service = imageServiceApi.createService(ctx.imageDependencies);
+          const service = imageServiceApi.createService(Object.assign({}, ctx.imageDependencies, { signUpload: deps.signUpload }));
           const result = await service.prepareAndUpload(file, cloudConfig, {
             placeId: ctx.placeId,
             purpose: ctx.purpose,

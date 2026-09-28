@@ -7,7 +7,10 @@ const tests = [
   'js/visitaloja-image-service.test.js',
   'js/visitaloja-image-config.test.js',
   'js/visitaloja-image-provider.test.js',
-  'js/merchant-image-upload-adapter.test.js'
+  'js/merchant-image-upload-adapter.test.js',
+  'js/merchant-profile-flow.test.js',
+  'js/merchant-signed-pipeline.test.js',
+  'functions/merchant-image-signing.test.js'
 ];
 
 const requiredPortalScripts = [
@@ -62,7 +65,7 @@ if (!/provider:\s*'firebase'/.test(config) || !/enabled:\s*false/.test(config)) 
   console.log('✓ Cloudinary permanece apagado por defecto');
 }
 
-if (!portal.includes('createMerchantImageUploader({firebaseUpload:uploadImageFirebase,allowFirebaseFallback:false})')) {
+if (!portal.includes('createMerchantImageUploader({firebaseUpload:uploadImageFirebase,allowFirebaseFallback:false,signUpload:')) {
   console.error('✗ El Portal no conserva el puente Firebase esperado');
   failed = true;
 } else {

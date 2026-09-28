@@ -19,15 +19,20 @@ const service = imageService.createService({
     }
   },
   cloudinary: {
-    async uploadUnsignedImage(blob, config, options) {
-      uploaded = !!blob.fake && config.cloudName === 'demo' && options.folder === 'visitaloja/places/local-123/gallery';
+    async uploadSignedImage(blob, signature) {
+      uploaded = !!blob.fake && signature.signature === 'signed';
       return { url: 'https://res.cloudinary.com/demo/image/upload/x.webp', publicId: 'visitaloja/places/local-123/gallery/x', width: 1600, height: 1200, bytes: 300000, format: 'webp' };
     }
+  },
+  async signUpload({ placeId, purpose }) {
+    assert.strictEqual(placeId, 'Local 123');
+    assert.strictEqual(purpose, 'gallery');
+    return { signature: 'signed' };
   }
 });
 
 (async () => {
-  const result = await service.prepareAndUpload('fake-file', { cloudName: 'demo', uploadPreset: 'preset' }, { placeId: 'Local 123', purpose: 'gallery' });
+  const result = await service.prepareAndUpload('fake-file', { mode: 'signed' }, { placeId: 'Local 123', purpose: 'gallery' });
   assert.strictEqual(compressed, true);
   assert.strictEqual(uploaded, true);
   assert.strictEqual(result.provider, 'cloudinary');

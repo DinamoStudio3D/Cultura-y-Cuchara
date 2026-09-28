@@ -2,14 +2,12 @@
   'use strict';
 
   // Configuración pública del frontend. Nunca colocar API Secret aquí.
-  // Cloudinary unsigned uploads solo se habilitan cuando enabled=true y
-  // se han definido cloudName + uploadPreset deliberadamente.
+  // Cloudinary solo se habilita con firma del servidor y activación explícita.
   const CONFIG = Object.freeze({
     provider: 'firebase',
     cloudinary: Object.freeze({
       enabled: false,
-      cloudName: '',
-      uploadPreset: ''
+      mode: 'signed'
     }),
     compression: Object.freeze({
       maxWidth: 1600,
@@ -23,18 +21,13 @@
   function cloudinaryReady(config) {
     const cfg = config || CONFIG;
     const cloud = cfg.cloudinary || {};
-    return cfg.provider === 'cloudinary' && cloud.enabled === true &&
-      typeof cloud.cloudName === 'string' && cloud.cloudName.trim().length > 0 &&
-      typeof cloud.uploadPreset === 'string' && cloud.uploadPreset.trim().length > 0;
+    return cfg.provider === 'cloudinary' && cloud.enabled === true && cloud.mode === 'signed';
   }
 
   function getPublicCloudinaryConfig(config) {
     const cfg = config || CONFIG;
     if (!cloudinaryReady(cfg)) return null;
-    return Object.freeze({
-      cloudName: cfg.cloudinary.cloudName.trim(),
-      uploadPreset: cfg.cloudinary.uploadPreset.trim()
-    });
+    return Object.freeze({ mode: 'signed' });
   }
 
   const api = Object.freeze({ CONFIG, cloudinaryReady, getPublicCloudinaryConfig });

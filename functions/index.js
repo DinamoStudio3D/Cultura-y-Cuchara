@@ -2,13 +2,16 @@
 
 const crypto = require("node:crypto");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { defineSecret } = require("firebase-functions/params");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const { safeSyncUserMissionsV2 } = require("./chabaquito-missions-v2-service");
+const { createMerchantImageSignature } = require("./merchant-image-signing");
 
 initializeApp();
 const db = getFirestore();
 const REGION = "us-central1";
+const cloudinaryCredentials = defineSecret("CLOUDINARY_MERCHANT_IMAGE_CREDENTIALS");
 
 function cleanId(value) {
   return String(value || "").replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 180);
@@ -36,6 +39,27 @@ async function authorizedMerchant(request) {
   if (!merchant || merchant.active === false) throw new HttpsError("permission-denied", "Cuenta de negocio no autorizada.");
   return { uid: request.auth.uid, email: request.auth.token.email || "", ...merchant };
 }
+
+// Firma preparada para una futura integración del portal. El cliente actual sigue en Firebase.
+exports.signMerchantImageUpload = onCall({ region: REGION, secrets: [cloudinaryCredentials] }, async request => {
+  if (!request.auth) throw new HttpsError("unauthenticated", "Debes iniciar sesión.");
+  const snap = await db.collection("missionRewardMerchants").doc(request.auth.uid).get();
+  try {
+    const credentials = JSON.parse(cloudinaryCredentials.value() || "null");
+    return createMerchantImageSignature({
+      merchant: snap.exists ? snap.data() : null,
+      placeId: request.data?.placeId,
+      purpose: request.data?.purpose,
+      credentials,
+      timestamp: Math.floor(Date.now() / 1000)
+    });
+  } catch (error) {
+    if (error.message === "Parada no autorizada." || error.message === "Destino de imagen inválido.") {
+      throw new HttpsError("permission-denied", error.message);
+    }
+    throw new HttpsError("failed-precondition", "La subida firmada aún no está configurada.");
+  }
+});
 
 function auditRef() {
   return db.collection("systemAudit").doc();

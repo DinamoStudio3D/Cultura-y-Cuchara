@@ -37,10 +37,12 @@
       const opts = options || {};
       const purpose = normalizePurpose(opts.purpose);
       const placeId = safeSegment(opts.placeId, 'unknown');
-      const uploaded = await cloudinary.uploadUnsignedImage(prepared.blob, config, {
-        folder: buildFolder(placeId, purpose),
-        filename: purpose + '-' + Date.now() + '.webp',
-        context: 'placeId=' + placeId + '|purpose=' + purpose
+      if (config.mode !== 'signed' || typeof deps.signUpload !== 'function') {
+        throw new Error('La subida firmada de imágenes no está disponible.');
+      }
+      const signature = await deps.signUpload({ placeId: opts.placeId, purpose });
+      const uploaded = await cloudinary.uploadSignedImage(prepared.blob, signature, {
+        filename: purpose + '-' + Date.now() + '.webp'
       });
       return {
         provider: 'cloudinary',
