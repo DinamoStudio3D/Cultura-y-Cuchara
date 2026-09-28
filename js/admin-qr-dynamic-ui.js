@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   const store = window.visitaLojaDynamicQrStore;
+  const staticQr = window.visitaLojaStaticQr;
   const staticRoot = document.getElementById('staticQrCreatePanel')?.parentElement;
   if (!store || !staticRoot || document.getElementById('dynamicQrPanel')) return;
 
@@ -41,6 +42,23 @@
   function previewUrl() { try { $('dynamicQrPermanentUrl').textContent = store.publicUrl($('dynamicQrId').value); $('dynamicQrPermanentBox').classList.remove('hidden'); } catch (_) { $('dynamicQrPermanentBox').classList.add('hidden'); } }
   function reset() { editingId = null; $('dynamicQrForm').reset(); $('dynamicQrId').disabled = false; $('dynamicQrGenerateId').disabled = false; $('dynamicQrCreate').innerHTML = '<i class="fa-solid fa-qrcode mr-2"></i>Crear QR dinámico'; $('dynamicQrCancelEdit').classList.add('hidden'); setId(); state('Listo para crear un QR dinámico.'); }
   function safeText(value) { return String(value ?? ''); }
+  async function prepareDownload(record, format) {
+    if (!staticQr) return state('El generador QR verificado no está disponible. Recarga el administrador.', true);
+    const permanentUrl = store.publicUrl(record.id);
+    state(`Preparando ${format.toUpperCase()} del enlace permanente…`);
+    try {
+      const loaded = await staticQr.loadSaved({
+        url: permanentUrl,
+        name: record.name || `QR dinámico ${record.id}`,
+        config: { margin: 4, level: 'H', size: 2048, logoEnabled: true, logoSize: 18 }
+      });
+      if (!loaded) throw new Error('No se pudo verificar la vista previa.');
+      await staticQr.download(format);
+      state(`${format.toUpperCase()} preparado con la URL permanente. Cambiar el destino después no cambia esta impresión.`);
+    } catch (error) {
+      state(`No se pudo preparar el ${format.toUpperCase()} (${error.message || 'error'}).`, true);
+    }
+  }
   function render() {
     $('dynamicQrCount').textContent = `${records.length} registro${records.length === 1 ? '' : 's'}`;
     const list = $('dynamicQrList'); list.replaceChildren();
@@ -55,7 +73,7 @@
       info.append(h,permanent,dest);
       const badge=document.createElement('span');badge.className=`h-fit text-[11px] font-black rounded-full px-2.5 py-1 ${r.status==='active'?'bg-emerald-500/15 text-emerald-200':'bg-gray-700 text-gray-300'}`;badge.textContent=r.status==='active'?'ACTIVO':'INACTIVO';head.append(info,badge);card.append(head);
       const actions=document.createElement('div');actions.className='flex flex-wrap gap-2 mt-3';
-      [['Editar destino','edit'],[r.status==='active'?'Desactivar':'Activar','toggle'],['Abrir permanente','open'],['Copiar URL','copy']].forEach(([label,action])=>{const b=document.createElement('button');b.type='button';b.className='text-xs font-bold rounded-lg border border-white/15 px-3 py-2 hover:border-amber-400';b.textContent=label;b.dataset.action=action;b.dataset.id=r.id;actions.append(b);});
+      [['Editar destino','edit'],[r.status==='active'?'Desactivar':'Activar','toggle'],['Descargar PNG','png'],['Descargar SVG','svg'],['Abrir permanente','open'],['Copiar URL','copy']].forEach(([label,action])=>{const b=document.createElement('button');b.type='button';b.className='text-xs font-bold rounded-lg border border-white/15 px-3 py-2 hover:border-amber-400';b.textContent=label;b.dataset.action=action;b.dataset.id=r.id;actions.append(b);});
       card.append(actions);list.append(card);
     });
   }
@@ -89,6 +107,7 @@
     const b=e.target.closest('button[data-action]');if(!b)return;const r=records.find(x=>x.id===b.dataset.id);if(!r)return;
     if(b.dataset.action==='open') window.open(store.publicUrl(r.id),'_blank','noopener,noreferrer');
     if(b.dataset.action==='copy'){try{await navigator.clipboard.writeText(store.publicUrl(r.id));state('URL permanente copiada.');}catch(_){state('No se pudo copiar la URL automáticamente.',true);}}
+    if(b.dataset.action==='png' || b.dataset.action==='svg') await prepareDownload(r,b.dataset.action);
     if(b.dataset.action==='edit'){editingId=r.id;$('dynamicQrName').value=r.name||'';$('dynamicQrDestination').value=r.destinationUrl||'';$('dynamicQrId').value=r.id;$('dynamicQrId').disabled=true;$('dynamicQrGenerateId').disabled=true;previewUrl();$('dynamicQrCreate').textContent='Guardar nuevo destino';$('dynamicQrCancelEdit').classList.remove('hidden');state('El ID permanente está bloqueado. Solo cambiarán nombre/destino.');$('dynamicQrName').focus();}
     if(b.dataset.action==='toggle'){const active=r.status!=='active';if(!confirm(`${active?'Activar':'Desactivar'} “${r.name}”? El QR impreso conservará su URL permanente.`))return;try{await store.setActive(r.id,active);state(active?'QR activado.':'QR desactivado; las impresiones no se han eliminado.');}catch(err){state(err.code==='permission-denied'?'Faltan las reglas de QR dinámicos.':'No se pudo cambiar el estado.',true);}}
   });
