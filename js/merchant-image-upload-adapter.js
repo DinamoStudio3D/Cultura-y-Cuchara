@@ -1,0 +1,41 @@
+(function (global) {
+  'use strict';
+
+  function createMerchantImageUploader(options) {
+    const opts = options || {};
+    const providerApi = opts.providerApi || global.VisitaLojaImageProvider;
+    const configApi = opts.configApi || global.VisitaLojaImageConfig;
+    if (!providerApi) throw new Error('Falta VisitaLojaImageProvider.');
+    if (!configApi) throw new Error('Falta VisitaLojaImageConfig.');
+    if (typeof opts.firebaseUpload !== 'function') throw new Error('Falta el uploader existente de Firebase.');
+
+    const provider = providerApi.createProvider({
+      configApi,
+      imageServiceApi: opts.imageServiceApi || global.VisitaLojaImageService,
+      firebaseUpload: opts.firebaseUpload
+    });
+
+    async function upload(file, placeId, purpose, extra) {
+      const result = await provider.upload(file, Object.assign({
+        config: opts.config || configApi.CONFIG,
+        placeId,
+        purpose,
+        allowFirebaseFallback: opts.allowFirebaseFallback === true,
+        imageDependencies: opts.imageDependencies
+      }, extra || {}));
+      return result;
+    }
+
+    async function uploadUrl(file, placeId, purpose, extra) {
+      const result = await upload(file, placeId, purpose, extra);
+      if (!result || !result.url) throw new Error('El proveedor de imágenes no devolvió una URL.');
+      return result.url;
+    }
+
+    return Object.freeze({ upload, uploadUrl });
+  }
+
+  const api = Object.freeze({ createMerchantImageUploader });
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.VisitaLojaMerchantImageUploadAdapter = api;
+})(typeof window !== 'undefined' ? window : globalThis);
