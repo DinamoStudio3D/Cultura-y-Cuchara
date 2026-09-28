@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const {
   buildPersistencePlan,
   calculateUserMissionStates,
+  persistMissionState,
   progressDocumentId,
   rewardDocumentId
 } = require("./chabaquito-missions-v2-service");
@@ -31,6 +32,37 @@ const visit = (requestId, placeId, status = "confirmed") => ({
   status,
   confirmedAt: "2026-09-15T12:00:00-05:00"
 });
+
+function createFakeDb(seed = {}) {
+  const store = new Map(Object.entries(seed));
+  const ref = (collection, id) => ({ key: `${collection}/${id}` });
+  return {
+    store,
+    collection(name) {
+      return { doc: id => ref(name, id) };
+    },
+    async runTransaction(callback) {
+      const tx = {
+        async get(docRef) {
+          const exists = store.has(docRef.key);
+          return { exists, data: () => store.get(docRef.key) };
+        },
+        set(docRef, data, options = {}) {
+          const previous = store.get(docRef.key) || {};
+          store.set(docRef.key, options.merge ? { ...previous, ...data } : { ...data });
+        },
+        create(docRef, data) {
+          if (store.has(docRef.key)) throw new Error(`Documento ya existe: ${docRef.key}`);
+          store.set(docRef.key, { ...data });
+        },
+        delete(docRef) {
+          store.delete(docRef.key);
+        }
+      };
+      return callback(tx);
+    }
+  };
+}
 
 {
   const states = calculateUserMissionStates({
@@ -111,9 +143,40 @@ const visit = (requestId, placeId, status = "confirmed") => ({
   assert.equal(plan.rewardAction, "delete");
 }
 
-{
+(async () => {
+  const now = "2026-09-15T17:00:00.000Z";
+  const completedState = calculateUserMissionStates({
+    userId: "user_123",
+    missions,
+    visits: [visit("visit_a", "cafe1"), visit("visit_b", "cafe2")],
+    placesById
+  })[0];
+  const db = createFakeDb();
+
+  const first = await persistMissionState(db, completedState, now);
+  assert.equal(first.rewardAction, "create");
+  assert.equal(db.store.get("chabaquitoMissionProgress/user_123_cafeterias_2").completed, true);
+  assert.equal(db.store.get("chabaquitoDigitalRewards/user_123_cafeterias_2").badge.title, "Explorador cafetero");
+
+  const second = await persistMissionState(db, completedState, "2026-09-16T17:00:00.000Z");
+  assert.equal(second.rewardAction, "none");
+  assert.equal(db.store.get("chabaquitoMissionProgress/user_123_cafeterias_2").completedAt, now);
+
+  const reversedState = calculateUserMissionStates({
+    userId: "user_123",
+    missions,
+    visits: [visit("visit_a", "cafe1"), visit("visit_b", "cafe2", "reversed")],
+    placesById
+  })[0];
+  const reversed = await persistMissionState(db, reversedState, "2026-09-16T18:00:00.000Z");
+  assert.equal(reversed.rewardAction, "delete");
+  assert.equal(db.store.get("chabaquitoMissionProgress/user_123_cafeterias_2").completed, false);
+  assert.equal(db.store.has("chabaquitoDigitalRewards/user_123_cafeterias_2"), false);
+
   assert.equal(progressDocumentId("user_123", "cafeterias_2"), "user_123_cafeterias_2");
   assert.equal(rewardDocumentId("user_123", "cafeterias_2"), "user_123_cafeterias_2");
-}
-
-console.log("Chabaquito Missions V2 service: OK");
+  console.log("Chabaquito Missions V2 service: OK");
+})().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
