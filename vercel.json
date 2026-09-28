@@ -30,6 +30,14 @@
   ],
   "rewrites": [
     {
+      "source": "/q/:id",
+      "destination": "/qr-dinamico.html"
+    },
+    {
+      "source": "/q/:id/",
+      "destination": "/qr-dinamico.html"
+    },
+    {
       "source": "/parada/:slug",
       "destination": "/negocio.html?lugar=:slug"
     },
