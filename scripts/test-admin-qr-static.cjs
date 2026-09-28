@@ -55,9 +55,13 @@ function checkPattern(image, info, code, cell, x, y, label) {
   assert.throws(()=>api.validatedUrl('https://www..visitaloja.com/'),/dominio.*inválido/);
   assert.strictEqual(api.validatedUrl(url),url);
   const high = api.qrCode(url,'H');
-  const logo = await sharp(path.join(__dirname,'../visita-loja-icon-512.png')).resize(128,128).png().toBuffer();
+  const original = sharp(path.join(__dirname,'../visita-loja-icon-512.png'));
+  const trimmed = await original.trim({threshold:16}).png().toBuffer();
+  const trimmedInfo = await sharp(trimmed).metadata();
+  const square = Math.ceil(Math.max(trimmedInfo.width,trimmedInfo.height)*1.06);
+  const logo = await sharp(trimmed).extend({top:Math.floor((square-trimmedInfo.height)/2),bottom:Math.ceil((square-trimmedInfo.height)/2),left:Math.floor((square-trimmedInfo.width)/2),right:Math.ceil((square-trimmedInfo.width)/2),background:'#00000000'}).resize(256,256).png().toBuffer();
   const logoData = {data:'data:image/png;base64,'+logo.toString('base64')};
-  for (const target of [304,1024]) for (const percent of [6,9,14]) {
+  for (const target of [304,1024]) for (const percent of [6,18,24,28]) {
     const cell=api.modulePixels(high,target,4), side=(high.getModuleCount()+8)*cell;
     const native=Buffer.from(high.createDataURL(cell,cell*4).split(',')[1],'base64');
     const {size,patch,x,y}=api.logoGeometry(high,cell,4,percent);
@@ -76,6 +80,7 @@ function checkPattern(image, info, code, cell, x, y, label) {
         checkPattern(data,info,high,cell,col,row,`${label} ${percent}%: ${pattern}`);
     }
   }
+  assert.throws(()=>api.logoGeometry(api.qrCode('https://a.co/','H'),5,4,28),/tapa una marca de alineación/);
   assert.throws(()=>api.logoGeometry(api.qrCode(url+'a'.repeat(110),'H'),5,4,9),/marca de alineación central/);
   console.log('QR M, negro #000000, blanco #ffffff, sin logo, margen 4 módulos: OK');
 })().catch(error => {console.error(error);process.exitCode = 1});

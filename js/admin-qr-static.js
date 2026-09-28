@@ -76,10 +76,28 @@
       const image = new Image();
       image.onload = () => {
         try {
+          // El PNG oficial contiene bordes transparentes amplios; encuadrar el dibujo
+          // mejora su tamaño visible sin sustituir ni deformar el recurso.
+          const source = document.createElement('canvas');
+          source.width = image.naturalWidth;
+          source.height = image.naturalHeight;
+          const sourceCtx = source.getContext('2d', { willReadFrequently: true });
+          sourceCtx.drawImage(image, 0, 0);
+          const { data } = sourceCtx.getImageData(0, 0, source.width, source.height);
+          let minX = source.width, minY = source.height, maxX = -1, maxY = -1;
+          for (let y = 0; y < source.height; y++) for (let x = 0; x < source.width; x++) {
+            if (data[(y * source.width + x) * 4 + 3] < 16) continue;
+            minX = Math.min(minX, x); minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+          }
+          if (maxX < 0) throw new Error('El logo oficial no contiene píxeles visibles.');
+          const side = Math.ceil(Math.max(maxX - minX + 1, maxY - minY + 1) * 1.06);
+          const centerX = (minX + maxX) / 2, centerY = (minY + maxY) / 2;
           const canvas = document.createElement('canvas');
-          canvas.width = canvas.height = 128;
-          canvas.getContext('2d').drawImage(image, 0, 0, 128, 128);
-          resolve({ image, data: canvas.toDataURL('image/png') });
+          canvas.width = canvas.height = 256;
+          canvas.getContext('2d').drawImage(source, centerX - side / 2, centerY - side / 2,
+            side, side, 0, 0, 256, 256);
+          resolve({ image: canvas, data: canvas.toDataURL('image/png') });
         } catch (_) { reject(new Error('No se pudo preparar el logo oficial.')); }
       };
       image.onerror = () => reject(new Error('No se pudo cargar el logo oficial.'));
@@ -93,7 +111,10 @@
     const size = Math.max(2, Math.round(count * percent / 100)) * pixels;
     const patch = size + pixels;
     const side = (count + margin * 2) * pixels;
-    return { size, patch, x: Math.round((side - patch) / 2), y: Math.round((side - patch) / 2) };
+    const x = Math.round((side - patch) / 2);
+    if (count >= 25 && (x + patch - margin * pixels) / pixels > count - 9)
+      throw new Error('El logo tapa una marca de alineación a este tamaño. Reduce el tamaño del logo.');
+    return { size, patch, x, y: x };
   }
   function drawLogo(canvas, logo, code, pixels, margin, percent) {
     const { size, patch, x, y } = logoGeometry(code, pixels, margin, percent);
