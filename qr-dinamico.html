@@ -24,7 +24,11 @@
       'use strict';
       const title = document.getElementById('title');
       const message = document.getElementById('message');
-      const fail = (text) => { title.textContent = 'Este enlace no está disponible'; message.textContent = text; message.className = 'error'; };
+      const fail = (text) => {
+        title.textContent = 'Este enlace no está disponible';
+        message.textContent = text;
+        message.className = 'error';
+      };
       const match = location.pathname.match(/^\/q\/([A-Za-z0-9_-]{6,64})\/?$/);
       if (!match) { fail('El código QR no es válido.'); return; }
       const qrId = match[1];
@@ -38,20 +42,27 @@
       };
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-      // Esta colección contiene exclusivamente el mínimo dato público necesario
-      // para resolver un QR. Nombre, creador, historial y configuración viven en
-      // la colección administrativa privada dynamicMarketingQrs.
+      // Solo se consulta un documento por ID. Las reglas deben mantener
+      // bloqueado el listado de la colección dynamicQrPublic.
       firebase.firestore().collection('dynamicQrPublic').doc(qrId).get()
         .then((snap) => {
-          if (!snap.exists) throw new Error('missing');
+          if (!snap.exists) { fail('Este código QR no existe o ya no está disponible.'); return; }
           const data = snap.data() || {};
           if (data.status !== 'active') { fail('Este código QR está temporalmente desactivado.'); return; }
+          if (typeof data.destinationUrl !== 'string' || data.destinationUrl.length === 0 || data.destinationUrl.length > 1800) {
+            fail('El destino configurado para este código no es válido.');
+            return;
+          }
           let destination;
-          try { destination = new URL(String(data.destinationUrl || '')); } catch (_) { throw new Error('invalid'); }
-          if (destination.protocol !== 'https:' || destination.username || destination.password) throw new Error('invalid');
+          try { destination = new URL(data.destinationUrl); }
+          catch (_) { fail('El destino configurado para este código no es válido.'); return; }
+          if (destination.protocol !== 'https:' || destination.username || destination.password) {
+            fail('El destino configurado para este código no es válido.');
+            return;
+          }
           location.replace(destination.href);
         })
-        .catch(() => fail('No pudimos encontrar un destino válido para este código.'));
+        .catch(() => fail('No pudimos comprobar este código en este momento. Inténtalo nuevamente.'));
     })();
   </script>
 </body>
