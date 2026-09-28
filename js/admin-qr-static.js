@@ -3,6 +3,8 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const ORIGIN = 'https://www.visitaloja.com';
+  const LOGO = 'visita-loja-icon-512.png';
+  let logoPromise;
   let generation = 0;
   let current = null;
 
@@ -14,6 +16,8 @@
     try { url = new URL(value); } catch (_) { throw new Error('Escribe una URL completa que empiece con https://.'); }
     if (url.protocol !== 'https:' || !url.hostname || url.username || url.password)
       throw new Error('Utiliza una URL https:// sin usuario ni contraseña.');
+    if (!url.hostname.startsWith('[') && !url.hostname.split('.').every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label)))
+      throw new Error('El dominio de la URL es inválido. Revisa puntos adicionales, como en https://.visitaloja.com/.');
     if (/(^|\.)visitaloja\.com$/i.test(url.hostname) && (url.pathname === '/fidelidad.html' || url.searchParams.has('checkin')))
       throw new Error('Los enlaces de visitas y fidelidad usan un flujo QR distinto.');
     return url.href;
@@ -67,6 +71,44 @@
       image.src = code.createDataURL(pixels, pixels * margin);
     });
   }
+  function logoData() {
+    if (!logoPromise) logoPromise = new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = canvas.height = 128;
+          canvas.getContext('2d').drawImage(image, 0, 0, 128, 128);
+          resolve({ image, data: canvas.toDataURL('image/png') });
+        } catch (_) { reject(new Error('No se pudo preparar el logo oficial.')); }
+      };
+      image.onerror = () => reject(new Error('No se pudo cargar el logo oficial.'));
+      image.src = LOGO;
+    }).catch(error => { logoPromise = null; throw error; });
+    return logoPromise;
+  }
+  function logoGeometry(code, pixels, margin, percent) {
+    const count = code.getModuleCount();
+    if (count >= 45) throw new Error('Este QR tiene una marca de alineación central. No se permite el logo en esta URL; desactívalo.');
+    const size = Math.max(2, Math.round(count * percent / 100)) * pixels;
+    const patch = size + pixels;
+    const side = (count + margin * 2) * pixels;
+    return { size, patch, x: Math.round((side - patch) / 2), y: Math.round((side - patch) / 2) };
+  }
+  function drawLogo(canvas, logo, code, pixels, margin, percent) {
+    const { size, patch, x, y } = logoGeometry(code, pixels, margin, percent);
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, patch, patch);
+    const inset = Math.round((patch - size) / 2);
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(logo.image, x + inset, y + inset, size, size);
+  }
+  function svgWithLogo(svg, logo, code, pixels, margin, percent) {
+    const { size, patch, x, y } = logoGeometry(code, pixels, margin, percent);
+    const inset = Math.round((patch - size) / 2);
+    return svg.replace('</svg>', `<rect x="${x}" y="${y}" width="${patch}" height="${patch}" fill="white"/><image x="${x + inset}" y="${y + inset}" width="${size}" height="${size}" href="${logo.data}"/></svg>`);
+  }
   function copyImage(image) {
     const canvas = document.createElement('canvas');
     canvas.width = image.naturalWidth;
@@ -110,19 +152,31 @@
     if ($('staticQrDestination').value === 'manual' && !$('staticQrUrl').value.trim()) return;
     try {
       const url = validatedUrl(destination());
+      const wantsLogo = $('staticQrLogo').checked;
+      if (wantsLogo && $('staticQrLevel').value !== 'H') {
+        $('staticQrLevel').value = 'H';
+        notice('Con logo se utiliza corrección H. Comprueba el QR con tu teléfono antes de imprimir.', false);
+      }
       const code = qrCode(url, $('staticQrLevel').value);
+      const margin = quietModules();
+      const logoSize = Number($('staticQrLogoSize').value);
+      if (wantsLogo) logoGeometry(code, 1, margin, logoSize);
       const preview = $('staticQrPreview');
       const available = Math.min(320, Math.max(160, (preview.clientWidth || 320) - 16));
-      const image = await libraryImage(code, modulePixels(code, available));
+      const pixels = modulePixels(code, available, margin);
+      const [image, logo] = await Promise.all([libraryImage(code, pixels, margin), wantsLogo ? logoData() : Promise.resolve(null)]);
       if (token !== generation) return;
-      assertQrDestination(copyImage(image), url);
+      const canvas = copyImage(image);
+      if (logo) drawLogo(canvas, logo, code, pixels, margin, logoSize);
+      assertQrDestination(canvas, url);
       if (token !== generation) return;
+      if (logo) image.src = canvas.toDataURL('image/png');
       image.alt = 'QR de ' + url;
       image.className = 'static-qr-image';
       preview.replaceChildren(image);
       $('staticQrPreviewUrl').textContent = url;
       $('staticQrPng').disabled = $('staticQrSvg').disabled = false;
-      current = { url, code, margin: quietModules() };
+      current = { url, code, margin, logo, logoSize };
     } catch (error) {
       if (token !== generation) return;
       notice(error.message || 'No se pudo generar el QR. Revisa el destino y los ajustes.');
@@ -154,7 +208,8 @@
   function downloadSvg() {
     if (!current) return notice('Primero genera un QR válido.');
     const pixels = modulePixels(current.code, Number($('staticQrSize').value), current.margin);
-    const svg = current.code.createSvgTag(pixels, pixels * current.margin);
+    const native = current.code.createSvgTag(pixels, pixels * current.margin);
+    const svg = current.logo ? svgWithLogo(native, current.logo, current.code, pixels, current.margin, current.logoSize) : native;
     saveBlob(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }), 'svg');
   }
   async function downloadPng() {
@@ -165,6 +220,7 @@
       const image = await libraryImage(snapshot.code, pixels, snapshot.margin);
       if (snapshot !== current) return;
       const canvas = copyImage(image);
+      if (snapshot.logo) drawLogo(canvas, snapshot.logo, snapshot.code, pixels, snapshot.margin, snapshot.logoSize);
       assertQrDestination(canvas, snapshot.url);
       canvas.toBlob(blob => {
         if (snapshot !== current) return;
@@ -176,6 +232,10 @@
   if (!module) return;
   module.addEventListener('input', event => {
     if (event.target.id === 'staticQrUrl') render();
+    if (event.target.id === 'staticQrLogoSize') {
+      $('staticQrLogoSizeValue').textContent = `${event.target.value}%`;
+      if ($('staticQrLogo').checked) render();
+    }
   });
   module.addEventListener('change', event => {
     if (event.target.id === 'staticQrDestination') updateDestination();

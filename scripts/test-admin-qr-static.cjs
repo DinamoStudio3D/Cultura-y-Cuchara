@@ -1,4 +1,4 @@
-/* Comprueba la salida nativa de qrcode-generator, sin logo ni redibujado de módulos. */
+/* Comprueba la salida nativa sin logo y las opciones de logo central. */
 const fs = require('fs');
 const vm = require('vm');
 const assert = require('assert');
@@ -10,7 +10,7 @@ const qrcode = require('../js/vendor/qrcode-generator.js');
 const url = 'https://www.visitaloja.com/';
 const source = fs.readFileSync(path.join(__dirname, '../js/admin-qr-static.js'), 'utf8');
 const head = source.slice(source.indexOf('(() => {'), source.indexOf("  const module = $('qrModule');"));
-const api = vm.runInNewContext(head + 'return {validatedUrl,qrCode,modulePixels};})();', {qrcode, URL});
+const api = vm.runInNewContext(head + 'return {validatedUrl,qrCode,modulePixels,logoGeometry,svgWithLogo};})();', {qrcode, URL});
 async function decode(input) {
   const {data, info} = await sharp(input).ensureAlpha().raw().toBuffer({resolveWithObject: true});
   return jsQR(new Uint8ClampedArray(data), info.width, info.height,
@@ -50,6 +50,32 @@ function checkPattern(image, info, code, cell, x, y, label) {
       console.log(`${name}, ${side} px, módulo ${cell} px: ${url}`);
     }
   }
-  assert.notStrictEqual(await decode(Buffer.from(api.qrCode('https://.www.visitaloja.com/','M').createDataURL(6,24).split(',')[1],'base64')),url);
+  assert.throws(()=>api.validatedUrl('https://.visitaloja.com/'),/dominio.*inválido/);
+  assert.throws(()=>api.validatedUrl('https://.www.visitaloja.com/'),/dominio.*inválido/);
+  assert.throws(()=>api.validatedUrl('https://www..visitaloja.com/'),/dominio.*inválido/);
+  assert.strictEqual(api.validatedUrl(url),url);
+  const high = api.qrCode(url,'H');
+  const logo = await sharp(path.join(__dirname,'../visita-loja-icon-512.png')).resize(128,128).png().toBuffer();
+  const logoData = {data:'data:image/png;base64,'+logo.toString('base64')};
+  for (const target of [304,1024]) for (const percent of [6,9,14]) {
+    const cell=api.modulePixels(high,target,4), side=(high.getModuleCount()+8)*cell;
+    const native=Buffer.from(high.createDataURL(cell,cell*4).split(',')[1],'base64');
+    const {size,patch,x,y}=api.logoGeometry(high,cell,4,percent);
+    const mark=await sharp(logo).resize(size,size).png().toBuffer();
+    const insert=Math.round((patch-size)/2);
+    const png=await sharp(native).composite([
+      {input:{create:{width:patch,height:patch,channels:4,background:'#ffffff'}},left:x,top:y},
+      {input:mark,left:x+insert,top:y+insert}
+    ]).png().toBuffer();
+    const svg=Buffer.from(api.svgWithLogo(high.createSvgTag(cell,cell*4),logoData,high,cell,4,percent));
+    for(const [label,content] of [['PNG',png],['SVG',svg]]) {
+      assert.strictEqual(await decode(content),url);
+      console.log(`${label} con logo ${percent}%, ${target}px: ${url}`);
+      const {data,info}=await sharp(content).ensureAlpha().raw().toBuffer({resolveWithObject:true});
+      for(const [col,row,pattern] of [[0,0,'finder izquierdo'],[high.getModuleCount()-7,0,'finder derecho'],[0,high.getModuleCount()-7,'finder inferior'],[high.getModuleCount()-9,high.getModuleCount()-9,'alignment']])
+        checkPattern(data,info,high,cell,col,row,`${label} ${percent}%: ${pattern}`);
+    }
+  }
+  assert.throws(()=>api.logoGeometry(api.qrCode(url+'a'.repeat(110),'H'),5,4,9),/marca de alineación central/);
   console.log('QR M, negro #000000, blanco #ffffff, sin logo, margen 4 módulos: OK');
 })().catch(error => {console.error(error);process.exitCode = 1});
