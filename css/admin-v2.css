@@ -69,3 +69,54 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   #loginView{margin-top:1.25rem}
 }
 @media(prefers-reduced-motion:reduce){button,a{transition:none}}
+
+/* Admin V2: reusable navigation, forms and status patterns. */
+#adminSidebar button[data-nav-item][aria-current="page"]{
+  background:linear-gradient(105deg,rgba(245,158,11,.2),rgba(234,88,12,.075))!important;
+  border-color:rgba(245,158,11,.33)!important;
+  color:#fff!important;
+  box-shadow:inset 3px 0 #f59e0b!important;
+}
+#adminSidebar button[data-nav-item][aria-current="page"] i{color:#fbbf24!important}
+#adminSidebar [data-nav-item].hidden{display:none!important}
+.admin-content{min-width:0}
+.admin-content>section{min-width:0;overflow-wrap:break-word}
+.admin-content :is(input,textarea,select){max-width:100%}
+.admin-content textarea{resize:vertical;min-height:6rem}
+.admin-content :is(button,[role="button"]):disabled{opacity:.53;cursor:wait;transform:none!important}
+.admin-content button[class*="bg-indigo-500"],
+.admin-content button[class*="bg-cyan-500"],
+.admin-content button[class*="bg-blue-500"]{background:#eaa514!important;color:#14100a!important}
+.admin-content button[class*="bg-indigo-500"]:hover,
+.admin-content button[class*="bg-cyan-500"]:hover,
+.admin-content button[class*="bg-blue-500"]:hover{background:#fbbf24!important}
+.admin-content :is([role="alert"],[role="status"]){overflow-wrap:anywhere}
+.admin-content :is(table,th,td){font-variant-numeric:tabular-nums}
+.admin-content .overflow-x-auto{scrollbar-color:#555f6e transparent;scrollbar-width:thin}
+.admin-content thead{background:rgba(255,255,255,.025)}
+.admin-content :is(tbody tr,article){border-color:rgba(255,255,255,.09)}
+.admin-dashboard-priority>button{transition:border-color .18s,background .18s,transform .18s}
+.admin-dashboard-priority>button:hover{border-color:rgba(245,158,11,.5);transform:translateY(-2px)}
+#dashboardModule>.grid>div{min-width:0}
+#dashboardLoadState{min-height:1.4rem}
+#adminGlobalSearchModal>div{max-height:calc(100dvh - 2rem);display:flex;flex-direction:column}
+#adminGlobalSearchResults{min-height:0;overflow-y:auto}
+@media(min-width:768px) and (max-width:1023px){
+  #adminView>.grid{grid-template-columns:220px minmax(0,1fr)!important;gap:1rem!important}
+  #adminSidebar{position:sticky!important;top:8.5rem!important;max-height:calc(100dvh - 9rem)!important;display:block!important}
+  #mobileAdminNavToggle{display:none!important}
+  .admin-content>section{padding:1.35rem!important}
+}
+@media(max-width:767px){
+  body:has(#adminSidebar:not(.mobile-closed)) #adminView:before{content:"";position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:49}
+  #adminSidebar:not(.mobile-closed){top:calc(4.2rem + env(safe-area-inset-top))!important;bottom:env(safe-area-inset-bottom);max-height:calc(100dvh - 5rem - env(safe-area-inset-top))!important}
+  #adminView>.grid{display:block}
+  .admin-content :is(button,a){max-width:100%}
+  .admin-content .overflow-x-auto{max-width:100%}
+  .admin-content table{min-width:640px}
+  #dashboardModule>.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #dashboardModule>.grid>div{padding:.8rem!important}
+  #dashboardModule>.grid>div strong{font-size:1.55rem}
+  #adminGlobalSearchModal>div{max-height:100dvh}
+}
+@media(max-width:389px){#dashboardModule>.grid{gap:.5rem!important}}
