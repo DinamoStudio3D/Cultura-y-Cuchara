@@ -16,7 +16,7 @@
     <div class="grid xl:grid-cols-2 gap-5">
       <form id="dynamicQrForm" class="rounded-2xl border border-white/10 bg-black/20 p-4 sm:p-5 space-y-4">
         <label class="block"><span class="text-sm font-bold block mb-2">Nombre interno</span><input id="dynamicQrName" class="field" maxlength="80" placeholder="Ej. Afiche Terminal Terrestre" required></label>
-        <label class="block"><span class="text-sm font-bold block mb-2">Destino actual</span><input id="dynamicQrDestination" class="field" type="url" inputmode="url" placeholder="https://www.visitaloja.com/..." required></label>
+        <label class="block"><span class="text-sm font-bold block mb-2">Destino actual</span><input id="dynamicQrDestination" class="field" type="url" inputmode="url" maxlength="1800" placeholder="https://www.visitaloja.com/..." required></label>
         <div><span class="text-sm font-bold block mb-2">ID permanente</span><div class="flex gap-2"><input id="dynamicQrId" class="field font-mono" minlength="6" maxlength="64" pattern="[A-Za-z0-9_-]{6,64}" required><button id="dynamicQrGenerateId" type="button" class="rounded-xl border border-white/15 px-3 font-bold hover:border-amber-400">Generar</button></div><p class="text-xs text-amber-200 mt-2">Este ID queda ligado a las impresiones físicas y no podrá editarse después de crear el QR.</p></div>
         <div id="dynamicQrPermanentBox" class="hidden rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3"><p class="text-[10px] uppercase tracking-widest font-black text-emerald-300">URL permanente</p><p id="dynamicQrPermanentUrl" class="text-sm break-all mt-1 font-mono"></p></div>
         <div class="flex flex-wrap gap-2"><button id="dynamicQrCreate" type="submit" class="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black px-4 py-3"><i class="fa-solid fa-qrcode mr-2"></i>Crear QR dinámico</button><button id="dynamicQrCancelEdit" type="button" class="hidden rounded-xl border border-white/15 px-4 py-3 font-bold">Cancelar edición</button></div>
@@ -39,7 +39,7 @@
   function randomId() { const bytes = new Uint8Array(9); crypto.getRandomValues(bytes); return Array.from(bytes, b => b.toString(36).padStart(2,'0')).join('').slice(0,12); }
   function setId() { if (!editingId) $('dynamicQrId').value = randomId(); previewUrl(); }
   function previewUrl() { try { $('dynamicQrPermanentUrl').textContent = store.publicUrl($('dynamicQrId').value); $('dynamicQrPermanentBox').classList.remove('hidden'); } catch (_) { $('dynamicQrPermanentBox').classList.add('hidden'); } }
-  function reset() { editingId = null; $('dynamicQrForm').reset(); $('dynamicQrId').disabled = false; $('dynamicQrCreate').innerHTML = '<i class="fa-solid fa-qrcode mr-2"></i>Crear QR dinámico'; $('dynamicQrCancelEdit').classList.add('hidden'); setId(); state('Listo para crear un QR dinámico.'); }
+  function reset() { editingId = null; $('dynamicQrForm').reset(); $('dynamicQrId').disabled = false; $('dynamicQrGenerateId').disabled = false; $('dynamicQrCreate').innerHTML = '<i class="fa-solid fa-qrcode mr-2"></i>Crear QR dinámico'; $('dynamicQrCancelEdit').classList.add('hidden'); setId(); state('Listo para crear un QR dinámico.'); }
   function safeText(value) { return String(value ?? ''); }
   function render() {
     $('dynamicQrCount').textContent = `${records.length} registro${records.length === 1 ? '' : 's'}`;
@@ -55,7 +55,7 @@
       info.append(h,permanent,dest);
       const badge=document.createElement('span');badge.className=`h-fit text-[11px] font-black rounded-full px-2.5 py-1 ${r.status==='active'?'bg-emerald-500/15 text-emerald-200':'bg-gray-700 text-gray-300'}`;badge.textContent=r.status==='active'?'ACTIVO':'INACTIVO';head.append(info,badge);card.append(head);
       const actions=document.createElement('div');actions.className='flex flex-wrap gap-2 mt-3';
-      [['Editar destino','edit'],[r.status==='active'?'Desactivar':'Activar','toggle'],['Abrir permanente','open']].forEach(([label,action])=>{const b=document.createElement('button');b.type='button';b.className='text-xs font-bold rounded-lg border border-white/15 px-3 py-2 hover:border-amber-400';b.textContent=label;b.dataset.action=action;b.dataset.id=r.id;actions.append(b);});
+      [['Editar destino','edit'],[r.status==='active'?'Desactivar':'Activar','toggle'],['Abrir permanente','open'],['Copiar URL','copy']].forEach(([label,action])=>{const b=document.createElement('button');b.type='button';b.className='text-xs font-bold rounded-lg border border-white/15 px-3 py-2 hover:border-amber-400';b.textContent=label;b.dataset.action=action;b.dataset.id=r.id;actions.append(b);});
       card.append(actions);list.append(card);
     });
   }
@@ -74,19 +74,22 @@
       if (editingId) {
         if (!confirm('Cambiarás el destino de un QR que puede estar impreso. La URL permanente NO cambiará. ¿Continuar?')) return;
         await store.update(editingId,{name:$('dynamicQrName').value,destinationUrl:$('dynamicQrDestination').value});
+        reset();
         state('Destino actualizado. Las impresiones existentes usarán el nuevo destino.');
       } else {
         const result=await store.create({qrId:$('dynamicQrId').value,name:$('dynamicQrName').value,destinationUrl:$('dynamicQrDestination').value,destinationType:'manual',status:'active',config:{}});
-        state(`QR creado: ${result.publicUrl}`);
+        reset();
+        state(`QR creado correctamente. URL permanente: ${result.publicUrl}`);
       }
-      reset(); listen();
+      listen();
     } catch(err) { state(err.code==='permission-denied'?'Firestore rechazó la operación: faltan las reglas de QR dinámicos.':`No se pudo guardar (${err.message || 'error'}).`,true); }
     finally { button.disabled=false; }
   });
   $('dynamicQrList').addEventListener('click', async e => {
     const b=e.target.closest('button[data-action]');if(!b)return;const r=records.find(x=>x.id===b.dataset.id);if(!r)return;
     if(b.dataset.action==='open') window.open(store.publicUrl(r.id),'_blank','noopener,noreferrer');
-    if(b.dataset.action==='edit'){editingId=r.id;$('dynamicQrName').value=r.name||'';$('dynamicQrDestination').value=r.destinationUrl||'';$('dynamicQrId').value=r.id;$('dynamicQrId').disabled=true;previewUrl();$('dynamicQrCreate').textContent='Guardar nuevo destino';$('dynamicQrCancelEdit').classList.remove('hidden');state('El ID permanente está bloqueado. Solo cambiarán nombre/destino.');$('dynamicQrName').focus();}
+    if(b.dataset.action==='copy'){try{await navigator.clipboard.writeText(store.publicUrl(r.id));state('URL permanente copiada.');}catch(_){state('No se pudo copiar la URL automáticamente.',true);}}
+    if(b.dataset.action==='edit'){editingId=r.id;$('dynamicQrName').value=r.name||'';$('dynamicQrDestination').value=r.destinationUrl||'';$('dynamicQrId').value=r.id;$('dynamicQrId').disabled=true;$('dynamicQrGenerateId').disabled=true;previewUrl();$('dynamicQrCreate').textContent='Guardar nuevo destino';$('dynamicQrCancelEdit').classList.remove('hidden');state('El ID permanente está bloqueado. Solo cambiarán nombre/destino.');$('dynamicQrName').focus();}
     if(b.dataset.action==='toggle'){const active=r.status!=='active';if(!confirm(`${active?'Activar':'Desactivar'} “${r.name}”? El QR impreso conservará su URL permanente.`))return;try{await store.setActive(r.id,active);state(active?'QR activado.':'QR desactivado; las impresiones no se han eliminado.');}catch(err){state(err.code==='permission-denied'?'Faltan las reglas de QR dinámicos.':'No se pudo cambiar el estado.',true);}}
   });
   auth.onAuthStateChanged(user=>{if(!user){if(unsubscribe){unsubscribe();unsubscribe=null;}records=[];render();}else listen();});
