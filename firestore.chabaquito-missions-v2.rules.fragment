@@ -1,0 +1,100 @@
+// BORRADOR AISLADO — Misiones de Chabaquito V2
+// NO está incluido en firestore.rules y NO está desplegado.
+// Objetivo: revisar el contrato de seguridad antes de habilitar persistencia.
+
+function validChabaquitoMissionV2() {
+  return request.resource.data.keys().hasAll([
+      'title', 'description', 'type', 'targetCount', 'categoryIds', 'placeIds',
+      'cantonIds', 'rewardType', 'badge', 'physicalCampaignId', 'startsAt',
+      'endsAt', 'status', 'version', 'createdAt', 'updatedAt', 'createdByUid',
+      'updatedByUid'
+    ])
+    && request.resource.data.keys().hasOnly([
+      'title', 'description', 'type', 'targetCount', 'categoryIds', 'placeIds',
+      'cantonIds', 'rewardType', 'badge', 'physicalCampaignId', 'startsAt',
+      'endsAt', 'status', 'version', 'createdAt', 'updatedAt', 'createdByUid',
+      'updatedByUid'
+    ])
+    && request.resource.data.title is string
+    && request.resource.data.title.size() > 0
+    && request.resource.data.title.size() <= 100
+    && request.resource.data.description is string
+    && request.resource.data.description.size() > 0
+    && request.resource.data.description.size() <= 500
+    && request.resource.data.type in ['category_visits', 'place_visits', 'canton_visits', 'total_visits']
+    && request.resource.data.targetCount is int
+    && request.resource.data.targetCount >= 1
+    && request.resource.data.targetCount <= 500
+    && request.resource.data.categoryIds is list
+    && request.resource.data.categoryIds.size() <= 50
+    && request.resource.data.placeIds is list
+    && request.resource.data.placeIds.size() <= 100
+    && request.resource.data.cantonIds is list
+    && request.resource.data.cantonIds.size() <= 32
+    && request.resource.data.rewardType in ['digital', 'digital_physical']
+    && request.resource.data.badge is map
+    && request.resource.data.badge.keys().hasAll(['title', 'description', 'icon', 'imageUrl', 'rarity'])
+    && request.resource.data.badge.keys().hasOnly(['title', 'description', 'icon', 'imageUrl', 'rarity'])
+    && request.resource.data.badge.title is string
+    && request.resource.data.badge.title.size() > 0
+    && request.resource.data.badge.title.size() <= 80
+    && request.resource.data.badge.description is string
+    && request.resource.data.badge.description.size() > 0
+    && request.resource.data.badge.description.size() <= 240
+    && request.resource.data.badge.icon is string
+    && request.resource.data.badge.icon.size() > 0
+    && request.resource.data.badge.icon.size() <= 16
+    && request.resource.data.badge.imageUrl is string
+    && request.resource.data.badge.imageUrl.size() <= 1000
+    && request.resource.data.badge.rarity in ['common', 'uncommon', 'rare', 'epic', 'legendary']
+    && request.resource.data.status in ['draft', 'active', 'paused', 'archived']
+    && request.resource.data.version == 1
+    && request.resource.data.updatedAt == request.time
+    && request.resource.data.updatedByUid == request.auth.uid
+    && (
+      request.resource.data.rewardType == 'digital'
+        ? request.resource.data.physicalCampaignId == null
+        : request.resource.data.physicalCampaignId is string
+          && request.resource.data.physicalCampaignId.size() >= 6
+          && request.resource.data.physicalCampaignId.size() <= 64
+    )
+    && (
+      request.resource.data.type == 'category_visits'
+        ? request.resource.data.categoryIds.size() > 0
+        : request.resource.data.type == 'place_visits'
+          ? request.resource.data.placeIds.size() > 0
+          : request.resource.data.type == 'canton_visits'
+            ? request.resource.data.cantonIds.size() > 0
+            : true
+    );
+}
+
+match /chabaquitoMissions/{missionId} {
+  // El público solo podrá consultar misiones activas. Admin ve todos los estados.
+  allow read: if isViveLojaAdmin() || resource.data.status == 'active';
+  allow create: if isViveLojaAdmin()
+    && missionId.matches('^[A-Za-z0-9_-]{6,64}$')
+    && validChabaquitoMissionV2()
+    && request.resource.data.createdAt == request.time
+    && request.resource.data.createdByUid == request.auth.uid;
+  allow update: if isViveLojaAdmin()
+    && validChabaquitoMissionV2()
+    && request.resource.data.createdAt == resource.data.createdAt
+    && request.resource.data.createdByUid == resource.data.createdByUid;
+  allow delete: if isViveLojaAdmin();
+}
+
+match /chabaquitoMissionProgress/{progressId} {
+  // Fase V2: el cliente nunca podrá acreditar su propio progreso.
+  // La escritura deberá venir de backend/admin tras validar visitas reales.
+  allow read: if isViveLojaAdmin()
+    || (request.auth != null && resource.data.userId == request.auth.uid);
+  allow create, update, delete: if isViveLojaAdmin();
+}
+
+match /chabaquitoDigitalRewards/{rewardId} {
+  // Las insignias son personales e inmutables para el usuario.
+  allow read: if isViveLojaAdmin()
+    || (request.auth != null && resource.data.userId == request.auth.uid);
+  allow create, update, delete: if isViveLojaAdmin();
+}
