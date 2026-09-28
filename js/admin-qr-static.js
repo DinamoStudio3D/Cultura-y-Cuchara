@@ -3,8 +3,6 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const ORIGIN = 'https://www.visitaloja.com';
-  const LOGO_PATH = 'visita-loja-icon-512.png';
-  let logoAssetPromise;
   let generation = 0;
   let current = null;
 
@@ -69,43 +67,6 @@
       image.src = code.createDataURL(pixels, pixels * margin);
     });
   }
-  function officialLogo() {
-    if (!logoAssetPromise) logoAssetPromise = new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = canvas.height = 128;
-          canvas.getContext('2d').drawImage(image, 0, 0, 128, 128);
-          resolve({ image, data: canvas.toDataURL('image/png') });
-        } catch (_) { reject(new Error('No se pudo preparar el logo.')); }
-      };
-      image.onerror = () => reject(new Error('No se pudo cargar el logo oficial.'));
-      image.src = LOGO_PATH;
-    }).catch(error => { logoAssetPromise = null; throw error; });
-    return logoAssetPromise;
-  }
-  function brandHeight(pixels) { return pixels * 8; }
-  function brandedCanvas(image, logo, pixels) {
-    const canvas = document.createElement('canvas');
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight + brandHeight(pixels);
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(image, 0, 0);
-    ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(logo.image, Math.round((canvas.width - pixels * 6) / 2),
-      image.naturalHeight + pixels, pixels * 6, pixels * 6);
-    return canvas;
-  }
-  function brandedSvg(native, logo, code, pixels, margin) {
-    const side = (code.getModuleCount() + margin * 2) * pixels;
-    const height = side + brandHeight(pixels);
-    const x = Math.round((side - pixels * 6) / 2);
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${side}px" height="${height}px" viewBox="0 0 ${side} ${height}"><rect width="${side}" height="${height}" fill="white"/>${native}<image x="${x}" y="${side + pixels}" width="${pixels * 6}" height="${pixels * 6}" href="${logo.data}"/></svg>`;
-  }
   function copyImage(image) {
     const canvas = document.createElement('canvas');
     canvas.width = image.naturalWidth;
@@ -149,33 +110,19 @@
     if ($('staticQrDestination').value === 'manual' && !$('staticQrUrl').value.trim()) return;
     try {
       const url = validatedUrl(destination());
-      const wantsLogo = $('staticQrLogo').checked;
       const code = qrCode(url, $('staticQrLevel').value);
-      const margin = quietModules();
       const preview = $('staticQrPreview');
       const available = Math.min(320, Math.max(160, (preview.clientWidth || 320) - 16));
-      const pixels = modulePixels(code, available, margin);
-      const [image, logo] = await Promise.all([libraryImage(code, pixels, margin), wantsLogo ? officialLogo() : Promise.resolve(null)]);
+      const image = await libraryImage(code, modulePixels(code, available));
       if (token !== generation) return;
-      const canvas = copyImage(image);
-      assertQrDestination(canvas, url);
+      assertQrDestination(copyImage(image), url);
       if (token !== generation) return;
       image.alt = 'QR de ' + url;
       image.className = 'static-qr-image';
       preview.replaceChildren(image);
-      if (logo) {
-        const brand = document.createElement('img');
-        brand.src = logo.data;
-        brand.alt = 'Visita Loja';
-        brand.className = 'static-qr-brand';
-        brand.width = brand.height = pixels * 6;
-        brand.style.marginTop = `${pixels}px`;
-        brand.style.marginBottom = `${pixels}px`;
-        preview.append(brand);
-      }
       $('staticQrPreviewUrl').textContent = url;
       $('staticQrPng').disabled = $('staticQrSvg').disabled = false;
-      current = { url, code, margin, logo };
+      current = { url, code, margin: quietModules() };
     } catch (error) {
       if (token !== generation) return;
       notice(error.message || 'No se pudo generar el QR. Revisa el destino y los ajustes.');
@@ -207,8 +154,7 @@
   function downloadSvg() {
     if (!current) return notice('Primero genera un QR válido.');
     const pixels = modulePixels(current.code, Number($('staticQrSize').value), current.margin);
-    const native = current.code.createSvgTag(pixels, pixels * current.margin);
-    const svg = current.logo ? brandedSvg(native, current.logo, current.code, pixels, current.margin) : native;
+    const svg = current.code.createSvgTag(pixels, pixels * current.margin);
     saveBlob(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }), 'svg');
   }
   async function downloadPng() {
@@ -218,7 +164,7 @@
       const pixels = modulePixels(snapshot.code, Number($('staticQrSize').value), snapshot.margin);
       const image = await libraryImage(snapshot.code, pixels, snapshot.margin);
       if (snapshot !== current) return;
-      const canvas = snapshot.logo ? brandedCanvas(image, snapshot.logo, pixels) : copyImage(image);
+      const canvas = copyImage(image);
       assertQrDestination(canvas, snapshot.url);
       canvas.toBlob(blob => {
         if (snapshot !== current) return;

@@ -1,4 +1,4 @@
-/* Comprueba QR nativo sin logo y la variante opcional superpuesta. */
+/* Comprueba la salida nativa de qrcode-generator, sin logo ni redibujado de módulos. */
 const fs = require('fs');
 const vm = require('vm');
 const assert = require('assert');
@@ -10,7 +10,7 @@ const qrcode = require('../js/vendor/qrcode-generator.js');
 const url = 'https://www.visitaloja.com/';
 const source = fs.readFileSync(path.join(__dirname, '../js/admin-qr-static.js'), 'utf8');
 const head = source.slice(source.indexOf('(() => {'), source.indexOf("  const module = $('qrModule');"));
-const api = vm.runInNewContext(head + 'return {validatedUrl,qrCode,modulePixels,brandedSvg,brandHeight};})();', {qrcode, URL});
+const api = vm.runInNewContext(head + 'return {validatedUrl,qrCode,modulePixels};})();', {qrcode, URL});
 async function decode(input) {
   const {data, info} = await sharp(input).ensureAlpha().raw().toBuffer({resolveWithObject: true});
   return jsQR(new Uint8ClampedArray(data), info.width, info.height,
@@ -50,25 +50,6 @@ function checkPattern(image, info, code, cell, x, y, label) {
       console.log(`${name}, ${side} px, módulo ${cell} px: ${url}`);
     }
   }
-  // El QR con marca exterior conserva, píxel por píxel, el símbolo M probado físicamente.
-  const cell = api.modulePixels(code, 1024, 4);
-  const side = (code.getModuleCount() + 8) * cell;
-  const native = Buffer.from(code.createDataURL(cell, cell * 4).split(',')[1], 'base64');
-  const logo = await sharp(path.join(__dirname, '../visita-loja-icon-512.png')).resize(128,128).png().toBuffer();
-  const mark = await sharp(logo).resize(cell*6,cell*6).png().toBuffer();
-  const height = side + api.brandHeight(cell);
-  const composed = await sharp({create:{width:side,height,channels:4,background:'#ffffff'}})
-    .composite([{input:native,left:0,top:0},{input:mark,left:Math.round((side-cell*6)/2),top:side+cell}]).png().toBuffer();
-  const svg = api.brandedSvg(code.createSvgTag(cell,cell*4),{data:'data:image/png;base64,'+logo.toString('base64')},code,cell,4);
-  const originalPixels = await sharp(native).ensureAlpha().raw().toBuffer();
-  for (const [label,content] of [['PNG con logo exterior',composed],['SVG con logo exterior',Buffer.from(svg)]]) {
-    assert.strictEqual(await decode(content),url,`${label}: URL`);
-    const {data,info} = await sharp(content).ensureAlpha().raw().toBuffer({resolveWithObject:true});
-    assert.strictEqual(info.width,side); assert.strictEqual(info.height,height);
-    for (let row=0; row<side; row++)
-      assert.deepStrictEqual(data.subarray(row*side*4,(row+1)*side*4),originalPixels.subarray(row*side*4,(row+1)*side*4),`${label}: fila QR ${row}`);
-    console.log(`${label}: ${url}; símbolo QR idéntico a la referencia`);
-  }
   assert.notStrictEqual(await decode(Buffer.from(api.qrCode('https://.www.visitaloja.com/','M').createDataURL(6,24).split(',')[1],'base64')),url);
-  console.log('QR M sin logo y con marca exterior; 4 módulos: OK');
+  console.log('QR M, negro #000000, blanco #ffffff, sin logo, margen 4 módulos: OK');
 })().catch(error => {console.error(error);process.exitCode = 1});

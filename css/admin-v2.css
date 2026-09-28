@@ -122,9 +122,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:389px){#dashboardModule>.grid{gap:.5rem!important}}
 
 /* Generador QR de difusión: vista nítida, controles táctiles y herramientas previas. */
-#staticQrPreview{background:#fff;overflow:auto;flex-direction:column}
+#staticQrPreview{background:#fff;overflow:auto}
 #staticQrPreview .static-qr-image{display:block;width:auto;height:auto;max-width:none;image-rendering:pixelated;image-rendering:crisp-edges}
-#staticQrPreview .static-qr-brand{display:block;max-width:none;object-fit:contain}
 #staticQrPreviewUrl{overflow-wrap:anywhere}
 #qrModule :is(#staticQrPng,#staticQrSvg){min-height:46px}
 #qrLegacyTools>summary{list-style:none}
