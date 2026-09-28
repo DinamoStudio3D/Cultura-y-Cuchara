@@ -63,6 +63,41 @@ function calculateUserMissionStates({ userId, missions, visits, placesById }) {
   });
 }
 
+function buildPersistencePlan(state, existing = {}, now = null) {
+  const progress = existing.progress || null;
+  const reward = existing.reward || null;
+  const progressData = {
+    missionId: state.missionId,
+    userId: state.userId,
+    current: state.current,
+    target: state.target,
+    completed: state.completed,
+    qualifyingVisitIds: state.qualifyingVisitIds,
+    completedAt: state.completed ? (progress?.completedAt || now) : null,
+    updatedAt: now
+  };
+
+  let rewardAction = "none";
+  let rewardData = null;
+  if (state.completed && !reward) {
+    rewardAction = "create";
+    rewardData = {
+      missionId: state.missionId,
+      userId: state.userId,
+      badge: state.mission.badge || null,
+      rewardType: state.mission.rewardType || "digital",
+      physicalCampaignId: state.mission.physicalCampaignId || null,
+      unlockedAt: now,
+      source: "chabaquito_mission_v2",
+      version: 1
+    };
+  } else if (!state.completed && reward) {
+    rewardAction = "delete";
+  }
+
+  return { progressData, rewardAction, rewardData };
+}
+
 async function calculateUserMissionStatesFromFirestore(db, userId) {
   const safeUserId = cleanId(userId);
   if (!safeUserId) throw new Error("userId es obligatorio.");
@@ -71,6 +106,7 @@ async function calculateUserMissionStatesFromFirestore(db, userId) {
 }
 
 module.exports = {
+  buildPersistencePlan,
   calculateUserMissionStates,
   calculateUserMissionStatesFromFirestore,
   loadMissionInputs,
