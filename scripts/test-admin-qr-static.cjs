@@ -1,54 +1,55 @@
-/* node scripts/test-admin-qr-static.cjs (requiere sharp para rasterizar SVG).
- * Contrasta el QR real de la vista previa, el PNG y el SVG con un decodificador independiente. */
-const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
-const sharp=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES
-  ? path.join(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'sharp') : 'sharp');
-const jsQR=require('../js/vendor/jsQR.js');
-const project=path.resolve(__dirname,'..');
-const url='https://www.visitaloja.com/';
-const document={createElement:()=>{throw new Error('Canvas no preparado')}};
-const qrcode=require(project+'/js/vendor/qrcode-generator.js');
-const source=fs.readFileSync(project+'/js/admin-qr-static.js','utf8');
-const head=source.slice(source.indexOf('(() => {'),source.indexOf("  const module = $('qrModule');"));
-const stub={document,qrcode,URL,jsQR};
-const api=vm.runInNewContext(head+'return {validatedUrl,qrMatrix,svgMarkup,pngCanvas,assertQrDestination};})();',stub);
-function makeCanvas(logoImage){
- const c={width:0,height:0,pixels:null,getContext(){return ctx}};
- const ctx={fillStyle:'#000000',getImageData(){return {data:new Uint8ClampedArray(c.pixels)}},fillRect(x,y,w,h){
-   if(!c.pixels)c.pixels=Buffer.alloc(c.width*c.height*4);
-   const hex=this.fillStyle;const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
-   for(let py=Math.max(0,Math.floor(y));py<Math.min(c.height,Math.ceil(y+h));py++)for(let px=Math.max(0,Math.floor(x));px<Math.min(c.width,Math.ceil(x+w));px++){
-    const off=(py*c.width+px)*4;c.pixels[off]=rgb[0];c.pixels[off+1]=rgb[1];c.pixels[off+2]=rgb[2];c.pixels[off+3]=255;
-   }
- },drawImage(image,x,y,w,h){
-   assert(image===logoImage);for(let py=Math.max(0,Math.floor(y));py<Math.min(c.height,Math.ceil(y+h));py++)for(let px=Math.max(0,Math.floor(x));px<Math.min(c.width,Math.ceil(x+w));px++){
-    const sx=Math.min(511,Math.max(0,Math.floor((px-x)*512/w))),sy=Math.min(511,Math.max(0,Math.floor((py-y)*512/h)));
-    const src=(sy*512+sx)*4,dst=(py*c.width+px)*4,a=image.pixels[src+3]/255;
-    for(let j=0;j<3;j++)c.pixels[dst+j]=Math.round(image.pixels[src+j]*a+c.pixels[dst+j]*(1-a));
-    c.pixels[dst+3]=255;
-   }
- }};return c;
+/* Comprueba la salida nativa de qrcode-generator, sin logo ni redibujado de módulos. */
+const fs = require('fs');
+const vm = require('vm');
+const assert = require('assert');
+const path = require('path');
+const sharp = require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES
+  ? path.join(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES, 'sharp') : 'sharp');
+const jsQR = require('../js/vendor/jsQR.js');
+const qrcode = require('../js/vendor/qrcode-generator.js');
+const url = 'https://www.visitaloja.com/';
+const source = fs.readFileSync(path.join(__dirname, '../js/admin-qr-static.js'), 'utf8');
+const head = source.slice(source.indexOf('(() => {'), source.indexOf("  const module = $('qrModule');"));
+const api = vm.runInNewContext(head + 'return {validatedUrl,qrCode,modulePixels};})();', {qrcode, URL});
+async function decode(input) {
+  const {data, info} = await sharp(input).ensureAlpha().raw().toBuffer({resolveWithObject: true});
+  return jsQR(new Uint8ClampedArray(data), info.width, info.height,
+    {inversionAttempts: 'dontInvert'})?.data;
 }
-async function scan(pixels,size,label){const result=jsQR(new Uint8ClampedArray(pixels),size,size,{inversionAttempts:'dontInvert'});console.log(label,result?.data||'SIN LECTURA');return result?.data}
-async function run(logo,size){
- const matrix=api.qrMatrix(url,'H');
- const logoBuffer=logo?fs.readFileSync(project+'/visita-loja-icon-512.png'):null;
- const img=logo?await sharp(logoBuffer).ensureAlpha().resize(512,512).raw().toBuffer({resolveWithObject:true}):null;
- const logoImage=logo?{pixels:img.data}:null;
- const data={url,matrix,size,margin:4,dark:'#101820',light:'#ffffff',logo:logo?{image:logoImage,data:'data:image/png;base64,'+logoBuffer.toString('base64')}:null};
- const svg=api.svgMarkup(data);
- const raster=await sharp(Buffer.from(svg)).resize(size,size).ensureAlpha().raw().toBuffer();
- const canvas=makeCanvas(logoImage);
- document.createElement=()=>canvas;
- const pngCanvas=api.pngCanvas(data);
- const png=await sharp(pngCanvas.pixels,{raw:{width:size,height:size,channels:4}}).png().toBuffer();
- const svgValue=await scan(raster,size,logo?'SVG logo':'SVG sin logo');
- const pngValue=await scan(await sharp(png).raw().toBuffer(),size,logo?'PNG logo':'PNG sin logo');
- assert.strictEqual(svgValue,url);assert.strictEqual(pngValue,url);
- api.assertQrDestination(pngCanvas,url);
- const wrong={...data,matrix:api.qrMatrix('https://.www.visitaloja.com/','H'),logo:null};
- const badCanvas=makeCanvas(null);document.createElement=()=>badCanvas;
- assert.throws(()=>api.assertQrDestination(api.pngCanvas(wrong),url),/destino distinto/);
+function checkPattern(image, info, code, cell, x, y, label) {
+  const offset = 4 * cell;
+  for (let row = 0; row < 7; row++) for (let col = 0; col < 7; col++) {
+    const px = offset + (x + col) * cell + Math.floor(cell / 2);
+    const py = offset + (y + row) * cell + Math.floor(cell / 2);
+    const base = (py * info.width + px) * info.channels;
+    const expected = code.isDark(y + row, x + col) ? 0 : 255;
+    assert.strictEqual(image[base], expected, `${label}: módulo ${col},${row}`);
+  }
 }
-(async()=>{for(const size of [512,1024]){await run(false,size);await run(true,size)}console.log('QR sin logo, con logo, PNG, SVG y rechazo del destino incorrecto: OK')})()
- .catch(error=>{console.error(error);process.exitCode=1});
+(async () => {
+  const code = api.qrCode(api.validatedUrl(url), 'M');
+  const count = code.getModuleCount();
+  assert.strictEqual(count, 29); // v3: hay marca de alineación.
+  for (const target of [512, 1024]) {
+    const cell = api.modulePixels(code, target, 4);
+    const side = (count + 8) * cell;
+    const gif = Buffer.from(code.createDataURL(cell, cell * 4).split(',')[1], 'base64');
+    const svg = Buffer.from(code.createSvgTag(cell, cell * 4));
+    const png = await sharp(gif).png().toBuffer();
+    for (const [name, content] of [['Vista previa nativa', gif], ['PNG', png], ['SVG', svg]]) {
+      assert.strictEqual(await decode(content), url);
+      const {data, info} = await sharp(content).ensureAlpha().raw().toBuffer({resolveWithObject: true});
+      assert.strictEqual(info.width, side);
+      assert.strictEqual(info.height, side);
+      for (const [x, y, label] of [[0,0,'finder superior izquierdo'],[count-7,0,'finder superior derecho'],[0,count-7,'finder inferior izquierdo'],[count-9,count-9,'alignment']])
+        checkPattern(data,info,code,cell,x,y,`${name}: ${label}`);
+      for (const [x,y] of [[0,0],[side-1,0],[0,side-1],[side-1,side-1],[4*cell-1,4*cell-1]]) {
+        const i=(y*side+x)*4;
+        assert.deepStrictEqual([...data.subarray(i,i+3)],[255,255,255],`${name}: quiet zone`);
+      }
+      console.log(`${name}, ${side} px, módulo ${cell} px: ${url}`);
+    }
+  }
+  assert.notStrictEqual(await decode(Buffer.from(api.qrCode('https://.www.visitaloja.com/','M').createDataURL(6,24).split(',')[1],'base64')),url);
+  console.log('QR M, negro #000000, blanco #ffffff, sin logo, margen 4 módulos: OK');
+})().catch(error => {console.error(error);process.exitCode = 1});
