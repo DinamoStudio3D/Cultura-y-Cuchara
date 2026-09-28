@@ -54,6 +54,8 @@ function checkPattern(image, info, code, cell, x, y, label) {
   assert.throws(()=>api.validatedUrl('https://.www.visitaloja.com/'),/dominio.*inválido/);
   assert.throws(()=>api.validatedUrl('https://www..visitaloja.com/'),/dominio.*inválido/);
   assert.strictEqual(api.validatedUrl(url),url);
+  for (const sensitive of ['https://www.visitaloja.com/fidelidad.html?place=foo', 'https://www.visitaloja.com/confirmar-visitas.html', 'https://www.visitaloja.com/?checkin=abc', 'https://www.visitaloja.com/?qr=abc', 'https://www.visitaloja.com/admin.html'])
+    assert.throws(()=>api.validatedUrl(sensitive),/flujo QR distinto/);
   const high = api.qrCode(url,'H');
   const original = sharp(path.join(__dirname,'../visita-loja-icon-512.png'));
   const trimmed = await original.trim({threshold:16}).png().toBuffer();

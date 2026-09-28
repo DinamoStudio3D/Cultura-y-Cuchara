@@ -134,3 +134,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   #qrModule .qr-legacy-tools{padding:.8rem}
   #qrModule .qr-legacy-tools form{padding:1rem}
 }
+
+/* Gestor de QR de difusión: pestañas y registros compactos. */
+.static-qr-tab{border-radius:.75rem;padding:.7rem 1rem;color:#cbd5e1;font-size:.875rem;font-weight:800;border:1px solid transparent}
+.static-qr-tab:hover{background:rgba(255,255,255,.06)}
+.static-qr-tab.is-active{background:rgba(245,158,11,.14);border-color:rgba(245,158,11,.35);color:#fcd34d}
+.static-qr-card{display:grid;grid-template-columns:94px minmax(0,1fr);gap:1rem;align-items:center;border:1px solid rgba(255,255,255,.1);border-radius:1rem;padding:.85rem;background:rgba(0,0,0,.2)}
+.static-qr-thumb{display:block;background:#fff;width:94px;height:94px;object-fit:contain;border-radius:.5rem;image-rendering:pixelated}
+.static-qr-card-actions{grid-column:2;display:flex;flex-wrap:wrap;gap:.45rem}
+.static-qr-action{font-size:.75rem;font-weight:700;color:#f8fafc;border:1px solid rgba(255,255,255,.17);border-radius:.6rem;padding:.5rem .7rem;min-height:36px}
+.static-qr-action:hover,.static-qr-action:focus-visible{border-color:#f59e0b;color:#fcd34d}
+.static-qr-card-actions .static-qr-action:last-child{color:#fca5a5}
+@media(min-width:1024px){.static-qr-card{grid-template-columns:94px minmax(0,1fr) auto}.static-qr-card-actions{grid-column:auto;max-width:320px}}
+@media(max-width:480px){.static-qr-card{grid-template-columns:72px minmax(0,1fr);gap:.75rem}.static-qr-thumb{width:72px;height:72px}.static-qr-card-actions{grid-column:1/-1}}

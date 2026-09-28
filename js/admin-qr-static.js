@@ -18,8 +18,11 @@
       throw new Error('Utiliza una URL https:// sin usuario ni contraseña.');
     if (!url.hostname.startsWith('[') && !url.hostname.split('.').every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label)))
       throw new Error('El dominio de la URL es inválido. Revisa puntos adicionales, como en https://.visitaloja.com/.');
-    if (/(^|\.)visitaloja\.com$/i.test(url.hostname) && (url.pathname === '/fidelidad.html' || url.searchParams.has('checkin')))
-      throw new Error('Los enlaces de visitas y fidelidad usan un flujo QR distinto.');
+    if (/(^|\.)visitaloja\.com$/i.test(url.hostname)
+        && (['/fidelidad.html', '/confirmar-visitas.html', '/gestion-fidelidad.html',
+          '/merchant-dashboard.html', '/merchant-rewards.html', '/admin.html'].includes(url.pathname.toLowerCase())
+          || ['checkin', 'qr', 'visitCode', 'requestId'].some(key => url.searchParams.has(key))))
+      throw new Error('Los enlaces de visitas, validación y administración usan un flujo QR distinto.');
     return url.href;
   }
 
@@ -213,7 +216,7 @@
       ? 'Abre el mapa de la web pública. Todavía no existe un enlace directo a una ruta turística concreta.'
       : kind === 'manual' ? 'Usa un enlace https:// válido. No se añaden parámetros de seguimiento.'
       : 'Se utiliza el enlace público real de Visita Loja.';
-    render();
+    return render();
   }
   function filename(extension) {
     const name = $('staticQrName').value.trim() || $('staticQrDestination').selectedOptions[0].textContent;
@@ -267,5 +270,32 @@
   $('staticQrPng').addEventListener('click', downloadPng);
   $('staticQrSvg').addEventListener('click', downloadSvg);
   updateDestination();
+  // El gestor reutiliza la vista previa y las exportaciones verificadas del generador.
+  window.visitaLojaStaticQr = Object.freeze({
+    snapshot() {
+      if (!current) return null;
+      return { url: current.url, destinationType: $('staticQrDestination').value,
+        placeId: $('staticQrPlace').value || '',
+        config: { dark: '#000000', light: '#ffffff', margin: current.margin,
+          level: $('staticQrLevel').value, size: Number($('staticQrSize').value),
+          logoEnabled: Boolean(current.logo), logoSize: current.logoSize } };
+    },
+    validateUrl: validatedUrl,
+    async loadSaved(record) {
+      const config = record.config || {};
+      $('staticQrDestination').value = 'manual';
+      $('staticQrUrl').value = record.url;
+      $('staticQrName').value = record.name || '';
+      $('staticQrMargin').value = String(config.margin || 4);
+      $('staticQrLevel').value = config.level || 'M';
+      $('staticQrSize').value = String(config.size || 1024);
+      $('staticQrLogo').checked = config.logoEnabled === true;
+      $('staticQrLogoSize').value = String(config.logoSize || 18);
+      $('staticQrLogoSizeValue').textContent = `${$('staticQrLogoSize').value}%`;
+      await updateDestination();
+      return Boolean(current && current.url === record.url);
+    },
+    download(format) { return format === 'svg' ? downloadSvg() : downloadPng(); }
+  });
   window.addEventListener('resize', () => { if (current) render(); });
 })();
