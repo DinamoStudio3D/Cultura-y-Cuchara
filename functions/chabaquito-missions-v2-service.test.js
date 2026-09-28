@@ -2,6 +2,7 @@
 
 const assert = require("node:assert/strict");
 const {
+  buildPersistencePlan,
   calculateUserMissionStates,
   progressDocumentId,
   rewardDocumentId
@@ -14,6 +15,8 @@ const missions = [
     type: "category_visits",
     targetCount: 2,
     categoryIds: ["cafeterias"],
+    badge: { title: "Explorador cafetero", rarity: "rare" },
+    rewardType: "digital",
     startsAt: "2026-09-01T00:00:00-05:00",
     endsAt: "2026-10-01T00:00:00-05:00"
   }
@@ -59,6 +62,53 @@ const visit = (requestId, placeId, status = "confirmed") => ({
   assert.equal(before[0].completed, true);
   assert.equal(after[0].completed, false);
   assert.equal(after[0].current, 1);
+}
+
+{
+  const state = calculateUserMissionStates({
+    userId: "user_123",
+    missions,
+    visits: [visit("visit_a", "cafe1"), visit("visit_b", "cafe2")],
+    placesById
+  })[0];
+  const now = "2026-09-15T17:00:00.000Z";
+  const plan = buildPersistencePlan(state, {}, now);
+  assert.equal(plan.progressData.completed, true);
+  assert.equal(plan.progressData.completedAt, now);
+  assert.equal(plan.rewardAction, "create");
+  assert.equal(plan.rewardData.badge.title, "Explorador cafetero");
+}
+
+{
+  const state = calculateUserMissionStates({
+    userId: "user_123",
+    missions,
+    visits: [visit("visit_a", "cafe1"), visit("visit_b", "cafe2")],
+    placesById
+  })[0];
+  const originalCompletedAt = "2026-09-14T17:00:00.000Z";
+  const plan = buildPersistencePlan(state, {
+    progress: { completedAt: originalCompletedAt },
+    reward: { missionId: "cafeterias_2" }
+  }, "2026-09-15T17:00:00.000Z");
+  assert.equal(plan.progressData.completedAt, originalCompletedAt);
+  assert.equal(plan.rewardAction, "none");
+}
+
+{
+  const state = calculateUserMissionStates({
+    userId: "user_123",
+    missions,
+    visits: [visit("visit_a", "cafe1"), visit("visit_b", "cafe2", "reversed")],
+    placesById
+  })[0];
+  const plan = buildPersistencePlan(state, {
+    progress: { completedAt: "2026-09-14T17:00:00.000Z" },
+    reward: { missionId: "cafeterias_2" }
+  }, "2026-09-15T17:00:00.000Z");
+  assert.equal(plan.progressData.completed, false);
+  assert.equal(plan.progressData.completedAt, null);
+  assert.equal(plan.rewardAction, "delete");
 }
 
 {
