@@ -98,6 +98,31 @@ function buildPersistencePlan(state, existing = {}, now = null) {
   return { progressData, rewardAction, rewardData };
 }
 
+async function persistMissionState(db, state, now) {
+  const progressRef = db.collection("chabaquitoMissionProgress").doc(state.id);
+  const rewardRef = db.collection("chabaquitoDigitalRewards").doc(rewardDocumentId(state.userId, state.missionId));
+
+  return db.runTransaction(async tx => {
+    const progressSnap = await tx.get(progressRef);
+    const rewardSnap = await tx.get(rewardRef);
+    const plan = buildPersistencePlan(state, {
+      progress: progressSnap.exists ? progressSnap.data() : null,
+      reward: rewardSnap.exists ? rewardSnap.data() : null
+    }, now);
+
+    tx.set(progressRef, plan.progressData, { merge: true });
+    if (plan.rewardAction === "create") tx.create(rewardRef, plan.rewardData);
+    if (plan.rewardAction === "delete") tx.delete(rewardRef);
+    return plan;
+  });
+}
+
+async function persistUserMissionStates(db, states, now) {
+  const results = [];
+  for (const state of states) results.push(await persistMissionState(db, state, now));
+  return results;
+}
+
 async function calculateUserMissionStatesFromFirestore(db, userId) {
   const safeUserId = cleanId(userId);
   if (!safeUserId) throw new Error("userId es obligatorio.");
@@ -110,6 +135,8 @@ module.exports = {
   calculateUserMissionStates,
   calculateUserMissionStatesFromFirestore,
   loadMissionInputs,
+  persistMissionState,
+  persistUserMissionStates,
   progressDocumentId,
   rewardDocumentId
 };
