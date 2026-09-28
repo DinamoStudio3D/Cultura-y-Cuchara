@@ -59,4 +59,53 @@ const base = { status: "active", targetCount: 2, startsAt: "2026-09-01T00:00:00-
   assert.equal(result.count, 0);
 }
 
+// Una visita que completaba la misión deja de contar al ser revertida.
+{
+  const mission = { ...base, type: "place_visits", placeIds: ["cafe1", "rest1"] };
+  const beforeReverse = calculateMissionProgress(mission, [
+    visit("a", "cafe1", "2026-09-10T10:00:00-05:00"),
+    visit("b", "rest1", "2026-09-11T10:00:00-05:00")
+  ], places);
+  const afterReverse = calculateMissionProgress(mission, [
+    visit("a", "cafe1", "2026-09-10T10:00:00-05:00"),
+    visit("b", "rest1", "2026-09-11T10:00:00-05:00", "reversed")
+  ], places);
+  assert.equal(beforeReverse.count, 2);
+  assert.equal(beforeReverse.completed, true);
+  assert.equal(afterReverse.count, 1);
+  assert.equal(afterReverse.completed, false);
+  assert.deepEqual(afterReverse.matchedKeys, ["cafe1"]);
+}
+
+// Recalcular dos veces sobre la misma fuente confirmada produce el mismo resultado.
+{
+  const mission = { ...base, type: "category_visits", categoryIds: ["cafeterias"] };
+  const visits = [
+    visit("a", "cafe1", "2026-09-10T10:00:00-05:00"),
+    visit("b", "cafe2", "2026-09-11T10:00:00-05:00")
+  ];
+  const first = calculateMissionProgress(mission, visits, places);
+  const second = calculateMissionProgress(mission, visits, places);
+  assert.deepEqual(second, first);
+}
+
+// Visitas fuera de vigencia no pueden acreditar progreso, ni antes ni después de la campaña.
+{
+  const result = calculateMissionProgress({ ...base, type: "total_visits", targetCount: 1 }, [
+    visit("before", "cafe1", "2026-08-31T23:59:59-05:00"),
+    visit("after", "cafe1", "2026-10-01T00:00:01-05:00")
+  ], places);
+  assert.equal(result.count, 0);
+  assert.equal(result.completed, false);
+}
+
+// Una visita sin fecha confirmada válida nunca debe contar.
+{
+  const result = calculateMissionProgress({ ...base, type: "total_visits", targetCount: 1 }, [
+    visit("bad-date", "cafe1", "fecha-invalida")
+  ], places);
+  assert.equal(result.count, 0);
+  assert.equal(result.completed, false);
+}
+
 console.log("Chabaquito Missions V2 engine: OK");
