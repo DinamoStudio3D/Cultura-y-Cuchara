@@ -1,10 +1,10 @@
 "use strict";
 
 const EARTH_RADIUS_M = 6371000;
-const DEFAULT_RADIUS_M = 120;
-const MIN_RADIUS_M = 30;
-const MAX_RADIUS_M = 500;
-const MAX_ACCEPTED_ACCURACY_M = 100;
+const DEFAULT_RADIUS_M = 15;
+const MIN_RADIUS_M = 10;
+const MAX_RADIUS_M = 15;
+const MAX_ACCEPTED_ACCURACY_M = 15;
 
 function finiteNumber(value) {
   const number = Number(value);
@@ -43,12 +43,12 @@ function validateProximity({ place, latitude, longitude, accuracy }) {
   const userLat = finiteNumber(latitude), userLng = finiteNumber(longitude), accuracyM = finiteNumber(accuracy);
   if (!validCoordinates(userLat, userLng)) throw new Error("No se pudo obtener una ubicación válida.");
   if (accuracyM === null || accuracyM <= 0 || accuracyM > MAX_ACCEPTED_ACCURACY_M) {
-    throw new Error("La ubicación no tiene suficiente precisión. Acércate al atractivo e inténtalo nuevamente.");
+    throw new Error("Tu ubicación todavía no tiene suficiente precisión (se requieren 15 m o mejor). Espera unos segundos e inténtalo nuevamente.");
   }
   const target = placeCoordinates(place);
   const distanceM = distanceMeters({ lat: userLat, lng: userLng }, target);
   const radiusM = allowedRadius(place);
-  if (distanceM > radiusM) throw new Error(`Debes estar cerca del atractivo para registrar la visita. Distancia aproximada: ${Math.round(distanceM)} m.`);
+  if (distanceM > radiusM) throw new Error(`Debes estar a ${radiusM} m o menos del atractivo para registrar la visita. Distancia aproximada: ${Math.round(distanceM)} m.`);
   return { ok: true, distanceM: Math.round(distanceM), radiusM, accuracyM: Math.round(accuracyM) };
 }
 
