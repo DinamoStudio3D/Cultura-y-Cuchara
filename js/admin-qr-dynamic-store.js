@@ -15,6 +15,12 @@
     businessAccessUi.defer = true;
     document.head.append(businessAccessUi);
   }
+  if (!document.querySelector('script[src="js/admin-places-organizer.js"]')) {
+    const placesOrganizer = document.createElement('script');
+    placesOrganizer.src = 'js/admin-places-organizer.js';
+    placesOrganizer.defer = true;
+    document.head.append(placesOrganizer);
+  }
 
   const PRIVATE_COLLECTION = 'dynamicMarketingQrs';
   const PUBLIC_COLLECTION = 'dynamicQrPublic';
