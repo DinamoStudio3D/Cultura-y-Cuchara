@@ -41,7 +41,6 @@
           url: image.url
         }));
       } catch (error) {
-        // Cleanup must never roll back a successfully saved merchant profile.
         console.warn("No se pudo limpiar una imagen anterior.", error);
         results.push({ error: error.message || String(error) });
       }
@@ -49,9 +48,30 @@
     return results;
   }
 
+  // Queue old URLs while the user edits. Nothing is deleted until Firestore
+  // has confirmed the profile save. This keeps failed saves reversible.
+  function createCleanupQueue() {
+    let jobs = [];
+    function add(purpose, url) {
+      if (!purpose || !url || !isCloudinaryUrl(url)) return;
+      if (!jobs.some(job => job.purpose === purpose && job.url === url)) jobs.push({ purpose, url });
+    }
+    function snapshot() { return jobs.slice(); }
+    function clear() { jobs = []; }
+    async function flush(options) {
+      const images = snapshot();
+      if (!images.length) return [];
+      const results = await cleanupAfterSave({ auth: options.auth, placeId: options.placeId, images });
+      clear();
+      return results;
+    }
+    return Object.freeze({ add, snapshot, clear, flush });
+  }
+
   global.VisitaLojaMerchantImageCleanup = {
     isCloudinaryUrl,
     requestDelete,
-    cleanupAfterSave
+    cleanupAfterSave,
+    createCleanupQueue
   };
 })(window);
