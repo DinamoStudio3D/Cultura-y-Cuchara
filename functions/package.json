@@ -1,7 +1,7 @@
 {
   "name": "vive-loja-functions",
   "private": true,
-  "main": "index.js",
+  "main": "main.js",
   "engines": { "node": "20" },
   "dependencies": {
     "firebase-admin": "^13.4.0",
