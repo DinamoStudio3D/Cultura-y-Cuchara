@@ -4,7 +4,7 @@
     const api=window.VisitaLojaPartnerMarquee;
     const form=document.getElementById('partnersForm');if(!form||!api)return;
     const $=id=>document.getElementById(id),rows=$('partnersRows'),status=$('partnersStatus'),save=$('partnersSave');
-    const fields=['Enabled','Source','Title','TitleEn','Subtitle','SubtitleEn','LogoSize','Speed','Direction'];
+    const fields=['Enabled','Source','Title','TitleEn','Subtitle','SubtitleEn','LogoSize','Speed','Direction','BackgroundColor','AccentColor','Placement'];
     const docRef=db.collection('siteContent').doc('partnerMarquee');
     let unsubscribe=null,placesUnsubscribe=null,loaded=false,dirty=false,existingPlaces=[];
     function setStatus(text,error=false){status.textContent=text;status.style.color=error?'#fca5a5':'';}
@@ -29,7 +29,7 @@
     }
     function updateCount(){$('partnersCount').textContent=`(${rows.children.length}/40)`;}
     function values(){
-        const config={enabled:$('partnersEnabled').checked,source:$('partnersSource').value,title:$('partnersTitle').value.trim(),titleEn:$('partnersTitleEn').value.trim(),subtitle:$('partnersSubtitle').value.trim(),subtitleEn:$('partnersSubtitleEn').value.trim(),logoSize:Number($('partnersLogoSize').value),speed:Number($('partnersSpeed').value),direction:$('partnersDirection').value,brands:[...rows.children].map(row=>Object.fromEntries([...row.querySelectorAll('[data-field]')].map(field=>[field.dataset.field,field.value.trim()])))};
+        const config={enabled:$('partnersEnabled').checked,source:$('partnersSource').value,title:$('partnersTitle').value.trim(),titleEn:$('partnersTitleEn').value.trim(),subtitle:$('partnersSubtitle').value.trim(),subtitleEn:$('partnersSubtitleEn').value.trim(),logoSize:Number($('partnersLogoSize').value),speed:Number($('partnersSpeed').value),direction:$('partnersDirection').value,backgroundColor:$('partnersBackgroundColor').value,accentColor:$('partnersAccentColor').value,placement:$('partnersPlacement').value,brands:[...rows.children].map(row=>Object.fromEntries([...row.querySelectorAll('[data-field]')].map(field=>[field.dataset.field,field.value.trim()])))};
         return config;
     }
     function preview(){
@@ -52,6 +52,7 @@
         event.preventDefault();if(!loaded)return;
         const data=values();
         if(!Number.isInteger(data.logoSize)||data.logoSize<48||data.logoSize>140||!Number.isInteger(data.speed)||data.speed<15||data.speed>120){setStatus('Revisa el tamaño (48–140) y la velocidad (15–120).',true);return;}
+        if(api.contrast(data.backgroundColor,data.accentColor)<3){setStatus('El color de acento necesita más contraste con el fondo para que se lea bien.',true);return;}
         if(data.source==='manual'&&data.enabled&&!data.brands.length){setStatus('Añade al menos una marca antes de activar la lista manual.',true);return;}
         if(data.source==='manual'&&data.brands.some(item=>!item.name||!api.httpsUrl(item.imageUrl)||item.linkUrl&&!api.httpsUrl(item.linkUrl))){setStatus('Cada marca necesita nombre y logo HTTPS; los enlaces también deben usar HTTPS.',true);return;}
         save.disabled=true;setStatus('Guardando…');

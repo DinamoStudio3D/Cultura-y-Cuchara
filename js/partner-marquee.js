@@ -2,13 +2,16 @@
 (function () {
     'use strict';
     const doc = document;
-    const DEFAULTS = {enabled:false,source:'auto',title:'Marcas que ya trabajan con nosotros',titleEn:'Brands working with us',subtitle:'Conoce a quienes forman parte de Visita Loja.',subtitleEn:'Discover the businesses working with Visita Loja.',logoSize:76,speed:40,direction:'left',brands:[]};
+    const DEFAULTS = {enabled:false,source:'auto',title:'Marcas que ya trabajan con nosotros',titleEn:'Brands working with us',subtitle:'Conoce a quienes forman parte de Visita Loja.',subtitleEn:'Discover the businesses working with Visita Loja.',logoSize:76,speed:40,direction:'left',backgroundColor:'#11151b',accentColor:'#fbbf24',placement:'beforeSupport',brands:[]};
     function httpsUrl(value) {
         if (!value) return '';
         try { const url = new URL(String(value).trim()); return url.protocol === 'https:' && !url.username && !url.password ? url.href : ''; }
         catch (_) { return ''; }
     }
     function bounded(value, min, max, fallback) { const number=Number(value); return Number.isFinite(number) ? Math.max(min,Math.min(max,Math.round(number))) : fallback; }
+    function safeColor(value,fallback){return typeof value==='string'&&/^#[0-9a-f]{6}$/i.test(value)?value.toLowerCase():fallback;}
+    function luminance(hex){const channels=[1,3,5].map(index=>parseInt(hex.slice(index,index+2),16)/255).map(value=>value<=.04045?value/12.92:((value+.055)/1.055)**2.4);return channels[0]*.2126+channels[1]*.7152+channels[2]*.0722;}
+    function contrast(a,b){const x=luminance(a),y=luminance(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
     function normalize(source) {
         const data=source && typeof source==='object' ? source : {};
         return {
@@ -17,6 +20,7 @@
             title:String(data.title||DEFAULTS.title).slice(0,100),titleEn:String(data.titleEn||DEFAULTS.titleEn).slice(0,100),
             subtitle:String(data.subtitle||DEFAULTS.subtitle).slice(0,180),subtitleEn:String(data.subtitleEn||DEFAULTS.subtitleEn).slice(0,180),
             logoSize:bounded(data.logoSize,48,140,76),speed:bounded(data.speed,15,120,40),direction:data.direction==='right'?'right':'left',
+            backgroundColor:safeColor(data.backgroundColor,DEFAULTS.backgroundColor),accentColor:safeColor(data.accentColor,DEFAULTS.accentColor),placement:data.placement==='afterPlaces'?'afterPlaces':'beforeSupport',
             brands:(Array.isArray(data.brands)?data.brands:[]).slice(0,40).map(item=>({name:String(item?.name||'').trim().slice(0,100),nameEn:String(item?.nameEn||'').trim().slice(0,100),detail:String(item?.detail||'').trim().slice(0,110),detailEn:String(item?.detailEn||'').trim().slice(0,110),imageUrl:httpsUrl(item?.imageUrl),linkUrl:httpsUrl(item?.linkUrl)})).filter(item=>item.name && item.imageUrl)
         };
     }
@@ -27,7 +31,9 @@
         const data=normalize(source),preview=options.preview===true,english=doc.documentElement.lang?.toLowerCase().startsWith('en');
         host.replaceChildren();host.hidden=!preview && (!data.enabled || !data.brands.length);
         if(host.hidden)return;
-        host.style.setProperty('--partner-size',data.logoSize+'px');host.dataset.direction=data.direction;
+        const light=luminance(data.backgroundColor)>.18;
+        host.style.setProperty('--partner-size',data.logoSize+'px');host.style.setProperty('--partner-background',data.backgroundColor);host.style.setProperty('--partner-accent',data.accentColor);
+        host.style.setProperty('--partner-ink',light?'#111827':'#f8fafc');host.style.setProperty('--partner-muted',light?'#374151':'#c4cbd5');host.style.setProperty('--partner-card',light?'rgba(0,0,0,.055)':'rgba(255,255,255,.045)');host.dataset.direction=data.direction;
         if (!data.brands.length) {host.append(el('p','partner-marquee__empty','Añade al menos una marca con nombre y logo HTTPS para ver la franja.'));return;}
         const heading=el('div','partner-marquee__heading'),eyebrow=el('p','partner-marquee__eyebrow',english?'VISIT LOJA PARTNERS':'ALIADOS DE VISITA LOJA'),title=el('h2','partner-marquee__title',english?data.titleEn:data.title),subtitle=el('p','partner-marquee__subtitle',english?data.subtitleEn:data.subtitle);
         heading.append(eyebrow,title,subtitle);host.append(heading);
@@ -48,12 +54,16 @@
         const update=()=>host.style.setProperty('--partner-duration',Math.max(8,group.scrollWidth/data.speed).toFixed(2)+'s');update();
         if(typeof ResizeObserver!=='undefined'){host._partnerResize=new ResizeObserver(update);host._partnerResize.observe(group);}
     }
-    window.VisitaLojaPartnerMarquee={normalize,httpsUrl,render,defaults:DEFAULTS};
+    window.VisitaLojaPartnerMarquee={normalize,httpsUrl,contrast,render,defaults:DEFAULTS};
     const publicHost=doc.getElementById('partnerMarquee');
     if(publicHost){
+        const originalNext=publicHost.nextElementSibling;
         let current=null,configLoaded=false,existingPlaces=[];
         function showPublic(){
             if(!configLoaded)return;
+            const placement=current?normalize(current).placement:DEFAULTS.placement;
+            if(placement==='afterPlaces')doc.getElementById('establecimientos')?.after(publicHost);
+            else if(originalNext&&publicHost.nextElementSibling!==originalNext)originalNext.before(publicHost);
             // The public locales listener supplies published businesses already present on the site.
             // This preview needs no extra Firestore document or test write.
             const brands=existingPlaces.map(place=>({name:place.title,nameEn:place.titleEn||'',detail:place.tag||'',detailEn:place.tagEn||'',imageUrl:place.customLogoUrl||place.gallery?.[0]?.img||''}));
