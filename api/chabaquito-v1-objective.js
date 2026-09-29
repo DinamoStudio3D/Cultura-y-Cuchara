@@ -1,9 +1,10 @@
 "use strict";
 
-const PROJECT_ID = "cultura-y-cuchara";
+const { validateDigitalAnswer } = require("../functions/chabaquito-v1-digital");
+
 const WEB_API_KEY = "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
 const ADVENTURE_ID = "tras-las-huellas-de-chabaquito";
-const OBJECTIVE_ID = "digital-1";
+const OBJECTIVE_ID = "descubre";
 
 function createHandler({ fetchImpl = fetch, env = process.env } = {}) {
   return async function handler(req, res) {
@@ -31,12 +32,18 @@ function createHandler({ fetchImpl = fetch, env = process.env } = {}) {
       const user = (await identity.json()).users?.[0];
       if (!user?.localId || user.disabled) return res.status(401).json({ error: "La sesión no es válida." });
 
-      // The endpoint is intentionally fail-closed until trusted persistence is
-      // connected. Correct answers and XP are not accepted from the browser.
-      // A later commit will validate answers here and perform an idempotent,
-      // server-authorized Firestore write.
+      let passed;
+      try {
+        passed = validateDigitalAnswer(objectiveId, answers);
+      } catch (_) {
+        return res.status(400).json({ error: "Respuestas no válidas." });
+      }
+      if (!passed) return res.status(200).json({ ok: true, passed: false });
+
+      // Fail closed after server-side validation until the trusted transactional
+      // Firestore adapter is connected. No XP can be granted from the browser.
       return res.status(503).json({
-        error: "La validación persistente todavía no está conectada.",
+        error: "Respuesta correcta, pero el guardado persistente todavía no está conectado.",
         code: "PERSISTENCE_NOT_CONNECTED"
       });
     } catch (_) {
