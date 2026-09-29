@@ -1,0 +1,17 @@
+// Self-check-in de atractivos sin encargado.
+// Integrar dentro de match /databases/{database}/documents antes del deny final.
+
+// El hash que valida el QR no debe ser legible por visitantes ni comerciantes.
+// Solo administradores pueden administrar esta configuración desde el cliente;
+// Firebase Admin SDK / Cloud Functions no está limitado por estas reglas.
+match /selfCheckinQrSecrets/{placeId} {
+  allow read, create, update, delete: if isViveLojaAdmin();
+}
+
+// Visitas autónomas: únicamente el backend puede escribirlas.
+// El usuario puede consultar sus propias visitas y el Admin puede auditarlas.
+match /selfCheckinVisits/{visitId} {
+  allow read: if isViveLojaAdmin()
+    || (request.auth != null && resource.data.userId == request.auth.uid);
+  allow create, update, delete: if false;
+}
