@@ -1,6 +1,7 @@
 "use strict";
 
 const { registerSelfCheckin } = require("./self-checkin-service");
+const { timingSafeTokenMatch } = require("./self-checkin-token");
 
 function requireText(value, name, max = 180) {
   const text = String(value || "").trim();
@@ -22,7 +23,10 @@ function createSelfCheckinHandler({ db, Timestamp, safeSyncUserMissionsV2, Https
       throw new HttpsError("invalid-argument", error.message);
     }
 
-    const placeSnap = await db.collection("locales").doc(placeId).get();
+    const [placeSnap, configSnap] = await Promise.all([
+      db.collection("locales").doc(placeId).get(),
+      db.collection("selfCheckinQrSecrets").doc(placeId).get()
+    ]);
     if (!placeSnap.exists) throw new HttpsError("not-found", "El lugar no existe.");
     const place = { id: placeSnap.id, ...placeSnap.data() };
     if (place.validationMode !== "self_checkin") {
@@ -32,9 +36,8 @@ function createSelfCheckinHandler({ db, Timestamp, safeSyncUserMissionsV2, Https
       throw new HttpsError("failed-precondition", "Este lugar no está disponible para visitas.");
     }
 
-    // El QR válido se configura en el documento del lugar. Nunca se acepta un modo enviado por el navegador.
-    const expectedToken = String(place.selfCheckinQrToken || "").trim();
-    if (!expectedToken || qrToken !== expectedToken) {
+    const secret = configSnap.exists ? configSnap.data() : {};
+    if (secret.active === false || !secret.tokenHash || !timingSafeTokenMatch(qrToken, secret.tokenHash)) {
       throw new HttpsError("permission-denied", "El código QR no es válido para este lugar.");
     }
 
