@@ -940,22 +940,10 @@
 
     <!-- Stats -->
     <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
-        <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div class="max-w-6xl mx-auto px-4 text-center">
             <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="3">3</span></p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporadas</p>
-            </div>
-            <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="4">4</span>+</p>
+                <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="0">0</span></p>
                 <p class="text-xs font-bold uppercase tracking-widest" id="stat2Label" data-i18n="statAllies">Puntos en el mapa</p>
-            </div>
-            <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="stat3Val" data-target="25">25</span>K</p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat3Label" data-i18n="statTourists">Turistas Activos</p>
-            </div>
-            <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="stat4Val" data-target="100">100</span>%</p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat4Label" data-i18n="statIdentity">Identidad Lojana</p>
             </div>
         </div>
     </section>
@@ -1724,11 +1712,6 @@
     <button id="webMascotRestore" type="button" class="web-mascot-restore hidden" onclick="restoreWebMascot()" aria-label="Mostrar mascota" title="Mostrar mascota">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
     </button>
-
-    <!-- Floating WhatsApp -->
-    <a href="https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Vive%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
 
     <!-- Modal Itinerary -->
     <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
@@ -3769,85 +3752,26 @@
                 lat: -3.9910, 
                 lng: -79.2030 
             }
-        ]).filter(isPublicContent);
-                if (!eventsList.some(event => !event.date || event.date >= new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0])) eventsList = [
-            {
-                id: 'sample_flavors_2026',
-                title: 'Ruta de Sabores Lojanos — Evento de muestra',
-                titleEn: 'Loja Flavors Route — Sample Event',
-                date: '2026-10-04',
-                time: '15:00',
-                type: 'Muestra',
-                location: 'Plaza de San Sebastián',
-                desc: 'Evento demostrativo para visualizar la agenda. Recorrido de gastronomía, café y tradiciones lojanas.',
-                descEn: 'Sample event used to preview the agenda with Loja cuisine, coffee and traditions.',
-                img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
-                lat: -4.0007,
-                lng: -79.2019
-            },
-            {
-                id: 'sample_culture_2026',
-                title: 'Tarde Cultural en Jipiro — Evento de muestra',
-                titleEn: 'Cultural Afternoon at Jipiro — Sample Event',
-                date: '2026-10-11',
-                time: '11:00',
-                type: 'Muestra',
-                location: 'Parque Recreacional Jipiro',
-                desc: 'Evento demostrativo con música, artesanías y actividades familiares para mostrar el diseño de la agenda.',
-                descEn: 'Sample event with music, crafts and family activities to preview the agenda design.',
-                img: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80',
-                lat: -3.9744,
-                lng: -79.2043
-            }
-        ];
+        ]).filter(event => isPublicContent(event) && !String(event.id || '').startsWith('sample_'));
 
         if (db) {
             db.collection('siteContent').doc('events').onSnapshot(snapshot => {
                 const sourceEvents = snapshot.exists && Array.isArray(snapshot.data().events) ? snapshot.data().events : [];
-                const syncedEvents = sourceEvents.map(event => ({ ...event })).filter(isPublicContent);
-                eventsList = syncedEvents.some(event => !event.date || event.date >= new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0]) ? syncedEvents : [
-                    {
-                        id: 'sample_flavors_2026',
-                        title: 'Ruta de Sabores Lojanos — Evento de muestra',
-                        titleEn: 'Loja Flavors Route — Sample Event',
-                        date: '2026-10-04',
-                        time: '15:00',
-                        type: 'Muestra',
-                        location: 'Plaza de San Sebastián',
-                        desc: 'Evento demostrativo para visualizar la agenda. Recorrido de gastronomía, café y tradiciones lojanas.',
-                        descEn: 'Sample event used to preview the agenda with Loja cuisine, coffee and traditions.',
-                        img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
-                        lat: -4.0007,
-                        lng: -79.2019
-                    },
-                    {
-                        id: 'sample_culture_2026',
-                        title: 'Tarde Cultural en Jipiro — Evento de muestra',
-                        titleEn: 'Cultural Afternoon at Jipiro — Sample Event',
-                        date: '2026-10-11',
-                        time: '11:00',
-                        type: 'Muestra',
-                        location: 'Parque Recreacional Jipiro',
-                        desc: 'Evento demostrativo con música, artesanías y actividades familiares para mostrar el diseño de la agenda.',
-                        descEn: 'Sample event with music, crafts and family activities to preview the agenda design.',
-                        img: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80',
-                        lat: -3.9744,
-                        lng: -79.2043
-                    }
-                ];
+                eventsList = sourceEvents.map(event => ({ ...event }))
+                    .filter(event => isPublicContent(event) && !String(event.id || '').startsWith('sample_'));
                 localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
                 renderEverything();
                 checkLiveEventsBanner();
             }, error => console.warn('No se pudo sincronizar la agenda pública:', error));
         }
 
-        let emprendedoresList = safeReadJSON('cyc_dynamic_emprendedores', [
-            { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
-        ]);
+        let emprendedoresList = safeReadJSON('cyc_dynamic_emprendedores', [])
+            .filter(item => item.phone !== '593999999999');
         if (db) {
             db.collection('siteContent').doc('entrepreneurs').onSnapshot(snapshot => {
                 if (!snapshot.exists || !Array.isArray(snapshot.data().items)) return;
-                emprendedoresList = snapshot.data().items.map(item => ({ ...item }));
+                emprendedoresList = snapshot.data().items.map(item => ({ ...item }))
+                    .filter(item => item.phone !== '593999999999');
                 localStorage.setItem('cyc_dynamic_emprendedores', JSON.stringify(emprendedoresList));
                 renderEmprendedoresUI();
             }, error => console.warn('No se pudieron sincronizar los emprendimientos:', error));
@@ -5316,6 +5240,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function renderEmprendedoresUI() {
             const container = document.getElementById('emprendedoresGridContainer');
             if(!container) return;
+            document.getElementById('emprendedores')?.classList.toggle('hidden', !emprendedoresList.length);
             container.innerHTML = '';
 
             emprendedoresList.forEach(emp => {
