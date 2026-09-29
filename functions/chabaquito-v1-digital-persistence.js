@@ -12,12 +12,12 @@ function cleanUid(value) {
 
 function digitalEvidence(objectiveId, verifiedAt) {
   const objective = core.PILOT.objectives.find(item => item.id === objectiveId);
-  if (!objective || objective.type !== 'digital') throw new Error('Objetivo digital no válido.');
+  if (!objective || objective.type !== 'digital_objective') throw new Error('Objetivo digital no válido.');
   if (!Number.isSafeInteger(verifiedAt) || verifiedAt <= 0) throw new Error('Fecha de validación no válida.');
   return core.normalizeEvidence({
-    type: 'digital',
-    sourceId: objectiveId,
-    proofId: null,
+    type: 'digital_objective',
+    sourceId: `pilot_${objectiveId}`,
+    proofId: objective.proofId,
     status: 'validated',
     verifiedAt
   });

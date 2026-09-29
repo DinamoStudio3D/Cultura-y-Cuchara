@@ -2,6 +2,7 @@
 
 const { validateDigitalAnswer } = require("../functions/chabaquito-v1-digital");
 const { persistDigitalCompletion } = require("../functions/chabaquito-v1-digital-service");
+const core = require("../js/chabaquito-v1-core");
 const { getAdminDb } = require("./_firebase-admin");
 
 const WEB_API_KEY = "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
@@ -11,7 +12,7 @@ const OBJECTIVE_ID = "descubre";
 function createHandler({ fetchImpl = fetch, env = process.env, dbFactory = getAdminDb } = {}) {
   return async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store");
-    if (req.method !== "POST") return res.status(405).json({ error: "Método no permitido." });
+    if (!["GET", "POST"].includes(req.method)) return res.status(405).json({ error: "Método no permitido." });
     if (env.CHABAQUITO_V1_ENABLED !== "true") {
       return res.status(503).json({ error: "El progreso persistente de Chabaquito aún no está activado." });
     }
@@ -20,7 +21,7 @@ function createHandler({ fetchImpl = fetch, env = process.env, dbFactory = getAd
     if (!token) return res.status(401).json({ error: "Debes iniciar sesión." });
 
     const { adventureId, objectiveId, answers } = req.body || {};
-    if (adventureId !== ADVENTURE_ID || objectiveId !== OBJECTIVE_ID || !Array.isArray(answers)) {
+    if (req.method === "POST" && (adventureId !== ADVENTURE_ID || objectiveId !== OBJECTIVE_ID || !Array.isArray(answers))) {
       return res.status(400).json({ error: "Objetivo inválido." });
     }
 
@@ -33,6 +34,18 @@ function createHandler({ fetchImpl = fetch, env = process.env, dbFactory = getAd
       if (!identity.ok) return res.status(401).json({ error: "La sesión ha caducado." });
       const user = (await identity.json()).users?.[0];
       if (!user?.localId || user.disabled) return res.status(401).json({ error: "La sesión no es válida." });
+
+      if (req.method === "GET") {
+        const profileRef = dbFactory(env).collection(core.COLLECTIONS.profiles).doc(user.localId);
+        const [profile, progress] = await Promise.all([
+          profileRef.get(), profileRef.collection("adventures").doc(ADVENTURE_ID).get()
+        ]);
+        const xp = profile.exists ? Number(profile.data().validatedXp || 0) : 0;
+        const adventure = progress.exists ? progress.data() : {};
+        return res.status(200).json({ ok: true, xp, level: core.levelForXp(xp),
+          adventureXp: Number(adventure.xp || 0),
+          completedObjectives: Array.isArray(adventure.completedObjectives) ? adventure.completedObjectives : [] });
+      }
 
       let passed;
       try { passed = validateDigitalAnswer(objectiveId, answers); }
