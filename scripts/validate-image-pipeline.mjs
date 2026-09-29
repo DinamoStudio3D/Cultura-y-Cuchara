@@ -10,7 +10,8 @@ const tests = [
   'js/merchant-image-upload-adapter.test.js',
   'js/merchant-profile-flow.test.js',
   'js/merchant-signed-pipeline.test.js',
-  'functions/merchant-image-signing.test.js'
+  'functions/merchant-image-signing.test.js',
+  'api/sign-merchant-image.test.js'
 ];
 
 const requiredPortalScripts = [
