@@ -941,10 +941,22 @@
 
     <!-- Stats -->
     <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
-        <div class="max-w-6xl mx-auto px-4 text-center">
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="0">0</span></p>
+                <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="1">1</span></p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporada</p>
+            </div>
+            <div class="reveal">
+                <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="0">0</span>+</p>
                 <p class="text-xs font-bold uppercase tracking-widest" id="stat2Label" data-i18n="statAllies">Puntos en el mapa</p>
+            </div>
+            <div class="reveal">
+                <p class="text-4xl font-black mb-1"><span class="counter" id="stat3Val" data-target="25">25</span>K</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat3Label" data-i18n="statTourists">Turistas Activos</p>
+            </div>
+            <div class="reveal">
+                <p class="text-4xl font-black mb-1"><span class="counter" id="stat4Val" data-target="100">100</span>%</p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat4Label" data-i18n="statIdentity">Identidad Lojana</p>
             </div>
         </div>
     </section>
@@ -2494,7 +2506,7 @@
                 heroTitle: 'Sabores, <span class="text-brandGold">Historias</span> y Destinos',
                 heroSubtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 btnStartRoute: "Iniciar la Ruta",
-                statSeasons: "Temporadas",
+                statSeasons: "Temporada",
                 statAllies: "Puntos en el mapa",
                 statTourists: "Turistas Activos",
                 statIdentity: "Identidad Lojana",
@@ -2634,7 +2646,7 @@
                 heroTitle: 'Flavors, <span class="text-brandGold">Stories</span> & Destinations',
                 heroSubtitle: "Discover traditional local eateries, specialty coffee shops, hotels and must-see tourist spots through our interactive route.",
                 btnStartRoute: "Start the Route",
-                statSeasons: "Seasons",
+                statSeasons: "Season",
                 statAllies: "Map Locations",
                 statTourists: "Active Tourists",
                 statIdentity: "Loja Identity",
