@@ -33,15 +33,17 @@ async function run() {
   const db = new MemoryDb();
   const uid = 'visitor-1';
   const id = 'visit-1';
+  const point = { active: true, placeId: 'place-a' };
   const visit = { userId: uid, requestId: id, placeId: 'place-a', status: 'confirmed', confirmedAt: date(1000) };
   const code = { userId: uid, placeId: 'place-a', status: 'confirmed' };
   db.data.set(`loyaltyVisits/${id}`, visit);
   db.data.set(`visitCodes/${id}`, code);
-  const sync = () => service.syncConfirmedVisit({ db, authenticatedUid: uid, visitId: id, now: 2000 });
-  assert.deepEqual(await sync(), { changed: true, xp: 50 });
-  assert.deepEqual(await sync(), { changed: false, xp: 50 });
+  const sync = () => service.syncConfirmedVisit({ db, authenticatedUid: uid, visitId: id, point, now: 2000 });
+  await assert.rejects(() => service.syncConfirmedVisit({ db, authenticatedUid: uid, visitId: id, now: 2000 }), /pendiente de configurar/);
+  assert.deepEqual(await sync(), { changed: true, xp: 0 });
+  assert.deepEqual(await sync(), { changed: false, xp: 0 });
   assert.equal([...db.data.keys()].filter(key => key.includes('/xpAudit/')).length, 1);
-  await assert.rejects(() => service.syncConfirmedVisit({ db, authenticatedUid: 'other', visitId: id }), /incompatibles/);
+  await assert.rejects(() => service.syncConfirmedVisit({ db, authenticatedUid: 'other', visitId: id, point }), /incompatibles/);
   db.data.set(`loyaltyVisits/${id}`, { ...visit, status: 'reversed', reversedAt: date(3000) });
   db.data.set(`visitCodes/${id}`, { ...code, status: 'reversed' });
   assert.deepEqual(await sync(), { changed: true, xp: 0 });
@@ -67,14 +69,14 @@ async function run() {
   ];
   for (const [type, sourceId, proofId] of others) {
     full.data.set(`${core.COLLECTIONS.profiles}/${uid}/evidence/${service.documentId(`${type}:${sourceId}`)}`,
-      { type, sourceId, proofId, status: 'validated', verifiedAt: 500 });
+      { type, sourceId, proofId, status: 'validated', verifiedAt: sourceId === 'self-2' ? 1200 : 500 });
   }
-  const fullSync = () => service.syncConfirmedVisit({ db: full, authenticatedUid: uid, visitId: id, now: 2000 });
+  const fullSync = () => service.syncConfirmedVisit({ db: full, authenticatedUid: uid, visitId: id, point, now: 2000 });
   assert.deepEqual(await fullSync(), { changed: true, xp: 500 });
   assert.deepEqual(full.data.get(`${core.COLLECTIONS.profiles}/${uid}`).publicBadgeIds, [core.PILOT.badge.id]);
   full.data.set(`loyaltyVisits/${id}`, { ...visit, status: 'reversed', reversedAt: date(3000) });
   full.data.set(`visitCodes/${id}`, { ...code, status: 'reversed' });
-  assert.deepEqual(await fullSync(), { changed: true, xp: 200 });
+  assert.deepEqual(await fullSync(), { changed: true, xp: 150 });
   assert.deepEqual(full.data.get(`${core.COLLECTIONS.profiles}/${uid}`).publicBadgeIds, []);
   assert.equal(full.data.get(`${core.COLLECTIONS.profiles}/${uid}/xpEvents/${service.documentId(`${core.PILOT.id}:completion`)}`).status, 'revoked');
   console.log('Chabaquito V1 confirmed visit service: OK');

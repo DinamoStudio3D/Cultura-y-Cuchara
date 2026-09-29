@@ -10,19 +10,34 @@
     adventures: 'chabaquitoAdventureProgress',
     leaderboard: 'chabaquitoPublicRanking'
   });
+  const LEVELS = Object.freeze([
+    Object.freeze({ minXp: 0, name: 'Viajero Curioso' }),
+    Object.freeze({ minXp: 500, name: 'Caminante de Loja' }),
+    Object.freeze({ minXp: 1500, name: 'Aventurero Lojano' }),
+    Object.freeze({ minXp: 3000, name: 'Explorador de Loja' }),
+    Object.freeze({ minXp: 5000, name: 'Conocedor de Loja' }),
+    Object.freeze({ minXp: 8000, name: 'Guardián de Loja' }),
+    Object.freeze({ minXp: 12000, name: 'Maestro Explorador' }),
+    Object.freeze({ minXp: 20000, name: 'Leyenda de Loja' })
+  ]);
+  const POINTS = Object.freeze({
+    POINT_A: Object.freeze({ id: 'POINT_A', active: false, latitude: null, longitude: null, radiusMeters: null, maxAccuracyMeters: null }),
+    ESTABLISHMENT_B: Object.freeze({ id: 'ESTABLISHMENT_B', active: false, placeId: null }),
+    POINT_C: Object.freeze({ id: 'POINT_C', active: false, latitude: null, longitude: null, radiusMeters: null, maxAccuracyMeters: null })
+  });
   const PILOT = Object.freeze({
     id: 'tras-las-huellas-de-chabaquito',
     title: 'Tras las huellas de Chabaquito',
     objectives: Object.freeze([
       Object.freeze({ id: 'descubre', type: 'digital_objective', proofId: 'pilot_discover', xp: 50 }),
       Object.freeze({ id: 'cultura', type: 'digital_objective', proofId: 'pilot_culture', xp: 50 }),
-      Object.freeze({ id: 'autonoma-uno', type: 'self_visit', proofId: 'pilot_self_one', xp: 50 }),
-      Object.freeze({ id: 'con-encargado', type: 'confirmed_visit', proofId: null, xp: 50 }),
-      Object.freeze({ id: 'autonoma-dos', type: 'self_visit', proofId: 'pilot_self_two', xp: 50 })
+      Object.freeze({ id: 'autonoma-uno', type: 'self_visit', proofId: 'pilot_self_one', pointId: 'POINT_A', xp: 50 }),
+      Object.freeze({ id: 'con-encargado', type: 'confirmed_visit', proofId: null, pointId: 'ESTABLISHMENT_B', xp: 50 }),
+      Object.freeze({ id: 'autonoma-dos', type: 'self_visit', proofId: 'pilot_self_two', pointId: 'POINT_C', xp: 50 })
     ]),
     completionXp: 250,
     badge: Object.freeze({ id: 'amigo-de-chabaquito', title: 'Amigo de Chabaquito' }),
-    levelThresholds: Object.freeze([0, 100, 250, 500, 1000, 2000])
+    levelThresholds: Object.freeze(LEVELS.map(level => level.minXp))
   });
 
   function identifier(value, label) {
@@ -70,22 +85,34 @@
     const used = new Set();
     const completedObjectives = [];
     const xpEvents = [];
+    const completionTimes = new Map();
+    const unlocks = {
+      descubre: [], cultura: ['descubre'],
+      'autonoma-uno': ['cultura'], 'con-encargado': ['cultura'],
+      'autonoma-dos': ['autonoma-uno', 'con-encargado']
+    };
     for (const objective of objectives) {
+      const prerequisites = unlocks[objective.id] || [];
+      if (!prerequisites.every(id => completionTimes.has(id))) continue;
+      const unlockAt = prerequisites.length ? Math.max(...prerequisites.map(id => completionTimes.get(id))) : 0;
       const matching = [...latest.values()].filter(e => e.status === 'validated' && e.type === objective.type &&
-        (objective.proofId == null || objective.proofId === e.proofId) && !used.has(evidenceKey(e)))
+        e.verifiedAt >= unlockAt && (objective.proofId == null || objective.proofId === e.proofId) && !used.has(evidenceKey(e)))
         .sort((a, b) => a.verifiedAt - b.verifiedAt || evidenceKey(a).localeCompare(evidenceKey(b)));
       const evidence = matching[0];
       if (!evidence) continue;
       const key = evidenceKey(evidence);
       used.add(key);
       completedObjectives.push(objective.id);
+      completionTimes.set(objective.id, evidence.verifiedAt);
       xpEvents.push({ id: `${adventure.id}:${objective.id}`, evidenceKey: key, xp: objective.xp });
     }
     const completed = completedObjectives.length === objectives.length;
     if (completed) xpEvents.push({ id: `${adventure.id}:completion`, evidenceKey: null, xp: adventure.completionXp });
     const xp = xpEvents.reduce((total, event) => total + event.xp, 0);
     if (!Number.isSafeInteger(xp)) throw new Error('XP fuera de rango.');
-    return Object.freeze({ completed, completedObjectives, xpEvents, xp,
+    const availableObjectives = objectives.filter(objective => !completedObjectives.includes(objective.id) &&
+      (unlocks[objective.id] || []).every(id => completedObjectives.includes(id))).map(objective => objective.id);
+    return Object.freeze({ completed, completedObjectives, availableObjectives, xpEvents, xp,
       badgeIds: completed ? [adventure.badge.id] : [] });
   }
 
@@ -108,8 +135,8 @@
   }
 
   function publicRankingEntry(profile) {
-    if (profile?.rankingOptIn !== true) return null;
-    const alias = String(profile.alias || '').trim();
+    if (profile?.participateInRanking !== true) return null;
+    const alias = String(profile.publicAlias || '').trim();
     if (!alias || alias.length > 40 || /[<>\x00-\x1f]/.test(alias)) throw new Error('Alias público no válido.');
     const xp = profile.validatedXp;
     const avatar = profile.publicAvatar || null;
@@ -118,10 +145,10 @@
     }
     return Object.freeze({ alias, avatar,
       level: levelForXp(xp, profile.levelThresholds || PILOT.levelThresholds), xp,
-      badgeIds: (profile.publicBadgeIds || []).filter(id => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,128}$/.test(id)) });
+      badgeIds: (profile.publicBadgeIds || []).filter(id => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,128}$/.test(id)).slice(0, 3) });
   }
 
-  const api = Object.freeze({ TYPES, COLLECTIONS, PILOT, evidenceKey, normalizeEvidence,
+  const api = Object.freeze({ TYPES, COLLECTIONS, LEVELS, POINTS, PILOT, evidenceKey, normalizeEvidence,
     evaluateAdventure, levelForXp, reconcileXp, publicRankingEntry });
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.VisitaLojaChabaquitoV1Core = api;

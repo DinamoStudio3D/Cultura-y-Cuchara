@@ -10,9 +10,12 @@ function millis(timestamp) {
   return value;
 }
 
-function verifiedVisitEvidence(visitId, visit, code, uid) {
+function verifiedVisitEvidence(visitId, visit, code, uid, point = core.POINTS.ESTABLISHMENT_B) {
+  if (point?.active !== true || typeof point.placeId !== 'string' || !point.placeId) {
+    throw new Error('Establecimiento piloto pendiente de configurar.');
+  }
   if (!visit || !code || visit.userId !== uid || code.userId !== uid ||
-      visit.requestId !== visitId || code.placeId !== visit.placeId ||
+      visit.requestId !== visitId || code.placeId !== visit.placeId || visit.placeId !== point.placeId ||
       !['confirmed', 'reversed'].includes(visit.status) || visit.status !== code.status) {
     throw new Error('Visita no confirmada o datos incompatibles.');
   }
@@ -23,11 +26,12 @@ function verifiedVisitEvidence(visitId, visit, code, uid) {
   });
 }
 
-function planConfirmedVisit({ uid, visitId, visit, code, storedEvidence = [], storedEvents = [], profile = null, now }) {
+function planConfirmedVisit({ uid, visitId, visit, code, point = core.POINTS.ESTABLISHMENT_B,
+  storedEvidence = [], storedEvents = [], profile = null, now }) {
   if (typeof uid !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(uid)) throw new Error('Usuario no válido.');
   if (typeof visitId !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(visitId)) throw new Error('Visita no válida.');
   if (!Number.isSafeInteger(now) || now <= 0) throw new Error('Fecha de proceso no válida.');
-  const incoming = verifiedVisitEvidence(visitId, visit, code, uid);
+  const incoming = verifiedVisitEvidence(visitId, visit, code, uid, point);
   const incomingKey = core.evidenceKey(incoming);
   const priorEvidence = storedEvidence.find(e => core.evidenceKey(e) === incomingKey);
   // Nunca revivir una visita anulada a partir de una petición vieja.
@@ -48,14 +52,14 @@ function planConfirmedVisit({ uid, visitId, visit, code, storedEvidence = [], st
     evidence: incoming, evidenceChanged: !priorEvidence || priorEvidence.status !== incoming.status || priorEvidence.verifiedAt !== incoming.verifiedAt,
     result, delta,
     profile: {
-      alias: profile?.alias || '', rankingOptIn: profile?.rankingOptIn === true,
+      publicAlias: profile?.publicAlias || '', participateInRanking: profile?.participateInRanking === true,
       validatedXp: nextXp, level: core.levelForXp(nextXp), publicBadgeIds: badges,
       createdAt: profile?.createdAt || now, updatedAt: now
     }
   };
 }
 
-async function syncConfirmedVisit({ db, authenticatedUid, visitId, now = Date.now() }) {
+async function syncConfirmedVisit({ db, authenticatedUid, visitId, point = core.POINTS.ESTABLISHMENT_B, now = Date.now() }) {
   // authenticatedUid DEBE derivarse de un token comprobado por el backend, nunca del body.
   if (!db?.runTransaction) throw new Error('Repositorio transaccional necesario.');
   if (typeof authenticatedUid !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(authenticatedUid) ||
@@ -71,7 +75,7 @@ async function syncConfirmedVisit({ db, authenticatedUid, visitId, now = Date.no
     const evidenceSnap = await tx.get(evidenceRef);
     const eventsSnap = await tx.get(eventRef);
     const oldEvents = eventsSnap.docs.map(doc => ({ id: doc.data().eventId, ...doc.data() }));
-    const plan = planConfirmedVisit({ uid: authenticatedUid, visitId,
+    const plan = planConfirmedVisit({ uid: authenticatedUid, visitId, point,
       visit: visitSnap.exists ? visitSnap.data() : null,
       code: codeSnap.exists ? codeSnap.data() : null,
       profile: profileSnap.exists ? profileSnap.data() : null,
