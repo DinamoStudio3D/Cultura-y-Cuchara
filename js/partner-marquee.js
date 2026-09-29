@@ -28,6 +28,7 @@
     function render(host, source, options={}) {
         if (!host) return;
         if (host._partnerResize) { host._partnerResize.disconnect();host._partnerResize=null; }
+        if (host._partnerResizeTimer) {clearTimeout(host._partnerResizeTimer);host._partnerResizeTimer=null;}
         const data=normalize(source),preview=options.preview===true,english=doc.documentElement.lang?.toLowerCase().startsWith('en');
         host.replaceChildren();host.hidden=!preview && (!data.enabled || !data.brands.length);
         if(host.hidden)return;
@@ -52,7 +53,16 @@
         const clone=group.cloneNode(true);clone.setAttribute('aria-hidden','true');clone.querySelectorAll('a').forEach(link=>{link.removeAttribute('href');link.removeAttribute('target');});
         track.append(group,clone);viewport.append(track);host.append(viewport);
         const update=()=>host.style.setProperty('--partner-duration',Math.max(8,group.scrollWidth/data.speed).toFixed(2)+'s');update();
-        if(typeof ResizeObserver!=='undefined'){host._partnerResize=new ResizeObserver(update);host._partnerResize.observe(group);}
+        if(typeof ResizeObserver!=='undefined'){
+            const widthAtRender=host.clientWidth;
+            host._partnerResize=new ResizeObserver(()=>{
+                if(Math.abs(host.clientWidth-widthAtRender)>24){
+                    if(!host._partnerResizeTimer)host._partnerResizeTimer=setTimeout(()=>{host._partnerResizeTimer=null;render(host,source,options);},80);
+                }else update();
+            });
+            host._partnerResize.observe(group);
+            host._partnerResize.observe(host);
+        }
     }
     window.VisitaLojaPartnerMarquee={normalize,httpsUrl,contrast,render,defaults:DEFAULTS};
     const publicHost=doc.getElementById('partnerMarquee');
