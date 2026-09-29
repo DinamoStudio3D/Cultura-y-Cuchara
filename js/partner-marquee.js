@@ -50,11 +50,20 @@
     window.VisitaLojaPartnerMarquee={normalize,httpsUrl,render,defaults:DEFAULTS};
     const publicHost=doc.getElementById('partnerMarquee');
     if(publicHost){
-        let current=null;
+        let current=null,configLoaded=false,existingPlaces=[];
+        function showPublic(){
+            if(!configLoaded)return;
+            if(current){render(publicHost,current);return;}
+            // The public locales listener supplies published businesses already present on the site.
+            // This preview needs no extra Firestore document or test write.
+            const brands=existingPlaces.map(place=>({name:place.title,nameEn:place.titleEn||'',detail:place.tag||'',detailEn:place.tagEn||'',imageUrl:place.customLogoUrl||place.gallery?.[0]?.img||''}));
+            render(publicHost,{...DEFAULTS,enabled:true,brands});
+        }
+        window.VisitaLojaPartnerMarquee.setPlaces=places=>{existingPlaces=Array.isArray(places)?places:[];showPublic();};
         try {
             const app=firebase.app('viveLojaPublic');
-            app.firestore().collection('siteContent').doc('partnerMarquee').onSnapshot(snapshot=>{current=snapshot.exists?snapshot.data():null;render(publicHost,current);},error=>{publicHost.hidden=true;console.warn('No se pudo cargar la franja de marcas:',error);});
-            new MutationObserver(()=>{if(current)render(publicHost,current);}).observe(doc.documentElement,{attributes:true,attributeFilter:['lang']});
+            app.firestore().collection('siteContent').doc('partnerMarquee').onSnapshot(snapshot=>{current=snapshot.exists?snapshot.data():null;configLoaded=true;showPublic();},error=>{publicHost.hidden=true;console.warn('No se pudo cargar la franja de marcas:',error);});
+            new MutationObserver(showPublic).observe(doc.documentElement,{attributes:true,attributeFilter:['lang']});
         } catch(error){publicHost.hidden=true;console.warn('No se pudo iniciar la franja de marcas:',error);}
     }
 })();

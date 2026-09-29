@@ -4126,6 +4126,7 @@
                 checkLiveEventsBanner();
                 checkUrlParamForCheckin();
                 if(snapshot.metadata.fromCache&&!navigator.onLine)setLocationsSyncStatus('offline');else if(snapshot.empty)setLocationsSyncStatus(locations.length?'cached':'error');else setLocationsSyncStatus('ready');
+                if(!snapshot.empty)window.VisitaLojaPartnerMarquee?.setPlaces(locations);
             }, (error) => {
                 console.error("Firestore error:", error);
                 const cached=readLocationsCache();if(cached.length){locations=cached;if(currentLocationId){const selectedIndex=locations.findIndex(loc=>String(loc.id)===String(currentLocationId));if(selectedIndex>=0)currentLocationIndex=selectedIndex;}}
