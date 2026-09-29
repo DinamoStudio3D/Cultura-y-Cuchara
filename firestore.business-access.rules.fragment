@@ -15,13 +15,25 @@ function hasBusinessAccess(placeId) {
     && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.role in ['owner', 'manager'];
 }
 
+// Operación diaria del negocio: propietario O encargado.
+// Usar para confirmar visitas, fidelidad y entrega/validación de premios.
+function isOperationalBusinessUser(placeId) {
+  return hasBusinessAccess(placeId);
+}
+
+// Autogestión sensible del negocio: SOLO propietario.
+// Usar para editar ficha, contacto, horarios, logo, portada y galería.
 function isBusinessOwner(placeId) {
   return hasBusinessAccess(placeId)
     && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.role == 'owner';
 }
 
-// Al integrar este fragmento, isAssignedVisitMerchant(placeId) debe aceptar
-// hasBusinessAccess(placeId) además del esquema legado missionRewardMerchants.
+// Compatibilidad durante la migración:
+// - isAssignedVisitMerchant(placeId) debe aceptar isOperationalBusinessUser(placeId)
+//   además del esquema legado missionRewardMerchants.
+// - canMerchantEditLocale(placeId) debe aceptar isBusinessOwner(placeId), NO
+//   isOperationalBusinessUser(placeId), para impedir que un encargado edite la ficha.
+// El fallback legado se retirará únicamente después de migrar y probar las cuentas existentes.
 
 match /businessAccess/{accessId} {
   allow read: if isViveLojaAdmin()
