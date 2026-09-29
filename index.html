@@ -194,6 +194,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/chabaquito-missions-v2.css">
+    <link rel="stylesheet" href="css/chabaquito-ranking.css">
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
@@ -1345,6 +1346,26 @@
                     <p id="chabaquitoSavedStatus" class="text-sm text-white/70 mt-2"></p>
                     <div id="chabaquitoSavedActions" class="mt-3"></div>
                 </section>
+            </section>
+            <section id="chabaquitoRanking" class="chabaquito-ranking" aria-labelledby="chabaquitoRankingTitle" data-preview-only="true">
+                <header class="chabaquito-ranking-header">
+                    <div><p id="chabaquitoRankingDemo" class="chabaquito-ranking-label">Ranking de usuarios · demostración</p>
+                    <h3 id="chabaquitoRankingTitle">Exploradores de Loja</h3>
+                    <p id="chabaquitoRankingDescription">Conoce el podio y explora el Top 3, 5 o 10. Estos perfiles y puntos son de ejemplo.</p></div>
+                    <div id="chabaquitoRankingFilters" class="chabaquito-ranking-filters" role="group" aria-label="Cantidad de usuarios">
+                        <button type="button" data-ranking-limit="3" aria-pressed="false">Top 3</button>
+                        <button type="button" data-ranking-limit="5" aria-pressed="true">Top 5</button>
+                        <button type="button" data-ranking-limit="10" aria-pressed="false">Top 10</button>
+                    </div>
+                </header>
+                <p id="chabaquitoRankingPrivacy" class="chabaquito-ranking-privacy">El ranking real será voluntario y contará únicamente XP validado. Aquí no se consultan cuentas reales.</p>
+                <div id="chabaquitoRankingPodium" class="chabaquito-ranking-podium"></div>
+                <ol id="chabaquitoRankingList" class="chabaquito-ranking-list" start="4"></ol>
+                <p id="chabaquitoRankingStatus" class="chabaquito-ranking-status" role="status" aria-live="polite"></p>
+                <dialog id="chabaquitoRankingProfile" class="chabaquito-ranking-dialog" aria-labelledby="chabaquitoRankingProfileTitle">
+                    <button id="chabaquitoRankingClose" type="button" class="chabaquito-ranking-close" aria-label="Cerrar">×</button>
+                    <div id="chabaquitoRankingProfileContent"></div>
+                </dialog>
             </section>
         </div>
     </section>
@@ -7997,6 +8018,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
     <script src="js/chabaquito-v1-pilot.js" defer></script>
     <script src="js/chabaquito-v1-preview.js" defer></script>
     <script src="js/chabaquito-v1-persistent.js" defer></script>
+    <script src="js/chabaquito-ranking.js" defer></script>
     <script src="js/app.js" defer></script>
 </body>
 </html>
