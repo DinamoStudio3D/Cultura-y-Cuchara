@@ -4577,7 +4577,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             renderLojaTimeUI();
             renderPublicFrameButtons();
             renderPostcardPreview();
-            updateItineraryUI();
+            if (typeof updateItineraryUI === 'function') updateItineraryUI();
             if(map) {
                 setTimeout(() => { map.invalidateSize(); }, 250);
             }
@@ -7772,6 +7772,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         let deferredInstallPrompt = null;
         const installBanner = document.getElementById('installAppBanner');
         const installButton = document.getElementById('installAppBtn');
+        const pilotCard = document.getElementById('chabaquitoPilot');
+        if (pilotCard && 'IntersectionObserver' in window) {
+            new IntersectionObserver(entries => {
+                document.body.classList.toggle('chabaquito-pilot-visible', entries[0].isIntersecting);
+            }).observe(pilotCard);
+        }
 
         function dismissInstallApp() {
             installBanner?.classList.add('hidden');

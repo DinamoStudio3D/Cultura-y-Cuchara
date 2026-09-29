@@ -37,16 +37,12 @@
     for (const [index, question] of questions.entries()) {
       const group = node('fieldset', 'chabaquito-pilot-question');
       group.append(node('legend', 'font-semibold text-xs mb-2', question.text));
-      if (question.pending) {
-        group.append(node('p', 'text-xs text-amber-300', tr('Contenido pendiente de verificar; no se califica.', 'Content pending verification; not graded.')));
-      } else {
-        for (const [optionIndex, option] of question.options.entries()) {
-          const label = node('label', 'chabaquito-pilot-option');
-          const input = document.createElement('input');
-          input.type = 'radio'; input.name = `pilot-${objective.id}-${index}`; input.value = String(optionIndex);
-          label.append(input, document.createTextNode(` ${option}`));
-          group.append(label);
-        }
+      for (const [optionIndex, option] of question.options.entries()) {
+        const label = node('label', 'chabaquito-pilot-option');
+        const input = document.createElement('input');
+        input.type = 'radio'; input.name = `pilot-${objective.id}-${index}`; input.value = String(optionIndex);
+        label.append(input, document.createTextNode(` ${option}`));
+        group.append(label);
       }
       form.append(group);
     }
@@ -55,12 +51,14 @@
     form.addEventListener('submit', event => {
       event.preventDefault();
       const answer = index => form.querySelector(`input[name="pilot-${objective.id}-${index}"]:checked`)?.value;
-      const first = answer(0), second = answer(1);
-      if (first === undefined || (objective.id === 'cultura' && second === undefined)) {
-        notice(tr('Selecciona una respuesta para cada pregunta disponible.', 'Choose an answer for each available question.')); return;
+      const answers = questions.map((_, index) => answer(index));
+      if (answers.filter(value => value !== undefined).length < (objective.id === 'cultura' ? 2 : 1)) {
+        notice(objective.id === 'cultura'
+          ? tr('Selecciona al menos dos respuestas culturales.', 'Choose at least two cultural answers.')
+          : tr('Selecciona una respuesta.', 'Choose an answer.')); return;
       }
       // Claves visibles solo para la maqueta. El backend tendrá su propia validación.
-      const correct = objective.id === 'descubre' ? first === '0' : Number(first === '1') + Number(second === '1') >= 2;
+      const correct = objective.id === 'descubre' ? answers[0] === '0' : answers.filter(value => value === '1').length >= 2;
       if (!correct) { notice(tr('Aún no lo conseguiste. Puedes intentarlo de nuevo sin límite.', 'Not quite. You can try again as often as you like.')); return; }
       addMock(objective.id);
     });

@@ -9,7 +9,7 @@
       description: 'Responde al menos dos de las tres preguntas culturales.', questions: Object.freeze([
         Object.freeze({ text: '¿Cuál es la capital de la provincia de Loja?', options: ['Catamayo', 'Loja', 'Saraguro'] }),
         Object.freeze({ text: '¿En qué región del Ecuador se encuentra la provincia de Loja?', options: ['Costa', 'Sierra', 'Amazonía'] }),
-        Object.freeze({ text: 'TODO_CONTENT: tercera pregunta cultural pendiente de verificar.', options: [], pending: true })
+        Object.freeze({ text: '¿En qué país se encuentra la provincia de Loja?', options: ['Colombia', 'Ecuador', 'Perú'] })
       ]) }),
     Object.freeze({ id: 'autonoma-uno', type: 'self_visit', pointId: 'POINT_A', title: 'Encuentra la primera huella',
       description: 'Chabaquito ha salido a recorrer Loja y dejó una de sus huellas en este lugar.' }),
@@ -23,7 +23,7 @@
     cultura: Object.freeze({ title: 'The Loja challenge', description: 'Answer at least two of the three cultural questions.', questions: [
       { text: 'What is the capital of Loja province?', options: ['Catamayo', 'Loja', 'Saraguro'] },
       { text: 'Which region of Ecuador is Loja province in?', options: ['Coast', 'Andes', 'Amazon'] },
-      { text: 'TODO_CONTENT: third cultural question pending verification.', options: [], pending: true }
+      { text: 'Which country is Loja province in?', options: ['Colombia', 'Ecuador', 'Peru'] }
     ] }),
     'autonoma-uno': Object.freeze({ title: 'Find the first footprint', description: 'Chabaquito explored Loja and left a footprint at this place.' }),
     'con-encargado': Object.freeze({ title: 'Meet a friend of Chabaquito', description: 'Visit the designated establishment and register your visit with its staff. No purchase is required.' }),

@@ -23,3 +23,8 @@
 #misiones .chabaquito-pilot-option:has(input:checked) { border-color: #fbbf24; background: rgba(251,191,36,.1); }
 #misiones .chabaquito-pilot-action { display: inline-block; border-radius: .7rem; background: #f59e0b; color: #1a1305; padding: .65rem .85rem; font-size: .75rem; font-weight: 900; text-align: center; }
 #misiones .chabaquito-pilot-action:hover, #misiones .chabaquito-pilot-action:focus-visible { background: #fbbf24; outline: 2px solid #fff; outline-offset: 2px; }
+@media (min-width: 768px) {
+  body.chabaquito-pilot-visible #webMascot,
+  body.chabaquito-pilot-visible #webMascotRestore,
+  body.chabaquito-pilot-visible #installAppBanner { opacity: 0; visibility: hidden; pointer-events: none; }
+}
