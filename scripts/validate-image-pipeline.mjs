@@ -14,18 +14,20 @@ const tests = [
   'api/sign-merchant-image.test.js'
 ];
 
+const optionalTests = ['api/delete-merchant-image.test.js'];
 const requiredPortalScripts = [
   'js/image-compressor.js',
   'js/cloudinary-image-uploader.js',
   'js/visitaloja-image-service.js',
   'js/visitaloja-image-config.js',
   'js/visitaloja-image-provider.js',
-  'js/merchant-image-upload-adapter.js'
+  'js/merchant-image-upload-adapter.js',
+  'js/merchant-image-cleanup.js'
 ];
 
 let failed = false;
 
-for (const test of tests) {
+for (const test of [...tests, ...optionalTests.filter(fs.existsSync)]) {
   if (!fs.existsSync(test)) {
     console.error(`✗ Falta ${test}`);
     failed = true;
@@ -37,9 +39,7 @@ for (const test of tests) {
   if (run.status !== 0) {
     console.error(`✗ Falló ${test}`);
     failed = true;
-  } else {
-    console.log(`✓ ${test}`);
-  }
+  } else console.log(`✓ ${test}`);
 }
 
 const portal = fs.readFileSync('merchant-profile.html', 'utf8');
@@ -59,19 +59,20 @@ for (const script of requiredPortalScripts) {
 }
 
 const config = fs.readFileSync('js/visitaloja-image-config.js', 'utf8');
-if (!/provider:\s*'firebase'/.test(config) || !/enabled:\s*false/.test(config)) {
-  console.error('✗ Cloudinary no está apagado por defecto');
+if (!/provider:\s*'cloudinary'/.test(config) || !/enabled:\s*true/.test(config) || !/mode:\s*'signed'/.test(config)) {
+  console.error('✗ Cloudinary firmado no está activo en la configuración pública');
   failed = true;
-} else {
-  console.log('✓ Cloudinary permanece apagado por defecto');
-}
+} else console.log('✓ Cloudinary firmado está activo');
 
-if (!portal.includes('createMerchantImageUploader({firebaseUpload:uploadImageFirebase,allowFirebaseFallback:false,signUpload:')) {
-  console.error('✗ El Portal no conserva el puente Firebase esperado');
+if (!portal.includes("fetch('/api/sign-merchant-image'") || !portal.includes('allowFirebaseFallback:false')) {
+  console.error('✗ El Portal no exige la subida firmada sin fallback silencioso');
   failed = true;
-} else {
-  console.log('✓ El Portal conserva Firebase como ruta efectiva');
-}
+} else console.log('✓ El Portal exige subida Cloudinary firmada');
+
+if (!portal.includes('cleanupAfterSave') || !portal.includes("fetch('/api/delete-merchant-image'")) {
+  console.error('✗ Falta la limpieza segura de imágenes después de guardar');
+  failed = true;
+} else console.log('✓ El Portal integra limpieza segura post-guardado');
 
 if (failed) process.exit(1);
 console.log('\nImage pipeline validation: OK');
