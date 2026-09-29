@@ -759,7 +759,7 @@
     </div>
 
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-amber-600 to-brandGold text-white py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
-        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
+        <span id="liveEventBadge" class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse"></span>
         <span id="liveEventText">Cargando eventos...</span>
         <button id="liveEventBtn" type="button" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
             <i class="fa-solid fa-map-pin mr-1"></i> <span data-i18n="btnViewMap">Ver en el mapa</span>
@@ -2899,6 +2899,7 @@
             });
 
             renderEverything();
+            checkLiveEventsBanner();
             if (typeof renderChabaquitoMissions === 'function') renderChabaquitoMissions();
             if (typeof refreshAudioGuideLabels === 'function') refreshAudioGuideLabels();
             applyAutomaticUiLanguage(document.body);
@@ -4439,6 +4440,7 @@
         let liveEventRotationInterval = null;
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
+            const badge = document.getElementById('liveEventBadge');
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
             if(!banner) return;
@@ -4470,9 +4472,12 @@
                 if(upcomingEvents.length === 0) return;
                 const ev = upcomingEvents[currentEventIndex % upcomingEvents.length];
                 const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
-                textEl.innerHTML = `🔥 <b>${evTitle}</b> en ${ev.location} (${ev.date})`;
-                
-                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}', '${ev.date || ''}', '${(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')`);
+                badge.textContent = ev.date === todayStr
+                    ? (currentLang === 'en' ? '🔴 TODAY' : '🔴 HOY')
+                    : (currentLang === 'en' ? 'UPCOMING' : 'PRÓXIMAMENTE');
+                textEl.textContent = `🔥 ${evTitle} ${currentLang === 'en' ? 'at' : 'en'} ${ev.location || ''}${ev.date ? ` (${ev.date})` : ''}`;
+                btnEl.onclick = () => focusEventOnMap(ev.lat || -3.9931, ev.lng || -79.2042,
+                    evTitle, ev.date || '', ev.location || '', ev.type || '');
                 currentEventIndex = (currentEventIndex + 1) % upcomingEvents.length;
             }
 
