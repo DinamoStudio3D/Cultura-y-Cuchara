@@ -1334,6 +1334,13 @@
                     </div>
                 </div>
             </div>
+            <section id="chabaquitoPilot" class="chabaquito-pilot mt-7 rounded-3xl p-5 sm:p-7" aria-labelledby="chabaquitoPilotTitle" data-preview-only="true">
+                <div class="flex flex-wrap items-start justify-between gap-3"><div><p class="text-amber-300 text-xs font-black uppercase tracking-widest" data-i18n="pilotPreviewLabel">Aventura piloto · demostración sin guardar</p><h3 id="chabaquitoPilotTitle" class="text-2xl sm:text-3xl font-black mt-2" data-i18n="pilotTitle">Tras las huellas de Chabaquito</h3><p class="text-sm text-white/70 mt-2" data-i18n="pilotDescription">Cinco objetivos, 500 XP posibles y la insignia Amigo de Chabaquito. Esta vista solo simula el circuito: aún no acredita XP real.</p></div><span id="chabaquitoPilotCount" class="text-amber-300 font-black">0/5</span></div>
+                <div class="flex flex-wrap gap-3 mt-4 text-xs font-bold"><span id="chabaquitoPilotXp">0/500 XP · simulación</span><span id="chabaquitoPilotLevel">Nivel 1 · Viajero Curioso</span><span id="chabaquitoPilotBadge">Insignia pendiente</span></div>
+                <div id="chabaquitoPilotObjectives" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-5"></div>
+                <p id="chabaquitoPilotNotice" class="text-sm text-amber-200 mt-4" role="status" aria-live="polite" data-i18n="pilotNotice">POINT_A, ESTABLISHMENT_B y POINT_C aún no tienen lugares ni QR reales.</p>
+                <button id="chabaquitoPilotReset" type="button" class="mt-4 rounded-xl border border-white/20 px-4 py-2 text-xs font-bold text-white/75 hover:text-white" data-i18n="pilotReset">Reiniciar demostración</button>
+            </section>
         </div>
     </section>
 
@@ -2575,6 +2582,11 @@
                 passRules: "* Seguridad: al escanear el QR, genera un código temporal y pide al personal autorizado que confirme tu visita.",
                 missionBadge: "Aventura interactiva",
                 missionV2Heading: "Explora Loja con Chabaquito",
+                pilotPreviewLabel: "Aventura piloto · demostración sin guardar",
+                pilotTitle: "Tras las huellas de Chabaquito",
+                pilotDescription: "Cinco objetivos, 500 XP posibles y la insignia Amigo de Chabaquito. Esta vista solo simula el circuito: aún no acredita XP real.",
+                pilotReset: "Reiniciar demostración",
+                pilotNotice: "POINT_A, ESTABLISHMENT_B y POINT_C aún no tienen lugares ni QR reales.",
                 missionV2Speech: "¡Vamos, explorador! Elige una aventura y sigue tu progreso.",
                 missionV2Upcoming: "Grandes aventuras por la provincia",
                 missionV2Preparing: "En preparación",
@@ -2710,6 +2722,11 @@
                 passRules: "* Security rules: To get your stamp by scanning the QR, the cashier or waiter must enter the authorized validation PIN.",
                 missionBadge: "Interactive adventure",
                 missionV2Heading: "Explore Loja with Chabaquito",
+                pilotPreviewLabel: "Pilot adventure · unsaved demonstration",
+                pilotTitle: "In Chabaquito's Footsteps",
+                pilotDescription: "Five objectives, 500 possible XP and the Friend of Chabaquito badge. This demo does not award real XP.",
+                pilotReset: "Reset demo",
+                pilotNotice: "POINT_A, ESTABLISHMENT_B and POINT_C have no real locations or QR codes yet.",
                 missionV2Speech: "Let's go, explorer! Choose an adventure and track your progress.",
                 missionV2Upcoming: "Bigger adventures across the province",
                 missionV2Preparing: "In development",
@@ -7965,6 +7982,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 })();
 </script>
 
+    <script src="js/chabaquito-v1-core.js" defer></script>
+    <script src="js/chabaquito-v1-pilot.js" defer></script>
+    <script src="js/chabaquito-v1-preview.js" defer></script>
     <script src="js/app.js" defer></script>
 </body>
 </html>

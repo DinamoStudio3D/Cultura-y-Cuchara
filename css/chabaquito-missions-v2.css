@@ -12,3 +12,14 @@
 #misiones .chabaquito-v2-future { background: linear-gradient(120deg,rgba(34,211,238,.08),rgba(16,185,129,.07)); border: 1px solid rgba(34,211,238,.2); }
 @media (min-width: 1024px) { #misiones .chabaquito-v2-hero { border-bottom: 0; border-right: 1px solid rgba(255,255,255,.09); } }
 @media (max-width: 640px) { #misiones .chabaquito-v2-hero img { width: min(210px,65%); max-height: 255px; } #misiones .chabaquito-v2-note { max-width: 220px; } }
+#misiones .chabaquito-pilot { background: linear-gradient(135deg,#10231e,#0a1512); border: 1px solid rgba(245,158,11,.3); color: #fff; }
+#misiones .chabaquito-pilot-card { background: rgba(0,0,0,.24); border: 1px solid rgba(255,255,255,.14); border-radius: 1rem; padding: 1rem; min-width: 0; }
+#misiones .chabaquito-pilot-card.is-done { border-color: rgba(52,211,153,.65); }
+#misiones .chabaquito-pilot-state { color: #fbbf24; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+#misiones .chabaquito-pilot-card.is-done .chabaquito-pilot-state { color: #6ee7b7; }
+#misiones .chabaquito-pilot-form { display: grid; gap: .9rem; }
+#misiones .chabaquito-pilot-question { border: 0; min-width: 0; padding: 0; }
+#misiones .chabaquito-pilot-option { display: block; margin: .35rem 0; padding: .5rem .7rem; border: 1px solid rgba(255,255,255,.16); border-radius: .65rem; font-size: .75rem; cursor: pointer; }
+#misiones .chabaquito-pilot-option:has(input:checked) { border-color: #fbbf24; background: rgba(251,191,36,.1); }
+#misiones .chabaquito-pilot-action { display: inline-block; border-radius: .7rem; background: #f59e0b; color: #1a1305; padding: .65rem .85rem; font-size: .75rem; font-weight: 900; text-align: center; }
+#misiones .chabaquito-pilot-action:hover, #misiones .chabaquito-pilot-action:focus-visible { background: #fbbf24; outline: 2px solid #fff; outline-offset: 2px; }
