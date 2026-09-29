@@ -1,0 +1,51 @@
+// Integrar dentro de match /databases/{database}/documents antes del deny final.
+// NO desplegar por separado.
+
+function businessAccessId(placeId) {
+  return placeId + '__' + request.auth.token.email;
+}
+
+function hasBusinessAccess(placeId) {
+  return request.auth != null
+    && request.auth.token.email is string
+    && exists(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId)))
+    && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.active == true
+    && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.placeId == placeId
+    && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.email == request.auth.token.email
+    && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.role in ['owner', 'manager'];
+}
+
+function isBusinessOwner(placeId) {
+  return hasBusinessAccess(placeId)
+    && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.role == 'owner';
+}
+
+match /businessAccess/{accessId} {
+  allow read: if isViveLojaAdmin()
+    || (request.auth != null
+      && request.auth.token.email is string
+      && resource.data.email == request.auth.token.email);
+
+  allow create, update: if isViveLojaAdmin()
+    && request.resource.data.keys().hasOnly([
+      'email', 'displayName', 'placeId', 'placeName', 'role', 'active',
+      'updatedAt', 'updatedBy'
+    ])
+    && request.resource.data.email is string
+    && request.resource.data.email.size() >= 5
+    && request.resource.data.email.size() <= 160
+    && request.resource.data.displayName is string
+    && request.resource.data.displayName.size() <= 100
+    && request.resource.data.placeId is string
+    && request.resource.data.placeId.size() > 0
+    && request.resource.data.placeId.size() <= 160
+    && request.resource.data.placeName is string
+    && request.resource.data.placeName.size() <= 180
+    && request.resource.data.role in ['owner', 'manager']
+    && request.resource.data.active is bool
+    && request.resource.data.updatedAt == request.time
+    && request.resource.data.updatedBy == request.auth.uid
+    && accessId == request.resource.data.placeId + '__' + request.resource.data.email;
+
+  allow delete: if isViveLojaAdmin();
+}
