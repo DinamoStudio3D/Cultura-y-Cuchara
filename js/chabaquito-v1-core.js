@@ -1,0 +1,128 @@
+/* Chabaquito V1: lógica pura. Solo un backend autorizado puede acreditar evidencias. */
+(function (root) {
+  'use strict';
+
+  const TYPES = Object.freeze(['confirmed_visit', 'self_visit', 'digital_objective']);
+  const COLLECTIONS = Object.freeze({
+    profiles: 'chabaquitoExplorerProfiles',
+    evidence: 'chabaquitoEvidence',
+    xpEvents: 'chabaquitoXpEvents',
+    adventures: 'chabaquitoAdventureProgress',
+    leaderboard: 'chabaquitoPublicRanking'
+  });
+  const PILOT = Object.freeze({
+    id: 'tras-las-huellas-de-chabaquito',
+    title: 'Tras las huellas de Chabaquito',
+    objectives: Object.freeze([
+      Object.freeze({ id: 'descubre', type: 'digital_objective', proofId: 'pilot_discover', xp: 50 }),
+      Object.freeze({ id: 'cultura', type: 'digital_objective', proofId: 'pilot_culture', xp: 50 }),
+      Object.freeze({ id: 'autonoma-uno', type: 'self_visit', proofId: 'pilot_self_one', xp: 50 }),
+      Object.freeze({ id: 'con-encargado', type: 'confirmed_visit', proofId: null, xp: 50 }),
+      Object.freeze({ id: 'autonoma-dos', type: 'self_visit', proofId: 'pilot_self_two', xp: 50 })
+    ]),
+    completionXp: 250,
+    badge: Object.freeze({ id: 'amigo-de-chabaquito', title: 'Amigo de Chabaquito' }),
+    levelThresholds: Object.freeze([0, 100, 250, 500, 1000, 2000])
+  });
+
+  function identifier(value, label) {
+    if (typeof value !== 'string' || !/^[a-zA-Z0-9_-]{1,128}$/.test(value)) {
+      throw new Error(`${label} no válido.`);
+    }
+    return value;
+  }
+
+  // Clave lógica; un adaptador Firestore debe codificarla antes de usarla como ID.
+  function evidenceKey(evidence) {
+    return `${identifier(evidence.type, 'Tipo')}:${identifier(evidence.sourceId, 'Origen')}`;
+  }
+
+  function normalizeEvidence(input) {
+    const type = identifier(input?.type, 'Tipo');
+    if (!TYPES.includes(type)) throw new Error('Tipo de evidencia desconocido.');
+    const sourceId = identifier(input.sourceId, 'Origen');
+    const proofId = input.proofId == null ? null : identifier(input.proofId, 'Objetivo');
+    if (type !== 'confirmed_visit' && !proofId) throw new Error('El objetivo es obligatorio.');
+    if (!['validated', 'reversed'].includes(input.status)) throw new Error('Estado no válido.');
+    // verifiedAt debe provenir del backend, nunca de un click del visitante.
+    const verifiedAt = Number(input.verifiedAt);
+    if (!Number.isSafeInteger(verifiedAt) || verifiedAt <= 0) throw new Error('Fecha validada no válida.');
+    return Object.freeze({ type, sourceId, proofId, status: input.status, verifiedAt });
+  }
+
+  function evaluateAdventure(adventure, evidenceList) {
+    const objectives = adventure?.objectives;
+    if (!adventure || !Array.isArray(objectives) || !objectives.length ||
+        new Set(objectives.map(o => o.id)).size !== objectives.length ||
+        !Number.isSafeInteger(adventure.completionXp) || adventure.completionXp < 0 || !adventure.badge?.id ||
+        !objectives.every(o => TYPES.includes(o.type) && Number.isSafeInteger(o.xp) && o.xp >= 0)) {
+      throw new Error('Configuración de aventura no válida.');
+    }
+    const latest = new Map();
+    for (const raw of evidenceList || []) {
+      const evidence = normalizeEvidence(raw);
+      const key = evidenceKey(evidence);
+      // Estado actual por ID canónico; una reversión prevalece ante reintentos anteriores.
+      const previous = latest.get(key);
+      if (!previous || evidence.verifiedAt > previous.verifiedAt ||
+          (evidence.verifiedAt === previous.verifiedAt && evidence.status === 'reversed')) latest.set(key, evidence);
+    }
+    const used = new Set();
+    const completedObjectives = [];
+    const xpEvents = [];
+    for (const objective of objectives) {
+      const matching = [...latest.values()].filter(e => e.status === 'validated' && e.type === objective.type &&
+        (objective.proofId == null || objective.proofId === e.proofId) && !used.has(evidenceKey(e)))
+        .sort((a, b) => a.verifiedAt - b.verifiedAt || evidenceKey(a).localeCompare(evidenceKey(b)));
+      const evidence = matching[0];
+      if (!evidence) continue;
+      const key = evidenceKey(evidence);
+      used.add(key);
+      completedObjectives.push(objective.id);
+      xpEvents.push({ id: `${adventure.id}:${objective.id}`, evidenceKey: key, xp: objective.xp });
+    }
+    const completed = completedObjectives.length === objectives.length;
+    if (completed) xpEvents.push({ id: `${adventure.id}:completion`, evidenceKey: null, xp: adventure.completionXp });
+    const xp = xpEvents.reduce((total, event) => total + event.xp, 0);
+    if (!Number.isSafeInteger(xp)) throw new Error('XP fuera de rango.');
+    return Object.freeze({ completed, completedObjectives, xpEvents, xp,
+      badgeIds: completed ? [adventure.badge.id] : [] });
+  }
+
+  function levelForXp(xp, thresholds = PILOT.levelThresholds) {
+    if (!Number.isSafeInteger(xp) || xp < 0 || !Array.isArray(thresholds) || thresholds[0] !== 0 ||
+        thresholds.some((n, i) => !Number.isSafeInteger(n) || n < 0 || (i > 0 && n <= thresholds[i - 1]))) {
+      throw new Error('XP o niveles no válidos.');
+    }
+    return thresholds.filter(n => xp >= n).length;
+  }
+
+  function reconcileXp(previousEvents, nextEvents) {
+    const previous = new Map(previousEvents.map(e => [e.id, e]));
+    const next = new Map(nextEvents.map(e => [e.id, e]));
+    if (previous.size !== previousEvents.length || next.size !== nextEvents.length) throw new Error('Eventos XP duplicados.');
+    return {
+      grant: [...next.values()].filter(e => !previous.has(e.id) || previous.get(e.id).xp !== e.xp || previous.get(e.id).evidenceKey !== e.evidenceKey),
+      revoke: [...previous.values()].filter(e => !next.has(e.id) || next.get(e.id).xp !== e.xp || next.get(e.id).evidenceKey !== e.evidenceKey)
+    };
+  }
+
+  function publicRankingEntry(profile) {
+    if (profile?.rankingOptIn !== true) return null;
+    const alias = String(profile.alias || '').trim();
+    if (!alias || alias.length > 40 || /[<>\x00-\x1f]/.test(alias)) throw new Error('Alias público no válido.');
+    const xp = profile.validatedXp;
+    const avatar = profile.publicAvatar || null;
+    if (avatar !== null && (typeof avatar !== 'string' || !/^https:\/\/[a-z0-9.-]+\//i.test(avatar) || avatar.length > 1000)) {
+      throw new Error('Avatar público no válido.');
+    }
+    return Object.freeze({ alias, avatar,
+      level: levelForXp(xp, profile.levelThresholds || PILOT.levelThresholds), xp,
+      badgeIds: (profile.publicBadgeIds || []).filter(id => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,128}$/.test(id)) });
+  }
+
+  const api = Object.freeze({ TYPES, COLLECTIONS, PILOT, evidenceKey, normalizeEvidence,
+    evaluateAdventure, levelForXp, reconcileXp, publicRankingEntry });
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  if (root) root.VisitaLojaChabaquitoV1Core = api;
+})(typeof window !== 'undefined' ? window : null);
