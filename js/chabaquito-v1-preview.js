@@ -60,6 +60,8 @@
       // Claves visibles solo para la maqueta. El backend tendrá su propia validación.
       const correct = objective.id === 'descubre' ? answers[0] === '0' : answers.filter(value => value === '1').length >= 2;
       if (!correct) { notice(tr('Aún no lo conseguiste. Puedes intentarlo de nuevo sin límite.', 'Not quite. You can try again as often as you like.')); return; }
+      window.dispatchEvent(new CustomEvent('chabaquito:demo-answer', { detail: { objectiveId: objective.id,
+        answers: answers.map(value => value === undefined ? null : Number(value)) } }));
       addMock(objective.id);
     });
   }

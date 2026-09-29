@@ -1341,6 +1341,11 @@
                 <p id="chabaquitoPilotNotice" class="text-sm text-amber-200 mt-4" role="status" aria-live="polite" data-i18n="pilotNotice">POINT_A, ESTABLISHMENT_B y POINT_C aún no tienen lugares ni QR reales.</p>
                 <button id="chabaquitoPilotReset" type="button" class="mt-4 rounded-xl border border-white/20 px-4 py-2 text-xs font-bold text-white/75 hover:text-white" data-i18n="pilotReset">Reiniciar demostración</button>
             </section>
+            <section id="chabaquitoSavedProgress" class="hidden chabaquito-pilot mt-4 rounded-3xl p-5 sm:p-7" aria-live="polite">
+                <h3 class="text-lg font-black">Progreso real de objetivos digitales</h3>
+                <p id="chabaquitoSavedStatus" class="text-sm text-white/70 mt-2">Inicia sesión para consultar tus objetivos guardados. La aventura de arriba sigue siendo una demostración.</p>
+                <div id="chabaquitoSavedActions" class="flex flex-wrap gap-3 mt-4"></div>
+            </section>
         </div>
     </section>
 
@@ -7991,6 +7996,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
     <script src="js/chabaquito-v1-core.js" defer></script>
     <script src="js/chabaquito-v1-pilot.js" defer></script>
     <script src="js/chabaquito-v1-preview.js" defer></script>
+    <script src="js/chabaquito-v1-persistence.js" defer></script>
     <script src="js/app.js" defer></script>
 </body>
 </html>

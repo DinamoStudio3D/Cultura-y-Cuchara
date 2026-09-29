@@ -9,6 +9,7 @@ assert.equal(one.passed, true);
 assert.equal(digital.digitalEvidence({ uid: 'user-1', objectiveId: 'descubre', answers: [0], existingEvidence: [one.evidence], verifiedAt: 2 }).alreadyCompleted, true);
 assert.equal(digital.validateDigitalAnswer('cultura', [1, 1, null]), true); // 2/3
 assert.equal(digital.validateDigitalAnswer('cultura', [1, 0, null]), false); // 1/3
+assert.equal(digital.validateDigitalAnswer('cultura', [0, 1, 1]), true); // Ecuador + Sierra
 assert.throws(() => digital.digitalEvidence({ uid: 'user-1', objectiveId: 'cultura', answers: [1, 1, null], verifiedAt: 2 }), /bloqueado/);
 const two = digital.digitalEvidence({ uid: 'user-1', objectiveId: 'cultura', answers: [1, 1, null], existingEvidence: [one.evidence], verifiedAt: 2 }).evidence;
 let evidence = [one.evidence, two];

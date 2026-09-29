@@ -1,7 +1,7 @@
 'use strict';
 // Lógica del futuro backend: estas respuestas no se cargan en la página pública.
 const core = require('../js/chabaquito-v1-core');
-const ANSWERS = Object.freeze({ descubre: [0], cultura: [1, 1, null] });
+const ANSWERS = Object.freeze({ descubre: [0], cultura: [1, 1, 1] });
 
 function validateDigitalAnswer(objectiveId, answers) {
   const expected = ANSWERS[objectiveId];
@@ -9,10 +9,7 @@ function validateDigitalAnswer(objectiveId, answers) {
       answers.some(value => value !== null && (!Number.isInteger(value) || value < 0 || value > 2))) {
     throw new Error('Respuestas no válidas.');
   }
-  if (objectiveId === 'cultura') {
-    // TODO_CONTENT: la tercera pregunta no tiene respuesta habilitada.
-    return answers.reduce((count, value, index) => count + (expected[index] !== null && value === expected[index] ? 1 : 0), 0) >= 2;
-  }
+  if (objectiveId === 'cultura') return answers.reduce((count, value, index) => count + (value === expected[index] ? 1 : 0), 0) >= 2;
   return answers[0] === expected[0];
 }
 

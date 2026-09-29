@@ -839,6 +839,21 @@ service cloud.firestore {
       allow delete: if isViveLojaAdmin();
     }
 
+    // Chabaquito V1: las evidencias y el XP solo los acredita el servidor.
+    match /chabaquitoExplorerProfiles/{userId} {
+      allow read: if isProfileOwner(userId);
+      allow write: if false;
+      match /{privateDocument=**} {
+        allow read: if isProfileOwner(userId);
+        allow write: if false;
+      }
+    }
+
+    match /chabaquitoAdventureProgress/{progressId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
     // Registro inmutable generado exclusivamente por funciones del servidor.
     match /systemAudit/{eventId} {
       allow read: if isViveLojaAdmin();
