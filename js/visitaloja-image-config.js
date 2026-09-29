@@ -2,11 +2,11 @@
   'use strict';
 
   // Configuración pública del frontend. Nunca colocar API Secret aquí.
-  // Cloudinary solo se habilita con firma del servidor y activación explícita.
+  // Las credenciales privadas permanecen en Vercel; el navegador solo solicita una firma.
   const CONFIG = Object.freeze({
-    provider: 'firebase',
+    provider: 'cloudinary',
     cloudinary: Object.freeze({
-      enabled: false,
+      enabled: true,
       mode: 'signed'
     }),
     compression: Object.freeze({
