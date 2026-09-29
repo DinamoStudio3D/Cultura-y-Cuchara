@@ -5,7 +5,10 @@
     const core = window.VisitaLojaChabaquitoV1Core;
     const catalog = window.VisitaLojaChabaquitoV1Pilot;
     const host = document.getElementById('chabaquitoPilotObjectives');
-    if (!core || !catalog || !host) return;
+    if (!core || !catalog || !host) return false;
+    if (host.dataset.chabaquitoBooted === 'true') return true;
+    host.dataset.chabaquitoBooted = 'true';
+
     let mockEvidence = [];
     let sequence = Date.now();
     const isEnglish = () => document.documentElement.lang === 'en';
@@ -88,25 +91,32 @@
     $('chabaquitoPilotReset')?.addEventListener('click', () => { mockEvidence = []; render(); notice(tr('Vista piloto reiniciada. El progreso real guardado no se elimina.', 'Pilot view reset. Saved real progress is not deleted.')); });
     new MutationObserver(() => render()).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     render();
+    return true;
   }
 
   let started = false;
-  const startOnce = () => {
+  function tryStart() {
     if (started) return;
-    started = true;
-    boot();
-  };
-
-  if (window.ChabaquitoV1Persistent) {
-    startOnce();
-    return;
+    try {
+      if (boot()) started = true;
+    } catch (error) {
+      console.error('[Chabaquito V1] No se pudo iniciar la vista piloto:', error);
+    }
   }
 
-  const script = document.createElement('script');
-  script.src = 'js/chabaquito-v1-persistent.js';
-  script.onload = startOnce;
-  script.onerror = startOnce;
-  document.head.appendChild(script);
-  // Never leave the pilot blank if a dynamically loaded helper is delayed or blocked.
-  window.setTimeout(startOnce, 300);
+  // Render as soon as the normal deferred dependencies are available.
+  tryStart();
+  document.addEventListener('DOMContentLoaded', tryStart, { once: true });
+  window.addEventListener('load', tryStart, { once: true });
+
+  if (!window.ChabaquitoV1Persistent) {
+    const script = document.createElement('script');
+    script.src = 'js/chabaquito-v1-persistent.js';
+    script.onload = tryStart;
+    script.onerror = tryStart;
+    document.head.appendChild(script);
+  }
+
+  // Short retries cover unusual script ordering/cache behavior without leaving the UI blank.
+  [100, 300, 800, 1500].forEach(delay => window.setTimeout(tryStart, delay));
 })();
