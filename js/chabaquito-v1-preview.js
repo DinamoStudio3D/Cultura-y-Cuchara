@@ -90,13 +90,23 @@
     render();
   }
 
-  if (window.ChabaquitoV1Persistent) {
+  let started = false;
+  const startOnce = () => {
+    if (started) return;
+    started = true;
     boot();
+  };
+
+  if (window.ChabaquitoV1Persistent) {
+    startOnce();
     return;
   }
+
   const script = document.createElement('script');
   script.src = 'js/chabaquito-v1-persistent.js';
-  script.onload = boot;
-  script.onerror = boot;
+  script.onload = startOnce;
+  script.onerror = startOnce;
   document.head.appendChild(script);
+  // Never leave the pilot blank if a dynamically loaded helper is delayed or blocked.
+  window.setTimeout(startOnce, 300);
 })();
