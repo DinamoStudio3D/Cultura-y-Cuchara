@@ -7,7 +7,7 @@
   const CONFIG = Object.freeze({
     enabled: false,
     adventureId: 'tras-las-huellas-de-chabaquito',
-    firstObjectiveId: 'digital-1'
+    firstObjectiveId: 'descubre'
   });
 
   function getCurrentUser() {
