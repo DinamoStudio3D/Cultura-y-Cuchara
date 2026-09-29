@@ -1,0 +1,12 @@
+{
+  "name": "visitaloja-web",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Server dependencies for VisitaLoja Vercel APIs.",
+  "dependencies": {
+    "firebase-admin": "^13.4.0"
+  },
+  "scripts": {
+    "test:chabaquito:persistence": "node functions/chabaquito-v1-digital-persistence.test.js && node functions/chabaquito-v1-digital-service.test.js"
+  }
+}
