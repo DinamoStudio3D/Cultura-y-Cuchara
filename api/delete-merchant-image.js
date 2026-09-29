@@ -55,19 +55,27 @@ function createHandler({ fetchImpl = fetch, env = process.env, now = Date.now } 
       const publicId = publicIdFromCloudinaryUrl(url, cloudName);
       const expectedPrefix = `visitaloja/places/${placeId}/${purpose}/`;
       if (!publicId || !publicId.startsWith(expectedPrefix)) {
-        // Legacy/Firebase/Imgur URLs are intentionally never deleted here.
         return res.status(200).json({ skipped: true });
       }
 
       const timestamp = Math.floor(now() / 1000);
-      const toSign = `public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
+      // Every signed request parameter (except api_key/signature/file/cloud_name)
+      // must be part of Cloudinary's canonical string, alphabetically ordered.
+      const toSign = `invalidate=true&public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
       const signature = crypto.createHash("sha1").update(toSign).digest("hex");
-      const form = new URLSearchParams({ public_id: publicId, timestamp: String(timestamp), api_key: apiKey, signature, invalidate: "true" });
+      const form = new URLSearchParams({
+        invalidate: "true",
+        public_id: publicId,
+        timestamp: String(timestamp),
+        api_key: apiKey,
+        signature
+      });
       const destroy = await fetchImpl(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/destroy`, {
         method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: form.toString()
       });
       const result = await destroy.json().catch(() => ({}));
       if (!destroy.ok || !["ok", "not found"].includes(result.result)) {
+        console.error("cloudinary-destroy", destroy.status, result.error?.message || result.result || "unknown");
         return res.status(502).json({ error: "No se pudo limpiar la imagen anterior." });
       }
       return res.status(200).json({ deleted: result.result === "ok", notFound: result.result === "not found" });
