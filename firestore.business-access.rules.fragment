@@ -15,25 +15,62 @@ function hasBusinessAccess(placeId) {
     && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.role in ['owner', 'manager'];
 }
 
-// Operación diaria del negocio: propietario O encargado.
-// Usar para confirmar visitas, fidelidad y entrega/validación de premios.
+// Propietario O encargado: operación diaria del negocio.
 function isOperationalBusinessUser(placeId) {
   return hasBusinessAccess(placeId);
 }
 
-// Autogestión sensible del negocio: SOLO propietario.
-// Usar para editar ficha, contacto, horarios, logo, portada y galería.
+// SOLO propietario: edición de ficha e imágenes.
 function isBusinessOwner(placeId) {
   return hasBusinessAccess(placeId)
     && get(/databases/$(database)/documents/businessAccess/$(businessAccessId(placeId))).data.role == 'owner';
 }
 
-// Compatibilidad durante la migración:
-// - isAssignedVisitMerchant(placeId) debe aceptar isOperationalBusinessUser(placeId)
-//   además del esquema legado missionRewardMerchants.
-// - canMerchantEditLocale(placeId) debe aceptar isBusinessOwner(placeId), NO
-//   isOperationalBusinessUser(placeId), para impedir que un encargado edite la ficha.
-// El fallback legado se retirará únicamente después de migrar y probar las cuentas existentes.
+// Helper de migración para confirmar visitas/fidelidad.
+// Conserva las cuentas antiguas mientras businessAccess entra en funcionamiento.
+function isAssignedVisitMerchantV2(placeId) {
+  return isOperationalBusinessUser(placeId) || isAssignedVisitMerchant(placeId);
+}
+
+// Edición sensible de locales para el esquema nuevo.
+// Un manager nunca satisface esta función aunque manipule el navegador.
+function canBusinessOwnerEditLocale(placeId) {
+  return isBusinessOwner(placeId)
+    && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+      'desc', 'description', 'phone', 'whatsapp', 'hours',
+      'customLogoUrl', 'heroImage', 'gallery',
+      'merchantUpdatedAt', 'merchantUpdatedBy'
+    ])
+    && (!('desc' in request.resource.data)
+      || (request.resource.data.desc is string && request.resource.data.desc.size() <= 1200))
+    && (!('description' in request.resource.data)
+      || (request.resource.data.description is string && request.resource.data.description.size() <= 1200))
+    && request.resource.data.phone is string
+    && request.resource.data.phone.size() <= 30
+    && request.resource.data.whatsapp is string
+    && request.resource.data.whatsapp.size() <= 30
+    && request.resource.data.hours is string
+    && request.resource.data.hours.size() <= 600
+    && request.resource.data.customLogoUrl is string
+    && request.resource.data.customLogoUrl.size() <= 2000
+    && request.resource.data.heroImage is string
+    && request.resource.data.heroImage.size() <= 2000
+    && request.resource.data.gallery is list
+    && request.resource.data.gallery.size() <= 6
+    && request.resource.data.merchantUpdatedAt == request.time
+    && request.resource.data.merchantUpdatedBy == request.auth.uid;
+}
+
+// INTEGRACIÓN REQUERIDA EN firestore.rules (cuando autoricemos el despliegue):
+// 1. Los matches de visitas/fidelidad/premios que hoy usen isAssignedVisitMerchant(placeId)
+//    deberán aceptar isAssignedVisitMerchantV2(placeId), o equivalentemente añadir
+//    isOperationalBusinessUser(placeId) al permiso existente.
+// 2. match /locales/{documentId} deberá usar:
+//    allow update: if isViveLojaAdmin()
+//      || canBusinessOwnerEditLocale(documentId)
+//      || canMerchantEditLocale(documentId); // fallback legado temporal
+// 3. NO usar isOperationalBusinessUser() para editar /locales: manager es solo operativo.
+// 4. Retirar los fallbacks legacy únicamente después de migrar/probar todas las cuentas.
 
 match /businessAccess/{accessId} {
   allow read: if isViveLojaAdmin()
