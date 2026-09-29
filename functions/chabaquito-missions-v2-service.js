@@ -1,47 +1,40 @@
 "use strict";
 
-// Capa backend aislada para Misiones de Chabaquito V2.
-// Lee únicamente fuentes confiables de Firestore mediante Admin SDK.
-// No está conectada todavía a confirmLoyaltyVisit ni reverseLastLoyaltyVisit.
-
 const { calculateMissionProgress } = require("./chabaquito-missions-v2-engine");
 
-function cleanId(value) {
-  return String(value ?? "").trim();
-}
-
+function cleanId(value) { return String(value ?? "").trim(); }
 function progressDocumentId(userId, missionId) {
-  const user = cleanId(userId);
-  const mission = cleanId(missionId);
+  const user = cleanId(userId), mission = cleanId(missionId);
   if (!user || !mission) throw new Error("userId y missionId son obligatorios.");
   return `${user}_${mission}`.replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 300);
 }
-
-function rewardDocumentId(userId, missionId) {
-  return progressDocumentId(userId, missionId);
+function rewardDocumentId(userId, missionId) { return progressDocumentId(userId, missionId); }
+function missionFromSnapshot(doc) { return { id: doc.id, ...doc.data() }; }
+function visitFromSnapshot(doc) { return { requestId: doc.id, ...doc.data() }; }
+function selfCheckinFromSnapshot(doc) {
+  const data = doc.data();
+  return {
+    requestId: doc.id,
+    ...data,
+    status: "confirmed",
+    confirmedAt: data.createdAt || null,
+    source: "self_checkin",
+    validationMode: "self_checkin"
+  };
 }
-
-function missionFromSnapshot(doc) {
-  return { id: doc.id, ...doc.data() };
-}
-
-function visitFromSnapshot(doc) {
-  return { requestId: doc.id, ...doc.data() };
-}
-
-function placeFromSnapshot(doc) {
-  return { id: doc.id, ...doc.data() };
-}
+function placeFromSnapshot(doc) { return { id: doc.id, ...doc.data() }; }
 
 async function loadMissionInputs(db, userId) {
-  const [missionsSnap, visitsSnap, placesSnap] = await Promise.all([
+  const [missionsSnap, visitsSnap, selfCheckinsSnap, placesSnap] = await Promise.all([
     db.collection("chabaquitoMissions").where("status", "==", "active").get(),
     db.collection("loyaltyVisits").where("userId", "==", userId).get(),
+    db.collection("selfCheckinVisits").where("userId", "==", userId).get(),
     db.collection("locales").get()
   ]);
-
   const missions = missionsSnap.docs.map(missionFromSnapshot);
-  const visits = visitsSnap.docs.map(visitFromSnapshot);
+  const merchantVisits = visitsSnap.docs.map(visitFromSnapshot).filter(v => v.status !== "reversed");
+  const selfCheckins = selfCheckinsSnap.docs.map(selfCheckinFromSnapshot);
+  const visits = [...merchantVisits, ...selfCheckins];
   const placesById = Object.fromEntries(placesSnap.docs.map(doc => [doc.id, placeFromSnapshot(doc)]));
   return { missions, visits, placesById };
 }
@@ -49,120 +42,36 @@ async function loadMissionInputs(db, userId) {
 function calculateUserMissionStates({ userId, missions, visits, placesById }) {
   return missions.map(mission => {
     const progress = calculateMissionProgress(mission, visits, placesById);
-    return {
-      id: progressDocumentId(userId, mission.id),
-      missionId: mission.id,
-      userId,
-      current: progress.count,
-      target: progress.target,
-      completed: progress.completed,
-      qualifyingVisitIds: progress.matchedKeys,
-      mission,
-      sourceVisitCount: progress.sourceVisitCount
-    };
+    return { id: progressDocumentId(userId, mission.id), missionId: mission.id, userId, current: progress.count, target: progress.target, completed: progress.completed, qualifyingVisitIds: progress.matchedKeys, mission, sourceVisitCount: progress.sourceVisitCount };
   });
 }
 
 function buildPersistencePlan(state, existing = {}, now = null) {
-  const progress = existing.progress || null;
-  const reward = existing.reward || null;
-  const progressData = {
-    missionId: state.missionId,
-    userId: state.userId,
-    current: state.current,
-    target: state.target,
-    completed: state.completed,
-    qualifyingVisitIds: state.qualifyingVisitIds,
-    completedAt: state.completed ? (progress?.completedAt || now) : null,
-    updatedAt: now
-  };
-
-  let rewardAction = "none";
-  let rewardData = null;
+  const progress = existing.progress || null, reward = existing.reward || null;
+  const progressData = { missionId: state.missionId, userId: state.userId, current: state.current, target: state.target, completed: state.completed, qualifyingVisitIds: state.qualifyingVisitIds, completedAt: state.completed ? (progress?.completedAt || now) : null, updatedAt: now };
+  let rewardAction = "none", rewardData = null;
   if (state.completed && !reward) {
     rewardAction = "create";
-    rewardData = {
-      missionId: state.missionId,
-      userId: state.userId,
-      badge: state.mission.badge || null,
-      rewardType: state.mission.rewardType || "digital",
-      physicalCampaignId: state.mission.physicalCampaignId || null,
-      unlockedAt: now,
-      source: "chabaquito_mission_v2",
-      version: 1
-    };
-  } else if (!state.completed && reward) {
-    rewardAction = "delete";
-  }
-
+    rewardData = { missionId: state.missionId, userId: state.userId, badge: state.mission.badge || null, rewardType: state.mission.rewardType || "digital", physicalCampaignId: state.mission.physicalCampaignId || null, unlockedAt: now, source: "chabaquito_mission_v2", version: 1 };
+  } else if (!state.completed && reward) rewardAction = "delete";
   return { progressData, rewardAction, rewardData };
 }
 
 async function persistMissionState(db, state, now) {
   const progressRef = db.collection("chabaquitoMissionProgress").doc(state.id);
   const rewardRef = db.collection("chabaquitoDigitalRewards").doc(rewardDocumentId(state.userId, state.missionId));
-
   return db.runTransaction(async tx => {
-    const progressSnap = await tx.get(progressRef);
-    const rewardSnap = await tx.get(rewardRef);
-    const plan = buildPersistencePlan(state, {
-      progress: progressSnap.exists ? progressSnap.data() : null,
-      reward: rewardSnap.exists ? rewardSnap.data() : null
-    }, now);
-
+    const progressSnap = await tx.get(progressRef), rewardSnap = await tx.get(rewardRef);
+    const plan = buildPersistencePlan(state, { progress: progressSnap.exists ? progressSnap.data() : null, reward: rewardSnap.exists ? rewardSnap.data() : null }, now);
     tx.set(progressRef, plan.progressData, { merge: true });
     if (plan.rewardAction === "create") tx.create(rewardRef, plan.rewardData);
     if (plan.rewardAction === "delete") tx.delete(rewardRef);
     return plan;
   });
 }
+async function persistUserMissionStates(db, states, now) { const results=[]; for (const state of states) results.push(await persistMissionState(db,state,now)); return results; }
+async function calculateUserMissionStatesFromFirestore(db,userId) { const safeUserId=cleanId(userId); if(!safeUserId) throw new Error("userId es obligatorio."); const inputs=await loadMissionInputs(db,safeUserId); return calculateUserMissionStates({userId:safeUserId,...inputs}); }
+async function syncUserMissionsV2(db,userId,now) { const states=await calculateUserMissionStatesFromFirestore(db,userId); const persistence=await persistUserMissionStates(db,states,now); return {missionCount:states.length,completedCount:states.filter(s=>s.completed).length,states,persistence}; }
+async function safeSyncUserMissionsV2({db,userId,now,logger=console}) { try { const result=await syncUserMissionsV2(db,userId,now); return {ok:true,...result}; } catch(error) { logger.error("Chabaquito Missions V2 sync failed",{userId:cleanId(userId),message:error?.message||String(error)}); return {ok:false,error:error?.message||String(error)}; } }
 
-async function persistUserMissionStates(db, states, now) {
-  const results = [];
-  for (const state of states) results.push(await persistMissionState(db, state, now));
-  return results;
-}
-
-async function calculateUserMissionStatesFromFirestore(db, userId) {
-  const safeUserId = cleanId(userId);
-  if (!safeUserId) throw new Error("userId es obligatorio.");
-  const inputs = await loadMissionInputs(db, safeUserId);
-  return calculateUserMissionStates({ userId: safeUserId, ...inputs });
-}
-
-async function syncUserMissionsV2(db, userId, now) {
-  const states = await calculateUserMissionStatesFromFirestore(db, userId);
-  const persistence = await persistUserMissionStates(db, states, now);
-  return {
-    missionCount: states.length,
-    completedCount: states.filter(state => state.completed).length,
-    states,
-    persistence
-  };
-}
-
-async function safeSyncUserMissionsV2({ db, userId, now, logger = console }) {
-  try {
-    const result = await syncUserMissionsV2(db, userId, now);
-    return { ok: true, ...result };
-  } catch (error) {
-    logger.error("Chabaquito Missions V2 sync failed", {
-      userId: cleanId(userId),
-      message: error?.message || String(error)
-    });
-    return { ok: false, error: error?.message || String(error) };
-  }
-}
-
-module.exports = {
-  buildPersistencePlan,
-  calculateUserMissionStates,
-  calculateUserMissionStatesFromFirestore,
-  loadMissionInputs,
-  persistMissionState,
-  persistUserMissionStates,
-  progressDocumentId,
-  rewardDocumentId,
-  safeSyncUserMissionsV2,
-  syncUserMissionsV2
-};
+module.exports={buildPersistencePlan,calculateUserMissionStates,calculateUserMissionStatesFromFirestore,loadMissionInputs,persistMissionState,persistUserMissionStates,progressDocumentId,rewardDocumentId,safeSyncUserMissionsV2,syncUserMissionsV2};
