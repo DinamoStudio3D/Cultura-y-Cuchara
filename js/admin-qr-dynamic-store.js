@@ -2,13 +2,18 @@
 (() => {
   'use strict';
 
-  // Punto de entrada ya cargado por admin.html: activa de forma aislada la UI de
-  // validación de visitas y QR sin encargado sin reescribir el HTML principal.
+  // Punto de entrada ya cargado por admin.html: activa módulos aislados sin reescribir el HTML principal.
   if (!document.querySelector('script[src="js/admin-self-checkin-bootstrap.js"]')) {
     const selfCheckinBootstrap = document.createElement('script');
     selfCheckinBootstrap.src = 'js/admin-self-checkin-bootstrap.js';
     selfCheckinBootstrap.defer = true;
     document.head.append(selfCheckinBootstrap);
+  }
+  if (!document.querySelector('script[src="js/admin-business-access-ui.js"]')) {
+    const businessAccessUi = document.createElement('script');
+    businessAccessUi.src = 'js/admin-business-access-ui.js';
+    businessAccessUi.defer = true;
+    document.head.append(businessAccessUi);
   }
 
   const PRIVATE_COLLECTION = 'dynamicMarketingQrs';
