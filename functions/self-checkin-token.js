@@ -23,7 +23,7 @@ function buildSelfCheckinUrl({ origin = "https://www.visitaloja.com", placeId, t
   const id = String(placeId || "").trim();
   if (!id) throw new Error("placeId requerido.");
   if (!token) throw new Error("token requerido.");
-  const url = new URL("/fidelidad.html", origin);
+  const url = new URL("/self-checkin.html", origin);
   url.searchParams.set("checkin", id);
   url.searchParams.set("mode", "self");
   url.searchParams.set("token", token);
