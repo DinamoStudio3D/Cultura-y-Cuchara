@@ -193,6 +193,7 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/chabaquito-missions-v2.css">
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
@@ -1255,19 +1256,20 @@
     </section>
 
     <!-- Misiones de Chabaquito -->
-    <section id="misiones" class="py-16 px-4 md:px-8 lg:px-12 bg-brandCream border-b border-gray-200 reveal">
-        <div class="max-w-6xl mx-auto">
-            <div class="bg-brandDark text-white rounded-3xl overflow-hidden shadow-2xl border border-brandGold/40">
-                <div class="grid lg:grid-cols-[280px_1fr]">
-                    <div class="bg-gradient-to-b from-brandGold/25 to-black p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_#EA580C_0,_transparent_65%)]"></div>
-                        <img src="mascota-vive-loja.png" onerror="this.onerror=null;this.src='https://visitaloja.com/mascota-vive-loja.png'" alt="Chabaquito presenta las misiones de Visita Loja" width="1122" height="1402" class="relative w-36 sm:w-44 h-auto drop-shadow-2xl" loading="lazy" decoding="async">
-                        <span class="relative mt-2 text-brandGold text-xs font-black uppercase tracking-widest" data-i18n="missionBadge">Aventura interactiva</span>
-                        <h2 id="missionPublicTitle" class="relative text-2xl font-black mt-2" data-i18n="missionTitle">Retos digitales de Chabaquito</h2>
-                        <p id="missionPublicDescription" class="relative text-xs text-gray-300 mt-2 leading-relaxed" data-i18n="missionDesc">Explora las funciones de la web y obtén tu certificado digital.</p>
+    <section id="misiones" class="chabaquito-v2 py-16 px-4 md:px-8 lg:px-12 reveal">
+        <div class="max-w-7xl mx-auto">
+            <div class="chabaquito-v2-shell rounded-3xl overflow-hidden shadow-2xl">
+                <div class="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+                    <div class="chabaquito-v2-hero p-6 sm:p-9 flex flex-col items-center justify-center text-center overflow-hidden">
+                        <span class="relative mt-2 text-emerald-300 text-xs font-black uppercase tracking-widest" data-i18n="missionBadge">Aventura interactiva</span>
+                        <h2 class="chabaquito-v2-heading relative font-black mt-3" data-i18n="missionV2Heading">Explora Loja con Chabaquito</h2>
+                        <p id="missionPublicDescription" class="relative text-sm text-gray-300 mt-4 leading-relaxed max-w-md" data-i18n="missionDesc">Explora las funciones de la web y obtén tu certificado digital.</p>
+                        <div class="chabaquito-v2-note relative rounded-2xl px-4 py-3 mt-5 text-xs font-bold shadow-xl" data-i18n="missionV2Speech">¡Vamos, explorador! Elige una aventura y sigue tu progreso.</div>
+                        <img src="mascota-vive-loja.png" alt="Chabaquito presenta las misiones de Visita Loja" width="1122" height="1402" class="relative mt-2 h-auto drop-shadow-2xl" loading="lazy" decoding="async">
                     </div>
 
-                    <div class="p-6 sm:p-8">
+                    <div class="chabaquito-v2-content p-6 sm:p-8">
+                        <h3 id="missionPublicTitle" class="text-2xl font-black mb-2" data-i18n="missionTitle">Retos digitales de Chabaquito</h3>
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                             <div>
                                 <p class="text-xs text-gray-400 font-bold uppercase tracking-widest" data-i18n="missionProgress">Tu progreso</p>
@@ -1301,6 +1303,12 @@
                                 <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-headphones"></i></span>
                                 <strong class="block text-sm" data-i18n="missionPodcastTitle">Escucha Loja</strong><span class="text-[11px] text-gray-400" data-i18n="missionPodcastDesc">Escucha una historia narrada o el audio del podcast.</span>
                             </button>
+                        </div>
+
+                        <div class="chabaquito-v2-future rounded-2xl p-4 sm:p-5 mt-6">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-3"><h4 class="font-black text-lg" data-i18n="missionV2Upcoming">Grandes aventuras por la provincia</h4><span class="text-[10px] uppercase font-black tracking-widest text-cyan-200 border border-cyan-400/30 rounded-full px-3 py-1" data-i18n="missionV2Preparing">En preparación</span></div>
+                            <p class="text-xs text-gray-300 leading-relaxed" data-i18n="missionV2UpcomingDesc">Estamos preparando misiones más largas basadas en visitas confirmadas, cantones y categorías. Aún no registran progreso ni entregan insignias.</p>
+                            <div class="grid sm:grid-cols-3 gap-2 mt-4 text-xs font-bold"><div class="rounded-xl border border-white/10 bg-black/20 p-3"><i class="fa-solid fa-map-location-dot text-cyan-300 mr-1"></i> <span data-i18n="missionV2Province">Chabaquito por la Provincia</span></div><div class="rounded-xl border border-white/10 bg-black/20 p-3"><i class="fa-solid fa-mug-hot text-emerald-300 mr-1"></i> <span data-i18n="missionV2Coffee">Maestro del Café Lojano</span></div><div class="rounded-xl border border-white/10 bg-black/20 p-3"><i class="fa-solid fa-star text-amber-300 mr-1"></i> <span data-i18n="missionV2Flavors">Explorador de Sabores</span></div></div>
                         </div>
 
                         <div id="missionReward" class="hidden mt-5 bg-brandGold/15 border border-brandGold/50 rounded-2xl p-4 text-center">
@@ -2566,6 +2574,14 @@
                 passLocalDesc: "Requiere: <b>6 Paradas Gastronómicas</b>. Los hoteles no cuentan.",
                 passRules: "* Seguridad: al escanear el QR, genera un código temporal y pide al personal autorizado que confirme tu visita.",
                 missionBadge: "Aventura interactiva",
+                missionV2Heading: "Explora Loja con Chabaquito",
+                missionV2Speech: "¡Vamos, explorador! Elige una aventura y sigue tu progreso.",
+                missionV2Upcoming: "Grandes aventuras por la provincia",
+                missionV2Preparing: "En preparación",
+                missionV2UpcomingDesc: "Estamos preparando misiones más largas basadas en visitas confirmadas, cantones y categorías. Aún no registran progreso ni entregan insignias.",
+                missionV2Province: "Chabaquito por la Provincia",
+                missionV2Coffee: "Maestro del Café Lojano",
+                missionV2Flavors: "Explorador de Sabores",
                 missionTitle: "Retos digitales de Chabaquito",
                 missionDesc: "Explora las funciones de la web y obtén tu certificado digital.",
                 missionProgress: "Tu progreso",
@@ -2693,6 +2709,14 @@
                 passLocalDesc: "Requires: <b>6 Gastronomic Stops</b>. Hotels do not count.",
                 passRules: "* Security rules: To get your stamp by scanning the QR, the cashier or waiter must enter the authorized validation PIN.",
                 missionBadge: "Interactive adventure",
+                missionV2Heading: "Explore Loja with Chabaquito",
+                missionV2Speech: "Let's go, explorer! Choose an adventure and track your progress.",
+                missionV2Upcoming: "Bigger adventures across the province",
+                missionV2Preparing: "In development",
+                missionV2UpcomingDesc: "Longer missions based on confirmed visits, cantons and categories are in development. They do not yet track progress or award badges.",
+                missionV2Province: "Chabaquito Across the Province",
+                missionV2Coffee: "Loja Coffee Master",
+                missionV2Flavors: "Flavor Explorer",
                 missionTitle: "Chabaquito's digital challenges",
                 missionDesc: "Explore the website features and earn your digital certificate.",
                 missionProgress: "Your progress",

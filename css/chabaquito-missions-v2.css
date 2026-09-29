@@ -1,0 +1,14 @@
+#misiones.chabaquito-v2 { background: radial-gradient(circle at 12% 5%, rgba(20,184,166,.13), transparent 38%), #07100e; border-color: rgba(255,255,255,.08); color: white; }
+#misiones .chabaquito-v2-shell { background: linear-gradient(145deg,#10201c,#07100e); border: 1px solid rgba(52,211,153,.18); }
+#misiones .chabaquito-v2-hero { position: relative; background: radial-gradient(circle at 55% 48%,rgba(52,211,153,.2),transparent 58%); border-bottom: 1px solid rgba(255,255,255,.09); }
+#misiones .chabaquito-v2-hero:before { content: ''; position: absolute; width: 72%; aspect-ratio: 1; border: 1px solid rgba(52,211,153,.13); border-radius: 50%; top: 10%; left: 14%; pointer-events: none; }
+#misiones .chabaquito-v2-hero img { width: min(260px,80%); max-height: 340px; object-fit: contain; object-position: center bottom; }
+#misiones .chabaquito-v2-heading { font-size: clamp(2rem,4vw,3.5rem); line-height: 1.05; letter-spacing: -.04em; }
+#misiones .chabaquito-v2-note { background: rgba(243,255,250,.96); color: #123027; transform: rotate(-2deg); }
+#misiones .chabaquito-v2-content { background: rgba(0,0,0,.13); }
+#misiones .mission-card { min-height: 135px; background: rgba(0,0,0,.25); border-color: rgba(255,255,255,.13); }
+#misiones .mission-card:hover, #misiones .mission-card:focus-visible { border-color: #34d399; background: rgba(52,211,153,.09); outline: none; }
+#misiones .mission-card.border-green-500 { border-color: #34d399; }
+#misiones .chabaquito-v2-future { background: linear-gradient(120deg,rgba(34,211,238,.08),rgba(16,185,129,.07)); border: 1px solid rgba(34,211,238,.2); }
+@media (min-width: 1024px) { #misiones .chabaquito-v2-hero { border-bottom: 0; border-right: 1px solid rgba(255,255,255,.09); } }
+@media (max-width: 640px) { #misiones .chabaquito-v2-hero img { width: min(210px,65%); max-height: 255px; } #misiones .chabaquito-v2-note { max-width: 220px; } }
