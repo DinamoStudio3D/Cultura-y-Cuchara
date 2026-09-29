@@ -3,6 +3,12 @@
   'use strict';
 
   // Punto de entrada ya cargado por admin.html: activa módulos aislados sin reescribir el HTML principal.
+  if (!document.querySelector('script[src="js/admin-module-isolation.js"]')) {
+    const moduleIsolation = document.createElement('script');
+    moduleIsolation.src = 'js/admin-module-isolation.js';
+    moduleIsolation.defer = true;
+    document.head.append(moduleIsolation);
+  }
   if (!document.querySelector('script[src="js/admin-self-checkin-bootstrap.js"]')) {
     const selfCheckinBootstrap = document.createElement('script');
     selfCheckinBootstrap.src = 'js/admin-self-checkin-bootstrap.js';
