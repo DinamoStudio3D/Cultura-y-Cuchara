@@ -4,9 +4,9 @@
     const api=window.VisitaLojaPartnerMarquee;
     const form=document.getElementById('partnersForm');if(!form||!api)return;
     const $=id=>document.getElementById(id),rows=$('partnersRows'),status=$('partnersStatus'),save=$('partnersSave');
-    const fields=['Enabled','Title','TitleEn','Subtitle','SubtitleEn','LogoSize','Speed','Direction'];
+    const fields=['Enabled','Source','Title','TitleEn','Subtitle','SubtitleEn','LogoSize','Speed','Direction'];
     const docRef=db.collection('siteContent').doc('partnerMarquee');
-    let unsubscribe=null,loaded=false,dirty=false;
+    let unsubscribe=null,placesUnsubscribe=null,loaded=false,dirty=false,existingPlaces=[];
     function setStatus(text,error=false){status.textContent=text;status.style.color=error?'#fca5a5':'';}
     function input(label,value,limit,required=false){
         const wrapper=document.createElement('label'),caption=document.createElement('span'),field=document.createElement('input');
@@ -29,10 +29,17 @@
     }
     function updateCount(){$('partnersCount').textContent=`(${rows.children.length}/40)`;}
     function values(){
-        const config={enabled:$('partnersEnabled').checked,title:$('partnersTitle').value.trim(),titleEn:$('partnersTitleEn').value.trim(),subtitle:$('partnersSubtitle').value.trim(),subtitleEn:$('partnersSubtitleEn').value.trim(),logoSize:Number($('partnersLogoSize').value),speed:Number($('partnersSpeed').value),direction:$('partnersDirection').value,brands:[...rows.children].map(row=>Object.fromEntries([...row.querySelectorAll('[data-field]')].map(field=>[field.dataset.field,field.value.trim()])))};
+        const config={enabled:$('partnersEnabled').checked,source:$('partnersSource').value,title:$('partnersTitle').value.trim(),titleEn:$('partnersTitleEn').value.trim(),subtitle:$('partnersSubtitle').value.trim(),subtitleEn:$('partnersSubtitleEn').value.trim(),logoSize:Number($('partnersLogoSize').value),speed:Number($('partnersSpeed').value),direction:$('partnersDirection').value,brands:[...rows.children].map(row=>Object.fromEntries([...row.querySelectorAll('[data-field]')].map(field=>[field.dataset.field,field.value.trim()])))};
         return config;
     }
-    function preview(){api.render($('partnersPreview'),values(),{preview:true});}
+    function preview(){
+        const config=values(),automatic=config.source==='auto';
+        $('partnersManualEditor').classList.toggle('hidden',automatic);
+        $('partnersAutoInfo').classList.toggle('hidden',!automatic);
+        rows.querySelectorAll('[data-field]').forEach(field=>{field.disabled=automatic;});
+        const brands=automatic?existingPlaces.map(place=>({name:place.title,nameEn:place.titleEn||'',detail:place.tag||'',detailEn:place.tagEn||'',imageUrl:place.customLogoUrl||place.gallery?.[0]?.img||''})):config.brands;
+        api.render($('partnersPreview'),{...config,brands},{preview:true});
+    }
     function changed(){dirty=true;setAdminUnsavedChanges(true);setStatus('Cambios sin guardar');updateCount();preview();}
     function populate(data){
         const config=api.normalize(data);$('partnersEnabled').checked=config.enabled;
@@ -45,8 +52,8 @@
         event.preventDefault();if(!loaded)return;
         const data=values();
         if(!Number.isInteger(data.logoSize)||data.logoSize<48||data.logoSize>140||!Number.isInteger(data.speed)||data.speed<15||data.speed>120){setStatus('Revisa el tamaño (48–140) y la velocidad (15–120).',true);return;}
-        if(data.enabled&&!data.brands.length){setStatus('Añade al menos una marca antes de activar la franja.',true);return;}
-        if(data.brands.some(item=>!item.name||!api.httpsUrl(item.imageUrl)||item.linkUrl&&!api.httpsUrl(item.linkUrl))){setStatus('Cada marca necesita nombre y logo HTTPS; los enlaces también deben usar HTTPS.',true);return;}
+        if(data.source==='manual'&&data.enabled&&!data.brands.length){setStatus('Añade al menos una marca antes de activar la lista manual.',true);return;}
+        if(data.source==='manual'&&data.brands.some(item=>!item.name||!api.httpsUrl(item.imageUrl)||item.linkUrl&&!api.httpsUrl(item.linkUrl))){setStatus('Cada marca necesita nombre y logo HTTPS; los enlaces también deben usar HTTPS.',true);return;}
         save.disabled=true;setStatus('Guardando…');
         try{
             await docRef.set({...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedByUid:auth.currentUser.uid},{merge:true});
@@ -55,14 +62,20 @@
         finally{save.disabled=false;}
     });
     auth.onAuthStateChanged(async user=>{
-        if(unsubscribe){unsubscribe();unsubscribe=null;}loaded=false;save.disabled=true;
+        if(unsubscribe){unsubscribe();unsubscribe=null;}
+        if(placesUnsubscribe){placesUnsubscribe();placesUnsubscribe=null;}
+        existingPlaces=[];loaded=false;dirty=false;save.disabled=true;
         if(!user){rows.replaceChildren();setStatus('Inicia sesión para editar');return;}
         try{
             if(!(await resolveAdminAccess(user)))return;
+            placesUnsubscribe=db.collection('locales').onSnapshot(snapshot=>{
+                existingPlaces=snapshot.docs.map(doc=>({id:doc.id,...doc.data()})).filter(place=>(!place.publicationStatus||place.publicationStatus==='published')&&!([place.category,place.tag,place.title,place.type].join(' ').toLowerCase().includes('motel')));
+                if($('partnersSource').value==='auto')preview();
+            },()=>{if($('partnersSource').value==='auto')setStatus('No se pudieron cargar los negocios para la vista previa.',true);});
             unsubscribe=docRef.onSnapshot(snapshot=>{
                 loaded=true;save.disabled=false;
                 if(dirty)return;
-                populate(snapshot.exists?snapshot.data():api.defaults);
+                populate(snapshot.exists?snapshot.data():{...api.defaults,enabled:true});
             },()=>setStatus('No se pudo cargar la configuración de marcas.',true));
         }catch(_){setStatus('No se pudo comprobar el acceso administrativo.',true);}
     });

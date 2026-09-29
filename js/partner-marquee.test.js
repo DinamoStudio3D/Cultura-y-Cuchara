@@ -15,10 +15,12 @@ const data=normalize({enabled:true,logoSize:999,speed:-4,direction:'right',brand
     {name:'Sin logo',imageUrl:'http://example.org/inseguro.png'}
 ]});
 assert.equal(data.enabled,true);
+assert.equal(data.source,'manual');
 assert.equal(data.logoSize,140);
 assert.equal(data.speed,15);
 assert.equal(data.direction,'right');
 assert.equal(data.brands.length,1);
 assert.equal(data.brands[0].linkUrl,'');
 assert.equal(normalize(null).enabled,false);
+assert.equal(normalize({source:'auto',brands:[{name:'Marca',imageUrl:'https://example.org/a.png'}]}).source,'auto');
 console.log('partner marquee normalization: OK');

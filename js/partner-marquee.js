@@ -2,7 +2,7 @@
 (function () {
     'use strict';
     const doc = document;
-    const DEFAULTS = {enabled:false,title:'Marcas que ya trabajan con nosotros',titleEn:'Brands working with us',subtitle:'Conoce a quienes forman parte de Visita Loja.',subtitleEn:'Discover the businesses working with Visita Loja.',logoSize:76,speed:40,direction:'left',brands:[]};
+    const DEFAULTS = {enabled:false,source:'auto',title:'Marcas que ya trabajan con nosotros',titleEn:'Brands working with us',subtitle:'Conoce a quienes forman parte de Visita Loja.',subtitleEn:'Discover the businesses working with Visita Loja.',logoSize:76,speed:40,direction:'left',brands:[]};
     function httpsUrl(value) {
         if (!value) return '';
         try { const url = new URL(String(value).trim()); return url.protocol === 'https:' && !url.username && !url.password ? url.href : ''; }
@@ -13,6 +13,7 @@
         const data=source && typeof source==='object' ? source : {};
         return {
             enabled:data.enabled===true,
+            source:data.source==='manual'||(!('source' in data)&&Array.isArray(data.brands)&&data.brands.length>0)?'manual':'auto',
             title:String(data.title||DEFAULTS.title).slice(0,100),titleEn:String(data.titleEn||DEFAULTS.titleEn).slice(0,100),
             subtitle:String(data.subtitle||DEFAULTS.subtitle).slice(0,180),subtitleEn:String(data.subtitleEn||DEFAULTS.subtitleEn).slice(0,180),
             logoSize:bounded(data.logoSize,48,140,76),speed:bounded(data.speed,15,120,40),direction:data.direction==='right'?'right':'left',
@@ -53,10 +54,10 @@
         let current=null,configLoaded=false,existingPlaces=[];
         function showPublic(){
             if(!configLoaded)return;
-            if(current){render(publicHost,current);return;}
             // The public locales listener supplies published businesses already present on the site.
             // This preview needs no extra Firestore document or test write.
             const brands=existingPlaces.map(place=>({name:place.title,nameEn:place.titleEn||'',detail:place.tag||'',detailEn:place.tagEn||'',imageUrl:place.customLogoUrl||place.gallery?.[0]?.img||''}));
+            if(current){const config=normalize(current);render(publicHost,{...config,brands:config.source==='manual'?config.brands:brands});return;}
             render(publicHost,{...DEFAULTS,enabled:true,brands});
         }
         window.VisitaLojaPartnerMarquee.setPlaces=places=>{existingPlaces=Array.isArray(places)?places:[];showPublic();};
