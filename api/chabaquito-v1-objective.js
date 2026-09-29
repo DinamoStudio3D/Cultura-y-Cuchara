@@ -1,12 +1,14 @@
 "use strict";
 
 const { validateDigitalAnswer } = require("../functions/chabaquito-v1-digital");
+const { persistDigitalCompletion } = require("../functions/chabaquito-v1-digital-service");
+const { getAdminDb } = require("./_firebase-admin");
 
 const WEB_API_KEY = "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
 const ADVENTURE_ID = "tras-las-huellas-de-chabaquito";
 const OBJECTIVE_ID = "descubre";
 
-function createHandler({ fetchImpl = fetch, env = process.env } = {}) {
+function createHandler({ fetchImpl = fetch, env = process.env, dbFactory = getAdminDb } = {}) {
   return async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store");
     if (req.method !== "POST") return res.status(405).json({ error: "Método no permitido." });
@@ -33,21 +35,21 @@ function createHandler({ fetchImpl = fetch, env = process.env } = {}) {
       if (!user?.localId || user.disabled) return res.status(401).json({ error: "La sesión no es válida." });
 
       let passed;
-      try {
-        passed = validateDigitalAnswer(objectiveId, answers);
-      } catch (_) {
-        return res.status(400).json({ error: "Respuestas no válidas." });
-      }
+      try { passed = validateDigitalAnswer(objectiveId, answers); }
+      catch (_) { return res.status(400).json({ error: "Respuestas no válidas." }); }
       if (!passed) return res.status(200).json({ ok: true, passed: false });
 
-      // Fail closed after server-side validation until the trusted transactional
-      // Firestore adapter is connected. No XP can be granted from the browser.
-      return res.status(503).json({
-        error: "Respuesta correcta, pero el guardado persistente todavía no está conectado.",
-        code: "PERSISTENCE_NOT_CONNECTED"
+      const db = dbFactory(env);
+      const saved = await persistDigitalCompletion({
+        db,
+        authenticatedUid: user.localId,
+        objectiveId,
+        now: Date.now()
       });
-    } catch (_) {
-      return res.status(503).json({ error: "No se pudo validar el objetivo." });
+      return res.status(200).json({ ok: true, passed: true, ...saved });
+    } catch (error) {
+      console.error("[chabaquito-v1-objective]", error?.message || error);
+      return res.status(503).json({ error: "No se pudo guardar el progreso del objetivo." });
     }
   };
 }
