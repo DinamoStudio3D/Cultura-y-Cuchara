@@ -1,0 +1,12 @@
+{
+  "expectedProjectId": "visitaloja-chabaquito-preview",
+  "placeholders": ["TEST_ADMIN_UID", "TEST_MANAGER_UID", "PREVIEW_ORIGIN"],
+  "documents": {
+    "adminUsers/TEST_ADMIN_UID": {"active": true, "role": "owner", "displayName": "Admin de prueba"},
+    "missionRewardMerchants/TEST_MANAGER_UID": {"active": true, "role": "manager", "placeIds": ["preview-manager"], "businessName": "Encargado ficticio"},
+    "locales/preview-manager": {"title": "Parada ficticia con encargado", "category": "cultura", "active": true, "publicationStatus": "published", "cantonId": "saraguro", "lat": -3.621, "lng": -79.238, "discovery": {"enabled": true, "method": "manager", "qrId": "preview-qr-manager", "version": 1}},
+    "locales/preview-proximity": {"title": "Parada ficticia de proximidad", "category": "naturaleza", "active": true, "publicationStatus": "published", "cantonId": "saraguro", "lat": -3.622, "lng": -79.239, "discovery": {"enabled": true, "method": "proximity", "qrId": "preview-qr-proximity", "version": 1}},
+    "qrCodes/preview-qr-manager": {"name": "QR ficticio encargado", "type": "editable", "active": true, "discoveryEnabled": true, "placeId": "preview-manager", "targetUrl": "PREVIEW_ORIGIN/?checkin=preview-manager"},
+    "qrCodes/preview-qr-proximity": {"name": "QR ficticio proximidad", "type": "editable", "active": true, "discoveryEnabled": true, "placeId": "preview-proximity", "targetUrl": "PREVIEW_ORIGIN/?checkin=preview-proximity"}
+  }
+}

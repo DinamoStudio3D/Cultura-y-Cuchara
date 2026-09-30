@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
+<script src="/api/firebase-web-config"></script>
+<script src="/js/firebase-runtime.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <style>
@@ -3358,7 +3360,7 @@
             }
         }
 
-        const firebaseConfig = {
+        const firebaseConfig = window.VisitaLojaFirebaseRuntime.resolve({
             apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
             authDomain: "cultura-y-cuchara.firebaseapp.com",
             projectId: "cultura-y-cuchara",
@@ -3366,7 +3368,7 @@
             messagingSenderId: "974351327730",
             appId: "1:974351327730:web:08573026a46d1bb6598b6b",
             measurementId: "G-T3895FPH4N"
-        };
+        });
 
         let db = null;
         let visitorAuth = null;

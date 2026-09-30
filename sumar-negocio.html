@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="/api/firebase-web-config"></script>
+<script src="/js/firebase-runtime.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Solicita que tu negocio forme parte de las Paradas de Visita Loja.">
@@ -34,7 +36,7 @@
   </main>
   <footer class="border-t border-white/10 py-8 px-4 text-center text-xs text-gray-500">Visita Loja · Paradas que dejan huella · Solicitudes revisadas personalmente</footer>
   <script>
-    const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
+    const firebaseConfig=window.VisitaLojaFirebaseRuntime.resolve({apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"});firebase.initializeApp(firebaseConfig);const db=firebase.firestore();
     const fallbackPlans=[{id:'free',name:'Parada Presente',monthly:0},{id:'impulse',name:'Plan Impulso',monthly:15},{id:'featured',name:'Plan Destacado',monthly:35},{id:'premium',name:'Experiencia Premium',monthly:69}];let plans=fallbackPlans;
     function safe(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));}
     function updateApplicationCategory(){const partner=document.getElementById('businessCategory').value==='aliado',notice=document.getElementById('partnerApplicationNotice'),description=document.getElementById('businessDescription'),hours=document.getElementById('businessHours');notice.classList.toggle('hidden',!partner);document.getElementById('businessInfoLegend').textContent=partner?'2. Información de la marca':'2. Información de la parada';document.getElementById('businessNameLabel').textContent=partner?'Nombre de la marca o empresa *':'Nombre del negocio *';document.getElementById('businessDescriptionLabel').textContent=partner?'¿Cómo desea vincularse o aportar al proyecto? *':'¿Qué hace especial a tu negocio? *';document.getElementById('businessAddressLabel').textContent=partner?'Dirección o ciudad de operación *':'Dirección *';document.getElementById('businessHoursLabel').textContent=partner?'Horario de contacto (opcional)':'Horario';description.placeholder=partner?'Cuéntanos sobre tu empresa, productos, servicios y forma de colaboración...':'Cuéntanos sobre tu historia, productos o experiencia...';hours.placeholder=partner?'Lun - Vie: 09:00 - 18:00':'Lun - Sáb: 08:00 - 20:00';}

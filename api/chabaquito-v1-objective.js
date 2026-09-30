@@ -5,7 +5,8 @@ const { persistDigitalCompletion } = require("../functions/chabaquito-v1-digital
 const core = require("../js/chabaquito-v1-core");
 const { getAdminDb } = require("./_firebase-admin");
 
-const WEB_API_KEY = "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
+const { configuration } = require('./_firebase-environment');
+const PRODUCTION_WEB_API_KEY = 'AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE';
 const ADVENTURE_ID = "tras-las-huellas-de-chabaquito";
 const OBJECTIVE_ID = "descubre";
 
@@ -26,7 +27,9 @@ function createHandler({ fetchImpl = fetch, env = process.env, dbFactory = getAd
     }
 
     try {
-      const identity = await fetchImpl(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${WEB_API_KEY}`, {
+      const target = configuration(env);
+      const webApiKey = target.mode === 'preview' ? target.config.apiKey : PRODUCTION_WEB_API_KEY;
+      const identity = await fetchImpl(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${webApiKey}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken: token })

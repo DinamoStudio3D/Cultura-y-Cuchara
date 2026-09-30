@@ -18,7 +18,7 @@ async function call(handler, method, authorization, body) {
 (async () => {
   const disabled = createHandler({ env: {}, fetchImpl, dbFactory: () => { throw new Error('No database access while disabled'); } });
   assert.equal((await call(disabled, 'GET', 'Bearer test')).status, 503);
-  const handler = createHandler({ env: { CHABAQUITO_V1_ENABLED: 'true' }, fetchImpl, dbFactory: () => db });
+  const handler = createHandler({ env: { CHABAQUITO_V1_ENABLED: 'true', VERCEL_ENV: 'production' }, fetchImpl, dbFactory: () => db });
   assert.equal((await call(handler, 'GET')).status, 401);
   assert.equal(reads, 0);
   const first = await call(handler, 'GET', 'Bearer test');
@@ -31,7 +31,7 @@ async function call(handler, method, authorization, body) {
   assert.equal((await call(handler, 'POST', 'Bearer test', { adventureId: 'fake', objectiveId: 'descubre', answers: [0], xp: 500 })).status, 400);
   assert.equal((await call(handler, 'POST', 'Bearer test', { adventureId: 'tras-las-huellas-de-chabaquito', objectiveId: 'descubre', answers: [2], xp: 500 })).payload.passed, false);
   assert.equal(reads, 4, 'Incorrect answers never read or write progress');
-  const denied = createHandler({ env: { CHABAQUITO_V1_ENABLED: 'true' }, fetchImpl: async () => ({ ok: false }), dbFactory: () => { throw new Error('Invalid token must not read database'); } });
+  const denied = createHandler({ env: { CHABAQUITO_V1_ENABLED: 'true', VERCEL_ENV: 'production' }, fetchImpl: async () => ({ ok: false }), dbFactory: () => { throw new Error('Invalid token must not read database'); } });
   assert.equal((await call(denied, 'GET', 'Bearer invalid')).status, 401);
   console.log('Chabaquito first objective API: authenticated read, reload, invalid input and disabled mode OK (mock database only).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -8,6 +8,7 @@ const WEB_API_KEY = "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
 function createHandler({ fetchImpl = fetch, env = process.env, now = Date.now } = {}) {
   return async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store");
+    if (env.VERCEL_ENV === "preview") return res.status(503).json({ error: "Subidas no disponibles en Preview Chabaquito." });
     if (req.method !== "POST") return res.status(405).json({ error: "Método no permitido." });
     const token = /^Bearer ([A-Za-z0-9._-]+)$/.exec(req.headers.authorization || "")?.[1];
     if (!token) return res.status(401).json({ error: "Debes iniciar sesión." });

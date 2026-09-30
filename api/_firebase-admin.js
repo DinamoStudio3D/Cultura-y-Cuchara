@@ -1,6 +1,7 @@
 'use strict';
 
-let cached;
+const { configuration } = require('./_firebase-environment');
+const cached = new Map();
 
 function serviceAccountFromEnv(env = process.env) {
   const raw = env.FIREBASE_SERVICE_ACCOUNT_JSON;
@@ -10,20 +11,26 @@ function serviceAccountFromEnv(env = process.env) {
   if (!account.project_id || !account.client_email || !account.private_key) {
     throw new Error('La cuenta de servicio de Firebase está incompleta.');
   }
+  const target = configuration(env).projectId;
+  if (account.project_id !== target) throw new Error('Credenciales administrativas del proyecto equivocado.');
   return account;
 }
 
 function getAdminDb(env = process.env) {
-  if (cached) return cached;
+  const target = configuration(env).projectId;
+  const account = serviceAccountFromEnv(env);
+  if (cached.has(target)) return cached.get(target);
   // firebase-admin is loaded only on the server. Never bundle credentials into client code.
   const admin = require('firebase-admin');
-  const account = serviceAccountFromEnv(env);
-  const app = admin.apps.length ? admin.app() : admin.initializeApp({
+  const name = `visitaloja-server-${target}`;
+  const app = admin.apps.find(app => app.name === name) || admin.initializeApp({
     credential: admin.credential.cert(account),
     projectId: account.project_id
-  });
-  cached = app.firestore();
-  return cached;
+  }, name);
+  if (app.options.projectId !== target) throw new Error('Instancia administrativa de proyecto incorrecto.');
+  const db = app.firestore();
+  cached.set(target, db);
+  return db;
 }
 
 module.exports = { serviceAccountFromEnv, getAdminDb };

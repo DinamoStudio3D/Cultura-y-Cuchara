@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="/api/firebase-web-config"></script>
+<script src="/js/firebase-runtime.js"></script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
 <title>Panel del negocio | Visita Loja</title>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +40,7 @@
 </div>
 </section></main>
 <script>
-const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};
+const firebaseConfig=window.VisitaLojaFirebaseRuntime.resolve({apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"});
 firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore();let merchant=null,places=[],programs=[],counters=[],visits=[],rewards=[],webEvents=[],birthdayOffers=[];
 const el=id=>document.getElementById(id),safe=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])),millis=value=>value?.toMillis?.()||new Date(value||0).getTime()||0,dt=value=>millis(value)?new Date(millis(value)).toLocaleString('es-EC'):'Sin fecha';function maskEmail(value){const email=String(value||''),parts=email.split('@');if(parts.length!==2)return'';const name=parts[0],visible=name.slice(0,Math.min(2,name.length));return visible+'***@'+parts[1]}
 function show(id){['loading','login','pending','upgrade','app'].forEach(name=>el(name).classList.toggle('hidden',name!==id))}
