@@ -1,1 +1,0 @@
-/* Placeholder staged file intentionally inactive until Admin QR integration is completed. */
