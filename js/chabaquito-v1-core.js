@@ -75,6 +75,8 @@
     }
     const latest = new Map();
     for (const raw of evidenceList || []) {
+      // Los descubrimientos turísticos no completan automáticamente objetivos del piloto.
+      if (raw?.scope === 'tourism_discovery') continue;
       const evidence = normalizeEvidence(raw);
       const key = evidenceKey(evidence);
       // Estado actual por ID canónico; una reversión prevalece ante reintentos anteriores.

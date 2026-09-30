@@ -35,6 +35,7 @@ function planConfirmedVisit({ uid, visitId, visit, code, point = core.POINTS.EST
   const incoming = verifiedVisitEvidence(visitId, visit, code, uid, point);
   const incomingKey = core.evidenceKey(incoming);
   const priorEvidence = storedEvidence.find(e => core.evidenceKey(e) === incomingKey);
+  if (priorEvidence?.scope === 'tourism_discovery') throw new Error('Evidencia turística: el piloto no puede reutilizarla automáticamente.');
   // Nunca revivir una visita anulada a partir de una petición vieja.
   if (priorEvidence?.status === 'reversed' && incoming.status === 'validated') throw new Error('Visita anulada previamente.');
   const effectiveEvidence = storedEvidence.filter(e => core.evidenceKey(e) !== incomingKey).concat(incoming);
