@@ -79,7 +79,7 @@
     <meta name="geo.placename" content="Loja, Ecuador">
     <meta name="geo.position" content="-3.99313;-79.20422">
     <meta name="ICBM" content="-3.99313, -79.20422">
-    <link rel="canonical" href="https://visita-loja.vercel.app/">
+    <link rel="canonical" href="https://www.visitaloja.com/">
     <meta name="theme-color" content="#121212">
     <script>
         (() => {
@@ -110,18 +110,18 @@
       "@graph": [
         {
           "@type": "WebSite",
-          "@id": "https://visita-loja.vercel.app/#website",
-          "url": "https://visita-loja.vercel.app/",
+          "@id": "https://www.visitaloja.com/#website",
+          "url": "https://www.visitaloja.com/",
           "name": "Visita Loja",
           "description": "Guía digital de gastronomía, hospedaje, cultura, eventos y destinos turísticos de Loja, Ecuador.",
           "inLanguage": "es-EC",
-          "publisher": { "@id": "https://visita-loja.vercel.app/#organization" }
+          "publisher": { "@id": "https://www.visitaloja.com/#organization" }
         },
         {
           "@type": "Organization",
-          "@id": "https://visita-loja.vercel.app/#organization",
+          "@id": "https://www.visitaloja.com/#organization",
           "name": "Visita Loja",
-          "url": "https://visita-loja.vercel.app/",
+          "url": "https://www.visitaloja.com/",
           "sameAs": [
             "https://www.youtube.com/@VisitaLoja",
             "https://www.tiktok.com/@visitaloja.com",
@@ -143,10 +143,10 @@
         },
         {
           "@type": "TouristDestination",
-          "@id": "https://visita-loja.vercel.app/#loja",
+          "@id": "https://www.visitaloja.com/#loja",
           "name": "Loja, Ecuador",
           "description": "Destino cultural, gastronómico y natural del sur del Ecuador.",
-          "url": "https://visita-loja.vercel.app/",
+          "url": "https://www.visitaloja.com/",
           "geo": {
             "@type": "GeoCoordinates",
             "latitude": -3.99313,
@@ -530,6 +530,7 @@
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1536">
     <meta property="og:image:height" content="1536">
+    <link rel="stylesheet" href="css/partner-marquee.css">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -762,7 +763,7 @@
     </div>
 
     <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-amber-600 to-brandGold text-white py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
-        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
+        <span id="liveEventBadge" class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse"></span>
         <span id="liveEventText">Cargando eventos...</span>
         <button id="liveEventBtn" type="button" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
             <i class="fa-solid fa-map-pin mr-1"></i> <span data-i18n="btnViewMap">Ver en el mapa</span>
@@ -945,11 +946,11 @@
     <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
         <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="3">3</span></p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporadas</p>
+                <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="1">1</span></p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporada</p>
             </div>
             <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="4">4</span>+</p>
+                <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="0">0</span>+</p>
                 <p class="text-xs font-bold uppercase tracking-widest" id="stat2Label" data-i18n="statAllies">Puntos en el mapa</p>
             </div>
             <div class="reveal">
@@ -1369,6 +1370,11 @@
                     <div id="chabaquitoRankingProfileContent"></div>
                 </dialog>
             </section>
+            <section id="chabaquitoSavedProgress" class="hidden chabaquito-pilot mt-4 rounded-3xl p-5 sm:p-7" aria-live="polite">
+                <h3 class="text-lg font-black">Progreso real de objetivos digitales</h3>
+                <p id="chabaquitoSavedStatus" class="text-sm text-white/70 mt-2">Inicia sesión para consultar tus objetivos guardados. La aventura de arriba sigue siendo una demostración.</p>
+                <div id="chabaquitoSavedActions" class="flex flex-wrap gap-3 mt-4"></div>
+            </section>
         </div>
     </section>
 
@@ -1696,6 +1702,8 @@
         </div>
     </section>
 
+    <section id="partnerMarquee" class="partner-marquee" hidden aria-label="Marcas aliadas"></section>
+
     <!-- Institutional Sponsorship -->
     <section class="py-12 px-4 md:px-8 bg-[#181818] text-white border-t border-brandGold/20 text-center">
         <div class="max-w-4xl mx-auto">
@@ -1747,11 +1755,6 @@
     <button id="webMascotRestore" type="button" class="web-mascot-restore hidden" onclick="restoreWebMascot()" aria-label="Mostrar mascota" title="Mostrar mascota">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
     </button>
-
-    <!-- Floating WhatsApp -->
-    <a href="https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Vive%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" class="fab-whatsapp bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-warm-glow hover:bg-green-600 transition-all hover:scale-110" title="Contáctanos por WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
 
     <!-- Modal Itinerary -->
     <div id="itineraryModal" class="fixed inset-0 z-[85] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
@@ -2531,7 +2534,7 @@
                 heroTitle: 'Sabores, <span class="text-brandGold">Historias</span> y Destinos',
                 heroSubtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 btnStartRoute: "Iniciar la Ruta",
-                statSeasons: "Temporadas",
+                statSeasons: "Temporada",
                 statAllies: "Puntos en el mapa",
                 statTourists: "Turistas Activos",
                 statIdentity: "Identidad Lojana",
@@ -2671,7 +2674,7 @@
                 heroTitle: 'Flavors, <span class="text-brandGold">Stories</span> & Destinations',
                 heroSubtitle: "Discover traditional local eateries, specialty coffee shops, hotels and must-see tourist spots through our interactive route.",
                 btnStartRoute: "Start the Route",
-                statSeasons: "Seasons",
+                statSeasons: "Season",
                 statAllies: "Map Locations",
                 statTourists: "Active Tourists",
                 statIdentity: "Loja Identity",
@@ -2939,6 +2942,7 @@
             });
 
             renderEverything();
+            checkLiveEventsBanner();
             if (typeof renderChabaquitoMissions === 'function') renderChabaquitoMissions();
             if (typeof refreshAudioGuideLabels === 'function') refreshAudioGuideLabels();
             applyAutomaticUiLanguage(document.body);
@@ -3778,99 +3782,29 @@
         const cachedPublicLocations = readLocationsCache();
         if (cachedPublicLocations.length) locations = cachedPublicLocations;
 
-        let eventsList = safeReadJSON('cyc_dynamic_events', [
-            { 
-                id: 'ev_1', 
-                title: 'Feria de Altura Loja', 
-                titleEn: 'Loja High-Altitude Coffee Fair', 
-                date: '2026-09-20', 
-                type: 'Festival', 
-                location: 'Plaza de las Flores', 
-                desc: 'Catas abiertas al público y barismo profesional en vivo.', 
-                descEn: 'Open tastings for the public and barista shows.', 
-                img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80',
-                lat: -3.9910, 
-                lng: -79.2030 
-            }
-        ]).filter(isPublicContent);
-                if (!eventsList.some(event => !event.date || event.date >= new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0])) eventsList = [
-            {
-                id: 'sample_flavors_2026',
-                title: 'Ruta de Sabores Lojanos — Evento de muestra',
-                titleEn: 'Loja Flavors Route — Sample Event',
-                date: '2026-10-04',
-                time: '15:00',
-                type: 'Muestra',
-                location: 'Plaza de San Sebastián',
-                desc: 'Evento demostrativo para visualizar la agenda. Recorrido de gastronomía, café y tradiciones lojanas.',
-                descEn: 'Sample event used to preview the agenda with Loja cuisine, coffee and traditions.',
-                img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
-                lat: -4.0007,
-                lng: -79.2019
-            },
-            {
-                id: 'sample_culture_2026',
-                title: 'Tarde Cultural en Jipiro — Evento de muestra',
-                titleEn: 'Cultural Afternoon at Jipiro — Sample Event',
-                date: '2026-10-11',
-                time: '11:00',
-                type: 'Muestra',
-                location: 'Parque Recreacional Jipiro',
-                desc: 'Evento demostrativo con música, artesanías y actividades familiares para mostrar el diseño de la agenda.',
-                descEn: 'Sample event with music, crafts and family activities to preview the agenda design.',
-                img: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80',
-                lat: -3.9744,
-                lng: -79.2043
-            }
-        ];
+        const isDemoEvent = event => String(event.id || '').startsWith('sample_')
+            || (event.id === 'ev_1' && event.title === 'Feria de Altura Loja' && event.date === '2026-09-20');
+        let eventsList = safeReadJSON('cyc_dynamic_events', [])
+            .filter(event => isPublicContent(event) && !isDemoEvent(event));
 
         if (db) {
             db.collection('siteContent').doc('events').onSnapshot(snapshot => {
                 const sourceEvents = snapshot.exists && Array.isArray(snapshot.data().events) ? snapshot.data().events : [];
-                const syncedEvents = sourceEvents.map(event => ({ ...event })).filter(isPublicContent);
-                eventsList = syncedEvents.some(event => !event.date || event.date >= new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0]) ? syncedEvents : [
-                    {
-                        id: 'sample_flavors_2026',
-                        title: 'Ruta de Sabores Lojanos — Evento de muestra',
-                        titleEn: 'Loja Flavors Route — Sample Event',
-                        date: '2026-10-04',
-                        time: '15:00',
-                        type: 'Muestra',
-                        location: 'Plaza de San Sebastián',
-                        desc: 'Evento demostrativo para visualizar la agenda. Recorrido de gastronomía, café y tradiciones lojanas.',
-                        descEn: 'Sample event used to preview the agenda with Loja cuisine, coffee and traditions.',
-                        img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
-                        lat: -4.0007,
-                        lng: -79.2019
-                    },
-                    {
-                        id: 'sample_culture_2026',
-                        title: 'Tarde Cultural en Jipiro — Evento de muestra',
-                        titleEn: 'Cultural Afternoon at Jipiro — Sample Event',
-                        date: '2026-10-11',
-                        time: '11:00',
-                        type: 'Muestra',
-                        location: 'Parque Recreacional Jipiro',
-                        desc: 'Evento demostrativo con música, artesanías y actividades familiares para mostrar el diseño de la agenda.',
-                        descEn: 'Sample event with music, crafts and family activities to preview the agenda design.',
-                        img: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80',
-                        lat: -3.9744,
-                        lng: -79.2043
-                    }
-                ];
+                eventsList = sourceEvents.map(event => ({ ...event }))
+                    .filter(event => isPublicContent(event) && !isDemoEvent(event));
                 localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
                 renderEverything();
                 checkLiveEventsBanner();
             }, error => console.warn('No se pudo sincronizar la agenda pública:', error));
         }
 
-        let emprendedoresList = safeReadJSON('cyc_dynamic_emprendedores', [
-            { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
-        ]);
+        let emprendedoresList = safeReadJSON('cyc_dynamic_emprendedores', [])
+            .filter(item => item.phone !== '593999999999');
         if (db) {
             db.collection('siteContent').doc('entrepreneurs').onSnapshot(snapshot => {
                 if (!snapshot.exists || !Array.isArray(snapshot.data().items)) return;
-                emprendedoresList = snapshot.data().items.map(item => ({ ...item }));
+                emprendedoresList = snapshot.data().items.map(item => ({ ...item }))
+                    .filter(item => item.phone !== '593999999999');
                 localStorage.setItem('cyc_dynamic_emprendedores', JSON.stringify(emprendedoresList));
                 renderEmprendedoresUI();
             }, error => console.warn('No se pudieron sincronizar los emprendimientos:', error));
@@ -4232,6 +4166,7 @@
                 checkLiveEventsBanner();
                 checkUrlParamForCheckin();
                 if(snapshot.metadata.fromCache&&!navigator.onLine)setLocationsSyncStatus('offline');else if(snapshot.empty)setLocationsSyncStatus(locations.length?'cached':'error');else setLocationsSyncStatus('ready');
+                if(!snapshot.empty)window.VisitaLojaPartnerMarquee?.setPlaces(locations);
             }, (error) => {
                 console.error("Firestore error:", error);
                 const cached=readLocationsCache();if(cached.length){locations=cached;if(currentLocationId){const selectedIndex=locations.findIndex(loc=>String(loc.id)===String(currentLocationId));if(selectedIndex>=0)currentLocationIndex=selectedIndex;}}
@@ -4536,8 +4471,29 @@
 
         let currentEventIndex = 0;
         let liveEventRotationInterval = null;
+        let eventDayRefreshTimeout = null;
+        function eventDaysFromToday(date, today) {
+            const day = String(date || '').slice(0, 10);
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return null;
+            const [year, month, number] = day.split('-').map(Number);
+            const eventTime = Date.UTC(year, month - 1, number);
+            if (new Date(eventTime).toISOString().slice(0, 10) !== day) return null;
+            const [todayYear, todayMonth, todayNumber] = today.split('-').map(Number);
+            return Math.round((eventTime - Date.UTC(todayYear, todayMonth - 1, todayNumber)) / 86400000);
+        }
+        function eventDayLabel(days) {
+            if (days === null) return currentLang === 'en' ? 'Date to be confirmed' : 'Fecha por confirmar';
+            if (days === 0) return currentLang === 'en' ? 'Today' : 'Hoy';
+            if (days === 1) return currentLang === 'en' ? '1 day left' : 'Falta 1 día';
+            if (days > 1) return currentLang === 'en' ? `${days} days left` : `Faltan ${days} días`;
+            const elapsed = Math.abs(days);
+            return currentLang === 'en'
+                ? `Past · ${elapsed} ${elapsed === 1 ? 'day' : 'days'} ago`
+                : `Pasado · hace ${elapsed} ${elapsed === 1 ? 'día' : 'días'}`;
+        }
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
+            const badge = document.getElementById('liveEventBadge');
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
             if(!banner) return;
@@ -4548,9 +4504,15 @@
                 month: '2-digit',
                 day: '2-digit'
             }).format(new Date());
+            if (eventDayRefreshTimeout) clearTimeout(eventDayRefreshTimeout);
+            const [year, month, day] = todayStr.split('-').map(Number);
+            eventDayRefreshTimeout = setTimeout(() => {
+                renderAgendaUI();
+                checkLiveEventsBanner();
+            }, Math.max(1000, Date.UTC(year, month - 1, day + 1, 5) - Date.now() + 1000));
             let upcomingEvents = eventsList.filter(ev => {
-                if (!ev.date) return true;
-                return ev.date >= todayStr;
+                const days = eventDaysFromToday(ev.date, todayStr);
+                return days === null || days >= 0;
             });
 
             if (liveEventRotationInterval) {
@@ -4569,9 +4531,10 @@
                 if(upcomingEvents.length === 0) return;
                 const ev = upcomingEvents[currentEventIndex % upcomingEvents.length];
                 const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
-                textEl.innerHTML = `🔥 <b>${evTitle}</b> en ${ev.location} (${ev.date})`;
-                
-                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}', '${ev.date || ''}', '${(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')`);
+                badge.textContent = eventDayLabel(eventDaysFromToday(ev.date, todayStr));
+                textEl.textContent = `🔥 ${evTitle} ${currentLang === 'en' ? 'at' : 'en'} ${ev.location || ''}${ev.date ? ` (${ev.date})` : ''}`;
+                btnEl.onclick = () => focusEventOnMap(ev.lat || -3.9931, ev.lng || -79.2042,
+                    evTitle, ev.date || '', ev.location || '', ev.type || '');
                 currentEventIndex = (currentEventIndex + 1) % upcomingEvents.length;
             }
 
@@ -5194,12 +5157,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if (!agendaContainer) return;
             agendaContainer.innerHTML = '';
 
-            const todayStr = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0];
+            const todayStr = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Guayaquil', year: 'numeric', month: '2-digit', day: '2-digit'
+            }).format(new Date());
             const savedGeneral = getSavedAgendaEvents();
             const savedFestival = safeReadJSON('cyc_saved_festival_events', []).map(String);
             const allGeneralItems = eventsList
                 .map((event, index) => ({ kind: 'general', event, eventId: agendaEventKey(event, index) }));
-            const upcomingGeneralItems = allGeneralItems.filter(item => !item.event.date || item.event.date >= todayStr);
             const festivalItems = (festivalConfig?.events || [])
                 .map(event => ({ kind: 'festival', event, eventId: String(event.id || '') }))
                 .filter(item => item.eventId && savedFestival.includes(item.eventId));
@@ -5208,12 +5172,14 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 ...festivalItems
             ];
             const agendaGroupOrder = { today: 0, week: 1, later: 2, undated: 3, past: 4 };
-            const weekLimit = new Date(todayStr + 'T12:00:00-05:00');
-            weekLimit.setDate(weekLimit.getDate() + 7);
-            const weekLimitStr = weekLimit.toISOString().split('T')[0];
-            const itemGroup = item => !item.event.date ? 'undated' : item.event.date < todayStr ? 'past' : item.event.date === todayStr ? 'today' : item.event.date <= weekLimitStr ? 'week' : 'later';
-            const visibleItems = (agendaViewMode === 'saved' ? savedItems : upcomingGeneralItems)
-                .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')));
+            const itemGroup = item => {
+                const days = eventDaysFromToday(item.event.date, todayStr);
+                return days === null ? 'undated' : days < 0 ? 'past' : days === 0 ? 'today' : days <= 7 ? 'week' : 'later';
+            };
+            const visibleItems = (agendaViewMode === 'saved' ? savedItems : allGeneralItems)
+                .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)])
+                    || (itemGroup(a) === 'past' ? String(b.event.date).localeCompare(String(a.event.date))
+                        : String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31'))));
 
             const totalSaved = savedItems.length;
             const allButton = document.getElementById('agendaAllButton');
@@ -5230,7 +5196,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     ? (currentLang === 'en'
                         ? '<div class="sm:col-span-2 lg:col-span-3 text-center py-12 px-5 bg-gray-50 border border-dashed border-gray-300 rounded-2xl"><i class="fa-regular fa-bookmark text-3xl text-brandGold mb-3"></i><h3 class="font-black text-brandDark">Your agenda is ready to begin</h3><p class="text-sm text-gray-500 mt-1">Save cultural or festival activities and they will appear here.</p><button type="button" onclick="setAgendaView(\'all\')" class="mt-4 bg-brandDark text-white px-5 py-2.5 rounded-xl text-xs font-bold">Explore events</button></div>'
                         : '<div class="sm:col-span-2 lg:col-span-3 text-center py-12 px-5 bg-gray-50 border border-dashed border-gray-300 rounded-2xl"><i class="fa-regular fa-bookmark text-3xl text-brandGold mb-3"></i><h3 class="font-black text-brandDark">Tu agenda está lista para empezar</h3><p class="text-sm text-gray-500 mt-1">Guarda actividades culturales o del festival y aparecerán aquí.</p><button type="button" onclick="setAgendaView(\'all\')" class="mt-4 bg-brandDark text-white px-5 py-2.5 rounded-xl text-xs font-bold">Explorar eventos</button></div>')
-                    : '<p class="sm:col-span-2 lg:col-span-3 text-center text-sm text-gray-500 py-10">No hay próximos eventos publicados por ahora.</p>';
+                    : (currentLang === 'en'
+                        ? '<p class="sm:col-span-2 lg:col-span-3 text-center text-sm text-gray-500 py-10">No events have been published yet.</p>'
+                        : '<p class="sm:col-span-2 lg:col-span-3 text-center text-sm text-gray-500 py-10">No hay eventos publicados por ahora.</p>');
                 renderAdminEventsList();
                 return;
             }
@@ -5241,11 +5209,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             let previousGroup = '';
             visibleItems.forEach(({ kind, event: ev, eventId }) => {
                 const group = itemGroup({ event: ev });
-                if (agendaViewMode === 'saved' && group !== previousGroup) {
+                if (group !== previousGroup) {
                     previousGroup = group;
                     agendaContainer.innerHTML += `<div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3 pt-3"><span class="h-px flex-1 bg-gray-200"></span><h3 class="text-xs font-black uppercase tracking-widest ${group === 'past' ? 'text-gray-400' : 'text-brandGold'}">${groupLabels[group]}</h3><span class="h-px flex-1 bg-gray-200"></span></div>`;
                 }
-                const isPast = group === 'past';
+                const days = eventDaysFromToday(ev.date, todayStr);
+                const isPast = days !== null && days < 0;
                 const isFestival = kind === 'festival';
                 const title = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : (ev.title || 'Evento Visita Loja');
                 const description = (currentLang === 'en' && ev.descEn) ? ev.descEn : (ev.desc || ev.description || '');
@@ -5260,14 +5229,15 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const mapUrl = ev.mapUrl || ((Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng))) ? `https://www.google.com/maps/search/?api=1&query=${ev.lat},${ev.lng}` : '');
 
                 agendaContainer.innerHTML += `
-                    <article class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between ${isPast ? 'opacity-70 grayscale-[25%]' : ''}">
+                    <article class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isPast ? 'border-red-200' : isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between">
                         <div class="h-48 md:h-52 overflow-hidden relative">
                             <img src="${escapeHTML(image)}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
                             <span class="absolute top-3 left-3 ${isFestival ? 'bg-fuchsia-700 text-white' : 'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${escapeHTML(badge)}</span>
                             <button type="button" onclick="${toggleAction}" aria-label="${isSaved ? 'Quitar de mis guardados' : 'Guardar evento'}" class="absolute top-3 right-3 w-10 h-10 rounded-full border border-white/70 shadow-lg transition ${isSaved ? 'bg-brandGold text-white' : 'bg-white/95 text-brandDark hover:text-brandGold'}"><i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i></button>
                         </div>
                         <div class="p-5">
-                            <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${escapeHTML(ev.date || 'Fecha por confirmar')} ${ev.time ? '· ' + escapeHTML(ev.time) : ''}</span>${isPast ? `<span class="ml-2 text-[9px] font-black uppercase bg-gray-200 text-gray-600 rounded-full px-2 py-1">${currentLang === 'en' ? 'Finished' : 'Finalizado'}</span>` : ''}
+                            <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${escapeHTML(ev.date || (currentLang === 'en' ? 'Date to be confirmed' : 'Fecha por confirmar'))} ${ev.time ? '· ' + escapeHTML(ev.time) : ''}</span>
+                            <span class="inline-block mt-2 text-[11px] font-black rounded-full px-3 py-1 ${isPast ? 'bg-red-100 text-red-800 border border-red-300' : days === 0 ? 'bg-emerald-100 text-emerald-900' : 'bg-amber-100 text-amber-900'}">${escapeHTML(eventDayLabel(days))}</span>
                             <h3 class="font-bold text-base sm:text-lg text-brandDark mt-2 mb-2">${escapeHTML(title)}</h3>
                             <p class="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">${escapeHTML(description)}</p>
                         </div>
@@ -5339,6 +5309,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function renderEmprendedoresUI() {
             const container = document.getElementById('emprendedoresGridContainer');
             if(!container) return;
+            document.getElementById('emprendedores')?.classList.toggle('hidden', !emprendedoresList.length);
             container.innerHTML = '';
 
             emprendedoresList.forEach(emp => {
@@ -8022,5 +7993,6 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
     <script src="js/chabaquito-v1-persistent.js" defer></script>
     <script src="js/chabaquito-ranking.js" defer></script>
     <script src="js/app.js" defer></script>
+    <script src="js/partner-marquee.js" defer></script>
 </body>
 </html>

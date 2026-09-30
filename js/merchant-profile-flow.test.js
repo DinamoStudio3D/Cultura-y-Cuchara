@@ -62,14 +62,14 @@ firebase.storage = () => ({
 });
 
 const sandbox = {
-  window: {}, firebase, URL: { createObjectURL: () => 'blob:preview' },
+  window: { __VL_FIREBASE_ENV__: { mode: 'preview', projectId: 'visitaloja-chabaquito-preview', config: { projectId: 'visitaloja-chabaquito-preview', authDomain: 'visitaloja-chabaquito-preview.firebaseapp.com' } } }, firebase, URL: { createObjectURL: () => 'blob:preview' },
   document: { getElementById: element }, Date, console, Blob, FormData, fetch() {
     throw new Error('Cloudinary debe permanecer apagado');
   }
 };
 vm.createContext(sandbox);
 for (const [, src, inline] of scripts) {
-  if (src && src.startsWith('js/')) vm.runInContext(fs.readFileSync(src, 'utf8'), sandbox, { filename: src });
+  if (src && (src.startsWith('js/') || src.startsWith('/js/'))) vm.runInContext(fs.readFileSync(src.replace(/^\//, ''), 'utf8'), sandbox, { filename: src });
   else if (inline.trim()) vm.runInContext(inline, sandbox, { filename: 'merchant-profile.html' });
 }
 

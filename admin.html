@@ -76,6 +76,7 @@
 
 </style>
     <link rel="stylesheet" href="css/admin-v2.css">
+    <link rel="stylesheet" href="css/partner-marquee.css">
 </head>
 <body class="min-h-screen text-white antialiased">
     <header class="sticky top-0 z-50 border-b border-white/10 bg-[#080b10]/90 backdrop-blur-xl">
@@ -131,6 +132,7 @@
 <div class="nav-group collapsed"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="false"><span>Contenido de la web</span><i class="fa-solid fa-chevron-down"></i></button><div class="nav-items">
 <button data-nav-item id="eventsNavBtn" type="button" onclick="showAdminModule('events')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-calendar w-6"></i>Eventos y agenda</button>
 <button data-nav-item id="routesNavBtn" type="button" onclick="showAdminModule('routes')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-route w-6"></i>Rutas turísticas</button>
+<button data-nav-item id="partnersNavBtn" type="button" onclick="showAdminModule('partners')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-handshake w-6"></i>Marcas aliadas</button>
 <button data-nav-item id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-bullhorn w-6"></i>Campañas y festivales</button>
 <button data-nav-item id="storiesNavBtn" type="button" onclick="showAdminModule('stories')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-book-open-reader w-6"></i>Historias de Loja</button>
 <button data-nav-item id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y podcast</button>
@@ -797,6 +799,23 @@
                     <div id="touristRoutesList" class="space-y-3"></div>
                 </section>
 
+                <section id="partnersModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                    <div class="mb-6"><p class="text-xs font-black uppercase tracking-widest text-amber-400">Contenido de la web</p><h2 class="text-2xl font-black mt-1">Marcas aliadas</h2><p class="text-sm text-gray-400 mt-1">Configura la franja de marcas en la página principal. En modo automático muestra los negocios publicados que ya tienen imagen.</p></div>
+                    <form id="partnersForm" class="space-y-6">
+                        <label class="flex items-center gap-3 font-bold"><input id="partnersEnabled" type="checkbox" class="accent-amber-500 w-5 h-5"> Mostrar la franja en la web</label>
+                        <label class="block font-bold">Origen de las marcas<select id="partnersSource" class="field mt-2"><option value="auto">Automático: negocios publicados en Visita Loja</option><option value="manual">Manual: elegir marcas y ordenar</option></select></label>
+                        <div class="grid sm:grid-cols-2 gap-4"><label>Título (español)<input id="partnersTitle" class="field mt-2" maxlength="100" placeholder="Marcas que ya trabajan con nosotros"></label><label>Title (English)<input id="partnersTitleEn" class="field mt-2" maxlength="100" placeholder="Brands working with us"></label><label>Descripción (español)<input id="partnersSubtitle" class="field mt-2" maxlength="180"></label><label>Description (English)<input id="partnersSubtitleEn" class="field mt-2" maxlength="180"></label></div>
+                        <div class="grid sm:grid-cols-3 gap-4"><label>Tamaño del logo (px)<input id="partnersLogoSize" class="field mt-2" type="number" min="48" max="140" step="1" value="76"></label><label>Velocidad (px/segundo)<input id="partnersSpeed" class="field mt-2" type="number" min="15" max="120" step="1" value="40"></label><label>Dirección<select id="partnersDirection" class="field mt-2"><option value="left">Derecha a izquierda</option><option value="right">Izquierda a derecha</option></select></label></div>
+                        <div class="grid sm:grid-cols-3 gap-4"><label>Fondo de la franja<input id="partnersBackgroundColor" class="field mt-2 h-12 p-1" type="color" value="#11151b"></label><label>Color de acento<input id="partnersAccentColor" class="field mt-2 h-12 p-1" type="color" value="#fbbf24"></label><label>Posición en la portada<select id="partnersPlacement" class="field mt-2"><option value="beforeSupport">Antes de apoyo institucional</option><option value="afterPlaces">Después de paradas y negocios</option></select></label></div>
+                        <div id="partnersAutoInfo" class="text-sm text-amber-100 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">Las marcas se toman automáticamente de las fichas publicadas. Sus nombres e imágenes se actualizan al editar cada negocio; no tienes que copiarlas aquí.</div>
+                        <div id="partnersManualEditor" class="hidden space-y-3"><div class="flex flex-wrap items-center justify-between gap-3"><h3 class="text-lg font-black">Lista manual <span id="partnersCount" class="text-sm text-gray-400"></span></h3><button id="partnersAdd" type="button" class="rounded-xl bg-white/10 hover:bg-white/20 px-4 py-2 font-bold">+ Añadir marca</button></div>
+                        <p class="text-xs text-gray-400">Usa una URL HTTPS para el logo (por ejemplo, una imagen ya subida a Firebase). El enlace de la marca es opcional. El orden aquí será el orden de la franja.</p>
+                        <div id="partnersRows" class="space-y-3"></div></div>
+                        <div><h3 class="font-black mb-3">Vista previa</h3><div id="partnersPreview" class="partner-marquee partner-marquee--preview"></div></div>
+                        <div class="flex flex-wrap items-center gap-3"><button id="partnersSave" type="submit" class="rounded-xl bg-amber-500 hover:bg-amber-400 px-6 py-3 text-black font-black">Guardar marcas</button><span id="partnersStatus" role="status" aria-live="polite" class="text-sm text-gray-300">Cargando…</span></div>
+                    </form>
+                </section>
+
                 <section id="entrepreneursModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6"><div><p class="text-lime-400 text-xs font-bold uppercase tracking-widest">Módulo 9</p><h2 class="text-2xl font-black mt-1">Emprendedores</h2><p class="text-sm text-gray-400 mt-1">Publica negocios y facilita el contacto directo por WhatsApp.</p></div><button type="button" onclick="resetEntrepreneurForm()" class="bg-lime-500 hover:bg-lime-400 text-black rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nuevo emprendimiento</button></div>
                     <form id="entrepreneurForm" class="space-y-5 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-7">
@@ -1026,7 +1045,7 @@ document.addEventListener('change',event=>{if(adminFieldChangesContent(event.tar
 document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
 window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
-const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',routes:'Rutas turísticas',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Apariencia y Marca',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
+const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',routes:'Rutas turísticas',partners:'Marcas aliadas',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Apariencia y Marca',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function toggleAdminNavGroup(button){const group=button.closest('.nav-group'),collapsed=!group.classList.contains('collapsed');group.classList.toggle('collapsed',collapsed);button.setAttribute('aria-expanded',String(!collapsed));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('[data-nav-item]').forEach(item=>{const show=!query||item.textContent.toLowerCase().includes(query);item.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);if(query&&visible){group.classList.remove('collapsed');group.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}});}
@@ -1111,7 +1130,7 @@ function showAdminModule(moduleName) {
     if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
-    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'routes', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'routes', 'partners', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('auditNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'audit' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('adminsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'admins' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -1125,6 +1144,7 @@ function showAdminModule(moduleName) {
     document.getElementById('applicationsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'applications' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('eventsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'events' ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('routesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'routes' ? 'bg-blue-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
+    document.getElementById('partnersNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'partners' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('storiesNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'stories' ? 'bg-amber-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('chabaquitoNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'chabaquito' ? 'bg-orange-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('passportNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'passport' ? 'bg-emerald-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -2135,6 +2155,7 @@ auth.onAuthStateChanged(async user => {
         await auth.signOut();
         return;
     }
+    window.dispatchEvent(new Event('visitaloja:admin-ready'));
     await recordAdminAudit('admin.login', 'access', 'Inicio de sesión administrativo');
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
     try {
@@ -2588,5 +2609,10 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
 <script src="js/admin-qr-manager.js"></script>
 <script src="js/admin-qr-dynamic-store.js"></script>
 <script src="js/admin-qr-dynamic-ui.js"></script>
+<script src="js/partner-marquee.js"></script>
+<script src="js/admin-partners.js"></script>
+<script src="js/admin-places-organizer.js"></script>
+<script src="js/admin-business-access-ui.js"></script>
+<script src="js/admin-module-isolation.js"></script>
 </body>
 </html>

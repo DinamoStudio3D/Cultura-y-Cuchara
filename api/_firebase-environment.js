@@ -3,7 +3,7 @@ const PREVIEW_PROJECT = 'visitaloja-chabaquito-preview';
 const PRODUCTION_PROJECT = 'cultura-y-cuchara';
 function configuration(env = process.env) {
   if (env.VERCEL_ENV === 'production') return { mode: 'production', projectId: PRODUCTION_PROJECT };
-  if (env.VERCEL_ENV !== 'preview' || env.VERCEL_GIT_COMMIT_REF !== 'feature/chabaquito-v1') throw new Error('Entorno Firebase no autorizado.');
+  if (env.VERCEL_ENV !== 'preview' || !['feature/chabaquito-v1', 'feature/visitaloja-integrada-preview'].includes(env.VERCEL_GIT_COMMIT_REF)) throw new Error('Entorno Firebase no autorizado.');
   if (env.VISITALOJA_FIREBASE_PROJECT_ID !== PREVIEW_PROJECT) throw new Error('Confirma el Project ID del Firebase aislado.');
   let publicConfig;
   try { publicConfig = JSON.parse(env.VISITALOJA_FIREBASE_WEB_CONFIG || ''); } catch (_) { throw new Error('Falta configuración Web pública de Preview.'); }

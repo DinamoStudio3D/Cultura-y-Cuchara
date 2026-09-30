@@ -16,6 +16,8 @@ assert.equal(serviceAccountFromEnv({...env,FIREBASE_SERVICE_ACCOUNT_JSON:JSON.st
 function request(environment) { let code,body;createHandler(environment)({method:'GET'},{setHeader(){},status(c){code=c;return this;},send(v){body=v;return this;}});return{code,body}; }
 assert.equal(request({}).code,503);
 assert.equal(request(env).code,200);
+assert.equal(request({...env,VERCEL_GIT_COMMIT_REF:'feature/visitaloja-integrada-preview'}).code,200);
+assert.equal(request({...env,VERCEL_GIT_COMMIT_REF:'feature/visitaloja-integrada-preview',VISITALOJA_FIREBASE_PROJECT_ID:'cultura-y-cuchara'}).code,503);
 assert.ok(!request(env).body.includes('private_key'));
 const fs=require('node:fs'),path=require('node:path');
 function inspect(directory) { for(const entry of fs.readdirSync(directory,{withFileTypes:true})) { if(entry.isDirectory() && !['node_modules','.git'].includes(entry.name))inspect(path.join(directory,entry.name));else if(entry.isFile() && entry.name.endsWith('.html')) { const html=fs.readFileSync(path.join(directory,entry.name),'utf8');if(html.includes('firebase.initializeApp(firebaseConfig')) { assert.ok(html.includes('/api/firebase-web-config'));assert.ok(html.includes('window.VisitaLojaFirebaseRuntime.resolve('));assert.ok(html.indexOf('/api/firebase-web-config')<html.indexOf('firebase.initializeApp(firebaseConfig')); } } } }
