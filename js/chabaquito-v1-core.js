@@ -5,9 +5,9 @@
   const TYPES = Object.freeze(['confirmed_visit', 'self_visit', 'digital_objective']);
   const COLLECTIONS = Object.freeze({
     profiles: 'chabaquitoExplorerProfiles',
-    evidence: 'chabaquitoEvidence',
-    xpEvents: 'chabaquitoXpEvents',
-    adventures: 'chabaquitoAdventureProgress',
+    evidence: 'evidence',
+    xpEvents: 'xpEvents',
+    adventures: 'adventures',
     leaderboard: 'chabaquitoPublicRanking'
   });
   const LEVELS = Object.freeze([

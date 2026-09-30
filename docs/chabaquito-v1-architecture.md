@@ -35,3 +35,14 @@ El catálogo público `js/chabaquito-v1-pilot.js` contiene los textos y opciones
 ## Antes de habilitar
 
 Implementar endpoint autenticado con transacción para las evidencias digitales y autónomas, reglas Firestore restrictivas, proyección Top 5 con consentimiento/alias único/moderación y entorno Firebase aislado para pruebas. Hace falta una estrategia de reconciliación de visitas revertidas aunque el usuario no abra la página: la transacción actual del encargado no llama a este servicio y no debe modificarse por accidente. Precisar los lugares `POINT_A`, `ESTABLISHMENT_B` y `POINT_C` antes de habilitarlos, sus coordenadas/radios, el QR activo y la tercera pregunta cultural. Revisar índices necesarios para Top 5 y límites/costos del backend elegido. Ningún cambio de reglas o infraestructura forma parte de esta fase.
+
+
+## Saneamiento del contrato de persistencia — fase 1
+
+`functions/chabaquito-v1-storage.js` centraliza el contrato versión 1 para los servicios digital y de visita confirmada. Las colecciones `evidence`, `xpEvents` y `adventures` son subcolecciones de `chabaquitoExplorerProfiles/{uid}`; las constantes de core reflejan ahora esos nombres. El progreso canónico está en `adventures/{adventureId}`, compatible con la lectura actual de la API digital. No se migra ni elimina el antiguo progreso de nivel superior: cualquier recuperación de esos documentos requiere una fase explícita posterior.
+
+La clave de evidencia sigue siendo `type:sourceId`, codificada en base64url. Los nuevos eventos usan el ID lógico aventura/objetivo codificado y conservan `id`/`eventId` compatibles. El lector acepta eventos anteriores con cualquiera de ambos campos, y las actualizaciones reutilizan el documento anterior en lugar de crear un segundo evento. Evidencias digitales previas con ID documental distinto siguen reconociéndose por su contenido. Dos documentos del mismo evento, campos ID contradictorios o XP/estados inválidos bloquean la operación antes de escribir; no se intenta reparar saldos reales automáticamente.
+
+Ambos servicios usan la misma referencia de progreso y escritura de eventos. Los cambios digitales también generan auditoría; los reintentos sin cambios no escriben. La configuración de XP y niveles del piloto no cambia. Las pruebas en memoria combinan objetivos digitales, confirmación, bono, repetición, formatos antiguos y reversión (500 → 150 XP), sin conexiones externas. No equivalen a una prueba de concurrencia en el emulador de Firestore, pendiente de una fase posterior.
+
+Esta fase no incorpora endpoints, hooks de confirmación/reversión, ranking real, migraciones, reglas, puntos reales ni despliegues. La API digital que ya existía continúa limitada al primer objetivo; la aventura visual continúa siendo una demostración independiente. Las secciones históricas anteriores describen etapas previas y no deben interpretarse como el estado actual de activación del backend.

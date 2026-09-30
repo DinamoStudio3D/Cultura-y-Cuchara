@@ -3,7 +3,8 @@
 // Servicio para invocación futura desde backend autenticado. No es endpoint ni Function.
 const core = require('../js/chabaquito-v1-core');
 
-function documentId(key) { return Buffer.from(key, 'utf8').toString('base64url'); }
+const storage = require('./chabaquito-v1-storage');
+const { documentId } = storage;
 function millis(timestamp) {
   const value = timestamp?.toMillis?.() ?? (timestamp instanceof Date ? timestamp.getTime() : NaN);
   if (!Number.isSafeInteger(value) || value <= 0) throw new Error('Fecha de visita no válida.');
@@ -64,17 +65,14 @@ async function syncConfirmedVisit({ db, authenticatedUid, visitId, point = core.
   if (!db?.runTransaction) throw new Error('Repositorio transaccional necesario.');
   if (typeof authenticatedUid !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(authenticatedUid) ||
       typeof visitId !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(visitId)) throw new Error('Identificadores no válidos.');
-  const base = db.collection(core.COLLECTIONS.profiles).doc(authenticatedUid);
-  const evidenceRef = base.collection('evidence');
-  const eventRef = base.collection('xpEvents');
-  const progressRef = db.collection(core.COLLECTIONS.adventures).doc(documentId(`${authenticatedUid}:${core.PILOT.id}`));
+  const { profile: base, evidence: evidenceRef, events: eventRef, progress: progressRef } = storage.references(db, authenticatedUid);
   return db.runTransaction(async tx => {
     const visitSnap = await tx.get(db.collection('loyaltyVisits').doc(visitId));
     const codeSnap = await tx.get(db.collection('visitCodes').doc(visitId));
     const profileSnap = await tx.get(base);
     const evidenceSnap = await tx.get(evidenceRef);
     const eventsSnap = await tx.get(eventRef);
-    const oldEvents = eventsSnap.docs.map(doc => ({ id: doc.data().eventId, ...doc.data() }));
+    const oldEvents = storage.readEvents(eventsSnap);
     const plan = planConfirmedVisit({ uid: authenticatedUid, visitId, point,
       visit: visitSnap.exists ? visitSnap.data() : null,
       code: codeSnap.exists ? codeSnap.data() : null,
@@ -84,19 +82,13 @@ async function syncConfirmedVisit({ db, authenticatedUid, visitId, point = core.
     const key = core.evidenceKey(plan.evidence);
     const prior = evidenceSnap.docs.find(doc => core.evidenceKey(doc.data()) === key)?.data();
     tx.set(evidenceRef.doc(documentId(key)), {
-      ...plan.evidence, firstVerifiedAt: prior?.firstVerifiedAt || now,
+      ...plan.evidence, schemaVersion: storage.VERSION, firstVerifiedAt: prior?.firstVerifiedAt || now,
       reversedAt: plan.evidence.status === 'reversed' ? now : null,
       updatedAt: now
     }, { merge: true });
-    for (const event of plan.delta.revoke) {
-      tx.set(eventRef.doc(documentId(event.id)), { status: 'revoked', updatedAt: now }, { merge: true });
-    }
-    for (const event of plan.delta.grant) {
-      tx.set(eventRef.doc(documentId(event.id)), { eventId: event.id, evidenceKey: event.evidenceKey,
-        xp: event.xp, status: 'granted', updatedAt: now }, { merge: true });
-    }
-    tx.set(base, plan.profile, { merge: true });
-    tx.set(progressRef, { userId: authenticatedUid, adventureId: core.PILOT.id,
+    storage.writeEvents(tx, eventRef, eventsSnap, plan.delta, now);
+    tx.set(base, { ...plan.profile, schemaVersion: storage.VERSION }, { merge: true });
+    tx.set(progressRef, { schemaVersion: storage.VERSION, availableObjectives: plan.result.availableObjectives, userId: authenticatedUid, adventureId: core.PILOT.id,
       completedObjectives: plan.result.completedObjectives, completed: plan.result.completed,
       xp: plan.result.xp, badgeIds: plan.result.badgeIds, updatedAt: now }, { merge: true });
     tx.create(base.collection('xpAudit').doc(), {
