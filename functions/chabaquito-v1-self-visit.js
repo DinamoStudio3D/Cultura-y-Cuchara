@@ -8,7 +8,8 @@ function distanceMeters(a, b) {
   const deltaLat = radians(b.latitude - a.latitude);
   const deltaLng = radians(b.longitude - a.longitude);
   const h = Math.sin(deltaLat / 2) ** 2 + Math.cos(radians(a.latitude)) * Math.cos(radians(b.latitude)) * Math.sin(deltaLng / 2) ** 2;
-  return 6371000 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  const bounded = Math.min(1, Math.max(0, h));
+  return 6371000 * 2 * Math.atan2(Math.sqrt(bounded), Math.sqrt(1 - bounded));
 }
 
 function validateSelfVisit({ uid, marker, point, coordinates, existingEvidence = [], verifiedAt }) {
