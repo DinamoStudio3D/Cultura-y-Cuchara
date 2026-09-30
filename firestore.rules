@@ -710,6 +710,14 @@ service cloud.firestore {
         || (request.auth != null && resource.data.userId == request.auth.uid)
         || isAssignedVisitMerchant(resource.data.placeId);
       allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
+        && request.resource.data.status == 'confirmed'
+        && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.status == 'pending'
+        && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.expiresAt >= request.time
+        && getAfter(/databases/$(database)/documents/visitCodes/$(requestId)).data.status == 'confirmed'
+        && getAfter(/databases/$(database)/documents/visitCodes/$(requestId)).data.confirmedBy == request.auth.uid
+        && getAfter(/databases/$(database)/documents/visitCodes/$(requestId)).data.confirmedAt == request.time
+        && getAfter(/databases/$(database)/documents/visitCodes/$(requestId)).data.userId == request.resource.data.userId
+        && getAfter(/databases/$(database)/documents/visitCodes/$(requestId)).data.placeId == request.resource.data.placeId
         && request.resource.data.requestId == requestId
         && request.resource.data.confirmedBy == request.auth.uid
         && request.resource.data.confirmedAt == request.time

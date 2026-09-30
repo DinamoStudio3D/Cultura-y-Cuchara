@@ -31,6 +31,8 @@ async function confirm() {
   const batch = writeBatch(client), timestamp = serverTimestamp();
   batch.update(doc(client, 'visitCodes/visit-a'), { status: 'confirmed', confirmedBy: 'staff-a', confirmedAt: timestamp, updatedAt: timestamp });
   batch.set(doc(client, 'loyaltyVisits/visit-a'), { requestId: 'visit-a', userId: 'user-a', placeId: 'place-a', status: 'confirmed', confirmedBy: 'staff-a', confirmedAt: timestamp });
+  batch.set(doc(client, 'loyaltyCounters/user-a_place-a'), { userId: 'user-a', placeId: 'place-a', visitCount: 1, rewardCycles: 0, dailyVisitCount: 1, lastVisitRequestId: 'visit-a', lastVisitAt: timestamp, updatedAt: timestamp });
+  batch.set(doc(client, 'securePassportStamps/stamp-a'), { requestId: 'visit-a', userId: 'user-a', placeId: 'place-a', confirmedBy: 'staff-a', confirmedAt: timestamp });
   await assertSucceeds(batch.commit());
 }
 function staff() { return processValidatedVisit({ db, authenticatedUid: 'user-a', method: 'staff', visitId: 'visit-a' }); }
@@ -87,11 +89,22 @@ test('Chabaquito contra Firestore Emulator y reglas del repositorio', async t =>
       const events = await db.collection(`${base}/xpEvents`).get();
       assert.ok(events.docs.every(d => d.data().status === 'revoked'));
     });
-    await t.test('riesgo heredado: reglas admiten visita sin confirmar código; adaptador la rechaza', async () => {
+    await t.test('código caducado y visita pendiente no pueden confirmarse', async () => {
+      await seed();
+      await db.doc('visitCodes/visit-a').update({ expiresAt: Timestamp.fromMillis(Date.now() - 10000) });
+      const client = env.authenticatedContext('staff-a').firestore();
+      await assertFails(setDoc(doc(client, 'loyaltyVisits/visit-a'), { requestId: 'visit-a', userId: 'user-a', placeId: 'place-a', status: 'confirmed', confirmedBy: 'staff-a', confirmedAt: serverTimestamp() }));
+      await seed();
+      const batch = writeBatch(client), timestamp = serverTimestamp();
+      batch.update(doc(client, 'visitCodes/visit-a'), { status: 'confirmed', confirmedBy: 'staff-a', confirmedAt: timestamp, updatedAt: timestamp });
+      batch.set(doc(client, 'loyaltyVisits/visit-a'), { requestId: 'visit-a', userId: 'user-a', placeId: 'place-a', status: 'pending', confirmedBy: 'staff-a', confirmedAt: timestamp });
+      await assertFails(batch.commit());
+    });
+    await t.test('regla reforzada rechaza visita sin confirmar código', async () => {
       await seed();
       const client = env.authenticatedContext('staff-a').firestore();
-      await assertSucceeds(setDoc(doc(client, 'loyaltyVisits/visit-a'), { requestId: 'visit-a', userId: 'user-a', placeId: 'place-a', status: 'confirmed', confirmedBy: 'staff-a', confirmedAt: serverTimestamp() }));
-      await assert.rejects(staff(), /incompatible/);
+      await assertFails(setDoc(doc(client, 'loyaltyVisits/visit-a'), { requestId: 'visit-a', userId: 'user-a', placeId: 'place-a', status: 'confirmed', confirmedBy: 'staff-a', confirmedAt: serverTimestamp() }));
+      await assert.rejects(staff(), /inexistente/);
       assert.equal((await db.doc(base).get()).exists, false);
     });
   } finally {

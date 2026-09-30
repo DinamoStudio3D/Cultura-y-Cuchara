@@ -16,11 +16,16 @@ NODE_PATH=/tmp/visitaloja-emulator-tools/node_modules node /tmp/visitaloja-emula
 
 La configuración solo inicia Firestore. Las fixtures y limpieza afectan exclusivamente a la base demo del emulador. Admin SDK simula backend y siembra fixtures; SDK cliente autenticado prueba las reglas. La reversión se simula modificando la fuente con Admin SDK local: no certifica la transacción comercial completa de reversión.
 
-Se prueban escritura XP denegada, privacidad, permisos por parada, confirmación mediante batch cliente, 10 transacciones concurrentes, ambos métodos y reversión idempotente. Una prueba documenta deliberadamente la permisividad heredada de loyaltyVisits: la regla admite crear una visita aunque el código siga pendiente; el adaptador debe rechazarla. Ese resultado no significa que dichas reglas estén listas para activar Chabaquito ni que sean las publicadas en Firebase.
+Se prueban escritura XP denegada, privacidad, permisos por parada, confirmación mediante batch cliente, 10 transacciones concurrentes, ambos métodos y reversión idempotente. La prueba negativa exige que crear una visita sin confirmar su código sea rechazado. Las reglas probadas son las locales del repositorio, no se consultan ni se publican las de producción.
 
 Las reglas actuales deniegan también lectura directa de perfiles Chabaquito al propietario. Las lecturas reales futuras deben usar API autorizada o nuevas reglas cuidadosamente preparadas en otra fase. No se publican reglas aquí.
 
 
-Resultado de esta fase: seis comprobaciones de integración pasan contra Firestore Emulator real. Las 11 suites originales,14 pruebas de descubrimientos y9 pruebas del adaptador también pasan. La primera ejecución falló por una fixture numérica de caducidad; se corrigió a Timestamp. El CLI no permite referenciar reglas fuera de su directorio de proyecto; bootstrap.rules evita abrir acceso durante el arranque y el test inyecta expresamente firestore.rules mediante initializeTestEnvironment.
+Resultado previo al refuerzo: seis comprobaciones de integración pasan contra Firestore Emulator real. Las 11 suites originales,14 pruebas de descubrimientos y9 pruebas del adaptador también pasan. La primera ejecución falló por una fixture numérica de caducidad; se corrigió a Timestamp. El CLI no permite referenciar reglas fuera de su directorio de proyecto; bootstrap.rules evita abrir acceso durante el arranque y el test inyecta expresamente firestore.rules mediante initializeTestEnvironment.
 
-Riesgo confirmado: loyaltyVisits permite crear una visita sin que su código esté confirmado. No se corrigieron ni desplegaron reglas en esta fase. El adaptador rechaza la inconsistencia; antes de activar habrá que revisar invariantes de esas fuentes y permisos del backend. Este resultado no autoriza producción.
+El riesgo original de crear loyaltyVisits sin confirmar el código fue reproducido y después corregido localmente en la fase descrita abajo. No se desplegaron reglas. Este resultado no autoriza producción.
+
+
+## Refuerzo local de loyaltyVisits
+
+La creación ahora requiere código previamente pendiente/vigente y código confirmado después de la operación, mismo usuario/parada/encargado y timestamp de confirmación. No se cambian las reglas de actualización/reversión ni otras colecciones. El batch positivo incluye contador de fidelidad y sello de Pasaporte. Se rechazan visitas aisladas y estados pendientes. No hay despliegue; no equivale a revisar todos los caminos de premios comerciales ni a confirmar reglas de producción.
