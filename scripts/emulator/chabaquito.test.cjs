@@ -100,6 +100,14 @@ test('Chabaquito contra Firestore Emulator y reglas del repositorio', async t =>
       batch.set(doc(client, 'loyaltyVisits/visit-a'), { requestId: 'visit-a', userId: 'user-a', placeId: 'place-a', status: 'pending', confirmedBy: 'staff-a', confirmedAt: timestamp });
       await assertFails(batch.commit());
     });
+    await t.test('parada antigua/incompleta no produceXP', async () => {
+      for (const patch of [{ discovery: { enabled: false } }, { cantonId: 'inventado' }, { discovery: { enabled: true, method: 'both', qrId: 'qr-a' }, lat: null }]) {
+        await seed(); await confirm();
+        await db.doc('locales/place-a').update(patch);
+        await assert.rejects(staff());
+        assert.equal((await db.doc(base).get()).exists, false);
+      }
+    });
     await t.test('regla reforzada rechaza visita sin confirmar código', async () => {
       await seed();
       const client = env.authenticatedContext('staff-a').firestore();

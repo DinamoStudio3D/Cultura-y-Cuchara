@@ -9,7 +9,7 @@ class Db {
     for (let retry = 0; retry < 50; retry++) {
       const version = this.version, snapshot = new Map(this.data), writes = [];
       const result = await fn({
-        get: async ref => ref instanceof Collection ? { docs: [...snapshot].filter(([p]) => p.startsWith(ref.path + '/') && !p.slice(ref.path.length + 1).includes('/')).map(([p, data]) => ({ id: p.split('/').at(-1), data: () => structuredClone(data) })) } : { exists: snapshot.has(ref.path), data: () => structuredClone(snapshot.get(ref.path)) },
+        get: async ref => ref instanceof Collection ? { docs: [...snapshot].filter(([p]) => p.startsWith(ref.path + '/') && !p.slice(ref.path.length + 1).includes('/')).map(([p, data]) => ({ id: p.split('/').at(-1), data: () => structuredClone(data) })).filter(d => !ref.predicate || ref.predicate(d.data())) } : { exists: snapshot.has(ref.path), data: () => structuredClone(snapshot.get(ref.path)) },
         set: (ref, data, options) => writes.push([ref.path, data, !!options?.merge, false]),
         create: (ref, data) => writes.push([ref.path, data, false, true])
       });
@@ -22,7 +22,7 @@ class Db {
     throw new Error('Transaction retries exhausted');
   }
 }
-class Collection { constructor(db, path) { this.db = db; this.path = path; } doc(id) { return new Doc(this.db, `${this.path}/${id || `audit-${++this.db.serial}`}`); } }
+class Collection { constructor(db, path) { this.db = db; this.path = path; } where(field, op, value) { if (op !== 'array-contains') throw new Error('Unsupported query'); const q = new Collection(this.db, this.path); q.predicate = data => Array.isArray(data[field]) && data[field].includes(value); return q; } doc(id) { return new Doc(this.db, `${this.path}/${id || `audit-${++this.db.serial}`}`); } }
 class Doc { constructor(db, path) { this.db = db; this.path = path; } collection(name) { return new Collection(this.db, `${this.path}/${name}`); } }
 
 function setup(mode = 'both') {
@@ -41,11 +41,11 @@ function setup(mode = 'both') {
 test('encargado asignado válido, otra parada rechazado', async () => {
   const s = setup('merchant_confirmation'); assert.equal((await s.staff()).xpDelta, 70);
   const bad = setup(); bad.db.data.set('missionRewardMerchants/staff-a', { active: true, placeIds: ['place-b'] });
-  await assert.rejects(bad.staff(), /no autorizado/);
+  await assert.rejects(bad.staff(), /no autorizado|incompleta/);
 });
 test('propietario/encargado y acceso suspendido', async () => {
   for (const role of ['owner', 'encargado']) { const s = setup(); s.db.data.set('missionRewardMerchants/staff-a', { active: true, placeIds: ['place-a'], role }); assert.equal((await s.staff()).xpDelta, 70); }
-  const s = setup(); s.db.data.set('missionRewardMerchants/staff-a', { active: false, placeIds: ['place-a'] }); await assert.rejects(s.staff(), /no autorizado/);
+  const s = setup(); s.db.data.set('missionRewardMerchants/staff-a', { active: false, placeIds: ['place-a'] }); await assert.rejects(s.staff(), /no autorizado|incompleta/);
 });
 test('≤15m válido; >15m rechazado sin ampliar por accuracy', async () => {
   const s = setup('self_checkin'); assert.equal((await s.self({ coordinates: { ...s.coordinates, latitude: -3.6 + 14 / 111195 } })).xpDelta, 70);

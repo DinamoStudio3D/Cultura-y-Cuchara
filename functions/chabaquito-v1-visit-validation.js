@@ -1,6 +1,7 @@
 'use strict';
 // Backend adapter only: no HTTP endpoint or production connection.
 const { processDiscovery } = require('./chabaquito-v1-discoveries');
+const configApi = require('../js/chabaquito-place-config');
 const { distanceMeters } = require('./chabaquito-v1-self-visit');
 const LIMITS = Object.freeze({ radiusMeters: 15, accuracyMeters: 20, maxAgeMillis: 30000 });
 function id(value) { if (typeof value !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(value)) throw new Error('Identificador inválido.'); return value; }
@@ -12,9 +13,19 @@ async function read(tx, db, collection, key) {
   return snap.data();
 }
 function configuration(place) {
-  if (place.active === false || place.discovery?.enabled !== true ||
-      !['merchant_confirmation', 'self_checkin', 'both'].includes(place.validationMode)) throw new Error('Parada no habilitada para este descubrimiento.');
-  return { mode: place.validationMode, cantonId: id(place.cantonId) };
+  if (place.discovery?.enabled !== true) throw new Error('Parada no habilitada para este descubrimiento.');
+  const mode = configApi.METHODS[configApi.methodFor(place)];
+  if (!mode || !configApi.CANTONS.some(c => c.id === place.cantonId)) throw new Error('Configuración o cantón inválido.');
+  return { mode, cantonId: place.cantonId };
+}
+async function assertReady(tx, db, placeId, place) {
+  const qrId = id(place.discovery?.qrId);
+  const qr = await read(tx, db, 'qrCodes', qrId);
+  const mode = configApi.methodFor(place);
+  const merchants = ['manager', 'both'].includes(mode)
+    ? (await tx.get(db.collection('missionRewardMerchants').where('placeIds', 'array-contains', placeId))).docs.map(d => d.data()) : [];
+  const readiness = configApi.readiness({ placeId, place, qr: { ...qr, id: qrId }, merchants });
+  if (!readiness.enabled) throw new Error('Parada incompleta: ' + readiness.issues.join(' '));
 }
 async function processValidatedVisit({ db, authenticatedUid, method, visitId, qrId, coordinates, now = Date.now() }) {
   id(authenticatedUid);
@@ -27,6 +38,7 @@ async function processValidatedVisit({ db, authenticatedUid, method, visitId, qr
         const code = await read(tx, db, 'visitCodes', visitId);
         const place = await read(tx, db, 'locales', visit.placeId);
         const config = configuration(place);
+        await assertReady(tx, db, visit.placeId, place);
         if (config.mode === 'self_checkin' || visit.userId !== uid || code.userId !== uid ||
             visit.requestId !== visitId || visit.placeId !== code.placeId || visit.status !== code.status ||
             !['confirmed', 'reversed'].includes(visit.status) || code.confirmedBy !== visit.confirmedBy) throw new Error('Confirmación incompatible.');
@@ -46,6 +58,7 @@ async function processValidatedVisit({ db, authenticatedUid, method, visitId, qr
       const qr = await read(tx, db, 'qrCodes', qrId);
       if (qr.discoveryEnabled !== true || qr.active !== true) throw new Error('QR no habilitado para descubrimientos.');
       const placeId = id(qr.placeId), place = await read(tx, db, 'locales', placeId), config = configuration(place);
+      await assertReady(tx, db, placeId, place);
       if (config.mode === 'merchant_confirmation' || place.discovery.qrId !== qrId) throw new Error('QR no asociado o método no permitido.');
       if (!finite(place.lat) || !finite(place.lng) || Math.abs(place.lat) > 90 || Math.abs(place.lng) > 180 ||
           !finite(coordinates?.latitude) || !finite(coordinates?.longitude) || Math.abs(coordinates.latitude) > 90 || Math.abs(coordinates.longitude) > 180 ||
