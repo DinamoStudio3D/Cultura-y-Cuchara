@@ -18,8 +18,9 @@ match /selfCheckinVisits/{visitId} {
       'visitId', 'userId', 'userName', 'userEmail',
       'placeId', 'placeName', 'purpose', 'status', 'createdAt'
     ])
-    && request.resource.data.visitId == visitId
     && request.resource.data.userId == request.auth.uid
+    && visitId == request.auth.uid + '_' + request.resource.data.placeId
+    && request.resource.data.visitId == visitId
     && request.resource.data.userEmail == request.auth.token.email
     && request.resource.data.userName is string
     && request.resource.data.userName.size() <= 100
