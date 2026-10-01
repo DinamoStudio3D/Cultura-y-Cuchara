@@ -107,10 +107,25 @@
       </div>`;
   }
 
+  function loadSponsorExperiences() {
+    if (window.VisitaLojaSponsors?.renderSponsoredExperiences) {
+      window.VisitaLojaSponsors.renderSponsoredExperiences();
+      return;
+    }
+    if (document.getElementById('visitaLojaSponsorsScript')) return;
+    const script = document.createElement('script');
+    script.id = 'visitaLojaSponsorsScript';
+    script.src = 'js/sponsors.js';
+    script.defer = true;
+    script.addEventListener('load', () => window.VisitaLojaSponsors?.renderSponsoredExperiences?.());
+    document.body.appendChild(script);
+  }
+
   function initResponsiveNavigation() {
     createMobileQuickRoute();
     createDesktopExploreMenu();
     renderPrincipalSponsors();
+    loadSponsorExperiences();
     if (window.matchMedia('(max-width: 767px)').matches) {
       const bubble = document.getElementById('webMascotBubble');
       if (bubble) bubble.classList.add('is-quiet');
