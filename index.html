@@ -50,10 +50,8 @@
         (() => {
             const params = new URLSearchParams(location.search);
             const checkin = params.get('checkin');
-            const editableQr = params.get('qr');
-            const stopFromQr = editableQr?.startsWith('parada-') ? editableQr.slice(7) : '';
-            const stop = checkin || stopFromQr;
-            if (!stop) return;
+            if (!checkin) return;
+            const stop = checkin;
             document.documentElement.classList.add('qr-stop-redirect');
             const target = new URL('fidelidad.html', location.href);
             target.searchParams.set('checkin', stop);
