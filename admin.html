@@ -73,12 +73,11 @@
         }
 
 </style>
-    <link rel="stylesheet" href="css/admin-v2.css">
 </head>
 <body class="min-h-screen text-white antialiased">
     <header class="sticky top-0 z-50 border-b border-white/10 bg-[#080b10]/90 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3"><div class="w-11 h-11 shrink-0 rounded-full border border-amber-500/50 bg-white p-1 shadow-lg shadow-orange-950/40 overflow-hidden"><img src="https://i.imgur.com/mmWzHK4.png?visita-loja-v4" alt="Logo de Visita Loja" width="44" height="44" class="w-full h-full object-contain" decoding="async"></div><div><p class="text-amber-400 text-[10px] font-black uppercase tracking-[.2em]">Visita Loja</p><h1 class="text-lg sm:text-xl font-black leading-tight">Centro de administración</h1></div></div>
+            <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-amber-400 text-black grid place-items-center shadow-lg shadow-orange-950/40"><i class="fa-solid fa-location-dot"></i></div><div><p class="text-amber-400 text-[10px] font-black uppercase tracking-[.2em]">Visita Loja</p><h1 class="text-lg sm:text-xl font-black leading-tight">Centro de administración</h1></div></div>
             <div class="flex items-center gap-2"><span class="hidden sm:inline-flex items-center gap-2 text-[11px] text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1.5"><i class="fa-solid fa-circle text-[7px]"></i>Conectado</span><a href="./" class="text-sm text-gray-200 hover:text-amber-300 border border-white/10 rounded-xl px-3 py-2"><i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i><span class="hidden sm:inline">Ver sitio</span></a></div>
         </div>
     </header>
@@ -240,19 +239,6 @@
                             <div class="grid sm:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Tipo *</span><select id="qrType" class="field" onchange="updateQrExplanation();previewQrFromForm()"><option value="editable">Editable</option><option value="fixed">Fijo permanente</option></select></label><label><span class="text-sm font-semibold block mb-2">Identificador</span><input id="qrSlug" class="field" oninput="previewQrFromForm()" placeholder="festival-2026"><span id="qrSlugHelp" class="hidden text-[10px] text-amber-200 mt-1">Se conserva para que el QR ya impreso nunca deje de funcionar.</span></label></div>
                             <label class="block"><span class="text-sm font-semibold block mb-2">Enlace de destino *</span><input id="qrTarget" class="field" required oninput="previewQrFromForm()" placeholder="https://... o ?lugar=nombre"></label>
                             <p id="qrExplanation" class="text-xs text-teal-200 bg-teal-500/10 border border-teal-500/20 rounded-xl p-3">El QR conservará la misma dirección aunque cambies su destino.</p>
-                            <input id="qrVisitPlaceId" type="hidden">
-                            <input id="qrVisitValidationMode" type="hidden">
-                            <input id="qrVisitPurpose" type="hidden">
-                            <div id="qrVisitModePanel" class="hidden rounded-2xl border p-4">
-                                <div class="flex items-start gap-3">
-                                    <i id="qrVisitModeIcon" class="fa-solid fa-shield-halved mt-1"></i>
-                                    <div class="min-w-0">
-                                        <strong id="qrVisitModeTitle" class="block"></strong>
-                                        <p id="qrVisitModeDescription" class="text-xs text-gray-300 mt-1"></p>
-                                        <p id="qrVisitModeWarning" class="text-xs font-bold mt-2"></p>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="bg-teal-500/5 border border-teal-500/20 rounded-2xl p-4 space-y-4">
                                 <h3 class="font-black text-teal-200"><i class="fa-solid fa-palette mr-2"></i>Diseño personalizado</h3>
                                 <div class="grid sm:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Color del QR</span><input id="qrDarkColor" type="color" value="#111111" oninput="previewQrFromForm()" class="field h-12 p-1"></label><label><span class="text-sm font-semibold block mb-2">Color del fondo</span><input id="qrLightColor" type="color" value="#ffffff" oninput="previewQrFromForm()" class="field h-12 p-1"></label></div>
@@ -824,9 +810,6 @@
         </div>
     </div>
 
-    <script src="js/admin-visit-validation-mode.js"></script>
-    <script src="js/admin-visit-validation-mode-integration.js"></script>
-    <script src="js/admin-visit-qr-mode.js"></script>
 <script>
 const firebaseConfig = {
     apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
@@ -1420,26 +1403,10 @@ function drawQr(value,design=qrDesignFromForm(),name='QR-Vive-Loja'){
     if(!design.logoUrl)return;const logo=new Image();logo.crossOrigin='anonymous';logo.onload=()=>{if(token!==qrRenderToken)return;const ctx=canvas.getContext('2d'),logoSide=Math.round(size*(Number(design.logoSize)||20)/100),padding=Math.max(8,Math.round(logoSide*.16)),backSide=logoSide+padding*2,x=(size-backSide)/2,y=(size-backSide)/2;ctx.fillStyle=design.lightColor||'#ffffff';ctx.beginPath();ctx.roundRect(x,y,backSide,backSide,Math.max(10,backSide*.12));ctx.fill();ctx.drawImage(logo,x+padding,y+padding,logoSide,logoSide);};logo.onerror=()=>{if(token!==qrRenderToken)return;status.textContent='No se pudo cargar el logo. Revisa el nombre o la URL; el QR sin logo sí funciona.';status.classList.remove('hidden');};logo.src=new URL(design.logoUrl,window.location.href).href;
 }
 function previewQrFromForm(){const target=document.getElementById('qrTarget').value.trim();if(!target){drawQr('');return;}const id=document.getElementById('qrEditId').value||createAdminSlug(document.getElementById('qrSlug').value||document.getElementById('qrName').value);try{drawQr(qrPublicValue({id,type:document.getElementById('qrType').value,targetUrl:target}),qrDesignFromForm(),document.getElementById('qrName').value.trim());}catch(_){drawQr('');}}
-function clearQrVisitMode(){
-    ['qrVisitPlaceId','qrVisitValidationMode','qrVisitPurpose'].forEach(id=>{const node=document.getElementById(id);if(node)node.value='';});
-    const panel=document.getElementById('qrVisitModePanel');if(panel){panel.className='hidden rounded-2xl border p-4';}
-}
-function showQrVisitMode(place,placeId){
-    const api=window.VisitaLojaVisitQrMode;if(!api)return null;
-    const descriptor=api.buildVisitQrDescriptor(place,placeId),copy=api.describeVisitQr(place);
-    document.getElementById('qrVisitPlaceId').value=descriptor.placeId;
-    document.getElementById('qrVisitValidationMode').value=descriptor.validationMode;
-    document.getElementById('qrVisitPurpose').value=descriptor.purpose;
-    const panel=document.getElementById('qrVisitModePanel'),title=document.getElementById('qrVisitModeTitle'),description=document.getElementById('qrVisitModeDescription'),warning=document.getElementById('qrVisitModeWarning'),icon=document.getElementById('qrVisitModeIcon');
-    if(panel){panel.className=descriptor.requiresMerchantConfirmation?'rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4':'rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4';}
-    if(title)title.textContent=copy.title;if(description)description.textContent=copy.description;if(warning)warning.textContent=copy.warning;
-    if(icon){icon.className=descriptor.requiresMerchantConfirmation?'fa-solid fa-user-check mt-1 text-amber-300':'fa-solid fa-location-crosshairs mt-1 text-cyan-300';}
-    return descriptor;
-}
-function resetQrForm(){document.getElementById('qrForm').reset();document.getElementById('qrEditId').value='';document.getElementById('qrType').value='editable';const slug=document.getElementById('qrSlug');slug.disabled=false;slug.classList.remove('opacity-60','cursor-not-allowed');document.getElementById('qrSlugHelp').classList.add('hidden');document.getElementById('qrFormTitle').textContent='Crear nuevo código QR';document.getElementById('qrEditBadge').classList.add('hidden');document.getElementById('qrSaveBtn').innerHTML='<i class="fa-solid fa-qrcode mr-2"></i>Generar y guardar';document.getElementById('qrMessage').classList.add('hidden');clearQrVisitMode();loadQrDesign();updateQrExplanation();drawQr('');}
+function resetQrForm(){document.getElementById('qrForm').reset();document.getElementById('qrEditId').value='';document.getElementById('qrType').value='editable';const slug=document.getElementById('qrSlug');slug.disabled=false;slug.classList.remove('opacity-60','cursor-not-allowed');document.getElementById('qrSlugHelp').classList.add('hidden');document.getElementById('qrFormTitle').textContent='Crear nuevo código QR';document.getElementById('qrEditBadge').classList.add('hidden');document.getElementById('qrSaveBtn').innerHTML='<i class="fa-solid fa-qrcode mr-2"></i>Generar y guardar';document.getElementById('qrMessage').classList.add('hidden');loadQrDesign();updateQrExplanation();drawQr('');}
 function renderQrList(){document.getElementById('qrCount').textContent=`${adminQrCodes.length} códigos`;document.getElementById('qrList').innerHTML=adminQrCodes.length?adminQrCodes.map(q=>`<article class="bg-black/30 border border-gray-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3"><div class="min-w-0"><b>${escapeAdminHtml(q.name)}</b><p class="text-xs text-gray-400 truncate">${q.type==='editable'?'Editable':'Fijo'} · ${escapeAdminHtml(q.targetUrl)}</p><p class="text-[10px] text-gray-500">Creado: ${q.createdAt?.toDate?q.createdAt.toDate().toLocaleString('es-EC'):'—'}</p></div><div class="flex flex-wrap gap-2"><button type="button" onclick="previewSavedQr('${escapeAdminHtml(q.id)}')" class="bg-teal-500/15 text-teal-200 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-eye mr-1"></i>Ver</button><button type="button" onclick="editSavedQr('${escapeAdminHtml(q.id)}')" class="bg-blue-500/15 text-blue-200 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-pen mr-1"></i>Editar</button><button type="button" onclick="deleteSavedQr('${escapeAdminHtml(q.id)}')" class="bg-red-500/10 text-red-300 px-3 py-2 rounded-lg text-xs font-bold" aria-label="Eliminar código"><i class="fa-solid fa-trash"></i></button></div></article>`).join(''):'<p class="text-sm text-gray-500">Todavía no hay códigos QR.</p>';}
 function previewSavedQr(id){const q=adminQrCodes.find(x=>x.id===id);if(q)drawQr(qrPublicValue(q),{...defaultQrDesign(),...(q.design||{})},q.name);}
-function editSavedQr(id){const q=adminQrCodes.find(x=>x.id===id);if(!q)return;document.getElementById('qrEditId').value=q.id;document.getElementById('qrName').value=q.name;document.getElementById('qrType').value=q.type;const slug=document.getElementById('qrSlug');slug.value=q.id;slug.disabled=true;slug.classList.add('opacity-60','cursor-not-allowed');document.getElementById('qrSlugHelp').classList.remove('hidden');document.getElementById('qrTarget').value=q.targetUrl;document.getElementById('qrFormTitle').textContent=`Editando: ${q.name}`;document.getElementById('qrEditBadge').classList.remove('hidden');document.getElementById('qrSaveBtn').innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Guardar cambios';clearQrVisitMode();if(q.visit?.placeId){const place=adminPlaces.find(item=>item.id===q.visit.placeId)||{id:q.visit.placeId,validationMode:q.visit.validationMode};showQrVisitMode(place,q.visit.placeId);}loadQrDesign(q.design);updateQrExplanation();drawQr(qrPublicValue(q),{...defaultQrDesign(),...(q.design||{})},q.name);document.getElementById('qrForm').scrollIntoView({behavior:'smooth',block:'start'});}
+function editSavedQr(id){const q=adminQrCodes.find(x=>x.id===id);if(!q)return;document.getElementById('qrEditId').value=q.id;document.getElementById('qrName').value=q.name;document.getElementById('qrType').value=q.type;const slug=document.getElementById('qrSlug');slug.value=q.id;slug.disabled=true;slug.classList.add('opacity-60','cursor-not-allowed');document.getElementById('qrSlugHelp').classList.remove('hidden');document.getElementById('qrTarget').value=q.targetUrl;document.getElementById('qrFormTitle').textContent=`Editando: ${q.name}`;document.getElementById('qrEditBadge').classList.remove('hidden');document.getElementById('qrSaveBtn').innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Guardar cambios';loadQrDesign(q.design);updateQrExplanation();drawQr(qrPublicValue(q),{...defaultQrDesign(),...(q.design||{})},q.name);document.getElementById('qrForm').scrollIntoView({behavior:'smooth',block:'start'});}
 async function deleteSavedQr(id){const q=adminQrCodes.find(x=>x.id===id);if(q&&confirm(`¿Eliminar “${q.name}”?`))await qrRef.doc(id).delete();}
 function downloadCurrentQr(){const canvas=document.querySelector('#qrPreview canvas');if(!canvas){message(document.getElementById('qrMessage'),'Primero genera o selecciona un QR.');return;}try{const link=document.createElement('a');link.download=`${createAdminSlug(currentQrName)}-qr.png`;link.href=canvas.toDataURL('image/png');link.click();}catch(_){message(document.getElementById('qrMessage'),'El logo externo bloqueó la descarga. Súbelo junto a index.html y escribe solamente el nombre del archivo.');}}
 
@@ -1830,32 +1797,7 @@ async function prepareApplicationAsPlace(id){const item=adminBusinessApplication
 
 async function migrateLegacyPlacePins(){if(legacyPinMigrationRunning)return;const legacy=adminPlaces.filter(place=>/^\d{4,6}$/.test(String(place.pin||''))).slice(0,200);if(!legacy.length)return;legacyPinMigrationRunning=true;try{const batch=db.batch();legacy.forEach(place=>{batch.set(passportPinsRef.doc(place.id),{pin:String(place.pin),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email},{merge:true});batch.update(placesRef.doc(place.id),{pin:firebase.firestore.FieldValue.delete()});});await batch.commit();}catch(error){console.warn('No se pudieron proteger automáticamente los PIN existentes:',error);}finally{legacyPinMigrationRunning=false;}}
 
-function prepareStopQr(id){
-    const place=adminPlaces.find(item=>item.id===id);if(!place)return;
-    showAdminModule('qr');
-    const qrApi=window.VisitaLojaVisitQrMode;
-    if(!qrApi){resetQrForm();message(document.getElementById('qrMessage'),'No se pudo cargar la clasificación del QR de visita. Recarga el panel antes de generar este código.');return;}
-    const descriptor=qrApi.buildVisitQrDescriptor(place,id),stopSlug=createAdminSlug(place.title),qrId=`parada-${stopSlug}`,existing=adminQrCodes.find(item=>item.id===qrId);
-    if(existing){
-        editSavedQr(existing.id);
-        showQrVisitMode(place,id);
-        message(document.getElementById('qrMessage'),`QR de la parada “${place.title}” cargado como ${descriptor.requiresMerchantConfirmation?'visita con encargado':'visita sin encargado'}. Puedes descargarlo o cambiar su diseño.`,true);
-        return;
-    }
-    resetQrForm();
-    document.getElementById('qrName').value=`Parada ${place.title}`;
-    document.getElementById('qrType').value='editable';
-    document.getElementById('qrSlug').value=qrId;
-    const selfCheckinUrl=`${window.location.origin}/visita.html?place=${encodeURIComponent(place.id)}`;
-    document.getElementById('qrTarget').value=descriptor.requiresMerchantConfirmation?`${window.location.origin}/fidelidad.html?place=${encodeURIComponent(place.id)}`:selfCheckinUrl;
-    showQrVisitMode(place,id);
-    updateQrExplanation();previewQrFromForm();
-    if(descriptor.requiresMerchantConfirmation){
-        message(document.getElementById('qrMessage'),'Esta parada usa confirmación por encargado. El QR conserva el flujo comercial actual y puede participar en Fidelidad cuando corresponda.',true);
-    }else{
-        message(document.getElementById('qrMessage'),'Esta parada está configurada sin encargado. Por seguridad, este QR no apunta a Fidelidad ni entrega sellos. Queda preparado como QR de visita para conectar posteriormente la autovalidación de Pasaporte/Misiones.',true);
-    }
-}
+function prepareStopQr(id){const place=adminPlaces.find(item=>item.id===id);if(!place)return;showAdminModule('qr');if(!['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(place.category)){resetQrForm();message(document.getElementById('qrMessage'),'Esta ficha no participa en el pasaporte. Los sellos se generan únicamente para hoteles, hostales, cafeterías, huecas y restaurantes.');return;}const stopSlug=createAdminSlug(place.title),qrId=`parada-${stopSlug}`,existing=adminQrCodes.find(item=>item.id===qrId);if(existing){editSavedQr(existing.id);message(document.getElementById('qrMessage'),`QR de la parada “${place.title}” cargado. Puedes descargarlo o cambiar su diseño.`,true);return;}resetQrForm();document.getElementById('qrName').value=`Parada ${place.title}`;document.getElementById('qrType').value='editable';document.getElementById('qrSlug').value=qrId;document.getElementById('qrTarget').value=`${window.location.origin}/fidelidad.html?place=${encodeURIComponent(place.id)}`;updateQrExplanation();previewQrFromForm();message(document.getElementById('qrMessage'),'Personaliza el QR y presiona “Generar y guardar”. Luego imprímelo y colócalo en esta parada.',true);}
 
 const PLACE_PLAN_DEFAULTS=DEFAULT_PLAN_FEATURES;
 function applyPlacePlanBenefits(){const planId=document.getElementById('placeSubscriptionPlan').value,plan=subscriptionDraftPlans.find(item=>item.id===planId),benefits=plan?planFeatures(plan):(PLACE_PLAN_DEFAULTS[planId]||PLACE_PLAN_DEFAULTS.free);Object.entries({placeBenefitLogoPin:'logoPin',placeBenefitBadge:'badge',placeBenefitPriority:'priority',placeBenefitPromo:'promo',placeBenefitStats:'stats',placeBenefitVideo:'video',placeBenefitMenu:'menu'}).forEach(([id,key])=>document.getElementById(id).checked=benefits[key]===true);if(planId==='free')document.getElementById('placePromoActive').checked=false;}
@@ -1892,7 +1834,6 @@ function resetPlaceForm() {
     document.getElementById('placeFormTitle').textContent = 'Registrar una parada';
     document.getElementById('placePin').value = '1234';
     document.getElementById('placePublicationStatus').value = 'published';
-    window.VisitaLojaVisitValidationAdminIntegration?.setMode('merchant_confirmation');
     togglePlacePinRequirement();
     document.getElementById('placeOpenHour').value = '8';
     document.getElementById('placeCloseHour').value = '20';
@@ -1906,7 +1847,6 @@ async function editAdminPlace(id) {
     showAdminModule('places');
     document.getElementById('placeEditId').value = place.id;
     document.getElementById('placeFormTitle').textContent = `Editar: ${place.title || 'parada'}`;
-    window.VisitaLojaVisitValidationAdminIntegration?.setMode(place.validationMode);
     const subscription=place.subscription||{},benefits=subscription.benefits||{},promo=subscription.promotion||{},commerce=place.commerce||{},profile=place.businessProfile||{},amenities=profile.amenities||{},paymentMethods=Array.isArray(profile.paymentMethods)?profile.paymentMethods:[];let privatePin=adminPassportPins[place.id]||place.pin||'';if(!privatePin){try{const pinSnapshot=await passportPinsRef.doc(place.id).get();privatePin=pinSnapshot.exists?pinSnapshot.data().pin||'':'';}catch(_){}}
     const values = { placePublicationStatus: place.publicationStatus || 'published', placeTitle: place.title, placeTitleEn: place.titleEn, placeCategory: place.category, placeTag: place.tag, placePin: privatePin, placeDesc: place.desc, placeDescEn: place.descEn, placeAudioUrl: place.audioUrl || ((place.id === 'dinamo_studio' || String(place.title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes('dinamo')) ? 'audios/dinamo-the-weight-of-one-note.mp3' : ''), placeAudioUrlEn: place.audioUrlEn, placeDish: place.dish, placeDishEn: place.dishEn, placeHours: place.hours, placeOpenHour: place.openHour, placeCloseHour: place.closeHour, placeAddress: place.address, placeLat: place.lat, placeLng: place.lng, placeLogo: place.customLogoUrl, placeYoutube: place.youtubeUrl, placeGallery: Array.isArray(place.gallery) ? place.gallery.map(item => item.img).filter(Boolean).join('\n') : '',placeProfilePhone:profile.phone||'',placeProfileWhatsapp:profile.whatsapp||'',placeProfileWebsite:profile.website||'',placeProfileInstagram:profile.instagram||'',placeProfileFacebook:profile.facebook||'',placeProfileTiktok:profile.tiktok||'',placeProfilePriceRange:profile.priceRange||'',placeMenuTitle:place.menu?.title||'',placeMenuTitleEn:place.menu?.titleEn||'',placeCommerceWhatsapp:commerce.whatsapp||'',placeOrderMessage:commerce.orderMessage||'Hola, deseo realizar un pedido en {negocio}.',placeOrderMessageEn:commerce.orderMessageEn||'Hello, I would like to place an order at {negocio}.',placeReservationMessage:commerce.reservationMessage||'Hola, deseo reservar una mesa en {negocio}. Fecha: ___ Hora: ___ Personas: ___',placeReservationMessageEn:commerce.reservationMessageEn||'Hello, I would like to reserve a table at {negocio}. Date: ___ Time: ___ Guests: ___',placeSubscriptionPlan:subscription.plan||'free',placeSubscriptionStatus:subscription.status||'active',placeSubscriptionStart:toLocalDateTimeInput(subscription.startAt||subscription.startDate),placeSubscriptionEnd:toLocalDateTimeInput(subscription.endAt||subscription.endDate,true),placeSubscriptionContactName:subscription.contactName||'',placeSubscriptionContactWhatsapp:subscription.contactWhatsapp||'',placeSubscriptionAmount:subscription.monthlyAmount??'',placeSubscriptionPaymentMethod:subscription.paymentMethod||'transfer',placeSubscriptionPaymentNotes:subscription.paymentNotes||'',placePromoTitle:promo.title||'',placePromoTitleEn:promo.titleEn||'',placePromoImage:promo.image||'',placePromoDescription:promo.description||'',placePromoDescriptionEn:promo.descriptionEn||'',placePromoButtonText:promo.buttonText||'Conocer promoción',placePromoButtonTextEn:promo.buttonTextEn||'View promotion',placePromoButtonUrl:promo.buttonUrl||'',placePromoStart:toLocalDateTimeInput(promo.startAt||promo.startDate),placePromoEnd:toLocalDateTimeInput(promo.endAt||promo.endDate,true) };
     Object.entries(values).forEach(([field, value]) => { document.getElementById(field).value = value ?? ''; });placePaymentHistoryDraft=Array.isArray(subscription.paymentHistory)?subscription.paymentHistory.map(item=>({...item})):[];renderPlacePaymentHistory();placeMenuDraftDishes=Array.isArray(place.menu?.dishes)?place.menu.dishes.map(item=>({...menuDishTemplate(),...item})):[];renderPlaceMenuDishes();
@@ -2234,7 +2174,7 @@ document.getElementById('placeForm').addEventListener('submit', async event => {
     const privatePin=passportEligible?document.getElementById('placePin').value.trim():'';
     if(passportEligible&&!/^\d{4,6}$/.test(privatePin)){message(formMessage,'El PIN privado debe tener entre 4 y 6 números.');return;}
     const data = {
-        publicationStatus: document.getElementById('placePublicationStatus').value, validationMode: window.VisitaLojaVisitValidationAdminIntegration?.getMode() || 'merchant_confirmation', pin: firebase.firestore.FieldValue.delete(), tag, tagEn: tag, title,
+        publicationStatus: document.getElementById('placePublicationStatus').value, pin: firebase.firestore.FieldValue.delete(), tag, tagEn: tag, title,
         titleEn: document.getElementById('placeTitleEn').value.trim() || title,
         desc: description, descEn: document.getElementById('placeDescEn').value.trim() || description,
         audioUrl: document.getElementById('placeAudioUrl').value.trim(),
@@ -2258,8 +2198,31 @@ document.getElementById('placeForm').addEventListener('submit', async event => {
     try {
         const editId = document.getElementById('placeEditId').value,applicationId=document.getElementById('placeApplicationId').value;
         const placeId=editId||`loc_${createAdminSlug(title)}_${Date.now()}`,batch=db.batch();batch.set(placesRef.doc(placeId),data,{merge:true});if(passportEligible)batch.set(passportPinsRef.doc(placeId),{pin:privatePin,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email},{merge:true});else batch.delete(passportPinsRef.doc(placeId));if(applicationId){const application=adminBusinessApplications.find(item=>item.id===applicationId),publicUrl=`${window.location.origin}/parada/${encodeURIComponent(createAdminSlug(title))}`;batch.update(businessApplicationsRef.doc(applicationId),{status:'approved',placeId,approvedAt:firebase.firestore.FieldValue.serverTimestamp(),approvedBy:auth.currentUser.email});if(application?.trackingCode)batch.set(businessApplicationStatusRef.doc(application.trackingCode),{status:'approved',trackingCode:application.trackingCode,publicUrl,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}await batch.commit();
+
+        const placeSlug=createAdminSlug(title),qrId=`parada-${placeSlug}`,qrRef=db.collection('qrCodes').doc(qrId),qrSnap=await qrRef.get();
+        const qrTargetUrl=data.validationMode==='self_checkin'
+            ? `${window.location.origin}/visita.html?place=${encodeURIComponent(placeId)}`
+            : `${window.location.origin}/fidelidad.html?checkin=${encodeURIComponent(placeSlug)}`;
+        const qrNow=firebase.firestore.FieldValue.serverTimestamp();
+        const qrPayload={
+            id:qrId,
+            name:qrSnap.exists?(qrSnap.data()?.name||title||qrId):(title||qrId),
+            type:qrSnap.exists?(qrSnap.data()?.type||'stop'):'stop',
+            destinationType:qrSnap.exists?(qrSnap.data()?.destinationType||'stop'):'stop',
+            placeId,
+            placeSlug,
+            targetUrl:qrTargetUrl,
+            visit:{placeId,validationMode:data.validationMode,purpose:data.validationMode==='self_checkin'?'passport_missions':'merchant_confirmation'},
+            updatedAt:qrNow,
+            updatedBy:auth.currentUser.email
+        };
+        if(!qrSnap.exists){qrPayload.createdAt=qrNow;qrPayload.createdBy=auth.currentUser.email;}
+        await qrRef.set(qrPayload,{merge:true});
+
         if (!editId) resetPlaceForm();
-        message(formMessage, editId ? 'Parada actualizada correctamente.' : 'Parada registrada correctamente.', true);
+        message(formMessage, editId
+            ? (qrSnap.exists?'Parada actualizada correctamente. QR estable actualizado.':'Parada actualizada correctamente. QR estable creado.')
+            : (qrSnap.exists?'Parada registrada correctamente. QR estable actualizado.':'Parada registrada correctamente. QR estable creado.'), true);
     } catch (error) {
         message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar. Revisa las reglas de seguridad.' : (error.message || 'No se pudo guardar la parada.'));
     } finally { button.disabled = false; }
@@ -2446,7 +2409,7 @@ document.getElementById('timeForm').addEventListener('submit', async event => {
 });
 
 document.getElementById('entrepreneurForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('entrepreneurSaveBtn'),formMessage=document.getElementById('entrepreneurMessage');const phone=document.getElementById('entrepreneurPhone').value.replace(/\D/g,'');if(phone.length<10){message(formMessage,'Revisa el número de WhatsApp y agrega el código de país.');return;}const editId=document.getElementById('entrepreneurEditId').value;const data={id:editId||`emp_${Date.now()}`,name:document.getElementById('entrepreneurName').value.trim(),category:document.getElementById('entrepreneurCategory').value.trim(),phone,img:document.getElementById('entrepreneurImage').value.trim(),desc:document.getElementById('entrepreneurDesc').value.trim()};const previous=adminEntrepreneurs.map(x=>({...x}));const index=adminEntrepreneurs.findIndex(x=>x.id===data.id);if(index>=0)adminEntrepreneurs[index]=data;else adminEntrepreneurs.push(data);button.disabled=true;try{await saveAdminEntrepreneurs();if(!editId)resetEntrepreneurForm();message(formMessage,editId?'Emprendimiento actualizado.':'Emprendimiento publicado.',true);}catch(error){adminEntrepreneurs=previous;renderAdminEntrepreneurs();message(formMessage,error.code==='permission-denied'?'Firestore no permitió guardar.':'No se pudo guardar el emprendimiento.');}finally{button.disabled=false;}});
-document.getElementById('qrForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('qrSaveBtn'),notice=document.getElementById('qrMessage'),editId=document.getElementById('qrEditId').value,name=document.getElementById('qrName').value.trim(),type=document.getElementById('qrType').value,targetUrl=document.getElementById('qrTarget').value.trim(),slug=createAdminSlug(document.getElementById('qrSlug').value||name),id=editId||slug,design=qrDesignFromForm();try{new URL(targetUrl,window.location.origin);}catch(_){message(notice,'El enlace de destino no es válido.');return;}button.disabled=true;try{if(!editId&&(await qrRef.doc(id).get()).exists){message(notice,'Ese identificador ya existe. Utiliza otro nombre.');return;}const visitPlaceId=document.getElementById('qrVisitPlaceId')?.value||'',visitValidationMode=document.getElementById('qrVisitValidationMode')?.value||'',visitPurpose=document.getElementById('qrVisitPurpose')?.value||'';const data={name,type,targetUrl,design,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email};if(visitPlaceId){const place=adminPlaces.find(item=>item.id===visitPlaceId)||{id:visitPlaceId,validationMode:visitValidationMode};const descriptor=window.VisitaLojaVisitQrMode?.buildVisitQrDescriptor(place,visitPlaceId);if(descriptor)data.visit=descriptor;else data.visit={placeId:visitPlaceId,validationMode:visitValidationMode,purpose:visitPurpose};}if(!editId)data.createdAt=firebase.firestore.FieldValue.serverTimestamp();await qrRef.doc(id).set(data,{merge:true});document.getElementById('qrEditId').value=id;const slugField=document.getElementById('qrSlug');slugField.value=id;slugField.disabled=true;slugField.classList.add('opacity-60','cursor-not-allowed');document.getElementById('qrSlugHelp').classList.remove('hidden');document.getElementById('qrFormTitle').textContent=`Editando: ${name}`;document.getElementById('qrEditBadge').classList.remove('hidden');button.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Guardar cambios';drawQr(qrPublicValue({id,...data}),design,name);message(notice,editId?'Cambios guardados. El QR conserva el mismo identificador.':'Código QR guardado con su diseño. Ya puedes descargarlo.',true);}catch(error){message(notice,error.code==='permission-denied'?'Firestore no permitió guardar el código.':'No se pudo guardar el código QR.');}finally{button.disabled=false;}});
+document.getElementById('qrForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('qrSaveBtn'),notice=document.getElementById('qrMessage'),editId=document.getElementById('qrEditId').value,name=document.getElementById('qrName').value.trim(),type=document.getElementById('qrType').value,targetUrl=document.getElementById('qrTarget').value.trim(),slug=createAdminSlug(document.getElementById('qrSlug').value||name),id=editId||slug,design=qrDesignFromForm();try{new URL(targetUrl,window.location.origin);}catch(_){message(notice,'El enlace de destino no es válido.');return;}button.disabled=true;try{if(!editId&&(await qrRef.doc(id).get()).exists){message(notice,'Ese identificador ya existe. Utiliza otro nombre.');return;}const data={name,type,targetUrl,design,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email};if(!editId)data.createdAt=firebase.firestore.FieldValue.serverTimestamp();await qrRef.doc(id).set(data,{merge:true});document.getElementById('qrEditId').value=id;const slugField=document.getElementById('qrSlug');slugField.value=id;slugField.disabled=true;slugField.classList.add('opacity-60','cursor-not-allowed');document.getElementById('qrSlugHelp').classList.remove('hidden');document.getElementById('qrFormTitle').textContent=`Editando: ${name}`;document.getElementById('qrEditBadge').classList.remove('hidden');button.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Guardar cambios';drawQr(qrPublicValue({id,...data}),design,name);message(notice,editId?'Cambios guardados. El QR conserva el mismo identificador.':'Código QR guardado con su diseño. Ya puedes descargarlo.',true);}catch(error){message(notice,error.code==='permission-denied'?'Firestore no permitió guardar el código.':'No se pudo guardar el código QR.');}finally{button.disabled=false;}});
 
 document.getElementById('podcastForm').addEventListener('submit', async event => {
     event.preventDefault();
