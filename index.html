@@ -1724,18 +1724,44 @@
         </div>
     </section>
 
-    <!-- Institutional Sponsorship -->
-    <section class="py-12 px-4 md:px-8 bg-[#181818] text-white border-t border-brandGold/20 text-center">
-        <div class="max-w-4xl mx-auto">
-            <div class="inline-block p-3 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4 shadow-warm-glow">
-                <i class="fa-solid fa-landmark"></i>
+    <!-- Patrocinadores y respaldo institucional -->
+    <section id="patrocinadores" class="py-14 px-4 md:px-8 bg-[#181818] text-white border-t border-brandGold/20 text-center">
+        <div class="max-w-6xl mx-auto">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4 shadow-warm-glow">
+                <i class="fa-solid fa-handshake"></i>
             </div>
-            <h3 id="institutionalSupportTitle" class="text-lg font-bold text-brandGold uppercase tracking-wider mb-2">Apoyo Institucional y Patrocinio Oficial</h3>
-            <p id="institutionalSupportDescription" class="text-xs text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">Proyecto respaldado por la Mesa Turística de Loja, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de Industria Lojana de Especerías (ILE) y Nettplus.</p>
-            <div class="flex flex-wrap justify-center items-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i> <span id="institutionalSupportInstitution">Mesa Turística</span></span>
-                <span class="bg-black/50 px-4 py-2 rounded-xl border border-gray-800"><i class="fa-solid fa-leaf text-brandGold mr-1.5"></i> Patrocinan: <span id="institutionalSupportSponsors">ILE y Nettplus</span></span>
+            <p class="text-[10px] sm:text-xs font-black uppercase tracking-[.28em] text-gray-400 mb-2">Patrocinadores de Visita Loja</p>
+            <h3 id="institutionalSupportTitle" class="text-2xl sm:text-3xl font-black text-white mb-3">Empresas que <span class="text-brandGold">impulsan Loja</span></h3>
+            <p id="institutionalSupportDescription" class="text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed">Aliados que apuestan por el turismo, la cultura y el desarrollo de nuestra provincia.</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mt-8" aria-label="Patrocinadores de Visita Loja">
+                <article class="min-h-36 bg-white rounded-2xl border border-white/10 shadow-xl flex flex-col items-center justify-center gap-3 px-5 py-6">
+                    <div class="h-16 w-full flex items-center justify-center">
+                        <img src="images/patrocinadores/banco-de-loja.png" alt="Banco de Loja" class="max-h-16 max-w-[85%] object-contain" loading="lazy" decoding="async">
+                    </div>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-gray-500">Banco de Loja</span>
+                </article>
+                <article class="min-h-36 bg-white rounded-2xl border border-white/10 shadow-xl flex flex-col items-center justify-center gap-3 px-5 py-6">
+                    <div class="h-16 w-full flex items-center justify-center">
+                        <img src="images/patrocinadores/ile.png" alt="ILE - Industria Lojana de Especerías" class="max-h-16 max-w-[85%] object-contain" loading="lazy" decoding="async">
+                    </div>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-gray-500">ILE</span>
+                </article>
+                <article class="min-h-36 bg-white rounded-2xl border border-white/10 shadow-xl flex flex-col items-center justify-center gap-3 px-5 py-6">
+                    <div class="h-16 w-full flex items-center justify-center">
+                        <img src="images/patrocinadores/netplus.png" alt="Netplus" class="max-h-16 max-w-[85%] object-contain" loading="lazy" decoding="async">
+                    </div>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-gray-500">Netplus</span>
+                </article>
             </div>
+
+            <div class="mt-7 flex justify-center">
+                <span class="bg-black/50 px-4 py-2.5 rounded-xl border border-gray-800 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                    <i class="fa-solid fa-certificate text-brandGold mr-1.5"></i>
+                    Respaldo institucional: <span id="institutionalSupportInstitution">Mesa Turística de Loja</span>
+                </span>
+            </div>
+            <span id="institutionalSupportSponsors" class="sr-only">Banco de Loja, ILE y Netplus</span>
         </div>
     </section>
 
@@ -8086,10 +8112,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const description = document.getElementById('institutionalSupportDescription');
                 const institution = document.getElementById('institutionalSupportInstitution');
                 const sponsors = document.getElementById('institutionalSupportSponsors');
-                if (title) title.textContent = data.institutionalTitle || 'Apoyo Institucional y Patrocinio Oficial';
-                if (description) description.textContent = data.institutionalDescription || 'Proyecto respaldado por la Mesa Turística de Loja, promoviendo la identidad culinaria, turística y hotelera de nuestra provincia con el patrocinio oficial de Industria Lojana de Especerías (ILE) y Nettplus.';
-                if (institution) institution.textContent = data.institutionName || 'Mesa Turística';
-                if (sponsors) sponsors.textContent = data.sponsorNames || 'ILE y Nettplus';
+                if (title) title.textContent = data.institutionalTitle || 'Empresas que impulsan Loja';
+                if (description) description.textContent = data.institutionalDescription || 'Aliados que apuestan por el turismo, la cultura y el desarrollo de nuestra provincia.';
+                if (institution) institution.textContent = data.institutionName || 'Mesa Turística de Loja';
+                if (sponsors) sponsors.textContent = data.sponsorNames || 'Banco de Loja, ILE y Netplus';
             }
 
             let cached = {};
