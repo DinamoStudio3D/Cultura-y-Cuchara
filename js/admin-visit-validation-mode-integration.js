@@ -72,6 +72,16 @@
     else if (!ok) console.warn(text);
   }
 
+  async function getInitializedFirebase() {
+    for (let attempt = 0; attempt < 40; attempt += 1) {
+      if (window.firebase && Array.isArray(window.firebase.apps) && window.firebase.apps.length > 0) {
+        return window.firebase;
+      }
+      await new Promise(resolve => window.setTimeout(resolve, 100));
+    }
+    throw new Error("Firebase no terminó de inicializarse en el panel de administración.");
+  }
+
   async function waitForSavedMode(firestore, placeId, expectedMode) {
     let lastMode = "";
     for (let attempt = 0; attempt < 8; attempt += 1) {
@@ -86,7 +96,8 @@
   }
 
   async function syncExistingQrTarget(placeId, title, expectedMode) {
-    const firestore = firebase.firestore();
+    const firebaseApp = await getInitializedFirebase();
+    const firestore = firebaseApp.firestore();
     const savedMode = await waitForSavedMode(firestore, placeId, expectedMode);
     const slug = slugify(title);
     if (!slug) throw new Error("No se pudo calcular el identificador del QR de la parada.");
@@ -98,8 +109,8 @@
       ? `${window.location.origin}/visita.html?place=${encodeURIComponent(placeId)}`
       : `${window.location.origin}/fidelidad.html?checkin=${encodeURIComponent(slug)}`;
 
-    const now = firebase.firestore.FieldValue.serverTimestamp();
-    const userEmail = firebase.auth().currentUser?.email || "";
+    const now = firebaseApp.firestore.FieldValue.serverTimestamp();
+    const userEmail = firebaseApp.auth().currentUser?.email || "";
     const payload = {
       id: qrId,
       name: qrSnap.exists ? (qrSnap.data()?.name || title || qrId) : (title || qrId),
