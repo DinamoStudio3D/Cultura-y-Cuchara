@@ -811,6 +811,8 @@
         </div>
     </div>
 
+    <script src="js/admin-visit-validation-mode.js"></script>
+    <script src="js/admin-visit-validation-mode-integration.js"></script>
 <script>
 const firebaseConfig = {
     apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
@@ -1835,6 +1837,7 @@ function resetPlaceForm() {
     document.getElementById('placeFormTitle').textContent = 'Registrar una parada';
     document.getElementById('placePin').value = '1234';
     document.getElementById('placePublicationStatus').value = 'published';
+    window.VisitaLojaVisitValidationAdminIntegration?.setMode('merchant_confirmation');
     togglePlacePinRequirement();
     document.getElementById('placeOpenHour').value = '8';
     document.getElementById('placeCloseHour').value = '20';
@@ -1848,6 +1851,7 @@ async function editAdminPlace(id) {
     showAdminModule('places');
     document.getElementById('placeEditId').value = place.id;
     document.getElementById('placeFormTitle').textContent = `Editar: ${place.title || 'parada'}`;
+    window.VisitaLojaVisitValidationAdminIntegration?.setMode(place.validationMode);
     const subscription=place.subscription||{},benefits=subscription.benefits||{},promo=subscription.promotion||{},commerce=place.commerce||{},profile=place.businessProfile||{},amenities=profile.amenities||{},paymentMethods=Array.isArray(profile.paymentMethods)?profile.paymentMethods:[];let privatePin=adminPassportPins[place.id]||place.pin||'';if(!privatePin){try{const pinSnapshot=await passportPinsRef.doc(place.id).get();privatePin=pinSnapshot.exists?pinSnapshot.data().pin||'':'';}catch(_){}}
     const values = { placePublicationStatus: place.publicationStatus || 'published', placeTitle: place.title, placeTitleEn: place.titleEn, placeCategory: place.category, placeTag: place.tag, placePin: privatePin, placeDesc: place.desc, placeDescEn: place.descEn, placeAudioUrl: place.audioUrl || ((place.id === 'dinamo_studio' || String(place.title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes('dinamo')) ? 'audios/dinamo-the-weight-of-one-note.mp3' : ''), placeAudioUrlEn: place.audioUrlEn, placeDish: place.dish, placeDishEn: place.dishEn, placeHours: place.hours, placeOpenHour: place.openHour, placeCloseHour: place.closeHour, placeAddress: place.address, placeLat: place.lat, placeLng: place.lng, placeLogo: place.customLogoUrl, placeYoutube: place.youtubeUrl, placeGallery: Array.isArray(place.gallery) ? place.gallery.map(item => item.img).filter(Boolean).join('\n') : '',placeProfilePhone:profile.phone||'',placeProfileWhatsapp:profile.whatsapp||'',placeProfileWebsite:profile.website||'',placeProfileInstagram:profile.instagram||'',placeProfileFacebook:profile.facebook||'',placeProfileTiktok:profile.tiktok||'',placeProfilePriceRange:profile.priceRange||'',placeMenuTitle:place.menu?.title||'',placeMenuTitleEn:place.menu?.titleEn||'',placeCommerceWhatsapp:commerce.whatsapp||'',placeOrderMessage:commerce.orderMessage||'Hola, deseo realizar un pedido en {negocio}.',placeOrderMessageEn:commerce.orderMessageEn||'Hello, I would like to place an order at {negocio}.',placeReservationMessage:commerce.reservationMessage||'Hola, deseo reservar una mesa en {negocio}. Fecha: ___ Hora: ___ Personas: ___',placeReservationMessageEn:commerce.reservationMessageEn||'Hello, I would like to reserve a table at {negocio}. Date: ___ Time: ___ Guests: ___',placeSubscriptionPlan:subscription.plan||'free',placeSubscriptionStatus:subscription.status||'active',placeSubscriptionStart:toLocalDateTimeInput(subscription.startAt||subscription.startDate),placeSubscriptionEnd:toLocalDateTimeInput(subscription.endAt||subscription.endDate,true),placeSubscriptionContactName:subscription.contactName||'',placeSubscriptionContactWhatsapp:subscription.contactWhatsapp||'',placeSubscriptionAmount:subscription.monthlyAmount??'',placeSubscriptionPaymentMethod:subscription.paymentMethod||'transfer',placeSubscriptionPaymentNotes:subscription.paymentNotes||'',placePromoTitle:promo.title||'',placePromoTitleEn:promo.titleEn||'',placePromoImage:promo.image||'',placePromoDescription:promo.description||'',placePromoDescriptionEn:promo.descriptionEn||'',placePromoButtonText:promo.buttonText||'Conocer promoción',placePromoButtonTextEn:promo.buttonTextEn||'View promotion',placePromoButtonUrl:promo.buttonUrl||'',placePromoStart:toLocalDateTimeInput(promo.startAt||promo.startDate),placePromoEnd:toLocalDateTimeInput(promo.endAt||promo.endDate,true) };
     Object.entries(values).forEach(([field, value]) => { document.getElementById(field).value = value ?? ''; });placePaymentHistoryDraft=Array.isArray(subscription.paymentHistory)?subscription.paymentHistory.map(item=>({...item})):[];renderPlacePaymentHistory();placeMenuDraftDishes=Array.isArray(place.menu?.dishes)?place.menu.dishes.map(item=>({...menuDishTemplate(),...item})):[];renderPlaceMenuDishes();
@@ -2175,7 +2179,7 @@ document.getElementById('placeForm').addEventListener('submit', async event => {
     const privatePin=passportEligible?document.getElementById('placePin').value.trim():'';
     if(passportEligible&&!/^\d{4,6}$/.test(privatePin)){message(formMessage,'El PIN privado debe tener entre 4 y 6 números.');return;}
     const data = {
-        publicationStatus: document.getElementById('placePublicationStatus').value, pin: firebase.firestore.FieldValue.delete(), tag, tagEn: tag, title,
+        publicationStatus: document.getElementById('placePublicationStatus').value, validationMode: window.VisitaLojaVisitValidationAdminIntegration?.getMode() || 'merchant_confirmation', pin: firebase.firestore.FieldValue.delete(), tag, tagEn: tag, title,
         titleEn: document.getElementById('placeTitleEn').value.trim() || title,
         desc: description, descEn: document.getElementById('placeDescEn').value.trim() || description,
         audioUrl: document.getElementById('placeAudioUrl').value.trim(),
