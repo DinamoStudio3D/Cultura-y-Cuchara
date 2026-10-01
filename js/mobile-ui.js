@@ -72,6 +72,13 @@
       panel.appendChild(clone);
       original.classList.add('vl-desktop-secondary-original');
     });
+    const alliesLink = document.createElement('a');
+    alliesLink.id = 'desktopAlliesLink';
+    alliesLink.href = 'aliados.html';
+    alliesLink.className = 'vl-explore-item flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-gray-200 hover:bg-white/10 hover:text-brandGold transition';
+    alliesLink.innerHTML = '<i class="fa-solid fa-handshake text-brandGold w-4"></i><span>Aliados</span>';
+    alliesLink.addEventListener('click', () => { details.open = false; });
+    panel.appendChild(alliesLink);
     desktopNav.insertBefore(details, candidates[0]);
     document.addEventListener('click', (event) => { if (details.open && !details.contains(event.target)) details.open = false; });
   }
@@ -83,6 +90,10 @@
     if (quickLabel) quickLabel.textContent = isEnglish() ? 'My Route' : 'Mi Ruta';
     const exploreLabel = document.querySelector('#desktopExploreMenu summary span');
     if (exploreLabel) exploreLabel.textContent = isEnglish() ? 'Explore' : 'Explorar';
+    const alliesLabel = document.querySelector('#desktopAlliesLink span');
+    if (alliesLabel) alliesLabel.textContent = isEnglish() ? 'Allies' : 'Aliados';
+    const sponsorCtaLabel = document.getElementById('principalSponsorsCtaLabel');
+    if (sponsorCtaLabel) sponsorCtaLabel.textContent = isEnglish() ? 'Meet our allies' : 'Conoce a nuestros aliados';
   }
 
   function renderPrincipalSponsors() {
@@ -103,7 +114,10 @@
           <article class="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col"><div class="h-36 flex items-center justify-center px-7 py-5 border-b border-gray-100"><img src="netplus.png" alt="NettPlus" class="max-h-24 max-w-[82%] object-contain" loading="lazy"></div><div class="p-6 flex-1"><p class="text-[10px] font-black uppercase tracking-[.18em] text-brandGold mb-2">Aliado de conectividad</p><h4 class="text-xl font-black text-gray-900 mb-2">NettPlus</h4><p class="text-sm leading-relaxed text-gray-600">Conectando tu recorrido por Loja.</p></div></article>
           <article class="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col"><div class="h-36 flex items-center justify-center px-7 py-5 border-b border-gray-100"><img src="ile.png" alt="ILE - Industria Lojana de Especerías" class="max-h-24 max-w-[82%] object-contain" loading="lazy"></div><div class="p-6 flex-1"><p class="text-[10px] font-black uppercase tracking-[.18em] text-brandGold mb-2">Aliado de identidad, gastronomía y producción lojana</p><h4 class="text-xl font-black text-gray-900 mb-2">ILE</h4><p class="text-sm leading-relaxed text-gray-600">Celebrando los sabores y la identidad de nuestra tierra.</p></div></article>
         </div>
-        <div class="mt-8 flex justify-center"><span class="bg-black/50 px-5 py-3 rounded-xl border border-gray-800 text-xs font-bold text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i>Respaldo institucional: <span>Mesa Turística de Loja</span></span></div>
+        <div class="mt-8 flex flex-col items-center gap-5">
+          <span class="bg-black/50 px-5 py-3 rounded-xl border border-gray-800 text-xs font-bold text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-certificate text-brandGold mr-1.5"></i>Respaldo institucional: <span>Mesa Turística de Loja</span></span>
+          <a href="aliados.html" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brandGold px-6 py-3 text-sm font-black text-white shadow-warm-glow hover:bg-brandGoldHover transition"><span id="principalSponsorsCtaLabel">Conoce a nuestros aliados</span><i class="fa-solid fa-arrow-right"></i></a>
+        </div>
       </div>`;
   }
 
