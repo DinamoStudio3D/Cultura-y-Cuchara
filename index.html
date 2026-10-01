@@ -3402,11 +3402,54 @@
 
             const editableQrId = new URLSearchParams(window.location.search).get('qr');
             if (editableQrId) {
+                const showQrResolverDiagnostic = (title, detail) => {
+                    const render = () => {
+                        document.body.classList.remove('overflow-hidden');
+                        const splash = document.getElementById('splash-screen');
+                        if (splash) splash.classList.add('hidden');
+                        const diagnostic = document.createElement('div');
+                        diagnostic.id = 'qrResolverDiagnostic';
+                        diagnostic.style.cssText = 'position:fixed;inset:0;z-index:100000;background:#031b17;color:#fff;display:flex;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;';
+                        diagnostic.innerHTML = `
+                            <div style="width:min(100%,520px);background:#0b2b25;border:1px solid rgba(234,88,12,.55);border-radius:22px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+                                <div style="font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fb923c">Diagnóstico QR</div>
+                                <h1 style="font-size:24px;line-height:1.15;margin:10px 0 8px;font-weight:900">${title}</h1>
+                                <p style="margin:0;color:#d1d5db;line-height:1.55">${detail}</p>
+                                <p style="margin:18px 0 0;font-size:12px;color:#9ca3af;word-break:break-all">ID: ${editableQrId}</p>
+                            </div>`;
+                        document.body.appendChild(diagnostic);
+                    };
+                    if (document.body) render();
+                    else document.addEventListener('DOMContentLoaded', render, { once: true });
+                };
+
                 db.collection('qrCodes').doc(editableQrId).get().then(snapshot => {
-                    if (!snapshot.exists || !snapshot.data().targetUrl) return;
-                    const destination = new URL(snapshot.data().targetUrl, window.location.origin);
-                    if (['http:', 'https:'].includes(destination.protocol)) window.location.replace(destination.href);
-                }).catch(error => console.warn('No se pudo resolver el código QR:', error));
+                    if (!snapshot.exists) {
+                        showQrResolverDiagnostic('QR no encontrado', 'Firestore no encontró un documento qrCodes con este identificador.');
+                        return;
+                    }
+                    const targetUrl = String(snapshot.data()?.targetUrl || '').trim();
+                    if (!targetUrl) {
+                        showQrResolverDiagnostic('QR sin destino', 'El documento existe, pero no tiene un targetUrl válido.');
+                        return;
+                    }
+                    try {
+                        const destination = new URL(targetUrl, window.location.origin);
+                        if (!['http:', 'https:'].includes(destination.protocol)) {
+                            showQrResolverDiagnostic('Destino QR no válido', `Protocolo no permitido: ${destination.protocol}`);
+                            return;
+                        }
+                        window.location.replace(destination.href);
+                    } catch (error) {
+                        showQrResolverDiagnostic('Destino QR no válido', error?.message || 'No se pudo interpretar targetUrl.');
+                    }
+                }).catch(error => {
+                    console.warn('No se pudo resolver el código QR:', error);
+                    showQrResolverDiagnostic(
+                        'No se pudo leer el QR',
+                        `Firestore devolvió ${error?.code || 'error/desconocido'}: ${error?.message || 'sin detalle'}`
+                    );
+                });
             }
 
             db.collection('siteContent').doc('maintenance').onSnapshot(snapshot => {
