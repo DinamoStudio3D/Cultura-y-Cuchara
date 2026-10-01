@@ -1846,8 +1846,8 @@ function prepareStopQr(id){
     document.getElementById('qrName').value=`Parada ${place.title}`;
     document.getElementById('qrType').value='editable';
     document.getElementById('qrSlug').value=qrId;
-    const publicPlaceUrl=`${window.location.origin}/?lugar=${encodeURIComponent(place.id)}`;
-    document.getElementById('qrTarget').value=descriptor.requiresMerchantConfirmation?`${window.location.origin}/fidelidad.html?place=${encodeURIComponent(place.id)}`:publicPlaceUrl;
+    const selfCheckinUrl=`${window.location.origin}/visita.html?place=${encodeURIComponent(place.id)}`;
+    document.getElementById('qrTarget').value=descriptor.requiresMerchantConfirmation?`${window.location.origin}/fidelidad.html?place=${encodeURIComponent(place.id)}`:selfCheckinUrl;
     showQrVisitMode(place,id);
     updateQrExplanation();previewQrFromForm();
     if(descriptor.requiresMerchantConfirmation){
