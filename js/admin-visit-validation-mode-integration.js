@@ -94,27 +94,41 @@
     const qrId = `parada-${slug}`;
     const qrRef = firestore.collection("qrCodes").doc(qrId);
     const qrSnap = await qrRef.get();
-    if (!qrSnap.exists) return { updated: false, reason: "missing", qrId };
-
     const targetUrl = savedMode === "self_checkin"
       ? `${window.location.origin}/visita.html?place=${encodeURIComponent(placeId)}`
       : `${window.location.origin}/fidelidad.html?checkin=${encodeURIComponent(slug)}`;
 
-    await qrRef.set({
+    const now = firebase.firestore.FieldValue.serverTimestamp();
+    const userEmail = firebase.auth().currentUser?.email || "";
+    const payload = {
+      id: qrId,
+      name: qrSnap.exists ? (qrSnap.data()?.name || title || qrId) : (title || qrId),
+      type: qrSnap.exists ? (qrSnap.data()?.type || "stop") : "stop",
+      destinationType: qrSnap.exists ? (qrSnap.data()?.destinationType || "stop") : "stop",
+      placeId,
+      placeSlug: slug,
       targetUrl,
       visit: {
         placeId,
         validationMode: savedMode,
         purpose: savedMode === "self_checkin" ? "passport_missions" : "merchant_confirmation"
       },
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedBy: firebase.auth().currentUser?.email || ""
-    }, { merge: true });
+      updatedAt: now,
+      updatedBy: userEmail
+    };
+
+    if (!qrSnap.exists) {
+      payload.createdAt = now;
+      payload.createdBy = userEmail;
+    }
+
+    await qrRef.set(payload, { merge: true });
 
     const verifySnap = await qrRef.get();
+    if (!verifySnap.exists) throw new Error("Firestore no confirmó la creación del QR estable.");
     const storedTarget = String(verifySnap.data()?.targetUrl || "");
     if (storedTarget !== targetUrl) throw new Error("Firestore no confirmó el nuevo destino del QR.");
-    return { updated: true, qrId, targetUrl, savedMode };
+    return { updated: qrSnap.exists, created: !qrSnap.exists, qrId, targetUrl, savedMode };
   }
 
   function installQrTargetSync(form) {
@@ -127,24 +141,27 @@
       const mode = getMode();
       if (!placeId || !title) return;
 
-      // The legacy admin owns the place write. This listener waits until that write
-      // is observable, then updates and verifies the already-issued stable QR.
       window.setTimeout(async function () {
         try {
           const result = await syncExistingQrTarget(placeId, title, mode);
-          if (result.updated) {
+          if (result.created) {
+            adminMessage(
+              mode === "self_checkin"
+                ? "Parada actualizada correctamente. Se creó el QR estable y ahora abre la visita sin encargado."
+                : "Parada actualizada correctamente. Se creó el QR estable y ahora abre la confirmación con encargado.",
+              true
+            );
+          } else {
             adminMessage(
               mode === "self_checkin"
                 ? "Parada actualizada correctamente. El QR existente ahora abre la visita sin encargado."
                 : "Parada actualizada correctamente. El QR existente ahora abre la confirmación con encargado.",
               true
             );
-          } else if (result.reason === "missing") {
-            adminMessage("Parada guardada. Todavía no existe un QR de parada para sincronizar; puedes generarlo desde “QR de parada”.", true);
           }
         } catch (error) {
           console.error("VISITALOJA_VISIT_QR_SYNC", error);
-          adminMessage(`La parada se guardó, pero no pudimos actualizar su QR: ${error?.message || "error desconocido"}`, false);
+          adminMessage(`La parada se guardó, pero no pudimos crear o actualizar su QR: ${error?.message || "error desconocido"}`, false);
         }
       }, 100);
     });
