@@ -1,0 +1,37 @@
+// VISITALOJA self-check-in rules fragment.
+// Integrar dentro de match /databases/{database}/documents antes del deny final.
+// NO desplegar por separado.
+
+function isSelfCheckinPlace(placeId) {
+  return exists(/databases/$(database)/documents/locales/$(placeId))
+    && get(/databases/$(database)/documents/locales/$(placeId)).data.validationMode == 'self_checkin'
+    && (!('status' in get(/databases/$(database)/documents/locales/$(placeId)).data)
+      || get(/databases/$(database)/documents/locales/$(placeId)).data.status in ['published', 'active']);
+}
+
+match /selfCheckinVisits/{visitId} {
+  allow read: if isViveLojaAdmin()
+    || (request.auth != null && resource.data.userId == request.auth.uid);
+
+  allow create: if request.auth != null
+    && request.resource.data.keys().hasOnly([
+      'visitId', 'userId', 'userName', 'userEmail',
+      'placeId', 'placeName', 'purpose', 'status', 'createdAt'
+    ])
+    && request.resource.data.visitId == visitId
+    && request.resource.data.userId == request.auth.uid
+    && request.resource.data.userEmail == request.auth.token.email
+    && request.resource.data.userName is string
+    && request.resource.data.userName.size() <= 100
+    && request.resource.data.placeId is string
+    && request.resource.data.placeId.size() > 0
+    && request.resource.data.placeId.size() <= 180
+    && request.resource.data.placeName is string
+    && request.resource.data.placeName.size() <= 160
+    && request.resource.data.purpose == 'passport_missions'
+    && request.resource.data.status == 'confirmed'
+    && request.resource.data.createdAt == request.time
+    && isSelfCheckinPlace(request.resource.data.placeId);
+
+  allow update, delete: if isViveLojaAdmin();
+}
