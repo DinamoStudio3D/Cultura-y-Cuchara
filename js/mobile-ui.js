@@ -135,11 +135,97 @@
     document.body.appendChild(script);
   }
 
+  function improveLojaTimeSelector() {
+    const container = document.getElementById('lojaTimeTabsContainer');
+    if (!container) return;
+
+    if (!document.getElementById('vlLojaTimeSelectorStyles')) {
+      const style = document.createElement('style');
+      style.id = 'vlLojaTimeSelectorStyles';
+      style.textContent = `
+        #lojaTimeTabsContainer.vl-time-selector {
+          display: grid !important;
+          grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+          width: min(100%, 720px);
+          margin: 1.5rem auto 0;
+          gap: .65rem !important;
+          overflow: visible !important;
+          padding: .35rem !important;
+          border: 1px solid rgba(255,255,255,.08);
+          border-radius: 1rem;
+          background: rgba(0,0,0,.22);
+        }
+        #lojaTimeTabsContainer.vl-time-selector > button {
+          width: 100%;
+          min-width: 0;
+          min-height: 46px;
+          padding: .7rem 1rem !important;
+          border-radius: .75rem !important;
+          justify-content: center;
+          white-space: normal !important;
+          text-align: center;
+          line-height: 1.2;
+          gap: .5rem !important;
+          border-color: rgba(255,255,255,.14) !important;
+          background: rgba(255,255,255,.045) !important;
+          color: #e5e7eb !important;
+          box-shadow: none !important;
+        }
+        #lojaTimeTabsContainer.vl-time-selector > button:hover {
+          border-color: rgba(234,88,12,.65) !important;
+          background: rgba(234,88,12,.09) !important;
+        }
+        #lojaTimeTabsContainer.vl-time-selector > button.vl-time-active {
+          border-color: #EA580C !important;
+          background: #EA580C !important;
+          color: #fff !important;
+          box-shadow: 0 8px 22px rgba(234,88,12,.2) !important;
+        }
+        #lojaTimeTabsContainer.vl-time-selector > button i {
+          flex: 0 0 auto;
+          color: #EA580C !important;
+        }
+        #lojaTimeTabsContainer.vl-time-selector > button.vl-time-active i {
+          color: #fff !important;
+        }
+        @media (max-width: 639px) {
+          #lojaTimeTabsContainer.vl-time-selector {
+            grid-template-columns: 1fr;
+            width: 100%;
+            max-width: 420px;
+            gap: .5rem !important;
+            margin-top: 1.1rem;
+            padding: .3rem !important;
+          }
+          #lojaTimeTabsContainer.vl-time-selector > button {
+            min-height: 48px;
+            font-size: .78rem !important;
+            padding: .75rem .85rem !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const sync = () => {
+      container.classList.add('vl-time-selector');
+      Array.from(container.querySelectorAll(':scope > button')).forEach((button) => {
+        const active = button.classList.contains('bg-brandGold');
+        button.classList.toggle('vl-time-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    };
+
+    sync();
+    new MutationObserver(sync).observe(container, { childList: true });
+  }
+
   function initResponsiveNavigation() {
     createMobileQuickRoute();
     createDesktopExploreMenu();
     renderPrincipalSponsors();
     loadSponsorExperiences();
+    improveLojaTimeSelector();
     if (window.matchMedia('(max-width: 767px)').matches) {
       const bubble = document.getElementById('webMascotBubble');
       if (bubble) bubble.classList.add('is-quiet');
