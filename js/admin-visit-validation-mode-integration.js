@@ -66,6 +66,57 @@
       .replace(/^-+|-+$/g, "");
   }
 
+  function adminMessage(text, ok) {
+    const node = document.getElementById("placeFormMessage");
+    if (typeof window.message === "function" && node) window.message(node, text, ok);
+    else if (!ok) console.warn(text);
+  }
+
+  async function waitForSavedMode(firestore, placeId, expectedMode) {
+    let lastMode = "";
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      const snap = await firestore.collection("locales").doc(placeId).get();
+      if (snap.exists) {
+        lastMode = api.normalizeAdminVisitValidationMode(snap.data()?.validationMode);
+        if (lastMode === expectedMode) return lastMode;
+      }
+      await new Promise(resolve => window.setTimeout(resolve, 350));
+    }
+    throw new Error(`La parada se guardó sin confirmar el modo de validación esperado (${expectedMode}); modo leído: ${lastMode || "sin valor"}.`);
+  }
+
+  async function syncExistingQrTarget(placeId, title, expectedMode) {
+    const firestore = firebase.firestore();
+    const savedMode = await waitForSavedMode(firestore, placeId, expectedMode);
+    const slug = slugify(title);
+    if (!slug) throw new Error("No se pudo calcular el identificador del QR de la parada.");
+
+    const qrId = `parada-${slug}`;
+    const qrRef = firestore.collection("qrCodes").doc(qrId);
+    const qrSnap = await qrRef.get();
+    if (!qrSnap.exists) return { updated: false, reason: "missing", qrId };
+
+    const targetUrl = savedMode === "self_checkin"
+      ? `${window.location.origin}/visita.html?place=${encodeURIComponent(placeId)}`
+      : `${window.location.origin}/fidelidad.html?checkin=${encodeURIComponent(slug)}`;
+
+    await qrRef.set({
+      targetUrl,
+      visit: {
+        placeId,
+        validationMode: savedMode,
+        purpose: savedMode === "self_checkin" ? "passport_missions" : "merchant_confirmation"
+      },
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: firebase.auth().currentUser?.email || ""
+    }, { merge: true });
+
+    const verifySnap = await qrRef.get();
+    const storedTarget = String(verifySnap.data()?.targetUrl || "");
+    if (storedTarget !== targetUrl) throw new Error("Firestore no confirmó el nuevo destino del QR.");
+    return { updated: true, qrId, targetUrl, savedMode };
+  }
+
   function installQrTargetSync(form) {
     if (!form || form.dataset.visitQrTargetSync === "1") return;
     form.dataset.visitQrTargetSync = "1";
@@ -76,48 +127,34 @@
       const mode = getMode();
       if (!placeId || !title) return;
 
-      const slug = slugify(title);
-      const qrId = `parada-${slug}`;
-
-      // The main admin submit handler writes the place first. We then verify that
-      // Firestore contains the selected mode before changing an already-issued QR.
+      // The legacy admin owns the place write. This listener waits until that write
+      // is observable, then updates and verifies the already-issued stable QR.
       window.setTimeout(async function () {
         try {
-          const firestore = firebase.firestore();
-          const placeSnap = await firestore.collection("locales").doc(placeId).get();
-          if (!placeSnap.exists) return;
-          const savedMode = api.normalizeAdminVisitValidationMode(placeSnap.data()?.validationMode);
-          if (savedMode !== mode) return;
-
-          const qrRef = firestore.collection("qrCodes").doc(qrId);
-          const qrSnap = await qrRef.get();
-          if (!qrSnap.exists) return;
-
-          const targetUrl = savedMode === "self_checkin"
-            ? `${window.location.origin}/visita.html?place=${encodeURIComponent(placeId)}`
-            : `${window.location.origin}/fidelidad.html?checkin=${encodeURIComponent(slug)}`;
-
-          await qrRef.set({
-            targetUrl,
-            visit: {
-              placeId,
-              validationMode: savedMode,
-              purpose: savedMode === "self_checkin" ? "passport_missions" : "merchant_confirmation"
-            },
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            updatedBy: firebase.auth().currentUser?.email || ""
-          }, { merge: true });
+          const result = await syncExistingQrTarget(placeId, title, mode);
+          if (result.updated) {
+            adminMessage(
+              mode === "self_checkin"
+                ? "Parada actualizada correctamente. El QR existente ahora abre la visita sin encargado."
+                : "Parada actualizada correctamente. El QR existente ahora abre la confirmación con encargado.",
+              true
+            );
+          } else if (result.reason === "missing") {
+            adminMessage("Parada guardada. Todavía no existe un QR de parada para sincronizar; puedes generarlo desde “QR de parada”.", true);
+          }
         } catch (error) {
-          console.warn("No se pudo sincronizar automáticamente el destino del QR de visita:", error);
+          console.error("VISITALOJA_VISIT_QR_SYNC", error);
+          adminMessage(`La parada se guardó, pero no pudimos actualizar su QR: ${error?.message || "error desconocido"}`, false);
         }
-      }, 900);
+      }, 100);
     });
   }
 
   window.VisitaLojaVisitValidationAdminIntegration = Object.freeze({
     ensureSelector,
     setMode,
-    getMode
+    getMode,
+    syncExistingQrTarget
   });
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ensureSelector);
