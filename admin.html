@@ -1408,7 +1408,7 @@ function renderAnalyticsDashboard(){const module=document.getElementById('analyt
 function csvCell(value){return`"${String(value??'').replace(/"/g,'""')}"`;}
 function downloadAnalyticsCsv(){const{bounds,events,completions}=analyticsFilteredData(),placeIds=[...new Set(events.map(item=>item.placeId))],rows=[['Reporte Visita Loja'],['Periodo',bounds.period==='all'?'Todo el historial':`${bounds.start?bounds.start.toLocaleDateString('es-EC'):'Inicio'} - ${bounds.end.toLocaleDateString('es-EC')}`],[],['Parada','Visitas','Clientes recurrentes','WhatsApp','Rutas','Productos','Beneficios entregados','Guardados','Sellos','Promociones','Total']];placeIds.map(placeId=>({placeId,totals:analyticsTotals(events.filter(item=>item.placeId===placeId))})).sort((a,b)=>Object.values(b.totals).reduce((sum,value)=>sum+value,0)-Object.values(a.totals).reduce((sum,value)=>sum+value,0)).forEach(({placeId,totals})=>rows.push([analyticsPlaceName(placeId),totals.view,'',totals.whatsapp,totals.directions,totals.product,totals.benefit,totals.favorite,totals.stamp,totals.promo,Object.values(totals).reduce((sum,value)=>sum+value,0)]));const tourists=completions.filter(item=>item.mode==='turista').length,locals=completions.filter(item=>item.mode==='lojano').length,delivered=completions.filter(item=>item.status==='delivered').length;rows.push([],['Pasaportes'],['Turistas',tourists],['Lojanos',locals],['Premios pendientes',completions.length-delivered],['Premios entregados',delivered]);const csv='\ufeff'+rows.map(row=>row.map(csvCell).join(';')).join('\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`reporte-vive-loja-${new Date().toISOString().slice(0,10)}.csv`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function updateQrExplanation(){document.getElementById('qrExplanation').textContent=document.getElementById('qrType').value==='editable'?'El QR conservará la misma dirección aunque cambies su destino.':'El destino queda escrito directamente en el QR; si cambia, deberás imprimir otro.';}
-function qrPublicValue(item){return item.type==='editable'?`${window.location.origin}/?qr=${encodeURIComponent(item.id)}`:new URL(item.targetUrl,window.location.origin).href;}
+function qrPublicValue(item){if(item.visit?.placeId)return new URL(item.targetUrl,window.location.origin).href;return item.type==='editable'?`${window.location.origin}/?qr=${encodeURIComponent(item.id)}`:new URL(item.targetUrl,window.location.origin).href;}
 function defaultQrDesign(){return{darkColor:'#111111',lightColor:'#ffffff',logoUrl:'',size:512,logoSize:20,correctLevel:'H'};}
 function qrDesignFromForm(){return{darkColor:document.getElementById('qrDarkColor').value||'#111111',lightColor:document.getElementById('qrLightColor').value||'#ffffff',logoUrl:document.getElementById('qrLogoUrl').value.trim(),size:Number(document.getElementById('qrSize').value)||512,logoSize:Number(document.getElementById('qrLogoSize').value)||20,correctLevel:document.getElementById('qrCorrectLevel').value||'H'};}
 function loadQrDesign(design={}){const value={...defaultQrDesign(),...design};document.getElementById('qrDarkColor').value=value.darkColor;document.getElementById('qrLightColor').value=value.lightColor;document.getElementById('qrLogoUrl').value=value.logoUrl||'';document.getElementById('qrSize').value=String(value.size);document.getElementById('qrLogoSize').value=String(value.logoSize);document.getElementById('qrCorrectLevel').value=value.correctLevel;}
@@ -1419,7 +1419,7 @@ function drawQr(value,design=qrDesignFromForm(),name='QR-Vive-Loja'){
     const sourceCanvas=box.querySelector('canvas');if(!sourceCanvas){status.textContent='El generador QR no pudo iniciar. Recarga la página e inténtalo nuevamente.';status.classList.remove('hidden');return;}const canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;canvas.getContext('2d').drawImage(sourceCanvas,0,0,size,size);box.innerHTML='';box.appendChild(canvas);canvas.style.display='block';canvas.style.width='100%';canvas.style.maxWidth='270px';canvas.style.height='auto';canvas.style.margin='0 auto';
     if(!design.logoUrl)return;const logo=new Image();logo.crossOrigin='anonymous';logo.onload=()=>{if(token!==qrRenderToken)return;const ctx=canvas.getContext('2d'),logoSide=Math.round(size*(Number(design.logoSize)||20)/100),padding=Math.max(8,Math.round(logoSide*.16)),backSide=logoSide+padding*2,x=(size-backSide)/2,y=(size-backSide)/2;ctx.fillStyle=design.lightColor||'#ffffff';ctx.beginPath();ctx.roundRect(x,y,backSide,backSide,Math.max(10,backSide*.12));ctx.fill();ctx.drawImage(logo,x+padding,y+padding,logoSide,logoSide);};logo.onerror=()=>{if(token!==qrRenderToken)return;status.textContent='No se pudo cargar el logo. Revisa el nombre o la URL; el QR sin logo sí funciona.';status.classList.remove('hidden');};logo.src=new URL(design.logoUrl,window.location.href).href;
 }
-function previewQrFromForm(){const target=document.getElementById('qrTarget').value.trim();if(!target){drawQr('');return;}const id=document.getElementById('qrEditId').value||createAdminSlug(document.getElementById('qrSlug').value||document.getElementById('qrName').value);try{drawQr(qrPublicValue({id,type:document.getElementById('qrType').value,targetUrl:target}),qrDesignFromForm(),document.getElementById('qrName').value.trim());}catch(_){drawQr('');}}
+function previewQrFromForm(){const target=document.getElementById('qrTarget').value.trim();if(!target){drawQr('');return;}const id=document.getElementById('qrEditId').value||createAdminSlug(document.getElementById('qrSlug').value||document.getElementById('qrName').value),visitPlaceId=document.getElementById('qrVisitPlaceId')?.value||'';try{drawQr(qrPublicValue({id,type:document.getElementById('qrType').value,targetUrl:target,visit:visitPlaceId?{placeId:visitPlaceId}:null}),qrDesignFromForm(),document.getElementById('qrName').value.trim());}catch(_){drawQr('');}}
 function clearQrVisitMode(){
     ['qrVisitPlaceId','qrVisitValidationMode','qrVisitPurpose'].forEach(id=>{const node=document.getElementById(id);if(node)node.value='';});
     const panel=document.getElementById('qrVisitModePanel');if(panel){panel.className='hidden rounded-2xl border p-4';}
@@ -1836,18 +1836,22 @@ function prepareStopQr(id){
     const qrApi=window.VisitaLojaVisitQrMode;
     if(!qrApi){resetQrForm();message(document.getElementById('qrMessage'),'No se pudo cargar la clasificación del QR de visita. Recarga el panel antes de generar este código.');return;}
     const descriptor=qrApi.buildVisitQrDescriptor(place,id),stopSlug=createAdminSlug(place.title),qrId=`parada-${stopSlug}`,existing=adminQrCodes.find(item=>item.id===qrId);
+    const selfCheckinUrl=`${window.location.origin}/visita.html?place=${encodeURIComponent(place.id)}`;
+    const directVisitUrl=descriptor.requiresMerchantConfirmation?`${window.location.origin}/fidelidad.html?place=${encodeURIComponent(place.id)}`:selfCheckinUrl;
     if(existing){
         editSavedQr(existing.id);
+        document.getElementById('qrType').value='fixed';
+        document.getElementById('qrTarget').value=directVisitUrl;
         showQrVisitMode(place,id);
-        message(document.getElementById('qrMessage'),`QR de la parada “${place.title}” cargado como ${descriptor.requiresMerchantConfirmation?'visita con encargado':'visita sin encargado'}. Puedes descargarlo o cambiar su diseño.`,true);
+        updateQrExplanation();previewQrFromForm();
+        message(document.getElementById('qrMessage'),`QR de la parada “${place.title}” preparado con acceso directo como ${descriptor.requiresMerchantConfirmation?'visita con encargado':'visita sin encargado'}. Guarda los cambios y descarga nuevamente el QR para evitar la redirección por la portada.`,true);
         return;
     }
     resetQrForm();
     document.getElementById('qrName').value=`Parada ${place.title}`;
-    document.getElementById('qrType').value='editable';
+    document.getElementById('qrType').value='fixed';
     document.getElementById('qrSlug').value=qrId;
-    const selfCheckinUrl=`${window.location.origin}/visita.html?place=${encodeURIComponent(place.id)}`;
-    document.getElementById('qrTarget').value=descriptor.requiresMerchantConfirmation?`${window.location.origin}/fidelidad.html?place=${encodeURIComponent(place.id)}`:selfCheckinUrl;
+    document.getElementById('qrTarget').value=directVisitUrl;
     showQrVisitMode(place,id);
     updateQrExplanation();previewQrFromForm();
     if(descriptor.requiresMerchantConfirmation){
