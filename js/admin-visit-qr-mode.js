@@ -39,5 +39,33 @@
     });
   }
 
-  root.VisitaLojaVisitQrMode = Object.freeze({ visitQrMeta, buildVisitQrDescriptor });
+  function applyVisitModeToQrConfig(config = {}, place = {}, placeId = "") {
+    const descriptor = buildVisitQrDescriptor(place, placeId);
+    return Object.freeze({
+      ...config,
+      visit: descriptor,
+      validationMode: descriptor.validationMode,
+      visitPurpose: descriptor.purpose,
+      requiresMerchantConfirmation: descriptor.requiresMerchantConfirmation,
+      loyaltyAllowed: descriptor.loyaltyAllowed
+    });
+  }
+
+  function describeVisitQr(place = {}) {
+    const meta = visitQrMeta(place);
+    return Object.freeze({
+      title: meta.label,
+      description: meta.description,
+      warning: meta.loyaltyAllowed
+        ? "La fidelidad conserva su validación comercial habitual."
+        : "Este QR no debe acreditar sellos ni recompensas de fidelidad."
+    });
+  }
+
+  root.VisitaLojaVisitQrMode = Object.freeze({
+    visitQrMeta,
+    buildVisitQrDescriptor,
+    applyVisitModeToQrConfig,
+    describeVisitQr
+  });
 })(typeof window !== "undefined" ? window : globalThis);
