@@ -9,9 +9,20 @@
 
   let settingsCache = null;
 
+  function adminApp() {
+    if (!global.firebase || !Array.isArray(firebase.apps)) throw new Error('Firebase no está disponible.');
+    return firebase.apps.find((app) => app && app.name === 'viveLojaAdmin') || null;
+  }
+
   function db() {
-    if (!global.firebase || !firebase.firestore) throw new Error('Firestore no está disponible.');
-    return firebase.firestore();
+    const app = adminApp();
+    if (!app) throw new Error('El panel administrativo todavía está inicializando Firebase. Intenta nuevamente en un momento.');
+    return app.firestore();
+  }
+
+  function auth() {
+    const app = adminApp();
+    return app ? app.auth() : null;
   }
 
   function clone(value) {
@@ -70,8 +81,8 @@
       plans: cleanedPlans,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    const user = firebase.auth && firebase.auth().currentUser;
-    if (user && user.email) payload.updatedBy = user.email;
+    const currentUser = auth() && auth().currentUser;
+    if (currentUser && currentUser.email) payload.updatedBy = currentUser.email;
     if (options && options.note) payload.updateNote = String(options.note).slice(0, 240);
 
     await db().collection(api.SETTINGS_COLLECTION).doc(api.SETTINGS_DOCUMENT).set(payload, { merge: true });
