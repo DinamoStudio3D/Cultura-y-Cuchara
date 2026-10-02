@@ -72,6 +72,13 @@
       panel.appendChild(clone);
       original.classList.add('vl-desktop-secondary-original');
     });
+    const mesaLink = document.createElement('a');
+    mesaLink.id = 'desktopMesaTuristicaLink';
+    mesaLink.href = 'mesa-turistica.html';
+    mesaLink.className = 'vl-explore-item flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-gray-200 hover:bg-white/10 hover:text-brandGold transition';
+    mesaLink.innerHTML = '<i class="fa-solid fa-people-group text-brandGold w-4"></i><span>Mesa Turística</span>';
+    mesaLink.addEventListener('click', () => { details.open = false; });
+    panel.appendChild(mesaLink);
     const alliesLink = document.createElement('a');
     alliesLink.id = 'desktopAlliesLink';
     alliesLink.href = 'aliados.html';
@@ -90,10 +97,40 @@
     if (quickLabel) quickLabel.textContent = isEnglish() ? 'My Route' : 'Mi Ruta';
     const exploreLabel = document.querySelector('#desktopExploreMenu summary span');
     if (exploreLabel) exploreLabel.textContent = isEnglish() ? 'Explore' : 'Explorar';
+    const mesaLabel = document.querySelector('#desktopMesaTuristicaLink span');
+    if (mesaLabel) mesaLabel.textContent = isEnglish() ? 'Tourism Board' : 'Mesa Turística';
     const alliesLabel = document.querySelector('#desktopAlliesLink span');
     if (alliesLabel) alliesLabel.textContent = isEnglish() ? 'Allies' : 'Aliados';
     const sponsorCtaLabel = document.getElementById('principalSponsorsCtaLabel');
     if (sponsorCtaLabel) sponsorCtaLabel.textContent = isEnglish() ? 'Meet our allies' : 'Conoce a nuestros aliados';
+  }
+
+  function renderMesaTuristicaSpotlight() {
+    if (document.getElementById('mesaTuristicaSpotlight')) return;
+    const sponsors = document.getElementById('patrocinadores');
+    if (!sponsors?.parentElement) return;
+    const section = document.createElement('section');
+    section.id = 'mesaTuristicaSpotlight';
+    section.className = 'relative overflow-hidden py-16 sm:py-20 px-4 md:px-8 bg-[#071713] text-white border-t border-white/10';
+    section.innerHTML = `
+      <div class="absolute -top-28 -left-20 w-80 h-80 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-32 right-0 w-96 h-96 rounded-full bg-brandGold/10 blur-3xl pointer-events-none"></div>
+      <div class="relative max-w-6xl mx-auto grid lg:grid-cols-[.9fr_1.1fr] gap-8 lg:gap-12 items-center">
+        <div class="rounded-[2rem] border border-white/10 bg-black/25 p-7 sm:p-10 min-h-[280px] flex items-center justify-center shadow-2xl">
+          <img src="logo%20mesa%20turistica.webp" alt="Logo oficial de la Mesa Turística de Loja" class="w-full max-w-[430px] h-auto object-contain" loading="lazy" decoding="async">
+        </div>
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-[.2em] text-cyan-200"><i class="fa-solid fa-handshake-angle"></i> Institución de apoyo</div>
+          <h2 class="text-3xl sm:text-5xl font-black leading-tight mt-5">Mesa Turística <span class="text-brandGold">de Loja</span></h2>
+          <p class="mt-5 text-sm sm:text-base text-gray-300 leading-relaxed max-w-2xl">Un actor fundamental que articula esfuerzos del sector turístico y acompaña iniciativas para fortalecer la promoción, identidad y desarrollo de Loja como destino.</p>
+          <div class="mt-7 rounded-2xl border border-white/10 bg-white/5 p-5 flex gap-4 items-start">
+            <span class="w-11 h-11 rounded-xl bg-brandGold/15 text-brandGold flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-people-group"></i></span>
+            <p class="text-sm text-gray-300 leading-relaxed"><strong class="text-white">VisitaLoja.com + Mesa Turística de Loja</strong><br>Articulación y tecnología trabajando para conectar visitantes, emprendimientos, cultura, gastronomía y experiencias de nuestra provincia.</p>
+          </div>
+          <a href="mesa-turistica.html" class="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-brandGold px-6 py-3.5 text-sm font-black text-white shadow-warm-glow hover:bg-brandGoldHover transition">Conocer la Mesa Turística <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>`;
+    sponsors.parentElement.insertBefore(section, sponsors);
   }
 
   function renderPrincipalSponsors() {
@@ -143,66 +180,13 @@
       const style = document.createElement('style');
       style.id = 'vlLojaTimeSelectorStyles';
       style.textContent = `
-        #lojaTimeTabsContainer.vl-time-selector {
-          display: grid !important;
-          grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-          width: min(100%, 720px);
-          margin: 1.5rem auto 0;
-          gap: .65rem !important;
-          overflow: visible !important;
-          padding: .35rem !important;
-          border: 1px solid rgba(255,255,255,.08);
-          border-radius: 1rem;
-          background: rgba(0,0,0,.22);
-        }
-        #lojaTimeTabsContainer.vl-time-selector > button {
-          width: 100%;
-          min-width: 0;
-          min-height: 46px;
-          padding: .7rem 1rem !important;
-          border-radius: .75rem !important;
-          justify-content: center;
-          white-space: normal !important;
-          text-align: center;
-          line-height: 1.2;
-          gap: .5rem !important;
-          border-color: rgba(255,255,255,.14) !important;
-          background: rgba(255,255,255,.045) !important;
-          color: #e5e7eb !important;
-          box-shadow: none !important;
-        }
-        #lojaTimeTabsContainer.vl-time-selector > button:hover {
-          border-color: rgba(234,88,12,.65) !important;
-          background: rgba(234,88,12,.09) !important;
-        }
-        #lojaTimeTabsContainer.vl-time-selector > button.vl-time-active {
-          border-color: #EA580C !important;
-          background: #EA580C !important;
-          color: #fff !important;
-          box-shadow: 0 8px 22px rgba(234,88,12,.2) !important;
-        }
-        #lojaTimeTabsContainer.vl-time-selector > button i {
-          flex: 0 0 auto;
-          color: #EA580C !important;
-        }
-        #lojaTimeTabsContainer.vl-time-selector > button.vl-time-active i {
-          color: #fff !important;
-        }
-        @media (max-width: 639px) {
-          #lojaTimeTabsContainer.vl-time-selector {
-            grid-template-columns: 1fr;
-            width: 100%;
-            max-width: 420px;
-            gap: .5rem !important;
-            margin-top: 1.1rem;
-            padding: .3rem !important;
-          }
-          #lojaTimeTabsContainer.vl-time-selector > button {
-            min-height: 48px;
-            font-size: .78rem !important;
-            padding: .75rem .85rem !important;
-          }
-        }
+        #lojaTimeTabsContainer.vl-time-selector { display:grid!important;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));width:min(100%,720px);margin:1.5rem auto 0;gap:.65rem!important;overflow:visible!important;padding:.35rem!important;border:1px solid rgba(255,255,255,.08);border-radius:1rem;background:rgba(0,0,0,.22); }
+        #lojaTimeTabsContainer.vl-time-selector > button { width:100%;min-width:0;min-height:46px;padding:.7rem 1rem!important;border-radius:.75rem!important;justify-content:center;white-space:normal!important;text-align:center;line-height:1.2;gap:.5rem!important;border-color:rgba(255,255,255,.14)!important;background:rgba(255,255,255,.045)!important;color:#e5e7eb!important;box-shadow:none!important; }
+        #lojaTimeTabsContainer.vl-time-selector > button:hover { border-color:rgba(234,88,12,.65)!important;background:rgba(234,88,12,.09)!important; }
+        #lojaTimeTabsContainer.vl-time-selector > button.vl-time-active { border-color:#EA580C!important;background:#EA580C!important;color:#fff!important;box-shadow:0 8px 22px rgba(234,88,12,.2)!important; }
+        #lojaTimeTabsContainer.vl-time-selector > button i { flex:0 0 auto;color:#EA580C!important; }
+        #lojaTimeTabsContainer.vl-time-selector > button.vl-time-active i { color:#fff!important; }
+        @media (max-width:639px) { #lojaTimeTabsContainer.vl-time-selector { grid-template-columns:1fr;width:100%;max-width:420px;gap:.5rem!important;margin-top:1.1rem;padding:.3rem!important; } #lojaTimeTabsContainer.vl-time-selector > button { min-height:48px;font-size:.78rem!important;padding:.75rem .85rem!important; } }
       `;
       document.head.appendChild(style);
     }
@@ -223,6 +207,7 @@
   function initResponsiveNavigation() {
     createMobileQuickRoute();
     createDesktopExploreMenu();
+    renderMesaTuristicaSpotlight();
     renderPrincipalSponsors();
     loadSponsorExperiences();
     improveLojaTimeSelector();
