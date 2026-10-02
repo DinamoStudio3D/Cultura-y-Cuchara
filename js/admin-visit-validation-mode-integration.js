@@ -72,6 +72,15 @@
     return api.normalizeAdminVisitValidationMode(select && select.value);
   }
 
+  function subscriptionDraft() {
+    try {
+      const plans = window.eval("subscriptionDraftPlans");
+      return Array.isArray(plans) ? plans : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
   function normalizedGalleryLimit(plan) {
     const raw = Number(plan && plan.features && plan.features.maxGalleryImages);
     return Number.isInteger(raw) && raw >= 0 ? Math.min(raw, 100) : 6;
@@ -79,11 +88,12 @@
 
   function injectGalleryLimitsIntoExistingPlanEditor() {
     const editor = document.getElementById("subscriptionPlansEditor");
-    if (!editor || !Array.isArray(window.subscriptionDraftPlans)) return;
+    if (!editor) return;
+    const plans = subscriptionDraft();
     const cards = Array.from(editor.children);
     cards.forEach((card, index) => {
       if (card.querySelector("[data-plan-gallery-limit]")) return;
-      const plan = window.subscriptionDraftPlans[index] || {};
+      const plan = plans[index] || {};
       const description = card.querySelector('[data-plan-field="description"]');
       const descriptionLabel = description && description.closest("label");
       if (!descriptionLabel) return;
@@ -96,10 +106,10 @@
   }
 
   function syncGalleryLimitsIntoDraft() {
-    if (!Array.isArray(window.subscriptionDraftPlans)) return;
+    const plans = subscriptionDraft();
     document.querySelectorAll("[data-plan-gallery-limit]").forEach((input) => {
       const index = Number(input.dataset.planIndex);
-      const plan = window.subscriptionDraftPlans[index];
+      const plan = plans[index];
       if (!plan) return;
       const parsed = Number.parseInt(input.value, 10);
       const limit = Number.isFinite(parsed) ? Math.min(100, Math.max(0, parsed)) : 6;
