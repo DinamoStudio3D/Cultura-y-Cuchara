@@ -35,6 +35,22 @@
     renderHelp();
   }
 
+  function ensureMesaTuristicaNav() {
+    if (document.getElementById("mesaTuristicaNavLink")) return;
+    const postcards = document.getElementById("postcardsNavBtn");
+    const navItems = postcards && postcards.parentElement;
+    if (!navItems) return;
+
+    const link = document.createElement("a");
+    link.id = "mesaTuristicaNavLink";
+    link.setAttribute("data-nav-item", "");
+    link.href = "gestion-mesa-turistica.html";
+    link.className = "block w-full text-left text-cyan-200 hover:bg-cyan-500/10 font-bold rounded-xl px-4 py-3";
+    link.innerHTML = '<i class="fa-solid fa-people-group w-6"></i>Mesa Turística';
+    link.title = "Administrar información, agenda, noticias, integrantes, galería y contacto de la Mesa Turística de Loja";
+    navItems.appendChild(link);
+  }
+
   function renderHelp() {
     const select = document.getElementById("placeValidationMode");
     const help = document.getElementById("placeValidationModeHelp");
@@ -56,12 +72,18 @@
     return api.normalizeAdminVisitValidationMode(select && select.value);
   }
 
+  function initializeAdminIntegration() {
+    ensureSelector();
+    ensureMesaTuristicaNav();
+  }
+
   window.VisitaLojaVisitValidationAdminIntegration = Object.freeze({
     ensureSelector,
     setMode,
-    getMode
+    getMode,
+    ensureMesaTuristicaNav
   });
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ensureSelector);
-  else ensureSelector();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeAdminIntegration);
+  else initializeAdminIntegration();
 })();
