@@ -1,0 +1,113 @@
+// VisitaLoja merchant profile + image plan enforcement.
+// REVIEWED INTEGRATION FRAGMENT — do not deploy by itself.
+// These blocks belong inside match /databases/{database}/documents.
+// The helper functions must be defined before canMerchantEditLocale().
+
+function hasBusinessOwnerAccess(placeId) {
+  return request.auth != null
+    && exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId))
+    && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.active == true
+    && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.uid == request.auth.uid
+    && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.placeId == placeId
+    && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.role == 'owner';
+}
+
+function hasLegacyMerchantOwnerAccess(placeId) {
+  // Compatibilidad temporal mientras los propietarios antiguos terminan de
+  // migrarse a businessAccess. No amplía permisos a managers de businessAccess.
+  return request.auth != null
+    && exists(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid))
+    && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.active == true
+    && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds is list
+    && placeId in get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds;
+}
+
+function canOwnMerchantProfile(placeId) {
+  return hasBusinessOwnerAccess(placeId) || hasLegacyMerchantOwnerAccess(placeId);
+}
+
+function hasGalleryEntitlement(placeId) {
+  return exists(/databases/$(database)/documents/businessEntitlements/$(placeId))
+    && get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.maxGalleryImages is int
+    && get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.maxGalleryImages >= 0
+    && get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.maxGalleryImages <= 100;
+}
+
+function merchantGalleryWithinPlan(placeId) {
+  return request.resource.data.gallery is list
+    && hasGalleryEntitlement(placeId)
+    && request.resource.data.gallery.size()
+      <= get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.maxGalleryImages;
+}
+
+// REPLACE the existing canMerchantEditLocale(documentId) with this version.
+function canMerchantEditLocale(documentId) {
+  return canOwnMerchantProfile(documentId)
+    && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+      'desc',
+      'description',
+      'phone',
+      'whatsapp',
+      'hours',
+      'customLogoUrl',
+      'heroImage',
+      'gallery',
+      'merchantUpdatedAt',
+      'merchantUpdatedBy'
+    ])
+    && (!('desc' in request.resource.data)
+      || (request.resource.data.desc is string && request.resource.data.desc.size() <= 1200))
+    && (!('description' in request.resource.data)
+      || (request.resource.data.description is string && request.resource.data.description.size() <= 1200))
+    && request.resource.data.phone is string
+    && request.resource.data.phone.size() <= 30
+    && request.resource.data.whatsapp is string
+    && request.resource.data.whatsapp.size() <= 30
+    && request.resource.data.hours is string
+    && request.resource.data.hours.size() <= 600
+    && request.resource.data.customLogoUrl is string
+    && request.resource.data.customLogoUrl.size() <= 2000
+    && request.resource.data.heroImage is string
+    && request.resource.data.heroImage.size() <= 2000
+    && request.resource.data.gallery is list
+    && request.resource.data.gallery.size() <= 100
+    && (
+      !request.resource.data.diff(resource.data).affectedKeys().hasAny(['gallery'])
+      || merchantGalleryWithinPlan(documentId)
+    )
+    && request.resource.data.merchantUpdatedAt == request.time
+    && request.resource.data.merchantUpdatedBy == request.auth.uid;
+}
+
+// businessAccess is private. Users can only read their own access documents;
+// only Admin V2 can create, modify or revoke assignments.
+match /businessAccess/{accessId} {
+  allow read: if isViveLojaAdmin() || (
+    request.auth != null
+    && resource.data.uid == request.auth.uid
+  );
+  allow create, update, delete: if isViveLojaAdmin();
+}
+
+// Effective plan capabilities per business. Only Admin V2 writes them.
+match /businessEntitlements/{placeId} {
+  allow read: if isViveLojaAdmin() || canOwnMerchantProfile(placeId);
+
+  allow create, update: if isViveLojaAdmin()
+    && request.resource.data.keys().hasOnly([
+      'placeId', 'planId', 'maxGalleryImages', 'planConfigured',
+      'updatedAt', 'updatedBy'
+    ])
+    && request.resource.data.placeId == placeId
+    && request.resource.data.planId is string
+    && request.resource.data.planId.size() > 0
+    && request.resource.data.planId.size() <= 60
+    && request.resource.data.maxGalleryImages is int
+    && request.resource.data.maxGalleryImages >= 0
+    && request.resource.data.maxGalleryImages <= 100
+    && request.resource.data.planConfigured is bool
+    && request.resource.data.updatedAt == request.time
+    && request.resource.data.updatedBy == request.auth.token.email;
+
+  allow delete: if isViveLojaAdmin();
+}

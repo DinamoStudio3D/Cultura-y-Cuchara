@@ -1,0 +1,9 @@
+// OBSOLETE — DO NOT INTEGRATE OR DEPLOY.
+//
+// This historical draft is intentionally kept only as a migration breadcrumb.
+// The canonical reviewed rules for merchant ownership, businessAccess,
+// businessEntitlements and plan-aware gallery limits are in:
+//
+//   firestore.business-entitlements.rules.fragment
+//
+// Do not copy rules from this file into firestore.rules.
