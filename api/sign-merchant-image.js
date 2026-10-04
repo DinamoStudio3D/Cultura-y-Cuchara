@@ -25,7 +25,16 @@ function configuredGalleryLimit(settingsFields,planId){
  }
  return DEFAULT_GALLERY_LIMIT;
 }
-async function resolveGalleryLimit(fetchImpl,token,placeId,localeFields){const entitlement=await readDocument(fetchImpl,`businessEntitlements/${encodeURIComponent(placeId)}`,token);if(entitlement&&fieldBool(entitlement.active)!==false&&entitlement.maxGalleryImages)return fieldInt(entitlement.maxGalleryImages,DEFAULT_GALLERY_LIMIT);const settings=await readDocument(fetchImpl,"settings/subscriptions",token);return configuredGalleryLimit(settings||{},localePlanId(localeFields||{}))}
+async function resolveGalleryLimit(fetchImpl,token,placeId,localeFields){
+ const entitlement=await readDocument(fetchImpl,`businessEntitlements/${encodeURIComponent(placeId)}`,token);
+ // Un entitlement explícitamente inactivo no debe seguir concediendo su límite anterior.
+ // Se ignora y se resuelve desde el plan vigente o, si no existe, desde compatibilidad.
+ if(entitlement&&(!entitlement.active||fieldBool(entitlement.active))&&entitlement.maxGalleryImages){
+  return fieldInt(entitlement.maxGalleryImages,DEFAULT_GALLERY_LIMIT);
+ }
+ const settings=await readDocument(fetchImpl,"settings/subscriptions",token);
+ return configuredGalleryLimit(settings||{},localePlanId(localeFields||{}));
+}
 function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return async function handler(req,res){
  res.setHeader("Cache-Control","no-store");
  if(req.method!=="POST")return res.status(405).json({error:"Método no permitido."});
