@@ -1,0 +1,26 @@
+// Business entitlement rules for merchant image-plan enforcement.
+// Insert this block inside match /databases/{database}/documents,
+// immediately before the final match /{document=**} deny rule.
+// Admin V2 is the only writer. Assigned merchants may only read their own
+// effective entitlement so the client can explain the active gallery limit.
+match /businessEntitlements/{placeId} {
+  allow read: if isViveLojaAdmin() || isAssignedVisitMerchant(placeId);
+
+  allow create, update: if isViveLojaAdmin()
+    && request.resource.data.keys().hasOnly([
+      'placeId', 'planId', 'maxGalleryImages', 'planConfigured',
+      'updatedAt', 'updatedBy'
+    ])
+    && request.resource.data.placeId == placeId
+    && request.resource.data.planId is string
+    && request.resource.data.planId.size() > 0
+    && request.resource.data.planId.size() <= 60
+    && request.resource.data.maxGalleryImages is int
+    && request.resource.data.maxGalleryImages >= 0
+    && request.resource.data.maxGalleryImages <= 100
+    && request.resource.data.planConfigured is bool
+    && request.resource.data.updatedAt == request.time
+    && request.resource.data.updatedBy == request.auth.token.email;
+
+  allow delete: if isViveLojaAdmin();
+}
