@@ -73,33 +73,63 @@
     const planId = subscriptionPlanId(place);
     const plan = findPlan(settings, planId);
     const features = plan && plan.features ? plan.features : {};
-    const currentGalleryCount = place && Array.isArray(place.gallery) ? place.gallery.length : 0;
     return {
       planId,
       plan,
       maxGalleryImages: normalizeGalleryLimit(features.maxGalleryImages, DEFAULT_GALLERY_LIMIT),
-      currentGalleryCount,
       usesConfiguredPlan: Boolean(plan)
     };
   }
 
-  function validateGalleryCount(gallery, capabilities) {
-    const count = Array.isArray(gallery) ? gallery.length : 0;
+  function galleryCount(gallery) {
+    return Array.isArray(gallery) ? gallery.length : 0;
+  }
+
+  function galleryStatus(gallery, capabilities) {
+    const count = galleryCount(gallery);
     const limit = normalizeGalleryLimit(capabilities && capabilities.maxGalleryImages, DEFAULT_GALLERY_LIMIT);
-    const currentCount = Math.max(0, Number.parseInt(capabilities && capabilities.currentGalleryCount, 10) || 0);
-    const grandfatheredLimit = currentCount > limit ? currentCount : limit;
-    if (count > grandfatheredLimit) {
-      const overExistingLimit = currentCount > limit;
-      const error = new Error(overExistingLimit
-        ? 'Tu galería ya supera el límite actual del plan. Conservaremos las fotos existentes, pero no puedes añadir nuevas hasta volver a estar dentro del límite (' + limit + ' fotos).'
-        : 'La galería supera el límite permitido por el plan (' + limit + ' fotos).');
+    return {
+      count,
+      limit,
+      remaining: Math.max(0, limit - count),
+      overLimit: count > limit,
+      atLimit: count >= limit,
+      canAdd: count < limit
+    };
+  }
+
+  function validateGalleryCount(gallery, capabilities) {
+    const status = galleryStatus(gallery, capabilities);
+    if (status.overLimit) {
+      const error = new Error('La galería supera el límite permitido por el plan (' + status.limit + ' fotos).');
       error.code = 'gallery-plan-limit-exceeded';
-      error.limit = limit;
-      error.count = count;
-      error.currentCount = currentCount;
+      error.limit = status.limit;
+      error.count = status.count;
       throw error;
     }
     return true;
+  }
+
+  function validateGalleryTransition(previousGallery, nextGallery, capabilities) {
+    const previous = galleryStatus(previousGallery, capabilities);
+    const next = galleryStatus(nextGallery, capabilities);
+
+    if (!next.overLimit) return true;
+
+    // Downgrade seguro: si el negocio ya estaba sobre el nuevo límite,
+    // puede conservar o reducir sus fotos, pero nunca aumentar la cantidad.
+    if (previous.overLimit && next.count <= previous.count) return true;
+
+    const error = new Error(
+      previous.overLimit
+        ? 'Tu galería supera el límite actual del plan. Conservaremos tus fotos, pero no puedes añadir nuevas hasta volver a estar dentro del límite.'
+        : 'La galería supera el límite permitido por el plan (' + next.limit + ' fotos).'
+    );
+    error.code = 'gallery-plan-limit-exceeded';
+    error.limit = next.limit;
+    error.count = next.count;
+    error.previousCount = previous.count;
+    throw error;
   }
 
   global.VisitaLojaSubscriptionPlans = Object.freeze({
@@ -113,6 +143,8 @@
     findPlan,
     subscriptionPlanId,
     capabilitiesForPlace,
-    validateGalleryCount
+    galleryStatus,
+    validateGalleryCount,
+    validateGalleryTransition
   });
 })(window);
