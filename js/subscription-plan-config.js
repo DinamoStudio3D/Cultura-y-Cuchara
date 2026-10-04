@@ -71,11 +71,14 @@
 
   function capabilitiesForPlace(place, settings) {
     const planId = subscriptionPlanId(place);
-    const plan = findPlan(settings, planId);
+    const assignedPlan = findPlan(settings, planId);
+    const plan = assignedPlan && assignedPlan.active !== false ? assignedPlan : null;
     const features = plan && plan.features ? plan.features : {};
     return {
       planId,
       plan,
+      assignedPlan,
+      planInactive: Boolean(assignedPlan && assignedPlan.active === false),
       maxGalleryImages: normalizeGalleryLimit(features.maxGalleryImages, DEFAULT_GALLERY_LIMIT),
       usesConfiguredPlan: Boolean(plan)
     };
