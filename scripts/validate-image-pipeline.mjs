@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 
+// Preview validation for the plan-aware Cloudinary pipeline.
 const requiredFiles = [
   'js/image-compressor.js',
   'js/cloudinary-image-uploader.js',
