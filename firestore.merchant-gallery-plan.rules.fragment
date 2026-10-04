@@ -1,0 +1,83 @@
+// VISITALOJA — Merchant image/plan security fragment
+// IMPORTANT: review and integrate into firestore.rules before deployment.
+// Do not deploy this fragment by itself.
+//
+// Architecture:
+// - settings/subscriptions remains the editable catalog of plans.
+// - businessEntitlements/{placeId} is the server/rules-friendly snapshot of the
+//   effective capabilities assigned to that business.
+// - Admin is the only writer of entitlements.
+// - Merchant rules read maxGalleryImages from the entitlement, so browser
+//   manipulation cannot raise the limit.
+
+function hasModernBusinessOwnerAccess(placeId) {
+  return request.auth != null
+    && exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId))
+    && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.active == true
+    && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.role == 'owner'
+    && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.uid == request.auth.uid
+    && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.placeId == placeId;
+}
+
+function hasLegacyBusinessOwnerAccess(placeId) {
+  return request.auth != null
+    && exists(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid))
+    && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.active == true
+    && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds is list
+    && placeId in get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.placeIds;
+}
+
+function canOwnerEditBusiness(placeId) {
+  return hasModernBusinessOwnerAccess(placeId) || hasLegacyBusinessOwnerAccess(placeId);
+}
+
+function hasGalleryEntitlement(placeId) {
+  return exists(/databases/$(database)/documents/businessEntitlements/$(placeId))
+    && get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.active == true
+    && get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.maxGalleryImages is int
+    && get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.maxGalleryImages >= 0
+    && get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.maxGalleryImages <= 100;
+}
+
+function validMerchantGallery(placeId) {
+  return request.resource.data.gallery is list
+    && hasGalleryEntitlement(placeId)
+    && request.resource.data.gallery.size()
+      <= get(/databases/$(database)/documents/businessEntitlements/$(placeId)).data.maxGalleryImages;
+}
+
+function canMerchantEditLocaleWithImages(placeId) {
+  return canOwnerEditBusiness(placeId)
+    && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+      'desc', 'description', 'phone', 'whatsapp', 'hours',
+      'customLogoUrl', 'heroImage', 'gallery',
+      'merchantUpdatedAt', 'merchantUpdatedBy'
+    ])
+    && (!('desc' in request.resource.data)
+      || (request.resource.data.desc is string && request.resource.data.desc.size() <= 1200))
+    && (!('description' in request.resource.data)
+      || (request.resource.data.description is string && request.resource.data.description.size() <= 1200))
+    && request.resource.data.phone is string
+    && request.resource.data.phone.size() <= 30
+    && request.resource.data.whatsapp is string
+    && request.resource.data.whatsapp.size() <= 30
+    && request.resource.data.hours is string
+    && request.resource.data.hours.size() <= 600
+    && request.resource.data.customLogoUrl is string
+    && request.resource.data.customLogoUrl.size() <= 2000
+    && request.resource.data.heroImage is string
+    && request.resource.data.heroImage.size() <= 2000
+    && validMerchantGallery(placeId)
+    && request.resource.data.merchantUpdatedAt == request.time
+    && request.resource.data.merchantUpdatedBy == request.auth.uid;
+}
+
+// Add this match at database scope. The admin panel/service that assigns a
+// subscription must keep this snapshot synchronized with the selected plan.
+match /businessEntitlements/{placeId} {
+  allow read: if isViveLojaAdmin() || canOwnerEditBusiness(placeId);
+  allow create, update, delete: if isViveLojaAdmin();
+}
+
+// Replace the merchant side of /locales/{documentId} update with:
+// allow update: if isViveLojaAdmin() || canMerchantEditLocaleWithImages(documentId);
