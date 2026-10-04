@@ -11,7 +11,20 @@ function fieldMap(f){return f?.mapValue?.fields||{}}
 function firestoreUrl(path){return `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${path}`}
 async function readDocument(fetchImpl,path,token){const r=await fetchImpl(firestoreUrl(path),{headers:{Authorization:`Bearer ${token}`}});if(!r.ok)return null;return (await r.json()).fields||{}}
 function localePlanId(fields){const subscription=fieldMap(fields.subscription);return fieldString(subscription.plan)||fieldString(subscription.planId)||fieldString(subscription.id)}
-function configuredGalleryLimit(settingsFields,planId){if(!planId)return DEFAULT_GALLERY_LIMIT;for(const value of fieldArray(settingsFields.plans)){const plan=fieldMap(value),candidates=[fieldString(plan.id),fieldString(plan.key),fieldString(plan.slug),fieldString(plan.code),fieldString(plan.name)].map(x=>x.trim().toLowerCase()).filter(Boolean);if(candidates.includes(planId.trim().toLowerCase())){const features=fieldMap(plan.features);return fieldInt(features.maxGalleryImages,fieldInt(plan.maxGalleryImages,DEFAULT_GALLERY_LIMIT));}}return DEFAULT_GALLERY_LIMIT}
+function configuredGalleryLimit(settingsFields,planId){
+ if(!planId)return DEFAULT_GALLERY_LIMIT;
+ for(const value of fieldArray(settingsFields.plans)){
+  const plan=fieldMap(value),candidates=[fieldString(plan.id),fieldString(plan.key),fieldString(plan.slug),fieldString(plan.code),fieldString(plan.name)].map(x=>x.trim().toLowerCase()).filter(Boolean);
+  if(candidates.includes(planId.trim().toLowerCase())){
+   // Un plan desactivado no debe seguir concediendo capacidades antiguas.
+   // Durante la transición usamos el límite de compatibilidad, igual que el portal.
+   if(plan.active&&fieldBool(plan.active)===false)return DEFAULT_GALLERY_LIMIT;
+   const features=fieldMap(plan.features);
+   return fieldInt(features.maxGalleryImages,fieldInt(plan.maxGalleryImages,DEFAULT_GALLERY_LIMIT));
+  }
+ }
+ return DEFAULT_GALLERY_LIMIT;
+}
 async function resolveGalleryLimit(fetchImpl,token,placeId,localeFields){const entitlement=await readDocument(fetchImpl,`businessEntitlements/${encodeURIComponent(placeId)}`,token);if(entitlement&&fieldBool(entitlement.active)!==false&&entitlement.maxGalleryImages)return fieldInt(entitlement.maxGalleryImages,DEFAULT_GALLERY_LIMIT);const settings=await readDocument(fetchImpl,"settings/subscriptions",token);return configuredGalleryLimit(settings||{},localePlanId(localeFields||{}))}
 function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return async function handler(req,res){
  res.setHeader("Cache-Control","no-store");
