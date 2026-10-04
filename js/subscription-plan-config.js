@@ -80,6 +80,7 @@
       assignedPlan,
       planInactive: Boolean(assignedPlan && assignedPlan.active === false),
       maxGalleryImages: normalizeGalleryLimit(features.maxGalleryImages, DEFAULT_GALLERY_LIMIT),
+      currentGalleryCount: galleryCount(place && place.gallery),
       usesConfiguredPlan: Boolean(plan)
     };
   }
@@ -103,11 +104,18 @@
 
   function validateGalleryCount(gallery, capabilities) {
     const status = galleryStatus(gallery, capabilities);
-    if (status.overLimit) {
-      const error = new Error('La galería supera el límite permitido por el plan (' + status.limit + ' fotos).');
+    const currentCount = Math.max(0, Number.parseInt(capabilities && capabilities.currentGalleryCount, 10) || 0);
+    const grandfatheredLimit = Math.max(status.limit, currentCount);
+    if (status.count > grandfatheredLimit) {
+      const error = new Error(
+        currentCount > status.limit
+          ? 'Tu galería supera el límite actual del plan. Conservaremos tus fotos, pero no puedes añadir nuevas hasta volver a estar dentro del límite (' + status.limit + ' fotos).'
+          : 'La galería supera el límite permitido por el plan (' + status.limit + ' fotos).'
+      );
       error.code = 'gallery-plan-limit-exceeded';
       error.limit = status.limit;
       error.count = status.count;
+      error.currentCount = currentCount;
       throw error;
     }
     return true;
