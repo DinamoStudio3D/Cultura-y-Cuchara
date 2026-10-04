@@ -2,13 +2,13 @@ name: Validar Cultura y Cuchara
 
 on:
   push:
-    branches: [main, recovery/cloudinary-images-v2]
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validar:
@@ -18,31 +18,11 @@ jobs:
     steps:
       - name: Descargar proyecto
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
 
       - name: Preparar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Integrar reglas de propietarios y límites de galería
-        if: github.ref == 'refs/heads/recovery/cloudinary-images-v2'
-        run: |
-          if grep -q "function hasBusinessOwnerAccess" firestore.rules; then
-            echo "Las reglas ya están integradas; no se vuelve a modificar el archivo."
-          else
-            node scripts/integrate-business-entitlement-rules.mjs
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add firestore.rules
-            if git diff --cached --quiet; then
-              echo "No hay cambios en firestore.rules."
-            else
-              git commit -m "feat: enforce merchant gallery entitlements in firestore rules"
-              git push origin HEAD:recovery/cloudinary-images-v2
-            fi
-          fi
 
       - name: Ejecutar pruebas
         run: node scripts/validate-site.mjs
