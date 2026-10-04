@@ -2,8 +2,17 @@
 const {createMerchantImageSignature}=require("../functions/merchant-image-signing");
 const PROJECT_ID="cultura-y-cuchara";
 const WEB_API_KEY="AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
+const DEFAULT_GALLERY_LIMIT=6;
 function fieldString(f){return f&&typeof f.stringValue==="string"?f.stringValue:""}
 function fieldBool(f){return !!(f&&f.booleanValue===true)}
+function fieldInt(f,fallback){const n=Number(f&&(f.integerValue??f.doubleValue));return Number.isFinite(n)?Math.max(0,Math.min(100,Math.trunc(n))):fallback}
+function fieldArray(f){return f?.arrayValue?.values||[]}
+function fieldMap(f){return f?.mapValue?.fields||{}}
+function firestoreUrl(path){return `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${path}`}
+async function readDocument(fetchImpl,path,token){const r=await fetchImpl(firestoreUrl(path),{headers:{Authorization:`Bearer ${token}`}});if(!r.ok)return null;return (await r.json()).fields||{}}
+function localePlanId(fields){const subscription=fieldMap(fields.subscription);return fieldString(subscription.plan)||fieldString(subscription.planId)||fieldString(subscription.id)}
+function configuredGalleryLimit(settingsFields,planId){if(!planId)return DEFAULT_GALLERY_LIMIT;for(const value of fieldArray(settingsFields.plans)){const plan=fieldMap(value),candidates=[fieldString(plan.id),fieldString(plan.key),fieldString(plan.slug),fieldString(plan.code),fieldString(plan.name)].map(x=>x.trim().toLowerCase()).filter(Boolean);if(candidates.includes(planId.trim().toLowerCase())){const features=fieldMap(plan.features);return fieldInt(features.maxGalleryImages,fieldInt(plan.maxGalleryImages,DEFAULT_GALLERY_LIMIT));}}return DEFAULT_GALLERY_LIMIT}
+async function resolveGalleryLimit(fetchImpl,token,placeId,localeFields){const entitlement=await readDocument(fetchImpl,`businessEntitlements/${encodeURIComponent(placeId)}`,token);if(entitlement&&fieldBool(entitlement.active)!==false&&entitlement.maxGalleryImages)return fieldInt(entitlement.maxGalleryImages,DEFAULT_GALLERY_LIMIT);const settings=await readDocument(fetchImpl,"settings/subscriptions",token);return configuredGalleryLimit(settings||{},localePlanId(localeFields||{}))}
 function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return async function handler(req,res){
  res.setHeader("Cache-Control","no-store");
  if(req.method!=="POST")return res.status(405).json({error:"Método no permitido."});
@@ -18,17 +27,21 @@ function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return
   if(!identity.ok)return res.status(401).json({error:"La sesión ha caducado."});
   const user=(await identity.json()).users?.[0]; if(!user?.localId||user.disabled)return res.status(401).json({error:"La sesión no es válida."});
   const accessId=`${user.localId}_${placeId}`;
-  const accessUrl=`https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/businessAccess/${encodeURIComponent(accessId)}`;
-  const accessResponse=await fetchImpl(accessUrl,{headers:{Authorization:`Bearer ${token}`}});
-  let authorized=false;
-  if(accessResponse.ok){const fields=(await accessResponse.json()).fields||{};authorized=fieldBool(fields.active)&&fieldString(fields.role)==="owner"&&fieldString(fields.placeId)===placeId&&fieldString(fields.uid)===user.localId;}
+  const accessFields=await readDocument(fetchImpl,`businessAccess/${encodeURIComponent(accessId)}`,token);
+  let authorized=!!accessFields&&fieldBool(accessFields.active)&&fieldString(accessFields.role)==="owner"&&fieldString(accessFields.placeId)===placeId&&fieldString(accessFields.uid)===user.localId;
   if(!authorized){
    // Compatibilidad temporal con propietarios ya existentes durante la migración.
-   const legacyUrl=`https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/missionRewardMerchants/${encodeURIComponent(user.localId)}`;
-   const legacyResponse=await fetchImpl(legacyUrl,{headers:{Authorization:`Bearer ${token}`}});
-   if(legacyResponse.ok){const f=(await legacyResponse.json()).fields||{};const ids=(f.placeIds?.arrayValue?.values||[]).map(v=>v.stringValue);authorized=f.active?.booleanValue===true&&ids.includes(placeId);}
+   const legacy=await readDocument(fetchImpl,`missionRewardMerchants/${encodeURIComponent(user.localId)}`,token);
+   if(legacy){const ids=fieldArray(legacy.placeIds).map(v=>fieldString(v));authorized=fieldBool(legacy.active)&&ids.includes(placeId);}
   }
   if(!authorized)return res.status(403).json({error:"Solo el propietario autorizado puede modificar imágenes de esta parada."});
+  if(purpose==="gallery"){
+   const locale=await readDocument(fetchImpl,`locales/${encodeURIComponent(placeId)}`,token);
+   if(!locale)return res.status(404).json({error:"No se encontró la parada."});
+   const limit=await resolveGalleryLimit(fetchImpl,token,placeId,locale);
+   const currentCount=fieldArray(locale.gallery).length;
+   if(currentCount>=limit)return res.status(409).json({error:`Tu plan permite máximo ${limit} fotos en la galería.`,code:"gallery-plan-limit-reached",limit,currentCount});
+  }
   return res.status(200).json(createMerchantImageSignature({placeId,purpose,credentials,timestamp:Math.floor(now()/1000)}));
  }catch(e){console.error("sign-merchant-image",e);return res.status(503).json({error:"No se pudo autorizar la imagen."});}
 };}
