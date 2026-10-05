@@ -51,7 +51,8 @@
       ...(Number.isFinite(rawAnnual) ? { annual: rawAnnual } : {}),
       features: {
         ...((plan && plan.features) || {}),
-        maxGalleryImages: normalized.features.maxGalleryImages
+        maxGalleryImages: normalized.features.maxGalleryImages,
+        analyticsPeriodMonths: normalized.features.analyticsPeriodMonths
       },
       sortOrder: Number.isFinite(Number(plan && plan.sortOrder)) ? Number(plan.sortOrder) : index
     };
@@ -69,6 +70,10 @@
       const limit = cleaned.features.maxGalleryImages;
       if (!Number.isInteger(limit) || limit < api.MIN_GALLERY_LIMIT || limit > api.MAX_GALLERY_LIMIT) {
         throw new Error('El límite de galería debe estar entre ' + api.MIN_GALLERY_LIMIT + ' y ' + api.MAX_GALLERY_LIMIT + '.');
+      }
+      const analyticsMonths = cleaned.features.analyticsPeriodMonths;
+      if (!Number.isInteger(analyticsMonths) || analyticsMonths < api.MIN_ANALYTICS_PERIOD_MONTHS || analyticsMonths > api.MAX_ANALYTICS_PERIOD_MONTHS) {
+        throw new Error('El historial de estadísticas debe estar entre ' + api.MIN_ANALYTICS_PERIOD_MONTHS + ' y ' + api.MAX_ANALYTICS_PERIOD_MONTHS + ' meses.');
       }
     });
     return true;
@@ -92,8 +97,9 @@
 
   function newPlan(seed) {
     const source = seed && typeof seed === 'object' ? seed : {};
+    const planId = source.id || '';
     return {
-      id: source.id || '',
+      id: planId,
       name: source.name || '',
       active: source.active !== false,
       monthly: source.monthly == null ? '' : source.monthly,
@@ -102,7 +108,10 @@
         ...(source.features || {}),
         maxGalleryImages: Number.isFinite(Number(source.features && source.features.maxGalleryImages))
           ? Number(source.features.maxGalleryImages)
-          : api.DEFAULT_GALLERY_LIMIT
+          : api.DEFAULT_GALLERY_LIMIT,
+        analyticsPeriodMonths: Number.isFinite(Number(source.features && source.features.analyticsPeriodMonths))
+          ? Number(source.features.analyticsPeriodMonths)
+          : api.defaultAnalyticsPeriodMonths(planId)
       }
     };
   }
