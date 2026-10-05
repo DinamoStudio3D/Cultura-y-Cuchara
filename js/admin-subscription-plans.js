@@ -39,13 +39,21 @@
   }
 
   function cleanPlanForSave(plan, index) {
-    const normalized = api.normalizePlans([plan])[0];
+    const analyticsOverride = plan && plan.analyticsPeriodMonths;
+    const source = analyticsOverride == null ? plan : {
+      ...plan,
+      features: {
+        ...((plan && plan.features) || {}),
+        analyticsPeriodMonths: analyticsOverride
+      }
+    };
+    const normalized = api.normalizePlans([source])[0];
     const rawMonthly = Number(plan && plan.monthly);
     const rawAnnual = Number(plan && plan.annual);
     return {
       ...plan,
       id: normalized.id,
-      name: normalized.name,
+      name: api.commercialPlanName(normalized.id, normalized.name),
       active: normalized.active,
       ...(Number.isFinite(rawMonthly) ? { monthly: rawMonthly } : {}),
       ...(Number.isFinite(rawAnnual) ? { annual: rawAnnual } : {}),
@@ -100,7 +108,7 @@
     const planId = source.id || '';
     return {
       id: planId,
-      name: source.name || '',
+      name: api.commercialPlanName(planId, source.name || ''),
       active: source.active !== false,
       monthly: source.monthly == null ? '' : source.monthly,
       annual: source.annual == null ? '' : source.annual,
@@ -116,11 +124,61 @@
     };
   }
 
+  function analyticsLabel(months) {
+    const value = Number(months) || 0;
+    if (value <= 0) return 'Sin estadísticas';
+    if (value === 1) return 'Últimos 30 días';
+    return 'Últimos ' + value + ' meses';
+  }
+
+  function enhancePlanEditor() {
+    const editor = document.getElementById('subscriptionPlansEditor');
+    if (!editor) return;
+    const cards = Array.from(editor.querySelectorAll('article'));
+    cards.forEach((card, index) => {
+      if (card.querySelector('[data-analytics-history-control]')) return;
+      const nameInput = card.querySelector('[data-plan-field="name"]');
+      const planId = ['free', 'impulse', 'featured', 'premium'][index] || '';
+      const commercialName = api.commercialPlanName(planId, nameInput && nameInput.value);
+      if (nameInput && planId) nameInput.value = commercialName;
+      const title = card.querySelector('strong');
+      if (title && planId) title.textContent = commercialName;
+
+      const months = api.defaultAnalyticsPeriodMonths(planId);
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('data-analytics-history-control', 'true');
+      wrapper.className = 'border border-sky-500/20 bg-sky-500/5 rounded-xl p-3';
+      wrapper.innerHTML = '<label><span class="text-xs font-semibold block mb-1"><i class="fa-solid fa-chart-line text-sky-300 mr-1"></i>Historial de estadísticas</span><div class="flex items-center gap-2"><input data-plan-field="analyticsPeriodMonths" data-plan-index="' + index + '" class="field" type="number" min="0" max="36" step="1" value="' + months + '"><span class="text-xs text-gray-400 whitespace-nowrap">meses</span></div><small class="block text-[11px] text-gray-500 mt-1" data-analytics-history-label>' + analyticsLabel(months) + '</small></label>';
+      const services = Array.from(card.querySelectorAll('div')).find((node) => node.querySelector('[data-plan-feature]'));
+      if (services) card.insertBefore(wrapper, services);
+      else card.appendChild(wrapper);
+      const input = wrapper.querySelector('input');
+      input.addEventListener('input', function () {
+        wrapper.querySelector('[data-analytics-history-label]').textContent = analyticsLabel(input.value);
+      });
+    });
+  }
+
+  function watchPlanEditor() {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', watchPlanEditor, { once: true });
+      return;
+    }
+    const editor = document.getElementById('subscriptionPlansEditor');
+    if (!editor) return;
+    enhancePlanEditor();
+    const observer = new MutationObserver(function () { enhancePlanEditor(); });
+    observer.observe(editor, { childList: true });
+  }
+
+  watchPlanEditor();
+
   global.VisitaLojaAdminSubscriptionPlans = Object.freeze({
     load,
     current,
     savePlans,
     validatePlans,
-    newPlan
+    newPlan,
+    enhancePlanEditor
   });
 })(window);
