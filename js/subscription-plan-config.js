@@ -9,6 +9,16 @@
   const DEFAULT_ANALYTICS_PERIOD_MONTHS = 1;
   const MIN_ANALYTICS_PERIOD_MONTHS = 0;
   const MAX_ANALYTICS_PERIOD_MONTHS = 36;
+  const DEFAULT_ANALYTICS_PERIOD_BY_PLAN = Object.freeze({
+    free: 0,
+    gratis: 0,
+    impulse: 1,
+    impulso: 1,
+    featured: 3,
+    destacado: 3,
+    pro: 3,
+    premium: 12
+  });
 
   function cleanText(value) {
     return typeof value === 'string' ? value.trim() : '';
@@ -16,6 +26,13 @@
 
   function normalizePlanId(value) {
     return cleanText(value).toLowerCase();
+  }
+
+  function defaultAnalyticsPeriodMonths(planId) {
+    const normalizedId = normalizePlanId(planId);
+    return Object.prototype.hasOwnProperty.call(DEFAULT_ANALYTICS_PERIOD_BY_PLAN, normalizedId)
+      ? DEFAULT_ANALYTICS_PERIOD_BY_PLAN[normalizedId]
+      : DEFAULT_ANALYTICS_PERIOD_MONTHS;
   }
 
   function normalizeGalleryLimit(value, fallback) {
@@ -34,8 +51,7 @@
     const source = plan && typeof plan === 'object' ? plan : {};
     const features = source.features && typeof source.features === 'object' ? source.features : {};
     const id = cleanText(source.id || source.key || source.slug || source.code || source.name) || ('plan-' + (index + 1));
-    const normalizedId = normalizePlanId(id);
-    const defaultAnalyticsMonths = normalizedId === 'free' || normalizedId === 'gratis' ? 0 : DEFAULT_ANALYTICS_PERIOD_MONTHS;
+    const defaultAnalyticsMonths = defaultAnalyticsPeriodMonths(id);
     return {
       ...source,
       id,
@@ -91,8 +107,7 @@
     const assignedPlan = findPlan(settings, planId);
     const plan = assignedPlan && assignedPlan.active !== false ? assignedPlan : null;
     const features = plan && plan.features ? plan.features : {};
-    const normalizedPlanId = normalizePlanId(planId);
-    const defaultAnalyticsMonths = normalizedPlanId === 'free' || normalizedPlanId === 'gratis' ? 0 : DEFAULT_ANALYTICS_PERIOD_MONTHS;
+    const defaultAnalyticsMonths = defaultAnalyticsPeriodMonths(planId);
     return {
       planId,
       plan,
@@ -171,6 +186,8 @@
     DEFAULT_ANALYTICS_PERIOD_MONTHS,
     MIN_ANALYTICS_PERIOD_MONTHS,
     MAX_ANALYTICS_PERIOD_MONTHS,
+    DEFAULT_ANALYTICS_PERIOD_BY_PLAN,
+    defaultAnalyticsPeriodMonths,
     normalizePlans,
     loadPlanSettings,
     findPlan,
