@@ -163,3 +163,121 @@ if (typeof window !== "undefined") {
     setTimeout(() => { normalizeCommercialDraft(); normalizeRenderedCards(); }, 500);
   });
 }
+
+/* Direct Firebase Storage uploader for place audioguides.
+   Keeps the existing URL fields as the source of truth, so the current
+   Firestore save flow does not need to change. */
+if (typeof window !== "undefined") {
+  window.addEventListener("DOMContentLoaded", () => {
+    const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
+    let storageSdkPromise = null;
+
+    function ensureStorageSdk() {
+      if (window.firebase?.storage) return Promise.resolve();
+      if (storageSdkPromise) return storageSdkPromise;
+      storageSdkPromise = new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js";
+        script.onload = resolve;
+        script.onerror = () => reject(new Error("No se pudo cargar Firebase Storage."));
+        document.head.appendChild(script);
+      });
+      return storageSdkPromise;
+    }
+
+    function safeSegment(value, fallback) {
+      const clean = String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase().replace(/[^a-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "");
+      return clean || fallback;
+    }
+
+    function setStatus(node, text, tone = "muted") {
+      if (!node) return;
+      node.textContent = text;
+      node.className = `text-xs ${tone === "ok" ? "text-emerald-300" : tone === "error" ? "text-red-300" : "text-gray-400"}`;
+    }
+
+    async function uploadPlaceAudio(file, language, input, preview, status, button) {
+      if (!file) return;
+      if (!String(file.type || "").startsWith("audio/")) {
+        setStatus(status, "Selecciona un archivo de audio válido.", "error");
+        return;
+      }
+      if (file.size > MAX_AUDIO_BYTES) {
+        setStatus(status, "El archivo supera el límite de 20 MB.", "error");
+        return;
+      }
+      button.disabled = true;
+      setStatus(status, "Preparando subida…");
+      try {
+        await ensureStorageSdk();
+        const app = window.firebase.app("viveLojaAdmin");
+        const storage = app.storage();
+        const placeId = document.getElementById("placeEditId")?.value;
+        const title = document.getElementById("placeTitle")?.value;
+        const placeKey = safeSegment(placeId || title, "nueva-parada");
+        const filename = safeSegment(file.name, `audio-${Date.now()}.mp3`);
+        const path = `audioguias/${placeKey}/${language}/${Date.now()}-${filename}`;
+        const ref = storage.ref().child(path);
+        const task = ref.put(file, { contentType: file.type || "audio/mpeg" });
+        await new Promise((resolve, reject) => {
+          task.on("state_changed", snap => {
+            const pct = snap.totalBytes ? Math.round((snap.bytesTransferred / snap.totalBytes) * 100) : 0;
+            setStatus(status, `Subiendo… ${pct}%`);
+          }, reject, resolve);
+        });
+        const url = await ref.getDownloadURL();
+        input.value = url;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        if (preview) {
+          preview.src = url;
+          preview.classList.remove("hidden");
+          preview.load();
+        }
+        if (typeof window.setAdminUnsavedChanges === "function") window.setAdminUnsavedChanges(true);
+        setStatus(status, "Audio subido. Guarda la parada para asociarlo definitivamente.", "ok");
+      } catch (error) {
+        console.error("Error al subir audioguía:", error);
+        const detail = error?.code === "storage/unauthorized" ? "Firebase Storage no autorizó la subida. Revisa que tu sesión de administrador siga activa." : (error?.message || "No se pudo subir el audio.");
+        setStatus(status, detail, "error");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function enhanceAudioField(inputId, previewId, language, label) {
+      const input = document.getElementById(inputId);
+      if (!input || input.dataset.directAudioUpload === "true") return;
+      input.dataset.directAudioUpload = "true";
+      const preview = document.getElementById(previewId);
+      const wrap = document.createElement("div");
+      wrap.className = "space-y-2";
+      wrap.innerHTML = `<input type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg" class="hidden" data-audio-file><div class="flex flex-wrap gap-2"><button type="button" class="rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 px-3 py-2 text-xs font-black" data-audio-pick><i class="fa-solid fa-cloud-arrow-up mr-1"></i>Subir audio ${label}</button><button type="button" class="rounded-lg border border-red-500/30 text-red-200 hover:bg-red-500/10 px-3 py-2 text-xs font-bold" data-audio-remove><i class="fa-solid fa-trash mr-1"></i>Quitar</button></div><p class="text-xs text-gray-400" data-audio-status>MP3 u otro audio compatible · máximo 20 MB.</p>`;
+      input.insertAdjacentElement("afterend", wrap);
+      const fileInput = wrap.querySelector("[data-audio-file]");
+      const pick = wrap.querySelector("[data-audio-pick]");
+      const remove = wrap.querySelector("[data-audio-remove]");
+      const status = wrap.querySelector("[data-audio-status]");
+      pick.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", () => uploadPlaceAudio(fileInput.files?.[0], language, input, preview, status, pick));
+      remove.addEventListener("click", () => {
+        input.value = "";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        if (preview) { preview.pause(); preview.removeAttribute("src"); preview.classList.add("hidden"); preview.load(); }
+        fileInput.value = "";
+        if (typeof window.setAdminUnsavedChanges === "function") window.setAdminUnsavedChanges(true);
+        setStatus(status, "Audio quitado del formulario. Guarda la parada para aplicar el cambio.");
+      });
+    }
+
+    function enhancePlaceAudioUploaders() {
+      enhanceAudioField("placeAudioUrl", "placeAudioPreviewEs", "es", "en español");
+      enhanceAudioField("placeAudioUrlEn", "placeAudioPreviewEn", "en", "en inglés");
+    }
+
+    enhancePlaceAudioUploaders();
+    const observer = new MutationObserver(enhancePlaceAudioUploaders);
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+}
