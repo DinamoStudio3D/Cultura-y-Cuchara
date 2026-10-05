@@ -22,16 +22,16 @@
     premium: 12
   });
   const COMMERCIAL_PLAN_NAME_BY_ID = Object.freeze({
-    free: 'Plan GRATIS',
-    gratis: 'Plan GRATIS',
-    impulse: 'Plan EMPRENDO',
-    impulso: 'Plan EMPRENDO',
-    emprendo: 'Plan EMPRENDO',
-    featured: 'Plan ACTIVO',
-    destacado: 'Plan ACTIVO',
-    pro: 'Plan ACTIVO',
-    activo: 'Plan ACTIVO',
-    premium: 'Plan PREMIUM'
+    free: 'Plan Gratis',
+    gratis: 'Plan Gratis',
+    impulse: 'Plan Emprendo',
+    impulso: 'Plan Emprendo',
+    emprendo: 'Plan Emprendo',
+    featured: 'Plan Activo',
+    destacado: 'Plan Activo',
+    pro: 'Plan Activo',
+    activo: 'Plan Activo',
+    premium: 'Plan Premium'
   });
 
   function cleanText(value) {
