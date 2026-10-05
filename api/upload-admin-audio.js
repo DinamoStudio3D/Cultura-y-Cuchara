@@ -9,24 +9,14 @@ function fieldBool(f){return !!(f&&f.booleanValue===true)}
 function firestoreUrl(path){return `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${path}`}
 async function readDocument(fetchImpl,path,token){const r=await fetchImpl(firestoreUrl(path),{headers:{Authorization:`Bearer ${token}`}});if(!r.ok)return null;return (await r.json()).fields||{}}
 function clean(value,fallback){const v=String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9._-]+/g,"-").replace(/^-+|-+$/g,"");return v||fallback}
-async function readRawBody(req){
- const chunks=[];let total=0;
- for await(const chunk of req){const part=Buffer.isBuffer(chunk)?chunk:Buffer.from(chunk);total+=part.length;if(total>MAX_AUDIO_BYTES)throw Object.assign(new Error("too_large"),{code:"TOO_LARGE"});chunks.push(part);}
- return Buffer.concat(chunks);
-}
+async function readRawBody(req){const chunks=[];let total=0;for await(const chunk of req){const part=Buffer.isBuffer(chunk)?chunk:Buffer.from(chunk);total+=part.length;if(total>MAX_AUDIO_BYTES)throw Object.assign(new Error("too_large"),{code:"TOO_LARGE"});chunks.push(part);}return Buffer.concat(chunks);}
 function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return async function handler(req,res){
  res.setHeader("Cache-Control","no-store");
  if(req.method!=="POST")return res.status(405).json({error:"Método no permitido."});
  const token=/^Bearer ([A-Za-z0-9._-]+)$/.exec(req.headers.authorization||"")?.[1];if(!token)return res.status(401).json({error:"Debes iniciar sesión."});
  const placeId=String(req.query?.placeId||""),language=String(req.query?.language||""),fileName=String(req.query?.fileName||"");
  if(!/^[A-Za-z0-9_-]{1,120}$/.test(placeId)||!/^(es|en)$/.test(language))return res.status(400).json({error:"Destino de audio inválido."});
- let buffer;
- try{
-  if(Buffer.isBuffer(req.body))buffer=req.body;
-  else if(typeof req.body==="string")buffer=Buffer.from(req.body,"binary");
-  else if(req.body?.type==="Buffer"&&Array.isArray(req.body.data))buffer=Buffer.from(req.body.data);
-  else buffer=await readRawBody(req);
- }catch(error){if(error?.code==="TOO_LARGE")return res.status(413).json({error:"Para subir directamente a GitHub el audio debe pesar máximo 4 MB."});throw error;}
+ let buffer;try{if(Buffer.isBuffer(req.body))buffer=req.body;else if(typeof req.body==="string")buffer=Buffer.from(req.body,"binary");else if(req.body?.type==="Buffer"&&Array.isArray(req.body.data))buffer=Buffer.from(req.body.data);else buffer=await readRawBody(req);}catch(error){if(error?.code==="TOO_LARGE")return res.status(413).json({error:"Para subir directamente a GitHub el audio debe pesar máximo 4 MB."});throw error;}
  if(!buffer?.length)return res.status(400).json({error:"No se recibió el archivo de audio."});if(buffer.length>MAX_AUDIO_BYTES)return res.status(413).json({error:"Para subir directamente a GitHub el audio debe pesar máximo 4 MB."});
  const githubToken=env.GITHUB_AUDIO_TOKEN;if(!githubToken)return res.status(503).json({error:"La subida a GitHub aún no está configurada."});
  try{
@@ -37,8 +27,8 @@ function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return
   const api=`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path).replace(/%2F/g,"/")}`;
   const gh=await fetchImpl(api,{method:"PUT",headers:{"Accept":"application/vnd.github+json","Authorization":`Bearer ${githubToken}`,"X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"},body:JSON.stringify({message:`content: add ${language} audioguide for ${placeId}`,content:buffer.toString("base64"),branch:BRANCH})});
   let data=null;try{data=await gh.json();}catch(_){}if(!gh.ok){console.error("github audio upload",gh.status,data?.message);return res.status(502).json({error:data?.message?`GitHub: ${data.message}`:"GitHub no pudo guardar el audio."});}
-  return res.status(200).json({path:`/${path}`,repositoryPath:path,branch:BRANCH,commit:data?.commit?.sha||null});
+  const rawUrl=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path}`;
+  return res.status(200).json({path:`/${path}`,repositoryPath:path,rawUrl,branch:BRANCH,commit:data?.commit?.sha||null});
  }catch(e){console.error("upload-admin-audio",e);return res.status(503).json({error:"No se pudo procesar la subida del audio."});}
 };}
-module.exports=createHandler();module.exports.createHandler=createHandler;
-module.exports.config={api:{bodyParser:false}};
+module.exports=createHandler();module.exports.createHandler=createHandler;module.exports.config={api:{bodyParser:false}};
