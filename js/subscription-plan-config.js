@@ -14,10 +14,24 @@
     gratis: 0,
     impulse: 1,
     impulso: 1,
+    emprendo: 1,
     featured: 3,
     destacado: 3,
     pro: 3,
+    activo: 3,
     premium: 12
+  });
+  const COMMERCIAL_PLAN_NAME_BY_ID = Object.freeze({
+    free: 'Plan GRATIS',
+    gratis: 'Plan GRATIS',
+    impulse: 'Plan EMPRENDO',
+    impulso: 'Plan EMPRENDO',
+    emprendo: 'Plan EMPRENDO',
+    featured: 'Plan ACTIVO',
+    destacado: 'Plan ACTIVO',
+    pro: 'Plan ACTIVO',
+    activo: 'Plan ACTIVO',
+    premium: 'Plan PREMIUM'
   });
 
   function cleanText(value) {
@@ -33,6 +47,11 @@
     return Object.prototype.hasOwnProperty.call(DEFAULT_ANALYTICS_PERIOD_BY_PLAN, normalizedId)
       ? DEFAULT_ANALYTICS_PERIOD_BY_PLAN[normalizedId]
       : DEFAULT_ANALYTICS_PERIOD_MONTHS;
+  }
+
+  function commercialPlanName(planId, fallback) {
+    const normalizedId = normalizePlanId(planId);
+    return COMMERCIAL_PLAN_NAME_BY_ID[normalizedId] || cleanText(fallback) || cleanText(planId) || 'Plan';
   }
 
   function normalizeGalleryLimit(value, fallback) {
@@ -55,7 +74,7 @@
     return {
       ...source,
       id,
-      name: cleanText(source.name || source.title || source.label) || id,
+      name: commercialPlanName(id, source.name || source.title || source.label),
       active: source.active !== false,
       features: {
         ...features,
@@ -187,7 +206,9 @@
     MIN_ANALYTICS_PERIOD_MONTHS,
     MAX_ANALYTICS_PERIOD_MONTHS,
     DEFAULT_ANALYTICS_PERIOD_BY_PLAN,
+    COMMERCIAL_PLAN_NAME_BY_ID,
     defaultAnalyticsPeriodMonths,
+    commercialPlanName,
     normalizePlans,
     loadPlanSettings,
     findPlan,
