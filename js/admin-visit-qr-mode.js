@@ -31,10 +31,13 @@
       const token=await user.getIdToken();setStatus(status,'Enviando a GitHub… 15%');
       const placeId=slug(document.getElementById('placeEditId')?.value||document.getElementById('placeTitle')?.value);const params=new URLSearchParams({placeId,language,fileName:file.name||`audio-${language}.mp3`});
       const response=await fetch(`/api/upload-admin-audio?${params}`,{method:'POST',headers:{'Content-Type':file.type||'audio/mpeg','Authorization':`Bearer ${token}`},body:file,signal:controller.signal});setStatus(status,'Procesando respuesta… 90%');
-      let data={};try{data=await response.json();}catch(_){}if(!response.ok)throw new Error(data.error||`Error HTTP ${response.status}`);if(!data.path)throw new Error('GitHub no devolvió la ruta del audio.');
-      field.value=data.path;field.dispatchEvent(new Event('input',{bubbles:true}));field.dispatchEvent(new Event('change',{bubbles:true}));
+      let data={};try{data=await response.json();}catch(_){}if(!response.ok)throw new Error(data.error||`Error HTTP ${response.status}`);if(!data.rawUrl&&!data.path)throw new Error('GitHub no devolvió la URL del audio.');
+      // Persist the raw GitHub URL, not a deployment-relative path. Vercel previews are immutable,
+      // so a relative /audios/... path can remain unavailable until a later deployment.
+      const publicAudioUrl=data.rawUrl||data.path;
+      field.value=publicAudioUrl;field.dispatchEvent(new Event('input',{bubbles:true}));field.dispatchEvent(new Event('change',{bubbles:true}));
       const preview=card.querySelector('audio')||document.getElementById(language==='en'?'placeAudioPreviewEn':'placeAudioPreviewEs');
-      if(preview){preview.src=data.rawUrl||data.path;preview.classList.remove('hidden');preview.load();}
+      if(preview){preview.src=publicAudioUrl;preview.classList.remove('hidden');preview.load();}
       if(typeof root.setAdminUnsavedChanges==='function')root.setAdminUnsavedChanges(true);setStatus(status,'Audio subido correctamente · 100%','ok');
     }catch(error){setStatus(status,error?.name==='AbortError'?'La subida superó 45 segundos y fue cancelada.':(error?.message||'No se pudo subir el audio.'),'error');console.error('Admin audio upload:',error);}finally{clearTimeout(timer);button.disabled=false;}
   }
