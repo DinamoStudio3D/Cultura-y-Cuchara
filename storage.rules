@@ -2,12 +2,27 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    function isViveLojaAdmin() {
+    function hasAdminClaim() {
       return request.auth != null
         && (request.auth.token.admin == true
           || request.auth.token.role == 'admin'
-          || request.auth.token.role == 'owner'
-          || request.auth.token.email == 'sukogames1996@gmail.com');
+          || request.auth.token.role == 'owner');
+    }
+
+    function isLegacyAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'sukogames1996@gmail.com';
+    }
+
+    function hasActiveAdminProfile() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/adminUsers/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/adminUsers/$(request.auth.uid)).data.active == true
+        && firestore.get(/databases/(default)/documents/adminUsers/$(request.auth.uid)).data.role in ['admin', 'owner'];
+    }
+
+    function isViveLojaAdmin() {
+      return hasAdminClaim() || hasActiveAdminProfile() || isLegacyAdmin();
     }
 
     function isAssignedMerchant(placeId) {
