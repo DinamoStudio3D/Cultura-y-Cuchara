@@ -2,7 +2,7 @@
 const PROJECT_ID="cultura-y-cuchara";
 const WEB_API_KEY="AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
 const REPO="DinamoStudio3D/Cultura-y-Cuchara";
-const BRANCH="feature/admin-audio-upload";
+const BRANCH="main";
 const MAX_AUDIO_BYTES=4*1024*1024;
 function fieldString(f){return f&&typeof f.stringValue==="string"?f.stringValue:""}
 function fieldBool(f){return !!(f&&f.booleanValue===true)}
