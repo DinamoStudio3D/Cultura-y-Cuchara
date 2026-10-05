@@ -6,6 +6,33 @@
   const DEFAULT_GALLERY_LIMIT = 6;
   const MIN_GALLERY_LIMIT = 0;
   const MAX_GALLERY_LIMIT = 100;
+  const DEFAULT_ANALYTICS_PERIOD_MONTHS = 1;
+  const MIN_ANALYTICS_PERIOD_MONTHS = 0;
+  const MAX_ANALYTICS_PERIOD_MONTHS = 36;
+  const DEFAULT_ANALYTICS_PERIOD_BY_PLAN = Object.freeze({
+    free: 0,
+    gratis: 0,
+    impulse: 1,
+    impulso: 1,
+    emprendo: 1,
+    featured: 3,
+    destacado: 3,
+    pro: 3,
+    activo: 3,
+    premium: 12
+  });
+  const COMMERCIAL_PLAN_NAME_BY_ID = Object.freeze({
+    free: 'Plan Gratis',
+    gratis: 'Plan Gratis',
+    impulse: 'Plan Emprendo',
+    impulso: 'Plan Emprendo',
+    emprendo: 'Plan Emprendo',
+    featured: 'Plan Activo',
+    destacado: 'Plan Activo',
+    pro: 'Plan Activo',
+    activo: 'Plan Activo',
+    premium: 'Plan Premium'
+  });
 
   function cleanText(value) {
     return typeof value === 'string' ? value.trim() : '';
@@ -15,26 +42,51 @@
     return cleanText(value).toLowerCase();
   }
 
+  function defaultAnalyticsPeriodMonths(planId) {
+    const normalizedId = normalizePlanId(planId);
+    return Object.prototype.hasOwnProperty.call(DEFAULT_ANALYTICS_PERIOD_BY_PLAN, normalizedId)
+      ? DEFAULT_ANALYTICS_PERIOD_BY_PLAN[normalizedId]
+      : DEFAULT_ANALYTICS_PERIOD_MONTHS;
+  }
+
+  function commercialPlanName(planId, fallback) {
+    const normalizedId = normalizePlanId(planId);
+    return COMMERCIAL_PLAN_NAME_BY_ID[normalizedId] || cleanText(fallback) || cleanText(planId) || 'Plan';
+  }
+
   function normalizeGalleryLimit(value, fallback) {
     const parsed = Number.parseInt(value, 10);
     if (!Number.isFinite(parsed)) return fallback;
     return Math.min(MAX_GALLERY_LIMIT, Math.max(MIN_GALLERY_LIMIT, parsed));
   }
 
+  function normalizeAnalyticsPeriodMonths(value, fallback) {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(MAX_ANALYTICS_PERIOD_MONTHS, Math.max(MIN_ANALYTICS_PERIOD_MONTHS, parsed));
+  }
+
   function normalizePlan(plan, index) {
     const source = plan && typeof plan === 'object' ? plan : {};
     const features = source.features && typeof source.features === 'object' ? source.features : {};
     const id = cleanText(source.id || source.key || source.slug || source.code || source.name) || ('plan-' + (index + 1));
+    const defaultAnalyticsMonths = defaultAnalyticsPeriodMonths(id);
     return {
       ...source,
       id,
-      name: cleanText(source.name || source.title || source.label) || id,
+      name: commercialPlanName(id, source.name || source.title || source.label),
       active: source.active !== false,
       features: {
         ...features,
         maxGalleryImages: normalizeGalleryLimit(
           features.maxGalleryImages != null ? features.maxGalleryImages : source.maxGalleryImages,
           DEFAULT_GALLERY_LIMIT
+        ),
+        analyticsPeriodMonths: normalizeAnalyticsPeriodMonths(
+          features.analyticsPeriodMonths != null ? features.analyticsPeriodMonths :
+            (features.statsPeriodMonths != null ? features.statsPeriodMonths :
+              (source.analyticsPeriodMonths != null ? source.analyticsPeriodMonths : source.statsPeriodMonths)),
+          defaultAnalyticsMonths
         )
       }
     };
@@ -74,12 +126,15 @@
     const assignedPlan = findPlan(settings, planId);
     const plan = assignedPlan && assignedPlan.active !== false ? assignedPlan : null;
     const features = plan && plan.features ? plan.features : {};
+    const defaultAnalyticsMonths = defaultAnalyticsPeriodMonths(planId);
     return {
       planId,
       plan,
       assignedPlan,
       planInactive: Boolean(assignedPlan && assignedPlan.active === false),
       maxGalleryImages: normalizeGalleryLimit(features.maxGalleryImages, DEFAULT_GALLERY_LIMIT),
+      analyticsPeriodMonths: normalizeAnalyticsPeriodMonths(features.analyticsPeriodMonths, defaultAnalyticsMonths),
+      analyticsEnabled: normalizeAnalyticsPeriodMonths(features.analyticsPeriodMonths, defaultAnalyticsMonths) > 0,
       currentGalleryCount: galleryCount(place && place.gallery),
       usesConfiguredPlan: Boolean(plan)
     };
@@ -127,8 +182,6 @@
 
     if (!next.overLimit) return true;
 
-    // Downgrade seguro: si el negocio ya estaba sobre el nuevo límite,
-    // puede conservar o reducir sus fotos, pero nunca aumentar la cantidad.
     if (previous.overLimit && next.count <= previous.count) return true;
 
     const error = new Error(
@@ -149,6 +202,13 @@
     DEFAULT_GALLERY_LIMIT,
     MIN_GALLERY_LIMIT,
     MAX_GALLERY_LIMIT,
+    DEFAULT_ANALYTICS_PERIOD_MONTHS,
+    MIN_ANALYTICS_PERIOD_MONTHS,
+    MAX_ANALYTICS_PERIOD_MONTHS,
+    DEFAULT_ANALYTICS_PERIOD_BY_PLAN,
+    COMMERCIAL_PLAN_NAME_BY_ID,
+    defaultAnalyticsPeriodMonths,
+    commercialPlanName,
     normalizePlans,
     loadPlanSettings,
     findPlan,
