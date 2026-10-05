@@ -131,27 +131,60 @@
     return 'Últimos ' + value + ' meses';
   }
 
+  function planIdFromName(value, index) {
+    const text = String(value || '').trim().toLowerCase();
+    if (text.includes('gratis') || text.includes('presente')) return 'free';
+    if (text.includes('emprendo') || text.includes('impulso')) return 'impulse';
+    if (text.includes('activo') || text.includes('destacado')) return 'featured';
+    if (text.includes('premium')) return 'premium';
+    return ['free', 'impulse', 'featured', 'premium'][index] || '';
+  }
+
+  function findPlanCard(input, editor) {
+    let node = input && input.parentElement;
+    while (node && node !== editor) {
+      const text = node.textContent || '';
+      if (text.includes('Precio mensual') && text.includes('Precio anual') && text.includes('Beneficios')) return node;
+      node = node.parentElement;
+    }
+    return null;
+  }
+
   function enhancePlanEditor() {
     const editor = document.getElementById('subscriptionPlansEditor');
     if (!editor) return;
-    const cards = Array.from(editor.querySelectorAll('article'));
-    cards.forEach((card, index) => {
-      if (card.querySelector('[data-analytics-history-control]')) return;
-      const nameInput = card.querySelector('[data-plan-field="name"]');
-      const planId = ['free', 'impulse', 'featured', 'premium'][index] || '';
-      const commercialName = api.commercialPlanName(planId, nameInput && nameInput.value);
-      if (nameInput && planId) nameInput.value = commercialName;
-      const title = card.querySelector('strong');
-      if (title && planId) title.textContent = commercialName;
 
+    const allInputs = Array.from(editor.querySelectorAll('input'));
+    const knownNames = ['parada presente', 'plan impulso', 'plan destacado', 'experiencia premium', 'plan gratis', 'plan emprendo', 'plan activo', 'plan premium'];
+    const nameInputs = allInputs.filter((input) => knownNames.includes(String(input.value || '').trim().toLowerCase()));
+
+    nameInputs.slice(0, 4).forEach((nameInput, index) => {
+      const card = findPlanCard(nameInput, editor);
+      if (!card) return;
+      const planId = planIdFromName(nameInput.value, index);
+      const commercialName = api.commercialPlanName(planId, nameInput.value);
+      nameInput.value = commercialName;
+      nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+      const headings = Array.from(card.querySelectorAll('strong,h3,h4')).filter((node) => {
+        const text = String(node.textContent || '').trim().toLowerCase();
+        return knownNames.includes(text);
+      });
+      headings.forEach((node) => { node.textContent = commercialName; });
+
+      if (card.querySelector('[data-analytics-history-control]')) return;
       const months = api.defaultAnalyticsPeriodMonths(planId);
       const wrapper = document.createElement('div');
       wrapper.setAttribute('data-analytics-history-control', 'true');
       wrapper.className = 'border border-sky-500/20 bg-sky-500/5 rounded-xl p-3';
-      wrapper.innerHTML = '<label><span class="text-xs font-semibold block mb-1"><i class="fa-solid fa-chart-line text-sky-300 mr-1"></i>Historial de estadísticas</span><div class="flex items-center gap-2"><input data-plan-field="analyticsPeriodMonths" data-plan-index="' + index + '" class="field" type="number" min="0" max="36" step="1" value="' + months + '"><span class="text-xs text-gray-400 whitespace-nowrap">meses</span></div><small class="block text-[11px] text-gray-500 mt-1" data-analytics-history-label>' + analyticsLabel(months) + '</small></label>';
-      const services = Array.from(card.querySelectorAll('div')).find((node) => node.querySelector('[data-plan-feature]'));
-      if (services) card.insertBefore(wrapper, services);
+      wrapper.innerHTML = '<label><span class="text-xs font-semibold block mb-1"><i class="fa-solid fa-chart-line text-sky-300 mr-1"></i>Historial de estadísticas</span><div class="flex items-center gap-2"><input data-plan-field="analyticsPeriodMonths" data-plan-id="' + planId + '" class="field" type="number" min="0" max="36" step="1" value="' + months + '"><span class="text-xs text-gray-400 whitespace-nowrap">meses</span></div><small class="block text-[11px] text-gray-500 mt-1" data-analytics-history-label>' + analyticsLabel(months) + '</small></label>';
+
+      const benefitsLabel = Array.from(card.querySelectorAll('span,label')).find((node) => String(node.textContent || '').includes('Beneficios (uno por línea)'));
+      const benefitsBlock = benefitsLabel ? benefitsLabel.closest('label') : null;
+      if (benefitsBlock && benefitsBlock.parentElement === card) card.insertBefore(wrapper, benefitsBlock);
+      else if (benefitsBlock && benefitsBlock.parentElement) benefitsBlock.parentElement.insertBefore(wrapper, benefitsBlock);
       else card.appendChild(wrapper);
+
       const input = wrapper.querySelector('input');
       input.addEventListener('input', function () {
         wrapper.querySelector('[data-analytics-history-label]').textContent = analyticsLabel(input.value);
@@ -167,8 +200,16 @@
     const editor = document.getElementById('subscriptionPlansEditor');
     if (!editor) return;
     enhancePlanEditor();
-    const observer = new MutationObserver(function () { enhancePlanEditor(); });
-    observer.observe(editor, { childList: true });
+    let scheduled = false;
+    const observer = new MutationObserver(function () {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(function () {
+        scheduled = false;
+        enhancePlanEditor();
+      });
+    });
+    observer.observe(editor, { childList: true, subtree: true });
   }
 
   watchPlanEditor();
