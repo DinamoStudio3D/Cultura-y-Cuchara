@@ -6,6 +6,9 @@
   const DEFAULT_GALLERY_LIMIT = 6;
   const MIN_GALLERY_LIMIT = 0;
   const MAX_GALLERY_LIMIT = 100;
+  const DEFAULT_ANALYTICS_PERIOD_MONTHS = 1;
+  const MIN_ANALYTICS_PERIOD_MONTHS = 0;
+  const MAX_ANALYTICS_PERIOD_MONTHS = 36;
 
   function cleanText(value) {
     return typeof value === 'string' ? value.trim() : '';
@@ -21,10 +24,18 @@
     return Math.min(MAX_GALLERY_LIMIT, Math.max(MIN_GALLERY_LIMIT, parsed));
   }
 
+  function normalizeAnalyticsPeriodMonths(value, fallback) {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(MAX_ANALYTICS_PERIOD_MONTHS, Math.max(MIN_ANALYTICS_PERIOD_MONTHS, parsed));
+  }
+
   function normalizePlan(plan, index) {
     const source = plan && typeof plan === 'object' ? plan : {};
     const features = source.features && typeof source.features === 'object' ? source.features : {};
     const id = cleanText(source.id || source.key || source.slug || source.code || source.name) || ('plan-' + (index + 1));
+    const normalizedId = normalizePlanId(id);
+    const defaultAnalyticsMonths = normalizedId === 'free' || normalizedId === 'gratis' ? 0 : DEFAULT_ANALYTICS_PERIOD_MONTHS;
     return {
       ...source,
       id,
@@ -35,6 +46,12 @@
         maxGalleryImages: normalizeGalleryLimit(
           features.maxGalleryImages != null ? features.maxGalleryImages : source.maxGalleryImages,
           DEFAULT_GALLERY_LIMIT
+        ),
+        analyticsPeriodMonths: normalizeAnalyticsPeriodMonths(
+          features.analyticsPeriodMonths != null ? features.analyticsPeriodMonths :
+            (features.statsPeriodMonths != null ? features.statsPeriodMonths :
+              (source.analyticsPeriodMonths != null ? source.analyticsPeriodMonths : source.statsPeriodMonths)),
+          defaultAnalyticsMonths
         )
       }
     };
@@ -74,12 +91,16 @@
     const assignedPlan = findPlan(settings, planId);
     const plan = assignedPlan && assignedPlan.active !== false ? assignedPlan : null;
     const features = plan && plan.features ? plan.features : {};
+    const normalizedPlanId = normalizePlanId(planId);
+    const defaultAnalyticsMonths = normalizedPlanId === 'free' || normalizedPlanId === 'gratis' ? 0 : DEFAULT_ANALYTICS_PERIOD_MONTHS;
     return {
       planId,
       plan,
       assignedPlan,
       planInactive: Boolean(assignedPlan && assignedPlan.active === false),
       maxGalleryImages: normalizeGalleryLimit(features.maxGalleryImages, DEFAULT_GALLERY_LIMIT),
+      analyticsPeriodMonths: normalizeAnalyticsPeriodMonths(features.analyticsPeriodMonths, defaultAnalyticsMonths),
+      analyticsEnabled: normalizeAnalyticsPeriodMonths(features.analyticsPeriodMonths, defaultAnalyticsMonths) > 0,
       currentGalleryCount: galleryCount(place && place.gallery),
       usesConfiguredPlan: Boolean(plan)
     };
@@ -127,8 +148,6 @@
 
     if (!next.overLimit) return true;
 
-    // Downgrade seguro: si el negocio ya estaba sobre el nuevo límite,
-    // puede conservar o reducir sus fotos, pero nunca aumentar la cantidad.
     if (previous.overLimit && next.count <= previous.count) return true;
 
     const error = new Error(
@@ -149,6 +168,9 @@
     DEFAULT_GALLERY_LIMIT,
     MIN_GALLERY_LIMIT,
     MAX_GALLERY_LIMIT,
+    DEFAULT_ANALYTICS_PERIOD_MONTHS,
+    MIN_ANALYTICS_PERIOD_MONTHS,
+    MAX_ANALYTICS_PERIOD_MONTHS,
     normalizePlans,
     loadPlanSettings,
     findPlan,
