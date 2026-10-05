@@ -17,7 +17,7 @@
   }
 
   function stampIcon(program){
-    return program.stampIcon || program.icon || program.stamp || 'fa-solid fa-location-dot';
+    return program.stampIcon || program.icon || program.loyaltyIcon || program.stamp || 'fa-solid fa-location-dot';
   }
 
   async function loadPrograms(db){
@@ -40,7 +40,7 @@
 
   async function loadCounters(db,user){
     if(!user) return new Map();
-    const snap=await db.collection('loyaltyCounters').where('uid','==',user.uid).get();
+    const snap=await db.collection('loyaltyCounters').where('userId','==',user.uid).get();
     const map=new Map();
     snap.forEach(doc=>{
       const data=doc.data()||{};
