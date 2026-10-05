@@ -76,3 +76,90 @@ const api = Object.freeze({
 
 if (typeof module !== "undefined" && module.exports) module.exports = api;
 if (typeof window !== "undefined") window.VisitaLojaVisitValidationAdmin = api;
+
+/* Commercial plan naming compatibility for Admin V2.
+   Internal IDs stay unchanged so existing subscriptions remain compatible. */
+if (typeof window !== "undefined") {
+  window.addEventListener("DOMContentLoaded", () => {
+    const commercialNames = Object.freeze({
+      free: "Plan Gratis",
+      impulse: "Plan Emprendo",
+      featured: "Plan Activo",
+      premium: "Plan Premium"
+    });
+    const analyticsMonths = Object.freeze({ free: 0, impulse: 1, featured: 3, premium: 12 });
+    const legacyNames = Object.freeze({
+      "Parada Presente": "Plan Gratis",
+      "Plan Impulso": "Plan Emprendo",
+      "Plan Destacado": "Plan Activo",
+      "Plan Destacada": "Plan Activo",
+      "Experiencia Premium": "Plan Premium"
+    });
+
+    function normalizeCommercialDraft() {
+      let plans = [];
+      try { plans = window.eval("subscriptionDraftPlans"); } catch (_) { return; }
+      if (!Array.isArray(plans)) return;
+      plans.forEach(plan => {
+        if (!plan || !commercialNames[plan.id]) return;
+        plan.name = commercialNames[plan.id];
+        plan.analyticsHistoryMonths = analyticsMonths[plan.id];
+        plan.features = { ...(plan.features || {}), analyticsHistoryMonths: analyticsMonths[plan.id] };
+        if (Array.isArray(plan.benefits)) {
+          plan.benefits = plan.benefits.map(text => {
+            let value = String(text || "");
+            Object.entries(legacyNames).forEach(([oldName, newName]) => { value = value.replaceAll(oldName, newName); });
+            return value;
+          });
+        }
+      });
+    }
+
+    function normalizeRenderedCards() {
+      const editor = document.getElementById("subscriptionPlansEditor");
+      if (!editor) return;
+      let plans = [];
+      try { plans = window.eval("subscriptionDraftPlans"); } catch (_) { return; }
+      Array.from(editor.children).forEach((card, index) => {
+        const plan = plans[index];
+        if (!plan || !commercialNames[plan.id]) return;
+        const nameInput = card.querySelector('[data-plan-field="name"]');
+        if (nameInput) nameInput.value = commercialNames[plan.id];
+        const heading = card.querySelector("strong.text-teal-200");
+        if (heading) heading.textContent = commercialNames[plan.id];
+        const benefits = card.querySelector('[data-plan-field="benefits"]');
+        if (benefits) benefits.value = (plan.benefits || []).join("\n");
+
+        let history = card.querySelector("[data-plan-analytics-history]");
+        if (!history) {
+          history = document.createElement("div");
+          history.dataset.planAnalyticsHistory = "true";
+          history.className = "rounded-xl border border-sky-500/25 bg-sky-500/10 p-3";
+          const description = card.querySelector('[data-plan-field="description"]')?.closest("label");
+          if (description) description.insertAdjacentElement("afterend", history); else card.appendChild(history);
+        }
+        const months = analyticsMonths[plan.id];
+        history.innerHTML = `<span class="text-xs font-black text-sky-200 block">Historial de estadísticas</span><span class="text-sm text-gray-300">${months === 0 ? "No incluido" : months === 1 ? "Último mes" : `Últimos ${months} meses`}</span>`;
+      });
+    }
+
+    function installCommercialPlanNormalizer() {
+      if (typeof window.renderSubscriptionEditors !== "function" || window.renderSubscriptionEditors.__commercialNamesIntegrated) return;
+      const original = window.renderSubscriptionEditors;
+      const wrapped = function () {
+        normalizeCommercialDraft();
+        const result = original.apply(this, arguments);
+        normalizeRenderedCards();
+        return result;
+      };
+      wrapped.__commercialNamesIntegrated = true;
+      window.renderSubscriptionEditors = wrapped;
+      normalizeCommercialDraft();
+      normalizeRenderedCards();
+    }
+
+    installCommercialPlanNormalizer();
+    setTimeout(installCommercialPlanNormalizer, 0);
+    setTimeout(() => { normalizeCommercialDraft(); normalizeRenderedCards(); }, 500);
+  });
+}
