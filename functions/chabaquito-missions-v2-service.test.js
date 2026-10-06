@@ -30,10 +30,15 @@ test("una visita sin identificador estable no puede sumar",()=>{
 
 test("evidencia turística validada se normaliza como visita confirmada",()=>{
   const visit=evidenceFromSnapshot({id:"doc-1",data:()=>({sourceId:"qr_demo",placeId:"p1",status:"validated",verifiedAt:123})});
-  assert.deepEqual(visit,{requestId:"qr_demo",placeId:"p1",status:"confirmed",confirmedAt:123,source:"chabaquito_evidence"});
+  assert.deepEqual(visit,{requestId:"demo",placeId:"p1",status:"confirmed",confirmedAt:123,source:"chabaquito_evidence"});
 });
 test("evidencia turística revertida se normaliza como visita revertida",()=>{
   const visit=evidenceFromSnapshot({id:"doc-1",data:()=>({sourceId:"visit-1",placeId:"p1",status:"reversed",firstVerifiedAt:100,verifiedAt:200})});
   assert.equal(visit.status,"reversed");
   assert.equal(visit.confirmedAt,100);
+});
+
+test("el prefijo técnico qr_ no crea una segunda identidad de visita",()=>{
+  const visit=evidenceFromSnapshot({id:"doc-1",data:()=>({sourceId:"qr_visit-1",placeId:"p1",status:"validated",verifiedAt:123})});
+  assert.equal(visit.requestId,"visit-1");
 });
