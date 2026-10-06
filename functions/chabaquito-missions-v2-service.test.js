@@ -51,3 +51,11 @@ test("dos visitas con el mismo origen producen un solo avance",()=>{
   assert.equal(state.current,1);
   assert.equal(state.completed,false);
 });
+
+test("solo una finalización nueva se marca como creación de recompensa",()=>{
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[mission],visits:[{requestId:"v1",placeId:"p1",status:"confirmed",confirmedAt:100}],placesById:{}});
+  const first=buildPersistencePlan(state,{},"now-1");
+  const repeated=buildPersistencePlan(state,{progress:first.progressData,reward:first.rewardData},"now-2");
+  assert.equal(first.rewardAction,"create");
+  assert.equal(repeated.rewardAction,"none");
+});
