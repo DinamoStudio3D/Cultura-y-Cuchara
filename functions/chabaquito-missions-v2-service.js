@@ -1,7 +1,7 @@
 "use strict";
 const {calculateMissionProgress}=require("./chabaquito-missions-v2-engine");
 function cleanId(value){return String(value??"").trim();}
-function progressDocumentId(userId,missionId){const user=cleanId(userId),mission=cleanId(missionId);if(!user||!mission)throw new Error("userId y missionId son obligatorios.");return `${user}_${mission}`.replace(/[^a-zA-Z0-9_-]/g,"-").slice(0,300);}
+function progressDocumentId(userId,missionId){const user=cleanId(userId),mission=cleanId(missionId);if(!user||!mission)throw new Error("userId y missionId son obligatorios.");const encode=value=>Buffer.from(value,"utf8").toString("base64url");return `v2_${encode(user)}_${encode(mission)}`;}
 function rewardDocumentId(userId,missionId){return progressDocumentId(userId,missionId);}
 function missionFromSnapshot(doc){return{id:doc.id,...doc.data()};}
 function visitFromSnapshot(doc){return{requestId:doc.id,...doc.data()};}
