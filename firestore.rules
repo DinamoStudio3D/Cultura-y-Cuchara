@@ -780,6 +780,13 @@ service cloud.firestore {
     match /chabaquitoExplorerProfiles/{userId} {
       allow read: if request.auth != null && request.auth.uid == userId;
       allow create, update, delete: if false;
+
+      // Evidencia, XP y progreso interno son generados exclusivamente por backend.
+      // El visitante puede leer sus propios datos, pero nunca escribirlos directamente.
+      match /{privateDocument=**} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if false;
+      }
     }
 
     match /chabaquitoPublicRanking/{entryId} {
