@@ -45,3 +45,11 @@ test("misión de categoría exige lugares distintos aunque se repita la visita",
 test("misión de cantones exige cantones distintos aunque haya varias visitas",()=>{
   assert.equal(calculateMissionProgress(mission("canton_visits",2,{cantonIds:["loja","catamayo"]}),[visit("a","p1"),visit("b","p2")],places).count,1);
 });
+
+
+test("una misión total_visits ignora visitas sin fecha confirmada válida",()=>{
+  const m=mission("total_visits",{targetCount:1});
+  const result=calculateMissionProgress(m,[{requestId:"sin-fecha",placeId:"p1",status:"confirmed",confirmedAt:null}],places);
+  assert.equal(result.count,0);
+  assert.equal(result.completed,false);
+});
