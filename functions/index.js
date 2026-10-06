@@ -164,7 +164,7 @@ exports.validateChabaquitoProximityVisit = onCall({ region: REGION, enforceAppCh
     });
     const missions = await safeSyncUserMissionsV2({ db, userId: request.auth.uid, now: Timestamp.now(), logger: console });
     if (!missions.ok) throw new Error(missions.error || "No se pudo sincronizar el progreso.");
-    return { validated: true, discoveryChanged: discovery.changed === true, missionCount: missions.missionCount, completedCount: missions.completedCount };
+    return { validated: true, alreadyRegistered: discovery.changed !== true, discoveryChanged: discovery.changed === true, missionCount: missions.missionCount, completedCount: missions.completedCount, newlyCompletedMissionIds: missions.newlyCompletedMissionIds || [] };
   } catch (error) {
     console.warn("Chabaquito proximity validation rejected", { uid: request.auth.uid, qrId, message: error?.message || String(error) });
     throw new HttpsError("failed-precondition", error?.message || "No se pudo validar la visita.");
