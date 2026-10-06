@@ -53,3 +53,10 @@ test("una misión total_visits ignora visitas sin fecha confirmada válida",()=>
   assert.equal(result.count,0);
   assert.equal(result.completed,false);
 });
+
+
+test("el backend rechaza metas de misión inválidas aunque Firestore contenga datos corruptos",()=>{
+  for(const targetCount of [0,-1,1.5,501,NaN]){
+    assert.throws(()=>calculateMissionProgress({status:"active",type:"total_visits",targetCount},[visit("a","p1")],places),/Meta de misión no válida/);
+  }
+});
