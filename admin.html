@@ -826,13 +826,17 @@
     </div>
 
     <script src="js/chabaquito-missions-v2-model.js"></script>
-    <script src="js/admin-chabaquito-missions-v2.js"></script>
     <script src="js/chabaquito-place-config.js"></script>
-    <script src="js/admin-chabaquito-place-config.js"></script>
     <script src="js/admin-visit-validation-mode.js"></script>
     <script src="js/admin-visit-validation-mode-integration.js"></script>
     <script src="js/admin-visit-qr-mode.js"></script>
 <script>
+
+function loadChabaquitoAdminModules(){
+    if (document.getElementById('chabaquitoAdminModulesLoader')) return;
+    const marker = document.createElement('meta'); marker.id = 'chabaquitoAdminModulesLoader'; document.head.appendChild(marker);
+    ['js/admin-chabaquito-missions-v2.js','js/admin-chabaquito-place-config.js'].forEach(src => { const script=document.createElement('script'); script.src=src; script.defer=false; document.body.appendChild(script); });
+}
 const firebaseConfig = {
     apiKey: "AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",
     authDomain: "cultura-y-cuchara.firebaseapp.com",
@@ -844,6 +848,8 @@ const firebaseConfig = {
 const adminFirebaseApp = firebase.initializeApp(firebaseConfig, 'viveLojaAdmin');
 const auth = adminFirebaseApp.auth();
 const db = adminFirebaseApp.firestore();
+// Chabaquito admin modules require db/auth to exist before they execute.
+loadChabaquitoAdminModules();
 const provisioningFirebaseApp = firebase.initializeApp(firebaseConfig, 'visitaLojaAdminProvisioning');
 const provisioningAuth = provisioningFirebaseApp.auth();
 provisioningAuth.setPersistence(firebase.auth.Auth.Persistence.NONE)
