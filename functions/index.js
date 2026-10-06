@@ -8,6 +8,7 @@ const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestor
 const { processValidatedVisit } = require("./chabaquito-v1-visit-validation");
 const { safeSyncUserMissionsV2 } = require("./chabaquito-missions-v2-service");
 const { shouldReconcileLoyaltyVisit } = require("./chabaquito-loyalty-reconciliation");
+const { publicRankingProjection, rankingDocumentId, rankingPreferencePatch } = require("./chabaquito-public-ranking");
 
 initializeApp();
 const db = getFirestore();
@@ -188,6 +189,39 @@ exports.validateChabaquitoProximityVisit = onCall({ region: REGION, enforceAppCh
     console.warn("Chabaquito proximity validation rejected", { uid: request.auth.uid, qrId, message: error?.message || String(error) });
     throw new HttpsError("failed-precondition", error?.message || "No se pudo validar la visita.");
   }
+});
+
+exports.configureChabaquitoRanking = onCall({ region: REGION, enforceAppCheck: false }, async request => {
+  if (!request.auth) throw new HttpsError("unauthenticated", "Debes iniciar sesión.");
+  let patch;
+  try {
+    patch = rankingPreferencePatch({
+      participateInRanking: request.data?.participateInRanking,
+      publicAlias: request.data?.publicAlias
+    });
+  } catch (error) {
+    throw new HttpsError("invalid-argument", error?.message || "Preferencia de ranking inválida.");
+  }
+  const uid = request.auth.uid;
+  const profileRef = db.collection("chabaquitoExplorerProfiles").doc(uid);
+  const rankingRef = db.collection("chabaquitoPublicRanking").doc(rankingDocumentId(uid));
+  const now = Timestamp.now();
+  await db.runTransaction(async tx => {
+    const profileSnap = await tx.get(profileRef);
+    const current = profileSnap.exists ? profileSnap.data() : {};
+    const next = { ...current, ...patch };
+    if (!patch.participateInRanking) {
+      tx.set(profileRef, { ...patch, updatedAt: now }, { merge: true });
+      tx.delete(rankingRef);
+      return;
+    }
+    let projection;
+    try { projection = publicRankingProjection(next); }
+    catch (error) { throw new HttpsError("failed-precondition", error?.message || "Perfil de ranking inválido."); }
+    tx.set(profileRef, { ...patch, updatedAt: now }, { merge: true });
+    tx.set(rankingRef, { ...projection, updatedAt: now }, { merge: false });
+  });
+  return { participateInRanking: patch.participateInRanking, publicAlias: patch.publicAlias };
 });
 
 exports.deliverRewardSecurely = onCall({ region: REGION, enforceAppCheck: false }, async request => {
