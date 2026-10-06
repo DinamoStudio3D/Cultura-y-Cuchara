@@ -1909,7 +1909,8 @@ function prepareStopQr(id){
     const qrApi=window.VisitaLojaVisitQrMode;
     if(!qrApi){resetQrForm();message(document.getElementById('qrMessage'),'No se pudo cargar la clasificación del QR de visita. Recarga el panel antes de generar este código.');return;}
     const descriptor=qrApi.buildVisitQrDescriptor(place,id),stopSlug=createAdminSlug(place.title),qrId=`parada-${stopSlug}`,existing=adminQrCodes.find(item=>item.id===qrId);
-    const selfCheckinUrl=`${window.location.origin}/visita.html?place=${encodeURIComponent(place.id)}`;
+    const selfCheckinQrId=String(place.discovery?.qrId||qrId).trim();
+    const selfCheckinUrl=`${window.location.origin}/visita.html?place=${encodeURIComponent(place.id)}&qr=${encodeURIComponent(selfCheckinQrId)}`;
     const directVisitUrl=descriptor.requiresMerchantConfirmation?`${window.location.origin}/fidelidad.html?place=${encodeURIComponent(place.id)}`:selfCheckinUrl;
     if(existing){
         editSavedQr(existing.id);
