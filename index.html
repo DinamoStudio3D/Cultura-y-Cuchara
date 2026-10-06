@@ -3326,6 +3326,7 @@
             const visitorFirebaseApp = firebase.initializeApp(firebaseConfig, 'viveLojaPublic');
             db = visitorFirebaseApp.firestore();
             visitorAuth = visitorFirebaseApp.auth();
+            document.addEventListener('DOMContentLoaded', () => window.ChabaquitoPublicV2?.start({ db, auth: visitorAuth }), { once: true });
             visitorAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                 .catch(error => console.warn('No se pudo conservar la sesión del visitante:', error))
                 .finally(() => visitorAuth.onAuthStateChanged(handleVisitorAuthState));
@@ -8159,6 +8160,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 })();
 </script>
 
-    <script src="js/chabaquito-public-v2.js" defer></script>\n    <script src="js/mobile-ui.js" defer></script>
+    <script src="js/chabaquito-public-v2.js" defer></script>
+    <script src="js/mobile-ui.js" defer></script>
 </body>
 </html>
