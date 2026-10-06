@@ -111,3 +111,14 @@ test("IDs de progreso y recompensa son deterministas por usuario y misión",()=>
 test("combinaciones distintas no colisionan al contener separadores",()=>{
   assert.notEqual(progressDocumentId("user_a","b"),progressDocumentId("user","a_b"));
 });
+
+
+test("evidencia Chabaquito prevalece sobre loyalty legacy con el mismo requestId",()=>{
+  const evidence=evidenceFromSnapshot({id:"e1",data:()=>({scope:"tourism_discovery",type:"confirmed_visit",validationMethod:"staff_confirmation",sourceId:"visit-1",placeId:"p1",status:"reversed",firstVerifiedAt:100,verifiedAt:200})});
+  const legacy={requestId:"visit-1",placeId:"p1",status:"confirmed",confirmedAt:100};
+  const evidenceIds=new Set([evidence.requestId]);
+  const visits=[evidence].concat([legacy].filter(v=>!evidenceIds.has(v.requestId)));
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[mission],visits,placesById:{}});
+  assert.equal(state.current,0);
+  assert.equal(state.completed,false);
+});
