@@ -76,3 +76,18 @@ test("una visita posterior al cierre de la misión no cuenta",()=>{
   const m={...mission("total_visits",1),endsAt:"2026-10-05T13:00:00Z"};
   assert.equal(calculateMissionProgress(m,[visit("tarde","p1","confirmed","2026-10-05T13:00:00.001Z")],places).count,0);
 });
+
+
+test("misiones pausadas, borrador o archivadas nunca suman progreso",()=>{
+  for(const status of ["paused","draft","archived"]){
+    const result=calculateMissionProgress({status,type:"total_visits",targetCount:1},[visit("a","p1")],places);
+    assert.equal(result.count,0);
+    assert.equal(result.completed,false);
+  }
+});
+
+test("una visita con estado desconocido nunca suma progreso",()=>{
+  const result=calculateMissionProgress(mission("total_visits",1),[visit("a","p1","validated")],places);
+  assert.equal(result.count,0);
+  assert.equal(result.completed,false);
+});
