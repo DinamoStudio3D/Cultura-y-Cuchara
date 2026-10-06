@@ -2,6 +2,7 @@
 
 const crypto = require("node:crypto");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const { processValidatedVisit } = require("./chabaquito-v1-visit-validation");
@@ -142,6 +143,21 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
   await safeSyncUserMissionsV2({ db, userId: result.chabaquitoUserId, now: Timestamp.now(), logger: console });
   const { chabaquitoUserId, ...publicResult } = result;
   return publicResult;
+});
+
+exports.reconcileChabaquitoAfterLoyaltyVisit = onDocumentWritten({ document: "loyaltyVisits/{requestId}", region: REGION }, async event => {
+  const visit = event.data?.after?.exists ? event.data.after.data() : null;
+  const requestId = String(event.params?.requestId || "").trim();
+  if (!visit || !requestId || !visit.userId || !["confirmed", "reversed"].includes(visit.status)) return null;
+  try {
+    await processValidatedVisit({ db, authenticatedUid: visit.userId, method: "staff", visitId: requestId });
+  } catch (error) {
+    console.error("Chabaquito evidence reconciliation failed", { requestId, userId: visit.userId, status: visit.status, message: error?.message || String(error) });
+    throw error;
+  }
+  const missionSync = await safeSyncUserMissionsV2({ db, userId: visit.userId, now: Timestamp.now(), logger: console });
+  if (!missionSync.ok) throw new Error(missionSync.error || "No se pudo reconciliar Misiones Chabaquito V2.");
+  return null;
 });
 
 exports.validateChabaquitoProximityVisit = onCall({ region: REGION, enforceAppCheck: false }, async request => {
