@@ -59,3 +59,12 @@ test("solo una finalización nueva se marca como creación de recompensa",()=>{
   assert.equal(first.rewardAction,"create");
   assert.equal(repeated.rewardAction,"none");
 });
+
+test("evidencia no confiable no entra al progreso de misiones",()=>{
+  const invalid=[
+    {scope:"tourism_discovery",type:"fake_visit",status:"validated",validationMethod:"self_visit",sourceId:"x",placeId:"p1"},
+    {scope:"tourism_discovery",type:"self_visit",status:"pending",validationMethod:"self_visit",sourceId:"x",placeId:"p1"},
+    {scope:"tourism_discovery",type:"self_visit",status:"validated",validationMethod:"client",sourceId:"x",placeId:"p1"}
+  ];
+  for(const data of invalid) assert.equal(evidenceFromSnapshot({id:"x",data:()=>data}),null);
+});
