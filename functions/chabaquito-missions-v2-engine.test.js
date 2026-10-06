@@ -60,3 +60,19 @@ test("el backend rechaza metas de misión inválidas aunque Firestore contenga d
     assert.throws(()=>calculateMissionProgress({status:"active",type:"total_visits",targetCount},[visit("a","p1")],places),/Meta de misión no válida/);
   }
 });
+
+
+test("una visita exactamente al inicio o fin de la ventana de misión sí cuenta",()=>{
+  const m={...mission("total_visits",2),startsAt:"2026-10-05T12:00:00Z",endsAt:"2026-10-05T13:00:00Z"};
+  const result=calculateMissionProgress(m,[
+    visit("inicio","p1","confirmed","2026-10-05T12:00:00Z"),
+    visit("fin","p2","confirmed","2026-10-05T13:00:00Z")
+  ],places);
+  assert.equal(result.count,2);
+  assert.equal(result.completed,true);
+});
+
+test("una visita posterior al cierre de la misión no cuenta",()=>{
+  const m={...mission("total_visits",1),endsAt:"2026-10-05T13:00:00Z"};
+  assert.equal(calculateMissionProgress(m,[visit("tarde","p1","confirmed","2026-10-05T13:00:00.001Z")],places).count,0);
+});
