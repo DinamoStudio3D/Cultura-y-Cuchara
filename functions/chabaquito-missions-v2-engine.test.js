@@ -48,7 +48,7 @@ test("misión de cantones exige cantones distintos aunque haya varias visitas",(
 
 
 test("una misión total_visits ignora visitas sin fecha confirmada válida",()=>{
-  const m=mission("total_visits",{targetCount:1});
+  const m=mission("total_visits",1);
   const result=calculateMissionProgress(m,[{requestId:"sin-fecha",placeId:"p1",status:"confirmed",confirmedAt:null}],places);
   assert.equal(result.count,0);
   assert.equal(result.completed,false);
