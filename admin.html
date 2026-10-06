@@ -132,6 +132,7 @@
 <button data-nav-item id="storiesNavBtn" type="button" onclick="showAdminModule('stories')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-book-open-reader w-6"></i>Historias de Loja</button>
 <button data-nav-item id="podcastNavBtn" type="button" onclick="showAdminModule('podcast')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-podcast w-6"></i>Audios y podcast</button>
 <button data-nav-item id="chabaquitoNavBtn" type="button" onclick="showAdminModule('chabaquito')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-user-astronaut w-6"></i>Chabaquito</button>
+<button data-nav-item id="chabaquitoMissionsNavBtn" type="button" onclick="showAdminModule('chabaquitoMissions')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-list-check w-6"></i>Misiones Chabaquito</button>
 <button data-nav-item id="entrepreneursNavBtn" type="button" onclick="showAdminModule('entrepreneurs')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-store w-6"></i>Emprendedores</button>
 <button data-nav-item id="timeNavBtn" type="button" onclick="showAdminModule('time')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-clock-rotate-left w-6"></i>Loja en el Tiempo</button>
 <button data-nav-item id="postcardsNavBtn" type="button" onclick="showAdminModule('postcards')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-camera-retro w-6"></i>Postales</button>
@@ -507,6 +508,8 @@
                     <div id="generalEventsList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando eventos…</p></div>
                 </section>
 
+                <section id="chabaquitoMissionsModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2"><div class="flex items-start justify-between gap-4 mb-6"><div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Chabaquito</p><h2 class="text-2xl font-black mt-1">Misiones Chabaquito</h2><p class="text-sm text-gray-400 mt-1">Crea y administra retos basados en visitas validadas a lugares de Loja.</p></div></div><div id="chabaquitoV2MissionAdmin" class="bg-amber-500/5 border border-amber-500/25 rounded-2xl p-4 sm:p-5"></div></section>
+
                 <section id="chabaquitoModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex items-start justify-between gap-4 mb-6"><div><p class="text-orange-400 text-xs font-bold uppercase tracking-widest">Módulo 5</p><h2 class="text-2xl font-black mt-1">Chabaquito</h2><p class="text-sm text-gray-400 mt-1">Controla la mascota guía y los consejos que muestra durante el recorrido.</p></div><span id="chabaquitoSaveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Sin cambios</span></div>
                     <form id="chabaquitoForm" class="space-y-5">
@@ -523,7 +526,7 @@
                             <label><span class="text-sm font-semibold block mb-2">Mensaje de misiones</span><textarea id="chabaquitoMisiones" class="field min-h-20" maxlength="220"></textarea></label>
                             <label><span class="text-sm font-semibold block mb-2">Mensaje del podcast</span><textarea id="chabaquitoPodcast" class="field min-h-20" maxlength="220"></textarea></label>
                         </div>
-                        <div id="chabaquitoV2MissionAdmin" class="bg-amber-500/5 border border-amber-500/25 rounded-2xl p-4 sm:p-5"></div>
+                        
                         <div class="bg-violet-500/10 border border-violet-500/25 rounded-2xl p-4 sm:p-5 space-y-4">
                             <label class="flex items-center justify-between gap-4"><span><strong class="block text-violet-200">Mostrar Misiones de Chabaquito</strong><span class="text-xs text-gray-400">Puedes ocultar temporalmente el módulo sin borrar el progreso de los visitantes.</span></span><input id="missionsActive" class="w-6 h-6 accent-violet-500" type="checkbox" checked></label>
                             <div class="grid md:grid-cols-2 gap-4">
@@ -1018,7 +1021,7 @@ document.addEventListener('change',event=>{if(adminFieldChangesContent(event.tar
 document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
 window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
-const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Apariencia y Marca',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
+const ADMIN_MODULE_LABELS={dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',chabaquitoMissions:'Misiones Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Apariencia y Marca',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function toggleAdminNavGroup(button){const group=button.closest('.nav-group'),collapsed=!group.classList.contains('collapsed');group.classList.toggle('collapsed',collapsed);button.setAttribute('aria-expanded',String(!collapsed));}
 function filterAdminNavigation(value){const query=String(value||'').trim().toLowerCase();document.querySelectorAll('#adminSidebar .nav-group').forEach(group=>{let visible=0;group.querySelectorAll('[data-nav-item]').forEach(item=>{const show=!query||item.textContent.toLowerCase().includes(query);item.classList.toggle('hidden',!show);if(show)visible++;});group.classList.toggle('hidden',visible===0);if(query&&visible){group.classList.remove('collapsed');group.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}});}
@@ -1097,12 +1100,12 @@ async function copySystemLink(index){
 }
 
 function showAdminModule(moduleName) {
-    if (moduleName === 'chabaquito') loadChabaquitoAdminModules();
+    if (moduleName === 'chabaquito' || moduleName === 'chabaquitoMissions') loadChabaquitoAdminModules();
     if(moduleName!==currentAdminModule&&adminUnsavedChanges&&!window.confirm('Tienes cambios sin guardar. ¿Quieres salir de este módulo y descartarlos?'))return false;
     if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
-    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'chabaquitoMissions', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('auditNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'audit' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('adminsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'admins' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
