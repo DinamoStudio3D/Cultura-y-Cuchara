@@ -144,6 +144,33 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
   return publicResult;
 });
 
+exports.validateChabaquitoProximityVisit = onCall({ region: REGION, enforceAppCheck: false }, async request => {
+  if (!request.auth) throw new HttpsError("unauthenticated", "Debes iniciar sesión.");
+  const qrId = requireString(request.data?.qrId, "QR", 128);
+  const coordinates = request.data?.coordinates || {};
+  const latitude = Number(coordinates.latitude);
+  const longitude = Number(coordinates.longitude);
+  const accuracy = Number(coordinates.accuracy);
+  const capturedAt = Number(coordinates.capturedAt);
+  if (![latitude, longitude, accuracy, capturedAt].every(Number.isFinite)) throw new HttpsError("invalid-argument", "Ubicación inválida.");
+  try {
+    const discovery = await processValidatedVisit({
+      db,
+      authenticatedUid: request.auth.uid,
+      method: "proximity",
+      qrId,
+      coordinates: { latitude, longitude, accuracy, capturedAt },
+      now: Date.now()
+    });
+    const missions = await safeSyncUserMissionsV2({ db, userId: request.auth.uid, now: Timestamp.now(), logger: console });
+    if (!missions.ok) throw new Error(missions.error || "No se pudo sincronizar el progreso.");
+    return { validated: true, discoveryChanged: discovery.changed === true, missionCount: missions.missionCount, completedCount: missions.completedCount };
+  } catch (error) {
+    console.warn("Chabaquito proximity validation rejected", { uid: request.auth.uid, qrId, message: error?.message || String(error) });
+    throw new HttpsError("failed-precondition", error?.message || "No se pudo validar la visita.");
+  }
+});
+
 exports.deliverRewardSecurely = onCall({ region: REGION, enforceAppCheck: false }, async request => {
   const merchant = await authorizedMerchant(request);
   const type = requireString(request.data?.type, "Tipo", 20);
