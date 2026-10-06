@@ -7,6 +7,7 @@ const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const { processValidatedVisit } = require("./chabaquito-v1-visit-validation");
 const { safeSyncUserMissionsV2 } = require("./chabaquito-missions-v2-service");
+const { shouldReconcileLoyaltyVisit } = require("./chabaquito-loyalty-reconciliation");
 
 initializeApp();
 const db = getFirestore();
@@ -145,14 +146,12 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
   return publicResult;
 });
 
-function shouldReconcileLoyaltyVisit(visit, requestId) {
-  return Boolean(visit && String(requestId || "").trim() && visit.userId && ["confirmed", "reversed"].includes(visit.status));
-}
 
 exports.reconcileChabaquitoAfterLoyaltyVisit = onDocumentWritten({ document: "loyaltyVisits/{requestId}", region: REGION }, async event => {
+  const beforeVisit = event.data?.before?.exists ? event.data.before.data() : null;
   const visit = event.data?.after?.exists ? event.data.after.data() : null;
   const requestId = String(event.params?.requestId || "").trim();
-  if (!shouldReconcileLoyaltyVisit(visit, requestId)) return null;
+  if (!shouldReconcileLoyaltyVisit(beforeVisit, visit, requestId)) return null;
   try {
     await processValidatedVisit({ db, authenticatedUid: visit.userId, method: "staff", visitId: requestId });
   } catch (error) {
