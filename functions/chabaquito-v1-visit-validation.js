@@ -4,7 +4,7 @@ const configApi=require('../js/chabaquito-place-config');
 const {distanceMeters}=require('./chabaquito-v1-self-visit');
 const LIMITS=Object.freeze({radiusMeters:15,accuracyMeters:20,maxAgeMillis:30000});
 const SELF_VISIT_COOLDOWN_MILLIS=24*60*60*1000;
-function selfVisitEvidenceId(qrId,now){const qr=id(qrId);if(!Number.isSafeInteger(now)||now<=0)throw new Error('Fecha no válida.');return `qr_${qr}_${Math.floor(now/SELF_VISIT_COOLDOWN_MILLIS)}`;}
+function selfVisitEvidenceId(qrId,now){const qr=id(qrId);if(!Number.isSafeInteger(now)||now<=0)throw new Error('Fecha no válida.');const crypto=require('node:crypto');const fingerprint=crypto.createHash('sha256').update(qr).digest('base64url').slice(0,22);return `qr_${fingerprint}_${now}`;}
 function id(value){if(typeof value!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(value))throw new Error('Identificador inválido.');return value;}
 function millis(value){return value?.toMillis?.()??value;}function finite(value){return typeof value==='number'&&Number.isFinite(value);}
 async function read(tx,db,collection,key){const snap=await tx.get(db.collection(collection).doc(id(key)));if(!snap.exists)throw new Error('Documento requerido inexistente.');return snap.data();}
