@@ -854,6 +854,17 @@
     <script src="js/admin-visit-qr-mode.js"></script>
 <script>
 
+function generateChabaquitoMissionId(value){
+    return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 52);
+}
+document.addEventListener('input', event => {
+    if (event.target?.id !== 'chabaquitoV2MissionTitle') return;
+    const idField = document.getElementById('chabaquitoV2MissionId');
+    if (!idField || idField.readOnly) return;
+    const base = generateChabaquitoMissionId(event.target.value);
+    idField.value = base ? (base + '-01').slice(0, 64) : '';
+});
+
 function loadChabaquitoAdminModules(){
     if (document.getElementById('chabaquitoAdminModulesLoader')) {
         window.ChabaquitoMissionsV2Admin?.init();
