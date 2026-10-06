@@ -864,6 +864,26 @@ document.addEventListener('input', event => {
     const base = generateChabaquitoMissionId(event.target.value);
     idField.value = base ? (base + '-01').slice(0, 64) : '';
 });
+// Misiones Chabaquito V2: enlaza el formulario estático aunque el módulo dinámico falle.
+document.addEventListener('submit', async event => {
+    if (event.target?.id !== 'chabaquitoV2MissionForm') return;
+    event.preventDefault();
+    event.stopPropagation();
+    const state=document.getElementById('chabaquitoV2MissionState');
+    const api=window.visitaLojaChabaquitoMissionsV2;
+    if(!api || typeof db==='undefined' || typeof auth==='undefined') { if(state) state.textContent='El editor todavía no tiene conexión con Firebase.'; return; }
+    const val=id=>document.getElementById(id)?.value||'';
+    const type=val('chabaquitoV2MissionType');
+    const scope=val('chabaquitoV2MissionScope').split(/[\\n,]+/).map(x=>x.trim()).filter(Boolean);
+    try {
+      const mission=api.normalizeMission({id:val('chabaquitoV2MissionId'),title:val('chabaquitoV2MissionTitle'),description:val('chabaquitoV2MissionDescription'),type,targetCount:val('chabaquitoV2MissionTarget'),status:val('chabaquitoV2MissionStatus'),rewardType:'digital',badge:{icon:val('chabaquitoV2BadgeIcon'),title:val('chabaquitoV2BadgeTitle'),description:val('chabaquitoV2BadgeDescription'),rarity:val('chabaquitoV2BadgeRarity')},placeIds:type==='place_visits'?scope:[],categoryIds:type==='category_visits'?scope:[],cantonIds:type==='canton_visits'?scope:[]});
+      if(state) state.textContent='Guardando misión…';
+      await db.collection(api.collections.missions).doc(mission.id).set({...mission,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser?.email||''},{merge:true});
+      setAdminUnsavedChanges(false);
+      if(state) state.textContent='Misión guardada correctamente.';
+    } catch(err) { if(state) state.textContent=(err?.code==='permission-denied'?'Firestore todavía no permite guardar Misiones Chabaquito V2 en este entorno.':(err?.message||'No se pudo guardar la misión.')); }
+}, true);
+
 
 function loadChabaquitoAdminModules(){
     if (document.getElementById('chabaquitoAdminModulesLoader')) {
