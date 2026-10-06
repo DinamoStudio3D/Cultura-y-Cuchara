@@ -349,13 +349,13 @@ assert(merchantRewards.includes('${remaining} de ${stock} disponibles'), 'Las ca
 assert(firestoreRules.includes('function hasMissionMerchantCampaign'), 'Firestore limita al negocio a sus campañas autorizadas');
 assert(firestoreRules.includes('match /missionRewardClaimCodes/{claimCode}'), 'Firestore protege el índice privado de códigos');
 assert(firestoreRules.includes("resource.data.status == 'pending'"), 'Un negocio solo puede entregar códigos pendientes');
-assert(firestoreRules.includes("affectedKeys().hasOnly([\n          'status', 'processedAt', 'processedBy'"), 'El negocio no puede modificar los datos de la recompensa');
+assert(/affectedKeys\(\)\.hasOnly\(\[\s*'status',\s*'processedAt',\s*'processedBy'/.test(firestoreRules), 'El negocio no puede modificar los datos de la recompensa');
 assert(index.includes("db.collection('missionRewardClaimCodes').doc(claimCode)"), 'Cada recompensa nueva crea su índice seguro');
 assert(index.includes("if(error?.code!=='permission-denied')throw error;await reserveReward(false)"), 'La publicación gradual no interrumpe la generación de recompensas');
 assert(admin.includes("status!=='delivered'") && admin.includes("status!=='cancelled'"), 'El panel conserva las acciones según el estado del código');
 assert(firestoreRules.includes('match /missionRewardClaims/{claimId}'), 'Firestore protege los códigos de misiones');
 assert(firestoreRules.includes('match /missionRewardCampaigns/{campaignId}'), 'Firestore protege las existencias de las campañas');
-assert(firestoreRules.includes("affectedKeys().hasOnly([\n          'issuedCount', 'updatedAt'"), 'El visitante solo puede descontar una recompensa');
+assert(/affectedKeys\(\)\.hasOnly\(\[\s*'issuedCount',\s*'updatedAt'/.test(firestoreRules), 'El visitante solo puede descontar una recompensa');
 assert(firestoreRules.includes('resource.data.issuedCount < resource.data.stock'), 'Firestore bloquea códigos cuando se agotan las existencias');
 assert(firestoreRules.includes('existsAfter(/databases/$(database)/documents/missionRewardClaims/'), 'Firestore exige crear el código junto con el descuento');
 assert(firestoreRules.includes("request.resource.data.keys().hasOnly(["), 'Firestore rechaza campos inesperados en los reclamos');
