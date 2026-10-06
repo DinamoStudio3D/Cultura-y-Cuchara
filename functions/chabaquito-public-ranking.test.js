@@ -18,3 +18,14 @@ test("el documento público no revela el UID",()=>{
   const id=rankingDocumentId("firebase-user-123");
   assert.notEqual(id,"firebase-user-123");assert.ok(!id.includes("firebase-user-123"));
 });
+
+test("la proyección refleja XP y nivel actuales del perfil",()=>{
+  const low=publicRankingProjection({participateInRanking:true,publicAlias:"Explorador",validatedXp:0});
+  const high=publicRankingProjection({participateInRanking:true,publicAlias:"Explorador",validatedXp:1000});
+  assert.equal(low.xp,0);assert.equal(high.xp,1000);assert.ok(high.level>=low.level);
+});
+test("opt-out nunca produce una entrada pública aunque conserve XP",()=>assert.equal(publicRankingProjection({participateInRanking:false,publicAlias:"Anterior",validatedXp:9999}),null));
+test("solo se publican hasta tres insignias con IDs seguros",()=>{
+  const entry=publicRankingProjection({participateInRanking:true,publicAlias:"Explorador",validatedXp:100,publicBadgeIds:["uno","../../privado","dos","tres","cuatro","<x>"]});
+  assert.deepEqual(entry.badgeIds,["uno","dos","tres"]);
+});
