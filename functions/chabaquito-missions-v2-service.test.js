@@ -1,7 +1,7 @@
 "use strict";
 const test=require("node:test");
 const assert=require("node:assert/strict");
-const {buildPersistencePlan,calculateUserMissionStates,evidenceFromSnapshot}=require("./chabaquito-missions-v2-service");
+const {buildPersistencePlan,calculateUserMissionStates,evidenceFromSnapshot,progressDocumentId,rewardDocumentId}=require("./chabaquito-missions-v2-service");
 
 const mission={id:"mision-01",status:"active",type:"total_visits",targetCount:1,badge:{title:"Explorador"},rewardType:"digital"};
 
@@ -98,4 +98,16 @@ test("evidencia no confiable no entra al progreso de misiones",()=>{
     {scope:"tourism_discovery",type:"self_visit",status:"validated",validationMethod:"client",sourceId:"x",placeId:"p1"}
   ];
   for(const data of invalid) assert.equal(evidenceFromSnapshot({id:"x",data:()=>data}),null);
+});
+
+test("IDs de progreso y recompensa son deterministas por usuario y misión",()=>{
+  const a=progressDocumentId("user-1","mision-01");
+  assert.equal(a,progressDocumentId("user-1","mision-01"));
+  assert.equal(a,rewardDocumentId("user-1","mision-01"));
+  assert.notEqual(a,progressDocumentId("user-2","mision-01"));
+  assert.notEqual(a,progressDocumentId("user-1","mision-02"));
+});
+
+test("combinaciones distintas no colisionan al contener separadores",()=>{
+  assert.notEqual(progressDocumentId("user_a","b"),progressDocumentId("user","a_b"));
 });
