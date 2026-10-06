@@ -43,3 +43,10 @@ test("otra parada no queda bloqueada por el cooldown",()=>{
   const incoming={...base,sourceId:"qr-2",placeId:"p2",verifiedAt:1001,scope:"tourism_discovery"};
   assert.equal(assertSelfVisitCooldown([evidenceDoc(first)],incoming),true);
 });
+
+
+test("un segundo intento con el estado ya confirmado queda bloqueado por el cooldown",()=>{
+  const committed={...base,sourceId:"qr-primer-intento",verifiedAt:1000,scope:"tourism_discovery"};
+  const retried={...base,sourceId:"qr-segundo-intento",verifiedAt:1001,scope:"tourism_discovery"};
+  assert.throws(()=>assertSelfVisitCooldown([evidenceDoc(committed)],retried),/después de 24 horas/);
+});
