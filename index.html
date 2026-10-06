@@ -1323,79 +1323,9 @@
         </div>
     </section>
 
-    <!-- Misiones de Chabaquito -->
-    <section id="misiones" class="py-16 px-4 md:px-8 lg:px-12 bg-brandCream border-b border-gray-200 reveal">
-        <div class="max-w-6xl mx-auto">
-            <div class="bg-brandDark text-white rounded-3xl overflow-hidden shadow-2xl border border-brandGold/40">
-                <div class="grid lg:grid-cols-[280px_1fr]">
-                    <div class="bg-gradient-to-b from-brandGold/25 to-black p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_#EA580C_0,_transparent_65%)]"></div>
-                        <img src="mascota-vive-loja.png" onerror="this.onerror=null;this.src='https://visitaloja.com/mascota-vive-loja.png'" alt="Chabaquito presenta las misiones de Visita Loja" width="1122" height="1402" class="relative w-36 sm:w-44 h-auto drop-shadow-2xl" loading="lazy" decoding="async">
-                        <span class="relative mt-2 text-brandGold text-xs font-black uppercase tracking-widest" data-i18n="missionBadge">Aventura interactiva</span>
-                        <h2 id="missionPublicTitle" class="relative text-2xl font-black mt-2" data-i18n="missionTitle">Retos digitales de Chabaquito</h2>
-                        <p id="missionPublicDescription" class="relative text-xs text-gray-300 mt-2 leading-relaxed" data-i18n="missionDesc">Explora las funciones de la web y obtén tu certificado digital.</p>
-                    </div>
-
-                    <div class="p-6 sm:p-8">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                            <div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest" data-i18n="missionProgress">Tu progreso</p>
-                                <p id="missionProgressText" class="text-lg font-black text-brandGold">0 de 5 misiones</p>
-                            </div>
-                            <div class="w-full sm:w-64 h-3 rounded-full bg-gray-800 overflow-hidden" role="progressbar" aria-label="Progreso de misiones" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" id="missionProgressBar">
-                                <div id="missionProgressFill" class="h-full bg-gradient-to-r from-brandGold to-amber-400 rounded-full transition-all duration-500" style="width:0%"></div>
-                            </div>
-                        </div>
-
-                        <div class="mb-5 bg-white/5 border border-white/10 rounded-xl p-3 flex gap-3 items-center"><span class="w-9 h-9 rounded-full bg-brandGold/20 text-brandGold grid place-items-center flex-shrink-0"><i class="fa-solid fa-certificate"></i></span><div><strong class="block text-xs">Premio de los retos digitales</strong><span class="text-[11px] text-gray-400">Insignia y certificado personalizado de Explorador de Loja.</span></div></div>
-
-                        <div class="grid sm:grid-cols-2 gap-3" id="missionCards">
-                            <button type="button" data-mission="mapa" onclick="goToMission('mapa')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition">
-                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-map-location-dot"></i></span>
-                                <strong class="block text-sm" data-i18n="missionMapTitle">Explora el mapa</strong><span class="text-[11px] text-gray-400" data-i18n="missionMapDesc">Abre la información de un lugar.</span>
-                            </button>
-                            <button type="button" data-mission="ruta" onclick="goToMission('ruta')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition">
-                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-seedling"></i></span>
-                                <strong class="block text-sm" data-i18n="missionRouteTitle">Crea tu ruta</strong><span class="text-[11px] text-gray-400" data-i18n="missionRouteDesc">Guarda un establecimiento favorito.</span>
-                            </button>
-                            <button type="button" data-mission="fiavl" onclick="goToMission('fiavl')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition">
-                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-masks-theater"></i></span>
-                                <strong class="block text-sm" data-i18n="missionFiavlTitle">Descubre FIAVL</strong><span class="text-[11px] text-gray-400" data-i18n="missionFiavlDesc">Visita la sección del festival.</span>
-                            </button>
-                            <button type="button" data-mission="postal" onclick="goToMission('postal')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition">
-                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-camera-retro"></i></span>
-                                <strong class="block text-sm" data-i18n="missionPostcardTitle">Crea un recuerdo</strong><span class="text-[11px] text-gray-400" data-i18n="missionPostcardDesc">Descarga una postal de Visita Loja.</span>
-                            </button>
-                            <button type="button" data-mission="podcast" onclick="goToMission('podcast')" class="mission-card text-left bg-black/40 border border-gray-700 rounded-2xl p-4 hover:border-brandGold transition sm:col-span-2">
-                                <span class="mission-icon w-9 h-9 rounded-full bg-brandGold/20 text-brandGold inline-flex items-center justify-center mb-2"><i class="fa-solid fa-headphones"></i></span>
-                                <strong class="block text-sm" data-i18n="missionPodcastTitle">Escucha Loja</strong><span class="text-[11px] text-gray-400" data-i18n="missionPodcastDesc">Escucha una historia narrada o el audio del podcast.</span>
-                            </button>
-                        </div>
-
-                        <div id="missionReward" class="hidden mt-5 bg-brandGold/15 border border-brandGold/50 rounded-2xl p-4 text-center">
-                            <i class="fa-solid fa-award text-4xl text-brandGold mb-2"></i>
-                            <p id="missionPublicRewardTitle" class="font-black text-brandGold" data-i18n="missionRewardTitle">¡Insignia Explorador de Loja desbloqueada!</p>
-                            <p id="missionPublicRewardDescription" class="text-xs text-gray-300 mt-1" data-i18n="missionRewardDesc">Completaste las cinco misiones de Chabaquito.</p>
-                            <div id="missionCommercialReward" class="hidden mt-4 max-w-xl mx-auto bg-white text-brandDark rounded-2xl overflow-hidden border border-emerald-300 text-left shadow-xl">
-                                <img id="missionRewardImage" class="hidden w-full h-36 object-cover" alt="Recompensa de las misiones" loading="lazy" decoding="async">
-                                <div class="p-4">
-                                    <p id="missionRewardSponsor" class="text-[10px] uppercase tracking-widest text-emerald-700 font-black"></p>
-                                    <h3 id="missionRewardOfferTitle" class="font-black text-lg mt-1"></h3>
-                                    <p id="missionRewardOfferDescription" class="text-xs text-gray-600 mt-2 leading-relaxed"></p>
-                                    <div class="flex flex-wrap gap-2 mt-3 text-[10px] font-bold text-gray-600"><span id="missionRewardValidity" class="hidden bg-gray-100 rounded-full px-2.5 py-1"></span><span id="missionRewardAvailability" class="hidden bg-emerald-50 text-emerald-700 rounded-full px-2.5 py-1"></span></div>
-                                    <div id="missionRewardClaimPrompt" class="mt-4"><p class="text-xs text-gray-600">Registra tu cuenta para proteger la recompensa y evitar códigos duplicados.</p><button id="missionRewardClaimButton" type="button" onclick="claimMissionReward()" class="w-full mt-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-4 py-3 text-xs font-black"><i class="fa-solid fa-ticket mr-2"></i><span>Registrar y generar mi código</span></button></div>
-                                    <div id="missionRewardCodeBox" class="hidden mt-4 bg-brandDark text-white border-2 border-dashed border-emerald-400 rounded-xl p-4 text-center"><p class="text-[9px] uppercase tracking-widest text-gray-400">Código único de canje</p><strong id="missionRewardCode" class="block text-2xl tracking-[.15em] text-emerald-300 mt-1"></strong><span id="missionRewardClaimStatus" class="inline-block mt-2 text-[10px] font-black uppercase rounded-full px-2.5 py-1 bg-amber-500/20 text-amber-200">Pendiente</span><p class="text-[10px] text-gray-400 mt-2">Presenta este código en el establecimiento patrocinador.</p></div>
-                                    <a id="missionRewardSponsorLink" href="#" target="_blank" rel="noopener noreferrer" class="hidden w-full mt-3 bg-green-500 text-white rounded-xl px-4 py-3 text-xs font-black text-center"><i class="fa-brands fa-whatsapp mr-2"></i>Contactar al patrocinador</a>
-                                    <p id="missionRewardNotice" class="hidden text-xs rounded-xl p-3 mt-3"></p>
-                                </div>
-                            </div>
-                            <div id="certificateRewardControls" class="mt-4 max-w-md mx-auto flex flex-col sm:flex-row gap-2"><input id="certificateVisitorName" class="flex-1 bg-white text-brandDark border border-brandGold/40 rounded-xl px-4 py-3 text-sm font-bold outline-none" maxlength="45" placeholder="Escribe tu nombre"><button type="button" onclick="downloadExplorerCertificate()" class="bg-brandGold hover:bg-orange-500 text-white font-black rounded-xl px-5 py-3 text-xs whitespace-nowrap"><i class="fa-solid fa-certificate mr-1"></i>Descargar certificado</button></div>
-                            <button type="button" onclick="resetChabaquitoMissions()" class="mt-4 text-[11px] text-gray-400 hover:text-white underline">Reiniciar misiones</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Chabaquito / Misiones V2: UI modular. La lógica legacy se conserva temporalmente para compatibilidad. -->
+    <section id="misiones" class="reveal">
+        <div id="chabaquitoV2Public" aria-live="polite"></div>
     </section>
 
     <!-- Loja en el Tiempo Section (Antes vs Después) -->
@@ -8229,6 +8159,6 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 })();
 </script>
 
-    <script src="js/mobile-ui.js" defer></script>
+    <script src="js/chabaquito-public-v2.js" defer></script>\n    <script src="js/mobile-ui.js" defer></script>
 </body>
 </html>
