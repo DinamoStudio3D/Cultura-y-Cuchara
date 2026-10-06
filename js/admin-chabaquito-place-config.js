@@ -15,7 +15,7 @@
       <div class="grid sm:grid-cols-2 gap-3">
       <label>Cantón<select id="chabaquitoPlaceCanton" class="field"><option value="">Seleccionar</option></select></label>
       <label>Método<select id="chabaquitoPlaceMethod" class="field"><option value="manager">Encargado</option><option value="proximity">Proximidad</option><option value="both">Ambos</option></select></label>
-      <label class="sm:col-span-2">ID del QR turístico existente<input id="chabaquitoPlaceQr" class="field" placeholder="ID del módulo Códigos QR"></label></div>
+      <label class="sm:col-span-2">QR turístico de esta parada<select id="chabaquitoPlaceQr" class="field"><option value="">Seleccionar QR existente…</option></select><small class="block mt-1 text-xs text-gray-500">Sirve para comprobar qué parada visitó el turista. No es el ID de una misión.</small></label></div>
       <label class="flex gap-2 text-sm"><input type="checkbox" id="chabaquitoPlaceAssociate">Preparar asociación explícita del QR existente a esta parada</label>
       <p class="text-xs text-gray-400">Usa las coordenadas del formulario y los encargados ya asignados. No cambia el destino ni el diseño del QR.</p>
       <button id="chabaquitoPlaceCheck" type="button" class="border border-amber-400/40 rounded-xl px-3 py-2">Comprobar configuración</button>
@@ -29,12 +29,20 @@
       catch (error) { $('chabaquitoPlaceState').textContent = error.message; }
     });
   }
-  function load(place = {}) {
+  async function load(place = {}) {
     ensure(); original = place;
+    const qrSelect = $('chabaquitoPlaceQr');
+    if (qrSelect) {
+      const selected = place.discovery?.qrId || '';
+      let docs = [];
+      try { const snap = await db.collection('qrCodes').get(); docs = snap.docs.map(d => ({ id: d.id, ...d.data() })); } catch (_) {}
+      qrSelect.innerHTML = '<option value="">Seleccionar QR existente…</option>' + docs.map(q => `<option value="${String(q.id).replace(/"/g,'&quot;')}">${String(q.name || q.title || q.label || q.id).replace(/</g,'&lt;')} — ${String(q.id).replace(/</g,'&lt;')}</option>`).join('');
+      if (selected && !docs.some(q => q.id === selected)) qrSelect.insertAdjacentHTML('beforeend', `<option value="${selected}">${selected} (asociado actualmente)</option>`);
+      qrSelect.value = selected;
+    }
     $('chabaquitoPlaceEnabled').checked = place.discovery?.enabled === true;
     $('chabaquitoPlaceCanton').value = place.cantonId || '';
     $('chabaquitoPlaceMethod').value = api.methodFor(place) || 'manager';
-    $('chabaquitoPlaceQr').value = place.discovery?.qrId || '';
     $('chabaquitoPlaceAssociate').checked = false;
     $('chabaquitoPlaceState').textContent = 'No comprobada. No se habilita automáticamente.';
   }
