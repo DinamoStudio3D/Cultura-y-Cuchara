@@ -191,6 +191,30 @@ exports.validateChabaquitoProximityVisit = onCall({ region: REGION, enforceAppCh
   }
 });
 
+exports.syncChabaquitoPublicRanking = onDocumentWritten({ document: "chabaquitoExplorerProfiles/{userId}", region: REGION }, async event => {
+  const userId = String(event.params?.userId || "").trim();
+  if (!userId) return null;
+  const rankingRef = db.collection("chabaquitoPublicRanking").doc(rankingDocumentId(userId));
+  if (!event.data?.after?.exists) {
+    await rankingRef.delete();
+    return null;
+  }
+  const profile = event.data.after.data() || {};
+  let projection;
+  try { projection = publicRankingProjection(profile); }
+  catch (error) {
+    console.error("Chabaquito public ranking projection rejected", { userId, message: error?.message || String(error) });
+    await rankingRef.delete();
+    return null;
+  }
+  if (!projection) {
+    await rankingRef.delete();
+    return null;
+  }
+  await rankingRef.set({ ...projection, updatedAt: Timestamp.now() }, { merge: false });
+  return null;
+});
+
 exports.configureChabaquitoRanking = onCall({ region: REGION, enforceAppCheck: false }, async request => {
   if (!request.auth) throw new HttpsError("unauthenticated", "Debes iniciar sesión.");
   let patch;
