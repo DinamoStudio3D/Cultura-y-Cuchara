@@ -23,6 +23,37 @@ test("revertir una visita revoca progreso y recompensa",()=>{
   assert.equal(plan.progressData.completedAt,null);
 });
 
+test("reintentar una reversión no intenta borrar dos veces la recompensa",()=>{
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[mission],visits:[{requestId:"visit-1",placeId:"p1",status:"reversed",confirmedAt:100}],placesById:{}});
+  const first=buildPersistencePlan(state,{progress:{completed:true,completedAt:"before"},reward:{missionId:"mision-01"}},"now-1");
+  assert.equal(first.rewardAction,"delete");
+  const repeated=buildPersistencePlan(state,{progress:first.progressData,reward:null},"now-2");
+  assert.equal(repeated.rewardAction,"none");
+  assert.equal(repeated.progressData.current,0);
+  assert.equal(repeated.progressData.completed,false);
+  assert.equal(repeated.progressData.completedAt,null);
+});
+
+test("reintentar una confirmación completada conserva una sola recompensa",()=>{
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[mission],visits:[{requestId:"visit-1",placeId:"p1",status:"confirmed",confirmedAt:100}],placesById:{}});
+  const first=buildPersistencePlan(state,{},"now-1");
+  const retry1=buildPersistencePlan(state,{progress:first.progressData,reward:first.rewardData},"now-2");
+  const retry2=buildPersistencePlan(state,{progress:retry1.progressData,reward:first.rewardData},"now-3");
+  assert.equal(first.rewardAction,"create");
+  assert.equal(retry1.rewardAction,"none");
+  assert.equal(retry2.rewardAction,"none");
+  assert.equal(retry2.progressData.completedAt,"now-1");
+});
+
+test("confirmada y luego revertida con el mismo requestId termina sin progreso",()=>{
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[mission],visits:[
+    {requestId:"visit-1",placeId:"p1",status:"confirmed",confirmedAt:100},
+    {requestId:"visit-1",placeId:"p1",status:"reversed",confirmedAt:100}
+  ],placesById:{}});
+  assert.equal(state.current,0);
+  assert.equal(state.completed,false);
+});
+
 test("una visita sin identificador estable no puede sumar",()=>{
   const [state]=calculateUserMissionStates({userId:"user-1",missions:[mission],visits:[{placeId:"p1",status:"confirmed",confirmedAt:"2026-10-05T12:00:00Z"}],placesById:{}});
   assert.equal(state.current,0);
