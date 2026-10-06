@@ -760,6 +760,33 @@ service cloud.firestore {
       allow delete: if isViveLojaAdmin();
     }
 
+    // Chabaquito V2: catálogo público y progreso privado de solo lectura para el visitante.
+    // Las escrituras de progreso, recompensas, perfiles XP y ranking se reservan al backend/Admin SDK.
+    match /chabaquitoMissions/{missionId} {
+      allow read: if resource.data.status == 'active' || isViveLojaAdmin();
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /chabaquitoMissionProgress/{progressId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+
+    match /chabaquitoDigitalRewards/{rewardId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+
+    match /chabaquitoExplorerProfiles/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update, delete: if false;
+    }
+
+    match /chabaquitoPublicRanking/{entryId} {
+      allow read: if true;
+      allow create, update, delete: if false;
+    }
+
     // Registro inmutable generado exclusivamente por funciones del servidor.
     match /systemAudit/{eventId} {
       allow read: if isViveLojaAdmin();
