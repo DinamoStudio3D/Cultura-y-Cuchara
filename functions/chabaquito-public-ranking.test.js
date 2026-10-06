@@ -29,3 +29,10 @@ test("solo se publican hasta tres insignias con IDs seguros",()=>{
   const entry=publicRankingProjection({participateInRanking:true,publicAlias:"Explorador",validatedXp:100,publicBadgeIds:["uno","../../privado","dos","tres","cuatro","<x>"]});
   assert.deepEqual(entry.badgeIds,["uno","dos","tres"]);
 });
+
+
+test("un usuario puede activar el ranking antes de haber ganado XP",()=>{
+  const entry=publicRankingProjection({participateInRanking:true,publicAlias:"Nuevo explorador"});
+  assert.equal(entry.xp,0);
+  assert.equal(entry.level,1);
+});
