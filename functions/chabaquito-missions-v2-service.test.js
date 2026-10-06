@@ -42,3 +42,12 @@ test("el prefijo técnico qr_ no crea una segunda identidad de visita",()=>{
   const visit=evidenceFromSnapshot({id:"doc-1",data:()=>({sourceId:"qr_visit-1",placeId:"p1",status:"validated",verifiedAt:123})});
   assert.equal(visit.requestId,"visit-1");
 });
+
+test("dos visitas con el mismo origen producen un solo avance",()=>{
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[{...mission,targetCount:2}],visits:[
+    {requestId:"same-source",placeId:"p1",status:"confirmed",confirmedAt:100},
+    {requestId:"same-source",placeId:"p1",status:"confirmed",confirmedAt:101}
+  ],placesById:{}});
+  assert.equal(state.current,1);
+  assert.equal(state.completed,false);
+});
