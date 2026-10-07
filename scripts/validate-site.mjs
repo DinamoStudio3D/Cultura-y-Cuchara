@@ -21,6 +21,7 @@ const serviceWorker = read('service-worker.js');
 const firestoreRules = read('firestore.rules');
 const chabaquitoPublicV2 = read('js/chabaquito-public-v2.js');
 const backendFunctions = read('functions/index.js');
+const chabaquitoWorker = read('workers/chabaquito/src/index.js');
 
 for (const [name, content] of [['index.html', index], ['admin.html', admin], ['merchant-rewards.html', merchantRewards], ['fidelidad.html', loyaltyVisitor], ['confirmar-visitas.html', loyaltyMerchant], ['gestion-fidelidad.html', loyaltyAdmin], ['merchant-dashboard.html', merchantDashboard], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
     assert(!/^(<{7}|={7}|>{7})/m.test(content), `${name} no contiene conflictos de Git sin resolver`);
@@ -390,6 +391,22 @@ assert(loyaltyMerchant.includes("functions.httpsCallable('confirmLoyaltyVisit')"
 assert(firestoreRules.includes('dailyVisitCount'), 'Firestore protege el contador diario de fidelidad');
 assert(admin.includes('customCampaigns') && index.includes('customCampaignsPublic'), 'Las campañas personalizadas siguen conectadas entre administración y la web');
 assert(admin.includes('tourismDay'), 'La campaña del Día Mundial del Turismo conserva su configuración administrativa');
+
+// Chabaquito Worker preview: only functional routes should remain exposed.
+assert(chabaquitoWorker.includes('url.pathname === "/health"'), 'Worker conserva health check');
+assert(chabaquitoWorker.includes('url.pathname === "/merchant-confirm-visit"'), 'Worker conserva confirmación de visitas');
+assert(chabaquitoWorker.includes('url.pathname === "/merchant-reverse-visit"'), 'Worker conserva reversión de visitas');
+assert(chabaquitoWorker.includes('url.pathname === "/ranking-preference"'), 'Worker conserva preferencias del ranking');
+for (const route of ['/auth-test', '/firebase-test', '/firestore-test', '/mission-inspect', '/merchant-confirm-inspect']) {
+    assert(!chabaquitoWorker.includes(route), `Worker no expone diagnóstico temporal: ${route}`);
+}
+assert(chabaquitoWorker.includes('updateMask: { fieldPaths: Object.keys(codeFields) }'), 'Worker actualiza códigos sin reescribir campos ajenos');
+assert(chabaquitoWorker.includes('updateMask: { fieldPaths: Object.keys(profileFields) }'), 'Worker actualiza perfil de ranking sin reescribir campos ajenos');
+assert(chabaquitoWorker.includes('qualifyingVisitIds'), 'Worker persiste las visitas que califican para misiones');
+assert(chabaquitoWorker.includes('chabaquitoDigitalRewards'), 'Worker sincroniza recompensas digitales de misiones');
+assert(chabaquitoWorker.includes('visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app'), 'Worker usa el origen estable de Preview');
+assert(chabaquitoPublicV2.includes('workers.dev/ranking-preference'), 'Ranking público usa el Worker gratuito');
+assert(loyaltyMerchant.includes('workers.dev'), 'Confirmación de visitas usa el Worker gratuito');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
