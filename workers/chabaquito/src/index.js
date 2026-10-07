@@ -308,6 +308,120 @@ async function inspectMerchantConfirmation(env, user, requestId) {
   };
 }
 
+async function confirmMerchantVisit(env, user, input) {
+  const requestId = String(input?.requestId || "").trim();
+  if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
+
+  const amountRaw = Number(input?.purchaseAmount || 0);
+  const purchaseAmount = Number.isFinite(amountRaw)
+    ? Math.max(0, Math.min(100000, Math.round(amountRaw * 100) / 100))
+    : 0;
+  const receiptRef = String(input?.receiptRef || "").trim().slice(0, 80);
+  const accessToken = await getGoogleAccessToken(env);
+  const transaction = await firestoreBeginTransaction(accessToken);
+
+  const merchantDocument = await firestoreGetDocumentInTransaction(
+    accessToken,
+    `missionRewardMerchants/${user.uid}`,
+    transaction
+  );
+  if (!merchantDocument) throw new Error("Merchant account is not authorized");
+  const merchant = decodeFirestoreDocument(merchantDocument);
+  if (merchant.active === false || !Array.isArray(merchant.placeIds) || !merchant.placeIds.length) {
+    throw new Error("Merchant account is not authorized");
+  }
+
+  const codePath = `visitCodes/${requestId}`;
+  const codeDocument = await firestoreGetDocumentInTransaction(accessToken, codePath, transaction);
+  if (!codeDocument) throw new Error("Visit code was not found");
+  const code = decodeFirestoreDocument(codeDocument);
+  if (code.status !== "pending") throw new Error("Visit code is not pending");
+  if (!Number.isFinite(code.expiresAt) || code.expiresAt < Date.now()) throw new Error("Visit code has expired");
+  if (!merchant.placeIds.includes(code.placeId)) throw new Error("Merchant cannot confirm this place");
+  if (!validDocumentId(code.userId) || !validDocumentId(code.placeId)) throw new Error("Visit code data is invalid");
+
+  const visitPath = `loyaltyVisits/${requestId}`;
+  const counterId = cleanId(`${code.userId}_${code.placeId}`);
+  const counterPath = `loyaltyCounters/${counterId}`;
+  const programPath = `loyaltyPrograms/${code.placeId}`;
+
+  const [visitDocument, counterDocument, programDocument] = await Promise.all([
+    firestoreGetDocumentInTransaction(accessToken, visitPath, transaction),
+    firestoreGetDocumentInTransaction(accessToken, counterPath, transaction),
+    firestoreGetDocumentInTransaction(accessToken, programPath, transaction)
+  ]);
+  if (visitDocument) throw new Error("Visit was already registered");
+
+  const counter = counterDocument ? decodeFirestoreDocument(counterDocument) : null;
+  const program = programDocument ? decodeFirestoreDocument(programDocument) : null;
+  const today = ecuadorDay();
+  const maxDaily = Math.max(1, Math.min(3, Number(program?.maxVisitsPerDay || 1)));
+  const previousDaily = counter?.lastVisitDay === today ? Number(counter.dailyVisitCount || 0) : 0;
+  if (previousDaily >= maxDaily) throw new Error("Daily visit limit reached");
+
+  const now = new Date();
+  const newCount = Number(counter?.visitCount || 0) + 1;
+  const target = Math.max(10, Number(program?.targetVisits || 10));
+  const merchantName = merchant.businessName || user.email || "";
+
+  const codeFields = {
+    ...decodeFirestoreDocument(codeDocument),
+    status: "confirmed",
+    confirmedAt: now,
+    confirmedBy: user.uid,
+    confirmedByName: merchantName,
+    updatedAt: now
+  };
+  const visitFields = {
+    requestId,
+    userId: code.userId,
+    userName: code.userName || "",
+    userEmail: code.userEmail || "",
+    placeId: code.placeId,
+    placeName: code.placeName || "",
+    confirmedBy: user.uid,
+    confirmedByName: merchantName,
+    confirmedAt: now,
+    purchaseAmount,
+    receiptRef,
+    status: "confirmed",
+    previousVisitCount: Number(counter?.visitCount || 0),
+    previousTotalSpend: Number(counter?.totalSpend || 0),
+    previousDailyVisitCount: previousDaily,
+    previousLastVisitDay: counter?.lastVisitDay || "",
+    previousLastVisitAt: Number.isFinite(counter?.lastVisitAt) ? new Date(counter.lastVisitAt) : null,
+    previousLastVisitRequestId: counter?.lastVisitRequestId || ""
+  };
+  const counterFields = {
+    ...(counter || {}),
+    userId: code.userId,
+    userName: code.userName || counter?.userName || "",
+    userEmail: code.userEmail || counter?.userEmail || "",
+    placeId: code.placeId,
+    placeName: code.placeName || counter?.placeName || "",
+    visitCount: newCount,
+    lastVisitDay: today,
+    dailyVisitCount: previousDaily + 1,
+    lastVisitRequestId: requestId,
+    lastVisitAt: now,
+    totalSpend: Number(counter?.totalSpend || 0) + purchaseAmount,
+    updatedAt: now
+  };
+  if (!counter) counterFields.firstVisitAt = now;
+
+  const writes = [
+    { update: { name: documentName(codePath), fields: firestoreFields(codeFields) } },
+    { update: { name: documentName(visitPath), fields: firestoreFields(visitFields) }, currentDocument: { exists: false } },
+    {
+      update: { name: documentName(counterPath), fields: firestoreFields(counterFields) },
+      ...(counterDocument ? { currentDocument: { updateTime: counterDocument.updateTime } } : { currentDocument: { exists: false } })
+    }
+  ];
+
+  await firestoreCommit(accessToken, transaction, writes);
+  return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId };
+}
+
 async function testFirestore(env) {
   const accessToken = await getGoogleAccessToken(env);
   const firestoreUrl =
@@ -339,6 +453,16 @@ export default {
         return withCors(json({ ok: true, authenticated: true, uid: user.uid }), request);
       } catch (error) {
         return withCors(json({ ok: false, authenticated: false, error: error.message }, 401), request);
+      }
+    }
+    if (request.method === "POST" && url.pathname === "/merchant-confirm-visit") {
+      try {
+        const user = await verifyFirebaseIdToken(request);
+        const body = await request.json().catch(() => ({}));
+        const result = await confirmMerchantVisit(env, user, body);
+        return withCors(json({ ok: true, ...result }), request);
+      } catch (error) {
+        return withCors(json({ ok: false, error: error.message }, 400), request);
       }
     }
     if (request.method === "POST" && url.pathname === "/merchant-confirm-inspect") {
