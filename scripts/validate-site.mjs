@@ -409,6 +409,9 @@ assert(admin.includes('No se puede generar el QR sin encargado: esta parada no t
 assert(admin.includes('No se puede generar el QR sin encargado: selecciona primero el cantón'), 'El administrador bloquea QR sin cantón');
 assert(admin.includes('No se puede generar el QR sin encargado: publica primero la parada'), 'El administrador bloquea QR de paradas no publicadas');
 assert(chabaquitoWorker.includes('String(place.discovery?.qrId || "") !== qrId'), 'El Worker exige que el QR pertenezca a la parada validada');
+assert(selfCheckin.includes("discoveryMethod==='proximity'||discoveryMethod==='both'||place.validationMode==='self_checkin'"), 'La página de visita acepta los modos canónicos proximity/both');
+assert(selfCheckin.includes("!place.discovery?.enabled||!proximityEnabled"), 'La página de visita exige discovery habilitado');
+
 
 
 for (const route of ['/auth-test', '/firebase-test', '/firestore-test', '/mission-inspect', '/merchant-confirm-inspect']) {
