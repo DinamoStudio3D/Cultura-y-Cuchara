@@ -422,6 +422,36 @@ async function confirmMerchantVisit(env, user, input) {
   return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId };
 }
 
+async function firestoreRunQuery(accessToken, structuredQuery) {
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
+      body: JSON.stringify({ structuredQuery })
+    }
+  );
+  if (!response.ok) throw new Error(`Firestore query failed (${response.status})`);
+  const rows = await response.json();
+  return rows.map(row => row.document).filter(Boolean);
+}
+
+async function loadConfirmedVisitCount(accessToken, visitorUid) {
+  const documents = await firestoreRunQuery(accessToken, {
+    from: [{ collectionId: "loyaltyVisits" }],
+    where: {
+      compositeFilter: {
+        op: "AND",
+        filters: [
+          { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: visitorUid } } },
+          { fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "confirmed" } } }
+        ]
+      }
+    }
+  });
+  return documents.length;
+}
+
 async function testFirestore(env) {
   const accessToken = await getGoogleAccessToken(env);
   const firestoreUrl =
