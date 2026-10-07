@@ -147,6 +147,16 @@ async function getGoogleAccessToken(env) {
   return token.access_token;
 }
 
+async function firestoreGetDocument(accessToken, documentPath) {
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${documentPath}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Firestore read failed (${response.status})`);
+  return response.json();
+}
+
 async function testFirestore(env) {
   const accessToken = await getGoogleAccessToken(env);
   const firestoreUrl =
