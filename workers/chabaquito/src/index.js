@@ -541,20 +541,25 @@ async function firestoreRunQuery(accessToken, structuredQuery) {
   return rows.map(row => row.document).filter(Boolean);
 }
 
-async function loadConfirmedVisitCount(accessToken, visitorUid) {
+async function loadConfirmedVisits(accessToken, visitorUid) {
   const documents = await firestoreRunQuery(accessToken, {
     from: [{ collectionId: "loyaltyVisits" }],
     where: {
-      compositeFilter: {
-        op: "AND",
-        filters: [
-          { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: visitorUid } } },
-          { fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "confirmed" } } }
-        ]
-      }
+      fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: visitorUid } }
     }
   });
-  return documents.length;
+  return documents.map(document => {
+    const visit = decodeFirestoreDocument(document);
+    return { ...visit, requestId: visit.requestId || document.name.split("/").pop() };
+  }).filter(visit => visit.status === "confirmed" && Number.isFinite(visit.confirmedAt));
+}
+
+function missionVisitIsEligible(mission, visit) {
+  const startsAt = Number.isFinite(mission?.startsAt) ? mission.startsAt : null;
+  const endsAt = Number.isFinite(mission?.endsAt) ? mission.endsAt : null;
+  if (startsAt !== null && visit.confirmedAt < startsAt) return false;
+  if (endsAt !== null && visit.confirmedAt > endsAt) return false;
+  return true;
 }
 
 function missionProgressDocumentId(userId, missionId) {
@@ -575,7 +580,7 @@ async function syncTotalVisitMissionProgress(env, visitorUid) {
       }
     }
   });
-  const confirmedVisits = await loadConfirmedVisitCount(accessToken, visitorUid);
+  const confirmedVisits = await loadConfirmedVisits(accessToken, visitorUid);
   const states = [];
 
   for (const document of missionDocuments) {
@@ -583,11 +588,18 @@ async function syncTotalVisitMissionProgress(env, visitorUid) {
     const mission = decodeFirestoreDocument(document);
     const target = Number(mission.targetCount);
     if (!Number.isSafeInteger(target) || target < 1 || target > 500) continue;
-    const current = Math.min(confirmedVisits, target);
+
+    const qualifyingVisits = confirmedVisits.filter(visit => missionVisitIsEligible(mission, visit));
+    const qualifyingVisitIds = [...new Set(qualifyingVisits.map(visit => String(visit.requestId || "")).filter(Boolean))];
+    const current = Math.min(qualifyingVisitIds.length, target);
     const completed = current >= target;
     const progressId = missionProgressDocumentId(visitorUid, missionId);
     const progressPath = `chabaquitoMissionProgress/${progressId}`;
-    const existingDocument = await firestoreGetDocument(accessToken, progressPath);
+    const rewardPath = `chabaquitoDigitalRewards/${progressId}`;
+    const [existingDocument, rewardDocument] = await Promise.all([
+      firestoreGetDocument(accessToken, progressPath),
+      firestoreGetDocument(accessToken, rewardPath)
+    ]);
     const existing = existingDocument ? decodeFirestoreDocument(existingDocument) : null;
     const now = new Date();
     const progressData = {
@@ -596,23 +608,47 @@ async function syncTotalVisitMissionProgress(env, visitorUid) {
       current,
       target,
       completed,
-      qualifyingVisitIds: [],
+      qualifyingVisitIds,
       completedAt: completed
         ? (Number.isFinite(existing?.completedAt) ? new Date(existing.completedAt) : now)
         : null,
       updatedAt: now
     };
+    const writes = [{ update: { name: documentName(progressPath), fields: firestoreFields(progressData) } }];
+
+    if (completed && !rewardDocument) {
+      writes.push({
+        update: {
+          name: documentName(rewardPath),
+          fields: firestoreFields({
+            missionId,
+            userId: visitorUid,
+            badge: mission.badge || null,
+            rewardType: mission.rewardType || "digital",
+            physicalCampaignId: mission.physicalCampaignId || null,
+            unlockedAt: now,
+            source: "chabaquito_mission_v2",
+            version: 1
+          })
+        },
+        currentDocument: { exists: false }
+      });
+    } else if (!completed && rewardDocument) {
+      writes.push({ delete: documentName(rewardPath), currentDocument: { updateTime: rewardDocument.updateTime } });
+    }
+
     const response = await fetch(
       `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
       {
         method: "POST",
         headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
-        body: JSON.stringify({
-          writes: [{ update: { name: documentName(progressPath), fields: firestoreFields(progressData) } }]
-        })
+        body: JSON.stringify({ writes })
       }
     );
-    if (!response.ok) throw new Error(`Mission progress write failed (${response.status})`);
+    if (!response.ok) {
+      const detail = await response.text();
+      throw new Error(`Mission progress write failed (${response.status}): ${detail.slice(0, 180)}`);
+    }
     states.push({ missionId, current, target, completed });
   }
   return states;
