@@ -716,6 +716,12 @@ async function validateProximityVisit(env, user, input) {
   const placeDocument = await firestoreGetDocument(accessToken, `locales/${qr.placeId}`);
   if (!placeDocument) throw new Error("Parada no encontrada");
   const place = decodeFirestoreDocument(placeDocument);
+  if (place.active === false || (place.publicationStatus != null && String(place.publicationStatus).toLowerCase() !== "published")) {
+    throw new Error("Parada no publicada o inactiva");
+  }
+  const canonicalCantons = new Set(["loja","calvas","catamayo","celica","chaguarpamba","espindola","gonzanama","macara","olmedo","paltas","pindal","puyango","quilanga","saraguro","sozoranga","zapotillo"]);
+  const cantonId = String(place.cantonId || "").trim().toLocaleLowerCase("es");
+  if (!canonicalCantons.has(cantonId)) throw new Error("Parada sin cantonId válido");
   const method = String(place.discovery?.method || "");
   if (place.discovery?.enabled !== true || !["proximity", "both"].includes(method) || String(place.discovery?.qrId || "") !== qrId) {
     throw new Error("QR no asociado o método no permitido");
@@ -742,7 +748,7 @@ async function validateProximityVisit(env, user, input) {
   const profilePath = `chabaquitoExplorerProfiles/${user.uid}`;
   const evidence = {
     type: "self_visit", sourceId: evidenceId, proofId: null, userId: user.uid,
-    placeId: qr.placeId, cantonId: place.cantonId || null, status: "validated",
+    placeId: qr.placeId, cantonId, status: "validated",
     verifiedAt: nowMs, firstVerifiedAt: nowMs, validationMethod: "self_visit",
     scope: "tourism_discovery", schemaVersion: 1, reversedAt: null, updatedAt: nowMs
   };
@@ -755,9 +761,9 @@ async function validateProximityVisit(env, user, input) {
   const placeIds = new Set(validatedEvidence.map(item => item.placeId).filter(Boolean));
   const cantonIds = new Set(validatedEvidence.map(item => item.cantonId).filter(Boolean));
   const isNewPlace = !placeIds.has(qr.placeId);
-  const isNewCanton = Boolean(place.cantonId) && !cantonIds.has(place.cantonId);
+  const isNewCanton = !cantonIds.has(cantonId);
   placeIds.add(qr.placeId);
-  if (place.cantonId) cantonIds.add(place.cantonId);
+  cantonIds.add(cantonId);
 
   const profileDocument = await firestoreGetDocument(accessToken, profilePath);
   const profile = profileDocument ? decodeFirestoreDocument(profileDocument) : {};
