@@ -560,7 +560,14 @@ function missionList(value) {
 }
 
 function missionMatchedKeys(mission, visits, placesById) {
-  const valid = visits.filter(visit => visit.status === "confirmed" && missionVisitIsEligible(mission, visit));
+  const byVisitId = new Map();
+  for (const visit of Array.isArray(visits) ? visits : []) {
+    const visitId = missionText(visit?.requestId);
+    if (!visitId) continue;
+    const previous = byVisitId.get(visitId);
+    if (!previous || visit.status === "reversed" || previous.status !== "reversed") byVisitId.set(visitId, visit);
+  }
+  const valid = [...byVisitId.values()].filter(visit => visit.status === "confirmed" && missionVisitIsEligible(mission, visit));
   if (mission.type === "total_visits") return valid.map(visit => missionText(visit.requestId)).filter(Boolean);
   if (mission.type === "place_visits") {
     const allowed = new Set(missionList(mission.placeIds));
@@ -610,9 +617,7 @@ async function syncUserMissionProgress(env, visitorUid) {
     if (!["total_visits", "place_visits", "category_visits", "canton_visits"].includes(mission.type)) continue;
 
     const matchedKeys = missionMatchedKeys(mission, visits, placesById);
-    const qualifyingVisitIds = mission.type === "total_visits"
-      ? [...new Set(matchedKeys)]
-      : [...new Set(matchedKeys)];
+    const qualifyingVisitIds = mission.type === "total_visits" ? matchedKeys : [...new Set(matchedKeys)];
     const current = Math.min(qualifyingVisitIds.length, target);
     const completed = current >= target;
     const progressId = missionProgressDocumentId(visitorUid, missionId);
