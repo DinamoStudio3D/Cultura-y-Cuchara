@@ -404,6 +404,12 @@ assert(chabaquitoWorker.includes('24 * 60 * 60 * 1000'), 'Worker conserva cooldo
 assert(chabaquitoWorker.includes('const evidenceKey = `self_visit:${evidenceId}`'), 'Worker conserva la clave canónica de evidencia QR');
 assert((chabaquitoWorker.match(/currentDocument: \{ exists: false \}/g)||[]).length >= 4, 'Worker protege creaciones únicas de evidencia, XP y auditoría');
 assert(chabaquitoWorker.includes('currentDocument: { updateTime: profileDocument.updateTime }'), 'Worker evita actualizar XP sobre un perfil concurrentemente modificado');
+assert(chabaquitoWorker.includes('async function firestoreRunQuery(accessToken, structuredQuery, transaction = null)'), 'Worker permite consultas Firestore dentro de una transacción');
+assert(chabaquitoWorker.includes('}, transaction);'), 'La evidencia QR se consulta dentro de la transacción');
+assert(chabaquitoWorker.includes('firestoreGetDocumentInTransaction(accessToken, evidencePath, transaction)'), 'La evidencia QR se comprueba dentro de la transacción');
+assert(chabaquitoWorker.includes('firestoreGetDocumentInTransaction(accessToken, profilePath, transaction)'), 'El perfil Chabaquito se lee dentro de la transacción QR');
+assert(chabaquitoWorker.includes('await firestoreCommit(accessToken, transaction, writes)'), 'La evidencia y XP QR se confirman en una sola transacción');
+
 
 assert(admin.includes("visitPurpose==='self_checkin'"), 'El administrador vincula los QR permanentes de autovisita');
 assert(admin.includes("const linkedQrId=unattended?String(place.discovery?.qrId||'').trim():''"), 'El administrador reutiliza el QR permanente ya vinculado');
