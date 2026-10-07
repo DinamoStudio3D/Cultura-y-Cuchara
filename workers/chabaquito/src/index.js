@@ -229,6 +229,16 @@ export default {
         return withCors(json({ ok: false, authenticated: false, error: error.message }, 401), request);
       }
     }
+    if (request.method === "POST" && url.pathname === "/mission-inspect") {
+      try {
+        const user = await verifyFirebaseIdToken(request);
+        const body = await request.json().catch(() => ({}));
+        const mission = await inspectActiveMission(env, body.missionId);
+        return withCors(json({ ok: true, authenticated: true, uid: user.uid, mission }), request);
+      } catch (error) {
+        return withCors(json({ ok: false, error: error.message }, 400), request);
+      }
+    }
     if (request.method === "GET" && url.pathname === "/firebase-test") {
       try {
         await getGoogleAccessToken(env);
