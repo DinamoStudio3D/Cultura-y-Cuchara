@@ -452,6 +452,38 @@ async function loadConfirmedVisitCount(accessToken, visitorUid) {
   return documents.length;
 }
 
+function missionProgressDocumentId(userId, missionId) {
+  return `v2_${base64url(userId)}_${base64url(missionId)}`;
+}
+
+async function syncTotalVisitMissionProgress(env, visitorUid) {
+  const accessToken = await getGoogleAccessToken(env);
+  const missionDocuments = await firestoreRunQuery(accessToken, {
+    from: [{ collectionId: "chabaquitoMissions" }],
+    where: {
+      compositeFilter: {
+        op: "AND",
+        filters: [
+          { fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "active" } } },
+          { fieldFilter: { field: { fieldPath: "type" }, op: "EQUAL", value: { stringValue: "total_visits" } } }
+        ]
+      }
+    }
+  });
+  const confirmedVisits = await loadConfirmedVisitCount(accessToken, visitorUid);
+  const states = [];
+
+  for (const document of missionDocuments) {
+    const missionId = document.name.split("/").pop();
+    const mission = decodeFirestoreDocument(document);
+    const target = Number(mission.targetCount);
+    if (!Number.isSafeInteger(target) || target < 1 || target > 500) continue;
+    const current = Math.min(confirmedVisits, target);
+    states.push({ missionId, current, target, completed: current >= target });
+  }
+  return states;
+}
+
 async function testFirestore(env) {
   const accessToken = await getGoogleAccessToken(env);
   const firestoreUrl =
