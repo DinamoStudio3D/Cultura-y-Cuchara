@@ -397,6 +397,12 @@ assert(chabaquitoWorker.includes('url.pathname === "/health"'), 'Worker conserva
 assert(chabaquitoWorker.includes('url.pathname === "/merchant-confirm-visit"'), 'Worker conserva confirmación de visitas');
 assert(chabaquitoWorker.includes('url.pathname === "/merchant-reverse-visit"'), 'Worker conserva reversión de visitas');
 assert(chabaquitoWorker.includes('url.pathname === "/ranking-preference"'), 'Worker conserva preferencias del ranking');
+assert(chabaquitoWorker.includes('url.pathname === "/proximity-visit"'), 'Worker conserva validación QR por proximidad');
+assert(chabaquitoWorker.includes('Fuera del radio de 15 metros'), 'Worker valida el radio seguro de 15 metros');
+assert(chabaquitoWorker.includes('accuracy > 20'), 'Worker rechaza GPS con precisión peor a 20 metros');
+assert(chabaquitoWorker.includes('24 * 60 * 60 * 1000'), 'Worker conserva cooldown de 24 horas para autovisitas');
+assert(chabaquitoWorker.includes('const evidenceKey = `self_visit:${evidenceId}`'), 'Worker conserva la clave canónica de evidencia QR');
+
 for (const route of ['/auth-test', '/firebase-test', '/firestore-test', '/mission-inspect', '/merchant-confirm-inspect']) {
     assert(!chabaquitoWorker.includes(route), `Worker no expone diagnóstico temporal: ${route}`);
 }
