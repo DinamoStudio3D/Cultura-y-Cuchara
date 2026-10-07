@@ -1906,6 +1906,18 @@ async function migrateLegacyPlacePins(){if(legacyPinMigrationRunning)return;cons
 function prepareStopQr(id){
     const place=adminPlaces.find(item=>item.id===id);if(!place)return;
     showAdminModule('qr');
+    const qrNotice=document.getElementById('qrMessage');
+    const lat=Number(place.lat),lng=Number(place.lng),mode=String(place.validationMode||'');
+    const unattended=mode==='self_checkin';
+    if(unattended&&(!Number.isFinite(lat)||lat<-90||lat>90||!Number.isFinite(lng)||lng<-180||lng>180)){
+        resetQrForm();message(qrNotice,'No se puede generar el QR sin encargado: esta parada no tiene coordenadas válidas. Corrige latitud y longitud y guarda primero la parada.');return;
+    }
+    if(unattended&&String(place.publicationStatus||'').toLowerCase()!=='published'){
+        resetQrForm();message(qrNotice,'No se puede generar el QR sin encargado: publica primero la parada para evitar instalar un QR de un lugar todavía no disponible.');return;
+    }
+    if(unattended&&!String(place.cantonId||'').trim()){
+        resetQrForm();message(qrNotice,'No se puede generar el QR sin encargado: selecciona primero el cantón en la configuración de Chabaquito y guarda la parada.');return;
+    }
     const qrApi=window.VisitaLojaVisitQrMode;
     if(!qrApi){resetQrForm();message(document.getElementById('qrMessage'),'No se pudo cargar la clasificación del QR de visita. Recarga el panel antes de generar este código.');return;}
     const descriptor=qrApi.buildVisitQrDescriptor(place,id),stopSlug=createAdminSlug(place.title),qrId=`parada-${stopSlug}`,existing=adminQrCodes.find(item=>item.id===qrId);
