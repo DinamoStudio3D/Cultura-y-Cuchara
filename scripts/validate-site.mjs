@@ -418,6 +418,14 @@ assert(chabaquitoWorker.includes('updateMask: { fieldPaths: Object.keys(codeFiel
 assert(chabaquitoWorker.includes('updateMask: { fieldPaths: Object.keys(profileFields) }'), 'Worker actualiza perfil de ranking sin reescribir campos ajenos');
 assert(chabaquitoWorker.includes('qualifyingVisitIds'), 'Worker persiste las visitas que califican para misiones');
 assert(chabaquitoWorker.includes('chabaquitoDigitalRewards'), 'Worker sincroniza recompensas digitales de misiones');
+assert(chabaquitoWorker.includes('"total_visits", "place_visits", "category_visits", "canton_visits"'), 'Worker admite los cuatro tipos de misión V2');
+assert(chabaquitoWorker.includes('collectionId: "evidence", allDescendants: true'), 'Worker incorpora evidencia confiable de Chabaquito a las misiones');
+assert(chabaquitoWorker.includes('source: "chabaquito_evidence"'), 'Worker prioriza evidencia turística de Chabaquito');
+assert(chabaquitoWorker.includes('item.status === "validated" || item.status === "reversed"'), 'Worker contempla evidencia validada y revertida');
+assert(chabaquitoWorker.includes('new Set(missionList(mission.placeIds))'), 'Misiones por lugares respetan la lista explícita de paradas');
+assert(chabaquitoWorker.includes('new Set(missionList(mission.categoryIds)'), 'Misiones por categoría respetan su alcance configurado');
+assert(chabaquitoWorker.includes('new Set(missionList(mission.cantonIds)'), 'Misiones por cantón respetan su alcance configurado');
+
 assert(chabaquitoWorker.includes('visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app'), 'Worker usa el origen estable de Preview');
 assert(chabaquitoPublicV2.includes('workers.dev/ranking-preference'), 'Ranking público usa el Worker gratuito');
 assert(loyaltyMerchant.includes('workers.dev'), 'Confirmación de visitas usa el Worker gratuito');
