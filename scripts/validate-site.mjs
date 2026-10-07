@@ -417,6 +417,10 @@ assert(admin.includes('No se puede generar el QR sin encargado: esta parada no t
 assert(admin.includes('No se puede generar el QR sin encargado: selecciona primero el cantón'), 'El administrador bloquea QR sin cantón');
 assert(admin.includes('No se puede generar el QR sin encargado: publica primero la parada'), 'El administrador bloquea QR de paradas no publicadas');
 assert(chabaquitoWorker.includes('String(place.discovery?.qrId || "") !== qrId'), 'El Worker exige que el QR pertenezca a la parada validada');
+assert(chabaquitoWorker.includes('Parada no publicada o inactiva'), 'El Worker rechaza QR de paradas inactivas o no publicadas');
+assert(chabaquitoWorker.includes('canonicalCantons'), 'El Worker exige un cantonId canónico de Loja');
+assert(chabaquitoWorker.includes('Parada sin cantonId válido'), 'El Worker bloquea autovisitas sin cantón válido');
+
 assert(selfCheckin.includes("discoveryMethod==='proximity'||discoveryMethod==='both'||place.validationMode==='self_checkin'"), 'La página de visita acepta los modos canónicos proximity/both');
 assert(selfCheckin.includes("!place.discovery?.enabled||!proximityEnabled"), 'La página de visita exige discovery habilitado');
 
