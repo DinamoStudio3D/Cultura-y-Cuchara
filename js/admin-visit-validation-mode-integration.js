@@ -19,6 +19,18 @@
       if (submit && submit.parentElement) submit.parentElement.insertBefore(wrapper, submit); else form.appendChild(wrapper);
     }
     wrapper.querySelector("#placeValidationMode").addEventListener("change", renderHelp); renderHelp();
+    ensureCantonSelector();
+  }
+  function ensureCantonSelector() {
+    const form=findPlaceForm();
+    if(!form||document.getElementById("placeCantonId"))return;
+    const cantons=window.ChabaquitoPlaceConfig?.CANTONS||[];
+    const field=document.createElement("div");
+    field.id="placeCantonField";
+    field.className="rounded-xl border border-cyan-500/25 bg-cyan-500/10 p-4";
+    field.innerHTML=`<label class="block"><span class="text-sm font-black block mb-2"><i class="fa-solid fa-location-dot mr-1"></i>Cantón *</span><select id="placeCantonId" class="field"><option value="">Selecciona el cantón</option>${cantons.map(c=>`<option value="${c.id}">${c.name}</option>`).join("")}</select></label><p class="text-xs text-gray-400 mt-2">Se usa para validar visitas, misiones y descubrimientos de Chabaquito.</p>`;
+    const mode=document.getElementById("placeValidationModeField");
+    if(mode)mode.insertAdjacentElement("afterend",field);else form.prepend(field);
   }
   function ensureMesaTuristicaNav() {
     if (document.getElementById("mesaTuristicaNavLink")) return;
@@ -27,7 +39,7 @@
     const link = document.createElement("a"); link.id="mesaTuristicaNavLink"; link.setAttribute("data-nav-item",""); link.href="gestion-mesa-turistica.html"; link.className="block w-full text-left text-cyan-200 hover:bg-cyan-500/10 font-bold rounded-xl px-4 py-3"; link.innerHTML='<i class="fa-solid fa-people-group w-6"></i>Mesa Turística'; link.title="Administrar información, agenda, noticias, integrantes, galería y contacto de la Mesa Turística de Loja"; navItems.appendChild(link);
   }
   function renderHelp(){const select=document.getElementById("placeValidationMode"),help=document.getElementById("placeValidationModeHelp");if(!select||!help)return;const selfCheckin=select.value==="self_checkin";help.textContent=selfCheckin?"El visitante escanea un QR permanente y el celular valida que esté físicamente en el lugar mediante GPS. Requiere coordenadas, cantón y la parada publicada.":"El visitante obtiene su visita mediante confirmación de personal autorizado. Fidelidad comercial permanece habilitada.";}
-  function setMode(value){ensureSelector();const select=document.getElementById("placeValidationMode");if(!select)return;select.value=api.normalizeAdminVisitValidationMode(value);renderHelp();}
+  function setMode(value){ensureSelector();ensureCantonSelector();const select=document.getElementById("placeValidationMode");if(!select)return;select.value=api.normalizeAdminVisitValidationMode(value);renderHelp();}
   function getMode(){const select=document.getElementById("placeValidationMode");return api.normalizeAdminVisitValidationMode(select&&select.value);}
   function subscriptionDraft(){try{const plans=window.eval("subscriptionDraftPlans");return Array.isArray(plans)?plans:[];}catch(_){return[];}}
   function adminPlaces(){try{const places=window.eval("adminPlaces");return Array.isArray(places)?places:[];}catch(_){return[];}}
@@ -43,7 +55,7 @@
   function integrateGalleryLimitsWithPlanEditor(){if(typeof window.renderSubscriptionEditors==="function"&&!window.renderSubscriptionEditors.__galleryLimitsIntegrated){const original=window.renderSubscriptionEditors,wrapped=function(){const result=original.apply(this,arguments);injectGalleryLimitsIntoExistingPlanEditor();return result;};wrapped.__galleryLimitsIntegrated=true;window.renderSubscriptionEditors=wrapped;}if(typeof window.syncSubscriptionEditors==="function"&&!window.syncSubscriptionEditors.__galleryLimitsIntegrated){const original=window.syncSubscriptionEditors,wrapped=function(){const result=original.apply(this,arguments);syncGalleryLimitsIntoDraft();return result;};wrapped.__galleryLimitsIntegrated=true;window.syncSubscriptionEditors=wrapped;}injectGalleryLimitsIntoExistingPlanEditor();}
   function watchPlacePlanSaves(){const form=findPlaceForm();if(!form||form.dataset.entitlementSyncBound)return;form.dataset.entitlementSyncBound="true";form.addEventListener("submit",()=>{const placeId=document.getElementById("placeEditId")?.value;setTimeout(async()=>{if(!placeId)return;const place=adminPlaces().find(item=>item.id===placeId);if(!place)return;try{await writeBusinessEntitlement(place);}catch(error){console.warn("No se pudo sincronizar businessEntitlements:",error);}},1200);});}
   function watchPlanSettingsSaves(){const form=document.getElementById("subscriptionsForm");if(!form||form.dataset.entitlementSyncBound)return;form.dataset.entitlementSyncBound="true";form.addEventListener("submit",()=>setTimeout(()=>syncAllBusinessEntitlements().catch(error=>console.warn("No se pudieron sincronizar límites de negocios:",error)),1200));}
-  function initializeAdminIntegration(){ensureSelector();ensureMesaTuristicaNav();integrateGalleryLimitsWithPlanEditor();watchPlacePlanSaves();watchPlanSettingsSaves();}
-  window.VisitaLojaVisitValidationAdminIntegration=Object.freeze({ensureSelector,setMode,getMode,ensureMesaTuristicaNav,integrateGalleryLimitsWithPlanEditor,injectGalleryLimitsIntoExistingPlanEditor,writeBusinessEntitlement,syncAllBusinessEntitlements,effectiveEntitlement});
+  function initializeAdminIntegration(){ensureSelector();ensureCantonSelector();ensureMesaTuristicaNav();integrateGalleryLimitsWithPlanEditor();watchPlacePlanSaves();watchPlanSettingsSaves();}
+  window.VisitaLojaVisitValidationAdminIntegration=Object.freeze({ensureSelector,ensureCantonSelector,setMode,getMode,ensureMesaTuristicaNav,integrateGalleryLimitsWithPlanEditor,injectGalleryLimitsIntoExistingPlanEditor,writeBusinessEntitlement,syncAllBusinessEntitlements,effectiveEntitlement});
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initializeAdminIntegration);else initializeAdminIntegration();
 })();
