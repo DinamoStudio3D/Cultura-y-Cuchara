@@ -1,6 +1,60 @@
 const PROJECT_ID = "cultura-y-cuchara";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const FIRESTORE_SCOPE = "https://www.googleapis.com/auth/datastore";
+const FIREBASE_JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
+
+function decodeJwtPart(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+  return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(padded), ch => ch.charCodeAt(0))));
+}
+
+async function verifyFirebaseIdToken(request) {
+  const authorization = request.headers.get("authorization") || "";
+  if (!authorization.startsWith("Bearer ")) throw new Error("Firebase ID token is required");
+  const token = authorization.slice(7).trim();
+  const parts = token.split(".");
+  if (parts.length !== 3) throw new Error("Invalid Firebase ID token");
+
+  const header = decodeJwtPart(parts[0]);
+  const payload = decodeJwtPart(parts[1]);
+  if (header.alg !== "RS256" || !header.kid) throw new Error("Unsupported Firebase ID token");
+
+  const keysResponse = await fetch(FIREBASE_JWKS_URL, { cf: { cacheTtl: 3600, cacheEverything: true } });
+  if (!keysResponse.ok) throw new Error("Firebase signing keys unavailable");
+  const jwks = await keysResponse.json();
+  const jwk = Array.isArray(jwks.keys) ? jwks.keys.find(key => key.kid === header.kid) : null;
+  if (!jwk) throw new Error("Firebase signing key not found");
+
+  const publicKey = await crypto.subtle.importKey(
+    "jwk",
+    jwk,
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["verify"]
+  );
+  const signatureValue = parts[2].replace(/-/g, "+").replace(/_/g, "/");
+  const signaturePadded = signatureValue + "=".repeat((4 - signatureValue.length % 4) % 4);
+  const signature = Uint8Array.from(atob(signaturePadded), ch => ch.charCodeAt(0));
+  const validSignature = await crypto.subtle.verify(
+    "RSASSA-PKCS1-v1_5",
+    publicKey,
+    signature,
+    new TextEncoder().encode(`${parts[0]}.${parts[1]}`)
+  );
+  if (!validSignature) throw new Error("Invalid Firebase ID token signature");
+
+  const now = Math.floor(Date.now() / 1000);
+  if (payload.aud !== PROJECT_ID) throw new Error("Invalid Firebase ID token audience");
+  if (payload.iss !== `https://securetoken.google.com/${PROJECT_ID}`) throw new Error("Invalid Firebase ID token issuer");
+  if (!payload.sub || typeof payload.sub !== "string" || payload.sub.length > 128) throw new Error("Invalid Firebase user");
+  if (!Number.isFinite(payload.exp) || payload.exp <= now) throw new Error("Firebase ID token expired");
+  if (!Number.isFinite(payload.iat) || payload.iat > now + 60) throw new Error("Invalid Firebase ID token issued-at time");
+  if (Number.isFinite(payload.auth_time) && payload.auth_time > now + 60) throw new Error("Invalid Firebase authentication time");
+
+  return { uid: payload.sub, email: typeof payload.email === "string" ? payload.email : null };
+}
+
 
 const json = (body, status = 200) => new Response(JSON.stringify(body), {
   status,
@@ -89,6 +143,15 @@ export default {
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/health") {
       return json({ ok: true, service: "chabaquito", project: env.FIREBASE_PROJECT_ID || PROJECT_ID });
+    }
+
+    if (request.method === "GET" && url.pathname === "/auth-test") {
+      try {
+        const user = await verifyFirebaseIdToken(request);
+        return json({ ok: true, authenticated: true, uid: user.uid });
+      } catch (error) {
+        return json({ ok: false, authenticated: false, error: error.message }, 401);
+      }
     }
     if (request.method === "GET" && url.pathname === "/firebase-test") {
       try {
