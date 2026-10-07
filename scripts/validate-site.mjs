@@ -452,6 +452,9 @@ assert(chabaquitoWorker.includes('item.status === "validated" || item.status ===
 assert(chabaquitoWorker.includes('new Set(missionList(mission.placeIds))'), 'Misiones por lugares respetan la lista explícita de paradas');
 assert(chabaquitoWorker.includes('new Set(missionList(mission.categoryIds)'), 'Misiones por categoría respetan su alcance configurado');
 assert(chabaquitoWorker.includes('new Set(missionList(mission.cantonIds)'), 'Misiones por cantón respetan su alcance configurado');
+assert(chabaquitoWorker.includes('const canton = missionText(place.cantonId).toLocaleLowerCase("es")'), 'Misiones por cantón usan únicamente el cantonId canónico');
+assert(!chabaquitoWorker.includes('place.cantonId || place.canton || place.city || place.ciudad || place.municipality'), 'Worker no mezcla nombres legacy con cantonId en misiones');
+
 const chabaquitoMissionAdmin = read('js/admin-chabaquito-missions-v2.js');
 assert(chabaquitoMissionAdmin.includes("new Map(scopeRaw.map(value=>[value.toLocaleLowerCase('es'),value]))"), 'El administrador elimina alcances duplicados de las misiones');
 assert(chabaquitoMissionAdmin.includes("type==='place_visits'&&m.targetCount>scope.length"), 'La meta por lugares no supera los lugares únicos configurados');
