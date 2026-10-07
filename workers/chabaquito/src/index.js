@@ -486,13 +486,13 @@ async function reverseMerchantVisit(env, user, input) {
   return { visitCount: restoredCount, target, visitorUid: visit.userId, placeId: visit.placeId, missions };
 }
 
-async function firestoreRunQuery(accessToken, structuredQuery) {
+async function firestoreRunQuery(accessToken, structuredQuery, transaction = null) {
   const response = await fetch(
     `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery`,
     {
       method: "POST",
       headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
-      body: JSON.stringify({ structuredQuery })
+      body: JSON.stringify(transaction ? { structuredQuery, transaction } : { structuredQuery })
     }
   );
   if (!response.ok) throw new Error(`Firestore query failed (${response.status})`);
@@ -730,10 +730,11 @@ async function validateProximityVisit(env, user, input) {
   if (!Number.isFinite(placeLat) || !Number.isFinite(placeLng) || Math.abs(placeLat) > 90 || Math.abs(placeLng) > 180) throw new Error("Parada sin coordenadas válidas");
   if (distanceMeters({ latitude: placeLat, longitude: placeLng }, { latitude, longitude }) > 15) throw new Error("Fuera del radio de 15 metros");
 
+  const transaction = await firestoreBeginTransaction(accessToken);
   const evidenceDocuments = await firestoreRunQuery(accessToken, {
     from: [{ collectionId: "evidence", allDescendants: true }],
     where: { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: user.uid } } }
-  });
+  }, transaction);
   const recent = evidenceDocuments.map(decodeFirestoreDocument).find(item =>
     item.scope === "tourism_discovery" && item.type === "self_visit" && item.status === "validated" &&
     item.placeId === qr.placeId && Number.isFinite(item.verifiedAt) && nowMs >= item.verifiedAt &&
@@ -752,7 +753,7 @@ async function validateProximityVisit(env, user, input) {
     verifiedAt: nowMs, firstVerifiedAt: nowMs, validationMethod: "self_visit",
     scope: "tourism_discovery", schemaVersion: 1, reversedAt: null, updatedAt: nowMs
   };
-  const existingEvidence = await firestoreGetDocument(accessToken, evidencePath);
+  const existingEvidence = await firestoreGetDocumentInTransaction(accessToken, evidencePath, transaction);
   if (existingEvidence) throw new Error("Esta evidencia de visita ya fue registrada");
 
   const validatedEvidence = evidenceDocuments.map(decodeFirestoreDocument).filter(item =>
@@ -765,7 +766,7 @@ async function validateProximityVisit(env, user, input) {
   placeIds.add(qr.placeId);
   cantonIds.add(cantonId);
 
-  const profileDocument = await firestoreGetDocument(accessToken, profilePath);
+  const profileDocument = await firestoreGetDocumentInTransaction(accessToken, profilePath, transaction);
   const profile = profileDocument ? decodeFirestoreDocument(profileDocument) : {};
   const previousXp = Number(profile.validatedXp || 0);
   if (!Number.isSafeInteger(previousXp) || previousXp < 0) throw new Error("Perfil Chabaquito inconsistente");
@@ -817,11 +818,11 @@ async function validateProximityVisit(env, user, input) {
     currentDocument: { exists: false }
   });
 
-  const response = await fetch(
-    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
-    { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" }, body: JSON.stringify({ writes }) }
-  );
-  if (!response.ok) throw new Error("No se pudo registrar la evidencia de visita");
+  try {
+    await firestoreCommit(accessToken, transaction, writes);
+  } catch (error) {
+    throw new Error("No se pudo registrar la evidencia de visita de forma segura");
+  }
   const missions = await syncUserMissionProgress(env, user.uid);
   return { validated: true, alreadyRegistered: false, discoveryChanged: true, xpDelta, validatedXp, missionCount: missions.length, completedCount: missions.filter(item => item.completed).length, newlyCompletedMissionIds: missions.filter(item => item.newlyCompleted).map(item => item.missionId) };
 }
