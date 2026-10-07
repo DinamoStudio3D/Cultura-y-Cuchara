@@ -2,6 +2,28 @@ const PROJECT_ID = "cultura-y-cuchara";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const FIRESTORE_SCOPE = "https://www.googleapis.com/auth/datastore";
 const FIREBASE_JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
+const ALLOWED_ORIGINS = new Set([
+  "https://visitaloja-hu6l8wk0v-dinamostudio3d.vercel.app"
+]);
+
+function corsHeaders(request) {
+  const origin = request.headers.get("origin") || "";
+  return ALLOWED_ORIGINS.has(origin)
+    ? {
+        "access-control-allow-origin": origin,
+        "access-control-allow-methods": "GET,POST,OPTIONS",
+        "access-control-allow-headers": "Authorization,Content-Type",
+        "access-control-max-age": "600",
+        "vary": "Origin"
+      }
+    : {};
+}
+
+function withCors(response, request) {
+  const headers = new Headers(response.headers);
+  for (const [key, value] of Object.entries(corsHeaders(request))) headers.set(key, value);
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
 
 function decodeJwtPart(value) {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
@@ -141,6 +163,11 @@ async function testFirestore(env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const origin = request.headers.get("origin") || "";
+    if (request.method === "OPTIONS") {
+      if (!ALLOWED_ORIGINS.has(origin)) return json({ ok: false, error: "Origin not allowed" }, 403);
+      return new Response(null, { status: 204, headers: corsHeaders(request) });
+    }
     if (request.method === "GET" && url.pathname === "/health") {
       return json({ ok: true, service: "chabaquito", project: env.FIREBASE_PROJECT_ID || PROJECT_ID });
     }
@@ -148,9 +175,9 @@ export default {
     if (request.method === "GET" && url.pathname === "/auth-test") {
       try {
         const user = await verifyFirebaseIdToken(request);
-        return json({ ok: true, authenticated: true, uid: user.uid });
+        return withCors(json({ ok: true, authenticated: true, uid: user.uid }), request);
       } catch (error) {
-        return json({ ok: false, authenticated: false, error: error.message }, 401);
+        return withCors(json({ ok: false, authenticated: false, error: error.message }, 401), request);
       }
     }
     if (request.method === "GET" && url.pathname === "/firebase-test") {
