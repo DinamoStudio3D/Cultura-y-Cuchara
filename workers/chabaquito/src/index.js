@@ -147,6 +147,29 @@ async function getGoogleAccessToken(env) {
   return token.access_token;
 }
 
+function fromFirestoreValue(value) {
+  if (!value || typeof value !== "object") return null;
+  if ("nullValue" in value) return null;
+  if ("booleanValue" in value) return value.booleanValue;
+  if ("integerValue" in value) return Number(value.integerValue);
+  if ("doubleValue" in value) return Number(value.doubleValue);
+  if ("stringValue" in value) return value.stringValue;
+  if ("timestampValue" in value) return Date.parse(value.timestampValue);
+  if ("arrayValue" in value) return (value.arrayValue.values || []).map(fromFirestoreValue);
+  if ("mapValue" in value) {
+    return Object.fromEntries(
+      Object.entries(value.mapValue.fields || {}).map(([key, item]) => [key, fromFirestoreValue(item)])
+    );
+  }
+  return null;
+}
+
+function decodeFirestoreDocument(document) {
+  return Object.fromEntries(
+    Object.entries(document?.fields || {}).map(([key, value]) => [key, fromFirestoreValue(value)])
+  );
+}
+
 async function firestoreGetDocument(accessToken, documentPath) {
   const response = await fetch(
     `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${documentPath}`,
