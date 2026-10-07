@@ -794,17 +794,17 @@ async function validateProximityVisit(env, user, input) {
     writes.push({
       update: {
         name: documentName(`${profilePath}/xpEvents/${base64url(eventId)}`),
-        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "VISIT_DISCOVERY", targetId: qr.placeId, xp: 20, placeId: qr.placeId, cantonId: place.cantonId || null, evidenceKey, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
+        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "VISIT_DISCOVERY", targetId: qr.placeId, xp: 20, placeId: qr.placeId, cantonId, evidenceKey, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
       },
       currentDocument: { exists: false }
     });
   }
   if (isNewCanton) {
-    const eventId = `discovery:canton:${place.cantonId}`;
+    const eventId = `discovery:canton:${cantonId}`;
     writes.push({
       update: {
         name: documentName(`${profilePath}/xpEvents/${base64url(eventId)}`),
-        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "FIRST_CANTON", targetId: place.cantonId, xp: 50, placeId: null, cantonId: place.cantonId, evidenceKey, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
+        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "FIRST_CANTON", targetId: cantonId, xp: 50, placeId: null, cantonId, evidenceKey, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
       },
       currentDocument: { exists: false }
     });
