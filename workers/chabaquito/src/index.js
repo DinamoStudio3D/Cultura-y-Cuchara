@@ -586,7 +586,7 @@ function missionMatchedKeys(mission, visits, placesById) {
     const allowed = new Set(missionList(mission.cantonIds).map(value => value.toLocaleLowerCase("es")));
     return valid.map(visit => {
       const place = placesById[missionText(visit.placeId)] || {};
-      const canton = missionText(place.cantonId || place.canton || place.city || place.ciudad || place.municipality).toLocaleLowerCase("es");
+      const canton = missionText(place.cantonId).toLocaleLowerCase("es");
       return canton && allowed.has(canton) ? canton : "";
     }).filter(Boolean);
   }
