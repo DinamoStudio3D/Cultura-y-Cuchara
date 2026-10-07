@@ -402,6 +402,14 @@ assert(chabaquitoWorker.includes('Fuera del radio de 15 metros'), 'Worker valida
 assert(chabaquitoWorker.includes('accuracy > 20'), 'Worker rechaza GPS con precisión peor a 20 metros');
 assert(chabaquitoWorker.includes('24 * 60 * 60 * 1000'), 'Worker conserva cooldown de 24 horas para autovisitas');
 assert(chabaquitoWorker.includes('const evidenceKey = `self_visit:${evidenceId}`'), 'Worker conserva la clave canónica de evidencia QR');
+assert(admin.includes("visitPurpose==='self_checkin'"), 'El administrador vincula los QR permanentes de autovisita');
+assert(admin.includes("discovery:{enabled:true,method:'proximity',qrId:id}"), 'El administrador activa proximidad al guardar un QR sin encargado');
+assert(admin.includes("active:true,discoveryEnabled:true,placeId:visitPlaceId"), 'El QR sin encargado queda activo y asociado a una sola parada');
+assert(admin.includes('No se puede generar el QR sin encargado: esta parada no tiene coordenadas válidas.'), 'El administrador bloquea QR sin coordenadas válidas');
+assert(admin.includes('No se puede generar el QR sin encargado: selecciona primero el cantón'), 'El administrador bloquea QR sin cantón');
+assert(admin.includes('No se puede generar el QR sin encargado: publica primero la parada'), 'El administrador bloquea QR de paradas no publicadas');
+assert(chabaquitoWorker.includes('String(place.discovery?.qrId || "") !== qrId'), 'El Worker exige que el QR pertenezca a la parada validada');
+
 
 for (const route of ['/auth-test', '/firebase-test', '/firestore-test', '/mission-inspect', '/merchant-confirm-inspect']) {
     assert(!chabaquitoWorker.includes(route), `Worker no expone diagnóstico temporal: ${route}`);
