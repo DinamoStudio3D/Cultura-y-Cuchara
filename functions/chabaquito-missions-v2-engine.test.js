@@ -29,6 +29,15 @@ test("categorías cuentan lugares únicos de categorías permitidas",()=>{
 test("cantones cuentan cantones únicos permitidos",()=>{
   assert.equal(calculateMissionProgress(mission("canton_visits",2,{cantonIds:["loja","catamayo"]}),[visit("a","p1"),visit("b","p2"),visit("c","p3")],places).count,2);
 });
+
+test("misiones de cantón priorizan cantonId canónico",()=>{
+  const canonicalPlaces={
+    p1:{category:"Museo",cantonId:"loja",canton:"Nombre legado distinto"},
+    p2:{category:"Museo",cantonId:"catamayo",canton:"Otro nombre legado"}
+  };
+  assert.equal(calculateMissionProgress(mission("canton_visits",2,{cantonIds:["loja","catamayo"]}),[visit("a","p1"),visit("b","p2")],canonicalPlaces).count,2);
+});
+
 test("una visita fuera de la ventana temporal no suma",()=>{
   assert.equal(calculateMissionProgress({...mission("total_visits"),startsAt:"2026-10-06T00:00:00Z"},[visit("a","p1")],places).count,0);
 });
