@@ -10,10 +10,14 @@
     if (!form || document.getElementById("placeValidationMode")) return;
     const wrapper = document.createElement("div");
     wrapper.id = "placeValidationModeField";
-    wrapper.className = "sm:col-span-2";
-    wrapper.innerHTML = `<label class="block"><span class="text-sm font-semibold block mb-2">Validación de visita</span><select id="placeValidationMode" class="field"><option value="merchant_confirmation">Con encargado</option><option value="self_checkin">Sin encargado / atractivo turístico</option></select></label><p id="placeValidationModeHelp" class="text-xs text-gray-400 mt-2"></p>`;
-    const submit = form.querySelector('button[type="submit"]');
-    if (submit && submit.parentElement) submit.parentElement.insertBefore(wrapper, submit); else form.appendChild(wrapper);
+    wrapper.className = "rounded-xl border border-cyan-500/25 bg-cyan-500/10 p-4";
+    wrapper.innerHTML = `<div class="flex items-start gap-3"><i class="fa-solid fa-qrcode text-cyan-300 mt-1"></i><div class="flex-1"><span class="text-sm font-black block mb-1">Validación de visita y QR</span><p class="text-xs text-gray-400 mb-3">Define cómo Chabaquito comprobará la visita en esta parada.</p><select id="placeValidationMode" class="field"><option value="merchant_confirmation">👤 Con encargado — confirmación del negocio</option><option value="self_checkin">📍 Sin encargado — QR permanente + GPS</option></select><p id="placeValidationModeHelp" class="text-xs text-cyan-100 mt-2"></p></div></div>`;
+    const publication = document.getElementById("placePublicationStatus")?.closest("label");
+    if (publication) publication.insertAdjacentElement("afterend", wrapper);
+    else {
+      const submit = form.querySelector('button[type="submit"]');
+      if (submit && submit.parentElement) submit.parentElement.insertBefore(wrapper, submit); else form.appendChild(wrapper);
+    }
     wrapper.querySelector("#placeValidationMode").addEventListener("change", renderHelp); renderHelp();
   }
   function ensureMesaTuristicaNav() {
@@ -22,7 +26,7 @@
     if (!navItems) return;
     const link = document.createElement("a"); link.id="mesaTuristicaNavLink"; link.setAttribute("data-nav-item",""); link.href="gestion-mesa-turistica.html"; link.className="block w-full text-left text-cyan-200 hover:bg-cyan-500/10 font-bold rounded-xl px-4 py-3"; link.innerHTML='<i class="fa-solid fa-people-group w-6"></i>Mesa Turística'; link.title="Administrar información, agenda, noticias, integrantes, galería y contacto de la Mesa Turística de Loja"; navItems.appendChild(link);
   }
-  function renderHelp(){const select=document.getElementById("placeValidationMode"),help=document.getElementById("placeValidationModeHelp");if(!select||!help)return;const meta=api.validationModeUiMeta(select.value);help.textContent=meta.description+(meta.loyaltyEnabled?" Fidelidad comercial permanece habilitada.":" No habilita Fidelidad comercial.");}
+  function renderHelp(){const select=document.getElementById("placeValidationMode"),help=document.getElementById("placeValidationModeHelp");if(!select||!help)return;const selfCheckin=select.value==="self_checkin";help.textContent=selfCheckin?"El visitante escanea un QR permanente y el celular valida que esté físicamente en el lugar mediante GPS. Requiere coordenadas, cantón y la parada publicada.":"El visitante obtiene su visita mediante confirmación de personal autorizado. Fidelidad comercial permanece habilitada.";}
   function setMode(value){ensureSelector();const select=document.getElementById("placeValidationMode");if(!select)return;select.value=api.normalizeAdminVisitValidationMode(value);renderHelp();}
   function getMode(){const select=document.getElementById("placeValidationMode");return api.normalizeAdminVisitValidationMode(select&&select.value);}
   function subscriptionDraft(){try{const plans=window.eval("subscriptionDraftPlans");return Array.isArray(plans)?plans:[];}catch(_){return[];}}
