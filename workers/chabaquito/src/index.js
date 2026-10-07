@@ -479,7 +479,36 @@ async function syncTotalVisitMissionProgress(env, visitorUid) {
     const target = Number(mission.targetCount);
     if (!Number.isSafeInteger(target) || target < 1 || target > 500) continue;
     const current = Math.min(confirmedVisits, target);
-    states.push({ missionId, current, target, completed: current >= target });
+    const completed = current >= target;
+    const progressId = missionProgressDocumentId(visitorUid, missionId);
+    const progressPath = `chabaquitoMissionProgress/${progressId}`;
+    const existingDocument = await firestoreGetDocument(accessToken, progressPath);
+    const existing = existingDocument ? decodeFirestoreDocument(existingDocument) : null;
+    const now = new Date();
+    const progressData = {
+      missionId,
+      userId: visitorUid,
+      current,
+      target,
+      completed,
+      qualifyingVisitIds: [],
+      completedAt: completed
+        ? (Number.isFinite(existing?.completedAt) ? new Date(existing.completedAt) : now)
+        : null,
+      updatedAt: now
+    };
+    const response = await fetch(
+      `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          writes: [{ update: { name: documentName(progressPath), fields: firestoreFields(progressData) } }]
+        })
+      }
+    );
+    if (!response.ok) throw new Error(`Mission progress write failed (${response.status})`);
+    states.push({ missionId, current, target, completed });
   }
   return states;
 }
