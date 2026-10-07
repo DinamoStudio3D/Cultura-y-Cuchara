@@ -180,6 +180,22 @@ async function firestoreGetDocument(accessToken, documentPath) {
   return response.json();
 }
 
+function validDocumentId(value) {
+  return typeof value === "string" && /^[A-Za-z0-9_-]{1,128}$/.test(value);
+}
+
+async function inspectActiveMission(env, missionId) {
+  if (!validDocumentId(missionId)) throw new Error("Mission id is invalid");
+  const accessToken = await getGoogleAccessToken(env);
+  const document = await firestoreGetDocument(accessToken, "chabaquitoMissions/" + missionId);
+  if (!document) throw new Error("Mission not found");
+  const mission = decodeFirestoreDocument(document);
+  if (mission.status !== "active") throw new Error("Mission is not active");
+  const target = Number(mission.targetCount);
+  if (!Number.isSafeInteger(target) || target < 1 || target > 500) throw new Error("Mission target is invalid");
+  return { id: missionId, type: mission.type, target };
+}
+
 async function testFirestore(env) {
   const accessToken = await getGoogleAccessToken(env);
   const firestoreUrl =
