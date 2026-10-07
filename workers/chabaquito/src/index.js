@@ -419,7 +419,8 @@ async function confirmMerchantVisit(env, user, input) {
   ];
 
   await firestoreCommit(accessToken, transaction, writes);
-  return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId };
+  const missions = await syncTotalVisitMissionProgress(env, code.userId);
+  return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId, missions };
 }
 
 async function firestoreRunQuery(accessToken, structuredQuery) {
