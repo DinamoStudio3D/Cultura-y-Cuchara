@@ -379,7 +379,7 @@ async function confirmMerchantVisit(env, user, input) {
   ];
 
   await firestoreCommit(accessToken, transaction, writes);
-  const missions = await syncTotalVisitMissionProgress(env, code.userId);
+  const missions = await syncUserMissionProgress(env, code.userId);
   return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId, missions };
 }
 
@@ -482,7 +482,7 @@ async function reverseMerchantVisit(env, user, input) {
   }
 
   await firestoreCommit(accessToken, transaction, writes);
-  const missions = await syncTotalVisitMissionProgress(env, visit.userId);
+  const missions = await syncUserMissionProgress(env, visit.userId);
   return { visitCount: restoredCount, target, visitorUid: visit.userId, placeId: visit.placeId, missions };
 }
 
@@ -500,46 +500,106 @@ async function firestoreRunQuery(accessToken, structuredQuery) {
   return rows.map(row => row.document).filter(Boolean);
 }
 
-async function loadConfirmedVisits(accessToken, visitorUid) {
-  const documents = await firestoreRunQuery(accessToken, {
-    from: [{ collectionId: "loyaltyVisits" }],
-    where: {
-      fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: visitorUid } }
-    }
-  });
-  return documents.map(document => {
+async function loadMissionVisits(accessToken, visitorUid) {
+  const [loyaltyDocuments, evidenceDocuments] = await Promise.all([
+    firestoreRunQuery(accessToken, {
+      from: [{ collectionId: "loyaltyVisits" }],
+      where: { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: visitorUid } } }
+    }),
+    firestoreRunQuery(accessToken, {
+      from: [{ collectionId: "evidence", allDescendants: true }],
+      where: { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: visitorUid } } }
+    })
+  ]);
+  const evidence = evidenceDocuments.map(document => {
+    const item = decodeFirestoreDocument(document);
+    const trustedType = item.type === "confirmed_visit" || item.type === "self_visit";
+    const trustedStatus = item.status === "validated" || item.status === "reversed";
+    const trustedMethod = ["staff_confirmation", "self_visit", "checkin"].includes(item.validationMethod);
+    if (item.scope !== "tourism_discovery" || !trustedType || !trustedStatus || !trustedMethod || !item.placeId) return null;
+    const sourceId = String(item.sourceId || document.name.split("/").pop() || "");
+    return {
+      requestId: sourceId.startsWith("qr_") ? sourceId.slice(3) : sourceId,
+      placeId: String(item.placeId),
+      status: item.status === "validated" ? "confirmed" : "reversed",
+      confirmedAt: Number.isFinite(item.firstVerifiedAt) ? item.firstVerifiedAt : item.verifiedAt,
+      source: "chabaquito_evidence"
+    };
+  }).filter(Boolean);
+  const evidenceIds = new Set(evidence.map(visit => visit.requestId));
+  const legacy = loyaltyDocuments.map(document => {
     const visit = decodeFirestoreDocument(document);
-    return { ...visit, requestId: visit.requestId || document.name.split("/").pop() };
-  }).filter(visit => visit.status === "confirmed" && Number.isFinite(visit.confirmedAt));
+    return { ...visit, requestId: visit.requestId || document.name.split("/").pop(), source: "loyalty_visit" };
+  }).filter(visit => ["confirmed", "reversed"].includes(visit.status) && Number.isFinite(visit.confirmedAt));
+  return evidence.concat(legacy.filter(visit => !evidenceIds.has(String(visit.requestId || ""))));
+}
+
+async function loadMissionPlaces(accessToken) {
+  const documents = await firestoreRunQuery(accessToken, { from: [{ collectionId: "locales" }] });
+  return Object.fromEntries(documents.map(document => {
+    const place = decodeFirestoreDocument(document);
+    return [document.name.split("/").pop(), place];
+  }));
 }
 
 function missionVisitIsEligible(mission, visit) {
   const startsAt = Number.isFinite(mission?.startsAt) ? mission.startsAt : null;
   const endsAt = Number.isFinite(mission?.endsAt) ? mission.endsAt : null;
+  if (!Number.isFinite(visit.confirmedAt)) return false;
   if (startsAt !== null && visit.confirmedAt < startsAt) return false;
   if (endsAt !== null && visit.confirmedAt > endsAt) return false;
   return true;
+}
+
+function missionText(value) {
+  return String(value ?? "").trim();
+}
+
+function missionList(value) {
+  return Array.isArray(value) ? value.map(missionText).filter(Boolean) : [];
+}
+
+function missionMatchedKeys(mission, visits, placesById) {
+  const valid = visits.filter(visit => visit.status === "confirmed" && missionVisitIsEligible(mission, visit));
+  if (mission.type === "total_visits") return valid.map(visit => missionText(visit.requestId)).filter(Boolean);
+  if (mission.type === "place_visits") {
+    const allowed = new Set(missionList(mission.placeIds));
+    return valid.map(visit => missionText(visit.placeId)).filter(placeId => placeId && allowed.has(placeId));
+  }
+  if (mission.type === "category_visits") {
+    const allowed = new Set(missionList(mission.categoryIds).map(value => value.toLocaleLowerCase("es")));
+    return valid.map(visit => {
+      const placeId = missionText(visit.placeId);
+      const place = placesById[placeId] || {};
+      const category = missionText(place.category || place.categoria || place.type || place.tipo).toLocaleLowerCase("es");
+      return category && allowed.has(category) ? placeId : "";
+    }).filter(Boolean);
+  }
+  if (mission.type === "canton_visits") {
+    const allowed = new Set(missionList(mission.cantonIds).map(value => value.toLocaleLowerCase("es")));
+    return valid.map(visit => {
+      const place = placesById[missionText(visit.placeId)] || {};
+      const canton = missionText(place.canton || place.city || place.ciudad || place.municipality).toLocaleLowerCase("es");
+      return canton && allowed.has(canton) ? canton : "";
+    }).filter(Boolean);
+  }
+  return [];
 }
 
 function missionProgressDocumentId(userId, missionId) {
   return `v2_${base64url(userId)}_${base64url(missionId)}`;
 }
 
-async function syncTotalVisitMissionProgress(env, visitorUid) {
+async function syncUserMissionProgress(env, visitorUid) {
   const accessToken = await getGoogleAccessToken(env);
   const missionDocuments = await firestoreRunQuery(accessToken, {
     from: [{ collectionId: "chabaquitoMissions" }],
-    where: {
-      compositeFilter: {
-        op: "AND",
-        filters: [
-          { fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "active" } } },
-          { fieldFilter: { field: { fieldPath: "type" }, op: "EQUAL", value: { stringValue: "total_visits" } } }
-        ]
-      }
-    }
+    where: { fieldFilter: { field: { fieldPath: "status" }, op: "EQUAL", value: { stringValue: "active" } } }
   });
-  const confirmedVisits = await loadConfirmedVisits(accessToken, visitorUid);
+  const [visits, placesById] = await Promise.all([
+    loadMissionVisits(accessToken, visitorUid),
+    loadMissionPlaces(accessToken)
+  ]);
   const states = [];
 
   for (const document of missionDocuments) {
@@ -547,9 +607,12 @@ async function syncTotalVisitMissionProgress(env, visitorUid) {
     const mission = decodeFirestoreDocument(document);
     const target = Number(mission.targetCount);
     if (!Number.isSafeInteger(target) || target < 1 || target > 500) continue;
+    if (!["total_visits", "place_visits", "category_visits", "canton_visits"].includes(mission.type)) continue;
 
-    const qualifyingVisits = confirmedVisits.filter(visit => missionVisitIsEligible(mission, visit));
-    const qualifyingVisitIds = [...new Set(qualifyingVisits.map(visit => String(visit.requestId || "")).filter(Boolean))];
+    const matchedKeys = missionMatchedKeys(mission, visits, placesById);
+    const qualifyingVisitIds = mission.type === "total_visits"
+      ? [...new Set(matchedKeys)]
+      : [...new Set(matchedKeys)];
     const current = Math.min(qualifyingVisitIds.length, target);
     const completed = current >= target;
     const progressId = missionProgressDocumentId(visitorUid, missionId);
@@ -568,9 +631,7 @@ async function syncTotalVisitMissionProgress(env, visitorUid) {
       target,
       completed,
       qualifyingVisitIds,
-      completedAt: completed
-        ? (Number.isFinite(existing?.completedAt) ? new Date(existing.completedAt) : now)
-        : null,
+      completedAt: completed ? (Number.isFinite(existing?.completedAt) ? new Date(existing.completedAt) : now) : null,
       updatedAt: now
     };
     const writes = [{ update: { name: documentName(progressPath), fields: firestoreFields(progressData) } }];
@@ -608,7 +669,7 @@ async function syncTotalVisitMissionProgress(env, visitorUid) {
       const detail = await response.text();
       throw new Error(`Mission progress write failed (${response.status}): ${detail.slice(0, 180)}`);
     }
-    states.push({ missionId, current, target, completed });
+    states.push({ missionId, type: mission.type, current, target, completed });
   }
   return states;
 }
