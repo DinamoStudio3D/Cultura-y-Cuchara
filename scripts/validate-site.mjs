@@ -439,6 +439,11 @@ assert(chabaquitoWorker.includes('item.status === "validated" || item.status ===
 assert(chabaquitoWorker.includes('new Set(missionList(mission.placeIds))'), 'Misiones por lugares respetan la lista explícita de paradas');
 assert(chabaquitoWorker.includes('new Set(missionList(mission.categoryIds)'), 'Misiones por categoría respetan su alcance configurado');
 assert(chabaquitoWorker.includes('new Set(missionList(mission.cantonIds)'), 'Misiones por cantón respetan su alcance configurado');
+const chabaquitoMissionAdmin = read('js/admin-chabaquito-missions-v2.js');
+assert(chabaquitoMissionAdmin.includes("new Map(scopeRaw.map(value=>[value.toLocaleLowerCase('es'),value]))"), 'El administrador elimina alcances duplicados de las misiones');
+assert(chabaquitoMissionAdmin.includes("type==='place_visits'&&m.targetCount>scope.length"), 'La meta por lugares no supera los lugares únicos configurados');
+assert(chabaquitoMissionAdmin.includes("type==='canton_visits'&&m.targetCount>scope.length"), 'La meta por cantones no supera los cantones únicos configurados');
+
 
 assert(chabaquitoWorker.includes('visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app'), 'Worker usa el origen estable de Preview');
 assert(chabaquitoPublicV2.includes('workers.dev/ranking-preference'), 'Ranking público usa el Worker gratuito');
