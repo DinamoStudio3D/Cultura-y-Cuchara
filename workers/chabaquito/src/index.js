@@ -738,26 +738,73 @@ async function validateProximityVisit(env, user, input) {
   const fingerprint = (await sha256Hex(qrId)).slice(0, 22);
   const evidenceId = `qr_${fingerprint}_${nowMs}`;
   const evidencePath = `chabaquitoExplorerProfiles/${user.uid}/evidence/${evidenceId}`;
+  const profilePath = `chabaquitoExplorerProfiles/${user.uid}`;
   const evidence = {
     type: "self_visit", sourceId: evidenceId, proofId: null, userId: user.uid,
     placeId: qr.placeId, cantonId: place.cantonId || null, status: "validated",
     verifiedAt: nowMs, firstVerifiedAt: nowMs, validationMethod: "self_visit",
     scope: "tourism_discovery", schemaVersion: 1, reversedAt: null, updatedAt: nowMs
   };
+
+  const validatedEvidence = evidenceDocuments.map(decodeFirestoreDocument).filter(item =>
+    item.scope === "tourism_discovery" && item.status === "validated"
+  );
+  const placeIds = new Set(validatedEvidence.map(item => item.placeId).filter(Boolean));
+  const cantonIds = new Set(validatedEvidence.map(item => item.cantonId).filter(Boolean));
+  const isNewPlace = !placeIds.has(qr.placeId);
+  const isNewCanton = Boolean(place.cantonId) && !cantonIds.has(place.cantonId);
+  placeIds.add(qr.placeId);
+  if (place.cantonId) cantonIds.add(place.cantonId);
+
+  const profileDocument = await firestoreGetDocument(accessToken, profilePath);
+  const profile = profileDocument ? decodeFirestoreDocument(profileDocument) : {};
+  const previousXp = Number(profile.validatedXp || 0);
+  if (!Number.isSafeInteger(previousXp) || previousXp < 0) throw new Error("Perfil Chabaquito inconsistente");
+  const xpDelta = (isNewPlace ? 20 : 0) + (isNewCanton ? 50 : 0);
+  const validatedXp = previousXp + xpDelta;
+  const thresholds = [0, 500, 1500, 3000, 5000, 8000, 12000, 20000];
+  const profileFields = {
+    validatedXp,
+    level: thresholds.filter(min => validatedXp >= min).length,
+    discoveredPlaces: placeIds.size,
+    discoveredCantons: cantonIds.size,
+    schemaVersion: 1,
+    updatedAt: nowMs
+  };
+  const writes = [{
+    update: { name: documentName(evidencePath), fields: firestoreFields(evidence) },
+    currentDocument: { exists: false }
+  }, {
+    update: { name: documentName(profilePath), fields: firestoreFields(profileFields) },
+    updateMask: { fieldPaths: Object.keys(profileFields) },
+    ...(profileDocument ? { currentDocument: { updateTime: profileDocument.updateTime } } : { currentDocument: { exists: false } })
+  }];
+  if (isNewPlace) {
+    const eventId = `discovery:place:${qr.placeId}`;
+    writes.push({
+      update: {
+        name: documentName(`${profilePath}/xpEvents/${base64url(eventId)}`),
+        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "VISIT_DISCOVERY", targetId: qr.placeId, xp: 20, placeId: qr.placeId, cantonId: place.cantonId || null, evidenceKey: `self_visit:${evidenceId}`, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
+      }
+    });
+  }
+  if (isNewCanton) {
+    const eventId = `discovery:canton:${place.cantonId}`;
+    writes.push({
+      update: {
+        name: documentName(`${profilePath}/xpEvents/${base64url(eventId)}`),
+        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "FIRST_CANTON", targetId: place.cantonId, xp: 50, placeId: null, cantonId: place.cantonId, evidenceKey: `self_visit:${evidenceId}`, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
+      }
+    });
+  }
+
   const response = await fetch(
     `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
-      body: JSON.stringify({ writes: [{
-        update: { name: documentName(evidencePath), fields: firestoreFields(evidence) },
-        currentDocument: { exists: false }
-      }] })
-    }
+    { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" }, body: JSON.stringify({ writes }) }
   );
   if (!response.ok) throw new Error("No se pudo registrar la evidencia de visita");
   const missions = await syncUserMissionProgress(env, user.uid);
-  return { validated: true, alreadyRegistered: false, discoveryChanged: true, missionCount: missions.length, completedCount: missions.filter(item => item.completed).length, newlyCompletedMissionIds: [] };
+  return { validated: true, alreadyRegistered: false, discoveryChanged: true, xpDelta, validatedXp, missionCount: missions.length, completedCount: missions.filter(item => item.completed).length, newlyCompletedMissionIds: [] };
 }
 
 function rankingAlias(value) {
