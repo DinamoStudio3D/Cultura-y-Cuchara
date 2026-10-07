@@ -327,7 +327,6 @@ async function confirmMerchantVisit(env, user, input) {
   const merchantName = merchant.businessName || user.email || "";
 
   const codeFields = {
-    ...decodeFirestoreDocument(codeDocument),
     status: "confirmed",
     confirmedAt: now,
     confirmedBy: user.uid,
@@ -355,7 +354,6 @@ async function confirmMerchantVisit(env, user, input) {
     previousLastVisitRequestId: counter?.lastVisitRequestId || ""
   };
   const counterFields = {
-    ...(counter || {}),
     userId: code.userId,
     userName: code.userName || counter?.userName || "",
     userEmail: code.userEmail || counter?.userEmail || "",
@@ -372,10 +370,11 @@ async function confirmMerchantVisit(env, user, input) {
   if (!counter) counterFields.firstVisitAt = now;
 
   const writes = [
-    { update: { name: documentName(codePath), fields: firestoreFields(codeFields) } },
+    { update: { name: documentName(codePath), fields: firestoreFields(codeFields) }, updateMask: { fieldPaths: Object.keys(codeFields) } },
     { update: { name: documentName(visitPath), fields: firestoreFields(visitFields) }, currentDocument: { exists: false } },
     {
       update: { name: documentName(counterPath), fields: firestoreFields(counterFields) },
+      updateMask: { fieldPaths: Object.keys(counterFields) },
       ...(counterDocument ? { currentDocument: { updateTime: counterDocument.updateTime } } : { currentDocument: { exists: false } })
     }
   ];
@@ -439,7 +438,6 @@ async function reverseMerchantVisit(env, user, input) {
   const target = Math.max(10, Number(decodeFirestoreDocument(programDocument || {}).targetVisits || 10));
 
   const visitFields = {
-    ...visit,
     status: "reversed",
     reversedAt: now,
     reversedBy: user.uid,
@@ -447,7 +445,6 @@ async function reverseMerchantVisit(env, user, input) {
     updatedAt: now
   };
   const counterFields = {
-    ...counter,
     visitCount: restoredCount,
     totalSpend: restoredSpend,
     dailyVisitCount: restoredDaily,
@@ -459,10 +456,12 @@ async function reverseMerchantVisit(env, user, input) {
   const writes = [
     {
       update: { name: documentName(visitPath), fields: firestoreFields(visitFields) },
+      updateMask: { fieldPaths: Object.keys(visitFields) },
       currentDocument: { updateTime: visitDocument.updateTime }
     },
     {
       update: { name: documentName(counterPath), fields: firestoreFields(counterFields) },
+      updateMask: { fieldPaths: Object.keys(counterFields) },
       currentDocument: { updateTime: counterDocument.updateTime }
     }
   ];
@@ -472,13 +471,13 @@ async function reverseMerchantVisit(env, user, input) {
       update: {
         name: documentName(codePath),
         fields: firestoreFields({
-          ...code,
           status: "reversed",
           reversedAt: now,
           reversedBy: user.uid,
           updatedAt: now
         })
       },
+      updateMask: { fieldPaths: ["status", "reversedAt", "reversedBy", "updatedAt"] },
       currentDocument: { updateTime: codeDocument.updateTime }
     });
   }
@@ -642,7 +641,6 @@ async function saveRankingPreference(env, user, input) {
   const profile = decodeFirestoreDocument(profileDocument);
   const now = new Date();
   const profileFields = {
-    ...profile,
     participateInRanking,
     publicAlias,
     updatedAt: now
@@ -651,6 +649,7 @@ async function saveRankingPreference(env, user, input) {
   const rankingPath = `chabaquitoPublicRanking/${rankingId}`;
   const writes = [{
     update: { name: documentName(profilePath), fields: firestoreFields(profileFields) },
+    updateMask: { fieldPaths: Object.keys(profileFields) },
     currentDocument: { updateTime: profileDocument.updateTime }
   }];
 
