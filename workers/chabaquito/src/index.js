@@ -679,6 +679,87 @@ async function syncUserMissionProgress(env, visitorUid) {
   return states;
 }
 
+
+function distanceMeters(a, b) {
+  const rad = value => value * Math.PI / 180;
+  const earth = 6371000;
+  const dLat = rad(b.latitude - a.latitude);
+  const dLng = rad(b.longitude - a.longitude);
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.latitude)) * Math.cos(rad(b.latitude)) * Math.sin(dLng / 2) ** 2;
+  return 2 * earth * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function validateProximityVisit(env, user, input) {
+  const qrId = String(input?.qrId || "").trim();
+  if (!validDocumentId(qrId)) throw new Error("QR inválido");
+  const coordinates = input?.coordinates || {};
+  const latitude = Number(coordinates.latitude), longitude = Number(coordinates.longitude);
+  const accuracy = Number(coordinates.accuracy), capturedAt = Number(coordinates.capturedAt);
+  const nowMs = Date.now();
+  if (![latitude, longitude, accuracy, capturedAt].every(Number.isFinite) ||
+      Math.abs(latitude) > 90 || Math.abs(longitude) > 180 ||
+      accuracy <= 0 || accuracy > 20 || capturedAt > nowMs || nowMs - capturedAt > 30000) {
+    throw new Error("GPS inválido, impreciso o antiguo");
+  }
+
+  const accessToken = await getGoogleAccessToken(env);
+  const qrDocument = await firestoreGetDocument(accessToken, `qrCodes/${qrId}`);
+  if (!qrDocument) throw new Error("QR no encontrado");
+  const qr = decodeFirestoreDocument(qrDocument);
+  if (qr.active !== true || qr.discoveryEnabled !== true || !validDocumentId(qr.placeId)) throw new Error("QR no habilitado para descubrimientos");
+
+  const placeDocument = await firestoreGetDocument(accessToken, `locales/${qr.placeId}`);
+  if (!placeDocument) throw new Error("Parada no encontrada");
+  const place = decodeFirestoreDocument(placeDocument);
+  const method = String(place.discovery?.method || "");
+  if (place.discovery?.enabled !== true || !["proximity", "both"].includes(method) || String(place.discovery?.qrId || "") !== qrId) {
+    throw new Error("QR no asociado o método no permitido");
+  }
+  const placeLat = Number(place.lat ?? place.latitude), placeLng = Number(place.lng ?? place.longitude);
+  if (!Number.isFinite(placeLat) || !Number.isFinite(placeLng) || Math.abs(placeLat) > 90 || Math.abs(placeLng) > 180) throw new Error("Parada sin coordenadas válidas");
+  if (distanceMeters({ latitude: placeLat, longitude: placeLng }, { latitude, longitude }) > 15) throw new Error("Fuera del radio de 15 metros");
+
+  const evidenceDocuments = await firestoreRunQuery(accessToken, {
+    from: [{ collectionId: "evidence", allDescendants: true }],
+    where: { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: user.uid } } }
+  });
+  const recent = evidenceDocuments.map(decodeFirestoreDocument).find(item =>
+    item.scope === "tourism_discovery" && item.type === "self_visit" && item.status === "validated" &&
+    item.placeId === qr.placeId && Number.isFinite(item.verifiedAt) && nowMs >= item.verifiedAt &&
+    nowMs - item.verifiedAt < 24 * 60 * 60 * 1000
+  );
+  if (recent) throw new Error("Esta parada ya fue validada recientemente. Intenta nuevamente después de 24 horas.");
+
+  const fingerprint = (await sha256Hex(qrId)).slice(0, 22);
+  const evidenceId = `qr_${fingerprint}_${nowMs}`;
+  const evidencePath = `chabaquitoExplorerProfiles/${user.uid}/evidence/${evidenceId}`;
+  const evidence = {
+    type: "self_visit", sourceId: evidenceId, proofId: null, userId: user.uid,
+    placeId: qr.placeId, cantonId: place.cantonId || null, status: "validated",
+    verifiedAt: nowMs, firstVerifiedAt: nowMs, validationMethod: "self_visit",
+    scope: "tourism_discovery", schemaVersion: 1, reversedAt: null, updatedAt: nowMs
+  };
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
+      body: JSON.stringify({ writes: [{
+        update: { name: documentName(evidencePath), fields: firestoreFields(evidence) },
+        currentDocument: { exists: false }
+      }] })
+    }
+  );
+  if (!response.ok) throw new Error("No se pudo registrar la evidencia de visita");
+  const missions = await syncUserMissionProgress(env, user.uid);
+  return { validated: true, alreadyRegistered: false, discoveryChanged: true, missionCount: missions.length, completedCount: missions.filter(item => item.completed).length, newlyCompletedMissionIds: [] };
+}
+
 function rankingAlias(value) {
   const alias = String(value || "").trim();
   if (!alias || alias.length > 40 || /[<>\x00-\x1f]/.test(alias)) throw new Error("Public ranking alias is invalid");
@@ -775,6 +856,16 @@ export default {
       return json({ ok: true, service: "chabaquito", project: env.FIREBASE_PROJECT_ID || PROJECT_ID });
     }
 
+    if (request.method === "POST" && url.pathname === "/proximity-visit") {
+      try {
+        const user = await verifyFirebaseIdToken(request);
+        const body = await request.json().catch(() => ({}));
+        const result = await validateProximityVisit(env, user, body);
+        return withCors(json({ ok: true, ...result }), request);
+      } catch (error) {
+        return withCors(json({ ok: false, error: error.message }, 400), request);
+      }
+    }
     if (request.method === "POST" && url.pathname === "/ranking-preference") {
       try {
         const user = await verifyFirebaseIdToken(request);
