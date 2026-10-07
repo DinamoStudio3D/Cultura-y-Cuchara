@@ -426,6 +426,9 @@ assert(chabaquitoWorker.includes('String(place.discovery?.qrId || "") !== qrId')
 assert(chabaquitoWorker.includes('Parada no publicada o inactiva'), 'El Worker rechaza QR de paradas inactivas o no publicadas');
 assert(chabaquitoWorker.includes('canonicalCantons'), 'El Worker exige un cantonId canónico de Loja');
 assert(chabaquitoWorker.includes('Parada sin cantonId válido'), 'El Worker bloquea autovisitas sin cantón válido');
+assert(chabaquitoWorker.includes('const eventId = `discovery:canton:${cantonId}`'), 'El XP de cantón usa el cantonId canónico normalizado');
+assert(chabaquitoWorker.includes('targetId: cantonId, xp: 50, placeId: null, cantonId'), 'El evento FIRST_CANTON conserva el cantonId normalizado');
+
 
 assert(selfCheckin.includes("discoveryMethod==='proximity'||discoveryMethod==='both'||place.validationMode==='self_checkin'"), 'La página de visita acepta los modos canónicos proximity/both');
 assert(selfCheckin.includes("!place.discovery?.enabled||!proximityEnabled"), 'La página de visita exige discovery habilitado');
