@@ -423,6 +423,9 @@ for (const route of ['/auth-test', '/firebase-test', '/firestore-test', '/missio
 assert(chabaquitoWorker.includes('updateMask: { fieldPaths: Object.keys(codeFields) }'), 'Worker actualiza códigos sin reescribir campos ajenos');
 assert(chabaquitoWorker.includes('updateMask: { fieldPaths: Object.keys(profileFields) }'), 'Worker actualiza perfil de ranking sin reescribir campos ajenos');
 assert(chabaquitoWorker.includes('qualifyingVisitIds'), 'Worker persiste las visitas que califican para misiones');
+assert(chabaquitoWorker.includes('newlyCompleted: completed && !existing?.completed'), 'Worker detecta la misión que acaba de completarse');
+assert(chabaquitoWorker.includes('missions.filter(item => item.newlyCompleted).map(item => item.missionId)'), 'La visita QR devuelve las nuevas misiones completadas');
+
 assert(chabaquitoWorker.includes('chabaquitoDigitalRewards'), 'Worker sincroniza recompensas digitales de misiones');
 assert(chabaquitoWorker.includes('"total_visits", "place_visits", "category_visits", "canton_visits"'), 'Worker admite los cuatro tipos de misión V2');
 assert(chabaquitoWorker.includes('collectionId: "evidence", allDescendants: true'), 'Worker incorpora evidencia confiable de Chabaquito a las misiones');
