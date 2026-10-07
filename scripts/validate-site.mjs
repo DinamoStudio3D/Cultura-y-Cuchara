@@ -388,7 +388,7 @@ assert(merchantDashboard.includes('missionRewardMerchants'), 'El tablero del neg
 assert(merchantDashboard.includes('loyaltyVisits'), 'El tablero del negocio consulta visitas de fidelidad');
 assert(merchantDashboard.includes('loyaltyRewardClaims'), 'El tablero del negocio consulta recompensas de fidelidad');
 assert(merchantDashboard.includes('function downloadCsv') && merchantDashboard.includes("el('csv').onclick=downloadCsv"), 'El tablero del negocio conserva la exportación de datos');
-assert(loyaltyMerchant.includes("functions.httpsCallable('confirmLoyaltyVisit')") && backendFunctions.includes('if (previousDaily >= maxDaily) throw new HttpsError') && backendFunctions.includes('dailyVisitCount: previousDaily + 1'), 'La confirmación controla el máximo diario de visitas');
+assert(loyaltyMerchant.includes("fetch(CHABAQUITO_WORKER+'/merchant-confirm-visit'") && chabaquitoWorker.includes('if (previousDaily >= maxDaily) throw new Error("Daily visit limit reached")') && chabaquitoWorker.includes('dailyVisitCount: previousDaily + 1'), 'La confirmación gratuita por Worker controla el máximo diario de visitas');
 assert(firestoreRules.includes('dailyVisitCount'), 'Firestore protege el contador diario de fidelidad');
 assert(admin.includes('customCampaigns') && index.includes('customCampaignsPublic'), 'Las campañas personalizadas siguen conectadas entre administración y la web');
 assert(admin.includes('tourismDay'), 'La campaña del Día Mundial del Turismo conserva su configuración administrativa');
