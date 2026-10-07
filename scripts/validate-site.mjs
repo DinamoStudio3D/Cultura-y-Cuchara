@@ -406,6 +406,11 @@ assert((chabaquitoWorker.match(/currentDocument: \{ exists: false \}/g)||[]).len
 assert(chabaquitoWorker.includes('currentDocument: { updateTime: profileDocument.updateTime }'), 'Worker evita actualizar XP sobre un perfil concurrentemente modificado');
 
 assert(admin.includes("visitPurpose==='self_checkin'"), 'El administrador vincula los QR permanentes de autovisita');
+assert(admin.includes("const linkedQrId=unattended?String(place.discovery?.qrId||'').trim():''"), 'El administrador reutiliza el QR permanente ya vinculado');
+assert(admin.includes('const selfCheckinQrId=qrId'), 'El enlace impreso usa exactamente el ID del QR que se guarda');
+assert(admin.includes('batch.set(qrRef.doc(id),{...data,active:true,discoveryEnabled:true,placeId:visitPlaceId}'), 'El QR permanente se aprovisiona dentro de un batch atómico');
+assert(admin.includes("batch.set(placeRef,{discovery:{enabled:true,method:'proximity',qrId:id}"), 'La asociación QR-parada se guarda en el mismo batch');
+
 assert(admin.includes("discovery:{enabled:true,method:'proximity',qrId:id}"), 'El administrador activa proximidad al guardar un QR sin encargado');
 assert(admin.includes("active:true,discoveryEnabled:true,placeId:visitPlaceId"), 'El QR sin encargado queda activo y asociado a una sola parada');
 assert(admin.includes('No se puede generar el QR sin encargado: esta parada no tiene coordenadas válidas.'), 'El administrador bloquea QR sin coordenadas válidas');
