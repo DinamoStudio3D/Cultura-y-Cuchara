@@ -196,6 +196,118 @@ async function inspectActiveMission(env, missionId) {
   return { id: missionId, type: mission.type, target };
 }
 
+function toFirestoreValue(value) {
+  if (value === null || value === undefined) return { nullValue: null };
+  if (typeof value === "boolean") return { booleanValue: value };
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new Error("Invalid numeric value");
+    return Number.isInteger(value) ? { integerValue: String(value) } : { doubleValue: value };
+  }
+  if (typeof value === "string") return { stringValue: value };
+  if (Array.isArray(value)) return { arrayValue: { values: value.map(toFirestoreValue) } };
+  if (value instanceof Date) return { timestampValue: value.toISOString() };
+  return {
+    mapValue: {
+      fields: Object.fromEntries(Object.entries(value).map(([key, item]) => [key, toFirestoreValue(item)]))
+    }
+  };
+}
+
+function firestoreFields(value) {
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, toFirestoreValue(item)]));
+}
+
+function cleanId(value) {
+  return String(value || "").replace(/[^a-zA-Z0-9_-]/g, "-").slice(0, 180);
+}
+
+function ecuadorDay(date = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Guayaquil",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(date);
+}
+
+async function firestoreBeginTransaction(accessToken) {
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:beginTransaction`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ options: { readWrite: {} } })
+    }
+  );
+  if (!response.ok) throw new Error(`Firestore transaction failed to start (${response.status})`);
+  const data = await response.json();
+  if (!data.transaction) throw new Error("Firestore transaction id was not returned");
+  return data.transaction;
+}
+
+async function firestoreGetDocumentInTransaction(accessToken, documentPath, transaction) {
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${documentPath}?transaction=${encodeURIComponent(transaction)}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`Firestore transactional read failed (${response.status})`);
+  return response.json();
+}
+
+async function firestoreCommit(accessToken, transaction, writes) {
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ transaction, writes })
+    }
+  );
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Firestore commit failed (${response.status}): ${detail.slice(0, 180)}`);
+  }
+  return response.json();
+}
+
+function documentName(path) {
+  return `projects/${PROJECT_ID}/databases/(default)/documents/${path}`;
+}
+
+async function inspectMerchantConfirmation(env, user, requestId) {
+  if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
+  const accessToken = await getGoogleAccessToken(env);
+  const merchantDocument = await firestoreGetDocument(accessToken, `missionRewardMerchants/${user.uid}`);
+  if (!merchantDocument) throw new Error("Merchant account is not authorized");
+  const merchant = decodeFirestoreDocument(merchantDocument);
+  if (merchant.active === false || !Array.isArray(merchant.placeIds) || !merchant.placeIds.length) {
+    throw new Error("Merchant account is not authorized");
+  }
+
+  const codeDocument = await firestoreGetDocument(accessToken, `visitCodes/${requestId}`);
+  if (!codeDocument) throw new Error("Visit code was not found");
+  const code = decodeFirestoreDocument(codeDocument);
+  if (code.status !== "pending") throw new Error("Visit code is not pending");
+  if (!Number.isFinite(code.expiresAt) || code.expiresAt < Date.now()) throw new Error("Visit code has expired");
+  if (!merchant.placeIds.includes(code.placeId)) throw new Error("Merchant cannot confirm this place");
+  if (!validDocumentId(code.userId) || !validDocumentId(code.placeId)) throw new Error("Visit code data is invalid");
+
+  return {
+    requestId,
+    visitorUid: code.userId,
+    placeId: code.placeId,
+    placeName: code.placeName || "",
+    merchantName: merchant.businessName || user.email || ""
+  };
+}
+
 async function testFirestore(env) {
   const accessToken = await getGoogleAccessToken(env);
   const firestoreUrl =
@@ -227,6 +339,16 @@ export default {
         return withCors(json({ ok: true, authenticated: true, uid: user.uid }), request);
       } catch (error) {
         return withCors(json({ ok: false, authenticated: false, error: error.message }, 401), request);
+      }
+    }
+    if (request.method === "POST" && url.pathname === "/merchant-confirm-inspect") {
+      try {
+        const user = await verifyFirebaseIdToken(request);
+        const body = await request.json().catch(() => ({}));
+        const confirmation = await inspectMerchantConfirmation(env, user, body.requestId);
+        return withCors(json({ ok: true, authenticated: true, confirmation }), request);
+      } catch (error) {
+        return withCors(json({ ok: false, error: error.message }, 400), request);
       }
     }
     if (request.method === "POST" && url.pathname === "/mission-inspect") {
