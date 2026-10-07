@@ -424,6 +424,109 @@ async function confirmMerchantVisit(env, user, input) {
   return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId, missions };
 }
 
+async function reverseMerchantVisit(env, user, input) {
+  const requestId = String(input?.requestId || "").trim();
+  if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
+
+  const accessToken = await getGoogleAccessToken(env);
+  const transaction = await firestoreBeginTransaction(accessToken);
+  const merchantDocument = await firestoreGetDocumentInTransaction(
+    accessToken,
+    `missionRewardMerchants/${user.uid}`,
+    transaction
+  );
+  if (!merchantDocument) throw new Error("Merchant account is not authorized");
+  const merchant = decodeFirestoreDocument(merchantDocument);
+  if (merchant.active === false || !Array.isArray(merchant.placeIds) || !merchant.placeIds.length) {
+    throw new Error("Merchant account is not authorized");
+  }
+
+  const visitPath = `loyaltyVisits/${requestId}`;
+  const codePath = `visitCodes/${requestId}`;
+  const visitDocument = await firestoreGetDocumentInTransaction(accessToken, visitPath, transaction);
+  if (!visitDocument) throw new Error("Visit was not found");
+  const visit = decodeFirestoreDocument(visitDocument);
+  if (visit.status !== "confirmed") throw new Error("Visit is not confirmed");
+  if (visit.confirmedBy !== user.uid) throw new Error("Only the confirming merchant can reverse this visit");
+  if (!validDocumentId(visit.userId) || !validDocumentId(visit.placeId)) throw new Error("Visit data is invalid");
+  if (!merchant.placeIds.includes(visit.placeId)) throw new Error("Merchant cannot reverse this place");
+  if (!Number.isFinite(visit.confirmedAt) || Date.now() - visit.confirmedAt > 15 * 60 * 1000) {
+    throw new Error("Reversal deadline exceeded");
+  }
+
+  const counterId = cleanId(`${visit.userId}_${visit.placeId}`);
+  const counterPath = `loyaltyCounters/${counterId}`;
+  const programPath = `loyaltyPrograms/${visit.placeId}`;
+  const [counterDocument, codeDocument, programDocument] = await Promise.all([
+    firestoreGetDocumentInTransaction(accessToken, counterPath, transaction),
+    firestoreGetDocumentInTransaction(accessToken, codePath, transaction),
+    firestoreGetDocumentInTransaction(accessToken, programPath, transaction)
+  ]);
+  if (!counterDocument) throw new Error("Loyalty counter was not found");
+  const counter = decodeFirestoreDocument(counterDocument);
+  if (counter.lastVisitRequestId !== requestId) throw new Error("Only the most recent visit can be reversed");
+
+  const now = new Date();
+  const restoredCount = Math.max(0, Number(visit.previousVisitCount || 0));
+  const restoredSpend = Math.max(0, Number(visit.previousTotalSpend || 0));
+  const restoredDaily = Math.max(0, Number(visit.previousDailyVisitCount || 0));
+  const restoredDay = String(visit.previousLastVisitDay || "");
+  const restoredLastRequestId = String(visit.previousLastVisitRequestId || "");
+  const restoredLastVisitAt = Number.isFinite(visit.previousLastVisitAt)
+    ? new Date(visit.previousLastVisitAt)
+    : null;
+  const target = Math.max(10, Number(decodeFirestoreDocument(programDocument || {}).targetVisits || 10));
+
+  const visitFields = {
+    ...visit,
+    status: "reversed",
+    reversedAt: now,
+    reversedBy: user.uid,
+    reversedByName: merchant.businessName || user.email || "",
+    updatedAt: now
+  };
+  const counterFields = {
+    ...counter,
+    visitCount: restoredCount,
+    totalSpend: restoredSpend,
+    dailyVisitCount: restoredDaily,
+    lastVisitDay: restoredDay,
+    lastVisitRequestId: restoredLastRequestId,
+    lastVisitAt: restoredLastVisitAt,
+    updatedAt: now
+  };
+  const writes = [
+    {
+      update: { name: documentName(visitPath), fields: firestoreFields(visitFields) },
+      currentDocument: { updateTime: visitDocument.updateTime }
+    },
+    {
+      update: { name: documentName(counterPath), fields: firestoreFields(counterFields) },
+      currentDocument: { updateTime: counterDocument.updateTime }
+    }
+  ];
+  if (codeDocument) {
+    const code = decodeFirestoreDocument(codeDocument);
+    writes.push({
+      update: {
+        name: documentName(codePath),
+        fields: firestoreFields({
+          ...code,
+          status: "reversed",
+          reversedAt: now,
+          reversedBy: user.uid,
+          updatedAt: now
+        })
+      },
+      currentDocument: { updateTime: codeDocument.updateTime }
+    });
+  }
+
+  await firestoreCommit(accessToken, transaction, writes);
+  const missions = await syncTotalVisitMissionProgress(env, visit.userId);
+  return { visitCount: restoredCount, target, visitorUid: visit.userId, placeId: visit.placeId, missions };
+}
+
 async function firestoreRunQuery(accessToken, structuredQuery) {
   const response = await fetch(
     `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery`,
@@ -553,6 +656,16 @@ export default {
         const user = await verifyFirebaseIdToken(request);
         const body = await request.json().catch(() => ({}));
         const result = await confirmMerchantVisit(env, user, body);
+        return withCors(json({ ok: true, ...result }), request);
+      } catch (error) {
+        return withCors(json({ ok: false, error: error.message }, 400), request);
+      }
+    }
+    if (request.method === "POST" && url.pathname === "/merchant-reverse-visit") {
+      try {
+        const user = await verifyFirebaseIdToken(request);
+        const body = await request.json().catch(() => ({}));
+        const result = await reverseMerchantVisit(env, user, body);
         return withCors(json({ ok: true, ...result }), request);
       } catch (error) {
         return withCors(json({ ok: false, error: error.message }, 400), request);
