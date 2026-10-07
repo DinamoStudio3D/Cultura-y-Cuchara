@@ -185,18 +185,6 @@ function validDocumentId(value) {
   return typeof value === "string" && /^[A-Za-z0-9_-]{1,128}$/.test(value);
 }
 
-async function inspectActiveMission(env, missionId) {
-  if (!validDocumentId(missionId)) throw new Error("Mission id is invalid");
-  const accessToken = await getGoogleAccessToken(env);
-  const document = await firestoreGetDocument(accessToken, "chabaquitoMissions/" + missionId);
-  if (!document) throw new Error("Mission not found");
-  const mission = decodeFirestoreDocument(document);
-  if (mission.status !== "active") throw new Error("Mission is not active");
-  const target = Number(mission.targetCount);
-  if (!Number.isSafeInteger(target) || target < 1 || target > 500) throw new Error("Mission target is invalid");
-  return { id: missionId, type: mission.type, target };
-}
-
 function toFirestoreValue(value) {
   if (value === null || value === undefined) return { nullValue: null };
   if (typeof value === "boolean") return { booleanValue: value };
@@ -280,33 +268,6 @@ async function firestoreCommit(accessToken, transaction, writes) {
 
 function documentName(path) {
   return `projects/${PROJECT_ID}/databases/(default)/documents/${path}`;
-}
-
-async function inspectMerchantConfirmation(env, user, requestId) {
-  if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
-  const accessToken = await getGoogleAccessToken(env);
-  const merchantDocument = await firestoreGetDocument(accessToken, `missionRewardMerchants/${user.uid}`);
-  if (!merchantDocument) throw new Error("Merchant account is not authorized");
-  const merchant = decodeFirestoreDocument(merchantDocument);
-  if (merchant.active === false || !Array.isArray(merchant.placeIds) || !merchant.placeIds.length) {
-    throw new Error("Merchant account is not authorized");
-  }
-
-  const codeDocument = await firestoreGetDocument(accessToken, `visitCodes/${requestId}`);
-  if (!codeDocument) throw new Error("Visit code was not found");
-  const code = decodeFirestoreDocument(codeDocument);
-  if (code.status !== "pending") throw new Error("Visit code is not pending");
-  if (!Number.isFinite(code.expiresAt) || code.expiresAt < Date.now()) throw new Error("Visit code has expired");
-  if (!merchant.placeIds.includes(code.placeId)) throw new Error("Merchant cannot confirm this place");
-  if (!validDocumentId(code.userId) || !validDocumentId(code.placeId)) throw new Error("Visit code data is invalid");
-
-  return {
-    requestId,
-    visitorUid: code.userId,
-    placeId: code.placeId,
-    placeName: code.placeName || "",
-    merchantName: merchant.businessName || user.email || ""
-  };
 }
 
 async function confirmMerchantVisit(env, user, input) {
@@ -738,19 +699,6 @@ async function saveRankingPreference(env, user, input) {
   return { participateInRanking, publicAlias };
 }
 
-async function testFirestore(env) {
-  const accessToken = await getGoogleAccessToken(env);
-  const firestoreUrl =
-    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/chabaquitoMissions?pageSize=1`;
-  const response = await fetch(firestoreUrl, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
-  if (!response.ok) throw new Error(`Firestore request failed (${response.status})`);
-  const data = await response.json();
-  return { documentsFound: Array.isArray(data.documents) ? data.documents.length : 0 };
-}
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -763,14 +711,6 @@ export default {
       return json({ ok: true, service: "chabaquito", project: env.FIREBASE_PROJECT_ID || PROJECT_ID });
     }
 
-    if (request.method === "GET" && url.pathname === "/auth-test") {
-      try {
-        const user = await verifyFirebaseIdToken(request);
-        return withCors(json({ ok: true, authenticated: true, uid: user.uid }), request);
-      } catch (error) {
-        return withCors(json({ ok: false, authenticated: false, error: error.message }, 401), request);
-      }
-    }
     if (request.method === "POST" && url.pathname === "/ranking-preference") {
       try {
         const user = await verifyFirebaseIdToken(request);
@@ -799,49 +739,6 @@ export default {
         return withCors(json({ ok: true, ...result }), request);
       } catch (error) {
         return withCors(json({ ok: false, error: error.message }, 400), request);
-      }
-    }
-    if (request.method === "POST" && url.pathname === "/merchant-confirm-inspect") {
-      try {
-        const user = await verifyFirebaseIdToken(request);
-        const body = await request.json().catch(() => ({}));
-        const confirmation = await inspectMerchantConfirmation(env, user, body.requestId);
-        return withCors(json({ ok: true, authenticated: true, confirmation }), request);
-      } catch (error) {
-        return withCors(json({ ok: false, error: error.message }, 400), request);
-      }
-    }
-    if (request.method === "POST" && url.pathname === "/mission-inspect") {
-      try {
-        const user = await verifyFirebaseIdToken(request);
-        const body = await request.json().catch(() => ({}));
-        const mission = await inspectActiveMission(env, body.missionId);
-        return withCors(json({ ok: true, authenticated: true, uid: user.uid, mission }), request);
-      } catch (error) {
-        return withCors(json({ ok: false, error: error.message }, 400), request);
-      }
-    }
-    if (request.method === "GET" && url.pathname === "/firebase-test") {
-      try {
-        await getGoogleAccessToken(env);
-        return json({ ok: true, service: "chabaquito", firebaseAuth: true, project: PROJECT_ID });
-      } catch (error) {
-        return json({ ok: false, firebaseAuth: false, error: error.message }, 500);
-      }
-    }
-    if (request.method === "GET" && url.pathname === "/firestore-test") {
-      try {
-        const result = await testFirestore(env);
-        return json({
-          ok: true,
-          firestore: true,
-          project: PROJECT_ID,
-          collection: "chabaquitoMissions",
-          readable: true,
-          documentsFound: result.documentsFound
-        });
-      } catch (error) {
-        return json({ ok: false, firestore: false, error: error.message }, 500);
       }
     }
     return json({ ok: false, error: "Not found" }, 404);
