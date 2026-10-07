@@ -674,7 +674,7 @@ async function syncUserMissionProgress(env, visitorUid) {
       const detail = await response.text();
       throw new Error(`Mission progress write failed (${response.status}): ${detail.slice(0, 180)}`);
     }
-    states.push({ missionId, type: mission.type, current, target, completed });
+    states.push({ missionId, type: mission.type, current, target, completed, newlyCompleted: completed && !existing?.completed });
   }
   return states;
 }
@@ -817,7 +817,7 @@ async function validateProximityVisit(env, user, input) {
   );
   if (!response.ok) throw new Error("No se pudo registrar la evidencia de visita");
   const missions = await syncUserMissionProgress(env, user.uid);
-  return { validated: true, alreadyRegistered: false, discoveryChanged: true, xpDelta, validatedXp, missionCount: missions.length, completedCount: missions.filter(item => item.completed).length, newlyCompletedMissionIds: [] };
+  return { validated: true, alreadyRegistered: false, discoveryChanged: true, xpDelta, validatedXp, missionCount: missions.length, completedCount: missions.filter(item => item.completed).length, newlyCompletedMissionIds: missions.filter(item => item.newlyCompleted).map(item => item.missionId) };
 }
 
 function rankingAlias(value) {
