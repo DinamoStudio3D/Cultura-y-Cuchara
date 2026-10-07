@@ -737,7 +737,8 @@ async function validateProximityVisit(env, user, input) {
 
   const fingerprint = (await sha256Hex(qrId)).slice(0, 22);
   const evidenceId = `qr_${fingerprint}_${nowMs}`;
-  const evidencePath = `chabaquitoExplorerProfiles/${user.uid}/evidence/${evidenceId}`;
+  const evidenceKey = `self_visit:${evidenceId}`;
+  const evidencePath = `chabaquitoExplorerProfiles/${user.uid}/evidence/${base64url(evidenceKey)}`;
   const profilePath = `chabaquitoExplorerProfiles/${user.uid}`;
   const evidence = {
     type: "self_visit", sourceId: evidenceId, proofId: null, userId: user.uid,
@@ -745,6 +746,8 @@ async function validateProximityVisit(env, user, input) {
     verifiedAt: nowMs, firstVerifiedAt: nowMs, validationMethod: "self_visit",
     scope: "tourism_discovery", schemaVersion: 1, reversedAt: null, updatedAt: nowMs
   };
+  const existingEvidence = await firestoreGetDocument(accessToken, evidencePath);
+  if (existingEvidence) throw new Error("Esta evidencia de visita ya fue registrada");
 
   const validatedEvidence = evidenceDocuments.map(decodeFirestoreDocument).filter(item =>
     item.scope === "tourism_discovery" && item.status === "validated"
@@ -784,7 +787,7 @@ async function validateProximityVisit(env, user, input) {
     writes.push({
       update: {
         name: documentName(`${profilePath}/xpEvents/${base64url(eventId)}`),
-        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "VISIT_DISCOVERY", targetId: qr.placeId, xp: 20, placeId: qr.placeId, cantonId: place.cantonId || null, evidenceKey: `self_visit:${evidenceId}`, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
+        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "VISIT_DISCOVERY", targetId: qr.placeId, xp: 20, placeId: qr.placeId, cantonId: place.cantonId || null, evidenceKey, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
       }
     });
   }
@@ -793,10 +796,18 @@ async function validateProximityVisit(env, user, input) {
     writes.push({
       update: {
         name: documentName(`${profilePath}/xpEvents/${base64url(eventId)}`),
-        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "FIRST_CANTON", targetId: place.cantonId, xp: 50, placeId: null, cantonId: place.cantonId, evidenceKey: `self_visit:${evidenceId}`, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
+        fields: firestoreFields({ id: eventId, eventId, uid: user.uid, type: "FIRST_CANTON", targetId: place.cantonId, xp: 50, placeId: null, cantonId: place.cantonId, evidenceKey, validationMethod: "self_visit", policyVersion: 1, schemaVersion: 1, status: "granted", createdAt: nowMs, updatedAt: nowMs })
       }
     });
   }
+
+  writes.push({
+    update: {
+      name: documentName(`${profilePath}/xpAudit/${base64url(evidenceId)}`),
+      fields: firestoreFields({ uid: user.uid, evidenceKey, action: "validated", grants: [], revocations: [], xpDelta, processedAt: nowMs, schemaVersion: 1 })
+    },
+    currentDocument: { exists: false }
+  });
 
   const response = await fetch(
     `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
