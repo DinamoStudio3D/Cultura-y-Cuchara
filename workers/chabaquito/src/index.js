@@ -654,6 +654,90 @@ async function syncTotalVisitMissionProgress(env, visitorUid) {
   return states;
 }
 
+function rankingAlias(value) {
+  const alias = String(value || "").trim();
+  if (!alias || alias.length > 40 || /[<>\x00-\x1f]/.test(alias)) throw new Error("Public ranking alias is invalid");
+  return alias;
+}
+
+async function sha256Base64url(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return base64url(digest);
+}
+
+function levelForRankingXp(xp) {
+  const thresholds = [0, 500, 1500, 3000, 5000, 8000, 12000, 20000];
+  return thresholds.filter(min => xp >= min).length;
+}
+
+async function saveRankingPreference(env, user, input) {
+  const participateInRanking = input?.participateInRanking;
+  if (typeof participateInRanking !== "boolean") throw new Error("Ranking preference is invalid");
+  const publicAlias = participateInRanking ? rankingAlias(input?.publicAlias) : "";
+  const accessToken = await getGoogleAccessToken(env);
+  const profilePath = `chabaquitoExplorerProfiles/${user.uid}`;
+  const profileDocument = await firestoreGetDocument(accessToken, profilePath);
+  if (!profileDocument) throw new Error("Explorer profile was not found");
+  const profile = decodeFirestoreDocument(profileDocument);
+  const now = new Date();
+  const profileFields = {
+    ...profile,
+    participateInRanking,
+    publicAlias,
+    updatedAt: now
+  };
+  const rankingId = await sha256Base64url(user.uid);
+  const rankingPath = `chabaquitoPublicRanking/${rankingId}`;
+  const writes = [{
+    update: { name: documentName(profilePath), fields: firestoreFields(profileFields) },
+    currentDocument: { updateTime: profileDocument.updateTime }
+  }];
+
+  if (participateInRanking) {
+    const xp = Math.max(0, Number(profile.validatedXp || 0));
+    if (!Number.isSafeInteger(xp)) throw new Error("Explorer XP is invalid");
+    const avatar = profile.publicAvatar == null ? null : String(profile.publicAvatar);
+    if (avatar !== null && (!/^https:\/\/[a-z0-9.-]+\//i.test(avatar) || avatar.length > 1000)) {
+      throw new Error("Public avatar is invalid");
+    }
+    const badgeIds = Array.isArray(profile.publicBadgeIds)
+      ? profile.publicBadgeIds.filter(id => typeof id === "string" && /^[A-Za-z0-9_-]{1,128}$/.test(id)).slice(0, 3)
+      : [];
+    writes.push({
+      update: {
+        name: documentName(rankingPath),
+        fields: firestoreFields({
+          alias: publicAlias,
+          avatar,
+          level: levelForRankingXp(xp),
+          xp,
+          badgeIds,
+          updatedAt: now
+        })
+      }
+    });
+  } else {
+    const rankingDocument = await firestoreGetDocument(accessToken, rankingPath);
+    if (rankingDocument) {
+      writes.push({ delete: documentName(rankingPath), currentDocument: { updateTime: rankingDocument.updateTime } });
+    }
+  }
+
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:commit`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
+      body: JSON.stringify({ writes })
+    }
+  );
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Ranking preference write failed (${response.status}): ${detail.slice(0, 180)}`);
+  }
+  return { participateInRanking, publicAlias };
+}
+
 async function testFirestore(env) {
   const accessToken = await getGoogleAccessToken(env);
   const firestoreUrl =
@@ -685,6 +769,16 @@ export default {
         return withCors(json({ ok: true, authenticated: true, uid: user.uid }), request);
       } catch (error) {
         return withCors(json({ ok: false, authenticated: false, error: error.message }, 401), request);
+      }
+    }
+    if (request.method === "POST" && url.pathname === "/ranking-preference") {
+      try {
+        const user = await verifyFirebaseIdToken(request);
+        const body = await request.json().catch(() => ({}));
+        const result = await saveRankingPreference(env, user, body);
+        return withCors(json({ ok: true, ...result }), request);
+      } catch (error) {
+        return withCors(json({ ok: false, error: error.message }, 400), request);
       }
     }
     if (request.method === "POST" && url.pathname === "/merchant-confirm-visit") {
