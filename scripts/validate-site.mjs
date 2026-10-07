@@ -22,6 +22,7 @@ const firestoreRules = read('firestore.rules');
 const chabaquitoPublicV2 = read('js/chabaquito-public-v2.js');
 const backendFunctions = read('functions/index.js');
 const chabaquitoWorker = read('workers/chabaquito/src/index.js');
+const selfCheckin = read('visita.html');
 
 for (const [name, content] of [['index.html', index], ['admin.html', admin], ['merchant-rewards.html', merchantRewards], ['fidelidad.html', loyaltyVisitor], ['confirmar-visitas.html', loyaltyMerchant], ['gestion-fidelidad.html', loyaltyAdmin], ['merchant-dashboard.html', merchantDashboard], ['service-worker.js', serviceWorker], ['firestore.rules', firestoreRules]]) {
     assert(!/^(<{7}|={7}|>{7})/m.test(content), `${name} no contiene conflictos de Git sin resolver`);
