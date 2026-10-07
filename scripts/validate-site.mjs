@@ -402,6 +402,9 @@ assert(chabaquitoWorker.includes('Fuera del radio de 15 metros'), 'Worker valida
 assert(chabaquitoWorker.includes('accuracy > 20'), 'Worker rechaza GPS con precisión peor a 20 metros');
 assert(chabaquitoWorker.includes('24 * 60 * 60 * 1000'), 'Worker conserva cooldown de 24 horas para autovisitas');
 assert(chabaquitoWorker.includes('const evidenceKey = `self_visit:${evidenceId}`'), 'Worker conserva la clave canónica de evidencia QR');
+assert((chabaquitoWorker.match(/currentDocument: \{ exists: false \}/g)||[]).length >= 4, 'Worker protege creaciones únicas de evidencia, XP y auditoría');
+assert(chabaquitoWorker.includes('currentDocument: { updateTime: profileDocument.updateTime }'), 'Worker evita actualizar XP sobre un perfil concurrentemente modificado');
+
 assert(admin.includes("visitPurpose==='self_checkin'"), 'El administrador vincula los QR permanentes de autovisita');
 assert(admin.includes("discovery:{enabled:true,method:'proximity',qrId:id}"), 'El administrador activa proximidad al guardar un QR sin encargado');
 assert(admin.includes("active:true,discoveryEnabled:true,placeId:visitPlaceId"), 'El QR sin encargado queda activo y asociado a una sola parada');
