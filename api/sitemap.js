@@ -1,7 +1,7 @@
 "use strict";
 const PROJECT_ID="cultura-y-cuchara";
 const BASE="https://www.visitaloja.com";
-const CATEGORY_PATHS={"hoteles-en-loja":["hotel","hoteles","hostal","hostales","hospedaje","alojamiento","alojamientos"],"restaurantes-en-loja":["restaurante","restaurantes","restaurant"],"cafeterias-en-loja":["cafeteria","cafeterias","cafe","coffee shop"],"que-hacer-en-loja":["turismo","atractivo turistico","atractivos turisticos","experiencia turistica","experiencias turisticas","lugar turistico","sitio turistico"]};
+const CATEGORY_PATHS={"hoteles-en-loja":["hotel","hoteles","hostal","hostales","hospedaje","alojamiento","alojamientos"],"restaurantes-en-loja":["restaurante","restaurantes","restaurant","comida tipica","gastronomia","picanteria","asadero","cevicheria"],"cafeterias-en-loja":["cafeteria","cafeterias","cafe","coffee shop"],"que-hacer-en-loja":["turismo","atractivo turistico","atractivos turisticos","experiencia turistica","experiencias turisticas","lugar turistico","sitio turistico","atractivo","naturaleza","cultura","aventura","destino turistico"]};
 const normalize=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const STATIC_PATHS=["/","/aliados.html","/mesa-turistica.html","/planes.html","/sumar-negocio.html"];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[c]));
