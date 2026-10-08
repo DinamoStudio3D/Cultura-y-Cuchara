@@ -434,6 +434,8 @@ assert(chabaquitoWorker.includes('targetId: cantonId, xp: 50, placeId: null, can
 assert(selfCheckin.includes("discoveryMethod==='proximity'||discoveryMethod==='both'||place.validationMode==='self_checkin'"), 'La página de visita acepta los modos canónicos proximity/both');
 assert(selfCheckin.includes("!place.discovery?.enabled||!proximityEnabled"), 'La página de visita exige discovery habilitado');
 assert(selfCheckin.includes('CHABAQUITO_WORKER="https://visitaloja-chabaquito-preview.sukogames1996.workers.dev"'), 'La autovisita usa explícitamente el Worker de Preview durante integración');
+assert(loyaltyMerchant.includes("CHABAQUITO_WORKER='https://visitaloja-chabaquito-preview.sukogames1996.workers.dev'"), 'La confirmación con encargado usa el mismo Worker de Preview durante integración');
+assert(chabaquitoPublicV2.includes("https://visitaloja-chabaquito-preview.sukogames1996.workers.dev/ranking-preference"), 'El ranking Chabaquito usa el mismo Worker de Preview durante integración');
 assert(selfCheckin.includes('fetch(CHABAQUITO_WORKER+"/proximity-visit"'), 'La autovisita envía la validación GPS al endpoint de proximidad');
 assert(selfCheckin.includes('MAX_ACCURACY_M=20') && selfCheckin.includes('SAMPLE_MS=12000'), 'La autovisita conserva precisión GPS máxima y muestreo controlado');
 assert(selfCheckin.includes('xpDelta') && selfCheckin.includes('validatedXp'), 'La celebración usa XP devuelto por el backend');
