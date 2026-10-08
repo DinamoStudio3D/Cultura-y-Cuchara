@@ -491,6 +491,9 @@ assert(chabaquitoMissionAdmin.includes("type==='canton_visits'&&m.targetCount>sc
 assert(chabaquitoWorker.includes('visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app'), 'Worker usa el origen estable de Preview');
 assert(chabaquitoWorker.includes('"https://www.visitaloja.com"') && chabaquitoWorker.includes('"https://visitaloja.com"'), 'Worker autoriza ambos orígenes oficiales de VisitaLoja');
 
+assert(index.includes('js/chabaquito-runtime-config.js'), 'La portada carga la configuración central de Chabaquito');
+assert(index.indexOf('js/chabaquito-runtime-config.js') < index.indexOf('js/chabaquito-public-v2.js'), 'La configuración central de Chabaquito carga antes del módulo público');
+
 assert(chabaquitoRuntimeConfig.includes('workers.dev'), 'La configuración central usa el Worker gratuito durante integración');
 
 if (failures.length) {
