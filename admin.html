@@ -525,7 +525,7 @@
 <label>Nombre de insignia<input id="chabaquitoV2BadgeTitle" class="field" required maxlength="80"></label>
 <label>Descripción de insignia<input id="chabaquitoV2BadgeDescription" class="field" required maxlength="240"></label>
 </div>
-<div class="flex gap-2"><button id="chabaquitoV2MissionSave" type="submit" class="bg-amber-500 text-black font-black rounded-lg px-4 py-2">Guardar misión</button><button type="button" id="chabaquitoV2MissionCancel" class="border border-gray-700 rounded-lg px-4 py-2">Limpiar</button></div>
+<div class="flex flex-wrap gap-2"><button id="chabaquitoV2MissionSave" type="submit" class="bg-amber-500 text-black font-black rounded-lg px-4 py-2">Guardar misión</button><button type="button" id="chabaquitoV2MissionPublish" class="border border-emerald-500/50 text-emerald-200 rounded-lg px-4 py-2 font-bold">Activar y publicar</button><button type="button" id="chabaquitoV2MissionArchive" class="border border-red-500/40 text-red-200 rounded-lg px-4 py-2 font-bold">Desactivar misión</button><button type="button" id="chabaquitoV2MissionCancel" class="border border-gray-700 rounded-lg px-4 py-2">Limpiar</button></div>
 <p id="chabaquitoV2MissionState" class="text-xs text-gray-400">Editor preparado. No se ha guardado ninguna misión.</p>
 </form><div id="chabaquitoV2MissionList" class="space-y-2 mt-5"></div></div></section>
 
@@ -866,6 +866,24 @@ document.addEventListener('input', event => {
     idField.value = base ? (base + '-01').slice(0, 64) : '';
 });
 // Misiones Chabaquito V2: enlaza el formulario estático aunque el módulo dinámico falle.
+document.addEventListener('click', event => {
+    const id=event.target?.id;
+    if(id!=='chabaquitoV2MissionPublish'&&id!=='chabaquitoV2MissionArchive') return;
+    const form=document.getElementById('chabaquitoV2MissionForm');
+    const status=document.getElementById('chabaquitoV2MissionStatus');
+    const missionId=document.getElementById('chabaquitoV2MissionId')?.value?.trim();
+    const state=document.getElementById('chabaquitoV2MissionState');
+    if(!form||!status)return;
+    if(id==='chabaquitoV2MissionPublish'){
+        status.value='active';
+        form.requestSubmit();
+        return;
+    }
+    if(!missionId){if(state)state.textContent='Carga o edita una misión antes de desactivarla.';return;}
+    if(!confirm('¿Desactivar esta misión? Dejará de mostrarse en la web pública.'))return;
+    status.value='archived';
+    form.requestSubmit();
+});
 document.addEventListener('submit', async event => {
     if (event.target?.id !== 'chabaquitoV2MissionForm') return;
     event.preventDefault();
