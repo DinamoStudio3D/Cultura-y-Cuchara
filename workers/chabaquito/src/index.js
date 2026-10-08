@@ -3,7 +3,9 @@ const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const FIRESTORE_SCOPE = "https://www.googleapis.com/auth/datastore";
 const FIREBASE_JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
 const ALLOWED_ORIGINS = new Set([
-  "https://visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app"
+  "https://visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app",
+  "https://www.visitaloja.com",
+  "https://visitaloja.com"
 ]);
 
 function corsHeaders(request) {
