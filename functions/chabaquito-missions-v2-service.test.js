@@ -156,3 +156,36 @@ test("unique_places pierde finalización e insignia si una visita necesaria se r
   assert.equal(plan.rewardAction,"delete");
   assert.equal(plan.progressData.completedAt,null);
 });
+
+
+test("canton_visits completa el reto provincial con cantones diferentes y una sola insignia",()=>{
+  const provincial={...mission,id:"descubriendo-provincia",type:"canton_visits",targetCount:3,cantonIds:["loja","catamayo","saraguro"],badge:{title:"Viajero Provincial"}};
+  const visits=[
+    {requestId:"c1",placeId:"p1",status:"confirmed",confirmedAt:100},
+    {requestId:"c2",placeId:"p2",status:"confirmed",confirmedAt:101},
+    {requestId:"c3",placeId:"p3",status:"confirmed",confirmedAt:102},
+    {requestId:"c4",placeId:"p4",status:"confirmed",confirmedAt:103}
+  ];
+  const placesById={
+    p1:{cantonId:"loja"},p2:{cantonId:"loja"},p3:{cantonId:"catamayo"},p4:{cantonId:"saraguro"}
+  };
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[provincial],visits,placesById});
+  assert.equal(state.current,3);
+  assert.equal(state.completed,true);
+  const first=buildPersistencePlan(state,{},"now-1");
+  assert.equal(first.rewardAction,"create");
+  const repeated=buildPersistencePlan(state,{progress:first.progressData,reward:first.rewardData},"now-2");
+  assert.equal(repeated.rewardAction,"none");
+});
+
+test("canton_visits no cuenta dos lugares del mismo cantón como dos cantones",()=>{
+  const provincial={...mission,id:"descubriendo-provincia",type:"canton_visits",targetCount:2,cantonIds:["loja","catamayo"],badge:{title:"Viajero Provincial"}};
+  const visits=[
+    {requestId:"c1",placeId:"p1",status:"confirmed",confirmedAt:100},
+    {requestId:"c2",placeId:"p2",status:"confirmed",confirmedAt:101}
+  ];
+  const placesById={p1:{cantonId:"loja"},p2:{cantonId:"loja"}};
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[provincial],visits,placesById});
+  assert.equal(state.current,1);
+  assert.equal(state.completed,false);
+});
