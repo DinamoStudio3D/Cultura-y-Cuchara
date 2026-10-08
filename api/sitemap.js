@@ -13,7 +13,7 @@ async function locales(fetchImpl){
   const u=new URL(`https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/locales`);
   u.searchParams.set("pageSize","300");if(token)u.searchParams.set("pageToken",token);
   const r=await fetchImpl(u);if(!r.ok)throw new Error(`Firestore ${r.status}`);
-  const j=await r.json();for(const d of j.documents||[]){const f=d.fields||{},status=String(value(f.publicationStatus)||value(f.status)||"").toLowerCase();if(status&& !["published","active"].includes(status))continue;const id=decodeURIComponent(d.name.split("/").pop()),s=slug(value(f.slug)||value(f.title)||id);if(s)out.push({slug:s,updated:value(f.updatedAt)||value(f.publishedAt)||"",category:[value(f.category),value(f.categoria),value(f.type),value(f.tipo)].map(normalize)})}token=j.nextPageToken||"";
+  const j=await r.json();for(const d of j.documents||[]){const f=d.fields||{},statuses=[value(f.publicationStatus),value(f.status)].filter(v=>v!==undefined&&v!==null&&String(v).trim()!=="").map(v=>String(v).toLowerCase());if(statuses.some(v=>!["published","active"].includes(v)))continue;const id=decodeURIComponent(d.name.split("/").pop()),s=slug(value(f.slug)||value(f.title)||id);if(s)out.push({slug:s,updated:value(f.updatedAt)||value(f.publishedAt)||"",category:[value(f.category),value(f.categoria),value(f.type),value(f.tipo)].map(normalize)})}token=j.nextPageToken||"";
  }while(token);return out
 }
 module.exports=async function handler(req,res){
