@@ -16,6 +16,9 @@ test("rechaza latitud o longitud imposibles",()=>assert.throws(()=>validateProxi
 test("rechaza precisión cero o negativa",()=>assert.throws(()=>validateProximityCoordinates({place,coordinates:gps({accuracy:0}),now}),/GPS inválido/));
 test("acepta exactamente el límite de precisión de 20 metros",()=>assert.equal(validateProximityCoordinates({place,coordinates:gps({accuracy:LIMITS.accuracyMeters}),now}),true));
 test("acepta una lectura con exactamente 30 segundos de antigüedad",()=>assert.equal(validateProximityCoordinates({place,coordinates:gps({capturedAt:now-LIMITS.maxAgeMillis}),now}),true));
+test("rechaza una parada con coordenadas configuradas fuera de rango",()=>assert.throws(()=>validateProximityCoordinates({place:{lat:-91,lng:place.lng},coordinates:gps(),now}),/GPS inválido/));
+test("rechaza precisión GPS no numérica",()=>assert.throws(()=>validateProximityCoordinates({place,coordinates:gps({accuracy:"5"}),now}),/GPS inválido/));
+
 
 
 test("cada visita autónoma aceptada recibe identidad backend distinta",()=>{
