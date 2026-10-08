@@ -13,11 +13,11 @@
     },
     {
       "source": "/parada/:slug",
-      "destination": "/negocio.html?lugar=:slug"
+      "destination": "/api/parada?slug=:slug"
     },
     {
       "source": "/parada/:slug/",
-      "destination": "/negocio.html?lugar=:slug"
+      "destination": "/api/parada?slug=:slug"
     }
   ]
 }
