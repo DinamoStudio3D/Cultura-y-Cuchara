@@ -529,6 +529,9 @@ assert(seoRobots.includes('Sitemap: https://www.visitaloja.com/sitemap.xml'), 'r
 assert(seoSitemapApi.includes('https://www.visitaloja.com') && seoSitemapApi.includes('documents/locales'), 'sitemap dinámico usa dominio oficial y colección de paradas');
 assert(seoSitemapApi.includes('["published","active"]') && seoSitemapApi.includes('/parada/'), 'sitemap dinámico limita paradas a publicadas/activas');
 assert(seoVercel.includes('"source": "/sitemap.xml"') && seoVercel.includes('"destination": "/api/sitemap"'), 'Vercel sirve sitemap.xml desde el generador dinámico');
+const seoBusinessApi = read('api/parada.js');
+assert(seoVercel.includes('"destination": "/api/parada?slug=:slug"'), 'Las URLs de paradas pasan por el render SEO del servidor');
+assert(seoBusinessApi.includes('application/ld+json') && seoBusinessApi.includes('documents/locales') && seoBusinessApi.includes('PostalAddress'), 'El servidor entrega metadatos y Schema.org por parada');
 assert(seoBusiness.includes('id="seoCanonical"') && seoBusiness.includes("const canonical='https://www.visitaloja.com/parada/'"), 'Las fichas generan canonical público por parada');
 assert(seoBusiness.includes('id="seoOgTitle"') && seoBusiness.includes('id="seoOgDescription"') && seoBusiness.includes('id="seoOgUrl"'), 'Las fichas actualizan metadatos sociales básicos');
 assert(seoBusiness.includes('id="seoStructuredData"') && seoBusiness.includes('https://schema.org') && seoBusiness.includes('LocalBusiness'), 'Las fichas publican datos estructurados de negocio');
