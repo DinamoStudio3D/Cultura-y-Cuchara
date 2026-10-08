@@ -471,7 +471,6 @@ assert(chabaquitoWorker.includes('missions.filter(item => item.newlyCompleted).m
 assert(chabaquitoWorker.includes('chabaquitoDigitalRewards'), 'Worker sincroniza recompensas digitales de misiones');
 assert(chabaquitoWorker.includes('"total_visits", "unique_places", "place_visits", "category_visits", "canton_visits"'), 'Worker admite los cinco tipos de misión V2');
 assert(chabaquitoWorker.includes('mission.type === "unique_places"') && chabaquitoWorker.includes('missionText(visit.placeId)'), 'Misiones de lugares diferentes usan placeId y deduplican paradas');
-assert(chabaquitoMissionModel.includes("'unique_places'"), 'El contrato de Misiones V2 admite lugares diferentes');
 assert(chabaquitoWorker.includes('collectionId: "evidence", allDescendants: true'), 'Worker incorpora evidencia confiable de Chabaquito a las misiones');
 assert(chabaquitoWorker.includes('source: "chabaquito_evidence"'), 'Worker prioriza evidencia turística de Chabaquito');
 assert(chabaquitoWorker.includes('item.status === "validated" || item.status === "reversed"'), 'Worker contempla evidencia validada y revertida');
@@ -483,6 +482,7 @@ assert(!chabaquitoWorker.includes('place.cantonId || place.canton || place.city 
 
 const chabaquitoMissionModel = read('js/chabaquito-missions-v2-model.js');
 const chabaquitoMissionAdmin = read('js/admin-chabaquito-missions-v2.js');
+assert(chabaquitoMissionModel.includes("'unique_places'"), 'El contrato de Misiones V2 admite lugares diferentes');
 assert(chabaquitoMissionAdmin.includes("new Map(scopeRaw.map(value=>[value.toLocaleLowerCase('es'),value]))"), 'El administrador elimina alcances duplicados de las misiones');
 assert(chabaquitoMissionAdmin.includes("type==='place_visits'&&m.targetCount>scope.length"), 'La meta por lugares no supera los lugares únicos configurados');
 assert(chabaquitoMissionAdmin.includes("type==='canton_visits'&&m.targetCount>scope.length"), 'La meta por cantones no supera los cantones únicos configurados');
