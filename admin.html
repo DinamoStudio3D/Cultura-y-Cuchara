@@ -865,6 +865,27 @@ document.addEventListener('input', event => {
     const base = generateChabaquitoMissionId(event.target.value);
     idField.value = base ? (base + '-01').slice(0, 64) : '';
 });
+// Lista estática de respaldo: garantiza que las misiones existentes se administren aunque falle el módulo dinámico.
+let chabaquitoMissionListUnsubscribe=null;
+function loadExistingChabaquitoMissions(){
+    const list=document.getElementById('chabaquitoV2MissionList'), count=document.getElementById('chabaquitoV2MissionCount');
+    if(!list||typeof db==='undefined'||chabaquitoMissionListUnsubscribe)return;
+    const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    chabaquitoMissionListUnsubscribe=db.collection('chabaquitoMissions').onSnapshot(snapshot=>{
+        const items=snapshot.docs.map(doc=>({id:doc.id,...doc.data()})).sort((a,b)=>String(a.title||a.id).localeCompare(String(b.title||b.id),'es'));
+        if(count)count.textContent=items.length+' misión'+(items.length===1?'':'es');
+        if(!items.length){list.innerHTML='<p class="text-sm text-gray-500">Todavía no hay misiones creadas.</p>';return;}
+        list.innerHTML=items.map(m=>'<article class="rounded-xl border border-gray-800 bg-black/25 p-4 flex flex-col sm:flex-row gap-3 justify-between"><div><strong>'+esc(m.badge?.icon||'🏅')+' '+esc(m.title||m.id)+'</strong><p class="text-xs text-gray-400 mt-1">Estado: '+esc(m.status||'draft')+' · Meta: '+Number(m.targetCount||1)+'</p></div><button type="button" data-static-mission-edit="'+esc(m.id)+'" class="border border-amber-500/40 text-amber-200 rounded-lg px-3 py-2 text-xs font-bold">Editar</button></article>').join('');
+        list.querySelectorAll('[data-static-mission-edit]').forEach(button=>button.onclick=()=>{
+            const m=items.find(item=>item.id===button.dataset.staticMissionEdit);if(!m)return;
+            const set=(id,value)=>{const el=document.getElementById(id);if(el)el.value=value??'';};
+            set('chabaquitoV2MissionId',m.id);set('chabaquitoV2MissionTitle',m.title);set('chabaquitoV2MissionDescription',m.description);set('chabaquitoV2MissionType',m.type);set('chabaquitoV2MissionTarget',m.targetCount);set('chabaquitoV2MissionScope',(m.placeIds||m.categoryIds||m.cantonIds||[]).join('\n'));set('chabaquitoV2MissionStatus',m.status||'draft');set('chabaquitoV2BadgeIcon',m.badge?.icon||'🏅');set('chabaquitoV2BadgeTitle',m.badge?.title||'');set('chabaquitoV2BadgeDescription',m.badge?.description||'');set('chabaquitoV2BadgeRarity',m.badge?.rarity||'common');
+            const idField=document.getElementById('chabaquitoV2MissionId');if(idField)idField.readOnly=true;
+            const state=document.getElementById('chabaquitoV2MissionState');if(state)state.textContent='Editando '+m.id;
+            document.getElementById('chabaquitoV2MissionForm')?.scrollIntoView({behavior:'smooth',block:'start'});
+        });
+    },error=>{list.innerHTML='<p class="text-sm text-red-300">No se pudieron cargar las misiones existentes ('+esc(error.code||'error')+').</p>';});
+}
 // Misiones Chabaquito V2: enlaza el formulario estático aunque el módulo dinámico falle.
 document.addEventListener('click', event => {
     const id=event.target?.id;
@@ -1209,7 +1230,7 @@ async function copySystemLink(index){
 }
 
 function showAdminModule(moduleName) {
-    if (moduleName === 'chabaquito' || moduleName === 'chabaquitoMissions') loadChabaquitoAdminModules();
+    if (moduleName === 'chabaquito' || moduleName === 'chabaquitoMissions') { loadChabaquitoAdminModules(); if(moduleName === 'chabaquitoMissions') setTimeout(loadExistingChabaquitoMissions, 0); }
     if(moduleName!==currentAdminModule&&adminUnsavedChanges&&!window.confirm('Tienes cambios sin guardar. ¿Quieres salir de este módulo y descartarlos?'))return false;
     if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
     currentAdminModule=moduleName;
