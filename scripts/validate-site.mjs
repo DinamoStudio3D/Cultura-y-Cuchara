@@ -490,8 +490,8 @@ assert(admin.includes('function hydrateChabaquitoMissionDraftSelect()') && admin
 assert(admin.includes("button.onclick=()=>{") && admin.includes("set('chabaquitoV2MissionTitle',m.title)") && admin.includes("set('chabaquitoV2BadgeTitle',m.badge?.title||'')"), 'El botón Cargar plantilla rellena misión e insignia desde el shell del administrador');
 assert(admin.includes("set('chabaquitoV2MissionStatus',m.status||'draft')"), 'El cargador respeta el estado definido por cada plantilla');
 assert(chabaquitoMissionDrafts.includes("id: 'primer-paso-chabaquito'") && chabaquitoMissionDrafts.includes("id: 'explorador-lojano'") && chabaquitoMissionDrafts.includes("id: 'ruta-de-cinco'") && chabaquitoMissionDrafts.includes("id: 'descubriendo-provincia'") && chabaquitoMissionDrafts.includes("id: 'dieciseis-cantones'"), 'El catálogo conserva las cinco misiones iniciales');
-assert((chabaquitoMissionDrafts.match(/status: 'draft'/g)||[]).length === 5, 'Las cinco plantillas iniciales permanecen en borrador');
-assert(chabaquitoMissionAdmin.includes('initDrafts()') && chabaquitoMissionAdmin.includes("value='draft'"), 'Las plantillas se cargan en el editor sin activarse');
+assert((chabaquitoMissionDrafts.match(/status: 'active'/g)||[]).length === 4 && (chabaquitoMissionDrafts.match(/status: 'draft'/g)||[]).length === 1, 'Las cuatro misiones iniciales están activas y el reto de 16 cantones permanece en borrador');
+assert(chabaquitoMissionAdmin.includes('initDrafts()'), 'El módulo inicializa las plantillas en el editor');
 assert(chabaquitoMissionAdmin.includes("if(!host)return;initDrafts();if(host.dataset.ready)return;"), 'Las plantillas se inicializan incluso si el editor ya había arrancado antes de cargar el catálogo');
 assert(chabaquitoMissionAdmin.includes("new Map(scopeRaw.map(value=>[value.toLocaleLowerCase('es'),value]))"), 'El administrador elimina alcances duplicados de las misiones');
 assert(chabaquitoMissionAdmin.includes("type==='place_visits'&&m.targetCount>scope.length"), 'La meta por lugares no supera los lugares únicos configurados');
