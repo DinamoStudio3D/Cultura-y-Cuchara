@@ -480,9 +480,15 @@ assert(chabaquitoWorker.includes('new Set(missionList(mission.cantonIds)'), 'Mis
 assert(chabaquitoWorker.includes('const canton = missionText(place.cantonId).toLocaleLowerCase("es")'), 'Misiones por cantón usan únicamente el cantonId canónico');
 assert(!chabaquitoWorker.includes('place.cantonId || place.canton || place.city || place.ciudad || place.municipality'), 'Worker no mezcla nombres legacy con cantonId en misiones');
 
+const chabaquitoMissionDrafts = read('js/chabaquito-mission-drafts.js');
 const chabaquitoMissionModel = read('js/chabaquito-missions-v2-model.js');
 const chabaquitoMissionAdmin = read('js/admin-chabaquito-missions-v2.js');
 assert(chabaquitoMissionModel.includes("'unique_places'"), 'El contrato de Misiones V2 admite lugares diferentes');
+assert(admin.includes('js/chabaquito-mission-drafts.js'), 'El administrador carga el catálogo inicial de misiones');
+assert(admin.includes('chabaquitoV2MissionDraftSelect') && admin.includes('chabaquitoV2MissionLoadDraft'), 'El administrador expone el selector de plantillas de misión');
+assert(chabaquitoMissionDrafts.includes("id: 'primer-paso-chabaquito'") && chabaquitoMissionDrafts.includes("id: 'explorador-lojano'") && chabaquitoMissionDrafts.includes("id: 'ruta-de-cinco'") && chabaquitoMissionDrafts.includes("id: 'descubriendo-provincia'") && chabaquitoMissionDrafts.includes("id: 'dieciseis-cantones'"), 'El catálogo conserva las cinco misiones iniciales');
+assert((chabaquitoMissionDrafts.match(/status: 'draft'/g)||[]).length === 5, 'Las cinco plantillas iniciales permanecen en borrador');
+assert(chabaquitoMissionAdmin.includes('initDrafts()') && chabaquitoMissionAdmin.includes("value='draft'"), 'Las plantillas se cargan en el editor sin activarse');
 assert(chabaquitoMissionAdmin.includes("new Map(scopeRaw.map(value=>[value.toLocaleLowerCase('es'),value]))"), 'El administrador elimina alcances duplicados de las misiones');
 assert(chabaquitoMissionAdmin.includes("type==='place_visits'&&m.targetCount>scope.length"), 'La meta por lugares no supera los lugares únicos configurados');
 assert(chabaquitoMissionAdmin.includes("type==='canton_visits'&&m.targetCount>scope.length"), 'La meta por cantones no supera los cantones únicos configurados');
