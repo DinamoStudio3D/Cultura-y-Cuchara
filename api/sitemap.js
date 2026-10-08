@@ -1,7 +1,7 @@
 "use strict";
 const PROJECT_ID="cultura-y-cuchara";
 const BASE="https://www.visitaloja.com";
-const STATIC_PATHS=["/","/aliados.html","/mesa-turistica.html","/planes.html","/sumar-negocio.html"];
+const STATIC_PATHS=["/","/aliados.html","/mesa-turistica.html","/planes.html","/sumar-negocio.html","/hoteles-en-loja","/restaurantes-en-loja","/cafeterias-en-loja","/que-hacer-en-loja"];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[c]));
 const slug=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 function value(v){if(!v)return"";if("stringValue"in v)return v.stringValue;if("booleanValue"in v)return v.booleanValue;if("integerValue"in v)return Number(v.integerValue);if("timestampValue"in v)return v.timestampValue;return""}
