@@ -434,9 +434,10 @@ assert(chabaquitoWorker.includes('targetId: cantonId, xp: 50, placeId: null, can
 
 assert(selfCheckin.includes("discoveryMethod==='proximity'||discoveryMethod==='both'||place.validationMode==='self_checkin'"), 'La página de visita acepta los modos canónicos proximity/both');
 assert(selfCheckin.includes("!place.discovery?.enabled||!proximityEnabled"), 'La página de visita exige discovery habilitado');
-assert(selfCheckin.includes('CHABAQUITO_WORKER="https://visitaloja-chabaquito-preview.sukogames1996.workers.dev"'), 'La autovisita usa explícitamente el Worker de Preview durante integración');
-assert(loyaltyMerchant.includes("CHABAQUITO_WORKER='https://visitaloja-chabaquito-preview.sukogames1996.workers.dev'"), 'La confirmación con encargado usa el mismo Worker de Preview durante integración');
-assert(chabaquitoPublicV2.includes("https://visitaloja-chabaquito-preview.sukogames1996.workers.dev/ranking-preference"), 'El ranking Chabaquito usa el mismo Worker de Preview durante integración');
+assert(chabaquitoRuntimeConfig.includes("workerUrl:'https://visitaloja-chabaquito-preview.sukogames1996.workers.dev'"), 'La configuración central conserva el Worker de Preview durante integración');
+assert(selfCheckin.includes('js/chabaquito-runtime-config.js') && selfCheckin.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'La autovisita obtiene el Worker desde la configuración central');
+assert(loyaltyMerchant.includes('js/chabaquito-runtime-config.js') && loyaltyMerchant.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'La confirmación con encargado obtiene el Worker desde la configuración central');
+assert(chabaquitoPublicV2.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'El ranking Chabaquito obtiene el Worker desde la configuración central');
 assert(selfCheckin.includes('fetch(CHABAQUITO_WORKER+"/proximity-visit"'), 'La autovisita envía la validación GPS al endpoint de proximidad');
 assert(selfCheckin.includes('MAX_ACCURACY_M=20') && selfCheckin.includes('SAMPLE_MS=12000'), 'La autovisita conserva precisión GPS máxima y muestreo controlado');
 assert(selfCheckin.includes('xpDelta') && selfCheckin.includes('validatedXp'), 'La celebración usa XP devuelto por el backend');
@@ -487,8 +488,7 @@ assert(chabaquitoMissionAdmin.includes("type==='canton_visits'&&m.targetCount>sc
 assert(chabaquitoWorker.includes('visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app'), 'Worker usa el origen estable de Preview');
 assert(chabaquitoWorker.includes('"https://www.visitaloja.com"') && chabaquitoWorker.includes('"https://visitaloja.com"'), 'Worker autoriza ambos orígenes oficiales de VisitaLoja');
 
-assert(chabaquitoPublicV2.includes('workers.dev/ranking-preference'), 'Ranking público usa el Worker gratuito');
-assert(loyaltyMerchant.includes('workers.dev'), 'Confirmación de visitas usa el Worker gratuito');
+assert(chabaquitoRuntimeConfig.includes('workers.dev'), 'La configuración central usa el Worker gratuito durante integración');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
