@@ -8,6 +8,10 @@
   ],
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
       "source": "/parada/:slug",
       "destination": "/negocio.html?lugar=:slug"
     },
