@@ -12,6 +12,22 @@
       "destination": "/api/sitemap"
     },
     {
+      "source": "/que-hacer-en-loja",
+      "destination": "/api/categoria?categoria=que-hacer-en-loja"
+    },
+    {
+      "source": "/cafeterias-en-loja",
+      "destination": "/api/categoria?categoria=cafeterias-en-loja"
+    },
+    {
+      "source": "/restaurantes-en-loja",
+      "destination": "/api/categoria?categoria=restaurantes-en-loja"
+    },
+    {
+      "source": "/hoteles-en-loja",
+      "destination": "/api/categoria?categoria=hoteles-en-loja"
+    },
+    {
       "source": "/parada/:slug",
       "destination": "/api/parada?slug=:slug"
     },
