@@ -122,3 +122,37 @@ test("evidencia Chabaquito prevalece sobre loyalty legacy con el mismo requestId
   assert.equal(state.current,0);
   assert.equal(state.completed,false);
 });
+
+
+test("unique_places completa y entrega una sola insignia con lugares distintos",()=>{
+  const uniqueMission={...mission,id:"explorador-lojano",type:"unique_places",targetCount:3,badge:{title:"Explorador Lojano"}};
+  const visits=[
+    {requestId:"v1",placeId:"p1",status:"confirmed",confirmedAt:100},
+    {requestId:"v2",placeId:"p1",status:"confirmed",confirmedAt:101},
+    {requestId:"v3",placeId:"p2",status:"confirmed",confirmedAt:102},
+    {requestId:"v4",placeId:"p3",status:"confirmed",confirmedAt:103}
+  ];
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[uniqueMission],visits,placesById:{}});
+  assert.equal(state.current,3);
+  assert.equal(state.completed,true);
+  const first=buildPersistencePlan(state,{},"now-1");
+  assert.equal(first.rewardAction,"create");
+  const repeated=buildPersistencePlan(state,{progress:first.progressData,reward:first.rewardData},"now-2");
+  assert.equal(repeated.rewardAction,"none");
+  assert.equal(repeated.progressData.completedAt,"now-1");
+});
+
+test("unique_places pierde finalización e insignia si una visita necesaria se revierte",()=>{
+  const uniqueMission={...mission,id:"explorador-lojano",type:"unique_places",targetCount:3,badge:{title:"Explorador Lojano"}};
+  const visits=[
+    {requestId:"v1",placeId:"p1",status:"confirmed",confirmedAt:100},
+    {requestId:"v2",placeId:"p2",status:"confirmed",confirmedAt:101},
+    {requestId:"v3",placeId:"p3",status:"reversed",confirmedAt:102}
+  ];
+  const [state]=calculateUserMissionStates({userId:"user-1",missions:[uniqueMission],visits,placesById:{}});
+  assert.equal(state.current,2);
+  assert.equal(state.completed,false);
+  const plan=buildPersistencePlan(state,{progress:{completed:true,completedAt:"before"},reward:{missionId:"explorador-lojano"}},"now");
+  assert.equal(plan.rewardAction,"delete");
+  assert.equal(plan.progressData.completedAt,null);
+});
