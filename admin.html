@@ -510,7 +510,7 @@
 
                 <section id="chabaquitoMissionsModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2"><div class="flex items-start justify-between gap-4 mb-6"><div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Chabaquito</p><h2 class="text-2xl font-black mt-1">Misiones Chabaquito</h2><p class="text-sm text-gray-400 mt-1">Crea y administra retos basados en visitas validadas a lugares de Loja.</p></div></div><div id="chabaquitoV2MissionAdmin" class="bg-amber-500/5 border border-amber-500/25 rounded-2xl p-4 sm:p-5">
 <form id="chabaquitoV2MissionForm" class="space-y-4">
-<div class="flex flex-col sm:flex-row justify-between gap-3"><div><h3 class="font-black text-lg text-amber-200">Crear misión</h3><p class="text-xs text-gray-400">Define un reto que se completará con visitas validadas.</p></div><button id="chabaquitoV2MissionNew" type="button" class="border border-amber-500/40 rounded-lg px-3 py-2 text-xs font-bold">Nueva misión</button></div>
+<div class="flex flex-col sm:flex-row justify-between gap-3"><div><h3 class="font-black text-lg text-amber-200">Crear misión</h3><p class="text-xs text-gray-400">Define un reto que se completará con visitas validadas.</p></div><div class="flex flex-wrap gap-2"><select id="chabaquitoV2MissionDraftSelect" class="field text-xs"><option value="">Plantillas iniciales…</option></select><button id="chabaquitoV2MissionLoadDraft" type="button" class="border border-amber-500/40 rounded-lg px-3 py-2 text-xs font-bold">Cargar plantilla</button><button id="chabaquitoV2MissionNew" type="button" class="border border-amber-500/40 rounded-lg px-3 py-2 text-xs font-bold">Nueva misión</button></div></div>
 <div class="grid md:grid-cols-2 gap-3">
 <label>Título<input id="chabaquitoV2MissionTitle" class="field" required maxlength="100" placeholder="Ej. Primeros pasos con Chabaquito"></label>
 <label>Estado<select id="chabaquitoV2MissionStatus" class="field"><option value="draft">Borrador</option><option value="active">Activa</option><option value="paused">Pausada</option><option value="archived">Archivada</option></select></label>
@@ -848,6 +848,7 @@
     </div>
 
     <script src="js/chabaquito-missions-v2-model.js"></script>
+    <script src="js/chabaquito-mission-drafts.js"></script>
     <script src="js/chabaquito-place-config.js"></script>
     <script src="js/admin-visit-validation-mode.js"></script>
     <script src="js/admin-visit-validation-mode-integration.js"></script>
