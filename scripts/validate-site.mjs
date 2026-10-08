@@ -522,3 +522,15 @@ if (failures.length) {
     process.exit(1);
 }
 console.log('\nValidación completada correctamente.');
+
+// SEO production-domain regression guards
+const seoIndex = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const seoBusiness = fs.readFileSync(path.join(root, 'negocio.html'), 'utf8');
+const seoRobots = fs.readFileSync(path.join(root, 'robots.txt'), 'utf8');
+const seoSitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+assert(seoIndex.includes('<link rel="canonical" href="https://www.visitaloja.com/">'), 'La portada usa visitaloja.com como canonical');
+assert(!seoIndex.includes('https://visita-loja.vercel.app/'), 'La portada no conserva URLs SEO del dominio provisional de Vercel');
+assert(seoRobots.includes('Sitemap: https://www.visitaloja.com/sitemap.xml'), 'robots.txt publica el sitemap del dominio oficial');
+assert(seoSitemap.includes('<loc>https://www.visitaloja.com/</loc>'), 'sitemap usa el dominio oficial');
+assert(seoBusiness.includes('id="seoCanonical"') && seoBusiness.includes("const canonical='https://www.visitaloja.com/parada/'"), 'Las fichas generan canonical público por parada');
+assert(seoBusiness.includes('id="seoOgTitle"') && seoBusiness.includes('id="seoOgDescription"') && seoBusiness.includes('id="seoOgUrl"'), 'Las fichas actualizan metadatos sociales básicos');
