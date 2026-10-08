@@ -189,3 +189,21 @@ test("canton_visits no cuenta dos lugares del mismo cantón como dos cantones",(
   assert.equal(state.current,1);
   assert.equal(state.completed,false);
 });
+
+
+test("la misión de 16 cantones solo completa al cubrir los 16 cantones únicos",()=>{
+  const cantons=["loja","calvas","catamayo","celica","chaguarpamba","espindola","gonzanama","macara","olmedo","paltas","pindal","puyango","quilanga","saraguro","sozoranga","zapotillo"];
+  const legendary={...mission,id:"dieciseis-cantones",type:"canton_visits",targetCount:16,cantonIds:cantons,badge:{title:"Leyenda de Loja"}};
+  const placesById=Object.fromEntries(cantons.map((cantonId,index)=>["p"+index,{cantonId}]));
+  const fifteen=cantons.slice(0,15).map((_,index)=>({requestId:"v"+index,placeId:"p"+index,status:"confirmed",confirmedAt:100+index}));
+  let [state]=calculateUserMissionStates({userId:"user-1",missions:[legendary],visits:fifteen,placesById});
+  assert.equal(state.current,15);
+  assert.equal(state.completed,false);
+  const all=fifteen.concat({requestId:"v15",placeId:"p15",status:"confirmed",confirmedAt:115});
+  [state]=calculateUserMissionStates({userId:"user-1",missions:[legendary],visits:all,placesById});
+  assert.equal(state.current,16);
+  assert.equal(state.completed,true);
+  const first=buildPersistencePlan(state,{},"now-legend");
+  assert.equal(first.rewardAction,"create");
+  assert.equal(first.rewardData.badge.title,"Leyenda de Loja");
+});
