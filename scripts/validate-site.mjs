@@ -439,6 +439,8 @@ assert(selfCheckin.includes('MAX_ACCURACY_M=20') && selfCheckin.includes('SAMPLE
 assert(selfCheckin.includes('xpDelta') && selfCheckin.includes('validatedXp'), 'La celebración usa XP devuelto por el backend');
 assert(selfCheckin.includes('newlyCompletedMissionIds'), 'La celebración detecta nuevas misiones completadas');
 assert(selfCheckin.includes('id="celebrationBox"'), 'La página conserva la tarjeta de celebración de Chabaquito');
+assert(selfCheckin.includes("title='Esta visita ya fue registrada'") && selfCheckin.includes('después de 24 horas'), 'La autovisita explica claramente el cooldown de 24 horas');
+assert(selfCheckin.includes("title='Acércate un poco más a la parada'") && selfCheckin.includes('15 metros'), 'La autovisita explica claramente el radio físico de 15 metros');
 assert(selfCheckin.includes('href="./#chabaquitoV2Public"'), 'La celebración enlaza con misiones e insignias');
 assert(chabaquitoPublicV2.includes('function levelProgress(xp)'), 'El perfil Chabaquito calcula el progreso hacia el siguiente nivel');
 assert(chabaquitoPublicV2.includes('lp.remaining') && chabaquitoPublicV2.includes('lp.pct'), 'El perfil muestra XP restante y porcentaje de nivel');
