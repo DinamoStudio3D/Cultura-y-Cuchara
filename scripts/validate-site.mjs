@@ -517,12 +517,6 @@ assert(index.indexOf('js/chabaquito-runtime-config.js') < index.indexOf('js/chab
 
 assert(chabaquitoRuntimeConfig.includes('workers.dev'), 'La configuración central usa el Worker gratuito durante integración');
 
-if (failures.length) {
-    console.error(`\nValidación fallida: ${failures.length} problema(s).`);
-    process.exit(1);
-}
-console.log('\nValidación completada correctamente.');
-
 // SEO production-domain regression guards
 const seoIndex = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const seoBusiness = fs.readFileSync(path.join(root, 'negocio.html'), 'utf8');
@@ -534,3 +528,10 @@ assert(seoRobots.includes('Sitemap: https://www.visitaloja.com/sitemap.xml'), 'r
 assert(seoSitemap.includes('<loc>https://www.visitaloja.com/</loc>'), 'sitemap usa el dominio oficial');
 assert(seoBusiness.includes('id="seoCanonical"') && seoBusiness.includes("const canonical='https://www.visitaloja.com/parada/'"), 'Las fichas generan canonical público por parada');
 assert(seoBusiness.includes('id="seoOgTitle"') && seoBusiness.includes('id="seoOgDescription"') && seoBusiness.includes('id="seoOgUrl"'), 'Las fichas actualizan metadatos sociales básicos');
+
+
+if (failures.length) {
+    console.error(`\nValidación fallida: ${failures.length} problema(s).`);
+    process.exit(1);
+}
+console.log('\nValidación completada correctamente.');
