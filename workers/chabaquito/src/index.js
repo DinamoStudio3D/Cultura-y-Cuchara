@@ -571,6 +571,7 @@ function missionMatchedKeys(mission, visits, placesById) {
   }
   const valid = [...byVisitId.values()].filter(visit => visit.status === "confirmed" && missionVisitIsEligible(mission, visit));
   if (mission.type === "total_visits") return valid.map(visit => missionText(visit.requestId)).filter(Boolean);
+  if (mission.type === "unique_places") return valid.map(visit => missionText(visit.placeId)).filter(Boolean);
   if (mission.type === "place_visits") {
     const allowed = new Set(missionList(mission.placeIds));
     return valid.map(visit => missionText(visit.placeId)).filter(placeId => placeId && allowed.has(placeId));
@@ -616,7 +617,7 @@ async function syncUserMissionProgress(env, visitorUid) {
     const mission = decodeFirestoreDocument(document);
     const target = Number(mission.targetCount);
     if (!Number.isSafeInteger(target) || target < 1 || target > 500) continue;
-    if (!["total_visits", "place_visits", "category_visits", "canton_visits"].includes(mission.type)) continue;
+    if (!["total_visits", "unique_places", "place_visits", "category_visits", "canton_visits"].includes(mission.type)) continue;
 
     const matchedKeys = missionMatchedKeys(mission, visits, placesById);
     const qualifyingVisitIds = mission.type === "total_visits" ? matchedKeys : [...new Set(matchedKeys)];
