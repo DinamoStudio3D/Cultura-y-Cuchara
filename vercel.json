@@ -18,6 +18,22 @@
     {
       "source": "/parada/:slug/",
       "destination": "/api/parada?slug=:slug"
+    },
+    {
+      "source": "/hoteles-en-loja",
+      "destination": "/api/categoria-seo?categoria=hoteles-en-loja"
+    },
+    {
+      "source": "/restaurantes-en-loja",
+      "destination": "/api/categoria-seo?categoria=restaurantes-en-loja"
+    },
+    {
+      "source": "/cafeterias-en-loja",
+      "destination": "/api/categoria-seo?categoria=cafeterias-en-loja"
+    },
+    {
+      "source": "/que-hacer-en-loja",
+      "destination": "/api/categoria-seo?categoria=que-hacer-en-loja"
     }
   ]
 }
