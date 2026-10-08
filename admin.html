@@ -890,9 +890,19 @@ document.addEventListener('submit', async event => {
 }, true);
 
 
+function hydrateChabaquitoMissionDraftSelect(){
+    const select=document.getElementById('chabaquitoV2MissionDraftSelect');
+    const drafts=Array.isArray(window.VisitaLojaChabaquitoMissionDrafts)?window.VisitaLojaChabaquitoMissionDrafts:[];
+    if(!select||!drafts.length)return false;
+    const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    select.innerHTML='<option value="">Plantillas iniciales…</option>'+drafts.map(m=>'<option value="'+esc(m.id)+'">'+esc((m.badge?.icon||'🏅')+' '+m.title)+'</option>').join('');
+    return true;
+}
 function loadChabaquitoAdminModules(){
+    hydrateChabaquitoMissionDraftSelect();
     if (document.getElementById('chabaquitoAdminModulesLoader')) {
         window.ChabaquitoMissionsV2Admin?.init();
+        hydrateChabaquitoMissionDraftSelect();
         return;
     }
     const marker = document.createElement('meta'); marker.id = 'chabaquitoAdminModulesLoader'; document.head.appendChild(marker);
