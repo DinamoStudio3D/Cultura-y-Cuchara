@@ -473,6 +473,8 @@ assert(chabaquitoMissionAdmin.includes("type==='canton_visits'&&m.targetCount>sc
 
 
 assert(chabaquitoWorker.includes('visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app'), 'Worker usa el origen estable de Preview');
+assert(chabaquitoWorker.includes('"https://www.visitaloja.com"') && chabaquitoWorker.includes('"https://visitaloja.com"'), 'Worker autoriza ambos orígenes oficiales de VisitaLoja');
+
 assert(chabaquitoPublicV2.includes('workers.dev/ranking-preference'), 'Ranking público usa el Worker gratuito');
 assert(loyaltyMerchant.includes('workers.dev'), 'Confirmación de visitas usa el Worker gratuito');
 
