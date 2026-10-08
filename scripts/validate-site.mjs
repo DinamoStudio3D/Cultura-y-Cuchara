@@ -433,6 +433,16 @@ assert(chabaquitoWorker.includes('targetId: cantonId, xp: 50, placeId: null, can
 
 assert(selfCheckin.includes("discoveryMethod==='proximity'||discoveryMethod==='both'||place.validationMode==='self_checkin'"), 'La página de visita acepta los modos canónicos proximity/both');
 assert(selfCheckin.includes("!place.discovery?.enabled||!proximityEnabled"), 'La página de visita exige discovery habilitado');
+assert(selfCheckin.includes('CHABAQUITO_WORKER="https://visitaloja-chabaquito-preview.sukogames1996.workers.dev"'), 'La autovisita usa explícitamente el Worker de Preview durante integración');
+assert(selfCheckin.includes("fetch(CHABAQUITO_WORKER+'/proximity-visit'"), 'La autovisita envía la validación GPS al endpoint de proximidad');
+assert(selfCheckin.includes('MAX_ACCURACY_M=20') && selfCheckin.includes('SAMPLE_MS=12000'), 'La autovisita conserva precisión GPS máxima y muestreo controlado');
+assert(selfCheckin.includes('xpDelta') && selfCheckin.includes('validatedXp'), 'La celebración usa XP devuelto por el backend');
+assert(selfCheckin.includes('newlyCompletedMissionIds'), 'La celebración detecta nuevas misiones completadas');
+assert(selfCheckin.includes('id="visitCelebration"'), 'La página conserva la tarjeta de celebración de Chabaquito');
+assert(selfCheckin.includes('href="./#chabaquitoV2Public"'), 'La celebración enlaza con misiones e insignias');
+assert(chabaquitoPublicV2.includes('function levelProgress(xp)'), 'El perfil Chabaquito calcula el progreso hacia el siguiente nivel');
+assert(chabaquitoPublicV2.includes('lp.remaining') && chabaquitoPublicV2.includes('lp.pct'), 'El perfil muestra XP restante y porcentaje de nivel');
+
 
 
 
