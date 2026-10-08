@@ -100,3 +100,19 @@ test("una visita con estado desconocido nunca suma progreso",()=>{
   assert.equal(result.count,0);
   assert.equal(result.completed,false);
 });
+
+
+test("lugares diferentes cuentan una sola vez aunque se repita la misma parada",()=>{
+  const result=calculateMissionProgress(mission("unique_places",3),[
+    visit("a","p1"),visit("b","p1"),visit("c","p2"),visit("d","p3")
+  ],places);
+  assert.equal(result.count,3);
+  assert.equal(result.completed,true);
+  assert.deepEqual(new Set(result.matchedKeys),new Set(["p1","p2","p3"]));
+});
+
+test("lugares diferentes no se completan repitiendo una sola parada",()=>{
+  const result=calculateMissionProgress(mission("unique_places",2),[visit("a","p1"),visit("b","p1")],places);
+  assert.equal(result.count,1);
+  assert.equal(result.completed,false);
+});
