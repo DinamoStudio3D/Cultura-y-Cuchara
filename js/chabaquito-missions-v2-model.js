@@ -8,7 +8,7 @@
  */
 (() => {
   'use strict';
-  const MISSION_TYPES = Object.freeze(['category_visits', 'place_visits', 'canton_visits', 'total_visits']);
+  const MISSION_TYPES = Object.freeze(['category_visits', 'place_visits', 'canton_visits', 'unique_places', 'total_visits']);
   const REWARD_TYPES = Object.freeze(['digital', 'digital_physical']);
   const STATUS = Object.freeze(['draft', 'active', 'paused', 'archived']);
   const BADGE_RARITIES = Object.freeze(['common', 'uncommon', 'rare', 'epic', 'legendary']);
