@@ -492,6 +492,10 @@ assert(chabaquitoMissionAdmin.includes('initDrafts()') && chabaquitoMissionAdmin
 assert(chabaquitoMissionAdmin.includes("new Map(scopeRaw.map(value=>[value.toLocaleLowerCase('es'),value]))"), 'El administrador elimina alcances duplicados de las misiones');
 assert(chabaquitoMissionAdmin.includes("type==='place_visits'&&m.targetCount>scope.length"), 'La meta por lugares no supera los lugares únicos configurados');
 assert(chabaquitoMissionAdmin.includes("type==='canton_visits'&&m.targetCount>scope.length"), 'La meta por cantones no supera los cantones únicos configurados');
+assert(admin.includes("const scopeRaw=val('chabaquitoV2MissionScope')") && admin.includes("new Map(scopeRaw.map(value=>[value.toLocaleLowerCase('es'),value]))"), 'El formulario estático elimina alcances duplicados');
+assert(admin.includes("type==='place_visits'&&mission.targetCount>scope.length"), 'El formulario estático limita la meta de lugares específicos');
+assert(admin.includes("type==='canton_visits'&&mission.targetCount>scope.length"), 'El formulario estático limita la meta de cantones');
+assert(admin.includes("type!=='total_visits'&&type!=='unique_places'&&!scope.length"), 'El formulario estático exige alcance solo cuando corresponde');
 
 
 assert(chabaquitoWorker.includes('visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app'), 'Worker usa el origen estable de Preview');
