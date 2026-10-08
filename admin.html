@@ -896,6 +896,22 @@ function hydrateChabaquitoMissionDraftSelect(){
     if(!select||!drafts.length)return false;
     const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     select.innerHTML='<option value="">Plantillas iniciales…</option>'+drafts.map(m=>'<option value="'+esc(m.id)+'">'+esc((m.badge?.icon||'🏅')+' '+m.title)+'</option>').join('');
+    const button=document.getElementById('chabaquitoV2MissionLoadDraft');
+    if(button){
+        button.onclick=()=>{
+            const m=drafts.find(item=>item.id===select.value);
+            const state=document.getElementById('chabaquitoV2MissionState');
+            if(!m){if(state)state.textContent='Selecciona una plantilla inicial.';return;}
+            const set=(id,value)=>{const el=document.getElementById(id);if(el)el.value=value??'';};
+            set('chabaquitoV2MissionId',m.id);set('chabaquitoV2MissionTitle',m.title);set('chabaquitoV2MissionDescription',m.description);
+            set('chabaquitoV2MissionType',m.type);set('chabaquitoV2MissionTarget',m.targetCount);set('chabaquitoV2MissionScope',(m.placeIds||m.categoryIds||m.cantonIds||[]).join('\\n'));
+            set('chabaquitoV2MissionStatus','draft');set('chabaquitoV2BadgeIcon',m.badge?.icon||'🏅');set('chabaquitoV2BadgeTitle',m.badge?.title||'');
+            set('chabaquitoV2BadgeDescription',m.badge?.description||'');set('chabaquitoV2BadgeRarity',m.badge?.rarity||'common');
+            const idField=document.getElementById('chabaquitoV2MissionId');if(idField)idField.readOnly=false;
+            if(state)state.textContent='Plantilla cargada como borrador. Revisa los datos antes de guardar.';
+            document.getElementById('chabaquitoV2MissionType')?.dispatchEvent(new Event('change',{bubbles:true}));
+        };
+    }
     return true;
 }
 function loadChabaquitoAdminModules(){
