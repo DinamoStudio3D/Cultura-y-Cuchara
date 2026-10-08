@@ -875,9 +875,13 @@ document.addEventListener('submit', async event => {
     if(!api || typeof db==='undefined' || typeof auth==='undefined') { if(state) state.textContent='El editor todavía no tiene conexión con Firebase.'; return; }
     const val=id=>document.getElementById(id)?.value||'';
     const type=val('chabaquitoV2MissionType');
-    const scope=val('chabaquitoV2MissionScope').split(/[\\n,]+/).map(x=>x.trim()).filter(Boolean);
+    const scopeRaw=val('chabaquitoV2MissionScope').split(/[\\n,]+/).map(x=>x.trim()).filter(Boolean);
+    const scope=[...new Map(scopeRaw.map(value=>[value.toLocaleLowerCase('es'),value])).values()];
     try {
       const mission=api.normalizeMission({id:val('chabaquitoV2MissionId'),title:val('chabaquitoV2MissionTitle'),description:val('chabaquitoV2MissionDescription'),type,targetCount:val('chabaquitoV2MissionTarget'),status:val('chabaquitoV2MissionStatus'),rewardType:'digital',badge:{icon:val('chabaquitoV2BadgeIcon'),title:val('chabaquitoV2BadgeTitle'),description:val('chabaquitoV2BadgeDescription'),rarity:val('chabaquitoV2BadgeRarity')},placeIds:type==='place_visits'?scope:[],categoryIds:type==='category_visits'?scope:[],cantonIds:type==='canton_visits'?scope:[]});
+      if(type==='place_visits'&&mission.targetCount>scope.length) throw new Error('La meta no puede ser mayor que la cantidad de lugares únicos configurados.');
+      if(type==='canton_visits'&&mission.targetCount>scope.length) throw new Error('La meta no puede ser mayor que la cantidad de cantones únicos configurados.');
+      if(type!=='total_visits'&&type!=='unique_places'&&!scope.length) throw new Error('Debes configurar al menos un valor para el alcance de esta misión.');
       if(state) state.textContent='Guardando misión…';
       await db.collection(api.collections.missions).doc(mission.id).set({...mission,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser?.email||''},{merge:true});
       setAdminUnsavedChanges(false);
