@@ -525,7 +525,7 @@
 <label>Nombre de insignia<input id="chabaquitoV2BadgeTitle" class="field" required maxlength="80"></label>
 <label>Descripción de insignia<input id="chabaquitoV2BadgeDescription" class="field" required maxlength="240"></label>
 </div>
-<div class="flex flex-wrap gap-2"><button id="chabaquitoV2MissionSave" type="submit" class="bg-amber-500 text-black font-black rounded-lg px-4 py-2">Guardar misión</button><button type="button" id="chabaquitoV2MissionPublish" class="border border-emerald-500/50 text-emerald-200 rounded-lg px-4 py-2 font-bold">Activar y publicar</button><button type="button" id="chabaquitoV2MissionArchive" class="border border-red-500/40 text-red-200 rounded-lg px-4 py-2 font-bold">Desactivar misión</button><button type="button" id="chabaquitoV2MissionCancel" class="border border-gray-700 rounded-lg px-4 py-2">Limpiar</button></div>
+<div class="flex flex-wrap gap-2"><button id="chabaquitoV2MissionSave" type="submit" class="bg-amber-500 text-black font-black rounded-lg px-4 py-2">Guardar misión</button><button type="button" id="chabaquitoV2MissionPublish" class="border border-emerald-500/50 text-emerald-200 rounded-lg px-4 py-2 font-bold">Activar y publicar</button><button type="button" id="chabaquitoV2MissionArchive" class="border border-red-500/40 text-red-200 rounded-lg px-4 py-2 font-bold">Desactivar misión</button><button type="button" id="chabaquitoV2MissionDelete" class="border border-red-600/70 text-red-300 rounded-lg px-4 py-2 font-bold">Eliminar definitivamente</button><button type="button" id="chabaquitoV2MissionCancel" class="border border-gray-700 rounded-lg px-4 py-2">Limpiar</button></div>
 <p id="chabaquitoV2MissionState" class="text-xs text-gray-400">Editor preparado. No se ha guardado ninguna misión.</p>
 </form><div class="mt-7 border-t border-gray-800 pt-5"><div class="flex items-center justify-between gap-3 mb-3"><div><h3 class="font-black text-lg text-amber-200">Misiones existentes</h3><p class="text-xs text-gray-400">Selecciona Editar para modificar, publicar o desactivar una misión.</p></div><span id="chabaquitoV2MissionCount" class="text-xs text-gray-500"></span></div><div id="chabaquitoV2MissionList" class="space-y-2"><p class="text-sm text-gray-500">Cargando misiones…</p></div></div></div></section>
 
@@ -889,7 +889,7 @@ function loadExistingChabaquitoMissions(){
 // Misiones Chabaquito V2: enlaza el formulario estático aunque el módulo dinámico falle.
 document.addEventListener('click', event => {
     const id=event.target?.id;
-    if(id!=='chabaquitoV2MissionPublish'&&id!=='chabaquitoV2MissionArchive') return;
+    if(id!=='chabaquitoV2MissionPublish'&&id!=='chabaquitoV2MissionArchive'&&id!=='chabaquitoV2MissionDelete') return;
     const form=document.getElementById('chabaquitoV2MissionForm');
     const status=document.getElementById('chabaquitoV2MissionStatus');
     const missionId=document.getElementById('chabaquitoV2MissionId')?.value?.trim();
@@ -898,6 +898,21 @@ document.addEventListener('click', event => {
     if(id==='chabaquitoV2MissionPublish'){
         status.value='active';
         form.requestSubmit();
+        return;
+    }
+    if(id==='chabaquitoV2MissionDelete'){
+        if(!missionId){if(state)state.textContent='Carga o edita una misión antes de eliminarla.';return;}
+        const title=document.getElementById('chabaquitoV2MissionTitle')?.value?.trim()||missionId;
+        if(!confirm('¿Eliminar definitivamente la misión "'+title+'"? Esta acción no se puede deshacer.'))return;
+        if(!confirm('Confirmación final: se eliminará la misión de Firestore. ¿Continuar?'))return;
+        if(typeof db==='undefined'||typeof auth==='undefined'||!auth.currentUser){if(state)state.textContent='No hay conexión administrativa con Firebase.';return;}
+        if(state)state.textContent='Eliminando misión…';
+        db.collection('chabaquitoMissions').doc(missionId).delete().then(()=>{
+            if(state)state.textContent='Misión eliminada definitivamente.';
+            document.getElementById('chabaquitoV2MissionForm')?.reset();
+            const idField=document.getElementById('chabaquitoV2MissionId');if(idField)idField.readOnly=false;
+            setAdminUnsavedChanges(false);
+        }).catch(err=>{if(state)state.textContent=err?.code==='permission-denied'?'No tienes permiso para eliminar esta misión.':(err?.message||'No se pudo eliminar la misión.');});
         return;
     }
     if(!missionId){if(state)state.textContent='Carga o edita una misión antes de desactivarla.';return;}
