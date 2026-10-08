@@ -486,6 +486,7 @@ const chabaquitoMissionAdmin = read('js/admin-chabaquito-missions-v2.js');
 assert(chabaquitoMissionModel.includes("'unique_places'"), 'El contrato de Misiones V2 admite lugares diferentes');
 assert(admin.includes('js/chabaquito-mission-drafts.js'), 'El administrador carga el catálogo inicial de misiones');
 assert(admin.includes('chabaquitoV2MissionDraftSelect') && admin.includes('chabaquitoV2MissionLoadDraft'), 'El administrador expone el selector de plantillas de misión');
+assert(admin.includes('function hydrateChabaquitoMissionDraftSelect()') && admin.includes('VisitaLojaChabaquitoMissionDrafts') && admin.includes('hydrateChabaquitoMissionDraftSelect();'), 'El shell del administrador hidrata las plantillas sin depender del orden de carga del módulo');
 assert(chabaquitoMissionDrafts.includes("id: 'primer-paso-chabaquito'") && chabaquitoMissionDrafts.includes("id: 'explorador-lojano'") && chabaquitoMissionDrafts.includes("id: 'ruta-de-cinco'") && chabaquitoMissionDrafts.includes("id: 'descubriendo-provincia'") && chabaquitoMissionDrafts.includes("id: 'dieciseis-cantones'"), 'El catálogo conserva las cinco misiones iniciales');
 assert((chabaquitoMissionDrafts.match(/status: 'draft'/g)||[]).length === 5, 'Las cinco plantillas iniciales permanecen en borrador');
 assert(chabaquitoMissionAdmin.includes('initDrafts()') && chabaquitoMissionAdmin.includes("value='draft'"), 'Las plantillas se cargan en el editor sin activarse');
