@@ -521,11 +521,14 @@ assert(chabaquitoRuntimeConfig.includes('workers.dev'), 'La configuración centr
 const seoIndex = read('index.html');
 const seoBusiness = read('negocio.html');
 const seoRobots = read('robots.txt');
-const seoSitemap = read('sitemap.xml');
+const seoSitemapApi = read('api/sitemap.js');
+const seoVercel = read('vercel.json');
 assert(seoIndex.includes('<link rel="canonical" href="https://www.visitaloja.com/">'), 'La portada usa visitaloja.com como canonical');
 assert(!seoIndex.includes('https://visita-loja.vercel.app/'), 'La portada no conserva URLs SEO del dominio provisional de Vercel');
 assert(seoRobots.includes('Sitemap: https://www.visitaloja.com/sitemap.xml'), 'robots.txt publica el sitemap del dominio oficial');
-assert(seoSitemap.includes('<loc>https://www.visitaloja.com/</loc>'), 'sitemap usa el dominio oficial');
+assert(seoSitemapApi.includes('https://www.visitaloja.com') && seoSitemapApi.includes('documents/locales'), 'sitemap dinámico usa dominio oficial y colección de paradas');
+assert(seoSitemapApi.includes('["published","active"]') && seoSitemapApi.includes('/parada/'), 'sitemap dinámico limita paradas a publicadas/activas');
+assert(seoVercel.includes('"source": "/sitemap.xml"') && seoVercel.includes('"destination": "/api/sitemap"'), 'Vercel sirve sitemap.xml desde el generador dinámico');
 assert(seoBusiness.includes('id="seoCanonical"') && seoBusiness.includes("const canonical='https://www.visitaloja.com/parada/'"), 'Las fichas generan canonical público por parada');
 assert(seoBusiness.includes('id="seoOgTitle"') && seoBusiness.includes('id="seoOgDescription"') && seoBusiness.includes('id="seoOgUrl"'), 'Las fichas actualizan metadatos sociales básicos');
 
