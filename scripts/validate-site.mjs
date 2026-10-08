@@ -394,7 +394,7 @@ assert(firestoreRules.includes('dailyVisitCount'), 'Firestore protege el contado
 assert(admin.includes('customCampaigns') && index.includes('customCampaignsPublic'), 'Las campañas personalizadas siguen conectadas entre administración y la web');
 assert(admin.includes('tourismDay'), 'La campaña del Día Mundial del Turismo conserva su configuración administrativa');
 
-// Chabaquito Worker preview: only functional routes should remain exposed.
+// Chabaquito stable Worker: frontend must use the verified production-ready endpoint.
 assert(chabaquitoWorker.includes('url.pathname === "/health"'), 'Worker conserva health check');
 assert(chabaquitoWorker.includes('url.pathname === "/merchant-confirm-visit"'), 'Worker conserva confirmación de visitas');
 assert(chabaquitoWorker.includes('url.pathname === "/merchant-reverse-visit"'), 'Worker conserva reversión de visitas');
@@ -434,7 +434,7 @@ assert(chabaquitoWorker.includes('targetId: cantonId, xp: 50, placeId: null, can
 
 assert(selfCheckin.includes("discoveryMethod==='proximity'||discoveryMethod==='both'||place.validationMode==='self_checkin'"), 'La página de visita acepta los modos canónicos proximity/both');
 assert(selfCheckin.includes("!place.discovery?.enabled||!proximityEnabled"), 'La página de visita exige discovery habilitado');
-assert(chabaquitoRuntimeConfig.includes("workerUrl:'https://visitaloja-chabaquito-preview.sukogames1996.workers.dev'"), 'La configuración central conserva el Worker de Preview durante integración');
+assert(chabaquitoRuntimeConfig.includes("workerUrl:'https://visitaloja-chabaquito.sukogames1996.workers.dev'"), 'La configuración central usa el Worker estable de Chabaquito');
 assert(selfCheckin.includes('js/chabaquito-runtime-config.js') && selfCheckin.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'La autovisita obtiene el Worker desde la configuración central');
 assert(loyaltyMerchant.includes('js/chabaquito-runtime-config.js') && loyaltyMerchant.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'La confirmación con encargado obtiene el Worker desde la configuración central');
 assert(chabaquitoPublicV2.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'El ranking Chabaquito obtiene el Worker desde la configuración central');
