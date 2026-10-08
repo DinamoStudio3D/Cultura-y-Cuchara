@@ -445,6 +445,9 @@ assert(selfCheckin.includes("title='Esta visita ya fue registrada'") && selfChec
 assert(selfCheckin.includes("title='Acércate un poco más a la parada'") && selfCheckin.includes('15 metros'), 'La autovisita explica claramente el radio físico de 15 metros');
 assert(selfCheckin.includes('href="./#chabaquitoV2Public"'), 'La celebración enlaza con misiones e insignias');
 assert(chabaquitoPublicV2.includes('function levelProgress(xp)'), 'El perfil Chabaquito calcula el progreso hacia el siguiente nivel');
+assert(chabaquitoPublicV2.includes("text('Insignia desbloqueada','Badge unlocked')"), 'Las misiones completadas muestran la insignia desbloqueada');
+assert(chabaquitoPublicV2.includes("text('Te faltan '+remaining+' para completar esta misión.'"), 'Las misiones activas muestran cuánto falta para completarlas');
+assert(chabaquitoPublicV2.includes("Todavía no has desbloqueado insignias"), 'La colección de insignias muestra un estado vacío útil');
 assert(chabaquitoPublicV2.includes('lp.remaining') && chabaquitoPublicV2.includes('lp.pct'), 'El perfil muestra XP restante y porcentaje de nivel');
 
 
