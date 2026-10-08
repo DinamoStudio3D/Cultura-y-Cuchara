@@ -1,9 +1,9 @@
 /*
  * Catálogo inicial sugerido para Misiones Chabaquito V2.
  *
- * Estas definiciones son PLANTILLAS EN BORRADOR: no escriben Firestore,
- * no activan misiones y no afectan a usuarios. Sirven como base editorial
- * para cargarlas desde el administrador cuando se apruebe el lanzamiento.
+ * Estas definiciones son plantillas editoriales: no escriben Firestore por sí solas.
+ * Las cuatro misiones iniciales se cargan como activas para el lanzamiento;
+ * el reto de 16 cantones permanece en borrador.
  */
 (() => {
   'use strict';
@@ -15,7 +15,7 @@
       description: 'Realiza tu primera visita validada y comienza tu aventura explorando Loja con Chabaquito.',
       type: 'total_visits',
       targetCount: 1,
-      status: 'draft',
+      status: 'active',
       rewardType: 'digital',
       badge: Object.freeze({
         icon: '🐾',
@@ -31,7 +31,7 @@
       description: 'Descubre y valida tu visita en 3 lugares diferentes de Loja.',
       type: 'unique_places',
       targetCount: 3,
-      status: 'draft',
+      status: 'active',
       rewardType: 'digital',
       badge: Object.freeze({
         icon: '🎒',
@@ -47,7 +47,7 @@
       description: 'Continúa la aventura visitando 5 lugares diferentes de Loja.',
       type: 'unique_places',
       targetCount: 5,
-      status: 'draft',
+      status: 'active',
       rewardType: 'digital',
       badge: Object.freeze({
         icon: '🧭',
@@ -64,7 +64,7 @@
       type: 'canton_visits',
       targetCount: 3,
       cantonIds: Object.freeze(['loja','calvas','catamayo','celica','chaguarpamba','espindola','gonzanama','macara','olmedo','paltas','pindal','puyango','quilanga','saraguro','sozoranga','zapotillo']),
-      status: 'draft',
+      status: 'active',
       rewardType: 'digital',
       badge: Object.freeze({
         icon: '🗺️',
