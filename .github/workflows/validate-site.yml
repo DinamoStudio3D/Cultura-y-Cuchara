@@ -2,7 +2,7 @@ name: Validar Cultura y Cuchara
 
 on:
   push:
-    branches: [main]
+    branches: [main, integration/chabaquito-misiones-v2]
   pull_request:
     branches: [main]
   workflow_dispatch:
