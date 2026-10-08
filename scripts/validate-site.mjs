@@ -447,6 +447,10 @@ assert(selfCheckin.includes('href="./#chabaquitoV2Public"'), 'La celebración en
 assert(chabaquitoPublicV2.includes('function levelProgress(xp)'), 'El perfil Chabaquito calcula el progreso hacia el siguiente nivel');
 assert(chabaquitoPublicV2.includes("text('Insignia desbloqueada','Badge unlocked')"), 'Las misiones completadas muestran la insignia desbloqueada');
 assert(chabaquitoPublicV2.includes("text('Te faltan '+remaining+' para completar esta misión.'"), 'Las misiones activas muestran cuánto falta para completarlas');
+assert(chabaquitoPublicV2.includes("text('Guarda tu aventura con Chabaquito','Save your Chabaquito adventure')"), 'Chabaquito explica por qué iniciar sesión');
+assert(chabaquitoPublicV2.includes("text('Top 10 de viajeros que decidieron participar públicamente.'"), 'El ranking explica que la participación es voluntaria');
+assert(chabaquitoPublicV2.includes("text('Solo alias público','Public alias only')"), 'El ranking aclara que usa alias público');
+assert(chabaquitoPublicV2.includes("🥇") && chabaquitoPublicV2.includes("🥈") && chabaquitoPublicV2.includes("🥉"), 'El ranking distingue visualmente el podio');
 assert(chabaquitoPublicV2.includes("Todavía no has desbloqueado insignias"), 'La colección de insignias muestra un estado vacío útil');
 assert(chabaquitoPublicV2.includes('lp.remaining') && chabaquitoPublicV2.includes('lp.pct'), 'El perfil muestra XP restante y porcentaje de nivel');
 
