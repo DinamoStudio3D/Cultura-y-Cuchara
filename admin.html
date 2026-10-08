@@ -905,7 +905,7 @@ function hydrateChabaquitoMissionDraftSelect(){
             const set=(id,value)=>{const el=document.getElementById(id);if(el)el.value=value??'';};
             set('chabaquitoV2MissionId',m.id);set('chabaquitoV2MissionTitle',m.title);set('chabaquitoV2MissionDescription',m.description);
             set('chabaquitoV2MissionType',m.type);set('chabaquitoV2MissionTarget',m.targetCount);set('chabaquitoV2MissionScope',(m.placeIds||m.categoryIds||m.cantonIds||[]).join('\\n'));
-            set('chabaquitoV2MissionStatus','draft');set('chabaquitoV2BadgeIcon',m.badge?.icon||'🏅');set('chabaquitoV2BadgeTitle',m.badge?.title||'');
+            set('chabaquitoV2MissionStatus',m.status||'draft');set('chabaquitoV2BadgeIcon',m.badge?.icon||'🏅');set('chabaquitoV2BadgeTitle',m.badge?.title||'');
             set('chabaquitoV2BadgeDescription',m.badge?.description||'');set('chabaquitoV2BadgeRarity',m.badge?.rarity||'common');
             const idField=document.getElementById('chabaquitoV2MissionId');if(idField)idField.readOnly=false;
             if(state)state.textContent='Plantilla cargada como borrador. Revisa los datos antes de guardar.';
