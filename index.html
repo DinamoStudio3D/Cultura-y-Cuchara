@@ -826,23 +826,48 @@
         </div>
     </div>
 
-    <div id="liveEventBanner" class="bg-gradient-to-r from-brandGold via-amber-600 to-brandGold text-white py-2.5 px-4 text-center text-xs font-bold sticky top-[65px] z-30 shadow-md flex items-center justify-center gap-3 hidden">
-        <span class="bg-brandDark text-brandGold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse" data-i18n="bannerLive">🔴 PRÓXIMO HOY</span>
-        <span id="liveEventText">Cargando eventos...</span>
-        <button id="liveEventBtn" type="button" class="bg-brandDark text-brandGold px-3 py-1 rounded-full text-[10px] hover:bg-black transition uppercase tracking-wider shadow">
-            <i class="fa-solid fa-map-pin mr-1"></i> <span data-i18n="btnViewMap">Ver en el mapa</span>
-        </button>
+    <!-- Avisos destacados: eventos y contenido audiovisual -->
+    <div class="bg-[#0e1018] border-b border-white/10 px-3 sm:px-6 py-3 relative z-30">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-2.5">
+            <div id="liveEventBanner" class="flex relative overflow-hidden rounded-2xl border border-orange-400/25 bg-gradient-to-r from-[#392015] via-[#28202a] to-[#171b2c] text-white p-3 sm:p-4 items-center gap-3 shadow-lg">
+                <div class="shrink-0 w-11 h-11 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-300 text-xl"><i class="fa-solid fa-calendar-days"></i></div>
+                <div class="min-w-0 flex-1">
+                    <span class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[.14em] font-black text-orange-300" data-i18n="bannerLive"><span class="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></span> PRÓXIMO EVENTO</span>
+                    <p id="liveEventText" class="mt-1 text-sm font-bold text-white leading-snug line-clamp-2">Cargando eventos...</p>
+                </div>
+                <button id="openUpcomingEventsButton" type="button" onclick="openUpcomingEventsModal()" class="shrink-0 rounded-xl border border-orange-400/40 bg-white/10 hover:bg-white/20 text-white px-3 py-2.5 text-xs font-extrabold transition" aria-label="Abrir galería de eventos"><i class="fa-regular fa-images mr-1"></i><span class="hidden sm:inline">Ver agenda</span><span class="sm:hidden">Agenda</span></button>
+                <button id="liveEventBtn" type="button" class="shrink-0 rounded-xl bg-orange-500 hover:bg-orange-400 text-white px-3 sm:px-4 py-2.5 text-xs font-extrabold transition shadow-lg" aria-label="Ver evento en el mapa"><i class="fa-solid fa-location-arrow mr-1"></i> <span class="hidden sm:inline" data-i18n="btnViewMap">Ver en el mapa</span><span class="sm:hidden">Mapa</span></button>
+            </div>
+            <div id="latestVideoBanner" class="relative overflow-hidden rounded-2xl border border-sky-400/20 bg-gradient-to-r from-[#122638] via-[#1c2038] to-[#281b31] text-white p-3 sm:p-4 flex items-center gap-3 shadow-lg">
+                <div class="shrink-0 w-11 h-11 rounded-xl bg-sky-400/15 border border-sky-400/25 flex items-center justify-center text-sky-300 text-lg"><i class="fa-solid fa-circle-play"></i></div>
+                <div class="min-w-0 flex-1">
+                    <span class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[.14em] font-black text-sky-300"><i class="fa-solid fa-film"></i> DESCUBRE VISITALOJA</span>
+                    <p id="latestVideoTitleText" class="mt-1 text-sm font-bold text-white leading-snug line-clamp-2">La Virgen del Cisne en Loja - Tradición y Fe</p>
+                </div>
+                <button type="button" onclick="openLatestVideoModal()" class="shrink-0 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 sm:px-4 py-2.5 text-xs font-extrabold transition" aria-label="Reproducir vídeo destacado"><i class="fa-solid fa-play mr-1"></i> <span class="hidden sm:inline">Reproducir</span><span class="sm:hidden">Ver</span></button>
+            </div>
+        </div>
     </div>
 
-    <div id="latestVideoBanner" class="bg-[#181818] text-white py-3 px-4 border-b border-brandGold/30 flex flex-col md:flex-row items-center justify-center gap-4 text-center md:text-left z-30 relative shadow-inner">
-        <div class="flex items-center gap-2">
-            <span class="bg-red-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow"><i class="fa-brands fa-youtube"></i> VÍDEO DESTACADO</span>
-            <span id="latestVideoTitleText" class="text-xs font-bold text-gray-200">La Virgen del Cisne en Loja - Tradición y Fe</span>
+    <!-- Visor de eventos: se abre bajo demanda, sin ocupar espacio en la portada -->
+    <div id="upcomingEventsModal" class="hidden fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm px-3 py-5 sm:p-8 items-center justify-center" role="dialog" aria-modal="true" aria-label="Galería de próximos eventos" onclick="if(event.target===this)closeUpcomingEventsModal()">
+        <div class="relative w-full max-w-3xl max-h-[94vh] overflow-y-auto rounded-3xl bg-[#171925] border border-white/15 text-white shadow-2xl">
+            <div class="sticky top-0 z-10 bg-[#171925]/95 backdrop-blur-md px-4 sm:px-6 py-4 flex items-center justify-between gap-3 border-b border-white/10">
+                <div><p class="text-[10px] uppercase tracking-widest font-black text-orange-400">VisitaLoja.com</p><h2 class="font-black text-lg sm:text-xl">Agenda de próximos eventos</h2></div>
+                <div class="flex items-center gap-2"><span id="upcomingEventCounter" class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">0 / 0</span><button type="button" onclick="closeUpcomingEventsModal()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20" aria-label="Cerrar galería"><i class="fa-solid fa-xmark"></i></button></div>
+            </div>
+            <div class="px-4 sm:px-6 py-4">
+                <div id="upcomingEventPoster" class="relative bg-[#0e1018] rounded-2xl overflow-hidden min-h-[200px] flex items-center justify-center"></div>
+                <div class="mt-4"><div id="upcomingEventDate" class="text-xs font-black uppercase tracking-widest text-orange-400"></div><h3 id="upcomingEventTitle" class="text-xl sm:text-2xl font-black mt-1"></h3><p id="upcomingEventPlace" class="text-sm text-sky-300 mt-2"></p><p id="upcomingEventDescription" class="text-sm text-gray-300 mt-3 whitespace-pre-line leading-relaxed"></p></div>
+                <div class="mt-5 flex flex-wrap gap-3 items-center justify-between">
+                    <div class="flex gap-2"><button type="button" onclick="stepUpcomingEvent(-1)" class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20" aria-label="Evento anterior"><i class="fa-solid fa-chevron-left"></i></button><button type="button" onclick="stepUpcomingEvent(1)" class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20" aria-label="Evento siguiente"><i class="fa-solid fa-chevron-right"></i></button></div>
+                    <button type="button" id="upcomingEventMapButton" class="rounded-xl bg-orange-500 hover:bg-orange-400 px-5 py-3 font-bold text-sm"><i class="fa-solid fa-location-dot mr-1"></i> Ver en el mapa</button>
+                </div>
+            </div>
         </div>
-        <button type="button" onclick="openLatestVideoModal()" class="bg-brandGold text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-brandGoldHover transition shadow-warm-glow flex items-center gap-1.5">
-            <i class="fa-solid fa-play"></i> Ver Vídeo Oficial
-        </button>
     </div>
+
+    <div class="fixed bottom-24 right-3 z-[900]"><button type="button" id="generalEventsMapToggle" onclick="toggleGeneralEventMarkers()" aria-pressed="true" class="bg-orange-600 text-white rounded-full px-3 py-2 text-[11px] font-bold shadow-lg border border-white/20">📅 Eventos: visibles</button></div>
 
     <!-- Hero Section -->
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
@@ -3502,6 +3527,8 @@
         let selectedFestivalDay = defaultFestivalConfig.events[0].date;
         let festivalClockTimer = null;
         let festivalEventLayer = null;
+        let generalEventLayer = null;
+        let generalEventsVisible = true;
         let festivalEventsVisible = true;
 
         function festivalDateTime(event) {
@@ -3589,6 +3616,7 @@
             localStorage.setItem(key, JSON.stringify(next));
             renderFestivalAgenda();
             renderAgendaUI();
+            checkLiveEventsBanner();
             renderVisitorExperience();
             showToast(next.includes(eventId)?(currentLang==='en'?'Activity saved to your agenda':'Actividad guardada en tu agenda'):(currentLang==='en'?'Activity removed from your agenda':'Actividad retirada de tu agenda'));
         }
@@ -3829,39 +3857,11 @@
             db.collection('siteContent').doc('events').onSnapshot(snapshot => {
                 const sourceEvents = snapshot.exists && Array.isArray(snapshot.data().events) ? snapshot.data().events : [];
                 const syncedEvents = sourceEvents.map(event => ({ ...event })).filter(isPublicContent);
-                eventsList = syncedEvents.some(event => !event.date || event.date >= new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0]) ? syncedEvents : [
-                    {
-                        id: 'sample_flavors_2026',
-                        title: 'Ruta de Sabores Lojanos — Evento de muestra',
-                        titleEn: 'Loja Flavors Route — Sample Event',
-                        date: '2026-10-04',
-                        time: '15:00',
-                        type: 'Muestra',
-                        location: 'Plaza de San Sebastián',
-                        desc: 'Evento demostrativo para visualizar la agenda. Recorrido de gastronomía, café y tradiciones lojanas.',
-                        descEn: 'Sample event used to preview the agenda with Loja cuisine, coffee and traditions.',
-                        img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
-                        lat: -4.0007,
-                        lng: -79.2019
-                    },
-                    {
-                        id: 'sample_culture_2026',
-                        title: 'Tarde Cultural en Jipiro — Evento de muestra',
-                        titleEn: 'Cultural Afternoon at Jipiro — Sample Event',
-                        date: '2026-10-11',
-                        time: '11:00',
-                        type: 'Muestra',
-                        location: 'Parque Recreacional Jipiro',
-                        desc: 'Evento demostrativo con música, artesanías y actividades familiares para mostrar el diseño de la agenda.',
-                        descEn: 'Sample event with music, crafts and family activities to preview the agenda design.',
-                        img: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80',
-                        lat: -3.9744,
-                        lng: -79.2043
-                    }
-                ];
+                eventsList = syncedEvents;
                 localStorage.setItem('cyc_dynamic_events', JSON.stringify(eventsList));
                 renderEverything();
                 checkLiveEventsBanner();
+                renderGeneralEventMarkers();
             }, error => console.warn('No se pudo sincronizar la agenda pública:', error));
         }
 
@@ -4156,6 +4156,7 @@
             }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
             festivalEventLayer = L.layerGroup().addTo(map);
+            generalEventLayer = L.layerGroup().addTo(map);
         } catch(e) { 
             console.warn('Map initialization:', e); 
         }
@@ -4539,50 +4540,160 @@
         }
 
         let currentEventIndex = 0;
-        let liveEventRotationInterval = null;
+        function upcomingEventTimestamp(event) {
+            if (!event?.date) return Number.POSITIVE_INFINITY;
+            const time = /^\d{2}:\d{2}$/.test(event.time || '') ? event.time : '18:00';
+            const stamp = Date.parse(event.date + 'T' + time + ':00-05:00');
+            return Number.isFinite(stamp) ? stamp : Number.POSITIVE_INFINITY;
+        }
+        function upcomingSortedEvents() {
+            const now = Date.now();
+            return (Array.isArray(eventsList) ? eventsList : [])
+                .filter(event => event && event.date && upcomingEventTimestamp(event) + 60 * 60 * 1000 > now && upcomingEventTimestamp(event) !== Infinity)
+                .sort((a, b) => upcomingEventTimestamp(a) - upcomingEventTimestamp(b));
+        }
+        let upcomingEventModalIndex = 0;
+        function closeUpcomingEventsModal() {
+            const modal = document.getElementById('upcomingEventsModal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            document.body.style.overflow = '';
+        }
+        function openUpcomingEventsModal() {
+            const items = upcomingSortedEvents().slice(0, 15);
+            if (!items.length) {
+                const modal = document.getElementById('upcomingEventsModal');
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+                document.getElementById('upcomingEventCounter').textContent = '0 / 0';
+                document.getElementById('upcomingEventPoster').textContent = '📅';
+                document.getElementById('upcomingEventDate').textContent = '';
+                document.getElementById('upcomingEventTitle').textContent = 'Próximamente nuevos eventos';
+                document.getElementById('upcomingEventPlace').textContent = 'VisitaLoja.com';
+                document.getElementById('upcomingEventDescription').textContent = 'Todavía no hay actividades futuras publicadas. Vuelve pronto para descubrir los próximos eventos de Loja.';
+                document.getElementById('upcomingEventMapButton').classList.add('hidden');
+                return;
+            }
+            document.getElementById('upcomingEventMapButton').classList.remove('hidden');
+            upcomingEventModalIndex = 0;
+            const modal = document.getElementById('upcomingEventsModal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            renderUpcomingEventModal();
+        }
+        function stepUpcomingEvent(direction) {
+            const items = upcomingSortedEvents().slice(0, 15);
+            if (!items.length) return;
+            upcomingEventModalIndex = (upcomingEventModalIndex + direction + items.length) % items.length;
+            renderUpcomingEventModal();
+        }
+        function renderUpcomingEventModal() {
+            const items = upcomingSortedEvents().slice(0, 15);
+            const event = items[upcomingEventModalIndex];
+            if (!event) return;
+            const title = currentLang === 'en' && event.titleEn ? event.titleEn : event.title || 'Evento en Loja';
+            const description = currentLang === 'en' && event.descEn ? event.descEn : event.desc || '';
+            const date = new Date(event.date + 'T12:00:00-05:00').toLocaleDateString(currentLang === 'en' ? 'en-US' : 'es-EC', {day:'numeric',month:'long',year:'numeric',timeZone:'America/Guayaquil'});
+            const image = /^https:\/\//.test(event.img || '') ? event.img : '';
+            const poster = document.getElementById('upcomingEventPoster');
+            poster.replaceChildren();
+            if (image) {
+                const img = document.createElement('img');
+                img.src = image; img.alt = title; img.loading = 'eager';
+                img.className = 'max-h-[52vh] w-full object-contain';
+                poster.appendChild(img);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'py-24 text-orange-300/50 text-6xl';
+                placeholder.textContent = '📅';
+                poster.appendChild(placeholder);
+            }
+            document.getElementById('upcomingEventCounter').textContent = (upcomingEventModalIndex + 1) + ' / ' + items.length;
+            document.getElementById('upcomingEventDate').textContent = date + (event.time ? ' · ' + event.time : '');
+            document.getElementById('upcomingEventTitle').textContent = title;
+            document.getElementById('upcomingEventPlace').textContent = '📍 ' + (event.location || 'Loja');
+            document.getElementById('upcomingEventDescription').textContent = description;
+            document.getElementById('upcomingEventMapButton').onclick = () => {
+                closeUpcomingEventsModal();
+                focusEventOnMap(Number(event.lat) || -3.9931, Number(event.lng) || -79.2042, title, event.date || '', event.location || '', event.type || '');
+            };
+        }
+        document.addEventListener('keydown', event => {
+            const modal = document.getElementById('upcomingEventsModal');
+            if (!modal || modal.classList.contains('hidden')) return;
+            if (event.key === 'Escape') closeUpcomingEventsModal();
+            if (event.key === 'ArrowRight') stepUpcomingEvent(1);
+            if (event.key === 'ArrowLeft') stepUpcomingEvent(-1);
+        });
+        function renderGeneralEventMarkers() {
+            if (!generalEventLayer || typeof L === 'undefined') return;
+            generalEventLayer.clearLayers();
+            if (!generalEventsVisible) return;
+            upcomingSortedEvents().forEach(event => {
+                const lat = Number(event.lat), lng = Number(event.lng);
+                if (!Number.isFinite(lat) || !Number.isFinite(lng) || !lat || !lng) return;
+                const icon = L.divIcon({
+                    className: 'general-event-leaflet-icon',
+                    html: '<div style="width:27px;height:27px;background:#f97316;border:2px solid white;border-radius:50% 50% 50% 6px;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px #0007"><span style="transform:rotate(45deg);font-size:14px">📅</span></div>',
+                    iconSize: [27,27], iconAnchor: [13,26], popupAnchor: [0,-26]
+                });
+                const popup = document.createElement('div');
+                const title = document.createElement('strong');
+                title.textContent = event.title || 'Evento en Loja';
+                const info = document.createElement('p');
+                info.textContent = [event.date, event.time || '18:00', event.location].filter(Boolean).join(' · ');
+                popup.append(title, info);
+                if (/^https:\/\//.test(event.img || '')) {
+                    const image = document.createElement('img');
+                    image.src = event.img; image.alt = event.title || 'Afiche del evento';
+                    image.style.cssText = 'max-width:180px;max-height:140px;object-fit:contain;border-radius:8px';
+                    popup.appendChild(image);
+                }
+                const button = document.createElement('button');
+                button.type = 'button'; button.textContent = 'Ver agenda de eventos';
+                button.style.cssText = 'display:block;margin-top:8px;background:#f97316;color:white;border:0;border-radius:8px;padding:7px 10px;cursor:pointer';
+                button.addEventListener('click', openUpcomingEventsModal);
+                popup.appendChild(button);
+                L.marker([lat,lng], {icon,zIndexOffset:650}).bindPopup(popup).addTo(generalEventLayer);
+            });
+        }
+        function toggleGeneralEventMarkers() {
+            generalEventsVisible = !generalEventsVisible;
+            renderGeneralEventMarkers();
+            const button = document.getElementById('generalEventsMapToggle');
+            if (button) {
+                button.setAttribute('aria-pressed', String(generalEventsVisible));
+                button.textContent = generalEventsVisible ? '📅 Eventos: visibles' : '📅 Eventos: ocultos';
+            }
+        }
+        setInterval(() => {
+            checkLiveEventsBanner();
+            renderGeneralEventMarkers();
+            const modal = document.getElementById('upcomingEventsModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (!upcomingSortedEvents().length) closeUpcomingEventsModal();
+                else { upcomingEventModalIndex = Math.min(upcomingEventModalIndex, upcomingSortedEvents().length - 1); renderUpcomingEventModal(); }
+            }
+        }, 60 * 1000);
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
-            if(!banner) return;
-
-            const todayStr = new Intl.DateTimeFormat('en-CA', {
-                timeZone: 'America/Guayaquil',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            }).format(new Date());
-            let upcomingEvents = eventsList.filter(ev => {
-                if (!ev.date) return true;
-                return ev.date >= todayStr;
-            });
-
-            if (liveEventRotationInterval) {
-                clearInterval(liveEventRotationInterval);
-                liveEventRotationInterval = null;
-            }
-
-            if(upcomingEvents.length === 0) {
-                banner.classList.add('hidden');
+            if (!banner || !textEl || !btnEl) return;
+            const next = upcomingSortedEvents()[0];
+            banner.classList.remove('hidden');
+            btnEl.classList.toggle('hidden', !next);
+            if (!next) {
+                textEl.textContent = 'No hay eventos próximos publicados. Consulta la agenda cuando se anuncien nuevas actividades.';
                 return;
             }
-
-            banner.classList.remove('hidden');
-            
-            function rotateEvent() {
-                if(upcomingEvents.length === 0) return;
-                const ev = upcomingEvents[currentEventIndex % upcomingEvents.length];
-                const evTitle = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : ev.title;
-                textEl.innerHTML = `🔥 <b>${evTitle}</b> en ${ev.location} (${ev.date})`;
-                
-                btnEl.setAttribute('onclick', `focusEventOnMap(${ev.lat || -3.9931}, ${ev.lng || -79.2042}, '${evTitle.replace(/'/g, "\\'")}', '${ev.date || ''}', '${(ev.location || '').replace(/'/g, "\\'")}', '${ev.type || ''}')`);
-                currentEventIndex = (currentEventIndex + 1) % upcomingEvents.length;
-            }
-
-            rotateEvent();
-            if(upcomingEvents.length > 1) {
-                liveEventRotationInterval = setInterval(rotateEvent, 6000);
-            }
+            const title = currentLang === 'en' && next.titleEn ? next.titleEn : next.title;
+            const date = new Date(next.date + 'T12:00:00-05:00').toLocaleDateString(currentLang === 'en' ? 'en-US' : 'es-EC', {day:'numeric',month:'short',timeZone:'America/Guayaquil'});
+            textEl.textContent = [title, date, next.time || '', next.location || ''].filter(Boolean).join(' · ');
+            btnEl.onclick = () => focusEventOnMap(Number(next.lat) || -3.9931, Number(next.lng) || -79.2042, title || '', next.date || '', next.location || '', next.type || '');
         }
 
 function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===id);if(index<0)return;selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth',block:'start'});}
@@ -4605,6 +4716,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             renderPromotionsUI();
             renderStoriesUI();
             renderAgendaUI();
+            checkLiveEventsBanner();
+            renderGeneralEventMarkers();
             renderEmprendedoresUI();
             renderLojaTimeUI();
             renderPublicFrameButtons();

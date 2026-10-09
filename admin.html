@@ -6,6 +6,11 @@
     <meta name="robots" content="noindex,nofollow">
     <title>Administración | Visita Loja</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/image-compressor.js"></script>
+    <script src="js/cloudinary-image-uploader.js"></script>
+    <script src="js/visitaloja-image-config.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -496,11 +501,11 @@
                         <h3 id="generalEventFormTitle" class="font-black text-lg">Programar un evento</h3>
                         <label class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-blue-500/25 bg-blue-500/10 p-4"><span><strong class="block text-sm"><i class="fa-solid fa-eye text-blue-300 mr-2"></i>Estado de publicación</strong><span class="text-xs text-gray-400">Guárdalo como borrador para terminarlo antes de mostrarlo.</span></span><select id="generalEventPublicationStatus" class="field sm:w-48"><option value="published">Publicado</option><option value="draft">Borrador</option><option value="hidden">Oculto</option></select></label>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Título en español *</span><input id="generalEventTitle" class="field" required maxlength="140"></label><label><span class="text-sm font-semibold block mb-2">Título en inglés</span><input id="generalEventTitleEn" class="field" maxlength="140"></label></div>
-                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Fecha *</span><input id="generalEventDate" class="field" type="date" required></label><label><span class="text-sm font-semibold block mb-2">Tipo *</span><select id="generalEventType" class="field" required><option>Festival</option><option>Gastronomía</option><option>Música</option><option>Teatro</option><option>Danza</option><option>Feria</option><option>Turismo</option><option>Deporte</option><option>Otro</option></select></label><label><span class="text-sm font-semibold block mb-2">Imagen</span><input id="generalEventImage" class="field" type="url" placeholder="https://..."></label></div>
+                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Fecha *</span><input id="generalEventDate" class="field" type="date" required><span class="text-xs text-gray-400 block mt-2">Se ocultará 1 hora después del inicio.</span></label><label><span class="text-sm font-semibold block mb-2">Hora de inicio (Ecuador) *</span><input id="generalEventTime" class="field" type="time" required value="18:00"></label><label><span class="text-sm font-semibold block mb-2">Tipo *</span><select id="generalEventType" class="field" required><option>Festival</option><option>Gastronomía</option><option>Música</option><option>Teatro</option><option>Danza</option><option>Feria</option><option>Turismo</option><option>Deporte</option><option>Otro</option></select></label><label><span class="text-sm font-semibold block mb-2">Imagen</span><input id="generalEventImage" class="field" type="url" placeholder="https://..."><input id="generalEventImageFile" type="file" accept="image/jpeg,image/png,image/webp" class="field mt-2" aria-label="Seleccionar afiche del evento"><button type="button" id="generalEventUploadBtn" onclick="uploadGeneralEventPoster()" class="mt-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 text-xs font-bold">Subir afiche</button><p id="generalEventUploadStatus" class="text-xs text-gray-400 mt-1">JPG, PNG o WebP · máximo 5 MB. Cloudinary · imagen optimizada automáticamente.</p></label></div>
                         <label class="block"><span class="text-sm font-semibold block mb-2">Lugar *</span><input id="generalEventLocation" class="field" required maxlength="180"></label>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Descripción en español *</span><textarea id="generalEventDesc" class="field min-h-24" required maxlength="700"></textarea></label><label><span class="text-sm font-semibold block mb-2">Descripción en inglés</span><textarea id="generalEventDescEn" class="field min-h-24" maxlength="700"></textarea></label></div>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Latitud *</span><input id="generalEventLat" class="field" required type="number" step="any" placeholder="-3.9931"></label><label><span class="text-sm font-semibold block mb-2">Longitud *</span><input id="generalEventLng" class="field" required type="number" step="any" placeholder="-79.2042"></label></div>
-                        <p class="text-xs text-gray-400 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3"><i class="fa-solid fa-map-pin text-blue-300 mr-2"></i>Estas coordenadas crearán el acceso del evento dentro del mapa.</p>
+                        <div class="rounded-xl border border-orange-500/30 p-3 bg-black/20"><p class="text-xs text-orange-200 mb-2"><i class="fa-solid fa-map-location-dot mr-1"></i>Selecciona el lugar haciendo clic en el mapa o arrastrando el marcador.</p><div id="generalEventLocationMap" style="height:290px;z-index:0;border-radius:12px"></div><button type="button" onclick="centerGeneralEventLocationMap()" class="mt-2 text-xs font-bold text-orange-300">Centrar en las coordenadas ingresadas</button></div><p class="text-xs text-gray-400 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3"><i class="fa-solid fa-map-pin text-blue-300 mr-2"></i>Estas coordenadas crearán el acceso del evento dentro del mapa.</p>
                         <div id="generalEventMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
                         <div class="flex flex-col sm:flex-row gap-3"><button type="button" onclick="openEventPreview()" class="border border-blue-500/40 text-blue-200 hover:bg-blue-500/10 font-black rounded-xl px-6 py-3"><i class="fa-solid fa-eye mr-2"></i>Vista previa</button><button id="generalEventSaveBtn" type="submit" class="bg-blue-500 hover:bg-blue-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar evento</button><button type="button" onclick="resetGeneralEventForm()" class="border border-gray-700 hover:border-gray-500 rounded-xl px-5 py-3 text-sm font-bold">Cancelar edición</button></div>
                     </form>
@@ -1252,6 +1257,7 @@ function showAdminModule(moduleName) {
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
     ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'chabaquitoMissions', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    if (moduleName === 'events') setTimeout(initGeneralEventLocationMap, 100);
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('auditNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'audit' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('adminsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'admins' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -2127,12 +2133,64 @@ function renderGeneralEvents() {
     list.innerHTML = ordered.map(event => `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><div class="flex flex-wrap items-center gap-2"><span class="text-[10px] uppercase tracking-wider text-blue-300 font-black">${escapeAdminHtml(event.type || 'Evento')}</span><span class="text-[9px] font-black uppercase border rounded-full px-2 py-0.5 ${adminPublicationMeta(event).tone}"><i class="fa-solid ${adminPublicationMeta(event).icon} mr-1"></i>${adminPublicationMeta(event).label}</span></div><h4 class="font-black">${escapeAdminHtml(event.title || 'Sin título')}</h4><p class="text-xs text-gray-400"><i class="fa-regular fa-calendar mr-1"></i>${escapeAdminHtml(event.date || 'Sin fecha')} · <i class="fa-solid fa-location-dot ml-1 mr-1"></i>${escapeAdminHtml(event.location || 'Sin lugar')}</p></div><div class="flex gap-2"><button type="button" onclick="editGeneralEvent('${escapeAdminHtml(event.id)}')" class="bg-blue-500/15 text-blue-200 hover:bg-blue-500/25 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-pen mr-1"></i>Editar</button><button type="button" onclick="deleteGeneralEvent('${escapeAdminHtml(event.id)}')" class="bg-red-500/10 text-red-300 hover:bg-red-500/20 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Eliminar</button></div></div></article>`).join('');
 }
 
+let generalEventPickerMap = null;
+let generalEventPickerMarker = null;
+function initGeneralEventLocationMap() {
+    const node = document.getElementById('generalEventLocationMap');
+    if (!node || typeof L === 'undefined') return;
+    if (!generalEventPickerMap) {
+        generalEventPickerMap = L.map(node, {scrollWheelZoom:false}).setView([-3.9931,-79.2042],13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(generalEventPickerMap);
+        generalEventPickerMarker = L.marker([-3.9931,-79.2042],{draggable:true}).addTo(generalEventPickerMap);
+        const update = latlng => {
+            document.getElementById('generalEventLat').value = latlng.lat.toFixed(6);
+            document.getElementById('generalEventLng').value = latlng.lng.toFixed(6);
+        };
+        generalEventPickerMap.on('click',e=>{generalEventPickerMarker.setLatLng(e.latlng);update(e.latlng);});
+        generalEventPickerMarker.on('dragend',()=>update(generalEventPickerMarker.getLatLng()));
+    }
+    setTimeout(()=>{generalEventPickerMap.invalidateSize();centerGeneralEventLocationMap();},150);
+}
+function centerGeneralEventLocationMap() {
+    if (!generalEventPickerMap) return;
+    const lat=Number(document.getElementById('generalEventLat').value),lng=Number(document.getElementById('generalEventLng').value);
+    if (!Number.isFinite(lat)||!Number.isFinite(lng)||!lat||!lng) return;
+    generalEventPickerMarker.setLatLng([lat,lng]);
+    generalEventPickerMap.setView([lat,lng],15);
+}
+async function uploadGeneralEventPoster() {
+ const file=document.getElementById('generalEventImageFile').files[0];
+ const status=document.getElementById('generalEventUploadStatus');
+ const button=document.getElementById('generalEventUploadBtn');
+ if(!file){status.textContent='Selecciona primero una imagen.';return;}
+ if(!auth.currentUser){status.textContent='Inicia sesión como administrador.';return;}
+ button.disabled=true;
+ try {
+  const compressor=window.VisitaLojaImageCompressor;
+  const uploader=window.VisitaLojaCloudinaryUploader;
+  if(!compressor||!uploader)throw new Error('No se cargaron las herramientas de imágenes.');
+  status.textContent='Optimizando afiche...';
+  const optimized=await compressor.compressImageClientSide(file,window.VisitaLojaImageConfig.CONFIG.compression);
+  status.textContent='Autorizando subida a Cloudinary...';
+  const response=await fetch('/api/sign-event-image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+await auth.currentUser.getIdToken()},body:JSON.stringify({purpose:'poster'})});
+  const authorization=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(authorization.error||'No se pudo autorizar la subida ('+response.status+').');
+  status.textContent='Subiendo afiche a Cloudinary...';
+  const result=await uploader.uploadSignedImage(optimized.blob,authorization,{filename:'evento-'+Date.now()+'.webp'});
+  document.getElementById('generalEventImage').value=result.url;
+  status.textContent='Afiche subido correctamente a Cloudinary. Guarda el evento para publicarlo.';
+ }catch(error){
+  status.textContent='No se pudo subir a Cloudinary: '+(error.message||'Error desconocido.')+' Puedes pegar una URL mientras lo resolvemos.';
+  console.error('Event Cloudinary upload',error);
+ }finally{button.disabled=false;}
+}
 function resetGeneralEventForm() {
     document.getElementById('generalEventForm').reset();
     document.getElementById('generalEventEditId').value = '';
     document.getElementById('generalEventFormTitle').textContent = 'Programar un evento';
     document.getElementById('generalEventPublicationStatus').value = 'published';
     document.getElementById('generalEventMessage').classList.add('hidden');
+    document.getElementById('generalEventImageFile').value = '';
 }
 
 function editGeneralEvent(id) {
@@ -2141,8 +2199,9 @@ function editGeneralEvent(id) {
     showAdminModule('events');
     document.getElementById('generalEventEditId').value = event.id;
     document.getElementById('generalEventFormTitle').textContent = `Editar: ${event.title || 'evento'}`;
-    const values = { generalEventPublicationStatus: event.publicationStatus || 'published', generalEventTitle: event.title, generalEventTitleEn: event.titleEn, generalEventDate: event.date, generalEventType: event.type, generalEventImage: event.img, generalEventLocation: event.location, generalEventDesc: event.desc, generalEventDescEn: event.descEn, generalEventLat: event.lat, generalEventLng: event.lng };
+    const values = { generalEventPublicationStatus: event.publicationStatus || 'published', generalEventTitle: event.title, generalEventTitleEn: event.titleEn, generalEventDate: event.date, generalEventTime: event.time || '18:00', generalEventType: event.type, generalEventImage: event.img, generalEventLocation: event.location, generalEventDesc: event.desc, generalEventDescEn: event.descEn, generalEventLat: event.lat, generalEventLng: event.lng };
     Object.entries(values).forEach(([field, value]) => { document.getElementById(field).value = value ?? ''; });
+    initGeneralEventLocationMap();
     document.getElementById('generalEventForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -2469,7 +2528,7 @@ document.getElementById('generalEventForm').addEventListener('submit', async eve
     const editId = document.getElementById('generalEventEditId').value;
     const title = document.getElementById('generalEventTitle').value.trim();
     const description = document.getElementById('generalEventDesc').value.trim();
-    const data = { id: editId || `ev_${Date.now()}`, publicationStatus: document.getElementById('generalEventPublicationStatus').value, title, titleEn: document.getElementById('generalEventTitleEn').value.trim() || title, date: document.getElementById('generalEventDate').value, type: document.getElementById('generalEventType').value, location: document.getElementById('generalEventLocation').value.trim(), img: document.getElementById('generalEventImage').value.trim(), desc: description, descEn: document.getElementById('generalEventDescEn').value.trim() || description, lat, lng };
+    const data = { id: editId || `ev_${Date.now()}`, publicationStatus: document.getElementById('generalEventPublicationStatus').value, title, titleEn: document.getElementById('generalEventTitleEn').value.trim() || title, date: document.getElementById('generalEventDate').value, time: document.getElementById('generalEventTime').value, type: document.getElementById('generalEventType').value, location: document.getElementById('generalEventLocation').value.trim(), img: document.getElementById('generalEventImage').value.trim(), desc: description, descEn: document.getElementById('generalEventDescEn').value.trim() || description, lat, lng };
     const previous = generalEvents.map(item => ({ ...item }));
     const index = generalEvents.findIndex(item => item.id === data.id);
     if (index >= 0) generalEvents[index] = data; else generalEvents.push(data);
