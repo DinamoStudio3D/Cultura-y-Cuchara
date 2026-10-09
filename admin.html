@@ -8,8 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
@@ -2170,7 +2170,7 @@ async function uploadGeneralEventPoster() {
         await ref.put(file,{contentType:file.type});
         document.getElementById('generalEventImage').value=await ref.getDownloadURL();
         status.textContent='Afiche subido correctamente. Guarda el evento para publicarlo.';
-    }catch(error){status.textContent='No se pudo subir: verifica que Firebase Storage esté habilitado y permita cargas de administradores. También puedes pegar una URL.';console.warn('Event poster upload',error);}
+    }catch(error){const code=error?.code || 'error-desconocido';status.textContent='No se pudo subir ('+code+'). '+(code==='storage/unauthorized'?'Revisa los permisos de Firebase Storage.':code==='storage/bucket-not-found'?'Verifica que Firebase Storage esté activado.':'Revisa la consola o la configuración de Firebase Storage.');console.error('Event poster upload',error);}
     finally{button.disabled=false;}
 }
 function resetGeneralEventForm() {
