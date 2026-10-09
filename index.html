@@ -664,6 +664,16 @@
 #legacyStatsBand{display:none!important}
 #categorias{padding-top:clamp(45px,6vw,76px)}
 </style>
+
+<style id="visitaloja-install-mascot-v8">
+/* Evita que el aviso PWA tape a Chabaquito: en escritorio va arriba a la derecha. */
+@media(min-width:768px){#installAppBanner:not(.hidden){position:fixed!important;top:90px!important;right:18px!important;bottom:auto!important;left:auto!important;transform:none!important;width:min(360px,calc(100vw - 36px))!important;max-width:360px!important;z-index:90!important;padding:10px 12px!important}}
+/* En móviles el aviso aparece encima de los controles inferiores, no sobre la mascota. */
+@media(max-width:767px){#installAppBanner:not(.hidden){position:fixed!important;top:76px!important;right:10px!important;bottom:auto!important;left:auto!important;transform:none!important;width:min(345px,calc(100vw - 20px))!important;max-width:345px!important;z-index:90!important;padding:9px 10px!important}#installAppBanner .w-11{width:36px!important;height:36px!important}}
+#installAppBanner:not(.hidden){border-color:rgba(249,115,22,.38)!important;box-shadow:0 14px 45px rgba(0,0,0,.3)!important;animation:vl-install-arrive .3s ease-out}
+@keyframes vl-install-arrive{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
+@media(prefers-reduced-motion:reduce){#installAppBanner:not(.hidden){animation:none}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
