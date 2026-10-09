@@ -613,6 +613,19 @@
       @media(prefers-reduced-motion:reduce){#inicio #heroLogoFrame,#inicio .vl-home-actions>*{transition:none}#inicio #heroLogoFrame:hover,#inicio .vl-home-actions>*:hover{transform:none}}
     </style>
 
+
+<style id="visitaloja-modern-home-v2">
+#inicio{padding-top:5.5rem;padding-bottom:6.5rem;background:#10121a}
+#inicio #heroBgWrapper{opacity:.66}
+#inicio #heroTitle{font-size:clamp(2.7rem,5.5vw,5.2rem);max-width:1050px}
+#inicio #heroSubtitle{font-size:clamp(.98rem,1.4vw,1.15rem)}
+.vl-discover{position:relative;background:#0c1019;color:#fff;padding:68px 22px 84px;border-top:1px solid rgba(255,255,255,.09)}
+.vl-discover-inner{max-width:1240px;margin:auto}.vl-discover-heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:27px}.vl-discover-kicker{color:#fb923c;font-weight:800;letter-spacing:.16em;font-size:11px}.vl-discover-heading h2{font-size:clamp(1.8rem,3.2vw,2.8rem);font-weight:900;letter-spacing:-.04em;line-height:1.12;margin:12px 0}.vl-discover-heading p{color:#aeb8c9;font-size:15px}.vl-discover-map{color:#fff;font-weight:750;border:1px solid #475063;border-radius:12px;padding:13px 17px;white-space:nowrap}.vl-discover-map:hover{border-color:#fb923c;color:#fb923c}
+.vl-discover-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.vl-discover-card{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:245px;overflow:hidden;padding:25px;border:1px solid rgba(255,255,255,.14);border-radius:22px;color:#fff;background:linear-gradient(150deg,var(--vl-card),#141925 83%);box-shadow:0 12px 30px rgba(0,0,0,.17);transition:transform .2s,border-color .2s}.vl-discover-card:before{content:"";position:absolute;width:200px;height:200px;border-radius:50%;background:var(--vl-glow);filter:blur(35px);opacity:.25;right:-85px;top:-90px;pointer-events:none}.vl-discover-card:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.45)}.vl-discover-card:focus-visible{outline:3px solid #fb923c;outline-offset:4px}.vl-card-orange{--vl-card:#482515;--vl-glow:#fb923c}.vl-card-blue{--vl-card:#153448;--vl-glow:#38bdf8}.vl-card-green{--vl-card:#183b2e;--vl-glow:#4ade80}.vl-card-purple{--vl-card:#352046;--vl-glow:#c084fc}.vl-card-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,.13);font-size:23px}.vl-card-content{display:flex;flex-direction:column;gap:10px;position:relative}.vl-card-content strong{font-size:20px;font-weight:850;line-height:1.15}.vl-card-content small{font-size:13px;line-height:1.5;color:#d1d7e0}.vl-card-link{font-size:12px;font-weight:800;color:#fff;margin-top:8px}.vl-card-link i{margin-left:5px;font-size:10px}
+@media(max-width:950px){.vl-discover-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.vl-discover-card{min-height:215px}}
+@media(max-width:560px){.vl-discover{padding:44px 16px 58px}.vl-discover-heading{display:block}.vl-discover-map{display:inline-block;margin-top:20px}.vl-discover-grid{gap:10px}.vl-discover-card{padding:16px;min-height:205px;border-radius:17px}.vl-card-content strong{font-size:16px}.vl-card-content small{font-size:12px}.vl-card-icon{width:43px;height:43px;font-size:19px}#inicio{padding-top:4rem;padding-bottom:4.5rem}}
+@media(prefers-reduced-motion:reduce){.vl-discover-card{transition:none}.vl-discover-card:hover{transform:none}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -921,6 +934,19 @@
         </div>
     </section>
 
+
+    <!-- Accesos de descubrimiento: modernización V2, conserva navegación existente -->
+    <section id="descubre-loja" class="vl-discover" aria-label="Explora Visita Loja">
+      <div class="vl-discover-inner">
+        <div class="vl-discover-heading"><div><span class="vl-discover-kicker">TU PRÓXIMA EXPERIENCIA EMPIEZA AQUÍ</span><h2>¿Qué te gustaría descubrir?</h2><p>Explora Loja a tu manera. Elige cómo quieres comenzar tu aventura.</p></div><a href="#mapa" class="vl-discover-map">Explorar el mapa <i class="fa-solid fa-arrow-right"></i></a></div>
+        <div class="vl-discover-grid">
+          <a href="#mapa" class="vl-discover-card vl-card-orange"><span class="vl-card-icon"><i class="fa-solid fa-utensils"></i></span><span class="vl-card-content"><strong>Sabores de Loja</strong><small>Descubre cafeterías, huecas y restaurantes</small><span class="vl-card-link">Explorar lugares <i class="fa-solid fa-arrow-up-right-from-square"></i></span></span></a>
+          <a href="#mapa" class="vl-discover-card vl-card-blue"><span class="vl-card-icon"><i class="fa-solid fa-bed"></i></span><span class="vl-card-content"><strong>Dónde hospedarte</strong><small>Encuentra alojamientos para tu próxima visita</small><span class="vl-card-link">Ver opciones <i class="fa-solid fa-arrow-up-right-from-square"></i></span></span></a>
+          <a href="#mapa" class="vl-discover-card vl-card-green"><span class="vl-card-icon"><i class="fa-solid fa-mountain-sun"></i></span><span class="vl-card-content"><strong>Rincones por conocer</strong><small>Explora destinos y atractivos turísticos</small><span class="vl-card-link">Descubrir destinos <i class="fa-solid fa-arrow-up-right-from-square"></i></span></span></a>
+          <a href="#misiones" class="vl-discover-card vl-card-purple"><span class="vl-card-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span><span class="vl-card-content"><strong>Vive la aventura</strong><small>Conoce las misiones de Chabaquito</small><span class="vl-card-link">Ver misiones <i class="fa-solid fa-arrow-up-right-from-square"></i></span></span></a>
+        </div>
+      </div>
+    </section>
 
     <!-- World Tourism Day 2026 -->
     <section id="dia-turismo" class="relative overflow-hidden text-white py-16 px-4 border-y border-emerald-400/25" style="background:linear-gradient(135deg,#071f1b,#0b3028,#121212)">
