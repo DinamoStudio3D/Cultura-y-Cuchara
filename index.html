@@ -835,6 +835,7 @@
                     <span class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[.14em] font-black text-orange-300" data-i18n="bannerLive"><span class="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></span> PRÓXIMO EVENTO</span>
                     <p id="liveEventText" class="mt-1 text-sm font-bold text-white leading-snug line-clamp-2">Cargando eventos...</p>
                 </div>
+                <button id="openUpcomingEventsButton" type="button" onclick="openUpcomingEventsModal()" class="shrink-0 rounded-xl border border-orange-400/40 bg-white/10 hover:bg-white/20 text-white px-3 py-2.5 text-xs font-extrabold transition" aria-label="Abrir galería de eventos"><i class="fa-regular fa-images mr-1"></i><span class="hidden sm:inline">Ver agenda</span><span class="sm:hidden">Agenda</span></button>
                 <button id="liveEventBtn" type="button" class="shrink-0 rounded-xl bg-orange-500 hover:bg-orange-400 text-white px-3 sm:px-4 py-2.5 text-xs font-extrabold transition shadow-lg" aria-label="Ver evento en el mapa"><i class="fa-solid fa-location-arrow mr-1"></i> <span class="hidden sm:inline" data-i18n="btnViewMap">Ver en el mapa</span><span class="sm:hidden">Mapa</span></button>
             </div>
             <div id="latestVideoBanner" class="relative overflow-hidden rounded-2xl border border-sky-400/20 bg-gradient-to-r from-[#122638] via-[#1c2038] to-[#281b31] text-white p-3 sm:p-4 flex items-center gap-3 shadow-lg">
@@ -848,17 +849,23 @@
         </div>
     </div>
 
-    <!-- Galería de próximos eventos, sincronizada con la agenda del administrador -->
-    <section id="proximos-eventos" class="bg-[#0e1018] text-white px-4 sm:px-6 py-9 sm:py-12 border-b border-white/10">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
-                <div><span class="text-[11px] font-black uppercase tracking-[.2em] text-orange-400"><i class="fa-solid fa-calendar-days mr-2"></i>Agenda cultural y turística</span><h2 class="text-2xl sm:text-3xl font-black mt-1">Próximos eventos en Loja</h2><p class="text-sm text-gray-400 mt-2">Explora lo que viene, del evento más cercano al más lejano.</p></div>
-                <div class="flex gap-2"><button type="button" onclick="scrollUpcomingEventGallery(-1)" class="w-10 h-10 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20" aria-label="Eventos anteriores"><i class="fa-solid fa-chevron-left"></i></button><button type="button" onclick="scrollUpcomingEventGallery(1)" class="w-10 h-10 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20" aria-label="Eventos siguientes"><i class="fa-solid fa-chevron-right"></i></button></div>
+    <!-- Visor de eventos: se abre bajo demanda, sin ocupar espacio en la portada -->
+    <div id="upcomingEventsModal" class="hidden fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm px-3 py-5 sm:p-8 items-center justify-center" role="dialog" aria-modal="true" aria-label="Galería de próximos eventos" onclick="if(event.target===this)closeUpcomingEventsModal()">
+        <div class="relative w-full max-w-3xl max-h-[94vh] overflow-y-auto rounded-3xl bg-[#171925] border border-white/15 text-white shadow-2xl">
+            <div class="sticky top-0 z-10 bg-[#171925]/95 backdrop-blur-md px-4 sm:px-6 py-4 flex items-center justify-between gap-3 border-b border-white/10">
+                <div><p class="text-[10px] uppercase tracking-widest font-black text-orange-400">VisitaLoja.com</p><h2 class="font-black text-lg sm:text-xl">Agenda de próximos eventos</h2></div>
+                <div class="flex items-center gap-2"><span id="upcomingEventCounter" class="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">0 / 0</span><button type="button" onclick="closeUpcomingEventsModal()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20" aria-label="Cerrar galería"><i class="fa-solid fa-xmark"></i></button></div>
             </div>
-            <div id="upcomingEventGallery" class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scroll-smooth" style="scrollbar-width:thin;scrollbar-color:#f97316 #20202a"></div>
-            <p id="upcomingEventGalleryEmpty" class="hidden text-sm text-gray-400 py-5">Pronto compartiremos nuevos eventos. ¡Vuelve a visitarnos!</p>
+            <div class="px-4 sm:px-6 py-4">
+                <div id="upcomingEventPoster" class="relative bg-[#0e1018] rounded-2xl overflow-hidden min-h-[200px] flex items-center justify-center"></div>
+                <div class="mt-4"><div id="upcomingEventDate" class="text-xs font-black uppercase tracking-widest text-orange-400"></div><h3 id="upcomingEventTitle" class="text-xl sm:text-2xl font-black mt-1"></h3><p id="upcomingEventPlace" class="text-sm text-sky-300 mt-2"></p><p id="upcomingEventDescription" class="text-sm text-gray-300 mt-3 whitespace-pre-line leading-relaxed"></p></div>
+                <div class="mt-5 flex flex-wrap gap-3 items-center justify-between">
+                    <div class="flex gap-2"><button type="button" onclick="stepUpcomingEvent(-1)" class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20" aria-label="Evento anterior"><i class="fa-solid fa-chevron-left"></i></button><button type="button" onclick="stepUpcomingEvent(1)" class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20" aria-label="Evento siguiente"><i class="fa-solid fa-chevron-right"></i></button></div>
+                    <button type="button" id="upcomingEventMapButton" class="rounded-xl bg-orange-500 hover:bg-orange-400 px-5 py-3 font-bold text-sm"><i class="fa-solid fa-location-dot mr-1"></i> Ver en el mapa</button>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
 
     <!-- Hero Section -->
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
@@ -3605,7 +3612,6 @@
             localStorage.setItem(key, JSON.stringify(next));
             renderFestivalAgenda();
             renderAgendaUI();
-            renderUpcomingEventGallery();
             checkLiveEventsBanner();
             renderVisitorExperience();
             showToast(next.includes(eventId)?(currentLang==='en'?'Activity saved to your agenda':'Actividad guardada en tu agenda'):(currentLang==='en'?'Activity removed from your agenda':'Actividad retirada de tu agenda'));
@@ -4569,36 +4575,67 @@
                 .filter(event => event && event.date && upcomingEventTimestamp(event) >= now && upcomingEventTimestamp(event) !== Infinity)
                 .sort((a, b) => upcomingEventTimestamp(a) - upcomingEventTimestamp(b));
         }
-        function scrollUpcomingEventGallery(direction) {
-            const gallery = document.getElementById('upcomingEventGallery');
-            if (gallery) gallery.scrollBy({ left: direction * Math.min(350, gallery.clientWidth * .85), behavior: 'smooth' });
+        let upcomingEventModalIndex = 0;
+        function closeUpcomingEventsModal() {
+            const modal = document.getElementById('upcomingEventsModal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            document.body.style.overflow = '';
         }
-        function renderUpcomingEventGallery() {
-            const gallery = document.getElementById('upcomingEventGallery');
-            const section = document.getElementById('proximos-eventos');
-            const empty = document.getElementById('upcomingEventGalleryEmpty');
-            if (!gallery || !section) return;
-            const events = upcomingSortedEvents().slice(0, 15);
-            section.classList.toggle('hidden', !events.length);
-            if (empty) empty.classList.toggle('hidden', !!events.length);
-            const escape = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-            gallery.innerHTML = events.map((event, i) => {
-                const title = currentLang === 'en' && event.titleEn ? event.titleEn : event.title || 'Evento en Loja';
-                const description = currentLang === 'en' && event.descEn ? event.descEn : event.desc || '';
-                const date = new Date(event.date + 'T12:00:00-05:00').toLocaleDateString(currentLang === 'en' ? 'en-US' : 'es-EC', {day:'numeric',month:'short',year:'numeric',timeZone:'America/Guayaquil'});
-                const image = /^https:\/\//.test(event.img || '') ? event.img : '';
-                const location = event.location || 'Loja';
-                const eventIndex = eventsList.indexOf(event);
-                return `<article class="shrink-0 w-[82vw] sm:w-[320px] snap-start rounded-2xl overflow-hidden border border-white/10 bg-[#1c202b] shadow-xl flex flex-col">
-                    <div class="relative h-44 bg-gradient-to-br from-orange-700/30 to-sky-900/40 overflow-hidden">${image ? `<img src="${escape(image)}" alt="${escape(title)}" loading="lazy" class="w-full h-full object-cover">` : '<div class="w-full h-full flex items-center justify-center text-5xl text-orange-300/40"><i class="fa-solid fa-calendar-days"></i></div>'}<span class="absolute top-3 left-3 bg-black/80 text-white text-[11px] font-black px-3 py-1.5 rounded-lg">📅 ${escape(date)}</span>${i === 0 ? '<span class="absolute top-3 right-3 bg-orange-500 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg">EL MÁS PRÓXIMO</span>' : ''}</div>
-                    <div class="p-4 flex flex-col flex-1 gap-2"><h3 class="text-base font-black leading-snug">${escape(title)}</h3><p class="text-xs text-orange-300"><i class="fa-solid fa-location-dot mr-1"></i>${escape(location)}${event.time ? ' · ' + escape(event.time) : ''}</p><p class="text-sm text-gray-300 line-clamp-3 flex-1">${escape(description)}</p><button type="button" data-event-index="${eventIndex}" class="upcoming-map-btn mt-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs py-3 transition"><i class="fa-solid fa-map-location-dot mr-1"></i> Ver evento en el mapa</button></div>
-                </article>`;
-            }).join('');
-            gallery.querySelectorAll('.upcoming-map-btn').forEach(button => button.addEventListener('click', () => {
-                const event = eventsList[Number(button.dataset.eventIndex)];
-                if (event) focusEventOnMap(Number(event.lat) || -3.9931, Number(event.lng) || -79.2042, event.title || '', event.date || '', event.location || '', event.type || '');
-            }));
+        function openUpcomingEventsModal() {
+            const items = upcomingSortedEvents().slice(0, 15);
+            if (!items.length) return;
+            upcomingEventModalIndex = 0;
+            const modal = document.getElementById('upcomingEventsModal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            renderUpcomingEventModal();
         }
+        function stepUpcomingEvent(direction) {
+            const items = upcomingSortedEvents().slice(0, 15);
+            if (!items.length) return;
+            upcomingEventModalIndex = (upcomingEventModalIndex + direction + items.length) % items.length;
+            renderUpcomingEventModal();
+        }
+        function renderUpcomingEventModal() {
+            const items = upcomingSortedEvents().slice(0, 15);
+            const event = items[upcomingEventModalIndex];
+            if (!event) return;
+            const title = currentLang === 'en' && event.titleEn ? event.titleEn : event.title || 'Evento en Loja';
+            const description = currentLang === 'en' && event.descEn ? event.descEn : event.desc || '';
+            const date = new Date(event.date + 'T12:00:00-05:00').toLocaleDateString(currentLang === 'en' ? 'en-US' : 'es-EC', {day:'numeric',month:'long',year:'numeric',timeZone:'America/Guayaquil'});
+            const image = /^https:\/\//.test(event.img || '') ? event.img : '';
+            const poster = document.getElementById('upcomingEventPoster');
+            poster.replaceChildren();
+            if (image) {
+                const img = document.createElement('img');
+                img.src = image; img.alt = title; img.loading = 'eager';
+                img.className = 'max-h-[52vh] w-full object-contain';
+                poster.appendChild(img);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'py-24 text-orange-300/50 text-6xl';
+                placeholder.textContent = '📅';
+                poster.appendChild(placeholder);
+            }
+            document.getElementById('upcomingEventCounter').textContent = (upcomingEventModalIndex + 1) + ' / ' + items.length;
+            document.getElementById('upcomingEventDate').textContent = date + (event.time ? ' · ' + event.time : '');
+            document.getElementById('upcomingEventTitle').textContent = title;
+            document.getElementById('upcomingEventPlace').textContent = '📍 ' + (event.location || 'Loja');
+            document.getElementById('upcomingEventDescription').textContent = description;
+            document.getElementById('upcomingEventMapButton').onclick = () => {
+                closeUpcomingEventsModal();
+                focusEventOnMap(Number(event.lat) || -3.9931, Number(event.lng) || -79.2042, title, event.date || '', event.location || '', event.type || '');
+            };
+        }
+        document.addEventListener('keydown', event => {
+            const modal = document.getElementById('upcomingEventsModal');
+            if (!modal || modal.classList.contains('hidden')) return;
+            if (event.key === 'Escape') closeUpcomingEventsModal();
+            if (event.key === 'ArrowRight') stepUpcomingEvent(1);
+            if (event.key === 'ArrowLeft') stepUpcomingEvent(-1);
+        });
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
             const textEl = document.getElementById('liveEventText');
