@@ -3,6 +3,13 @@
    A nested surface resets all text tokens; dynamic content inherits the same contract. */
 @layer vl-colors, vl-layout;
 @layer vl-colors {
+  /* Decoration opacity belongs to the element, independent of readable text colors. */
+  .vl-decoration {
+    opacity: .035 !important;
+    pointer-events: none !important;
+    user-select: none;
+    z-index: 0;
+  }
   :root {
     --vl-ink-light: #172d45;
     --vl-muted-light: #4d6075;
@@ -141,7 +148,7 @@
     --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
     background: var(--vl-success) !important;
   }
-  :where([class~="bg-fuchsia-500"], [class~="bg-pink-500"], #festivalMapToggle) {
+  :where([class~="bg-fuchsia-500"], [class~="bg-fuchsia-600"], [class~="bg-pink-500"], #festivalMapToggle) {
     --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
     background: #9d2489 !important;
   }
