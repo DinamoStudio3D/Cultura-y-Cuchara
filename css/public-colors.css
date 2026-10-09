@@ -97,13 +97,18 @@
     --vl-text: var(--vl-ink-dark); --vl-muted: var(--vl-muted-dark); --vl-accent: var(--vl-accent-dark);
     background: var(--vl-surface-dark) !important;
   }
+  /* The welcome uses warm neutral paper; photo copy has its own dark surface. */
+  .vl-welcome, .vl-discovery-nav {
+    --vl-text: #253241; --vl-muted: #56616c; --vl-accent: #9e4317;
+    background-color: #fff9ef !important;
+  }
   /* Nested light cards reset dark inherited tokens. */
   :where(.vl29-dropdown, #mapPreviewCard, #mapLegendPanel, #searchInput,
     .vl37-steps > div, .vl39-results-toolbar, .vl46-sponsors-existing,
     .vl52-spice-card, .vl52-spice-copy, .vl53-ile-partner, .vl-experience-sponsor,
     #localesGrid > article, #localesGrid > .group, #emprendedoresGridContainer > div,
     #agendaGridContainer > article, #agendaGridContainer > div,
-    #exploreCategoryGrid > button, .vl41-quicklink, .vl44-entrepreneur-copy,
+    #exploreCategoryGrid > button, .vl44-entrepreneur-copy,
     #podcastSampleCard, #principalSponsorsGrid > article, .vl43-feature-actions a:first-child) {
     --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
     background-color: #fff !important;
@@ -117,16 +122,12 @@
     background: var(--vl-action-hover) !important;
   }
   /* Text over photographs has a solid label or an existing dark scrim. */
-  :where(.vl24-photo-stage, .vl24-photo-bottom) {
-    --vl-text: var(--vl-ink-dark); --vl-muted: var(--vl-muted-dark); --vl-accent: var(--vl-accent-dark);
-  }
-  :where(.vl24-photo-top span:first-child, .vl24-photo-index, .vl43-photo-label,
-    .vl44-entrepreneur-photo span, .vl52-spice-photo span, .vl24-aside-footer) {
+  :where(.vl43-photo-label,
+    .vl44-entrepreneur-photo span, .vl52-spice-photo span) {
     --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
     background: #fff !important;
   }
-  #heroBadge { color: var(--vl-accent-light) !important; }
-  .vl24-photo-top span:last-child { background: #142b43 !important; padding: 9px 12px; border-radius: 4px; }
+  #heroBadge { color: var(--vl-accent) !important; }
   #exploreCategoryGrid b { color: var(--vl-accent-light) !important; }
   #exploreCategoryGrid .text-gray-400 { color: var(--vl-muted-light) !important; }
   :where([class~="bg-emerald-400"], [class~="bg-amber-400"], .bg-gold) {
@@ -135,13 +136,13 @@
   /* Explicit button pairs: the label and its children always use the same foreground. */
   :where(.bg-brandGold, .bg-brand, [class~="bg-orange-500"], [class~="bg-orange-600"],
     [class~="bg-amber-500"], [class~="bg-amber-600"], [class~="bg-sky-600"], .vl38-passport-main, .vl44-entrepreneur-link,
-    .vl26-mission-cta, .vl-v3-primary, .vl-v3-now, .skip-link,
+    .vl26-mission-cta, .vl-welcome-primary, .skip-link,
     #categorias .max-w-7xl > div:first-child > button,
     #mapa .vl-place-actions > button[onclick="openBusinessPageForCurrent()"] ) {
     --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
     background: var(--vl-action) !important;
   }
-  :where(.bg-brandGold, .vl38-passport-main, .vl44-entrepreneur-link, .vl-v3-primary):hover {
+  :where(.bg-brandGold, .vl38-passport-main, .vl44-entrepreneur-link, .vl-welcome-primary):hover {
     background: var(--vl-action-hover) !important;
   }
   :where([class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], .bg-teal, #previewWhatsapp) {

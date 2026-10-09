@@ -268,8 +268,8 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=60">
-<link rel="stylesheet" href="css/public-colors.css?v=58">
+<link rel="stylesheet" href="css/public-layout.css?v=61">
+<link rel="stylesheet" href="css/public-colors.css?v=61">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -540,46 +540,32 @@
 
 
 
-    <!-- Hero Section -->
-    <section id="inicio" data-vl-surface="light" class="relative bg-brandCream text-white py-20 lg:py-32 px-4 overflow-hidden">
-        <div id="heroBgWrapper" class="absolute inset-0 opacity-45 overflow-hidden flex items-center justify-center bg-black">
-            <div class="absolute inset-0 bg-gradient-to-t from-brandDark via-brandDark/40 to-brandDark opacity-90 z-10"></div>
-            <div id="heroSlidesContainer" class="absolute inset-0 w-full h-full"></div>
+    <!-- Visitor welcome: configured photography and direct search -->
+    <section id="inicio" data-vl-surface="light" class="vl-welcome">
+      <div class="vl-welcome-shell">
+        <div class="vl-welcome-copy">
+          <span id="heroBadge" class="vl-welcome-eyebrow" data-i18n="heroBadge">LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA</span>
+          <h1 id="heroTitle" data-i18n="heroTitle">Sabores, <span class="text-brandGold">Historias</span> y Destinos</h1>
+          <p id="heroSubtitle" data-i18n="heroSubtitle">Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.</p>
+          <form class="vl-welcome-search" role="search" aria-labelledby="welcomeSearchLabel" onsubmit="searchFromWelcome(event)">
+            <label id="welcomeSearchLabel" for="welcomeSearch" data-i18n="welcomeSearchLabel">¿Qué quieres descubrir?</label>
+            <div class="vl-welcome-search-row"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="welcomeSearch" type="search" name="q" placeholder="Café, hotel, comida lojana…" data-i18n-placeholder="welcomeSearchPlaceholder" autocomplete="off"><button type="submit" class="vl-welcome-primary"><span data-i18n="welcomeSearchButton">Buscar</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button></div>
+          </form>
+          <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button></div>
         </div>
-        <div class="vl-v3-shell relative z-20 reveal active">
-          <div class="vl-v3-copy">
-            <span id="heroBadge" class="vl-v3-eyebrow" data-i18n="heroBadge">LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA</span>
-            <h1 id="heroTitle" data-i18n="heroTitle">Sabores, <span class="text-brandGold">Historias</span> y Destinos</h1>
-            <p id="heroSubtitle" data-i18n="heroSubtitle">Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.</p>
-            <div class="vl-home-actions vl-v3-actions">
-              <a href="#mapa" class="vl-v3-primary"><i class="fa-solid fa-map-location-dot"></i> <span data-i18n="btnStartRoute">Iniciar la Ruta</span></a>
-              <button type="button" onclick="openSmartRoutePlanner()" class="vl-v3-secondary"><i class="fa-solid fa-route"></i> Planificar mi recorrido</button>
-            </div>
-          </div>
-          <div class="vl-v3-aside vl24-aside">
-            <div data-vl-surface="dark" class="vl24-photo-stage">
-              <img class="vl24-photo-main" src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=85" alt="Paisaje natural para inspirar un recorrido por Loja" loading="eager" decoding="async">
-              <div class="vl24-photo-shade"></div>
-              <div class="vl24-photo-top"><span><i class="fa-solid fa-location-dot"></i> LOJA · ECUADOR</span><span>GUÍA TURÍSTICA INTERACTIVA</span></div>
-              <div class="vl24-photo-bottom"><span>EL SUR TIENE ALGO ESPECIAL</span><strong>Una provincia.<br>Infinitas historias.</strong><a href="#categorias">Descubre dónde ir <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
-              <div class="vl24-photo-index">01 <span>/</span> DESCUBRE</div>
-            </div>
-            <div class="vl24-aside-footer">
-              <div class="vl-v3-brand"><div id="heroLogoFrame" class="vl-v3-logo"><img id="heroLogoImg" src="https://i.imgur.com/mmWzHK4.png?visita-loja-v4" alt="Visita Loja" decoding="async" fetchpriority="high"></div><div><span>BIENVENIDO A</span><strong>VisitaLoja.com</strong></div></div>
-              <button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()" class="vl24-now"><i class="fa-solid fa-compass"></i> ¿Qué hacer ahora? <i class="fa-solid fa-arrow-right"></i></button>
-            </div>
-          </div>
+        <div class="vl-welcome-visual">
+          <div id="heroBgWrapper"><div aria-hidden="true"></div><div id="heroSlidesContainer"><img class="hero-slide active-slide" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="" decoding="async" fetchpriority="high"></div></div>
+          <div class="vl-welcome-photo-top"><span class="vl-welcome-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> LOJA · ECUADOR</span><div id="heroLogoFrame"><img id="heroLogoImg" src="https://i.imgur.com/mmWzHK4.png?visita-loja-v4" alt="Visita Loja" decoding="async"></div></div>
+          <div class="vl-welcome-photo-caption" data-vl-surface="dark"><span data-i18n="welcomePhotoKicker">TU PRÓXIMA HISTORIA EMPIEZA AQUÍ</span><strong data-i18n="welcomePhotoTitle">Loja, a tu ritmo.</strong><button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()"><span data-i18n="welcomeNow">¿Qué hacer ahora?</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></button></div>
         </div>
+      </div>
     </section>
-
-
-    <!-- V41: prominent visitor entry points to reduce long-page navigation -->
-    <nav class="vl41-quicknav" aria-label="Accesos rápidos a VisitaLoja">
-      <div class="vl41-quicknav-inner">
-        <a href="#establecimientos" class="vl41-quicklink"><span class="vl41-quick-icon"><i class="fa-solid fa-utensils"></i></span><span><strong>Dónde comer y alojarse</strong><small>Explora establecimientos</small></span><i class="fa-solid fa-arrow-up-right-from-square vl41-arrow"></i></a>
-        <a href="#mapa" class="vl41-quicklink"><span class="vl41-quick-icon"><i class="fa-solid fa-map-location-dot"></i></span><span><strong>Explorar el mapa</strong><small>Encuentra lugares en Loja</small></span><i class="fa-solid fa-arrow-up-right-from-square vl41-arrow"></i></a>
-        <a href="#pasaporte" class="vl41-quicklink"><span class="vl41-quick-icon"><i class="fa-solid fa-passport"></i></span><span><strong>Pasaporte de Paradas</strong><small>Colecciona tus visitas</small></span><i class="fa-solid fa-arrow-up-right-from-square vl41-arrow"></i></a>
-        <a href="#agenda" class="vl41-quicklink"><span class="vl41-quick-icon"><i class="fa-solid fa-calendar-days"></i></span><span><strong>Agenda y eventos</strong><small>Descubre qué hacer</small></span><i class="fa-solid fa-arrow-up-right-from-square vl41-arrow"></i></a>
+    <nav class="vl-discovery-nav" aria-label="Accesos rápidos a VisitaLoja">
+      <div class="vl-discovery-inner">
+        <a href="#establecimientos"><span class="vl-discovery-icon"><i class="fa-solid fa-utensils" aria-hidden="true"></i></span><span><strong data-i18n="welcomePlaces">Comer y alojarse</strong><small data-i18n="welcomePlacesHelp">Encuentra tu próxima parada</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        <a href="#pasaporte"><span class="vl-discovery-icon"><i class="fa-solid fa-passport" aria-hidden="true"></i></span><span><strong data-i18n="welcomePassport">Tu pasaporte</strong><small data-i18n="welcomePassportHelp">Colecciona experiencias</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        <a href="#misiones"><span class="vl-discovery-icon"><i class="fa-solid fa-compass" aria-hidden="true"></i></span><span><strong data-i18n="welcomeMissions">Con Chabaquito</strong><small data-i18n="welcomeMissionsHelp">Descubre y cumple misiones</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        <a href="#agenda"><span class="vl-discovery-icon"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i></span><span><strong data-i18n="welcomeAgenda">Agenda cultural</strong><small data-i18n="welcomeAgendaHelp">Planea tu próxima salida</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
       </div>
     </nav>
     <!-- World Tourism Day 2026 -->
@@ -1433,6 +1419,10 @@
                 <div class="mt-3"><p class="text-[10px] uppercase tracking-[0.18em] font-black text-gray-400 mb-2">Síguenos</p><div class="flex flex-wrap justify-center md:justify-end gap-2" aria-label="Redes sociales oficiales de Visita Loja"><a id="footerWhatsapp" href="https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Visita%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n." target="_blank" rel="noopener noreferrer" aria-label="Contáctanos por WhatsApp" title="WhatsApp" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-green-600 hover:text-white transition flex items-center justify-center text-base"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a><a href="https://www.youtube.com/@VisitaLoja" target="_blank" rel="noopener noreferrer" aria-label="Visita Loja en YouTube" title="YouTube" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-red-600 hover:text-white hover:border-red-600 transition flex items-center justify-center text-base"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a><a href="https://www.tiktok.com/@visitaloja.com" target="_blank" rel="noopener noreferrer" aria-label="Visita Loja en TikTok" title="TikTok" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-white hover:text-black hover:border-white transition flex items-center justify-center text-base"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a><a href="https://www.instagram.com/visitaloja.oficial/" target="_blank" rel="noopener noreferrer" aria-label="Visita Loja en Instagram" title="Instagram" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-pink-600 hover:text-white hover:border-pink-600 transition flex items-center justify-center text-base"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><a href="https://www.facebook.com/visitalojaoficial/" target="_blank" rel="noopener noreferrer" aria-label="Visita Loja en Facebook" title="Facebook" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition flex items-center justify-center text-base"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a></div></div><div class="mt-3 flex flex-wrap justify-center md:justify-end gap-3"><a href="/privacidad.html" class="hover:text-brandGold underline">Privacidad</a><a href="/terminos.html" class="hover:text-brandGold underline">Términos de uso</a></div>
             </div>
         </div>
+        <div class="vl-footer-contact">
+          <div><strong data-i18n="footerContactTitle">Hablemos de Loja</strong><p data-i18n="footerContactHelp">Consultas, alianzas y asistencia sobre la plataforma.</p></div>
+          <a href="mailto:contacto@visitaloja.com?subject=Contacto%20desde%20Visita%20Loja"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span>contacto@visitaloja.com</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+        </div>
     </footer>
 
     <!-- Mascota animada de Visita Loja -->
@@ -2202,6 +2192,25 @@
     <script>
         const translations = {
             es: {
+                footerContactTitle: 'Hablemos de Loja',
+                footerContactHelp: 'Consultas, alianzas y asistencia sobre la plataforma.',
+                welcomeSearchLabel: '¿Qué quieres descubrir?',
+                welcomeSearchPlaceholder: 'Café, hotel, comida lojana…',
+                welcomeSearchButton: 'Buscar',
+                welcomeMap: 'Explorar el mapa',
+                welcomeRoute: 'Planificar mi recorrido',
+                welcomePhotoKicker: 'TU PRÓXIMA HISTORIA EMPIEZA AQUÍ',
+                welcomePhotoTitle: 'Loja, a tu ritmo.',
+                welcomeNow: '¿Qué hacer ahora?',
+                welcomePlaces: 'Comer y alojarse',
+                welcomePlacesHelp: 'Encuentra tu próxima parada',
+                welcomePassport: 'Tu pasaporte',
+                welcomePassportHelp: 'Colecciona experiencias',
+                welcomeMissions: 'Con Chabaquito',
+                welcomeMissionsHelp: 'Descubre y cumple misiones',
+                welcomeAgenda: 'Agenda cultural',
+                welcomeAgendaHelp: 'Planea tu próxima salida',
+
                 splashText: "✨ Preparando los mejores sabores de Loja para ti...",
                 topInit: '<i class="fa-solid fa-star text-brandGold mr-1"></i> Una iniciativa de Dínamo Studio & Codeproim',
                 topMesa: '<i class="fa-solid fa-landmark-flag mr-1"></i> Mesa Turística de Loja | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Patrocinan: ILE y Nettplus',
@@ -2329,6 +2338,25 @@
                 adminPinBtn: "Ingresar al Panel"
             },
             en: {
+                footerContactTitle: "Let's talk about Loja",
+                footerContactHelp: 'Questions, partnerships and platform support.',
+                welcomeSearchLabel: 'What would you like to discover?',
+                welcomeSearchPlaceholder: 'Coffee, hotels, local food…',
+                welcomeSearchButton: 'Search',
+                welcomeMap: 'Explore the map',
+                welcomeRoute: 'Plan my route',
+                welcomePhotoKicker: 'YOUR NEXT STORY STARTS HERE',
+                welcomePhotoTitle: 'Loja, at your own pace.',
+                welcomeNow: 'What can I do now?',
+                welcomePlaces: 'Eat and stay',
+                welcomePlacesHelp: 'Find your next stop',
+                welcomePassport: 'Your passport',
+                welcomePassportHelp: 'Collect experiences',
+                welcomeMissions: 'With Chabaquito',
+                welcomeMissionsHelp: 'Discover and complete missions',
+                welcomeAgenda: 'Cultural calendar',
+                welcomeAgendaHelp: 'Plan your next outing',
+
                 splashText: "✨ Preparing the best flavors of Loja for you...",
                 topInit: '<i class="fa-solid fa-star text-brandGold mr-1"></i> An initiative by Dínamo Studio & Codeproim',
                 topMesa: '<i class="fa-solid fa-landmark-flag mr-1"></i> Endorsed by Loja Municipality & Tourism Board | <i class="fa-solid fa-leaf ml-2 mr-1"></i> Sponsored by: ILE and Nettplus',
@@ -6903,6 +6931,11 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             initTimeSliderEvents();
             initChabaquitoMissions();
             initWebMascot();
+            // Keep footer contact and social links clear of fixed invitations.
+            const footer = document.querySelector('body > footer');
+            if (footer && 'IntersectionObserver' in window) {
+                new IntersectionObserver(([entry]) => document.body.classList.toggle('vl-footer-visible', entry.isIntersecting)).observe(footer);
+            }
             initPostcardCanvasDragging();
             changeLanguage(currentLang);
             const arrivingFromQr = new URLSearchParams(window.location.search).has('checkin');
@@ -6947,6 +6980,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const allButton = document.querySelector('.filter-btn[onclick*="\'all\'"]');
             filterItems('all', allButton);
             updateClearFiltersButton(false);
+        }
+
+        function searchFromWelcome(event) {
+            event.preventDefault();
+            const query = document.getElementById('welcomeSearch').value.trim();
+            runSmartSearch(query);
+            document.getElementById('establecimientos').scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
         }
 
         function runSmartSearch(query){const input=document.getElementById('searchInput');if(input){input.value=query;searchItems();input.focus();}}
@@ -7891,25 +7931,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             }
         })();
     </script>
-    <section aria-label="Contacto de Visita Loja" class="bg-brandDark text-white border-t border-white/10 px-4 py-5">
-                <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-            <div>
-                <p class="font-black text-sm">¿Necesitas comunicarte con Visita Loja?</p>
-                <p class="text-xs text-white/70">Consultas, alianzas y asistencia sobre la plataforma.</p>
-                                <div class="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2" aria-label="Redes sociales de Visita Loja">
-                    <span class="text-[10px] uppercase tracking-widest text-white/50 mr-1">Síguenos próximamente</span>
-                    <span role="img" aria-label="Facebook: enlace pendiente" title="Facebook · Enlace pendiente" class="w-9 h-9 rounded-full border border-white/15 bg-white/5 text-white/80 inline-flex items-center justify-center"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></span>
-                    <span role="img" aria-label="YouTube: enlace pendiente" title="YouTube · Enlace pendiente" class="w-9 h-9 rounded-full border border-white/15 bg-white/5 text-white/80 inline-flex items-center justify-center"><i class="fa-brands fa-youtube" aria-hidden="true"></i></span>
-                    <span role="img" aria-label="TikTok: enlace pendiente" title="TikTok · Enlace pendiente" class="w-9 h-9 rounded-full border border-white/15 bg-white/5 text-white/80 inline-flex items-center justify-center"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></span>
-                    <span role="img" aria-label="Instagram: enlace pendiente" title="Instagram · Enlace pendiente" class="w-9 h-9 rounded-full border border-white/15 bg-white/5 text-white/80 inline-flex items-center justify-center"><i class="fa-brands fa-instagram" aria-hidden="true"></i></span>
-                </div>
-            </div>
-            <a href="mailto:contacto@visitaloja.com?subject=Contacto%20desde%20Visita%20Loja" class="inline-flex items-center gap-2 rounded-full bg-brandGold text-brandDark px-5 py-2.5 text-sm font-black shadow-lg hover:brightness-110 transition" aria-label="Enviar un correo a Visita Loja">
-                <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-                Contactar
-            </a>
-        </div>
-    </section>
+
 
 <script>
 /* Sincroniza el contador móvil de Mi Ruta con el contador existente, sin duplicar la lógica de rutas. */
