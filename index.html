@@ -1006,6 +1006,29 @@ nav.glass-nav.sticky #mobileMenu .grid>a{padding:14px!important}
 @media(max-width:980px){nav.glass-nav.sticky .vl28-primary-links{display:none}nav.glass-nav.sticky .vl28-nav-actions{margin-left:auto}}
 @media(max-width:580px){nav.glass-nav.sticky{padding:11px 15px!important}nav.glass-nav.sticky .vl28-route-button{padding:11px 13px;font-size:0}nav.glass-nav.sticky .vl28-route-button i{font-size:17px}nav.glass-nav.sticky .vl28-menu-caption{display:none}nav.glass-nav.sticky #brandNameText{font-size:13px!important}nav.glass-nav.sticky #mobileMenu{padding:12px!important}}
 </style>
+
+<style id="visitaloja-dropdown-navigation-v29">
+nav.glass-nav.sticky{z-index:1000!important}
+nav.glass-nav.sticky>.max-w-\[1500px\]{max-width:1450px!important;width:100%!important}
+nav.glass-nav.sticky .vl28-primary-links{gap:clamp(12px,1.5vw,28px)!important;flex-shrink:0}
+nav.glass-nav.sticky .vl29-nav-group{position:relative}
+nav.glass-nav.sticky .vl29-nav-group>button{display:flex;align-items:center;gap:8px;color:#f0f3ee;font-size:12px;font-weight:750;padding:12px 2px;white-space:nowrap}
+nav.glass-nav.sticky .vl29-nav-group>button i{font-size:9px;color:#e5b477;transition:transform .2s}
+nav.glass-nav.sticky .vl29-nav-group>button[aria-expanded="true"] i{transform:rotate(180deg)}
+nav.glass-nav.sticky .vl29-nav-group>button:hover{color:#f0bc7b}
+nav.glass-nav.sticky .vl29-dropdown{position:absolute;right:-15px;top:calc(100% + 8px);min-width:245px;background:#fffdf8;border:1px solid #e3e7df;border-radius:10px;box-shadow:0 25px 55px rgba(0,0,0,.22);padding:9px;display:flex;flex-direction:column;gap:2px;z-index:1100}
+nav.glass-nav.sticky .vl29-dropdown[hidden]{display:none!important}
+nav.glass-nav.sticky .vl29-dropdown a,nav.glass-nav.sticky .vl29-dropdown button{display:block;text-align:left;color:#203b32;font-size:13px;font-weight:650;padding:12px 13px;border-radius:6px;white-space:nowrap;width:100%}
+nav.glass-nav.sticky .vl29-dropdown a:hover,nav.glass-nav.sticky .vl29-dropdown button:hover{background:#e9f0e8;color:#0e3025}
+nav.glass-nav.sticky .vl29-account{display:flex;align-items:center;gap:8px;padding:11px 12px;border:1px solid rgba(255,255,255,.28);border-radius:7px;color:white;font-size:12px;font-weight:800;white-space:nowrap}
+nav.glass-nav.sticky .vl29-account:hover{background:rgba(255,255,255,.12)}
+nav.glass-nav.sticky #mobileMenuButton{display:flex!important}
+nav.glass-nav.sticky #mobileMenu{position:absolute;top:100%;right:clamp(14px,3vw,60px);width:min(580px,calc(100vw - 28px));margin-top:0!important}
+nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
+@media(max-width:1200px){nav.glass-nav.sticky .vl29-account span{display:none}nav.glass-nav.sticky .vl28-primary-links{gap:12px!important}}
+@media(max-width:980px){nav.glass-nav.sticky .vl28-nav-actions{margin-left:auto!important}}
+@media(max-width:580px){nav.glass-nav.sticky .vl29-account{padding:11px}nav.glass-nav.sticky .vl28-route-button{font-size:0!important}nav.glass-nav.sticky .vl28-route-button i{font-size:17px!important}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1093,16 +1116,13 @@ nav.glass-nav.sticky #mobileMenu .grid>a{padding:14px!important}
             </div>
 
             <!-- Editorial primary navigation: full catalogue remains available in menu -->
-            <div class="vl28-primary-links" aria-label="Exploración principal">
-                <a href="#categorias">Descubrir</a>
-                <a href="#mapa">Mapa interactivo</a>
-                <a href="#establecimientos">Lugares</a>
-                <a href="#misiones">Experiencias</a>
+            <div class="vl28-primary-links" aria-label="Navegación principal">
+              <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-discover" onclick="vl29ToggleMenu(this)"><span>Descubrir</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-discover" class="vl29-dropdown" hidden><a href="#categorias">Categorías turísticas</a><a href="#mapa">Mapa interactivo</a><a href="#establecimientos">Lugares y negocios</a><a href="#emprendedores">Emprendedores</a></div></div>
+              <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-experiences" onclick="vl29ToggleMenu(this)"><span>Experiencias</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-experiences" class="vl29-dropdown" hidden><a href="#misiones">Misiones de Chabaquito</a><a href="#pasaporte">Pasaporte turístico</a><a href="#loja-tiempo">Loja en el Tiempo</a><a href="#postales">Postales</a></div></div>
+              <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-events" onclick="vl29ToggleMenu(this)"><span>Eventos</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-events" class="vl29-dropdown" hidden><a href="#agenda">Agenda turística</a><a href="#fiavl">Festival FIAVL</a></div></div>
+              <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-more" onclick="vl29ToggleMenu(this)"><span>Más</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-more" class="vl29-dropdown" hidden><a href="tienda.html">Tienda</a><a href="sumar-negocio.html">Sumar mi negocio</a><button type="button" onclick="vl29CloseMenus();openAccountModal()">Ingresar / Mi cuenta</button></div></div>
             </div>
-            <div class="vl28-nav-actions">
-                <button type="button" class="vl28-route-button" onclick="openModal('itineraryModal')"><i class="fa-solid fa-route"></i> Mi ruta</button>
-                <span class="vl28-menu-caption">MENÚ</span>
-            </div>
+            <div class="vl28-nav-actions"><button type="button" class="vl28-route-button" onclick="openModal('itineraryModal')"><i class="fa-solid fa-route"></i> Mi ruta</button><button type="button" class="vl29-account" onclick="openAccountModal()" aria-label="Ingresar o abrir mi cuenta"><i class="fa-solid fa-circle-user"></i><span>Ingresar</span></button></div>
             <!-- Hamburger Button for Mobile / Tablet -->
             <button id="mobileMenuButton" type="button" onclick="toggleMobileMenu()" class="2xl:hidden text-white text-xl p-2 relative" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
                 <i class="fa-solid fa-bars"></i>
@@ -8723,5 +8743,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
     <script src="js/chabaquito-runtime-config.js" defer></script>
     <script src="js/chabaquito-public-v2.js" defer></script>
     <script src="js/mobile-ui.js" defer></script>
+
+<script id="visitaloja-dropdown-navigation-js-v29">
+function vl29CloseMenus(){document.querySelectorAll('.vl29-nav-group>button[aria-expanded="true"]').forEach(function(b){b.setAttribute('aria-expanded','false');var p=document.getElementById(b.getAttribute('aria-controls'));if(p)p.hidden=true;});}
+function vl29ToggleMenu(button){var wasOpen=button.getAttribute('aria-expanded')==='true';vl29CloseMenus();if(!wasOpen){button.setAttribute('aria-expanded','true');var p=document.getElementById(button.getAttribute('aria-controls'));if(p)p.hidden=false;}}
+document.addEventListener('click',function(e){if(e.target.closest('.vl29-dropdown a'))vl29CloseMenus();else if(!e.target.closest('.vl29-nav-group'))vl29CloseMenus();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMenus();});
+</script>
 </body>
 </html>
