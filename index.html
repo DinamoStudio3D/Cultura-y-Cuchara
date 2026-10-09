@@ -860,6 +860,11 @@
 #establecimientos #localesGrid>.local-item>.vl17-media>div.absolute.top-3>span{display:inline-flex;align-items:center;min-height:24px;font-size:9px!important;line-height:1.25!important;padding:5px 8px!important;border-radius:9px!important;box-shadow:0 2px 8px rgba(0,0,0,.13)!important}
 }
 </style>
+
+<style id="visitaloja-card-accessibility-v22">
+#establecimientos #localesGrid>.local-item:focus-visible{outline:3px solid #ea580c!important;outline-offset:4px!important}
+#establecimientos #localesGrid>.local-item .vl18-quicklinks>a:focus-visible,#establecimientos #localesGrid>.local-item .vl18-quicklinks>button:focus-visible,#establecimientos #localesGrid>.local-item .vl18-favorite:focus-visible{outline:3px solid #ea580c!important;outline-offset:3px!important}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -5072,7 +5077,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             topTrending.forEach((loc,index)=>{
                 const realIndex=locations.findIndex(l=>l.id===loc.id),medalIcon=index===0?"🥇":index===1?"🥈":"🥉";
                 const locTitle=(currentLang==='en'&&loc.titleEn)?loc.titleEn:loc.title,locTag=(currentLang==='en'&&loc.tagEn)?loc.tagEn:loc.tag,locDesc=(currentLang==='en'&&loc.descEn)?loc.descEn:loc.desc;
-                container.innerHTML+=`<div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})"><div class="h-48 md:h-52 overflow-hidden relative"><img src="${loc.gallery&&loc.gallery[0]?loc.gallery[0].img:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async"><span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index+1} EN RUTA</span></div><div class="p-5"><span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${locTag}</span><h3 class="text-base sm:text-lg font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${locTitle}</h3><p class="text-gray-600 text-xs sm:text-sm line-clamp-2">${locDesc}</p></div></div>`;
+                container.innerHTML+=`<div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})"><div class="h-48 md:h-52 overflow-hidden relative"><img src="${loc.gallery&&loc.gallery[0]?loc.gallery[0].img:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="Fotografía de ${locTitle}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async"><span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index+1} EN RUTA</span></div><div class="p-5"><span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${locTag}</span><h3 class="text-base sm:text-lg font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${locTitle}</h3><p class="text-gray-600 text-xs sm:text-sm line-clamp-2">${locDesc}</p></div></div>`;
             });
         }
 
@@ -5199,7 +5204,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
                 grid.innerHTML += `
-                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-location-id="${loc.id}" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="button" tabindex="0" aria-label="Ver detalles de ${locTitle}" data-location-id="${loc.id}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
