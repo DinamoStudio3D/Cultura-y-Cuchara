@@ -114,6 +114,7 @@
 <button data-nav-item id="analyticsNavBtn" type="button" onclick="showAdminModule('analytics')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-chart-line w-6"></i>Estadísticas generales</button>
 </div></div>
 <div class="nav-group"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="true"><span>Negocios</span><i class="fa-solid fa-chevron-down"></i></button><div class="nav-items">
+<button data-nav-item id="cantonEditorNavBtn" type="button" onclick="showAdminModule('cantonEditor')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-map w-6"></i>Gestión de cantones</button>
 <button data-nav-item id="placesNavBtn" type="button" onclick="showAdminModule('places')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-location-dot w-6"></i>Paradas y negocios</button>
 <button data-nav-item id="applicationsNavBtn" type="button" onclick="showAdminModule('applications')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-inbox w-6"></i>Solicitudes nuevas <span id="applicationsNavCount" class="hidden float-right bg-rose-500 text-white text-[10px] rounded-full min-w-5 h-5 px-1.5 items-center justify-center">0</span></button>
 <button data-nav-item id="subscriptionsNavBtn" type="button" onclick="showAdminModule('subscriptions')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-handshake w-6"></i>Planes, pagos y vencimientos</button>
@@ -429,7 +430,21 @@
                     <div id="applicationsMessage" class="hidden text-sm rounded-xl p-3 mb-4" role="alert"></div><div id="applicationsList" class="space-y-4"><p class="text-gray-500 text-sm">Cargando solicitudes…</p></div>
                 </section>
 
-                <section id="placesModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                <section id="cantonEditorModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2"><h2 class="text-2xl font-black">Gestión de los 16 cantones</h2><p class="text-sm text-gray-400 mt-2 mb-5">Selecciona un cantón para configurar su información turística. Se guarda como borrador privado, sin modificar las guías públicas.</p><div id="cantonEditorGrid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3 mb-6"></div><form id="cantonEditorForm" class="hidden space-y-4 border border-cyan-500/30 rounded-xl p-5"><h3 id="cantonEditorHeading" class="text-xl font-black"></h3><div class="grid md:grid-cols-2 gap-4"><label class="block text-sm font-semibold">Nombre turístico<input id="cantonField_title" type="text" class="field mt-2"></label>
+<label class="block text-sm font-semibold">Eslogan del cantón<input id="cantonField_subtitle" type="text" class="field mt-2"></label>
+<label class="block text-sm font-semibold">Descripción general<textarea id="cantonField_description" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">Historia<textarea id="cantonField_history" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">Cultura y tradiciones<textarea id="cantonField_culture" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">Gastronomía<textarea id="cantonField_gastronomy" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">Cómo llegar y movilidad<textarea id="cantonField_transport" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">URL de portada<input id="cantonField_coverImage" type="url" class="field mt-2"></label>
+<label class="block text-sm font-semibold">URLs de galería (una por línea)<textarea id="cantonField_gallery" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">Parroquias (una por línea)<textarea id="cantonField_parishes" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">Atractivos destacados (uno por línea)<textarea id="cantonField_attractions" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">Título SEO<input id="cantonField_seoTitle" type="text" class="field mt-2"></label>
+<label class="block text-sm font-semibold">Descripción SEO<textarea id="cantonField_seoDescription" class="field mt-2" rows="3"></textarea></label>
+<label class="block text-sm font-semibold">Palabras clave (una por línea)<textarea id="cantonField_keywords" class="field mt-2" rows="3"></textarea></label></div><p id="cantonEditorNotice" class="text-amber-200 text-sm" role="status"></p><button id="cantonEditorSave" type="submit" class="bg-cyan-500 text-black font-black px-5 py-3 rounded-xl">Guardar borrador del cantón</button></form></section>
+<section id="placesModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                         <div><p class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Módulo 3</p><h2 class="text-2xl font-black mt-1">Paradas</h2><p class="text-sm text-gray-400 mt-1">Administra los negocios, atractivos, puntos del mapa y sus fichas públicas.</p></div>
                         <button id="newPlaceBtn" type="button" onclick="resetPlaceForm()" class="bg-cyan-500 hover:bg-cyan-400 text-black rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nueva parada</button>
@@ -1252,7 +1267,7 @@ function showAdminModule(moduleName) {
     if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
-    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'chabaquitoMissions', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'cantonEditor', 'places', 'events', 'stories', 'chabaquito', 'chabaquitoMissions', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('dashboardNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 ${moduleName === 'dashboard' ? 'bg-indigo-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('auditNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'audit' ? 'bg-rose-500 text-white' : 'text-gray-300 hover:bg-white/5'}`;
     document.getElementById('adminsNavBtn').className = `w-full text-left font-bold rounded-xl px-4 py-3 mt-2 ${moduleName === 'admins' ? 'bg-cyan-500 text-black' : 'text-gray-300 hover:bg-white/5'}`;
@@ -2767,5 +2782,6 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
     finally{button.disabled=false;}
 });
 </script>
+<script src="js/admin-canton-editor.js"></script>
 </body>
 </html>
