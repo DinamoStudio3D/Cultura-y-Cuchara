@@ -712,6 +712,23 @@
 }
 @media(max-width:1023px){#mapa>div.grid{gap:14px!important}#mapa #mapPreviewCard{box-shadow:0 12px 34px rgba(18,29,38,.1)!important}}
 </style>
+
+<style id="visitaloja-map-actions-v13">
+/* Jerarquía clara para la ficha del mapa; todos los botones originales conservan sus eventos. */
+#mapa .vl-place-actions{display:flex!important;flex-direction:column!important;gap:10px!important;border-top:0!important;padding-top:0!important}
+#mapa .vl-place-actions-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;padding-bottom:12px;border-bottom:1px solid #e7e9ec;margin-bottom:4px}
+#mapa .vl-place-actions-head span{font-weight:900;font-size:16px;color:#18232a}#mapa .vl-place-actions-head span i{color:#ea580c;margin-right:8px}#mapa .vl-place-actions-head small{font-size:11px;color:#74808c}
+#mapa .vl-place-actions>button,#mapa .vl-place-actions>a{min-height:43px!important;box-shadow:none!important;border-radius:12px!important;font-size:12px!important;transition:background .2s,transform .2s}
+#mapa .vl-place-actions>button:hover{transform:translateY(-1px)}
+#mapa .vl-place-actions>button[onclick="openBusinessPageForCurrent()"]{order:-3;background:#ea580c!important;color:white!important;border-color:#ea580c!important;min-height:54px!important;font-size:14px!important;font-weight:900!important}
+#mapa .vl-place-actions>div:last-child{order:-2;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#mapa .vl-place-actions #previewGps{background:#17222c!important;color:white!important}
+#mapa .vl-place-actions #previewWhatsapp{background:#16a34a!important;color:white!important}
+#mapa .vl-place-actions #previewAudioGuideBtn{background:#fff7ed!important;color:#9a3412!important;border-color:#fed7aa!important}
+#mapa .vl-place-actions #previewStampButton{background:#fff7ed!important;color:#9a3412!important;border:1px solid #fed7aa!important}
+@media(min-width:1024px){#mapa #mapPreviewCard>div.vl-place-actions:last-of-type{display:flex!important;flex-direction:column!important;gap:10px!important;padding:8px 0 8px 30px!important}#mapa .vl-place-actions>div:last-child{order:-2}}
+@media(max-width:600px){#mapa .vl-place-actions-head{align-items:flex-start;flex-direction:column}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1251,7 +1268,8 @@
                     </div><div id="previewBusinessProfile" class="hidden mt-3 pt-3 border-t border-gray-100"></div>
                 </div>
 
-                <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
+                <div class="vl-place-actions pt-3 border-t border-gray-100 flex flex-col gap-2">
+                    <div class="vl-place-actions-head"><span><i class="fa-solid fa-compass"></i> Explora este lugar</span><small>Elige cómo continuar tu visita</small></div>
                     <button id="previewAudioGuideBtn" type="button" onclick="toggleLocationAudioGuide()" class="w-full bg-brandGold/10 text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-brandGold hover:text-white transition border border-brandGold/40 flex items-center justify-center gap-2" aria-label="Escuchar audioguía del lugar seleccionado">
                         <i class="fa-solid fa-volume-high"></i> <span id="previewAudioGuideLabel">Escuchar audioguía</span>
                     </button>
