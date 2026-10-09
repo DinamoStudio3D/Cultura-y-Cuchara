@@ -3604,7 +3604,9 @@
             const next = saved.includes(eventId) ? saved.filter(id => id !== eventId) : [...saved, eventId];
             localStorage.setItem(key, JSON.stringify(next));
             renderFestivalAgenda();
-            renderAgendaUI();\n            renderUpcomingEventGallery();\n            checkLiveEventsBanner();
+            renderAgendaUI();
+            renderUpcomingEventGallery();
+            checkLiveEventsBanner();
             renderVisitorExperience();
             showToast(next.includes(eventId)?(currentLang==='en'?'Activity saved to your agenda':'Actividad guardada en tu agenda'):(currentLang==='en'?'Activity removed from your agenda':'Actividad retirada de tu agenda'));
         }
