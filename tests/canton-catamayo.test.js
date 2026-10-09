@@ -26,3 +26,14 @@ test("Render seguro y sin enlaces falsos de filtros",()=>{
  const malicious=guide.render([{id:"test",title:"<script>alert(1)<\/script>",category:"hotel"}]);
  assert.doesNotMatch(malicious,/<h3><script>/);
 });
+
+test("Categorías usadas por el administrador",()=>{
+ assert.equal(guide.type({category:"urbana"}),"Gastronomía");
+ assert.equal(guide.type({category:"hueca"}),"Gastronomía");
+ assert.equal(guide.type({category:"hotel"}),"Alojamiento");
+ assert.equal(guide.type({category:"cafe"}),"Cafeterías");
+});
+test("Imagen principal de galería como alternativa",()=>{
+ const page=guide.render([{id:"prueba",title:"Parada con galería",category:"hotel",gallery:[{img:"https://example.com/foto.jpg"}]}]);
+ assert.match(page,/https:\/\/example.com\/foto.jpg/);
+});
