@@ -963,7 +963,7 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 .vl-entrepreneur-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); }
 .vl-enterprise-card { display:flex; flex-direction:column; border:1px solid #e1e9f1; box-shadow:0 8px 24px rgba(19,44,72,.06); }
 .vl-enterprise-photo { position:relative; height:230px; overflow:hidden; background:#e8eef3; }
-.vl-enterprise-photo img { width:100%; height:100%; object-fit:cover; }
+.vl-enterprise-photo img { width:100%!important; height:100%!important; object-fit:cover; }
 .vl-enterprise-placeholder { display:none; }
 .vl-enterprise-photo.is-unavailable .vl-enterprise-placeholder { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; font-weight:800; }
 .vl-enterprise-placeholder i { font-size:48px; }
