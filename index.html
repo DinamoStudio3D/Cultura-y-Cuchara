@@ -679,6 +679,8 @@
 .vl-route-strip{background:#f7f6f3;border-top:1px solid #e6e1d8;border-bottom:1px solid #e6e1d8;padding:27px 24px;color:#18232a}.vl-route-strip-inner{max-width:1240px;margin:auto;display:flex;align-items:center;gap:22px}.vl-route-strip-intro{display:flex;align-items:center;gap:13px;flex:0 0 280px}.vl-route-strip-icon{display:grid;place-items:center;width:47px;height:47px;border-radius:15px;background:#ffead8;color:#ea580c;font-size:19px;flex:none}.vl-route-strip-intro h3{font-size:16px;line-height:1.25;font-weight:900}.vl-route-strip-intro p{font-size:12px;color:#66727c;margin-top:5px;line-height:1.45}.vl-route-strip-list{display:flex;align-items:center;gap:9px;overflow-x:auto;flex:1;min-width:0;padding:7px 2px}.vl-route-strip-list>*{flex-shrink:0}.vl-route-strip-map{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 16px;border-radius:13px;background:#17222c;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;transition:background .2s}.vl-route-strip-map:hover{background:#ea580c}.vl-route-strip a:focus-visible,.vl-route-strip button:focus-visible{outline:3px solid #ea580c;outline-offset:3px}
 @media(max-width:1000px){.vl-route-strip-inner{flex-wrap:wrap}.vl-route-strip-intro{flex:1 1 100%}.vl-route-strip-list{flex:1 1 60%}}@media(max-width:600px){.vl-route-strip{padding:22px 16px}.vl-route-strip-inner{gap:12px}.vl-route-strip-list{flex:1 1 100%;order:3}.vl-route-strip-map{margin-left:auto}.vl-route-strip-intro{flex:1 1 65%}.vl-route-strip-icon{width:42px;height:42px}}
 </style>
+
+<style id="visitaloja-hide-duplicate-routes-v10">#experiencias-sugeridas{display:none!important}</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1140,7 +1142,7 @@
     </section>
 
     <!-- Suggested Routes: puente visual entre categorías y mapa -->
-    <section id="experiencias-sugeridas" class="vl-route-strip reveal" aria-label="Experiencias sugeridas">
+    <section id="experiencias-sugeridas" class="vl-route-strip reveal" aria-label="Experiencias sugeridas" hidden aria-hidden="true">
         <div class="vl-route-strip-inner">
             <div class="vl-route-strip-intro">
                 <span class="vl-route-strip-icon"><i class="fa-solid fa-route" aria-hidden="true"></i></span>
