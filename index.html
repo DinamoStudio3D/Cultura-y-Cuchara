@@ -937,6 +937,27 @@ footer>.max-w-7xl{max-width:1390px!important}
 footer a:hover{color:#f4bf78!important}
 @media(max-width:768px){#categorias,#mapa,#establecimientos{padding-top:66px!important;padding-bottom:66px!important}#exploreCategoryGrid{gap:12px!important}#mapa>div:first-child{text-align:left!important}#mapa h2,#categorias h2,#establecimientos h2{font-size:clamp(35px,9vw,48px)!important}}
 </style>
+
+<style id="visitaloja-missions-editorial-v26">
+#misiones.vl26-missions{background:#f7f4ee!important;padding:0 0 80px!important;overflow:hidden}
+#misiones .vl26-mission-intro{max-width:1390px;margin:auto;padding:95px clamp(20px,4vw,64px) 50px;display:grid;grid-template-columns:1fr .9fr;gap:clamp(28px,5vw,75px);align-items:center}
+#misiones .vl26-overline{font-size:11px;font-weight:900;letter-spacing:.2em;color:#9d6735;display:inline-flex;align-items:center;gap:10px}
+#misiones .vl26-mission-copy h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(44px,5.2vw,78px);line-height:1.03;letter-spacing:-.055em;color:#172c27;font-weight:500;margin:25px 0}
+#misiones .vl26-mission-copy h2 em{font-weight:400;color:#b6783b}
+#misiones .vl26-mission-copy p{font-size:16px;line-height:1.8;color:#62716a;max-width:540px}
+#misiones .vl26-mission-cta{margin-top:27px;display:inline-flex;align-items:center;gap:18px;padding:16px 23px;background:#193c33;color:white;border-radius:7px;font-size:13px;font-weight:800}
+#misiones .vl26-mission-cta:hover{background:#275b4a}
+#misiones .vl26-mission-art{position:relative;min-height:350px;overflow:hidden;border-radius:12px;background:radial-gradient(circle at 65% 32%,#467963,#153c31 64%,#0c251f);color:#fff;padding:28px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 22px 60px rgba(18,54,39,.17)}
+#misiones .vl26-mission-art:before{content:"";position:absolute;inset:-70px;border:1px solid rgba(255,255,255,.08);border-radius:50%;transform:translate(26%,10%);pointer-events:none}
+#misiones .vl26-mission-art-label{font-size:10px;font-weight:900;letter-spacing:.22em;color:#e5c18c;position:relative;z-index:1}
+#misiones .vl26-mission-orbit{position:absolute;inset:30px;display:flex;align-items:center;justify-content:center;gap:38px;color:#efbe79;font-size:clamp(36px,5vw,70px);opacity:.72;transform:rotate(-10deg)}
+#misiones .vl26-mission-orbit i:nth-child(2){transform:translateY(-48px)}
+#misiones .vl26-mission-orbit i:nth-child(3){transform:translateY(45px)}
+#misiones .vl26-mission-art-copy{position:relative;z-index:1;font-family:Georgia,serif;font-size:clamp(29px,3.2vw,46px);line-height:1.1;letter-spacing:-.03em;align-self:flex-end;text-align:right;text-shadow:0 2px 14px rgba(0,0,0,.3)}
+#misiones #chabaquitoV2Public{max-width:1390px;margin:auto;padding:0 clamp(20px,4vw,64px)}
+#misiones #chabaquitoV2Public>*{max-width:100%}
+@media(max-width:800px){#misiones .vl26-mission-intro{grid-template-columns:1fr;padding-top:65px;gap:30px}#misiones .vl26-mission-art{min-height:270px}#misiones .vl26-mission-copy h2{font-size:clamp(42px,10vw,62px)}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1661,7 +1682,11 @@ footer a:hover{color:#f4bf78!important}
     </section>
 
     <!-- Chabaquito / Misiones V2: UI modular. La lógica legacy se conserva temporalmente para compatibilidad. -->
-    <section id="misiones" class="reveal">
+    <section id="misiones" class="reveal vl26-missions">
+        <div class="vl26-mission-intro">
+          <div class="vl26-mission-copy"><span class="vl26-overline"><i class="fa-solid fa-compass"></i> TU AVENTURA COMIENZA AQUÍ</span><h2>Explora Loja.<br><em>Vive la aventura.</em></h2><p>Descubre lugares, supera retos y convierte cada recorrido en una nueva historia con Chabaquito.</p><a href="#chabaquitoV2Public" class="vl26-mission-cta">Ver misiones <i class="fa-solid fa-arrow-down"></i></a></div>
+          <div class="vl26-mission-art"><span class="vl26-mission-art-label">AVENTURAS VISITA LOJA</span><div class="vl26-mission-orbit"><i class="fa-solid fa-map-location-dot"></i><i class="fa-solid fa-award"></i><i class="fa-solid fa-camera-retro"></i></div><div class="vl26-mission-art-copy">Cada rincón<br>es una misión.</div></div>
+        </div>
         <div id="chabaquitoV2Public" aria-live="polite"></div>
     </section>
 
