@@ -658,6 +658,12 @@
 #categorias h2{letter-spacing:-.045em}
 #categorias a:focus-visible,#categorias button:focus-visible{outline:3px solid #fb923c;outline-offset:3px}
 </style>
+
+<style id="visitaloja-modern-home-v7">
+/* Las cifras heredadas no están verificadas; se conservan nodos para compatibilidad con scripts. */
+#legacyStatsBand{display:none!important}
+#categorias{padding-top:clamp(45px,6vw,76px)}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1049,7 +1055,7 @@
 
 
     <!-- Stats -->
-    <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
+    <section id="legacyStatsBand" class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow" aria-hidden="true">
         <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
                 <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="1">1</span></p>
