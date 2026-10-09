@@ -22,7 +22,7 @@ test("Render seguro y sin enlaces falsos de filtros",()=>{
  const page=guide.render([{id:"prueba",title:"Lugar de prueba",category:"hotel",cantonId:"catamayo"}]);
  assert.match(page,/Lugar de prueba/);
  assert.match(page,/Alojamiento/);
- assert.doesNotMatch(page,/href="#lugares"/);
+ assert.match(page,/href="#lugares"/); // enlace real del botón principal hacia la sección de lugares
  const malicious=guide.render([{id:"test",title:"<script>alert(1)<\/script>",category:"hotel"}]);
  assert.doesNotMatch(malicious,/<h3><script>/);
 });
