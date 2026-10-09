@@ -4561,10 +4561,21 @@
         function openUpcomingEventsModal() {
             const items = upcomingSortedEvents().slice(0, 15);
             if (!items.length) {
-                const banner = document.getElementById('liveEventText');
-                if (banner) banner.textContent = 'Todavía no hay eventos próximos publicados. Pronto tendremos novedades.';
+                const modal = document.getElementById('upcomingEventsModal');
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+                document.getElementById('upcomingEventCounter').textContent = '0 / 0';
+                document.getElementById('upcomingEventPoster').textContent = '📅';
+                document.getElementById('upcomingEventDate').textContent = '';
+                document.getElementById('upcomingEventTitle').textContent = 'Próximamente nuevos eventos';
+                document.getElementById('upcomingEventPlace').textContent = 'VisitaLoja.com';
+                document.getElementById('upcomingEventDescription').textContent = 'Todavía no hay actividades futuras publicadas. Vuelve pronto para descubrir los próximos eventos de Loja.';
+                document.getElementById('upcomingEventMapButton').classList.add('hidden');
                 return;
             }
+            document.getElementById('upcomingEventMapButton').classList.remove('hidden');
             upcomingEventModalIndex = 0;
             const modal = document.getElementById('upcomingEventsModal');
             if (!modal) return;
