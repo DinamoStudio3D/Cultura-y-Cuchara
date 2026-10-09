@@ -1273,6 +1273,35 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 #especias .vl53-ile-partner span{color:#183d60!important}
 #especias .vl53-ile-partner,#especias .vl53-ile-partner *{opacity:1!important;text-shadow:none!important}
 @media(max-width:600px){#especias .vl53-ile-partner{padding:13px;gap:10px;font-size:10px}#especias .vl53-ile-partner img{width:40px;height:40px}}
+</style><style id="vl54-systematic-contrast">
+/* V54: explicit surface contrast. Dark hero headers take priority over old global heading overrides. */
+#establecimientos>div>div:first-child{background:#14212c!important;color:#fff!important}
+#establecimientos>div>div:first-child h2,#establecimientos>div>div:first-child h2.text-brandDark{color:#fff!important}
+#establecimientos>div>div:first-child span[data-i18n="secTourism"]{color:#80d2ff!important}
+#establecimientos>div>div:first-child #smartSearchStatus{color:#e1ebf5!important}
+#establecimientos>div>div:first-child #searchInput{background:#fff!important;color:#18324e!important}
+#establecimientos>div>div:first-child #searchInput::placeholder{color:#546b82!important}
+#establecimientos>div>div:first-child .text-gray-400,#establecimientos>div>div:first-child .text-gray-500{color:#d3e1ee!important}
+#establecimientos>div>div:first-child #smartSearchClearButton{color:#1c405f!important}
+#establecimientos #localesGrid .bg-brandDark h2,#establecimientos #localesGrid .bg-brandDark h3,#establecimientos #localesGrid .bg-brandDark h4{color:#fff!important}
+#establecimientos #localesGrid .bg-black h2,#establecimientos #localesGrid .bg-black h3,#establecimientos #localesGrid .bg-black h4{color:#fff!important}
+#establecimientos #localesGrid .bg-brandDark p,#establecimientos #localesGrid .bg-black p{color:#e0eaf5!important}
+#establecimientos #localesGrid .bg-white h2,#establecimientos #localesGrid .bg-white h3,#establecimientos #localesGrid .bg-white h4{color:#193450!important}
+#establecimientos #localesGrid .bg-white p{color:#49647c!important}
+#agenda .vl40-agenda-intro h2,#agenda .vl40-agenda-intro h3{color:#fff!important}
+#agenda .vl40-agenda-intro p{color:#e1eaf4!important}
+#pasaporte .bg-brandDark h2,#pasaporte .bg-brandDark h3{color:#fff!important}
+#pasaporte .bg-brandDark p{color:#e0e9f3!important}
+#categorias .vl43-explore-feature h3{color:#fff!important}
+#categorias .vl43-explore-feature p{color:#dceaf7!important}
+#fiavl h2,#fiavl h3,#fiavl .text-white{color:#fff!important}
+#fiavl p.text-gray-300,#fiavl p.text-gray-400{color:#dbe6f1!important}
+#loja-tiempo h2,#loja-tiempo h3{color:#fff!important}
+#loja-tiempo p{color:#d9e7f3!important}
+#especias .vl52-spice-copy h2,#especias .vl52-spice-card h3{color:#193450!important}
+#especias .vl53-ile-partner span{color:#183d60!important}
+#installAppBanner{display:none!important}
+#footerInstallApp:not(.hidden){display:inline-flex!important;align-items:center;justify-content:center}
 </style></head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -2429,7 +2458,7 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
                     </p>
                 </div>
             </div>
-            <div class="text-[11px] text-gray-500 text-center md:text-right">
+            <div class="text-[11px] text-gray-500 text-center md:text-right"><button id="footerInstallApp" type="button" onclick="requestVisitaLojaInstall()" class="hidden mb-3 rounded-xl border border-white/30 bg-white/10 px-4 py-2.5 text-white font-bold hover:bg-white/20"><i class="fa-solid fa-mobile-screen-button mr-2"></i>Instalar Visita Loja</button>
                 <span data-i18n="footerText">Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística de Loja. © 2026.</span>
                 <div class="mt-3"><p class="text-[10px] uppercase tracking-[0.18em] font-black text-gray-400 mb-2">Síguenos</p><div class="flex flex-wrap justify-center md:justify-end gap-2" aria-label="Redes sociales oficiales de Visita Loja"><a href="https://www.youtube.com/@VisitaLoja" target="_blank" rel="noopener noreferrer" aria-label="Visita Loja en YouTube" title="YouTube" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-red-600 hover:text-white hover:border-red-600 transition flex items-center justify-center text-base"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a><a href="https://www.tiktok.com/@visitaloja.com" target="_blank" rel="noopener noreferrer" aria-label="Visita Loja en TikTok" title="TikTok" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-white hover:text-black hover:border-white transition flex items-center justify-center text-base"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a><a href="https://www.instagram.com/visitaloja.oficial/" target="_blank" rel="noopener noreferrer" aria-label="Visita Loja en Instagram" title="Instagram" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-pink-600 hover:text-white hover:border-pink-600 transition flex items-center justify-center text-base"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><a href="https://www.facebook.com/visitalojaoficial/" target="_blank" rel="noopener noreferrer" aria-label="Visita Loja en Facebook" title="Facebook" class="w-10 h-10 rounded-full border border-white/15 bg-white/5 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition flex items-center justify-center text-base"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a></div></div><div class="mt-3 flex flex-wrap justify-center md:justify-end gap-3"><a href="/privacidad.html" class="hover:text-brandGold underline">Privacidad</a><a href="/terminos.html" class="hover:text-brandGold underline">Términos de uso</a></div>
             </div>
@@ -8770,6 +8799,15 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         let deferredInstallPrompt = null;
         const installBanner = document.getElementById('installAppBanner');
         const installButton = document.getElementById('installAppBtn');
+        const footerInstallButton = document.getElementById('footerInstallApp');
+        async function requestVisitaLojaInstall() {
+            if (!deferredInstallPrompt) return;
+            const promptEvent = deferredInstallPrompt;
+            deferredInstallPrompt = null;
+            footerInstallButton?.classList.add('hidden');
+            await promptEvent.prompt();
+            await promptEvent.userChoice;
+        }
 
         function dismissInstallApp() {
             installBanner?.classList.add('hidden');
@@ -8779,7 +8817,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         window.addEventListener('beforeinstallprompt', event => {
             event.preventDefault();
             deferredInstallPrompt = event;
-            installBanner?.classList.remove('hidden');
+            footerInstallButton?.classList.remove('hidden');
+            // No interrumpir la navegación: la instalación se ofrece solo desde el pie de página.
         });
 
         installButton?.addEventListener('click', async () => {
