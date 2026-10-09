@@ -748,6 +748,28 @@
 #mapa .vl-map-more-body>button:first-child{grid-column:1/-1}
 @media(max-width:540px){#mapa .vl-map-more-body{grid-template-columns:1fr}#mapa .vl-map-more-body>button:first-child{grid-column:auto}}
 </style>
+
+<style id="visitaloja-places-modern-v15">
+/* Explorador de paradas: buscador protagonista, filtros claros y tarjetas visuales. */
+#establecimientos{background:linear-gradient(180deg,#f5f7f8 0%,#fff 360px);padding-top:clamp(60px,7vw,94px);padding-bottom:clamp(65px,8vw,105px);scroll-margin-top:90px}
+#establecimientos>div{max-width:1320px}
+#establecimientos>div>div:first-child{background:#14212c;border:1px solid #293948;border-radius:27px;padding:clamp(22px,3.5vw,42px);margin-bottom:24px;align-items:center;box-shadow:0 24px 55px rgba(17,34,48,.14)}
+#establecimientos>div>div:first-child h2{color:#fff;font-size:clamp(29px,3.3vw,45px);line-height:1.1;letter-spacing:-.05em}
+#establecimientos>div>div:first-child span[data-i18n="secTourism"]{color:#ffb56c}
+#establecimientos>div>div:first-child>div:last-child{width:100%;max-width:490px}
+#establecimientos #searchInput{background:white!important;border:2px solid transparent!important;border-radius:15px!important;min-height:58px!important;padding-left:48px!important;padding-right:42px!important;font-size:14px!important;box-shadow:0 10px 28px rgba(0,0,0,.14)}
+#establecimientos #searchInput:focus{border-color:#fb923c!important;box-shadow:0 0 0 4px rgba(251,146,60,.22)!important}
+#establecimientos #smartSearchStatus{color:#b8c5d0!important;padding-left:3px!important;margin-top:10px!important}
+#establecimientos>div>div:nth-child(2){border:1px solid #e5e9ed;background:#fff;border-radius:21px;padding:17px 19px;margin-bottom:27px;box-shadow:0 8px 30px rgba(17,34,48,.05)}
+#establecimientos #localesGrid{gap:22px}
+#establecimientos #localesGrid>*,#emprendedoresGridContainer>*{border-radius:22px;overflow:hidden;transition:transform .22s ease,box-shadow .22s ease}
+#establecimientos #localesGrid>*:hover,#emprendedoresGridContainer>*:hover{transform:translateY(-5px);box-shadow:0 20px 42px rgba(17,34,48,.15)}
+#establecimientos #localesGrid img{object-fit:cover;transition:transform .35s ease}
+#establecimientos #localesGrid>*:hover img{transform:scale(1.035)}
+#establecimientos button:focus-visible,#establecimientos a:focus-visible{outline:3px solid #f97316;outline-offset:3px}
+@media(max-width:700px){#establecimientos{padding-left:14px;padding-right:14px}#establecimientos>div>div:first-child{padding:23px 18px;border-radius:20px;gap:22px}#establecimientos>div>div:nth-child(2){padding:13px;border-radius:17px}#establecimientos #localesGrid{gap:15px}}
+@media(prefers-reduced-motion:reduce){#establecimientos #localesGrid>*,#establecimientos #localesGrid img,#emprendedoresGridContainer>*{transition:none!important}#establecimientos #localesGrid>*:hover,#establecimientos #localesGrid>*:hover img,#emprendedoresGridContainer>*:hover{transform:none!important}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
