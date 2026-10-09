@@ -26,7 +26,8 @@
     --vl-muted: var(--vl-muted-light);
     --vl-accent: var(--vl-accent-light);
   }
-  :where([data-vl-surface="dark"], .bg-brandDark, .bg-black, .bg-ink, [class*="bg-ink/"],
+  :where([data-vl-surface="dark"], .web-mascot-bubble, .web-mascot-close, .web-mascot-restore,
+    .bg-brandDark, .bg-black, .bg-ink, [class*="bg-ink/"],
     [class*="bg-brandDark/"], [class*="bg-black/"],
     [class~="bg-[#111827]"], [class~="bg-[#090914]"],
     [class~="bg-[#17120f]"], [class~="bg-[#0f0f0f]"],
