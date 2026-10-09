@@ -674,6 +674,11 @@
 @keyframes vl-install-arrive{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
 @media(prefers-reduced-motion:reduce){#installAppBanner:not(.hidden){animation:none}}
 </style>
+
+<style id="visitaloja-routes-modern-v9">
+.vl-route-strip{background:#f7f6f3;border-top:1px solid #e6e1d8;border-bottom:1px solid #e6e1d8;padding:27px 24px;color:#18232a}.vl-route-strip-inner{max-width:1240px;margin:auto;display:flex;align-items:center;gap:22px}.vl-route-strip-intro{display:flex;align-items:center;gap:13px;flex:0 0 280px}.vl-route-strip-icon{display:grid;place-items:center;width:47px;height:47px;border-radius:15px;background:#ffead8;color:#ea580c;font-size:19px;flex:none}.vl-route-strip-intro h3{font-size:16px;line-height:1.25;font-weight:900}.vl-route-strip-intro p{font-size:12px;color:#66727c;margin-top:5px;line-height:1.45}.vl-route-strip-list{display:flex;align-items:center;gap:9px;overflow-x:auto;flex:1;min-width:0;padding:7px 2px}.vl-route-strip-list>*{flex-shrink:0}.vl-route-strip-map{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 16px;border-radius:13px;background:#17222c;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;transition:background .2s}.vl-route-strip-map:hover{background:#ea580c}.vl-route-strip a:focus-visible,.vl-route-strip button:focus-visible{outline:3px solid #ea580c;outline-offset:3px}
+@media(max-width:1000px){.vl-route-strip-inner{flex-wrap:wrap}.vl-route-strip-intro{flex:1 1 100%}.vl-route-strip-list{flex:1 1 60%}}@media(max-width:600px){.vl-route-strip{padding:22px 16px}.vl-route-strip-inner{gap:12px}.vl-route-strip-list{flex:1 1 100%;order:3}.vl-route-strip-map{margin-left:auto}.vl-route-strip-intro{flex:1 1 65%}.vl-route-strip-icon{width:42px;height:42px}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1134,14 +1139,15 @@
         <div class="max-w-7xl mx-auto"><div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-9"><div><span class="text-amber-400 text-xs font-black uppercase tracking-[.2em]"><i class="fa-solid fa-book-open-reader mr-2"></i><span id="storiesPublicBadge">Memoria, sabores y tradición</span></span><h2 id="storiesPublicTitle" class="text-3xl sm:text-4xl font-black mt-2">Historias de Loja</h2><p id="storiesPublicIntro" class="text-sm text-stone-300 mt-2 max-w-2xl">Relatos que conectan sabores, lugares y tradiciones.</p></div><span id="storiesPublicCount" class="text-xs border border-amber-500/30 text-amber-200 rounded-full px-4 py-2"></span></div><div id="storiesPublicGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>
     </section>
 
-    <!-- Suggested Routes -->
-    <section class="py-10 px-4 md:px-8 bg-brandCream border-b border-gray-200 reveal">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-                <h3 class="font-bold text-brandDark text-base md:text-lg"><i class="fa-solid fa-route text-brandGold mr-2"></i> <span data-i18n="sugTitle">Experiencias Sugeridas</span></h3>
-                <p class="text-xs text-gray-500" data-i18n="sugDesc">Elige un recorrido especializado para tu viaje.</p>
+    <!-- Suggested Routes: puente visual entre categorías y mapa -->
+    <section id="experiencias-sugeridas" class="vl-route-strip reveal" aria-label="Experiencias sugeridas">
+        <div class="vl-route-strip-inner">
+            <div class="vl-route-strip-intro">
+                <span class="vl-route-strip-icon"><i class="fa-solid fa-route" aria-hidden="true"></i></span>
+                <div><h3><span data-i18n="sugTitle">Experiencias Sugeridas</span></h3><p data-i18n="sugDesc">Elige un recorrido especializado para tu viaje.</p></div>
             </div>
-            <div class="flex gap-3 overflow-x-auto hide-scrollbar w-full md:w-auto pb-2 md:pb-0" id="suggestedRoutesContainer"></div>
+            <div class="vl-route-strip-list hide-scrollbar" id="suggestedRoutesContainer"></div>
+            <a href="#mapa" class="vl-route-strip-map"><i class="fa-solid fa-map-location-dot"></i> Ver mapa <i class="fa-solid fa-arrow-right"></i></a>
         </div>
     </section>
 
