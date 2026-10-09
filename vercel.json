@@ -8,6 +8,10 @@
   ],
   "rewrites": [
     {
+      "source": "/cantones/catamayo",
+      "destination": "/api/canton-catamayo"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
     },

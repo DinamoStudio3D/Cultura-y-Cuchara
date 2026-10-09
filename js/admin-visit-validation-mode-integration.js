@@ -28,7 +28,7 @@
     const field=document.createElement("div");
     field.id="placeCantonField";
     field.className="rounded-xl border border-cyan-500/25 bg-cyan-500/10 p-4";
-    field.innerHTML=`<label class="block"><span class="text-sm font-black block mb-2"><i class="fa-solid fa-location-dot mr-1"></i>Cantón *</span><select id="placeCantonId" class="field"><option value="">Selecciona el cantón</option>${cantons.map(c=>`<option value="${c.id}">${c.name}</option>`).join("")}</select></label><p class="text-xs text-gray-400 mt-2">Se usa para validar visitas, misiones y descubrimientos de Chabaquito.</p>`;
+    field.innerHTML=`<label class="block"><span class="text-sm font-black block mb-2"><i class="fa-solid fa-location-dot mr-1"></i>Cantón *</span><select id="placeCantonId" class="field"><option value="">Selecciona el cantón</option>${cantons.map(c=>`<option value="${c.id}">${c.name}</option>`).join("")}</select></label><p class="text-xs text-gray-400 mt-2">Ubicación oficial de la parada: se utiliza en las guías turísticas por cantón y en las visitas y misiones de Chabaquito. Selecciona el cantón correcto antes de publicar.</p>`;
     const mode=document.getElementById("placeValidationModeField");
     if(mode)mode.insertAdjacentElement("afterend",field);else form.prepend(field);
   }

@@ -232,10 +232,10 @@
         .web-mascot-close { position: absolute; right: -2px; top: -8px; width: 28px; height: 28px; border-radius: 999px; background: #121212; color: #fff; border: 1px solid rgba(255,255,255,.3); pointer-events: auto; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
         .web-mascot-restore { position: fixed; left: 14px; bottom: 14px; z-index: 85; width: 46px; height: 46px; border-radius: 999px; border: 2px solid #EA580C; background: #121212; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
         @keyframes mascot-dance { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-9px) rotate(1.5deg); } }
-        .festival-map-pin { width: 48px; height: 48px; border-radius: 50% 50% 50% 8px; transform: rotate(-45deg); display:flex; align-items:center; justify-content:center; color:white; border:3px solid #fff; box-shadow:0 6px 20px rgba(217,70,239,.55); position:relative; }
-        .festival-map-pin::after { content:''; position:absolute; inset:-8px; border:3px solid var(--pin-color,#d946ef); border-radius:50%; animation:festival-map-pulse 1.8s ease-out infinite; opacity:.7; }
-        .festival-map-pin > span { transform:rotate(45deg); font-size:20px; line-height:1; }
-        @keyframes festival-map-pulse { 0% { transform:scale(.75); opacity:.8; } 100% { transform:scale(1.45); opacity:0; } }
+        .festival-map-pin { width: 28px; height: 28px; border-radius: 50% 50% 50% 8px; transform: rotate(-45deg); display:flex; align-items:center; justify-content:center; color:white; border:2px solid #fff; box-shadow:0 3px 10px rgba(217,70,239,.4); position:relative; }
+        .festival-map-pin::after { content:''; position:absolute; inset:-3px; border:1px solid var(--pin-color,#d946ef); border-radius:50%; animation:festival-map-pulse 1.8s ease-out infinite; opacity:.7; }
+        .festival-map-pin > span { transform:rotate(45deg); font-size:15px; line-height:1; }
+        @keyframes festival-map-pulse { 0% { transform:scale(.75); opacity:.8; } 100% { transform:scale(1.2); opacity:0; } }
         @media (max-width: 640px) {
             .web-mascot { width: 105px; left: 6px; bottom: 4px; }
             .web-mascot-bubble { left: 76px; bottom: 82px; width: 155px; font-size: 11px; padding: 8px 10px; }
@@ -655,6 +655,7 @@
                 <a href="#mapa" class="hover:text-brandGold transition-colors" data-i18n="menuMap">El Mapa</a>
                 <a href="#establecimientos" class="hover:text-brandGold transition-colors" data-i18n="menuRoute">La Ruta</a>
                 <a href="#emprendedores" class="hover:text-brandGold transition-colors" data-i18n="menuEntrepreneurs">Emprendedores</a>
+                <a href="cantones.html" class="hover:text-brandGold transition-colors font-bold"><i class="fa-solid fa-compass text-brandGold mr-1"></i>Cantones</a>
                 <a href="#fiavl" class="hover:text-brandGold transition-colors flex items-center gap-1.5 text-brandGold font-bold">
                     <i class="fa-solid fa-masks-theater text-base"></i>
                     <span>FIAVL 2026</span>
@@ -693,6 +694,7 @@
                 <a href="#inicio" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuHome"><i class="fa-solid fa-house text-brandGold"></i> Inicio</a>
                 <a href="#tendencia" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuTrending"><i class="fa-solid fa-fire text-red-500"></i> En Tendencia</a>
                 <a href="#mapa" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuMap"><i class="fa-solid fa-map text-brandGold"></i> El Mapa</a>
+                <a href="cantones.html" class="bg-black/40 p-2.5 rounded-xl border border-brandGold/40 text-brandGold hover:border-brandGold transition flex items-center gap-2"><i class="fa-solid fa-compass"></i> Cantones</a>
                 <a href="#establecimientos" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuRoute"><i class="fa-solid fa-utensils text-brandGold"></i> La Ruta</a>
                 <a href="#emprendedores" class="bg-black/40 p-2.5 rounded-xl border border-gray-800 text-gray-300 hover:text-brandGold hover:border-brandGold transition flex items-center gap-2" onclick="toggleMobileMenu()" data-i18n="menuEntrepreneurs"><i class="fa-solid fa-store text-brandGold"></i> Emprendedores</a>
                 <a href="#fiavl" class="bg-brandGold/15 p-2.5 rounded-xl border border-brandGold/50 text-brandGold font-bold flex items-center gap-2" onclick="toggleMobileMenu()"><i class="fa-solid fa-masks-theater"></i> FIAVL 2026</a>
@@ -968,50 +970,14 @@
     <!-- Campaigns created from Administration -->
     <div id="customCampaignsPublic" aria-live="polite"></div>
 
-    <!-- FIAVL Live Mode -->
-    <section id="festival-live" class="bg-[#090914] text-white py-12 px-4 border-y border-fuchsia-500/30 relative overflow-hidden">
-        <div id="festivalCampaignGlow" class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
-        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] -rotate-12 pointer-events-none" aria-hidden="true"><i id="festivalCampaignIcon" class="fa-solid fa-masks-theater"></i></div>
-        <div class="max-w-7xl mx-auto relative z-10">
-            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
-                <div>
-                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Modo Festival · Demostración</span>
-                    <h2 id="festivalModeTitle" class="text-3xl sm:text-4xl font-black mt-4">Loja se convierte en escenario</h2>
-                    <p id="festivalModeSubtitle" class="text-sm text-gray-300 mt-2 max-w-2xl">Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.</p>
-                </div>
-                <div id="festivalCountdown" class="grid grid-cols-4 gap-2 text-center min-w-full sm:min-w-[390px] lg:min-w-[430px]">
-                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalDays" class="block text-2xl text-fuchsia-300">--</strong><span class="text-[10px] uppercase text-gray-400">Días</span></div>
-                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalHours" class="block text-2xl text-cyan-300">--</strong><span class="text-[10px] uppercase text-gray-400">Horas</span></div>
-                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalMinutes" class="block text-2xl text-yellow-300">--</strong><span class="text-[10px] uppercase text-gray-400">Min</span></div>
-                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalSeconds" class="block text-2xl text-orange-300">--</strong><span class="text-[10px] uppercase text-gray-400">Seg</span></div>
-                </div>
-            </div>
 
-            <div id="festivalNowCard" class="bg-gradient-to-r from-fuchsia-700/50 to-cyan-700/40 border border-white/20 rounded-2xl p-5 sm:p-6 mb-7 shadow-2xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-full bg-white text-fuchsia-600 flex items-center justify-center text-lg flex-shrink-0"><i id="festivalNowIcon" class="fa-solid fa-hourglass-half"></i></div>
-                        <div><p id="festivalNowLabel" class="text-xs font-black text-yellow-300 uppercase tracking-widest">Próximamente</p><h3 id="festivalNowTitle" class="text-xl font-black mt-1">Preparando la agenda del Festival</h3><p id="festivalNowMeta" class="text-sm text-gray-200 mt-1">La próxima actividad aparecerá aquí.</p></div>
-                    </div>
-                    <a id="festivalNowMap" href="#festival-agenda" class="bg-white text-gray-950 font-black rounded-xl px-5 py-3 text-sm text-center hover:bg-yellow-300 transition"><i class="fa-solid fa-calendar-days mr-2"></i>Ver agenda</a>
-                </div>
-            </div>
-
-            <div id="festival-agenda">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><h3 class="text-xl font-black">Agenda diaria</h3><span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Contenido inicial de demostración</span></div>
-                <div id="festivalDayTabs" class="flex gap-2 overflow-x-auto pb-3 mb-3"></div>
-                <div id="festivalAgendaGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
-                <p id="festivalEmpty" class="hidden text-center text-gray-400 bg-white/5 rounded-2xl p-8">No hay actividades cargadas para este día.</p>
-            </div>
-        </div>
-    </section>
 
     <!-- Stats -->
     <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
         <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="reveal">
-                <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="3">3</span></p>
-                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporadas</p>
+                <p class="text-4xl font-black mb-1"><span class="counter" id="stat1Val" data-target="1">1</span></p>
+                <p class="text-xs font-bold uppercase tracking-widest" id="stat1Label" data-i18n="statSeasons">Temporada</p>
             </div>
             <div class="reveal">
                 <p class="text-4xl font-black mb-1"><span class="counter" id="totalAliadosCount" data-target="4">4</span>+</p>
@@ -1592,6 +1558,45 @@
                 </div>
             </div>
         </div>
+
+        <!-- Agenda y cuenta regresiva integradas dentro de FIAVL 2026 -->
+            <!-- FIAVL Live Mode -->
+    <section id="festival-live" class="max-w-7xl mx-auto mt-12 lg:mt-16 rounded-3xl bg-[#090914] text-white py-10 px-4 sm:px-6 lg:px-10 border border-fuchsia-500/30 relative overflow-hidden shadow-2xl">
+        <div id="festivalCampaignGlow" class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
+        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] -rotate-12 pointer-events-none" aria-hidden="true"><i id="festivalCampaignIcon" class="fa-solid fa-masks-theater"></i></div>
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+                <div>
+                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Modo Festival · Demostración</span>
+                    <h2 id="festivalModeTitle" class="text-3xl sm:text-4xl font-black mt-4">Loja se convierte en escenario</h2>
+                    <p id="festivalModeSubtitle" class="text-sm text-gray-300 mt-2 max-w-2xl">Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.</p>
+                </div>
+                <div id="festivalCountdown" class="grid grid-cols-4 gap-2 text-center min-w-full sm:min-w-[390px] lg:min-w-[430px]">
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalDays" class="block text-2xl text-fuchsia-300">--</strong><span class="text-[10px] uppercase text-gray-400">Días</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalHours" class="block text-2xl text-cyan-300">--</strong><span class="text-[10px] uppercase text-gray-400">Horas</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalMinutes" class="block text-2xl text-yellow-300">--</strong><span class="text-[10px] uppercase text-gray-400">Min</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalSeconds" class="block text-2xl text-orange-300">--</strong><span class="text-[10px] uppercase text-gray-400">Seg</span></div>
+                </div>
+            </div>
+
+            <div id="festivalNowCard" class="bg-gradient-to-r from-fuchsia-700/50 to-cyan-700/40 border border-white/20 rounded-2xl p-5 sm:p-6 mb-7 shadow-2xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-full bg-white text-fuchsia-600 flex items-center justify-center text-lg flex-shrink-0"><i id="festivalNowIcon" class="fa-solid fa-hourglass-half"></i></div>
+                        <div><p id="festivalNowLabel" class="text-xs font-black text-yellow-300 uppercase tracking-widest">Próximamente</p><h3 id="festivalNowTitle" class="text-xl font-black mt-1">Preparando la agenda del Festival</h3><p id="festivalNowMeta" class="text-sm text-gray-200 mt-1">La próxima actividad aparecerá aquí.</p></div>
+                    </div>
+                    <a id="festivalNowMap" href="#festival-agenda" class="bg-white text-gray-950 font-black rounded-xl px-5 py-3 text-sm text-center hover:bg-yellow-300 transition"><i class="fa-solid fa-calendar-days mr-2"></i>Ver agenda</a>
+                </div>
+            </div>
+
+            <div id="festival-agenda">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><h3 class="text-xl font-black">Agenda diaria</h3><span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Contenido inicial de demostración</span></div>
+                <div id="festivalDayTabs" class="flex gap-2 overflow-x-auto pb-3 mb-3"></div>
+                <div id="festivalAgendaGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                <p id="festivalEmpty" class="hidden text-center text-gray-400 bg-white/5 rounded-2xl p-8">No hay actividades cargadas para este día.</p>
+            </div>
+        </div>
+    </section>
     </section>
 
     <!-- Agenda -->
@@ -2518,7 +2523,7 @@
                 heroTitle: 'Sabores, <span class="text-brandGold">Historias</span> y Destinos',
                 heroSubtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 btnStartRoute: "Iniciar la Ruta",
-                statSeasons: "Temporadas",
+                statSeasons: "Temporada",
                 statAllies: "Puntos en el mapa",
                 statTourists: "Turistas Activos",
                 statIdentity: "Identidad Lojana",
@@ -3616,7 +3621,7 @@
                 const icon = L.divIcon({
                     className: 'festival-leaflet-icon',
                     html: `<div class="festival-map-pin" style="background:${style.color};--pin-color:${style.color}"><span>${style.emoji}</span></div>`,
-                    iconSize: [48, 48], iconAnchor: [24, 44], popupAnchor: [0, -42]
+                    iconSize: [28, 28], iconAnchor: [14, 27], popupAnchor: [0, -27]
                 });
                 const safeId = escapeHTML(event.id || '');
                 const mapLink = event.mapUrl || `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
