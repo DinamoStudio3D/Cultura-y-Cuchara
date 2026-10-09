@@ -829,7 +829,7 @@
     <!-- Avisos destacados: eventos y contenido audiovisual -->
     <div class="bg-[#0e1018] border-b border-white/10 px-3 sm:px-6 py-3 relative z-30">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-2.5">
-            <div id="liveEventBanner" class="hidden flex relative overflow-hidden rounded-2xl border border-orange-400/25 bg-gradient-to-r from-[#392015] via-[#28202a] to-[#171b2c] text-white p-3 sm:p-4 items-center gap-3 shadow-lg">
+            <div id="liveEventBanner" class="flex relative overflow-hidden rounded-2xl border border-orange-400/25 bg-gradient-to-r from-[#392015] via-[#28202a] to-[#171b2c] text-white p-3 sm:p-4 items-center gap-3 shadow-lg">
                 <div class="shrink-0 w-11 h-11 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-300 text-xl"><i class="fa-solid fa-calendar-days"></i></div>
                 <div class="min-w-0 flex-1">
                     <span class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[.14em] font-black text-orange-300" data-i18n="bannerLive"><span class="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></span> PRÓXIMO EVENTO</span>
@@ -4560,7 +4560,11 @@
         }
         function openUpcomingEventsModal() {
             const items = upcomingSortedEvents().slice(0, 15);
-            if (!items.length) return;
+            if (!items.length) {
+                const banner = document.getElementById('liveEventText');
+                if (banner) banner.textContent = 'Todavía no hay eventos próximos publicados. Pronto tendremos novedades.';
+                return;
+            }
             upcomingEventModalIndex = 0;
             const modal = document.getElementById('upcomingEventsModal');
             if (!modal) return;
@@ -4669,8 +4673,12 @@
             const btnEl = document.getElementById('liveEventBtn');
             if (!banner || !textEl || !btnEl) return;
             const next = upcomingSortedEvents()[0];
-            banner.classList.toggle('hidden', !next);
-            if (!next) return;
+            banner.classList.remove('hidden');
+            btnEl.classList.toggle('hidden', !next);
+            if (!next) {
+                textEl.textContent = 'No hay eventos próximos publicados. Consulta la agenda cuando se anuncien nuevas actividades.';
+                return;
+            }
             const title = currentLang === 'en' && next.titleEn ? next.titleEn : next.title;
             const date = new Date(next.date + 'T12:00:00-05:00').toLocaleDateString(currentLang === 'en' ? 'en-US' : 'es-EC', {day:'numeric',month:'short',timeZone:'America/Guayaquil'});
             textEl.textContent = [title, date, next.time || '', next.location || ''].filter(Boolean).join(' · ');
