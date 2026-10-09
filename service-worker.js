@@ -1,5 +1,5 @@
-const CACHE_NAME = 'visita-loja-shell-v12';
-const LOCAL_SHELL = ['./', './index.html', './css/public-layout.css?v=55', './css/public-colors.css?v=55', './css/mobile-ui.css', './js/app-install.js?v=55', './js/public-color-contract.js?v=55', './manifest.webmanifest?v=6', './mascota-vive-loja.png', './visita-loja-icon-512.png', './visita-loja-maskable-512.png'];
+const CACHE_NAME = 'visita-loja-shell-v13';
+const LOCAL_SHELL = ['./', './index.html', './css/public-layout.css?v=56', './css/public-colors.css?v=55', './css/mobile-ui.css?v=56', './js/app-install.js?v=55', './js/public-color-contract.js?v=55', './manifest.webmanifest?v=6', './mascota-vive-loja.png', './visita-loja-icon-512.png', './visita-loja-maskable-512.png'];
 const OFFLINE_HTML = '<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Sin conexión</title><body style="font-family:system-ui;background:#121212;color:white;text-align:center;padding:12vh 24px"><h1>Visita Loja</h1><p>No hay conexión en este momento. Inténtalo nuevamente cuando recuperes internet.</p></body></html>';
 
 // Compatibilidad temporal: elimina únicamente la fila social antigua del bloque de contacto.

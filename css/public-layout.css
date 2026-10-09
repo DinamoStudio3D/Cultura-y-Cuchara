@@ -1,6 +1,24 @@
 /* Existing layout, consolidated in source order. Foregrounds live in public-colors.css. */
 @layer vl-colors, vl-layout;
 @layer vl-layout {
+  /* Map actions remain inside the map; account access uses one compact control. */
+  .vl-map-controls { display: flex; gap: 8px; right: 16px; flex-wrap: wrap; }
+  .vl-map-controls > button { min-height: 44px; }
+  #accountFloatingInvite {
+    position: fixed; right: max(16px, env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 95;
+    border: 1px solid rgba(255,255,255,.3); border-radius: 999px;
+    min-height: 44px; padding: 10px 14px; font-size: 12px; font-weight: 700;
+    box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  }
+  #accountFloatingInvite > i { margin-right: 6px; }
+  @media (max-width: 639px) {
+    .vl-map-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .vl-map-controls > button { justify-content: center; padding: 8px; font-size: 11px; }
+    #accountFloatingInvite { width: 44px; height: 44px; padding: 0; font-size: 17px; }
+    #accountFloatingInvite > i { margin: 0; }
+    #accountFloatingInvite > span { display: none; }
+  }
 /* Base styles */
 html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-action: manipulation; }
         :focus-visible { outline: 3px solid #EA580C; outline-offset: 3px; }
@@ -18,8 +36,6 @@ html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-actio
 
         .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
-
-        .fab-whatsapp { position: fixed; bottom: 28px; right: 20px; z-index: 90; animation: bounce-slight 2s infinite; }
         @keyframes bounce-slight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
         .web-mascot { position: fixed; left: 12px; bottom: 10px; z-index: 85; width: 150px; pointer-events: none; transition: opacity .3s ease, transform .3s ease; }
@@ -226,13 +242,6 @@ html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-actio
             #pasaporteModal > div > .p-6 { padding: 1rem; }
 
             /* Flotantes móviles: compactos para no tapar contenido */
-            .fab-whatsapp {
-                right: max(10px, env(safe-area-inset-right));
-                bottom: calc(10px + env(safe-area-inset-bottom));
-                animation: none !important;
-                transform: scale(.84);
-                transform-origin: bottom right;
-            }
 
             /* Chabaquito se convierte en una burbuja compacta de asistente */
             .web-mascot {
@@ -287,13 +296,6 @@ html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-actio
             }
 
             /* Registro: sigue visible, pero ocupa bastante menos espacio en móvil */
-            #accountFloatingInvite {
-                right: max(8px, env(safe-area-inset-right)) !important;
-                bottom: calc(72px + env(safe-area-inset-bottom)) !important;
-                transform: scale(.78);
-                transform-origin: bottom right;
-            }
-            #accountFloatingInvite:hover { transform: scale(.82); }
 
             #toast { bottom: calc(5rem + env(safe-area-inset-bottom)) !important; }
 
@@ -312,8 +314,6 @@ html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-actio
             .web-mascot > button.block { width: 48px !important; height: 48px !important; }
             .web-mascot-character { width: 44px !important; height: 44px !important; }
             .web-mascot-bubble { left: 44px; bottom: 44px; width: min(196px, calc(100vw - 78px)); }
-            #accountFloatingInvite { transform: scale(.72); }
-            #accountFloatingInvite:hover { transform: scale(.76); }
         }
 
     
@@ -429,12 +429,8 @@ html.low-data-mode *, html.low-data-mode *::before, html.low-data-mode *::after 
 
 /* visitaloja-modern-overlays-v5 */
 /* La navegación flotante deja respirar la portada sin perder sus acciones. */
-#accountFloatingInvite{right:16px!important;bottom:20px!important;z-index:95!important;box-shadow:0 10px 30px rgba(0,0,0,.28)!important}
-#accountFloatingInvite>span{padding:6px 10px!important;gap:8px!important}
-#accountFloatingInvite .animate-ping{animation:none!important}
-#generalEventsMapToggle{font-size:11px;box-shadow:0 6px 22px rgba(0,0,0,.2)}
-@media(min-width:1024px){#accountFloatingInvite{right:20px!important;bottom:20px!important}}
-@media(max-width:639px){#accountFloatingInvite{bottom:92px!important;right:12px!important}#accountFloatingInvite>span{padding:5px!important}#generalEventsMapToggle{font-size:10px!important}}
+@media(min-width:1024px){}
+@media(max-width:639px){}
 
 /* visitaloja-modern-categories-v6 */
 /* La navegación real de categorías es la única cuadrícula de descubrimiento. */

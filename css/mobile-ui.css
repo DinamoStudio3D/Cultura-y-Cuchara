@@ -94,9 +94,6 @@
     width: 48px;
     height: 48px;
   }
-
-  #accountFloatingInvite { right: max(8px, env(safe-area-inset-right)) !important; bottom: calc(78px + env(safe-area-inset-bottom)) !important; transform: scale(.78); transform-origin: bottom right; }
-  #accountFloatingInvite:hover { transform: scale(.82); }
   #toast { bottom: calc(5rem + env(safe-area-inset-bottom)) !important; }
 }
 
@@ -113,6 +110,4 @@
   .web-mascot > button.block { width: 48px !important; height: 48px !important; }
   .web-mascot-character { width: 44px !important; height: 44px !important; }
   .web-mascot-bubble { left: 44px; bottom: 44px; width: min(196px, calc(100vw - 78px)); }
-  #accountFloatingInvite { transform: scale(.72); }
-  #accountFloatingInvite:hover { transform: scale(.76); }
 }
