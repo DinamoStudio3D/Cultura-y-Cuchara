@@ -6,10 +6,12 @@
     <meta name="robots" content="noindex,nofollow">
     <title>Administración | Visita Loja</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/image-compressor.js"></script>
+    <script src="js/cloudinary-image-uploader.js"></script>
+    <script src="js/visitaloja-image-config.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
@@ -499,7 +501,7 @@
                         <h3 id="generalEventFormTitle" class="font-black text-lg">Programar un evento</h3>
                         <label class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-blue-500/25 bg-blue-500/10 p-4"><span><strong class="block text-sm"><i class="fa-solid fa-eye text-blue-300 mr-2"></i>Estado de publicación</strong><span class="text-xs text-gray-400">Guárdalo como borrador para terminarlo antes de mostrarlo.</span></span><select id="generalEventPublicationStatus" class="field sm:w-48"><option value="published">Publicado</option><option value="draft">Borrador</option><option value="hidden">Oculto</option></select></label>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Título en español *</span><input id="generalEventTitle" class="field" required maxlength="140"></label><label><span class="text-sm font-semibold block mb-2">Título en inglés</span><input id="generalEventTitleEn" class="field" maxlength="140"></label></div>
-                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Fecha *</span><input id="generalEventDate" class="field" type="date" required><span class="text-xs text-gray-400 block mt-2">Se ocultará 1 hora después del inicio.</span></label><label><span class="text-sm font-semibold block mb-2">Hora de inicio (Ecuador) *</span><input id="generalEventTime" class="field" type="time" required value="18:00"></label><label><span class="text-sm font-semibold block mb-2">Tipo *</span><select id="generalEventType" class="field" required><option>Festival</option><option>Gastronomía</option><option>Música</option><option>Teatro</option><option>Danza</option><option>Feria</option><option>Turismo</option><option>Deporte</option><option>Otro</option></select></label><label><span class="text-sm font-semibold block mb-2">Imagen</span><input id="generalEventImage" class="field" type="url" placeholder="https://..."><input id="generalEventImageFile" type="file" accept="image/jpeg,image/png,image/webp" class="field mt-2" aria-label="Seleccionar afiche del evento"><button type="button" id="generalEventUploadBtn" onclick="uploadGeneralEventPoster()" class="mt-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 text-xs font-bold">Subir afiche</button><p id="generalEventUploadStatus" class="text-xs text-gray-400 mt-1">JPG, PNG o WebP · máximo 5 MB. Si Storage no está habilitado, puedes seguir usando una URL.</p></label></div>
+                        <div class="grid md:grid-cols-3 gap-4"><label><span class="text-sm font-semibold block mb-2">Fecha *</span><input id="generalEventDate" class="field" type="date" required><span class="text-xs text-gray-400 block mt-2">Se ocultará 1 hora después del inicio.</span></label><label><span class="text-sm font-semibold block mb-2">Hora de inicio (Ecuador) *</span><input id="generalEventTime" class="field" type="time" required value="18:00"></label><label><span class="text-sm font-semibold block mb-2">Tipo *</span><select id="generalEventType" class="field" required><option>Festival</option><option>Gastronomía</option><option>Música</option><option>Teatro</option><option>Danza</option><option>Feria</option><option>Turismo</option><option>Deporte</option><option>Otro</option></select></label><label><span class="text-sm font-semibold block mb-2">Imagen</span><input id="generalEventImage" class="field" type="url" placeholder="https://..."><input id="generalEventImageFile" type="file" accept="image/jpeg,image/png,image/webp" class="field mt-2" aria-label="Seleccionar afiche del evento"><button type="button" id="generalEventUploadBtn" onclick="uploadGeneralEventPoster()" class="mt-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 text-xs font-bold">Subir afiche</button><p id="generalEventUploadStatus" class="text-xs text-gray-400 mt-1">JPG, PNG o WebP · máximo 5 MB. Cloudinary · imagen optimizada automáticamente.</p></label></div>
                         <label class="block"><span class="text-sm font-semibold block mb-2">Lugar *</span><input id="generalEventLocation" class="field" required maxlength="180"></label>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Descripción en español *</span><textarea id="generalEventDesc" class="field min-h-24" required maxlength="700"></textarea></label><label><span class="text-sm font-semibold block mb-2">Descripción en inglés</span><textarea id="generalEventDescEn" class="field min-h-24" maxlength="700"></textarea></label></div>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Latitud *</span><input id="generalEventLat" class="field" required type="number" step="any" placeholder="-3.9931"></label><label><span class="text-sm font-semibold block mb-2">Longitud *</span><input id="generalEventLng" class="field" required type="number" step="any" placeholder="-79.2042"></label></div>
@@ -2157,57 +2159,30 @@ function centerGeneralEventLocationMap() {
     generalEventPickerMap.setView([lat,lng],15);
 }
 async function uploadGeneralEventPoster() {
-    const file=document.getElementById('generalEventImageFile').files[0];
-    const status=document.getElementById('generalEventUploadStatus');
-    const button=document.getElementById('generalEventUploadBtn');
-    if(!file){status.textContent='Selecciona primero una imagen.';return;}
-    if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){status.textContent='Solo JPG, PNG o WebP de hasta 5 MB.';return;}
-    if(!auth.currentUser){status.textContent='Inicia sesión como administrador.';return;}
-    button.disabled=true;
-    status.textContent='Conectando con Firebase Storage...';
-    let uploadTask=null;
-    let timeoutId=null;
-    try {
-        if(typeof adminFirebaseApp.storage!=='function') throw Object.assign(new Error('El módulo Firebase Storage no está disponible.'),{code:'storage/sdk-unavailable'});
-        const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-        const ref=adminFirebaseApp.storage().ref('event-posters/'+Date.now()+'-'+safeName);
-        uploadTask=ref.put(file,{contentType:file.type});
-        const completed=new Promise((resolve,reject)=>{
-            uploadTask.on('state_changed',snapshot=>{
-                const percentage=snapshot.totalBytes ? Math.round(100*snapshot.bytesTransferred/snapshot.totalBytes) : 0;
-                status.textContent='Subiendo afiche... '+percentage+'%';
-            },reject,resolve);
-        });
-        const deadline=new Promise((_,reject)=>{
-            timeoutId=setTimeout(()=>{
-                if(uploadTask) uploadTask.cancel();
-                reject(Object.assign(new Error('Firebase no respondió en 45 segundos.'),{code:'storage/timeout'}));
-            },45000);
-        });
-        await Promise.race([completed,deadline]);
-        if(timeoutId){clearTimeout(timeoutId);timeoutId=null;}
-        status.textContent='Finalizando afiche...';
-        document.getElementById('generalEventImage').value=await Promise.race([
-            ref.getDownloadURL(),
-            new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(Object.assign(new Error('No se obtuvo la URL del afiche.'),{code:'storage/url-timeout'})),15000);})
-        ]);
-        status.textContent='Afiche subido correctamente. Guarda el evento para publicarlo.';
-    }catch(error){
-        const code=error?.code || 'error-desconocido';
-        const explanations={
-            'storage/unauthorized':'Firebase Storage rechazó los permisos de subida.',
-            'storage/bucket-not-found':'No existe el depósito de Firebase Storage configurado.',
-            'storage/sdk-unavailable':'No se cargó la librería de Firebase Storage.',
-            'storage/timeout':'Firebase no respondió en 45 segundos. Comprueba la conexión y la configuración de Storage.',
-            'storage/url-timeout':'Se transfirió el archivo, pero no se pudo obtener su URL.',
-            'storage/canceled':'Se canceló la subida.'
-        };
-        status.textContent='No se pudo subir ('+code+'). '+(explanations[code]||error?.message||'Revisa la configuración de Firebase Storage.')+' Puedes usar una URL de imagen mientras lo resolvemos.';
-        console.error('Event poster upload',error);
-    }finally{
-        if(timeoutId)clearTimeout(timeoutId);
-        button.disabled=false;
-    }
+ const file=document.getElementById('generalEventImageFile').files[0];
+ const status=document.getElementById('generalEventUploadStatus');
+ const button=document.getElementById('generalEventUploadBtn');
+ if(!file){status.textContent='Selecciona primero una imagen.';return;}
+ if(!auth.currentUser){status.textContent='Inicia sesión como administrador.';return;}
+ button.disabled=true;
+ try {
+  const compressor=window.VisitaLojaImageCompressor;
+  const uploader=window.VisitaLojaCloudinaryUploader;
+  if(!compressor||!uploader)throw new Error('No se cargaron las herramientas de imágenes.');
+  status.textContent='Optimizando afiche...';
+  const optimized=await compressor.compressImageClientSide(file,window.VisitaLojaImageConfig.CONFIG.compression);
+  status.textContent='Autorizando subida a Cloudinary...';
+  const response=await fetch('/api/sign-event-image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+await auth.currentUser.getIdToken()},body:JSON.stringify({purpose:'poster'})});
+  const authorization=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(authorization.error||'No se pudo autorizar la subida ('+response.status+').');
+  status.textContent='Subiendo afiche a Cloudinary...';
+  const result=await uploader.uploadSignedImage(optimized.blob,authorization,{filename:'evento-'+Date.now()+'.webp'});
+  document.getElementById('generalEventImage').value=result.url;
+  status.textContent='Afiche subido correctamente a Cloudinary. Guarda el evento para publicarlo.';
+ }catch(error){
+  status.textContent='No se pudo subir a Cloudinary: '+(error.message||'Error desconocido.')+' Puedes pegar una URL mientras lo resolvemos.';
+  console.error('Event Cloudinary upload',error);
+ }finally{button.disabled=false;}
 }
 function resetGeneralEventForm() {
     document.getElementById('generalEventForm').reset();
