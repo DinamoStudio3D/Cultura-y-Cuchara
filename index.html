@@ -681,6 +681,20 @@
 </style>
 
 <style id="visitaloja-hide-duplicate-routes-v10">#experiencias-sugeridas{display:none!important}</style>
+
+<style id="visitaloja-map-modern-v11">
+/* Modernización del mapa existente: solo estilos, sin sustituir Leaflet ni su lógica. */
+#mapa{position:relative;scroll-margin-top:90px;padding-top:clamp(54px,6vw,86px);padding-bottom:clamp(60px,7vw,92px)}
+#mapa>div:first-child{margin-bottom:30px}#mapa>div:first-child h2{letter-spacing:-.045em;line-height:1.15;font-weight:950}#mapa>div:first-child p{line-height:1.7;margin-top:10px}
+#mapa #lojaMap{border-radius:22px}#mapa .lg\\:col-span-2{border-radius:24px;border-color:#d7d9dc;box-shadow:0 22px 60px rgba(18,29,38,.12);background:#e9edf0}
+#mapa #mapPreviewCard{border-radius:24px!important;border:1px solid #e2e5e8!important;background:linear-gradient(155deg,#fff 0%,#fafbfc 100%);box-shadow:0 22px 60px rgba(18,29,38,.09)!important;overflow:visible}
+#mapa #mapLegendToggle{border-radius:13px;padding:12px 15px;box-shadow:0 8px 26px rgba(18,29,38,.15);min-height:43px}
+#mapa #mapLegendPanel{border-radius:17px;box-shadow:0 18px 40px rgba(18,29,38,.2)}
+#mapa button:focus-visible,#mapa a:focus-visible{outline:3px solid #f97316;outline-offset:3px}
+#mapa #mapSpotlightIndicator{border-radius:14px}
+@media(max-width:1023px){#mapa #mapPreviewCard{min-height:0!important;position:relative!important;top:auto!important}}
+@media(max-width:639px){#mapa{padding-left:14px;padding-right:14px}#mapa .lg\\:col-span-2{height:420px;border-radius:19px}#mapa #lojaMap{border-radius:18px}#mapa #mapPreviewCard{border-radius:19px!important;padding:17px!important}#mapa #mapLegendToggle{font-size:11px;padding:10px}#mapa #mapSpotlightIndicator{max-width:calc(100% - 26px)}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
