@@ -695,6 +695,23 @@
 @media(max-width:1023px){#mapa #mapPreviewCard{min-height:0!important;position:relative!important;top:auto!important}}
 @media(max-width:639px){#mapa{padding-left:14px;padding-right:14px}#mapa .lg\\:col-span-2{height:420px;border-radius:19px}#mapa #lojaMap{border-radius:18px}#mapa #mapPreviewCard{border-radius:19px!important;padding:17px!important}#mapa #mapLegendToggle{font-size:11px;padding:10px}#mapa #mapSpotlightIndicator{max-width:calc(100% - 26px)}}
 </style>
+
+<style id="visitaloja-map-explorer-v12">
+/* Nueva composición del explorador: mapa dominante + ficha horizontal de lugar. */
+@media(min-width:1024px){
+#mapa{max-width:1500px!important;padding-left:clamp(24px,4vw,72px)!important;padding-right:clamp(24px,4vw,72px)!important}
+#mapa>div.grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important}
+#mapa>div.grid>.lg\\:col-span-2{grid-column:1!important;height:min(67vh,650px)!important;min-height:470px!important}
+#mapa #mapPreviewCard{position:relative!important;top:auto!important;min-height:0!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(330px,.9fr)!important;gap:30px!important;padding:30px!important;align-items:start!important}
+#mapa #mapPreviewCard>div:first-of-type{min-width:0;padding:8px 12px 8px 0}
+#mapa #mapPreviewCard>div:last-of-type{min-width:0;padding:8px 0 8px 30px!important;border-top:0!important;border-left:1px solid #e6e8eb!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:10px!important}
+#mapa #mapPreviewCard>div:last-of-type>button,#mapa #mapPreviewCard>div:last-of-type>a,#mapa #mapPreviewCard>div:last-of-type>div{min-width:0}
+#mapa #mapPreviewCard>div:last-of-type>button:first-child,#mapa #mapPreviewCard>div:last-of-type>#previewCommerceActions,#mapa #mapPreviewCard>div:last-of-type>div:last-child{grid-column:1/-1}
+#mapa #previewTitle{font-size:clamp(24px,2.3vw,34px)!important;line-height:1.15;letter-spacing:-.04em}
+#mapa #previewDesc{font-size:14px!important;line-height:1.8}
+}
+@media(max-width:1023px){#mapa>div.grid{gap:14px!important}#mapa #mapPreviewCard{box-shadow:0 12px 34px rgba(18,29,38,.1)!important}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
