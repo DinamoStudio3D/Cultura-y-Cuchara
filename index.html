@@ -867,6 +867,8 @@
         </div>
     </div>
 
+    <div class="fixed bottom-24 right-3 z-[900]"><button type="button" id="generalEventsMapToggle" onclick="toggleGeneralEventMarkers()" aria-pressed="true" class="bg-orange-600 text-white rounded-full px-3 py-2 text-[11px] font-bold shadow-lg border border-white/20">📅 Eventos: visibles</button></div>
+
     <!-- Hero Section -->
     <section id="inicio" class="relative bg-brandDark text-white py-20 lg:py-32 px-4 overflow-hidden">
         <div id="heroBgWrapper" class="absolute inset-0 opacity-45 overflow-hidden flex items-center justify-center bg-black">
@@ -3525,6 +3527,8 @@
         let selectedFestivalDay = defaultFestivalConfig.events[0].date;
         let festivalClockTimer = null;
         let festivalEventLayer = null;
+        let generalEventLayer = null;
+        let generalEventsVisible = true;
         let festivalEventsVisible = true;
 
         function festivalDateTime(event) {
@@ -4180,6 +4184,7 @@
             }).addTo(map);
             markersLayer = L.layerGroup().addTo(map);
             festivalEventLayer = L.layerGroup().addTo(map);
+            generalEventLayer = L.layerGroup().addTo(map);
         } catch(e) { 
             console.warn('Map initialization:', e); 
         }
@@ -4565,14 +4570,14 @@
         let currentEventIndex = 0;
         function upcomingEventTimestamp(event) {
             if (!event?.date) return Number.POSITIVE_INFINITY;
-            const time = /^\d{2}:\d{2}$/.test(event.time || '') ? event.time : '00:00';
+            const time = /^\d{2}:\d{2}$/.test(event.time || '') ? event.time : '18:00';
             const stamp = Date.parse(event.date + 'T' + time + ':00-05:00');
             return Number.isFinite(stamp) ? stamp : Number.POSITIVE_INFINITY;
         }
         function upcomingSortedEvents() {
             const now = Date.now();
             return (Array.isArray(eventsList) ? eventsList : [])
-                .filter(event => event && event.date && upcomingEventTimestamp(event) >= now && upcomingEventTimestamp(event) !== Infinity)
+                .filter(event => event && event.date && upcomingEventTimestamp(event) + 60 * 60 * 1000 > now && upcomingEventTimestamp(event) !== Infinity)
                 .sort((a, b) => upcomingEventTimestamp(a) - upcomingEventTimestamp(b));
         }
         let upcomingEventModalIndex = 0;
@@ -4636,6 +4641,47 @@
             if (event.key === 'ArrowRight') stepUpcomingEvent(1);
             if (event.key === 'ArrowLeft') stepUpcomingEvent(-1);
         });
+        function renderGeneralEventMarkers() {
+            if (!generalEventLayer || typeof L === 'undefined') return;
+            generalEventLayer.clearLayers();
+            if (!generalEventsVisible) return;
+            upcomingSortedEvents().forEach(event => {
+                const lat = Number(event.lat), lng = Number(event.lng);
+                if (!Number.isFinite(lat) || !Number.isFinite(lng) || !lat || !lng) return;
+                const icon = L.divIcon({
+                    className: 'general-event-leaflet-icon',
+                    html: '<div style="width:27px;height:27px;background:#f97316;border:2px solid white;border-radius:50% 50% 50% 6px;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px #0007"><span style="transform:rotate(45deg);font-size:14px">📅</span></div>',
+                    iconSize: [27,27], iconAnchor: [13,26], popupAnchor: [0,-26]
+                });
+                const popup = document.createElement('div');
+                const title = document.createElement('strong');
+                title.textContent = event.title || 'Evento en Loja';
+                const info = document.createElement('p');
+                info.textContent = [event.date, event.time || '18:00', event.location].filter(Boolean).join(' · ');
+                popup.append(title, info);
+                if (/^https:\/\//.test(event.img || '')) {
+                    const image = document.createElement('img');
+                    image.src = event.img; image.alt = event.title || 'Afiche del evento';
+                    image.style.cssText = 'max-width:180px;max-height:140px;object-fit:contain;border-radius:8px';
+                    popup.appendChild(image);
+                }
+                const button = document.createElement('button');
+                button.type = 'button'; button.textContent = 'Ver agenda de eventos';
+                button.style.cssText = 'display:block;margin-top:8px;background:#f97316;color:white;border:0;border-radius:8px;padding:7px 10px;cursor:pointer';
+                button.addEventListener('click', openUpcomingEventsModal);
+                popup.appendChild(button);
+                L.marker([lat,lng], {icon,zIndexOffset:650}).bindPopup(popup).addTo(generalEventLayer);
+            });
+        }
+        function toggleGeneralEventMarkers() {
+            generalEventsVisible = !generalEventsVisible;
+            renderGeneralEventMarkers();
+            const button = document.getElementById('generalEventsMapToggle');
+            if (button) {
+                button.setAttribute('aria-pressed', String(generalEventsVisible));
+                button.textContent = generalEventsVisible ? '📅 Eventos: visibles' : '📅 Eventos: ocultos';
+            }
+        }
         function checkLiveEventsBanner() {
             const banner = document.getElementById('liveEventBanner');
             const textEl = document.getElementById('liveEventText');
