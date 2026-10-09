@@ -37,3 +37,12 @@ test("Imagen principal de galería como alternativa",()=>{
  const page=guide.render([{id:"prueba",title:"Parada con galería",category:"hotel",gallery:[{img:"https://example.com/foto.jpg"}]}]);
  assert.match(page,/https:\/\/example.com\/foto.jpg/);
 });
+
+test("Decodifica los tipos de campos Firestore sin perder valores",()=>{
+ assert.equal(guide.val({booleanValue:true}),true);
+ assert.equal(guide.val({integerValue:"12"}),12);
+ assert.equal(guide.val({doubleValue:2.5}),2.5);
+ assert.equal(guide.val({timestampValue:"2026-01-01T00:00:00Z"}),"2026-01-01T00:00:00Z");
+ assert.equal(guide.val({nullValue:null}),null);
+ assert.deepEqual(guide.val({arrayValue:{values:[{stringValue:"Catamayo"},{integerValue:"2"}]}}),["Catamayo",2]);
+});
