@@ -2163,15 +2163,51 @@ async function uploadGeneralEventPoster() {
     if(!file){status.textContent='Selecciona primero una imagen.';return;}
     if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){status.textContent='Solo JPG, PNG o WebP de hasta 5 MB.';return;}
     if(!auth.currentUser){status.textContent='Inicia sesión como administrador.';return;}
-    button.disabled=true;status.textContent='Subiendo afiche...';
+    button.disabled=true;
+    status.textContent='Conectando con Firebase Storage...';
+    let uploadTask=null;
+    let timeoutId=null;
     try {
+        if(typeof adminFirebaseApp.storage!=='function') throw Object.assign(new Error('El módulo Firebase Storage no está disponible.'),{code:'storage/sdk-unavailable'});
         const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
         const ref=adminFirebaseApp.storage().ref('event-posters/'+Date.now()+'-'+safeName);
-        await ref.put(file,{contentType:file.type});
-        document.getElementById('generalEventImage').value=await ref.getDownloadURL();
+        uploadTask=ref.put(file,{contentType:file.type});
+        const completed=new Promise((resolve,reject)=>{
+            uploadTask.on('state_changed',snapshot=>{
+                const percentage=snapshot.totalBytes ? Math.round(100*snapshot.bytesTransferred/snapshot.totalBytes) : 0;
+                status.textContent='Subiendo afiche... '+percentage+'%';
+            },reject,resolve);
+        });
+        const deadline=new Promise((_,reject)=>{
+            timeoutId=setTimeout(()=>{
+                if(uploadTask) uploadTask.cancel();
+                reject(Object.assign(new Error('Firebase no respondió en 45 segundos.'),{code:'storage/timeout'}));
+            },45000);
+        });
+        await Promise.race([completed,deadline]);
+        if(timeoutId){clearTimeout(timeoutId);timeoutId=null;}
+        status.textContent='Finalizando afiche...';
+        document.getElementById('generalEventImage').value=await Promise.race([
+            ref.getDownloadURL(),
+            new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(Object.assign(new Error('No se obtuvo la URL del afiche.'),{code:'storage/url-timeout'})),15000);})
+        ]);
         status.textContent='Afiche subido correctamente. Guarda el evento para publicarlo.';
-    }catch(error){const code=error?.code || 'error-desconocido';status.textContent='No se pudo subir ('+code+'). '+(code==='storage/unauthorized'?'Revisa los permisos de Firebase Storage.':code==='storage/bucket-not-found'?'Verifica que Firebase Storage esté activado.':'Revisa la consola o la configuración de Firebase Storage.');console.error('Event poster upload',error);}
-    finally{button.disabled=false;}
+    }catch(error){
+        const code=error?.code || 'error-desconocido';
+        const explanations={
+            'storage/unauthorized':'Firebase Storage rechazó los permisos de subida.',
+            'storage/bucket-not-found':'No existe el depósito de Firebase Storage configurado.',
+            'storage/sdk-unavailable':'No se cargó la librería de Firebase Storage.',
+            'storage/timeout':'Firebase no respondió en 45 segundos. Comprueba la conexión y la configuración de Storage.',
+            'storage/url-timeout':'Se transfirió el archivo, pero no se pudo obtener su URL.',
+            'storage/canceled':'Se canceló la subida.'
+        };
+        status.textContent='No se pudo subir ('+code+'). '+(explanations[code]||error?.message||'Revisa la configuración de Firebase Storage.')+' Puedes usar una URL de imagen mientras lo resolvemos.';
+        console.error('Event poster upload',error);
+    }finally{
+        if(timeoutId)clearTimeout(timeoutId);
+        button.disabled=false;
+    }
 }
 function resetGeneralEventForm() {
     document.getElementById('generalEventForm').reset();
