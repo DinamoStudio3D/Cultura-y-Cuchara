@@ -9,6 +9,23 @@ const read = path => {
 };
 const assert = (condition, message) => condition ? pass(message) : fail(message);
 
+// Check actual HTML image tags, excluding JavaScript templates and remote URLs.
+// Missing local assets must fail validation before a Preview is delivered.
+for (const filename of fs.readdirSync('.').filter(name => name.endsWith('.html'))) {
+    const markup = fs.readFileSync(filename, 'utf8')
+        .replace(/<!--[^]*?-->/g, '')
+        .replace(/<(script|style)\b[^>]*>[^]*?<\/\1\s*>/gi, '');
+    const missing = [];
+    for (const tag of markup.matchAll(/<img\b[^>]*>/gi)) {
+        const src = tag[0].match(/\bsrc\s*=\s*(["'])(.*?)\1/i)?.[2];
+        if (!src || /^(?:[a-z]+:|\/\/)/i.test(src) || src.includes('${')) continue;
+        const path = decodeURIComponent(src.split(/[?#]/)[0]).replace(/^\//, '');
+        if (path && !fs.existsSync(path)) missing.push(src);
+    }
+    assert(missing.length === 0,
+        `${filename}: imágenes locales disponibles${missing.length ? ' — faltan: ' + missing.join(', ') : ''}`);
+}
+
 const index = read('index.html');
 const publicStyles = index + read('css/public-layout.css') + read('css/public-colors.css');
 const admin = read('admin.html');
