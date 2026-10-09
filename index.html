@@ -595,6 +595,24 @@
     <meta property="og:image:width" content="1536">
     <meta property="og:image:height" content="1536">
     <link rel="stylesheet" href="css/mobile-ui.css">
+    <!-- Modernización visual V1: solo presentación de portada, sin alterar funcionalidades -->
+    <style id="visitaloja-modern-home-v1">
+      #inicio { isolation:isolate; padding-top:clamp(4.5rem,8vw,7.5rem); padding-bottom:clamp(5rem,9vw,8rem); }
+      #inicio #heroBgWrapper { opacity:.58; }
+      #inicio #heroBgWrapper:after { content:"";position:absolute;inset:0;z-index:11;pointer-events:none;background:radial-gradient(ellipse at 50% 38%,transparent 8%,rgba(8,10,17,.5) 82%); }
+      #inicio #heroLogoFrame { box-shadow:0 20px 65px rgba(0,0,0,.35),0 0 0 8px rgba(255,255,255,.05);transition:transform .3s ease; }
+      #inicio #heroLogoFrame:hover { transform:translateY(-4px); }
+      #inicio #heroBadge { letter-spacing:.13em;backdrop-filter:blur(14px); }
+      #inicio #heroTitle { max-width:1000px;line-height:1.08;letter-spacing:-.035em;text-wrap:balance;text-shadow:0 5px 30px rgba(0,0,0,.24); }
+      #inicio #heroSubtitle { max-width:680px;text-wrap:pretty; }
+      #inicio .vl-home-actions { max-width:1100px;flex-wrap:wrap;align-items:stretch;gap:12px; }
+      #inicio .vl-home-actions > * { display:inline-flex;align-items:center;justify-content:center;min-height:54px;border-radius:16px;transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease; }
+      #inicio .vl-home-actions > *:hover { transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.24); }
+      #inicio .vl-home-actions > *:focus-visible { outline:3px solid #fff;outline-offset:3px; }
+      @media(max-width:639px){#inicio{padding-top:4rem;padding-bottom:5rem}#inicio #heroLogoFrame{width:116px;height:116px}#inicio #heroTitle{font-size:clamp(2.15rem,9vw,3.1rem)}#inicio .vl-home-actions{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:10px}#inicio .vl-home-actions>*{padding:12px 8px;font-size:12px;min-height:58px}#inicio #heroSubtitle{font-size:14px}}
+      @media(prefers-reduced-motion:reduce){#inicio #heroLogoFrame,#inicio .vl-home-actions>*{transition:none}#inicio #heroLogoFrame:hover,#inicio .vl-home-actions>*:hover{transform:none}}
+    </style>
+
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -888,7 +906,7 @@
             <p id="heroSubtitle" class="text-sm sm:text-base lg:text-lg text-gray-200 max-w-3xl mx-auto mb-8 leading-relaxed font-normal" data-i18n="heroSubtitle">
                 Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.
             </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
+            <div class="vl-home-actions flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
                 <a href="#mapa" class="bg-brandGold text-white font-bold px-8 py-4 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-sm text-center">
                     <i class="fa-solid fa-map-location-dot mr-2"></i> <span data-i18n="btnStartRoute">Iniciar la Ruta</span>
                 </a>
