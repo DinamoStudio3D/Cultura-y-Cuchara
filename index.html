@@ -4557,7 +4557,7 @@
         let currentEventIndex = 0;
         function upcomingEventTimestamp(event) {
             if (!event?.date) return Number.POSITIVE_INFINITY;
-            const time = /^\\d{2}:\\d{2}$/.test(event.time || '') ? event.time : '00:00';
+            const time = /^\d{2}:\d{2}$/.test(event.time || '') ? event.time : '00:00';
             const stamp = Date.parse(event.date + 'T' + time + ':00-05:00');
             return Number.isFinite(stamp) ? stamp : Number.POSITIVE_INFINITY;
         }
