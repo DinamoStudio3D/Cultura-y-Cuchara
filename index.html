@@ -268,7 +268,7 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=59">
+<link rel="stylesheet" href="css/public-layout.css?v=60">
 <link rel="stylesheet" href="css/public-colors.css?v=58">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
@@ -920,7 +920,7 @@
                     Apoya el talento local, la repostería artesanal, el café de autor y los productos emergentes de nuestra provincia.
                 </p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="emprendedoresGridContainer"></div>
+            <div class="vl-entrepreneur-grid" id="emprendedoresGridContainer"></div>
         </div>
     </section>
 
@@ -5301,27 +5301,29 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(!container) return;
             container.innerHTML = '';
 
-            emprendedoresList.forEach(emp => {
-                const waText = currentLang === 'en' 
+            container.innerHTML = emprendedoresList.map(emp => {
+                const name = escapeHTML(String(emp.name || ''));
+                const waText = currentLang === 'en'
                     ? `Hello! I came from the Visita Loja website and would like information about ${emp.name}.`
                     : `¡Hola! Vengo desde la web Visita Loja y deseo más información sobre su emprendimiento ${emp.name}.`;
-
-                container.innerHTML += `
-                    <div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between">
-                        <div class="h-48 md:h-52 overflow-hidden relative">
-                            <img src="${emp.img}" alt="" class="w-full h-full object-cover" decoding="async" loading="lazy">
-                            <span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow">${emp.category}</span>
+                const contactLabel = currentLang === 'en' ? 'Contact on WhatsApp' : 'Contactar por WhatsApp';
+                const phone = String(emp.phone || '').replace(/\D/g, '');
+                return `
+                    <article class="vl-enterprise-card bg-white">
+                        <div class="vl-enterprise-photo">
+                            <img src="${escapeHTML(String(emp.img || ''))}" alt="${name}" decoding="async" loading="lazy" onerror="this.hidden=true;this.parentElement.classList.add('is-unavailable')">
+                            <div class="vl-enterprise-placeholder" aria-hidden="true"><i class="fa-solid fa-store"></i><span>Hecho en Loja</span></div>
+                            <span class="vl-enterprise-category bg-brandDark">${escapeHTML(String(emp.category || ''))}</span>
                         </div>
-                        <div class="p-5">
-                            <h3 class="font-bold text-base sm:text-lg text-brandDark mb-1">${emp.name}</h3>
-                            <p class="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-4">${emp.desc}</p>
-                            <a href="https://wa.me/${emp.phone}?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener noreferrer" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition flex items-center justify-center shadow">
-                                <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Contactar por WhatsApp
-                            </a>
+                        <div class="vl-enterprise-copy">
+                            <p class="vl-enterprise-kicker">${currentLang === 'en' ? 'LOCAL ENTREPRENEURSHIP' : 'TALENTO LOCAL'}</p>
+                            <h3>${name}</h3>
+                            <p class="vl-enterprise-description">${escapeHTML(String(emp.desc || ''))}</p>
+                            ${phone ? `<a href="https://wa.me/${phone}?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener noreferrer" class="vl-enterprise-contact bg-green-500"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> ${contactLabel}<i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>` : ''}
                         </div>
-                    </div>
-                `;
-            });
+                    </article>`;
+            }).join('');
+            if (!emprendedoresList.length) container.innerHTML = `<p class="vl-enterprise-empty">${currentLang === 'en' ? 'New local businesses will appear here.' : 'Aquí encontrarás los nuevos emprendimientos de Loja.'}</p>`;
             renderAdminEmprendedoresList();
         }
 

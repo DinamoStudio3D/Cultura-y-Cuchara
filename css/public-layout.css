@@ -959,6 +959,32 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 #emprendedores .vl44-entrepreneur-photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 #emprendedores .vl44-entrepreneur-photo span { position:absolute; right:20px; bottom:20px; padding:10px 15px; border-radius:30px; background:rgba(255,255,255,.94); font-size:11px!important; font-weight:900!important; letter-spacing:.12em; }
 #emprendedores #emprendedoresGridContainer { gap:23px!important; }
+/* Adapt the actual entries: one becomes a feature; several form equal cards. */
+.vl-entrepreneur-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); }
+.vl-enterprise-card { display:flex; flex-direction:column; border:1px solid #e1e9f1; box-shadow:0 8px 24px rgba(19,44,72,.06); }
+.vl-enterprise-photo { position:relative; height:230px; overflow:hidden; background:#e8eef3; }
+.vl-enterprise-photo img { width:100%; height:100%; object-fit:cover; }
+.vl-enterprise-placeholder { display:none; }
+.vl-enterprise-photo.is-unavailable .vl-enterprise-placeholder { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; font-weight:800; }
+.vl-enterprise-placeholder i { font-size:48px; }
+.vl-enterprise-category { position:absolute; left:18px; top:18px; padding:8px 12px; border-radius:999px; font-size:12px!important; font-weight:800!important; }
+.vl-enterprise-copy { padding:26px; display:flex; flex-direction:column; flex:1; align-items:flex-start; }
+.vl-enterprise-kicker { font-size:11px!important; font-weight:800!important; letter-spacing:.14em; margin-bottom:12px; }
+.vl-enterprise-copy h3 { font-size:26px!important; line-height:1.15!important; font-weight:850!important; margin-bottom:14px; letter-spacing:-.025em; }
+.vl-enterprise-description { font-size:16px!important; line-height:1.65!important; margin-bottom:24px; }
+.vl-enterprise-contact { display:inline-flex; gap:10px; align-items:center; justify-content:center; border-radius:12px; padding:13px 18px; min-height:46px; margin-top:auto; font-size:14px!important; font-weight:800!important; }
+.vl-enterprise-empty { padding:24px; text-align:center; }
+@media(min-width:761px) {
+  .vl-entrepreneur-grid:has(>article:only-child) { grid-template-columns:1fr; }
+  .vl-enterprise-card:only-child { display:grid; grid-template-columns:1fr 1fr; }
+  .vl-enterprise-card:only-child .vl-enterprise-photo { height:auto; min-height:300px; }
+  .vl-enterprise-card:only-child .vl-enterprise-photo img { position:absolute; inset:0; }
+  .vl-enterprise-card:only-child .vl-enterprise-copy { padding:36px; justify-content:center; }
+  .vl-enterprise-card:only-child h3 { font-size:34px!important; }
+  .vl-enterprise-card:only-child .vl-enterprise-description { font-size:18px!important; max-width:520px; }
+  .vl-enterprise-card:only-child .vl-enterprise-contact { margin-top:0; }
+}
+@media(max-width:480px) { .vl-enterprise-copy { padding:24px; } .vl-enterprise-contact { width:100%; } }
 #emprendedores #emprendedoresGridContainer>div,#emprendedores #emprendedoresGridContainer>article { border-radius:20px!important; overflow:hidden; }
 @media(max-width:760px) {
   #emprendedores .vl44-entrepreneur-header { grid-template-columns:1fr; }
