@@ -770,6 +770,21 @@
 @media(max-width:700px){#establecimientos{padding-left:14px;padding-right:14px}#establecimientos>div>div:first-child{padding:23px 18px;border-radius:20px;gap:22px}#establecimientos>div>div:nth-child(2){padding:13px;border-radius:17px}#establecimientos #localesGrid{gap:15px}}
 @media(prefers-reduced-motion:reduce){#establecimientos #localesGrid>*,#establecimientos #localesGrid img,#emprendedoresGridContainer>*{transition:none!important}#establecimientos #localesGrid>*:hover,#establecimientos #localesGrid>*:hover img,#emprendedoresGridContainer>*:hover{transform:none!important}}
 </style>
+
+<style id="visitaloja-card-redesign-v16">
+#establecimientos #localesGrid>.local-item{background:#fff!important;border:1px solid #e5e8ed!important;border-radius:24px!important;box-shadow:0 10px 30px rgba(22,34,45,.07)!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important}
+#establecimientos #localesGrid>.local-item>div:first-of-type{height:245px!important;flex-shrink:0}
+#establecimientos #localesGrid>.local-item>div:first-of-type:after{content:'';position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.25));pointer-events:none}
+#establecimientos #localesGrid .vl-card-content{padding:22px 23px 20px!important;display:flex;flex-direction:column;flex:1;gap:9px}
+#establecimientos #localesGrid .vl-card-kicker{font-size:9px;letter-spacing:.17em;font-weight:900;color:#ea580c}
+#establecimientos #localesGrid .vl-card-kicker i{margin-right:5px}
+#establecimientos #localesGrid .local-title{font-size:21px!important;font-weight:900!important;letter-spacing:-.035em;line-height:1.18;color:#17212b!important}
+#establecimientos #localesGrid .local-desc{font-size:13px!important;line-height:1.7!important;color:#62707d!important;min-height:42px}
+#establecimientos #localesGrid .vl-card-explore{border-top:1px solid #e9edf0;margin-top:auto;padding-top:16px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:900;color:#d95213}
+#establecimientos #localesGrid .vl-card-explore-icon{width:34px;height:34px;border-radius:11px;background:#fff0e5;display:grid;place-items:center;font-size:13px}
+#establecimientos #localesGrid>.local-item:hover{transform:translateY(-6px);box-shadow:0 22px 50px rgba(22,34,45,.15)!important}
+@media(max-width:640px){#establecimientos #localesGrid>.local-item>div:first-of-type{height:215px!important}#establecimientos #localesGrid .vl-card-content{padding:18px!important}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -5126,7 +5141,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                                 </a>
                             </div>
                         </div>
-                        <div class="p-5 relative">
+                        <div class="vl-card-content p-5 relative">
+                            <div class="vl-card-kicker"><i class="fa-solid fa-location-dot"></i> DESCUBRE LOJA</div>
                             <div class="flex items-center justify-between mb-1">
                                 <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${locTitle}</h3>
                                 ${cardDistHtml}
@@ -5135,6 +5151,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
                                 <i class="fa-solid fa-clock text-brandGold"></i> <span>${loc.hours || 'Lun - Dom: 08:00 - 20:00'}</span>
                             </div>
+                            <div class="vl-card-explore"><span>Explorar este lugar</span><span class="vl-card-explore-icon"><i class="fa-solid fa-arrow-up-right-from-square"></i></span></div>
                         </div>
                     </div>
                 `;
