@@ -729,6 +729,25 @@
 @media(min-width:1024px){#mapa #mapPreviewCard>div.vl-place-actions:last-of-type{display:flex!important;flex-direction:column!important;gap:10px!important;padding:8px 0 8px 30px!important}#mapa .vl-place-actions>div:last-child{order:-2}}
 @media(max-width:600px){#mapa .vl-place-actions-head{align-items:flex-start;flex-direction:column}}
 </style>
+
+<style id="visitaloja-map-more-v14">
+#mapa .vl-place-actions{display:flex!important;flex-direction:column!important;gap:11px!important}
+#mapa .vl-place-actions>button[onclick="openBusinessPageForCurrent()"]{order:0!important}
+#mapa .vl-place-actions>div:last-child{order:1!important}
+#mapa .vl-place-actions>details.vl-map-more{order:2!important}
+#mapa .vl-place-actions>#previewRestaurantMenuBtn,#mapa .vl-place-actions>#previewCommerceActions{order:1!important}
+#mapa .vl-map-more{border:1px solid #e2e6eb;border-radius:14px;background:#f8fafc;overflow:hidden}
+#mapa .vl-map-more summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:15px 17px;font-size:13px;font-weight:900;color:#273747;user-select:none}
+#mapa .vl-map-more summary::-webkit-details-marker{display:none}
+#mapa .vl-map-more summary span i{color:#ea580c;margin-right:9px}
+#mapa .vl-map-more summary .vl-more-chevron{font-size:12px;transition:transform .2s}
+#mapa .vl-map-more[open] summary .vl-more-chevron{transform:rotate(180deg)}
+#mapa .vl-map-more summary:focus-visible{outline:3px solid #ea580c;outline-offset:-3px}
+#mapa .vl-map-more-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:0 12px 13px}
+#mapa .vl-map-more-body>button{min-height:44px;padding:11px!important;border-radius:11px!important;font-size:11px!important;box-shadow:none!important}
+#mapa .vl-map-more-body>button:first-child{grid-column:1/-1}
+@media(max-width:540px){#mapa .vl-map-more-body{grid-template-columns:1fr}#mapa .vl-map-more-body>button:first-child{grid-column:auto}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1270,17 +1289,18 @@
 
                 <div class="vl-place-actions pt-3 border-t border-gray-100 flex flex-col gap-2">
                     <div class="vl-place-actions-head"><span><i class="fa-solid fa-compass"></i> Explora este lugar</span><small>Elige cómo continuar tu visita</small></div>
-                    <button id="previewAudioGuideBtn" type="button" onclick="toggleLocationAudioGuide()" class="w-full bg-brandGold/10 text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-brandGold hover:text-white transition border border-brandGold/40 flex items-center justify-center gap-2" aria-label="Escuchar audioguía del lugar seleccionado">
-                        <i class="fa-solid fa-volume-high"></i> <span id="previewAudioGuideLabel">Escuchar audioguía</span>
-                    </button>
-                    <button id="previewRestaurantMenuBtn" type="button" onclick="openRestaurantMenu()" class="hidden w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white py-3 rounded-xl font-black text-xs hover:from-orange-500 hover:to-amber-400 transition shadow-lg items-center justify-center gap-2"><i class="fa-solid fa-book-open"></i><span id="previewRestaurantMenuLabel">Ver menú del restaurante</span></button><div id="previewCommerceActions" class="hidden grid grid-cols-2 gap-2"><button id="previewOrderBtn" type="button" onclick="openCommerceWhatsapp('order')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i><span id="previewOrderLabel">Pedir ahora</span></button><button id="previewReservationBtn" type="button" onclick="openCommerceWhatsapp('reservation')" class="hidden bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-solid fa-calendar-check"></i><span id="previewReservationLabel">Reservar mesa</span></button></div>
-                    <button type="button" onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
-                        <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
-                    </button>
                     <button type="button" onclick="openBusinessPageForCurrent()" class="w-full bg-orange-50 text-orange-800 py-2.5 rounded-xl font-bold text-xs hover:bg-orange-100 transition shadow border border-orange-200 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-store"></i> Ver página completa
                     </button>
                     
+                    <button id="previewRestaurantMenuBtn" type="button" onclick="openRestaurantMenu()" class="hidden w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white py-3 rounded-xl font-black text-xs hover:from-orange-500 hover:to-amber-400 transition shadow-lg items-center justify-center gap-2"><i class="fa-solid fa-book-open"></i><span id="previewRestaurantMenuLabel">Ver menú del restaurante</span></button><div id="previewCommerceActions" class="hidden grid grid-cols-2 gap-2"><button id="previewOrderBtn" type="button" onclick="openCommerceWhatsapp('order')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i><span id="previewOrderLabel">Pedir ahora</span></button><button id="previewReservationBtn" type="button" onclick="openCommerceWhatsapp('reservation')" class="hidden bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-solid fa-calendar-check"></i><span id="previewReservationLabel">Reservar mesa</span></button></div>
+                    <details class="vl-map-more"><summary><span><i class="fa-solid fa-ellipsis"></i> Más opciones del lugar</span><i class="fa-solid fa-chevron-down vl-more-chevron"></i></summary><div class="vl-map-more-body">
+                    <button id="previewAudioGuideBtn" type="button" onclick="toggleLocationAudioGuide()" class="w-full bg-brandGold/10 text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-brandGold hover:text-white transition border border-brandGold/40 flex items-center justify-center gap-2" aria-label="Escuchar audioguía del lugar seleccionado">
+                        <i class="fa-solid fa-volume-high"></i> <span id="previewAudioGuideLabel">Escuchar audioguía</span>
+                    </button>
+                    <button type="button" onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
+                        <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
+                    </button>
                     <button id="previewStampButton" type="button" onclick="openQrClaimForCurrent()" class="w-full bg-brandGold text-white py-2.5 rounded-xl font-bold text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-qrcode"></i> Obtener sello de esta parada
                     </button>
@@ -1293,6 +1313,7 @@
                         <i class="fa-solid fa-link text-brandGold"></i> <span id="previewShareLinkLabel">Compartir enlace del lugar</span>
                     </button>
 
+                    </div></details>
                     <div class="grid grid-cols-2 gap-2">
                         <a id="previewWhatsapp" href="#" target="_blank" rel="noopener noreferrer" class="min-h-11 bg-green-500 text-white px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
                             <i class="fa-brands fa-whatsapp mr-1.5 text-base"></i> <span>WhatsApp</span>
