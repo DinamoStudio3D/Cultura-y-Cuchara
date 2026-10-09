@@ -981,6 +981,31 @@ footer a:hover{color:#f4bf78!important}
 #dia-turismo .grid.sm\:grid-cols-3>div{border-radius:9px!important;padding:25px!important;background:rgba(255,255,255,.055)!important;min-height:135px}
 @media(max-width:768px){#loja-tiempo,#dia-turismo{padding:70px 20px!important}#loja-tiempo #beforeAfterViewer{height:340px!important}#dia-turismo #tourismDayCountdown>div{padding:12px 5px!important}}
 </style>
+
+<style id="visitaloja-navigation-editorial-v28">
+nav.glass-nav.sticky{background:rgba(14,40,33,.97)!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.14)!important;box-shadow:0 10px 35px rgba(0,0,0,.13)!important;backdrop-filter:blur(22px)!important;padding:14px clamp(18px,3.5vw,60px)!important}
+nav.glass-nav.sticky>.max-w-\[1500px\]{max-width:1450px!important;gap:22px!important}
+nav.glass-nav.sticky>a,nav.glass-nav.sticky .group{min-width:0}
+nav.glass-nav.sticky #brandNameText{font-size:16px!important;letter-spacing:.055em!important}
+nav.glass-nav.sticky #navLogoImg{object-fit:contain}
+nav.glass-nav.sticky .hidden.\32 xl\:flex{display:none!important}
+nav.glass-nav.sticky .vl28-primary-links{display:flex;align-items:center;justify-content:center;gap:clamp(14px,2.2vw,36px);margin-left:auto}
+nav.glass-nav.sticky .vl28-primary-links a{font-size:12px;font-weight:750;color:rgba(255,255,255,.83);white-space:nowrap;padding:10px 0;transition:color .2s}
+nav.glass-nav.sticky .vl28-primary-links a:hover{color:#f4bf78}
+nav.glass-nav.sticky .vl28-nav-actions{display:flex;align-items:center;gap:12px;margin-left:5px}
+nav.glass-nav.sticky .vl28-route-button{background:#e9b477;color:#17372d;border-radius:7px;padding:12px 18px;white-space:nowrap;font-size:12px;font-weight:900}
+nav.glass-nav.sticky .vl28-route-button:hover{background:#f6c993}
+nav.glass-nav.sticky .vl28-menu-caption{font-size:9px;letter-spacing:.15em;color:#c5d8ce;font-weight:800}
+nav.glass-nav.sticky #mobileMenuButton{display:flex!important;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid rgba(255,255,255,.26);border-radius:7px;font-size:18px!important;flex-shrink:0}
+nav.glass-nav.sticky #mobileMenuButton:hover{background:rgba(255,255,255,.1)}
+nav.glass-nav.sticky #mobileMenu{background:#12372d!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:10px!important;margin-top:15px!important;padding:20px!important;max-height:min(75vh,720px);overflow:auto;box-shadow:0 25px 55px rgba(0,0,0,.25)}
+nav.glass-nav.sticky #mobileMenu:not(.hidden){display:block!important}
+nav.glass-nav.sticky #mobileMenu a{border-radius:7px!important}
+nav.glass-nav.sticky #mobileMenu .grid>a{padding:14px!important}
+@media(max-width:1180px){nav.glass-nav.sticky .vl28-primary-links{gap:14px}nav.glass-nav.sticky .vl28-primary-links a{font-size:11px}}
+@media(max-width:980px){nav.glass-nav.sticky .vl28-primary-links{display:none}nav.glass-nav.sticky .vl28-nav-actions{margin-left:auto}}
+@media(max-width:580px){nav.glass-nav.sticky{padding:11px 15px!important}nav.glass-nav.sticky .vl28-route-button{padding:11px 13px;font-size:0}nav.glass-nav.sticky .vl28-route-button i{font-size:17px}nav.glass-nav.sticky .vl28-menu-caption{display:none}nav.glass-nav.sticky #brandNameText{font-size:13px!important}nav.glass-nav.sticky #mobileMenu{padding:12px!important}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1067,6 +1092,17 @@ footer a:hover{color:#f4bf78!important}
                 </button>
             </div>
 
+            <!-- Editorial primary navigation: full catalogue remains available in menu -->
+            <div class="vl28-primary-links" aria-label="Exploración principal">
+                <a href="#categorias">Descubrir</a>
+                <a href="#mapa">Mapa interactivo</a>
+                <a href="#establecimientos">Lugares</a>
+                <a href="#misiones">Experiencias</a>
+            </div>
+            <div class="vl28-nav-actions">
+                <button type="button" class="vl28-route-button" onclick="openModal('itineraryModal')"><i class="fa-solid fa-route"></i> Mi ruta</button>
+                <span class="vl28-menu-caption">MENÚ</span>
+            </div>
             <!-- Hamburger Button for Mobile / Tablet -->
             <button id="mobileMenuButton" type="button" onclick="toggleMobileMenu()" class="2xl:hidden text-white text-xl p-2 relative" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
                 <i class="fa-solid fa-bars"></i>
