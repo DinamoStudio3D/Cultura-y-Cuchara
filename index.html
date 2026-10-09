@@ -5232,7 +5232,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                                 </a>
                             </div>
                                 </div>
-                                <button type="button" onclick="toggleFavoriteCard(event, '${loc.id}')" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta" aria-label="Añadir a mi ruta">
+                                <button type="button" onclick="toggleFavoriteCard(event, '${loc.id}')" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta" aria-label="Guardar o quitar de mi ruta" aria-pressed="${favoriteLocations.includes(loc.id) ? 'true' : 'false'}">
                             <i id="cardFav_${loc.id}" class="${favClass}"></i>
                         </button>
                             </div>
@@ -5411,13 +5411,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
                 if(icon) icon.className = "fa-solid fa-seedling text-brandGold";
-                if(parentBtn) parentBtn.className = "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-black/60 text-brandGold border-brandGold/40 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
+                if(parentBtn) { parentBtn.classList.remove("bg-red-50","text-red-600","border-red-300"); parentBtn.classList.add("bg-white","text-brandGold","border-gray-200"); parentBtn.setAttribute("aria-pressed","false"); parentBtn.setAttribute("title","Añadir a mi ruta"); }
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
                 trackBusinessEvent(localId,'favorite');
                 if(icon) icon.className = "fa-solid fa-seedling text-red-500 scale-110";
-                if(parentBtn) parentBtn.className = "absolute top-3 right-3 z-20 w-10 h-10 rounded-full bg-red-50 text-red-600 border-red-300 backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg";
+                if(parentBtn) { parentBtn.classList.remove("bg-white","bg-black/60","text-brandGold","border-brandGold/40","border-gray-200"); parentBtn.classList.add("bg-red-50","text-red-600","border-red-300"); parentBtn.setAttribute("aria-pressed","true"); parentBtn.setAttribute("title","Quitar de mi ruta"); }
                 showToast(`¡Añadido a Mi Ruta! ☕`);
                 completeChabaquitoMission('ruta');
             }
