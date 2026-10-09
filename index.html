@@ -232,9 +232,9 @@
         .web-mascot-close { position: absolute; right: -2px; top: -8px; width: 28px; height: 28px; border-radius: 999px; background: #121212; color: #fff; border: 1px solid rgba(255,255,255,.3); pointer-events: auto; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
         .web-mascot-restore { position: fixed; left: 14px; bottom: 14px; z-index: 85; width: 46px; height: 46px; border-radius: 999px; border: 2px solid #EA580C; background: #121212; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
         @keyframes mascot-dance { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-9px) rotate(1.5deg); } }
-        .festival-map-pin { width: 24px; height: 24px; border-radius: 50% 50% 50% 8px; transform: rotate(-45deg); display:flex; align-items:center; justify-content:center; color:white; border:2px solid #fff; box-shadow:0 3px 10px rgba(217,70,239,.4); position:relative; }
+        .festival-map-pin { width: 28px; height: 28px; border-radius: 50% 50% 50% 8px; transform: rotate(-45deg); display:flex; align-items:center; justify-content:center; color:white; border:2px solid #fff; box-shadow:0 3px 10px rgba(217,70,239,.4); position:relative; }
         .festival-map-pin::after { content:''; position:absolute; inset:-3px; border:1px solid var(--pin-color,#d946ef); border-radius:50%; animation:festival-map-pulse 1.8s ease-out infinite; opacity:.7; }
-        .festival-map-pin > span { transform:rotate(45deg); font-size:13px; line-height:1; }
+        .festival-map-pin > span { transform:rotate(45deg); font-size:15px; line-height:1; }
         @keyframes festival-map-pulse { 0% { transform:scale(.75); opacity:.8; } 100% { transform:scale(1.2); opacity:0; } }
         @media (max-width: 640px) {
             .web-mascot { width: 105px; left: 6px; bottom: 4px; }
@@ -3621,7 +3621,7 @@
                 const icon = L.divIcon({
                     className: 'festival-leaflet-icon',
                     html: `<div class="festival-map-pin" style="background:${style.color};--pin-color:${style.color}"><span>${style.emoji}</span></div>`,
-                    iconSize: [24, 24], iconAnchor: [12, 23], popupAnchor: [0, -23]
+                    iconSize: [28, 28], iconAnchor: [14, 27], popupAnchor: [0, -27]
                 });
                 const safeId = escapeHTML(event.id || '');
                 const mapLink = event.mapUrl || `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
