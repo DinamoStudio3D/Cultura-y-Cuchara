@@ -98,13 +98,16 @@
     background: var(--vl-surface-dark) !important;
   }
   /* The welcome uses warm neutral paper; photo copy has its own dark surface. */
-  .vl-welcome, .vl-discovery-nav {
+  .vl-welcome, .vl-discovery-nav, .vl-passport-section {
     --vl-text: #253241; --vl-muted: #56616c; --vl-accent: #9e4317;
     background-color: #fff9ef !important;
   }
+  .vl-adventure-signin {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
+  }
   /* Nested light cards reset dark inherited tokens. */
   :where(.vl29-dropdown, #mapPreviewCard, #mapLegendPanel, #searchInput,
-    .vl37-steps > div, .vl39-results-toolbar, .vl46-sponsors-existing,
+    .vl39-results-toolbar, .vl46-sponsors-existing,
     .vl52-spice-card, .vl52-spice-copy, .vl53-ile-partner, .vl-experience-sponsor,
     #localesGrid > article, #localesGrid > .group, #emprendedoresGridContainer > div,
     #agendaGridContainer > article, #agendaGridContainer > div,
@@ -135,14 +138,14 @@
   }
   /* Explicit button pairs: the label and its children always use the same foreground. */
   :where(.bg-brandGold, .bg-brand, [class~="bg-orange-500"], [class~="bg-orange-600"],
-    [class~="bg-amber-500"], [class~="bg-amber-600"], [class~="bg-sky-600"], .vl38-passport-main, .vl44-entrepreneur-link,
-    .vl26-mission-cta, .vl-welcome-primary, .skip-link,
+    [class~="bg-amber-500"], [class~="bg-amber-600"], [class~="bg-sky-600"], .vl-passport-action, .vl44-entrepreneur-link,
+    .vl-adventure-start, .vl-welcome-primary, .skip-link,
     #categorias .max-w-7xl > div:first-child > button,
     #mapa .vl-place-actions > button[onclick="openBusinessPageForCurrent()"] ) {
     --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
     background: var(--vl-action) !important;
   }
-  :where(.bg-brandGold, .vl38-passport-main, .vl44-entrepreneur-link, .vl-welcome-primary):hover {
+  :where(.bg-brandGold, .vl-passport-action, .vl44-entrepreneur-link, .vl-welcome-primary):hover {
     background: var(--vl-action-hover) !important;
   }
   :where([class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], .bg-teal, #previewWhatsapp) {

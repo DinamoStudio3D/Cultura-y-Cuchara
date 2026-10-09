@@ -320,7 +320,7 @@ assert(admin.includes('id="missionsRewardDescriptionEn"'), 'El panel configura l
 assert(admin.includes('missions:{active:document.getElementById'), 'La configuración de misiones se guarda en Firestore');
 assert(index.includes('function applyMissionPresentation'), 'La web aplica la presentación configurable de misiones');
 assert(index.includes("section.classList.toggle('hidden',config.active===false)"), 'El módulo público puede ocultarse sin borrar progreso');
-assert(index.includes('id="chabaquitoV2Public"') && index.includes('src="js/chabaquito-public-v2.js"') && chabaquitoPublicV2.includes('mission.badge?.title'), 'Chabaquito V2 muestra la insignia configurada de cada misión');
+assert(index.includes('id="chabaquitoV2Public"') && /src="js\/chabaquito-public-v2\.js(?:\?[^"]*)?"/.test(index) && chabaquitoPublicV2.includes('mission.badge?.title'), 'Chabaquito V2 muestra la insignia configurada de cada misión');
 
 
 assert(chabaquitoPublicV2.includes('chabaquitoV2Rewards') && chabaquitoPublicV2.includes("collection('chabaquitoDigitalRewards').where('userId','==',uid)") && chabaquitoPublicV2.includes('r.badge?.title'), 'Chabaquito V2 muestra las recompensas del usuario desde Firestore');

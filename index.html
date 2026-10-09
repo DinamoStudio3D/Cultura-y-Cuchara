@@ -268,8 +268,8 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=61">
-<link rel="stylesheet" href="css/public-colors.css?v=61">
+<link rel="stylesheet" href="css/public-layout.css?v=62">
+<link rel="stylesheet" href="css/public-colors.css?v=62">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -949,50 +949,24 @@
         </div>
     </section>
 
-    <!-- Passport Section -->
-    <section id="pasaporte" data-vl-surface="light" class="py-16 px-4 md:px-8 lg:px-12 bg-brandCream text-white reveal shadow-warm-glow">
-        <div class="vl37-passport-intro" aria-label="Guía del pasaporte turístico"><div><span class="vl37-kicker"><i class="fa-solid fa-stamp"></i> UNA EXPERIENCIA PARA COLECCIONAR</span><h2>Tu aventura, <em>una parada a la vez.</em></h2><p>Explora los establecimientos participantes, registra tus visitas y sigue tu progreso desde tu pasaporte.</p><div class="vl38-passport-actions"><button type="button" onclick="openModal('pasaporteModal')" class="vl38-passport-main"><i class="fa-solid fa-passport"></i> Ver mi pasaporte <i class="fa-solid fa-arrow-right"></i></button><a href="#establecimientos" class="vl38-passport-secondary"><i class="fa-solid fa-location-dot"></i> Explorar paradas</a></div></div><div class="vl37-steps" aria-label="Cómo participar"><div><span>01</span><strong>Explora</strong><small>Elige una parada participante.</small></div><div><span>02</span><strong>Visita</strong><small>Escanea el QR y confirma tu visita.</small></div><div><span>03</span><strong>Colecciona</strong><small>Reúne los sellos de tu recorrido.</small></div></div></div><div class="max-w-5xl mx-auto">
-            <div class="bg-white text-brandDark rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
-                <div class="md:w-1/3 bg-brandDark p-8 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-brandGold relative overflow-hidden">
-                    <i aria-hidden="true" class="fa-solid fa-passport absolute -right-4 -bottom-4 text-8xl vl-decoration text-white transform -rotate-12"></i>
-                    <div class="relative z-10 w-full">
-                        <i class="fa-solid fa-qrcode text-6xl text-brandGold mb-4 animate-pulse"></i>
-                        <h2 class="text-2xl font-black text-white uppercase tracking-wider mb-2" data-i18n="passTitle">Pasaporte<br>de Paradas</h2>
-                        <p class="text-gray-400 text-xs mb-4" data-i18n="passDesc">Visita negocios y atractivos, escanea su QR y colecciona sellos.</p>
-                        
-                        <button type="button" onclick="openModal('pasaporteModal')" class="w-full bg-brandGold text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-brandGoldHover transition shadow-warm-glow flex items-center justify-center mx-auto">
-                            <i class="fa-solid fa-book-open mr-2"></i> <span data-i18n="passBtnOpen">Abrir mi Pasaporte</span>
-                        </button>
-                        
-                        <button type="button" onclick="resetPassportProgess()" class="mt-4 text-[10px] text-gray-400 hover:text-white underline" data-i18n="passReset">Borrar progreso guardado</button>
-                    </div>
-                </div>
-                <div class="md:w-2/3 p-8 flex flex-col justify-center">
-                    <h3 class="text-xl font-bold mb-2" data-i18n="passHowTitle">Cada lugar es una nueva parada</h3><p class="text-xs text-gray-600 mb-4">Busca el distintivo de Visita Loja en cada negocio. Escanea su QR, genera tu código temporal y pide al encargado que confirme la visita.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                        <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
-                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-house-user text-brandGold mr-1"></i> <span data-i18n="passLocalMode">Modo Lojano</span></h4>
-                            <p class="text-[11px] text-gray-600" data-i18n="passLocalDesc">Requiere: <b>6 Paradas Gastronómicas</b> (Libre elección).</p>
-                        </div>
-                        <div class="bg-brandCream p-4 rounded-xl border border-brandGold/30">
-                            <h4 class="font-bold text-sm text-brandDark mb-1"><i class="fa-solid fa-suitcase-rolling text-brandGold mr-1"></i> <span data-i18n="passTouristMode">Modo Turista</span></h4>
-                            <p class="text-[11px] text-gray-600" data-i18n="passTouristDesc">Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).</p>
-                        </div>
-                    </div>
-                    <p class="text-[10px] text-gray-500 italic" data-i18n="passRules">* Seguridad: al escanear el QR, genera un código temporal y pide al personal autorizado que confirme tu visita.</p>
-                </div>
-            </div>
+    <!-- A single passport guide, with its existing QR and progress actions. -->
+    <section id="pasaporte" data-vl-surface="light" class="vl-passport-section reveal">
+      <div class="vl-passport-shell">
+        <div class="vl-passport-feature">
+          <div class="vl-passport-copy"><span class="vl-passport-kicker" data-i18n="passportKicker">UN RECUERDO QUE SE CONSTRUYE VISITANDO</span><h2 data-i18n="passportHeadline">Tu pasaporte.<br><em>Tu historia en Loja.</em></h2><p data-i18n="passDesc">Visita negocios y atractivos, escanea su QR y colecciona sellos.</p><div class="vl-passport-actions"><button type="button" onclick="openModal('pasaporteModal')" class="vl-passport-action"><i class="fa-solid fa-passport" aria-hidden="true"></i><span data-i18n="passBtnOpen">Abrir mi Pasaporte</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button><a href="#establecimientos"><span data-i18n="passportFindPlaces">Encontrar paradas</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div></div>
+          <div class="vl-passport-art" aria-hidden="true"><div class="vl-passport-book" data-vl-surface="dark"><span>VISITA LOJA</span><i class="fa-solid fa-passport"></i><strong data-i18n="passportBookTitle">Pasaporte<br>de Paradas</strong><div class="vl-passport-book-stamps"><i class="fa-solid fa-utensils"></i><i class="fa-solid fa-mug-hot"></i><i class="fa-solid fa-bed"></i></div><small>LOJA · ECUADOR</small></div><span class="vl-passport-art-note" data-i18n="passportArtNote">Tus visitas merecen un recuerdo.</span></div>
         </div>
+        <ol class="vl-passport-steps" aria-label="Cómo participar">
+          <li><span>01</span><div><strong data-i18n="passportStepExplore">Elige tu próxima parada</strong><p data-i18n="passportStepExploreHelp">Encuentra un establecimiento participante y disfruta tu visita.</p></div></li>
+          <li><span>02</span><div><strong data-i18n="passportStepVisit">Escanea y confirma</strong><p data-i18n="passportStepVisitHelp">Escanea el QR, genera tu código temporal y pide al personal autorizado que confirme tu visita.</p></div></li>
+          <li><span>03</span><div><strong data-i18n="passportStepCollect">Colecciona tus sellos</strong><p data-i18n="passportStepCollectHelp">Consulta el progreso de tu recorrido en el pasaporte.</p></div></li>
+        </ol>
+        <div class="vl-passport-modes"><div><i class="fa-solid fa-house-user" aria-hidden="true"></i><div><h3 data-i18n="passLocalMode">Modo Lojano</h3><p data-i18n="passLocalDesc">Requiere: <b>6 Paradas Gastronómicas</b>. Los hoteles no cuentan.</p></div></div><div><i class="fa-solid fa-suitcase-rolling" aria-hidden="true"></i><div><h3 data-i18n="passTouristMode">Modo Turista</h3><p data-i18n="passTouristDesc">Requiere: <b>1 Hotel + 5 Gastronomía</b> (6 casillas).</p></div></div></div>
+        <details class="vl-passport-options"><summary data-i18n="passportOptions">Opciones del progreso guardado</summary><button type="button" onclick="resetPassportProgess()" data-i18n="passReset">Borrar progreso guardado</button></details>
+      </div>
     </section>
-
-    <!-- Chabaquito / Misiones V2: UI modular. La lógica legacy se conserva temporalmente para compatibilidad. -->
-    <section id="misiones" data-vl-surface="light" class="reveal vl26-missions">
-        <div class="vl26-mission-intro">
-          <div class="vl26-mission-copy"><span class="vl26-overline"><i class="fa-solid fa-compass"></i> TU AVENTURA COMIENZA AQUÍ</span><h2>Explora Loja.<br><em>Vive la aventura.</em></h2><p>Descubre lugares, supera retos y convierte cada recorrido en una nueva historia con Chabaquito.</p><a href="#chabaquitoV2Public" class="vl26-mission-cta">Ver misiones <i class="fa-solid fa-arrow-down"></i></a></div>
-          <div data-vl-surface="dark" class="vl26-mission-art"><span class="vl26-mission-art-label">AVENTURAS VISITA LOJA</span><div class="vl26-mission-orbit"><i class="fa-solid fa-map-location-dot"></i><i class="fa-solid fa-award"></i><i class="fa-solid fa-camera-retro"></i></div><div class="vl26-mission-art-copy">Cada rincón<br>es una misión.</div></div>
-        </div>
-        <div id="chabaquitoV2Public" aria-live="polite"></div>
-    </section>
+    <!-- Missions own their complete introduction and dynamic content. -->
+    <section id="misiones" data-vl-surface="light" class="vl-adventure-section reveal"><div id="chabaquitoV2Public" aria-live="polite"></div></section>
 
     <!-- Loja en el Tiempo Section (Antes vs Después) -->
     <section id="loja-tiempo" data-vl-surface="dark" class="py-16 lg:py-24 px-4 md:px-8 lg:px-12 bg-[#0f0f0f] text-white border-t border-brandGold/30 relative overflow-hidden reveal">
@@ -2192,6 +2166,19 @@
     <script>
         const translations = {
             es: {
+                passportKicker: 'UN RECUERDO QUE SE CONSTRUYE VISITANDO',
+                passportHeadline: 'Tu pasaporte.<br><em>Tu historia en Loja.</em>',
+                passportFindPlaces: 'Encontrar paradas',
+                passportBookTitle: 'Pasaporte<br>de Paradas',
+                passportArtNote: 'Tus visitas merecen un recuerdo.',
+                passportStepExplore: 'Elige tu próxima parada',
+                passportStepExploreHelp: 'Encuentra un establecimiento participante y disfruta tu visita.',
+                passportStepVisit: 'Escanea y confirma',
+                passportStepVisitHelp: 'Escanea el QR, genera tu código temporal y pide al personal autorizado que confirme tu visita.',
+                passportStepCollect: 'Colecciona tus sellos',
+                passportStepCollectHelp: 'Consulta el progreso de tu recorrido en el pasaporte.',
+                passportOptions: 'Opciones del progreso guardado',
+
                 footerContactTitle: 'Hablemos de Loja',
                 footerContactHelp: 'Consultas, alianzas y asistencia sobre la plataforma.',
                 welcomeSearchLabel: '¿Qué quieres descubrir?',
@@ -2338,6 +2325,19 @@
                 adminPinBtn: "Ingresar al Panel"
             },
             en: {
+                passportKicker: 'A MEMORY BUILT ONE VISIT AT A TIME',
+                passportHeadline: 'Your passport.<br><em>Your story in Loja.</em>',
+                passportFindPlaces: 'Find places',
+                passportBookTitle: 'Places<br>Passport',
+                passportArtNote: 'Your visits deserve a keepsake.',
+                passportStepExplore: 'Choose your next stop',
+                passportStepExploreHelp: 'Find a participating place and enjoy your visit.',
+                passportStepVisit: 'Scan and confirm',
+                passportStepVisitHelp: 'Scan the QR, generate your temporary code and ask authorized staff to confirm your visit.',
+                passportStepCollect: 'Collect your stamps',
+                passportStepCollectHelp: 'Check your journey progress in your passport.',
+                passportOptions: 'Saved progress options',
+
                 footerContactTitle: "Let's talk about Loja",
                 footerContactHelp: 'Questions, partnerships and platform support.',
                 welcomeSearchLabel: 'What would you like to discover?',
@@ -2632,6 +2632,7 @@
             });
 
             renderEverything();
+            window.ChabaquitoPublicV2?.setLanguage(lang);
             if (typeof renderChabaquitoMissions === 'function') renderChabaquitoMissions();
             if (typeof refreshAudioGuideLabels === 'function') refreshAudioGuideLabels();
             applyAutomaticUiLanguage(document.body);
@@ -6931,9 +6932,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             initTimeSliderEvents();
             initChabaquitoMissions();
             initWebMascot();
-            // Keep footer contact and social links clear of fixed invitations.
+            // Keep the main welcome, adventure actions and contact clear of fixed invitations.
             if ('IntersectionObserver' in window) {
-                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible']]) {
+                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible'], ['#pasaporte', 'vl-passport-visible'], ['#misiones', 'vl-adventure-visible']]) {
                     const surface = document.querySelector(selector);
                     if (surface) new IntersectionObserver(([entry]) => document.body.classList.toggle(state, entry.isIntersecting)).observe(surface);
                 }
@@ -7971,7 +7972,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 </script>
 
     <script src="js/chabaquito-runtime-config.js" defer></script>
-    <script src="js/chabaquito-public-v2.js" defer></script>
+    <script src="js/chabaquito-public-v2.js?v=62" defer></script>
     <script src="js/mobile-ui.js" defer></script>
 
 <script id="visitaloja-dropdown-navigation-js-v29">
