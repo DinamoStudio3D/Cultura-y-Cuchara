@@ -268,8 +268,8 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=62">
-<link rel="stylesheet" href="css/public-colors.css?v=62">
+<link rel="stylesheet" href="css/public-layout.css?v=63">
+<link rel="stylesheet" href="css/public-colors.css?v=63">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -1270,29 +1270,25 @@
     </section>
 
     <!-- Agenda -->
-    <section id="agenda" data-vl-surface="light" class="py-16 px-4 md:px-8 lg:px-12 bg-white border-t border-gray-200 reveal">
-        <div class="max-w-7xl mx-auto"><div data-vl-surface="dark" class="vl40-agenda-intro"><div class="vl40-agenda-icon"><i class="fa-solid fa-ticket"></i></div><div><strong>Tu próxima experiencia en Loja comienza aquí</strong><p>Descubre actividades culturales, guarda las que te interesan y consulta su ubicación desde la agenda.</p></div><a href="#mapa" class="vl40-agenda-map"><i class="fa-solid fa-map-location-dot"></i> Explorar mapa <i class="fa-solid fa-arrow-right"></i></a></div>
-            <div class="text-center mb-12">
-                <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-calendar-days mr-1"></i> <span data-i18n="agendaSub">Loja en Movimiento</span></span>
-                <h2 class="text-3xl lg:text-4xl font-black text-brandDark mt-2 mb-3" data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
-                <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="agendaDesc">
-                    Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.
-                </p>
-            </div>
-
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-7 p-2.5 bg-orange-50 border border-orange-100 rounded-2xl">
-                <div class="flex items-center gap-2" role="group" aria-label="Filtrar agenda">
-                    <button id="agendaAllButton" type="button" onclick="setAgendaView('all')" class="px-4 py-2 rounded-xl text-xs font-black transition">
-                        <i class="fa-solid fa-calendar-days mr-1.5"></i><span data-i18n="agendaAll">Todos</span>
-                    </button>
-                    <button id="agendaSavedButton" type="button" onclick="setAgendaView('saved')" class="px-4 py-2 rounded-xl text-xs font-black transition">
-                        <i class="fa-solid fa-bookmark mr-1.5"></i><span data-i18n="agendaSaved">Mis guardados</span>
-                    </button>
+    <section id="agenda" data-vl-surface="light" class="vl-agenda-section reveal">
+        <div class="vl-agenda-shell">
+            <header class="vl-agenda-header">
+                <div><span class="vl-agenda-kicker" data-i18n="agendaSub">Loja en Movimiento</span>
+                <h2 data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
+                <p data-i18n="agendaDesc">Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.</p></div>
+                <nav class="vl-agenda-links" aria-label="Explorar actividades">
+                    <a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="agendaMapLink">Explorar mapa</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                    <a href="#festival-live"><i class="fa-solid fa-masks-theater" aria-hidden="true"></i><span data-i18n="agendaFestivalLink">Programación FIAVL</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                </nav>
+            </header>
+            <div class="vl-agenda-toolbar">
+                <div role="group" aria-label="Filtrar agenda">
+                    <button id="agendaAllButton" type="button" onclick="setAgendaView('all')"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span data-i18n="agendaAll">Todos</span></button>
+                    <button id="agendaSavedButton" type="button" onclick="setAgendaView('saved')"><i class="fa-solid fa-bookmark" aria-hidden="true"></i><span data-i18n="agendaSaved">Mis guardados</span></button>
                 </div>
-                <p id="agendaSavedCount" class="text-xs font-bold text-gray-600 px-3"></p>
+                <p id="agendaSavedCount" role="status"></p>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="agendaGridContainer"></div>
+            <div id="agendaGridContainer" class="vl-agenda-grid"></div>
         </div>
     </section>
 
@@ -2312,6 +2308,8 @@
                 missionRewardTitle: "¡Insignia Explorador de Loja desbloqueada!",
                 missionRewardDesc: "Completaste los cinco retos. Tu certificado ya está disponible.",
                 agendaSub: "Loja en Movimiento",
+                agendaMapLink: "Explorar mapa",
+                agendaFestivalLink: "Programación FIAVL",
                 agendaTitle: "Agenda Cultural y Eventos",
                 agendaDesc: "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
                 podSub: "Episodios Completos",
@@ -2471,6 +2469,8 @@
                 missionRewardTitle: "Loja Explorer badge unlocked!",
                 missionRewardDesc: "You completed all five challenges. Your certificate is now available.",
                 agendaSub: "Loja in Motion",
+                agendaMapLink: "Explore map",
+                agendaFestivalLink: "FIAVL program",
                 agendaTitle: "Cultural Agenda & Events",
                 agendaDesc: "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
                 podSub: "Full Episodes",
@@ -5210,6 +5210,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const countLabel = document.getElementById('agendaSavedCount');
             if (allButton) allButton.className = 'px-4 py-2 rounded-xl text-xs font-black transition ' + (agendaViewMode === 'all' ? 'bg-brandDark text-white shadow' : 'text-gray-600 hover:bg-white');
             if (savedButton) savedButton.className = 'px-4 py-2 rounded-xl text-xs font-black transition ' + (agendaViewMode === 'saved' ? 'bg-brandGold text-white shadow' : 'text-gray-600 hover:bg-white');
+            allButton?.setAttribute('aria-pressed', String(agendaViewMode === 'all'));
+            savedButton?.setAttribute('aria-pressed', String(agendaViewMode === 'saved'));
             if (countLabel) countLabel.textContent = currentLang === 'en'
                 ? (totalSaved === 1 ? '1 saved event' : totalSaved + ' saved events')
                 : (totalSaved === 1 ? '1 evento guardado' : totalSaved + ' eventos guardados');
@@ -5234,38 +5236,41 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     previousGroup = group;
                     agendaContainer.innerHTML += `<div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3 pt-3"><span class="h-px flex-1 bg-gray-200"></span><h3 class="text-xs font-black uppercase tracking-widest ${group === 'past' ? 'text-gray-400' : 'text-brandGold'}">${groupLabels[group]}</h3><span class="h-px flex-1 bg-gray-200"></span></div>`;
                 }
+                const eventDate = /^\d{4}-\d{2}-\d{2}$/.test(ev.date || '') ? new Date(ev.date + 'T12:00:00-05:00') : null;
+                const displayDate = eventDate && Number.isFinite(eventDate.getTime())
+                    ? new Intl.DateTimeFormat(currentLang === 'en' ? 'en-US' : 'es-EC', { day: 'numeric', month: 'long', timeZone: 'America/Guayaquil' }).format(eventDate)
+                    : (currentLang === 'en' ? 'Date to be confirmed' : 'Fecha por confirmar');
                 const isPast = group === 'past';
                 const isFestival = kind === 'festival';
                 const title = (currentLang === 'en' && ev.titleEn) ? ev.titleEn : (ev.title || 'Evento Visita Loja');
                 const description = (currentLang === 'en' && ev.descEn) ? ev.descEn : (ev.desc || ev.description || '');
                 const place = ev.location || ev.place || 'Ubicación por confirmar';
-                const image = ev.img || ev.image || ev.imageUrl || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80';
+                const image = ev.img || ev.image || ev.imageUrl || '';
                 const isSaved = isFestival ? savedFestival.includes(eventId) : savedGeneral.includes(eventId);
                 const safeId = encodeURIComponent(eventId);
                 const badge = isFestival ? 'FIAVL' : (ev.type || 'Evento');
                 const toggleAction = isFestival
                     ? `saveFestivalEvent(decodeURIComponent('${safeId}'))`
                     : `toggleAgendaEventSaved(decodeURIComponent('${safeId}'))`;
-                const mapUrl = ev.mapUrl || ((Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng))) ? `https://www.google.com/maps/search/?api=1&query=${ev.lat},${ev.lng}` : '');
+                const mapUrl = ev.mapUrl || ((ev.lat != null && ev.lng != null && Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng))) ? `https://www.google.com/maps/search/?api=1&query=${ev.lat},${ev.lng}` : '');
 
                 agendaContainer.innerHTML += `
-                    <article class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between ${isPast ? 'opacity-70 grayscale-[25%]' : ''}">
-                        <div class="h-48 md:h-52 overflow-hidden relative">
-                            <img src="${escapeHTML(image)}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
-                            <span class="absolute top-3 left-3 ${isFestival ? 'bg-fuchsia-700 text-white' : 'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${escapeHTML(badge)}</span>
-                            <button type="button" onclick="${toggleAction}" aria-label="${isSaved ? 'Quitar de mis guardados' : 'Guardar evento'}" class="absolute top-3 right-3 w-10 h-10 rounded-full border border-white/70 shadow-lg transition ${isSaved ? 'bg-brandGold text-white' : 'bg-white/95 text-brandDark hover:text-brandGold'}"><i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i></button>
+                    <article class="vl-agenda-card glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between ${isPast ? 'vl-agenda-past' : ''}">
+                        <div class="vl-agenda-media">
+                            ${image ? `<img src="${escapeHTML(image)}" alt="" loading="lazy" decoding="async">` : `<div class="vl-agenda-calendar-art" aria-hidden="true"><i class="fa-regular fa-calendar-days"></i><strong>${escapeHTML(displayDate)}</strong></div>`}
+                            <span data-vl-surface="dark" class="absolute top-3 left-3 ${isFestival ? 'bg-fuchsia-700 text-white' : 'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow">${escapeHTML(badge)}</span>
+                            <button type="button" onclick="${toggleAction}" aria-pressed="${isSaved}" aria-label="${currentLang === 'en' ? (isSaved ? 'Remove saved event' : 'Save event') : (isSaved ? 'Quitar de mis guardados' : 'Guardar evento')}" class="absolute top-3 right-3 w-10 h-10 rounded-full border border-white/70 shadow-lg transition ${isSaved ? 'bg-brandGold text-white' : 'bg-white/95 text-brandDark hover:text-brandGold'}"><i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i></button>
                         </div>
-                        <div class="p-5">
-                            <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${escapeHTML(ev.date || 'Fecha por confirmar')} ${ev.time ? '· ' + escapeHTML(ev.time) : ''}</span>${isPast ? `<span class="ml-2 text-[9px] font-black uppercase bg-gray-200 text-gray-600 rounded-full px-2 py-1">${currentLang === 'en' ? 'Finished' : 'Finalizado'}</span>` : ''}
+                        <div class="vl-agenda-card-body">
+                            <span class="text-xs text-gray-500 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${escapeHTML(displayDate)} ${ev.time ? '· ' + escapeHTML(ev.time) : ''}</span>${isPast ? `<span class="ml-2 text-[9px] font-black uppercase bg-gray-200 text-gray-600 rounded-full px-2 py-1">${currentLang === 'en' ? 'Finished' : 'Finalizado'}</span>` : ''}
                             <h3 class="font-bold text-base sm:text-lg text-brandDark mt-2 mb-2">${escapeHTML(title)}</h3>
-                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">${escapeHTML(description)}</p>
-                        </div>
-                        <div class="px-5 pb-5 pt-3 border-t border-gray-200/60">
-                            <p class="text-xs text-gray-500 truncate mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${escapeHTML(place)}</p>
+                            <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">${escapeHTML(description)}</p>
+                        <div class="vl-agenda-card-actions">
+                            <p class="text-xs text-gray-500 mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${escapeHTML(place)}</p>
                             ${isFestival
                                 ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : '<span></span>'}</div>`
                                 : `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-regular fa-calendar-plus mr-1"></i> ${currentLang === 'en' ? 'Calendar' : 'Calendario'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-route mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : `<span class="border border-gray-200 text-gray-400 px-3 py-2.5 rounded-xl text-center text-xs">${currentLang === 'en' ? 'Location pending' : 'Ubicación pendiente'}</span>`}</div>`}
-                        </div>
+                        </div></div>
                     </article>`;
             });
             renderAdminEventsList();
@@ -6934,7 +6939,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             initWebMascot();
             // Keep the main welcome, adventure actions and contact clear of fixed invitations.
             if ('IntersectionObserver' in window) {
-                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible'], ['#pasaporte', 'vl-passport-visible'], ['#misiones', 'vl-adventure-visible']]) {
+                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible'], ['#pasaporte', 'vl-passport-visible'], ['#misiones', 'vl-adventure-visible'], ['#agenda', 'vl-agenda-visible']]) {
                     const surface = document.querySelector(selector);
                     if (surface) new IntersectionObserver(([entry]) => document.body.classList.toggle(state, entry.isIntersecting)).observe(surface);
                 }

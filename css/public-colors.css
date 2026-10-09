@@ -98,9 +98,12 @@
     background: var(--vl-surface-dark) !important;
   }
   /* The welcome uses warm neutral paper; photo copy has its own dark surface. */
-  .vl-welcome, .vl-discovery-nav, .vl-passport-section {
+  .vl-welcome, .vl-discovery-nav, .vl-passport-section, .vl-agenda-section {
     --vl-text: #253241; --vl-muted: #56616c; --vl-accent: #9e4317;
     background-color: #fff9ef !important;
+  }
+  .vl-agenda-calendar-art {
+    --vl-text: #253241; --vl-muted: #56616c; --vl-accent: #9e4317;
   }
   .vl-adventure-signin {
     --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);

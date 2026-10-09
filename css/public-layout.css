@@ -696,17 +696,13 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 #establecimientos #searchInput{border-radius:15px!important;min-height:56px;background:#fff!important;box-shadow:0 8px 28px rgba(22,54,40,.06)}
 #establecimientos .local-item{border-radius:22px!important;overflow:hidden;box-shadow:0 12px 35px rgba(15,39,29,.075)!important;transition:transform .25s ease,box-shadow .25s ease}
 #establecimientos .local-item:hover{transform:translateY(-6px);box-shadow:0 22px 45px rgba(15,39,29,.14)!important}
-#agenda{background:#f5f2ef!important;padding-block:105px!important;border:0!important}
-#agenda h2{font-size:clamp(36px,4.2vw,64px)!important;letter-spacing:-.055em!important;line-height:1.05!important}
-#agenda .max-w-7xl>.text-center>p{font-size:16px!important;line-height:1.7!important;max-width:650px}
-#agenda #agendaAllButton,#agenda #agendaSavedButton{min-height:43px}
 #fiavl{background:linear-gradient(125deg,#171717 0%,#30201a 55%,#141414 100%)!important;padding-block:110px!important;border:0!important}
 #fiavl h2{letter-spacing:-.045em!important;line-height:1.08!important}
 #fiavl .max-w-7xl{max-width:1390px!important}
 #mapa{padding-block:100px!important;background:#fff!important}
 #mapa h2{font-size:clamp(36px,4vw,64px)!important;letter-spacing:-.05em!important;line-height:1.08!important}
 #mapa .max-w-7xl{max-width:1390px!important}
-@media(max-width:639px){#establecimientos,#agenda,#fiavl,#mapa{padding-block:70px!important}#establecimientos h2,#agenda h2,#mapa h2{font-size:37px!important}#establecimientos .local-item:hover{transform:none}}
+@media(max-width:639px){#establecimientos,#fiavl,#mapa{padding-block:70px!important}#establecimientos h2,#mapa h2{font-size:37px!important}#establecimientos .local-item:hover{transform:none}}
 @media(prefers-reduced-motion:reduce){#establecimientos .local-item{transition:none!important}#establecimientos .local-item:hover{transform:none!important}}
 
 /* vl33-experiences-redesign */
@@ -734,7 +730,6 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 #establecimientos{background:#f7fbff!important}
 #establecimientos .local-item{box-shadow:0 12px 35px rgba(4,55,153,.09)!important}
 #mapa{background:#fff!important}
-#agenda{background:#eaf5ff!important}
 #fiavl{background:linear-gradient(125deg,#061647,#073a94 55%,#061c5e)!important}
 #loja-tiempo{background:#071b62!important}
 #postales{background:#f7fbff!important}
@@ -749,7 +744,6 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 #establecimientos{background:#f7f9fc!important}
 #establecimientos .local-item{box-shadow:0 7px 22px rgba(20,48,83,.06)!important;border:1px solid #e5eaf1!important}
 #mapa{background:#fff!important}
-#agenda{background:#f8fafc!important}
 #loja-tiempo{background:#15243f!important}
 #postales{background:#fff!important}
 #fiavl{background:linear-gradient(120deg,#18243c,#342b48 58%,#172947)!important}
@@ -764,7 +758,6 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 #establecimientos .vl39-results-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:5px 0 23px;padding:19px 23px;border:1px solid #e2e8f0;border-radius:20px;background:#fff}#establecimientos .vl39-results-label{display:flex;align-items:center;gap:14px}#establecimientos .vl39-results-dot{width:11px;height:11px;flex-shrink:0;border-radius:50%;background:#0875d1;box-shadow:0 0 0 6px #e8f3ff}#establecimientos .vl39-results-label strong{display:block;font-size:15px;line-height:1.5;font-weight:850;}#establecimientos .vl39-results-label small{display:block;font-size:12px;line-height:1.6;}#establecimientos .vl39-map-link{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;min-height:42px;padding:10px 15px;border-radius:12px;background:#edf6ff;font-size:12px;font-weight:850;text-decoration:none}#establecimientos .vl39-map-link:hover{background:#dcefff}#establecimientos .vl39-map-link:focus-visible{outline:3px solid #00bdf2;outline-offset:3px}#establecimientos #searchInput{border-radius:15px!important;background:white!important;min-height:50px!important;border:1px solid #dce4ed!important;box-shadow:0 3px 13px rgba(25,50,78,.035)}#establecimientos #searchInput:focus{border-color:#0875d1!important}#establecimientos #categoryScroll{padding-bottom:6px}#establecimientos #localesGrid{gap:25px!important}#establecimientos #localesGrid>article,#establecimientos #localesGrid>.group,#establecimientos #localesGrid>div{border-radius:20px!important;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease}#establecimientos #localesGrid>article:hover,#establecimientos #localesGrid>.group:hover,#establecimientos #localesGrid>div:hover{transform:translateY(-3px);box-shadow:0 16px 35px rgba(25,50,78,.10)!important}@media(max-width:680px){#establecimientos .vl39-results-toolbar{flex-direction:column;align-items:stretch;padding:16px;gap:13px}#establecimientos .vl39-map-link{justify-content:center}#establecimientos #localesGrid{gap:17px!important}}@media(prefers-reduced-motion:reduce){#establecimientos #localesGrid>article,#establecimientos #localesGrid>.group,#establecimientos #localesGrid>div{transition:none!important}#establecimientos #localesGrid>article:hover,#establecimientos #localesGrid>.group:hover,#establecimientos #localesGrid>div:hover{transform:none!important}}
 
 /* vl40-agenda-experience */
-#agenda .vl40-agenda-intro{display:flex;align-items:center;gap:18px;padding:23px 25px;margin:0 0 35px;border:1px solid #e1e8f0;border-radius:22px;background:#f9fbfd}#agenda .vl40-agenda-icon{flex-shrink:0;width:57px;height:57px;border-radius:17px;display:grid;place-items:center;background:#e7f2ff;font-size:24px}#agenda .vl40-agenda-intro>div:nth-child(2){flex:1}#agenda .vl40-agenda-intro strong{font-size:17px;font-weight:850;}#agenda .vl40-agenda-intro p{font-size:12px;line-height:1.7;margin-top:5px}#agenda .vl40-agenda-map{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;padding:12px 16px;background:#fff;border:1px solid #dbe5f0;border-radius:12px;font-size:12px;font-weight:850;text-decoration:none}#agenda .vl40-agenda-map:hover{background:#edf6ff}#agenda .vl40-agenda-map:focus-visible{outline:3px solid #00bdf2;outline-offset:3px}#agenda #agendaGridContainer{gap:23px!important}#agenda #agendaGridContainer>div,#agenda #agendaGridContainer>article{border-radius:20px!important;overflow:hidden;transition:transform .2s,box-shadow .2s}#agenda #agendaGridContainer>div:hover,#agenda #agendaGridContainer>article:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(20,48,80,.10)!important}#agenda #agendaAllButton,#agenda #agendaSavedButton{min-height:42px}#agenda #agendaSavedButton:focus-visible,#agenda #agendaAllButton:focus-visible{outline:3px solid #00bdf2;outline-offset:2px}@media(max-width:700px){#agenda .vl40-agenda-intro{flex-wrap:wrap;padding:18px;gap:13px}#agenda .vl40-agenda-icon{width:45px;height:45px;font-size:19px}#agenda .vl40-agenda-intro>div:nth-child(2){flex-basis:calc(100% - 65px)}#agenda .vl40-agenda-map{width:100%;justify-content:center}#agenda #agendaGridContainer{gap:16px!important}}@media(prefers-reduced-motion:reduce){#agenda #agendaGridContainer>div,#agenda #agendaGridContainer>article{transition:none!important}#agenda #agendaGridContainer>div:hover,#agenda #agendaGridContainer>article:hover{transform:none!important}}
 
 /* vl41-visitor-quicknav */
 
@@ -850,7 +843,6 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 #categorias a:focus-visible,#patrocinadores a:focus-visible,#podcast button:focus-visible{outline-offset:3px}
 
 /* vl48-agenda-contrast */
-#agenda button:focus-visible,#agenda a:focus-visible{outline-offset:3px}#agenda #agendaAllButton,#agenda #agendaSavedButton{min-height:42px}#agenda .vl40-agenda-intro{border-radius:22px!important;box-shadow:0 12px 34px rgba(19,46,77,.1)}@media(max-width:650px){#agenda{padding-top:60px!important;padding-bottom:60px!important}#agenda .vl40-agenda-intro{padding:19px!important}#agenda #agendaAllButton,#agenda #agendaSavedButton{min-height:44px}}
 
 /* vl49-experience-contrast */
 #loja-tiempo #lojaTimeTabsContainer button{min-height:42px;border-radius:12px}
@@ -943,7 +935,7 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 .vl-footer-contact a:focus-visible{outline:3px solid #9bdcff;outline-offset:4px}
 @media(max-width:640px){.vl-footer-contact{flex-direction:column;text-align:center;padding-bottom:30px}.vl-footer-contact a{font-size:14px;max-width:100%;overflow-wrap:anywhere}}
 
-body:is(.vl-footer-visible,.vl-welcome-visible,.vl-passport-visible,.vl-adventure-visible) :is(#webMascot,#webMascotRestore,#accountFloatingInvite){visibility:hidden!important;pointer-events:none!important}
+body:is(.vl-footer-visible,.vl-welcome-visible,.vl-passport-visible,.vl-adventure-visible,.vl-agenda-visible) :is(#webMascot,#webMascotRestore,#accountFloatingInvite){visibility:hidden!important;pointer-events:none!important}
 
 /* Passport and missions: authored component layouts, with surface colors in the contract. */
 #pasaporte.vl-passport-section{padding:64px 32px!important;box-shadow:none!important}
@@ -1005,3 +997,42 @@ body:is(.vl-footer-visible,.vl-welcome-visible,.vl-passport-visible,.vl-adventur
 .vl-passport-section button:focus-visible,.vl-passport-section a:focus-visible,.vl-passport-options summary:focus-visible,.vl-adventure-shell a:focus-visible,.vl-adventure-shell button:focus-visible{outline:3px solid #075bb2;outline-offset:4px}
 @media(max-width:1000px){.vl-passport-feature{gap:32px;grid-template-columns:1.1fr .9fr}.vl-adventure-content{grid-template-columns:1fr;padding:26px}.vl-adventure-profile{border-right:0;border-bottom:1px solid #ffffff26;padding:0 0 24px}.vl-adventure-profile-heading h3{margin-bottom:14px}.vl-adventure-profile{display:grid;grid-template-columns:1fr 1.5fr;gap:20px;align-items:start}.vl-passport-steps>li{padding:22px 17px;gap:12px}}
 @media(max-width:700px){#pasaporte.vl-passport-section,#misiones.vl-adventure-section{padding:44px 18px!important}.vl-passport-feature,.vl-adventure-hero{grid-template-columns:1fr;gap:28px}.vl-passport-copy h2,.vl-adventure-copy h2{font-size:43px}.vl-passport-copy p,.vl-adventure-copy p{font-size:17px}.vl-passport-art{min-height:350px;padding:30px}.vl-passport-book{width:210px;min-height:275px;padding:22px}.vl-passport-book>i{font-size:44px;margin:18px 0 14px}.vl-passport-book>strong{font-size:27px}.vl-passport-book-stamps{margin:16px 0}.vl-passport-art-note{margin-top:8px}.vl-passport-steps,.vl-passport-modes{grid-template-columns:1fr}.vl-passport-steps>li{border-right:0;border-bottom:1px solid #dce3e9;padding:22px}.vl-passport-actions{gap:12px}.vl-passport-action{width:100%}.vl-passport-actions>a{width:100%;justify-content:center}.vl-adventure-hero{padding:0}.vl-adventure-character img{width:230px;height:285px}.vl-adventure-character{max-width:330px;width:100%;margin:auto}.vl-adventure-content{padding:22px 18px;border-radius:20px}.vl-adventure-profile{display:block}#chabaquitoV2Missions{grid-template-columns:1fr}#chabaquitoV2Missions>article{padding:20px}#chabaquitoV2Missions h3{font-size:21px}.vl-adventure-profile-heading h3,.vl-adventure-missions-heading h3{font-size:25px}}
+
+/* Agenda: one introduction, one responsive event system, no legacy overrides. */
+#agenda.vl-agenda-section{padding:72px 32px;scroll-margin-top:95px;border:0}
+.vl-agenda-shell{max-width:1280px;margin:auto}
+.vl-agenda-header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:36px;margin-bottom:32px}
+.vl-agenda-kicker{font-size:11px;font-weight:850;letter-spacing:.17em;text-transform:uppercase}
+.vl-agenda-header h2{font-family:Georgia,serif;font-size:clamp(42px,4.5vw,66px);line-height:1.08;letter-spacing:-.045em;margin:16px 0 22px;max-width:750px;font-weight:400}
+.vl-agenda-header p{font-size:18px;line-height:1.7;max-width:710px}
+.vl-agenda-links{display:flex;flex-direction:column;gap:12px;padding-bottom:7px}
+.vl-agenda-links a{display:flex;gap:12px;align-items:center;font-size:15px;font-weight:800;padding:14px 18px;border:1px solid #d8dfe5;border-radius:12px;background:#fff;text-decoration:none}
+.vl-agenda-links a i:last-child{margin-left:auto}
+.vl-agenda-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;border-block:1px solid #d8dfe5;padding:18px 0;margin-bottom:28px}
+.vl-agenda-toolbar>div{display:flex;gap:8px;flex-wrap:wrap}
+.vl-agenda-toolbar button{display:inline-flex;align-items:center;gap:9px;min-height:46px;font-size:15px;padding:12px 18px;border-radius:10px}
+.vl-agenda-toolbar>p{font-size:14px;font-weight:650}
+.vl-agenda-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.vl-agenda-card{min-width:0;border:1px solid #d8dfe5;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 28px #172d450a}
+.vl-agenda-card:first-of-type{grid-column:1/-1;display:grid;grid-template-columns:1fr 1.1fr}
+.vl-agenda-media{position:relative;min-height:270px;overflow:hidden;background:#f3e9d8}
+.vl-agenda-media>img{width:100%;height:100%;min-height:270px;object-fit:cover;position:absolute;inset:0}
+.vl-agenda-calendar-art{height:100%;min-height:270px;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:22px;padding:65px 30px}
+.vl-agenda-calendar-art>i{font-size:70px}
+.vl-agenda-calendar-art>strong{font-family:Georgia,serif;font-size:30px;text-align:center}
+.vl-agenda-media>span{font-size:12px;max-width:calc(100% - 80px);white-space:normal;line-height:1.5}
+.vl-agenda-media>button{min-height:44px;min-width:44px}
+.vl-agenda-card-body{padding:30px;display:flex;flex-direction:column;min-width:0;gap:12px}
+.vl-agenda-card-body>span{font-size:14px;line-height:1.6}
+.vl-agenda-card-body>h3{font-size:28px;line-height:1.25;font-weight:850;margin:0;overflow-wrap:anywhere}
+.vl-agenda-card:first-of-type h3{font-size:34px;letter-spacing:-.02em}
+.vl-agenda-card-body>p{font-size:16px;line-height:1.7}
+.vl-agenda-card-actions{margin-top:auto;padding-top:20px;border-top:1px solid #d8dfe5}
+.vl-agenda-card-actions>p{font-size:15px;line-height:1.6;white-space:normal;overflow-wrap:anywhere;margin-bottom:18px}
+.vl-agenda-card-actions button,.vl-agenda-card-actions a,.vl-agenda-card-actions span{font-size:14px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:10px;line-height:1.5}
+.vl-agenda-grid>div:not(.vl-agenda-card),.vl-agenda-grid>p{grid-column:1/-1}
+.vl-agenda-grid>div>h3{font-size:24px}.vl-agenda-grid>div>p,.vl-agenda-grid>p{font-size:16px;line-height:1.7}
+.vl-agenda-grid>div>button{min-height:46px;font-size:15px}
+.vl-agenda-section button:focus-visible,.vl-agenda-section a:focus-visible{outline:3px solid #075bb2;outline-offset:4px}
+@media(max-width:900px){.vl-agenda-header{grid-template-columns:1fr;gap:24px}.vl-agenda-links{flex-direction:row;flex-wrap:wrap}.vl-agenda-card:first-of-type{grid-template-columns:1fr 1fr}.vl-agenda-card:first-of-type h3{font-size:28px}.vl-agenda-card-body{padding:24px}}
+@media(max-width:650px){#agenda.vl-agenda-section{padding:44px 18px}.vl-agenda-header h2{font-size:43px}.vl-agenda-header p{font-size:17px}.vl-agenda-toolbar{align-items:start;flex-direction:column;gap:12px}.vl-agenda-toolbar button{padding:12px 15px}.vl-agenda-grid{grid-template-columns:1fr}.vl-agenda-card:first-of-type{display:flex}.vl-agenda-media{min-height:230px}.vl-agenda-media>img{min-height:230px}.vl-agenda-card-body{padding:24px 20px}.vl-agenda-card-body h3,.vl-agenda-card:first-of-type h3{font-size:26px}.vl-agenda-links{gap:10px}.vl-agenda-links a{width:100%}.vl-agenda-calendar-art{min-height:230px}}
