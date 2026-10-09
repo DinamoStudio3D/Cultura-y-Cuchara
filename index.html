@@ -808,6 +808,19 @@
 @media(max-width:540px){#establecimientos #localesGrid>.local-item{grid-template-columns:38% minmax(0,1fr)!important;min-height:210px}#establecimientos #localesGrid>.local-item>.vl17-media{min-height:210px!important}#establecimientos #localesGrid>.local-item .vl-card-content{padding:15px 12px!important;gap:6px!important}#establecimientos #localesGrid>.local-item .local-title{font-size:17px!important}#establecimientos #localesGrid>.local-item .local-desc{font-size:11px!important;line-height:1.5!important}#establecimientos #localesGrid>.local-item .vl-card-explore{font-size:10px!important}#establecimientos #localesGrid>.local-item>.vl17-media>div.absolute.top-3{top:50px!important}#establecimientos #localesGrid>.local-item>.vl17-media>div.absolute.top-3 span{font-size:8px!important;padding:4px 6px!important}#establecimientos #localesGrid>.local-item>.vl17-media>div.absolute.bottom-3{gap:3px!important}#establecimientos #localesGrid>.local-item>.vl17-media>div.absolute.bottom-3 a,#establecimientos #localesGrid>.local-item>.vl17-media>div.absolute.bottom-3 button{width:29px!important;height:29px!important}}
 @media(prefers-reduced-motion:reduce){#establecimientos #localesGrid>.local-item{transition:none!important}}
 </style>
+
+<style id="visitaloja-card-controls-v18">
+#establecimientos #localesGrid .vl18-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:12px}
+#establecimientos #localesGrid .vl18-quicklinks{display:flex;gap:8px;align-items:center}
+#establecimientos #localesGrid .vl18-quicklinks>a,#establecimientos #localesGrid .vl18-quicklinks>button{width:40px!important;height:40px!important;display:grid!important;place-items:center;border-radius:12px!important;box-shadow:none!important;background:#edf2f6!important;color:#17212b!important;border:1px solid #dce3e9;font-size:14px!important}
+#establecimientos #localesGrid .vl18-quicklinks>button{background:#fff0e6!important;color:#c2410c!important;border-color:#fed7aa!important}
+#establecimientos #localesGrid .vl18-favorite{position:static!important;flex-shrink:0;display:grid;place-items:center;background:#fff!important;color:#e45d19!important;border:1px solid #e0e5e9!important;box-shadow:none!important;border-radius:12px!important;width:40px!important;height:40px!important}
+#establecimientos #localesGrid .vl18-favorite i{font-size:17px}
+#establecimientos #localesGrid .vl-card-explore{margin-top:3px!important}
+#establecimientos #localesGrid .vl17-media .absolute.top-3{top:12px!important;left:12px!important;right:12px!important}
+#establecimientos #localesGrid .vl17-media .absolute.top-3 span{max-width:100%;white-space:normal;line-height:1.3}
+@media(max-width:540px){#establecimientos #localesGrid .vl18-tools{padding-top:8px;gap:5px}#establecimientos #localesGrid .vl18-quicklinks{gap:5px}#establecimientos #localesGrid .vl18-quicklinks>a,#establecimientos #localesGrid .vl18-quicklinks>button,#establecimientos #localesGrid .vl18-favorite{width:33px!important;height:33px!important;border-radius:9px!important}#establecimientos #localesGrid .vl17-media .absolute.top-3{top:10px!important}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -5148,21 +5161,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" data-location-id="${loc.id}" data-lat="${loc.lat}" data-lng="${loc.lng}">
-                        <button type="button" onclick="toggleFavoriteCard(event, '${loc.id}')" class="absolute top-3 right-3 z-20 w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta">
-                            <i id="cardFav_${loc.id}" class="${favClass}"></i>
-                        </button>
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
                             <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
                                 <span class="${loc.category==='aliado'?'bg-violet-700 text-white':'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${loc.category==='aliado'?'<i class="fa-solid fa-handshake mr-1"></i>Marca aliada':locTag}</span>${hasPaidBadge&&loc.category!=='aliado'?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Destacado Visita Loja</span>':''}
                                 ${loc.category==='aliado'?'':openBadge}
                             </div>
-                            <div class="absolute bottom-3 right-3 flex gap-1.5 z-20">
-                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)"><i class="fa-solid fa-qrcode"></i></button>`:''}
-                                <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar">
-                                    <i class="fa-solid fa-diamond-turn-right"></i>
-                                </a>
-                            </div>
+
                         </div>
                         <div class="vl17-detail"><div class="vl-card-content p-5 relative">
                             <div class="vl-card-kicker"><i class="fa-solid fa-location-dot"></i> DESCUBRE LOJA</div>
@@ -5173,6 +5178,19 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             <p class="text-gray-600 text-xs sm:text-sm local-desc line-clamp-2">${locDesc}</p>
                             <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
                                 <i class="fa-solid fa-clock text-brandGold"></i> <span>${loc.hours || 'Lun - Dom: 08:00 - 20:00'}</span>
+                            </div>
+                            <div class="vl18-tools">
+                                <div class="vl18-tools-links">
+                                                                <div class="vl18-quicklinks">
+                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)" aria-label="Sellar pasaporte"><i class="fa-solid fa-qrcode"></i></button>`:''}
+                                <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar" aria-label="Cómo llegar">
+                                    <i class="fa-solid fa-diamond-turn-right"></i>
+                                </a>
+                            </div>
+                                </div>
+                                <button type="button" onclick="toggleFavoriteCard(event, '${loc.id}')" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta" aria-label="Añadir a mi ruta">
+                            <i id="cardFav_${loc.id}" class="${favClass}"></i>
+                        </button>
                             </div>
                             <div class="vl-card-explore"><span>Ver detalles del lugar</span><span class="vl-card-explore-icon"><i class="fa-solid fa-arrow-right"></i></span></div>
                         </div></div>
