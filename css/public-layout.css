@@ -979,4 +979,4 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 .vl-footer-contact a:focus-visible{outline:3px solid #9bdcff;outline-offset:4px}
 @media(max-width:640px){.vl-footer-contact{flex-direction:column;text-align:center;padding-bottom:30px}.vl-footer-contact a{font-size:14px;max-width:100%;overflow-wrap:anywhere}}
 
-.vl-footer-visible #webMascot,.vl-footer-visible #webMascotRestore,.vl-footer-visible #accountFloatingInvite{visibility:hidden!important;pointer-events:none!important}
+.vl-footer-visible #webMascot,.vl-footer-visible #webMascotRestore,.vl-footer-visible #accountFloatingInvite,.vl-welcome-visible #webMascot,.vl-welcome-visible #webMascotRestore,.vl-welcome-visible #accountFloatingInvite{visibility:hidden!important;pointer-events:none!important}

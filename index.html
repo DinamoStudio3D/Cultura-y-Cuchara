@@ -6932,9 +6932,11 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             initChabaquitoMissions();
             initWebMascot();
             // Keep footer contact and social links clear of fixed invitations.
-            const footer = document.querySelector('body > footer');
-            if (footer && 'IntersectionObserver' in window) {
-                new IntersectionObserver(([entry]) => document.body.classList.toggle('vl-footer-visible', entry.isIntersecting)).observe(footer);
+            if ('IntersectionObserver' in window) {
+                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible']]) {
+                    const surface = document.querySelector(selector);
+                    if (surface) new IntersectionObserver(([entry]) => document.body.classList.toggle(state, entry.isIntersecting)).observe(surface);
+                }
             }
             initPostcardCanvasDragging();
             changeLanguage(currentLang);
