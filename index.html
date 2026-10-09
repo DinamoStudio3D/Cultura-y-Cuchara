@@ -970,43 +970,7 @@
     <!-- Campaigns created from Administration -->
     <div id="customCampaignsPublic" aria-live="polite"></div>
 
-    <!-- FIAVL Live Mode -->
-    <section id="festival-live" class="bg-[#090914] text-white py-12 px-4 border-y border-fuchsia-500/30 relative overflow-hidden">
-        <div id="festivalCampaignGlow" class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
-        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] -rotate-12 pointer-events-none" aria-hidden="true"><i id="festivalCampaignIcon" class="fa-solid fa-masks-theater"></i></div>
-        <div class="max-w-7xl mx-auto relative z-10">
-            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
-                <div>
-                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Modo Festival · Demostración</span>
-                    <h2 id="festivalModeTitle" class="text-3xl sm:text-4xl font-black mt-4">Loja se convierte en escenario</h2>
-                    <p id="festivalModeSubtitle" class="text-sm text-gray-300 mt-2 max-w-2xl">Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.</p>
-                </div>
-                <div id="festivalCountdown" class="grid grid-cols-4 gap-2 text-center min-w-full sm:min-w-[390px] lg:min-w-[430px]">
-                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalDays" class="block text-2xl text-fuchsia-300">--</strong><span class="text-[10px] uppercase text-gray-400">Días</span></div>
-                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalHours" class="block text-2xl text-cyan-300">--</strong><span class="text-[10px] uppercase text-gray-400">Horas</span></div>
-                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalMinutes" class="block text-2xl text-yellow-300">--</strong><span class="text-[10px] uppercase text-gray-400">Min</span></div>
-                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalSeconds" class="block text-2xl text-orange-300">--</strong><span class="text-[10px] uppercase text-gray-400">Seg</span></div>
-                </div>
-            </div>
 
-            <div id="festivalNowCard" class="bg-gradient-to-r from-fuchsia-700/50 to-cyan-700/40 border border-white/20 rounded-2xl p-5 sm:p-6 mb-7 shadow-2xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-full bg-white text-fuchsia-600 flex items-center justify-center text-lg flex-shrink-0"><i id="festivalNowIcon" class="fa-solid fa-hourglass-half"></i></div>
-                        <div><p id="festivalNowLabel" class="text-xs font-black text-yellow-300 uppercase tracking-widest">Próximamente</p><h3 id="festivalNowTitle" class="text-xl font-black mt-1">Preparando la agenda del Festival</h3><p id="festivalNowMeta" class="text-sm text-gray-200 mt-1">La próxima actividad aparecerá aquí.</p></div>
-                    </div>
-                    <a id="festivalNowMap" href="#festival-agenda" class="bg-white text-gray-950 font-black rounded-xl px-5 py-3 text-sm text-center hover:bg-yellow-300 transition"><i class="fa-solid fa-calendar-days mr-2"></i>Ver agenda</a>
-                </div>
-            </div>
-
-            <div id="festival-agenda">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><h3 class="text-xl font-black">Agenda diaria</h3><span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Contenido inicial de demostración</span></div>
-                <div id="festivalDayTabs" class="flex gap-2 overflow-x-auto pb-3 mb-3"></div>
-                <div id="festivalAgendaGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
-                <p id="festivalEmpty" class="hidden text-center text-gray-400 bg-white/5 rounded-2xl p-8">No hay actividades cargadas para este día.</p>
-            </div>
-        </div>
-    </section>
 
     <!-- Stats -->
     <section class="bg-brandGold text-white py-8 border-b-4 border-black z-10 relative shadow-warm-glow">
@@ -1592,6 +1556,44 @@
                         </p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FIAVL Live Mode -->
+    <section id="festival-live" class="bg-[#090914] text-white py-12 px-4 border-y border-fuchsia-500/30 relative overflow-hidden">
+        <div id="festivalCampaignGlow" class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
+        <div class="absolute -right-12 -top-12 text-[13rem] text-white/[.035] -rotate-12 pointer-events-none" aria-hidden="true"><i id="festivalCampaignIcon" class="fa-solid fa-masks-theater"></i></div>
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+                <div>
+                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Modo Festival · Demostración</span>
+                    <h2 id="festivalModeTitle" class="text-3xl sm:text-4xl font-black mt-4">Loja se convierte en escenario</h2>
+                    <p id="festivalModeSubtitle" class="text-sm text-gray-300 mt-2 max-w-2xl">Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.</p>
+                </div>
+                <div id="festivalCountdown" class="grid grid-cols-4 gap-2 text-center min-w-full sm:min-w-[390px] lg:min-w-[430px]">
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalDays" class="block text-2xl text-fuchsia-300">--</strong><span class="text-[10px] uppercase text-gray-400">Días</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalHours" class="block text-2xl text-cyan-300">--</strong><span class="text-[10px] uppercase text-gray-400">Horas</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalMinutes" class="block text-2xl text-yellow-300">--</strong><span class="text-[10px] uppercase text-gray-400">Min</span></div>
+                    <div class="bg-white/10 border border-white/15 rounded-xl p-3"><strong id="festivalSeconds" class="block text-2xl text-orange-300">--</strong><span class="text-[10px] uppercase text-gray-400">Seg</span></div>
+                </div>
+            </div>
+
+            <div id="festivalNowCard" class="bg-gradient-to-r from-fuchsia-700/50 to-cyan-700/40 border border-white/20 rounded-2xl p-5 sm:p-6 mb-7 shadow-2xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-full bg-white text-fuchsia-600 flex items-center justify-center text-lg flex-shrink-0"><i id="festivalNowIcon" class="fa-solid fa-hourglass-half"></i></div>
+                        <div><p id="festivalNowLabel" class="text-xs font-black text-yellow-300 uppercase tracking-widest">Próximamente</p><h3 id="festivalNowTitle" class="text-xl font-black mt-1">Preparando la agenda del Festival</h3><p id="festivalNowMeta" class="text-sm text-gray-200 mt-1">La próxima actividad aparecerá aquí.</p></div>
+                    </div>
+                    <a id="festivalNowMap" href="#festival-agenda" class="bg-white text-gray-950 font-black rounded-xl px-5 py-3 text-sm text-center hover:bg-yellow-300 transition"><i class="fa-solid fa-calendar-days mr-2"></i>Ver agenda</a>
+                </div>
+            </div>
+
+            <div id="festival-agenda">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><h3 class="text-xl font-black">Agenda diaria</h3><span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Contenido inicial de demostración</span></div>
+                <div id="festivalDayTabs" class="flex gap-2 overflow-x-auto pb-3 mb-3"></div>
+                <div id="festivalAgendaGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                <p id="festivalEmpty" class="hidden text-center text-gray-400 bg-white/5 rounded-2xl p-8">No hay actividades cargadas para este día.</p>
             </div>
         </div>
     </section>
