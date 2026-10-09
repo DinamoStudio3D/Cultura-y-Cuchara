@@ -111,6 +111,7 @@
     if (!sponsors?.parentElement) return;
     const section = document.createElement('section');
     section.id = 'mesaTuristicaSpotlight';
+    section.dataset.vlSurface = 'dark';
     section.className = 'relative overflow-hidden py-16 sm:py-20 px-4 md:px-8 bg-[#071713] text-white border-t border-white/10';
     section.innerHTML = `
       <div class="absolute -top-28 -left-20 w-80 h-80 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>

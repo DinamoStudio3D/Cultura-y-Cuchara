@@ -1,0 +1,176 @@
+/* Public color contract. Important colors are in the FIRST layer deliberately:
+   they outrank legacy important declarations without selector escalation.
+   A nested surface resets all text tokens; dynamic content inherits the same contract. */
+@layer vl-colors, vl-layout;
+@layer vl-colors {
+  :root {
+    --vl-ink-light: #172d45;
+    --vl-muted-light: #4d6075;
+    --vl-accent-light: #075bb2;
+    --vl-ink-dark: #ffffff;
+    --vl-muted-dark: #d4dfeb;
+    --vl-accent-dark: #9bdcff;
+    --vl-action: #075bb2;
+    --vl-action-hover: #03458b;
+    --vl-warm-action: #b83d08;
+    --vl-success: #13753b;
+    --vl-surface-light: #f8fafc;
+    --vl-surface-dark: #142b43;
+  }
+  body, :where([data-vl-surface="light"], .bg-white, .bg-brandCream, .bg-cream,
+    [class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/80"],
+    [class~="bg-[#fbf8f1]"], [class~="bg-[#f5f8fc]"], [class~="bg-gray-50"],
+    [class~="bg-gray-100"], [class~="bg-orange-50"], [class~="bg-amber-50"],
+    [class~="bg-amber-100"], [class~="bg-orange-100"], [class~="bg-sky-50"]) {
+    --vl-text: var(--vl-ink-light);
+    --vl-muted: var(--vl-muted-light);
+    --vl-accent: var(--vl-accent-light);
+  }
+  :where([data-vl-surface="dark"], .bg-brandDark, .bg-black, .bg-ink, [class*="bg-ink/"],
+    [class*="bg-brandDark/"], [class*="bg-black/"],
+    [class~="bg-[#111827]"], [class~="bg-[#090914]"],
+    [class~="bg-[#17120f]"], [class~="bg-[#0f0f0f]"],
+    [class~="bg-gray-800"], [class~="bg-gray-900"],
+    [class~="bg-violet-700"], [class~="bg-blue-600"],
+    [class~="bg-purple-600"], [class~="bg-purple-700"]) {
+    --vl-text: var(--vl-ink-dark);
+    --vl-muted: var(--vl-muted-dark);
+    --vl-accent: var(--vl-accent-dark);
+  }
+  /* Fixed arbitrary utility surfaces used by public templates. */
+  :where([class~="bg-[#f5f8fc]"],
+    [class~="bg-[#f8f5ef]"],
+    [class~="bg-[#f8fafc]"],
+    [class~="bg-[#fbf8f1]"]) {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
+  }
+  :where([class~="bg-[#071713]"],
+    [class~="bg-[#090909]"],
+    [class~="bg-[#090914]"],
+    [class~="bg-[#0b0b12]"],
+    [class~="bg-[#0b0d10]"],
+    [class~="bg-[#0e1018]"],
+    [class~="bg-[#0f0f0f]"],
+    [class~="bg-[#111817]"],
+    [class~="bg-[#111827]"],
+    [class~="bg-[#111]"],
+    [class~="bg-[#121212]"],
+    [class~="bg-[#141414]"],
+    [class~="bg-[#17120f]"],
+    [class~="bg-[#171925]"],
+    [class~="bg-[#181818]"]) {
+    --vl-text: var(--vl-ink-dark); --vl-muted: var(--vl-muted-dark); --vl-accent: var(--vl-accent-dark);
+  }
+  [data-vl-surface="light"] {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
+  }
+  [data-vl-surface="dark"] {
+    --vl-text: var(--vl-ink-dark); --vl-muted: var(--vl-muted-dark); --vl-accent: var(--vl-accent-dark);
+  }
+  /* Apply once to every text-bearing element, including injected cards and dialogs. */
+  body :where(div, section, article, aside, header, footer, nav, main, h1, h2, h3, h4, h5, h6,
+    p, span, small, strong, em, b, a, button, label, input, select, textarea, option,
+    summary, li, ul, ol, dl, dt, dd, legend, time, figcaption, i) {
+    color: var(--vl-text) !important;
+  }
+  body :where([class*="text-gray-"], [class*="text-slate-"], [class*="text-white/"], small) {
+    color: var(--vl-muted) !important;
+  }
+  body :where(.text-brandGold, [class*="text-brandGold/"], .text-sky-300,
+    .text-amber-300, .text-orange-300, .text-emerald-300, .text-cyan-300,
+    .vl37-kicker, .vl44-eyebrow, .vl46-eyebrow, .vl26-overline,
+    .vl-card-kicker, .vl-card-explore, .vl43-eyebrow) {
+    color: var(--vl-accent) !important;
+  }
+  :where([data-vl-surface="light"]) { background-color: var(--vl-surface-light) !important; }
+  :where(#dia-turismo, #fiavl, #loja-tiempo, .vl26-mission-art, .vl43-explore-content,
+    .vl40-agenda-intro) { background-color: var(--vl-surface-dark) !important; }
+  #establecimientos > .max-w-7xl > div:first-child {
+    --vl-text: var(--vl-ink-dark); --vl-muted: var(--vl-muted-dark); --vl-accent: var(--vl-accent-dark);
+    background: var(--vl-surface-dark) !important;
+  }
+  /* Nested light cards reset dark inherited tokens. */
+  :where(.vl29-dropdown, #mapPreviewCard, #mapLegendPanel, #searchInput,
+    .vl37-steps > div, .vl39-results-toolbar, .vl46-sponsors-existing,
+    .vl52-spice-card, .vl52-spice-copy, .vl53-ile-partner, .vl-experience-sponsor,
+    #localesGrid > article, #localesGrid > .group, #emprendedoresGridContainer > div,
+    #agendaGridContainer > article, #agendaGridContainer > div,
+    #exploreCategoryGrid > button, .vl41-quicklink, .vl44-entrepreneur-copy,
+    #podcastSampleCard, #principalSponsorsGrid > article, .vl43-feature-actions a:first-child) {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
+    background-color: #fff !important;
+  }
+  :where([class~="hover:bg-white"]:hover, [class~="hover:bg-gray-100"]:hover, [class~="hover:bg-gray-200"]:hover, [class~="hover:bg-yellow-300"]:hover) {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
+    background: #fff !important;
+  }
+  :where([class~="hover:bg-brandGold"]:hover, [class~="hover:bg-orange-500"]:hover) {
+    --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
+    background: var(--vl-action-hover) !important;
+  }
+  /* Text over photographs has a solid label or an existing dark scrim. */
+  :where(.vl24-photo-stage, .vl24-photo-bottom) {
+    --vl-text: var(--vl-ink-dark); --vl-muted: var(--vl-muted-dark); --vl-accent: var(--vl-accent-dark);
+  }
+  :where(.vl24-photo-top span:first-child, .vl24-photo-index, .vl43-photo-label,
+    .vl44-entrepreneur-photo span, .vl52-spice-photo span, .vl24-aside-footer) {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
+    background: #fff !important;
+  }
+  #heroBadge { color: var(--vl-accent-light) !important; }
+  .vl24-photo-top span:last-child { background: #142b43 !important; padding: 9px 12px; border-radius: 4px; }
+  #exploreCategoryGrid b { color: var(--vl-accent-light) !important; }
+  #exploreCategoryGrid .text-gray-400 { color: var(--vl-muted-light) !important; }
+  :where([class~="bg-emerald-400"], [class~="bg-amber-400"], .bg-gold) {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-ink-light); --vl-accent: var(--vl-ink-light);
+  }
+  /* Explicit button pairs: the label and its children always use the same foreground. */
+  :where(.bg-brandGold, .bg-brand, [class~="bg-orange-500"], [class~="bg-orange-600"],
+    [class~="bg-amber-500"], [class~="bg-amber-600"], [class~="bg-sky-600"], .vl38-passport-main, .vl44-entrepreneur-link,
+    .vl26-mission-cta, .vl-v3-primary, .vl-v3-now, .skip-link,
+    #categorias .max-w-7xl > div:first-child > button,
+    #mapa .vl-place-actions > button[onclick="openBusinessPageForCurrent()"] ) {
+    --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
+    background: var(--vl-action) !important;
+  }
+  :where(.bg-brandGold, .vl38-passport-main, .vl44-entrepreneur-link, .vl-v3-primary):hover {
+    background: var(--vl-action-hover) !important;
+  }
+  :where([class~="bg-green-500"], [class~="bg-green-600"], [class~="bg-emerald-500"], [class~="bg-emerald-600"], .bg-teal, #previewWhatsapp) {
+    --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
+    background: var(--vl-success) !important;
+  }
+  :where([class~="bg-fuchsia-500"], [class~="bg-pink-500"], #festivalMapToggle) {
+    --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
+    background: #9d2489 !important;
+  }
+  #previewGps {
+    --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff;
+    background: var(--vl-surface-dark) !important;
+  }
+  #patrocinadores [class~="bg-black/50"] {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
+    background: #eaf0f6 !important;
+  }
+  :where(.vl28-route-button) {
+    --vl-text: #172d45; --vl-muted: #172d45; --vl-accent: #172d45;
+    background: #f2bd79 !important;
+  }
+  :where([class~="bg-white/95"], [class~="bg-white/90"], [class~="bg-white/80"]) { background: #fff !important; }
+  :where(input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    --vl-text: var(--vl-ink-light); --vl-muted: var(--vl-muted-light); --vl-accent: var(--vl-accent-light);
+    background-color: #fff !important;
+    border-color: #8093a8 !important;
+  }
+  :where(input, textarea)::placeholder { color: var(--vl-muted-light) !important; opacity: 1; }
+  select option { color: var(--vl-ink-light) !important; background: #fff; }
+  :where(a, button, input, select, textarea, summary):focus-visible {
+    outline: 3px solid var(--vl-accent) !important; outline-offset: 3px;
+  }
+  .leaflet-control-attribution { --vl-text: #172d45; --vl-muted: #4d6075; background: #fff !important; }
+  #installAppBtn { min-height: 44px; }
+  #installAppBtn:disabled { opacity: 1; cursor: wait; }
+  @media (forced-colors: active) {
+    body :where(a, button, input, select, textarea) { color: ButtonText !important; }
+  }
+}

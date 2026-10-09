@@ -10,6 +10,7 @@ const read = path => {
 const assert = (condition, message) => condition ? pass(message) : fail(message);
 
 const index = read('index.html');
+const publicStyles = index + read('css/public-layout.css') + read('css/public-colors.css');
 const admin = read('admin.html');
 const merchantRewards = read('merchant-rewards.html');
 const loyaltyVisitor = read('fidelidad.html');
@@ -230,10 +231,10 @@ assert(admin.includes('id="settingsCardStyle"'), 'El panel permite elegir el est
 assert(admin.includes('id="settingsCornerStyle"'), 'El panel permite configurar las esquinas');
 assert(admin.includes('id="settingsHeroImageOpacity"'), 'El panel permite ajustar la visibilidad de fotografías');
 assert(admin.includes('id="settingsPremiumAnimations"'), 'El panel permite controlar las animaciones');
-assert(index.includes('body.visual-premium'), 'La web conserva los estilos premium aislados');
+assert(publicStyles.includes('body.visual-premium'), 'La web conserva los estilos premium aislados');
 assert(index.includes("body?.classList.toggle('visual-premium'"), 'La apariencia premium puede revertirse');
 assert(index.includes("--premium-radius"), 'Las esquinas premium se aplican mediante una variable segura');
-assert(index.includes('@media (prefers-reduced-motion:reduce)'), 'La apariencia respeta el movimiento reducido');
+assert(publicStyles.includes('@media (prefers-reduced-motion:reduce)'), 'La apariencia respeta el movimiento reducido');
 assert(index.includes("['cinematic','classic','clean'].includes"), 'La web valida los estilos de portada permitidos');
 assert(index.includes("['elevated','bordered','soft'].includes"), 'La web valida los estilos de tarjetas permitidos');
 
@@ -259,11 +260,11 @@ assert(index.includes('function shareCurrentStory'), 'Las historias pueden compa
 
 
 assert(index.includes('viewport-fit=cover'), 'La web respeta las áreas seguras de móviles modernos');
-assert(index.includes('Mobile UX hardening: isolated from desktop layouts'), 'La web conserva la capa responsive móvil aislada');
-assert(index.includes('#restaurantMenuModal > div'), 'El menú gastronómico se adapta a pantalla completa en móvil');
-assert(index.includes('height: 100dvh'), 'Los modales usan la altura dinámica del dispositivo');
-assert(index.includes('#mapPreviewCard { min-height: 0'), 'La ficha del mapa evita alturas forzadas en móvil');
-assert(index.includes('input, select, textarea { font-size: 16px'), 'Los formularios públicos evitan zoom involuntario en iPhone');
+assert(publicStyles.includes('Mobile UX hardening: isolated from desktop layouts'), 'La web conserva la capa responsive móvil aislada');
+assert(publicStyles.includes('#restaurantMenuModal > div'), 'El menú gastronómico se adapta a pantalla completa en móvil');
+assert(publicStyles.includes('height: 100dvh'), 'Los modales usan la altura dinámica del dispositivo');
+assert(publicStyles.includes('#mapPreviewCard { min-height: 0'), 'La ficha del mapa evita alturas forzadas en móvil');
+assert(publicStyles.includes('input, select, textarea { font-size: 16px'), 'Los formularios públicos evitan zoom involuntario en iPhone');
 assert(admin.includes('Mobile admin UX hardening'), 'El panel conserva su adaptación móvil');
 assert(admin.includes('viewport-fit=cover'), 'El panel respeta las áreas seguras del dispositivo');
 assert(admin.includes('.admin-sidebar{position:fixed!important'), 'El menú administrativo móvil permanece navegable');
@@ -273,7 +274,7 @@ assert(!index.includes('.web-mascot-bubble { display: none !important; }'), 'Los
 
 assert(index.includes('function selectRestaurantMenuCategory'), 'Las etiquetas de platos permiten filtrar su categoría');
 assert(index.includes('data-menu-category='), 'Los filtros de categorías usan valores seguros y configurables');
-assert(index.includes('Restaurant menu categories: compact, complete and tappable on mobile'), 'Las categorías del menú se organizan correctamente en móvil');
+assert(publicStyles.includes('Restaurant menu categories: compact, complete and tappable on mobile'), 'Las categorías del menú se organizan correctamente en móvil');
 assert(index.includes('restaurantMenuModal" class="fixed inset-0 z-[100]'), 'El menú permanece sobre los botones flotantes');
 
 
@@ -284,7 +285,7 @@ assert(index.includes("querySelectorAll('[role=\"dialog\"], #mobileMenu')"), 'Se
 
 assert(index.includes("rawDesc=String("), 'Las descripciones vacías activan un texto de respaldo');
 assert(index.includes('menu-dish-description'), 'Cada tarjeta conserva un espacio visible para su descripción');
-assert(index.includes('grid-auto-rows: max-content'), 'Las filas del menú crecen según todo su contenido');
+assert(publicStyles.includes('grid-auto-rows: max-content'), 'Las filas del menú crecen según todo su contenido');
 
 
 assert(index.includes("completeChabaquitoMission('mapa')"), 'Explorar una parada completa la misión del mapa');
