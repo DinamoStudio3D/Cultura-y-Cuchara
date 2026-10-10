@@ -209,7 +209,7 @@
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1536">
     <meta property="og:image:height" content="1536">
-    <link rel="stylesheet" href="css/mobile-ui.css?v=56">
+    <link rel="stylesheet" href="css/mobile-ui.css?v=64">
     <!-- Modernización visual V1: solo presentación de portada, sin alterar funcionalidades -->
 
 
@@ -268,8 +268,8 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=63">
-<link rel="stylesheet" href="css/public-colors.css?v=63">
+<link rel="stylesheet" href="css/public-layout.css?v=64">
+<link rel="stylesheet" href="css/public-colors.css?v=64">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -498,7 +498,7 @@
     </div>
 
     <!-- Avisos destacados: eventos y contenido audiovisual -->
-    <div class="bg-[#0e1018] border-b border-white/10 px-3 sm:px-6 py-3 relative z-30">
+    <div class="vl-highlights bg-[#0e1018] border-b border-white/10 px-3 sm:px-6 py-3 relative z-30">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-2.5">
             <div id="liveEventBanner" class="flex relative overflow-hidden rounded-2xl border border-orange-400/25 bg-gradient-to-r from-[#392015] via-[#28202a] to-[#171b2c] text-white p-3 sm:p-4 items-center gap-3 shadow-lg">
                 <div class="shrink-0 w-11 h-11 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-300 text-xl"><i class="fa-solid fa-calendar-days"></i></div>
@@ -2597,7 +2597,7 @@
                 });
                 const original = automaticOriginalAttributes.get(element);
                 [['placeholder','placeholder'],['title','title'],['ariaLabel','aria-label']].forEach(([key,attribute]) => {
-                    if (original[key] == null) return;
+                    if (original[key] == null || (attribute === 'placeholder' && element.hasAttribute('data-i18n-placeholder'))) return;
                     const desired = currentLang === 'en' ? (automaticEnglishAttributes[original[key]] || original[key]) : original[key];
                     if (element.getAttribute(attribute) !== desired) element.setAttribute(attribute, desired);
                 });
@@ -2636,6 +2636,7 @@
             if (typeof renderChabaquitoMissions === 'function') renderChabaquitoMissions();
             if (typeof refreshAudioGuideLabels === 'function') refreshAudioGuideLabels();
             applyAutomaticUiLanguage(document.body);
+            window.dispatchEvent(new Event('languagechange'));
         }
 
         const uiLanguageObserver = new MutationObserver(mutations => {
@@ -7978,7 +7979,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
     <script src="js/chabaquito-runtime-config.js" defer></script>
     <script src="js/chabaquito-public-v2.js?v=62" defer></script>
-    <script src="js/mobile-ui.js" defer></script>
+    <script src="js/mobile-ui.js?v=64" defer></script>
 
 <script id="visitaloja-dropdown-navigation-js-v29">
 function vl29CloseMenus(){document.querySelectorAll('.vl29-nav-group>button[aria-expanded="true"]').forEach(function(b){b.setAttribute('aria-expanded','false');var p=document.getElementById(b.getAttribute('aria-controls'));if(p)p.hidden=true;});}

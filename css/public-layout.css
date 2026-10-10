@@ -650,7 +650,7 @@ nav.glass-nav.sticky #mobileMenu a{border-radius:7px!important}
 nav.glass-nav.sticky #mobileMenu .grid>a{padding:14px!important}
 @media(max-width:1180px){nav.glass-nav.sticky .vl28-primary-links{gap:14px}nav.glass-nav.sticky .vl28-primary-links a{font-size:11px}}
 @media(max-width:980px){nav.glass-nav.sticky .vl28-primary-links{display:none}nav.glass-nav.sticky .vl28-nav-actions{margin-left:auto}}
-@media(max-width:580px){nav.glass-nav.sticky{padding:11px 15px!important}nav.glass-nav.sticky .vl28-route-button{padding:11px 13px;font-size:0}nav.glass-nav.sticky .vl28-route-button i{font-size:17px}nav.glass-nav.sticky .vl28-menu-caption{display:none}nav.glass-nav.sticky #brandNameText{font-size:13px!important}nav.glass-nav.sticky #mobileMenu{padding:12px!important}}
+@media(max-width:580px){nav.glass-nav.sticky{padding:9px 12px!important}nav.glass-nav.sticky>.max-w-\[1500px\]{gap:8px!important}nav.glass-nav.sticky .vl28-nav-actions{gap:0}nav.glass-nav.sticky .vl29-account{width:44px;min-height:44px;justify-content:center;padding:10px}nav.glass-nav.sticky .vl28-route-button{padding:11px 13px;font-size:0}nav.glass-nav.sticky .vl28-route-button i{font-size:17px}nav.glass-nav.sticky .vl28-menu-caption{display:none}nav.glass-nav.sticky #brandNameText{font-size:13px!important}nav.glass-nav.sticky #mobileMenu{padding:12px!important}}
 
 /* visitaloja-dropdown-navigation-v29 */
 nav.glass-nav.sticky{z-index:1000!important}
@@ -923,7 +923,29 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 .vl-discovery-inner>a>i{margin-left:auto;font-size:12px}
 .vl-welcome button:focus-visible,.vl-welcome a:focus-visible,.vl-discovery-inner>a:focus-visible{outline:3px solid #075bb2;outline-offset:-3px}
 @media(max-width:1100px){.vl-welcome-shell{gap:24px}.vl-welcome-copy{padding:20px 0}.vl-discovery-inner{grid-template-columns:repeat(2,minmax(0,1fr))}.vl-discovery-inner>a:nth-child(2){border-right:0}.vl-discovery-inner>a:nth-child(-n+2){border-bottom:1px solid #dce3e9}}
-@media(max-width:760px){#inicio.vl-welcome{padding:28px 18px 24px!important}.vl-welcome-shell{grid-template-columns:1fr;gap:24px}.vl-welcome-copy{padding:0}#heroTitle{font-size:clamp(48px,10vw,70px)!important}.vl-welcome-eyebrow{margin-bottom:18px;font-size:10px}#heroSubtitle{font-size:17px!important;margin-bottom:22px}.vl-welcome-visual{min-height:350px}.vl-welcome-photo-caption{left:16px;right:16px;bottom:16px;padding:20px}.vl-welcome-photo-top{top:16px;left:16px;right:16px}.vl-discovery-nav{padding:0 18px 28px}.vl-discovery-inner>a{padding:18px 14px;min-height:130px;gap:10px;flex-wrap:wrap}.vl-discovery-inner>a>span:nth-child(2){width:100%}.vl-discovery-inner>a>i{display:none}.vl-discovery-inner strong{font-size:16px}.vl-discovery-inner small{font-size:12px}.vl-discovery-icon{height:36px;width:36px;font-size:18px}.vl-welcome-actions{gap:8px 16px}.vl-welcome-actions>a,.vl-welcome-actions>button{font-size:13px}.vl-welcome-search{padding:14px}.vl-welcome-primary{padding:12px 14px}.vl-welcome-photo-caption>strong{font-size:35px}}
+@media(max-width:760px){
+#inicio.vl-welcome{padding:24px 18px!important}.vl-welcome-shell{grid-template-columns:1fr;gap:24px}.vl-welcome-copy{padding:0}
+#heroTitle{font-size:clamp(36px,9vw,48px)!important;line-height:1.12!important;letter-spacing:-.04em;margin-bottom:16px}
+.vl-welcome-eyebrow{margin-bottom:12px;font-size:10px;max-width:310px;letter-spacing:.1em}
+#heroSubtitle{font-size:16px!important;line-height:1.55!important;margin-bottom:20px}
+.vl-welcome-visual{min-height:280px;border-radius:20px}.vl-welcome-photo-caption{left:12px;right:12px;bottom:12px;padding:16px}.vl-welcome-photo-top{top:12px;left:12px;right:12px}
+.vl-discovery-nav{padding:0 18px 24px}.vl-discovery-inner>a{padding:16px 12px;min-height:100px;gap:10px;flex-wrap:wrap}.vl-discovery-inner>a>span:nth-child(2){width:100%}.vl-discovery-inner>a>i{display:none}.vl-discovery-inner strong{font-size:15px}.vl-discovery-inner small{font-size:12px}.vl-discovery-icon{height:30px;width:30px;font-size:16px}
+.vl-welcome-actions{gap:8px 16px;margin-top:12px}.vl-welcome-actions>a,.vl-welcome-actions>button{font-size:14px}
+.vl-welcome-search{padding:12px;border-radius:14px}.vl-welcome-search label{font-size:14px;margin-bottom:8px}.vl-welcome-search-row{gap:8px}.vl-welcome-search-row>i,.vl-welcome-primary>i{display:none}.vl-welcome-primary{padding:10px 12px;min-height:44px;font-size:14px}#welcomeSearch{min-height:44px}
+.vl-welcome-photo-caption>strong{font-size:30px}
+.vl-highlights{padding:0;margin-top:24px;border:0;background:transparent!important;z-index:auto}.vl-highlights>.max-w-7xl{gap:10px}
+#liveEventBanner{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;border-radius:16px}
+#liveEventBanner>div:first-child{display:none}#liveEventBanner>div:nth-child(2){grid-column:1/-1}
+#liveEventBanner>div:nth-child(2)>span{font-size:10px;letter-spacing:.08em}
+#liveEventText{display:block;font-size:14px;line-height:1.5;overflow:visible;-webkit-line-clamp:unset}
+#liveEventBanner>button{min-height:44px;padding:10px;font-size:13px}
+#latestVideoBanner{padding:14px;gap:10px;border-radius:16px}#latestVideoBanner>div:first-child{width:32px;height:32px;font-size:16px;border-radius:10px}
+#latestVideoTitleText{font-size:14px;line-height:1.45;display:block;-webkit-line-clamp:unset}
+#latestVideoBanner>button{width:44px;height:44px;padding:0;display:grid;place-items:center}#latestVideoBanner>button span{display:none}#latestVideoBanner>button i{margin:0}
+#mobileMenu #welcomeMusicToggle{position:static;width:100%;height:auto;min-height:44px;margin-top:14px;border-radius:12px;padding:12px;gap:10px;font-size:13px;box-shadow:none;backdrop-filter:none}
+#mobileMenu #welcomeMusicToggle:after{content:attr(aria-label)}
+}
+
 @media(prefers-reduced-motion:reduce){.vl-discovery-inner>a{transition:none}}
 
 /* Contact belongs to the footer, alongside a single set of social links. */

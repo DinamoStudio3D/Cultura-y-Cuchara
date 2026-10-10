@@ -205,8 +205,34 @@
     new MutationObserver(sync).observe(container, { childList: true });
   }
 
+  // Reuse the same controls and listeners; desktop returns to its original DOM order.
+  function arrangeMobileWelcome() {
+    const highlights = document.querySelector('.vl-highlights');
+    const copy = document.querySelector('.vl-welcome-copy');
+    const music = document.getElementById('welcomeMusicToggle');
+    const menu = document.getElementById('mobileMenu');
+    if (!highlights || !copy || !music || !menu) return;
+    const highlightsHome = document.createComment('highlights desktop position');
+    const musicHome = document.createComment('music desktop position');
+    highlights.before(highlightsHome);
+    music.before(musicHome);
+    const mobile = window.matchMedia('(max-width: 760px)');
+    const arrange = () => {
+      if (mobile.matches) {
+        copy.append(highlights);
+        menu.append(music);
+      } else {
+        highlightsHome.after(highlights);
+        musicHome.after(music);
+      }
+    };
+    arrange();
+    mobile.addEventListener('change', arrange);
+  }
+
   function initResponsiveNavigation() {
     createMobileQuickRoute();
+    arrangeMobileWelcome();
     createDesktopExploreMenu();
     renderMesaTuristicaSpotlight();
     renderPrincipalSponsors();

@@ -20,6 +20,7 @@
 }
 
 @media (max-width: 767px) {
+  nav.glass-nav .vl28-route-button { display: none !important; }
   /* La franja institucional deja de ocupar dos pisos antes del contenido. */
   body > header:first-of-type { padding-top: calc(.35rem + env(safe-area-inset-top)); padding-bottom: .35rem; }
   body > header:first-of-type > div { flex-direction: row; justify-content: center; gap: .5rem; }
