@@ -1,0 +1,18 @@
+/* Standalone customer wallet; no changes to stamp/reward eligibility. */
+#wallet .loyalty-wallet-tools{display:grid;gap:12px;margin-top:24px;grid-template-columns:minmax(0,1fr) minmax(0,.7fr)}
+.loyalty-wallet-tools label{display:grid;gap:8px;font-size:.85rem;font-weight:700;color:#d7e7e5}
+#wallet .loyalty-wallet-tools :is(input,select){width:100%;min-width:0;min-height:46px;background:#102c31;border:1px solid #638489;border-radius:12px;padding:12px;color:white}
+#loyaltyCardResults{grid-column:1/-1;font-size:.8rem;color:#bbd2d2}
+#wallet .loyalty-pass[hidden]{display:none!important}
+.loyalty-pass__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.loyalty-pass__actions a{display:flex;align-items:center;justify-content:center;min-height:46px;border:1px solid #9ab7b7;border-radius:12px;padding:12px 16px;color:#fff;background:#24494f;font-size:.85rem;font-weight:800;text-decoration:none}
+.loyalty-pass .loyalty-pass__actions a:first-child{background:#ffce95;color:#17343b;border-color:#ffce95}
+.loyalty-pass__actions a:focus-visible{outline:3px solid white;outline-offset:3px}
+@media(min-width:1000px){body:has(#wallet:not(.hidden)) main{max-width:1180px}#walletList{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:400px){#wallet .loyalty-wallet-tools{grid-template-columns:minmax(0,1fr)}.loyalty-pass__actions a{flex:1}}
+@layer vl-colors{
+ #wallet .loyalty-pass .loyalty-pass__actions a{color:#fff!important;background:#24494f!important}
+ #wallet .loyalty-pass .loyalty-pass__actions a:first-child{color:#17343b!important;background:#ffce95!important}
+ #wallet .loyalty-wallet-tools :is(input,select){color:#fff!important;background:#102c31!important;border-color:#638489!important}
+}
+.loyalty-pass__conditions{font-size:.8rem;line-height:1.6;color:#d0e4e1;margin-top:14px}
