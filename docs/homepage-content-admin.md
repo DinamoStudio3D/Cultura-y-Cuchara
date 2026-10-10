@@ -28,3 +28,18 @@ Las fotos pueden subirse desde el dispositivo (JPG, PNG, WebP, hasta 15 MB), sus
 | SEO y estructura global | Código/SEO dinámico de fichas | Editor de metadatos generales y orden global |
 
 No se afirma que toda la página sea editable. La seguridad, autenticación, QR y lógica de rutas permanecen fuera del editor. La verificación de publicación, rechazo de permisos y carga de imágenes se realiza con un almacén aislado: no se escriben datos de prueba en Firestore ni en Cloudinary reales. La subida real depende de las variables Cloudinary existentes y de una sesión de administrador.
+
+## Ampliación V68: ajustes junto a cada módulo
+
+Se agregan diez bloques editables de presentación:
+
+- **Paradas**: título y ayuda de categorías, encabezado de paradas y título/descripción del mapa.
+- **Eventos**: título y descripción de la agenda.
+- **Postales**: título e introducción.
+- **Loja en el Tiempo**: título e introducción.
+- **Podcast**: título e introducción.
+- **Apariencia y Marca → Ingredientes y sabores de ILE**: título, descripción y etiqueta de cada una de las tres tarjetas, en ambos idiomas, y visibilidad individual.
+
+Cada formulario publica solamente sus propios bloques mediante una escritura parcial con `merge:true`. Los campos de contacto pertenecen exclusivamente al editor de portada. No se duplican editores de eventos, fotografías históricas, audios, categorías ni establecimientos. Los textos originales conservan su presentación hasta que el administrador publique una personalización. Los encabezados de mapa y módulos funcionales no incorporan un control de ocultación: las opciones existentes del módulo conservan autoridad sobre la funcionalidad.
+
+La portada móvil comparte las fotografías del carrusel configurado en Portada e identidad; no tiene un carrusel independiente. Continúan pendientes los restantes mensajes auxiliares, tarjetas de FIAVL, navegación, metadatos generales y orden global de secciones. Se verifica cada publicación con datos aislados, en cuatro anchos de pantalla y ambos idiomas; publicar desde la sesión real del propietario sigue pendiente.

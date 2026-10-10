@@ -671,7 +671,7 @@
                             <label class="block"><span class="text-sm font-semibold block mb-2">Texto descriptivo</span><textarea id="settingsSubtitle" class="field min-h-20" maxlength="350"></textarea></label>
                             <div class="grid md:grid-cols-2 gap-4"><label><span class="block text-sm font-semibold mb-2">Título principal · Inglés</span><input id="settingsTitleEn" class="field" maxlength="120"></label><label><span class="block text-sm font-semibold mb-2">Texto descriptivo · Inglés</span><textarea id="settingsSubtitleEn" class="field min-h-20" maxlength="350"></textarea></label></div><div class="grid md:grid-cols-[1fr_150px] gap-4 items-end"><label class="block"><span class="text-sm font-semibold block mb-2">URL del logotipo oficial</span><input id="settingsLogo" class="field" placeholder="https://..." oninput="previewAdminBrandImage('settingsLogo','settingsLogoPreview')"><span class="text-xs text-gray-500 mt-1 block">Este será el único logotipo usado por la web, incluido el inicio de carga.</span></label><div class="bg-white rounded-2xl p-3 min-h-28 flex items-center justify-center"><img id="settingsLogoPreview" alt="Vista previa del logotipo" class="max-w-full max-h-24 object-contain"></div></div>
                             <div class="bg-fuchsia-500/10 border border-fuchsia-500/25 rounded-2xl p-4"><div class="grid md:grid-cols-[1fr_180px] gap-4 items-end"><label class="block"><span class="text-sm font-semibold block mb-2">Imagen destacada FIAVL</span><input id="settingsFiavlImage" class="field" placeholder="https://..." oninput="previewAdminBrandImage('settingsFiavlImage','settingsFiavlImagePreview')"><span class="text-xs text-gray-400 mt-1 block">Cambia aquí la imagen principal del Festival Internacional de Artes Vivas.</span></label><div class="bg-black/40 border border-fuchsia-500/20 rounded-2xl p-3 min-h-32 flex items-center justify-center"><img id="settingsFiavlImagePreview" alt="Vista previa FIAVL" class="max-w-full max-h-28 object-contain"></div></div></div>
-                            <label class="block"><span class="text-sm font-semibold block mb-2">Imágenes del carrusel</span><textarea id="settingsHeroImages" class="field min-h-24" placeholder="Una dirección de imagen por línea"></textarea></label>
+                            <label class="block"><span class="text-sm font-semibold block mb-2">Imágenes del carrusel · escritorio y móvil</span><textarea id="settingsHeroImages" class="field min-h-24" placeholder="Una dirección de imagen por línea"></textarea></label>
                             <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Cambio de imagen (segundos)</span><input id="settingsHeroInterval" class="field" type="number" min="2" max="60" value="6"></label><label><span class="text-sm font-semibold block mb-2">Posición del fondo</span><select id="settingsHeroPosition" class="field"><option value="50% 50%">Centro</option><option value="50% 20%">Parte superior</option><option value="50% 80%">Parte inferior</option><option value="20% 50%">Izquierda</option><option value="80% 50%">Derecha</option></select></label></div>
                         </div>
                         
@@ -2830,7 +2830,7 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
     finally{button.disabled=false;}
 });
 </script>
-<script src="js/homepage-content.js?v=67"></script>
-<script src="js/homepage-editor.js?v=67"></script>
+<script src="js/homepage-content.js?v=68"></script>
+<script src="js/homepage-editor.js?v=68"></script>
 </body>
 </html>

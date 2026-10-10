@@ -174,6 +174,282 @@
       ],
     },
   ];
+  blocks.push(
+    ...[
+      {
+        id: "categoryIntro",
+        name: "Categorías: presentación",
+        selector: "#categorias",
+        adminModule: "places",
+        noVisibility: true,
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            "#categorias h2",
+            "Explora Loja por categoría",
+            "Explore Loja by category",
+          ],
+          [
+            "description",
+            "Descripción",
+            "#categorias h2 + p",
+            "Elige una categoría para ver su lista de lugares y experiencias.",
+            "Choose a category to see places and experiences.",
+          ],
+          [
+            "gridTitle",
+            "Título de categorías",
+            ".vl43-categories-heading strong",
+            "Explora a tu manera",
+            "Explore your way",
+          ],
+          [
+            "gridDescription",
+            "Ayuda de categorías",
+            ".vl43-categories-heading span",
+            "Selecciona una categoría para comenzar",
+            "Select a category to start",
+          ],
+        ],
+      },
+      {
+        id: "placesIntro",
+        name: "Paradas: presentación",
+        selector: "#establecimientos",
+        adminModule: "places",
+        noVisibility: true,
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="secAlliesTitle"]',
+            "Paradas de Visita Loja",
+            "Visita Loja Stops",
+          ],
+          [
+            "eyebrow",
+            "Antetítulo",
+            '[data-i18n="secTourism"]',
+            "Sabores, hospedaje y experiencias",
+            "Flavors, lodging and experiences",
+          ],
+        ],
+      },
+      {
+        id: "mapIntro",
+        name: "Mapa: presentación",
+        selector: "#mapa",
+        adminModule: "places",
+        noVisibility: true,
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="mapTitle"]',
+            "Mapa Interactivo de Loja",
+            "Interactive Map of Loja",
+          ],
+          [
+            "description",
+            "Descripción",
+            '[data-i18n="mapDesc"]',
+            "Desliza libremente por el mapa o pulsa los pines para explorar los sitios.",
+            "Drag freely with one finger on the map or tap the pins to explore spots.",
+          ],
+        ],
+      },
+      {
+        id: "agendaIntro",
+        name: "Agenda: presentación",
+        selector: ".vl-agenda-header",
+        adminModule: "events",
+        noVisibility: true,
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="agendaTitle"]',
+            "Agenda Cultural y Eventos",
+            "Cultural Agenda & Events",
+          ],
+          [
+            "description",
+            "Descripción",
+            '[data-i18n="agendaDesc"]',
+            "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
+            "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
+          ],
+        ],
+      },
+      {
+        id: "postcardsIntro",
+        name: "Postales: presentación",
+        selector: "#postales",
+        adminModule: "postcards",
+        noVisibility: true,
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="postcardTitle"]',
+            "Crea tu Postal  Visita Loja",
+            "Create your  Visita Loja  Postcard",
+          ],
+          [
+            "description",
+            "Descripción",
+            '[data-i18n="postcardDesc"]',
+            "Sube tu foto, escoge tu marco favorito (FIAVL 2026, Ruta del Café o Tradición Lojana), personaliza tu recuerdo y descárgalo con formato listo para tus Historias de Instagram y WhatsApp.",
+            "Upload your photo, pick a signature frame (FIAVL 2026, Coffee Route or Loja Heritage), customize your memory, and export it ready for your Instagram & WhatsApp Stories.",
+          ],
+        ],
+      },
+      {
+        id: "timeIntro",
+        name: "Loja en el Tiempo: presentación",
+        selector: "#loja-tiempo",
+        adminModule: "time",
+        noVisibility: true,
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="timeTitle"]',
+            "Loja en el  Tiempo",
+            "Loja Through  Time",
+          ],
+          [
+            "description",
+            "Descripción",
+            '[data-i18n="timeDesc"]',
+            "Desliza el cursor o tu dedo sobre las imágenes para viajar entre el ayer y el hoy de nuestros rincones más queridos.",
+            "Slide your cursor or finger across the images to travel between yesterday and today in our most iconic spots.",
+          ],
+        ],
+      },
+      {
+        id: "podcastIntro",
+        name: "Podcast: presentación",
+        selector: "#podcast",
+        adminModule: "podcast",
+        noVisibility: true,
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="podTitle"]',
+            "El Podcast de Loja",
+            "The Loja Podcast",
+          ],
+          [
+            "description",
+            "Descripción",
+            '[data-i18n="podDesc"]',
+            "Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.",
+            "Get to know the stories of sacrifice, secret recipes and cultural heritage behind each eatery, hotel and coffee shop in our province.",
+          ],
+        ],
+      },
+      {
+        id: "ileCard1",
+        name: "ILE: El Adobo Lojano",
+        selector: "#especias .vl52-spice-card:nth-child(1)",
+        adminModule: "settings",
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="ileCard1Title"]',
+            "El Adobo Lojano",
+            "Loja Marinade",
+          ],
+          [
+            "description",
+            "Descripción",
+            '[data-i18n="ileCard1Desc"]',
+            "Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.",
+            "Masterful blend of cumin, achiote and garlic that infuses cecina before being grilled over firewood coals.",
+          ],
+          [
+            "tag",
+            "Etiqueta",
+            '[data-i18n="ileCard1Tag"]',
+            "Ideal para: Cecina y Secos",
+            "Ideal for: Cecina & Stews",
+          ],
+        ],
+      },
+      {
+        id: "ileCard2",
+        name: "ILE: Aromas de Altura",
+        selector: "#especias .vl52-spice-card:nth-child(2)",
+        adminModule: "settings",
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="ileCard2Title"]',
+            "Aromas de Altura",
+            "Highland Aromas",
+          ],
+          [
+            "description",
+            "Descripción",
+            '[data-i18n="ileCard2Desc"]',
+            "El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.",
+            "Coffee from Catamayo and Olmedo pairs perfectly with subtle notes of cinnamon and cloves in pastry.",
+          ],
+          [
+            "tag",
+            "Etiqueta",
+            '[data-i18n="ileCard2Tag"]',
+            "Ideal para: Cafés y Pasteles",
+            "Ideal for: Coffees & Pastries",
+          ],
+        ],
+      },
+      {
+        id: "ileCard3",
+        name: "ILE: El Toque del Repe",
+        selector: "#especias .vl52-spice-card:nth-child(3)",
+        adminModule: "settings",
+        preserveDefault: true,
+        fields: [
+          [
+            "title",
+            "Título",
+            '[data-i18n="ileCard3Title"]',
+            "El Toque del Repe",
+            "The Repe Touch",
+          ],
+          [
+            "description",
+            "Descripción",
+            '[data-i18n="ileCard3Desc"]',
+            "El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.",
+            "Fresh cilantro and a touch of white pepper enhance the creaminess of green plantain and traditional quesillo.",
+          ],
+          [
+            "tag",
+            "Etiqueta",
+            '[data-i18n="ileCard3Tag"]',
+            "Ideal para: Repe y Sopas",
+            "Ideal for: Repe & Soups",
+          ],
+        ],
+      },
+    ],
+  );
   const placeholder = "assets/photos/photo-unavailable.svg";
   function safeUrl(value) {
     if (
@@ -250,7 +526,13 @@
       const saved = content.blocks[block.id],
         element = document.querySelector(block.selector);
       if (!element) continue;
-      element.toggleAttribute("data-home-content-hidden", !saved.enabled);
+      if (
+        block.preserveDefault &&
+        !settings.homepageContent?.blocks?.[block.id]
+      )
+        continue;
+      if (!block.noVisibility)
+        element.toggleAttribute("data-home-content-hidden", !saved.enabled);
       for (const [key, , selector] of block.fields)
         setText(
           document.querySelector(selector),
