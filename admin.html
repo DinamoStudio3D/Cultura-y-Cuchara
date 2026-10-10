@@ -798,8 +798,8 @@
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Imagen antigua *</span><input id="timeImagePast" class="field" required placeholder="https://... o foto-antigua.jpg"></label><label><span class="text-sm font-semibold block mb-2">Imagen actual *</span><input id="timeImagePresent" class="field" required placeholder="https://... o foto-actual.jpg"></label></div>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Descripción en español *</span><textarea id="timeDesc" class="field min-h-24" required maxlength="900"></textarea></label><label><span class="text-sm font-semibold block mb-2">Descripción en inglés</span><textarea id="timeDescEn" class="field min-h-24" maxlength="900"></textarea></label></div>
                         <div class="grid lg:grid-cols-2 gap-4">
-                            <div class="rounded-xl border border-amber-500/25 bg-amber-500/10 p-4 space-y-3"><strong class="text-sm">Historia en español</strong><p class="text-xs text-gray-400">Ruta manual del MP3 en GitHub. Sin archivo se conservará la narración automática.</p><input id="timeAudioUrl" class="field" placeholder="audios/historia-del-lugar.mp3" oninput="syncAdminAudioPreview('timeAudioUrl','timeAudioPreviewEs')"><audio id="timeAudioPreviewEs" controls class="hidden w-full"></audio></div>
-                            <div class="rounded-xl border border-sky-500/25 bg-sky-500/10 p-4 space-y-3"><strong class="text-sm">Historia en inglés</strong><p class="text-xs text-gray-400">Ruta manual del MP3 en inglés. Sin archivo se utilizará la voz automática en inglés.</p><input id="timeAudioUrlEn" class="field" placeholder="audios/history-of-place-en.mp3" oninput="syncAdminAudioPreview('timeAudioUrlEn','timeAudioPreviewEn')"><audio id="timeAudioPreviewEn" controls class="hidden w-full"></audio></div>
+                            <div class="rounded-xl border border-amber-500/25 bg-amber-500/10 p-4 space-y-3"><strong class="text-sm">Historia en español</strong><p class="text-xs text-gray-400">Sube una narración o pega su URL. Sin audio se conserva la narración automática.</p><input id="timeAudioUrl" class="field" placeholder="audios/historia-del-lugar.mp3" oninput="syncAdminAudioPreview('timeAudioUrl','timeAudioPreviewEs')"><audio id="timeAudioPreviewEs" controls class="hidden w-full"></audio></div>
+                            <div class="rounded-xl border border-sky-500/25 bg-sky-500/10 p-4 space-y-3"><strong class="text-sm">Historia en inglés</strong><p class="text-xs text-gray-400">Sube una narración en inglés o pega su URL. Sin audio se utiliza la voz automática.</p><input id="timeAudioUrlEn" class="field" placeholder="audios/history-of-place-en.mp3" oninput="syncAdminAudioPreview('timeAudioUrlEn','timeAudioPreviewEn')"><audio id="timeAudioPreviewEn" controls class="hidden w-full"></audio></div>
                         </div>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Latitud *</span><input id="timeLat" class="field" required type="number" step="any" placeholder="-3.9931"></label><label><span class="text-sm font-semibold block mb-2">Longitud *</span><input id="timeLng" class="field" required type="number" step="any" placeholder="-79.2042"></label></div>
                         <div id="timeMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
@@ -861,6 +861,7 @@
     <script src="js/admin-visit-validation-mode.js"></script>
     <script src="js/admin-visit-validation-mode-integration.js"></script>
     <script src="js/admin-visit-qr-mode.js"></script>
+    <script src="js/admin-time-audio.js?v=72" defer></script>
 <script>
 
 function generateChabaquitoMissionId(value){
@@ -1905,12 +1906,13 @@ function clearAdminAudioPreview(previewId){const audio=document.getElementById(p
 function syncAdminAudioPreview(fieldId,previewId){const field=document.getElementById(fieldId),audio=document.getElementById(previewId);if(!field||!audio)return;const url=field.value.trim();if(!url){clearAdminAudioPreview(previewId);return;}audio.src=url;audio.classList.remove('hidden');}
 
 function resetTimeForm() {
+    window.VisitaLojaTimeAudio?.cancel();
     document.getElementById('timeForm').reset(); clearAdminAudioPreview('timeAudioPreviewEs'); clearAdminAudioPreview('timeAudioPreviewEn'); document.getElementById('timeEditIdSecure').value = ''; document.getElementById('timeSecureFormTitle').textContent = 'Registrar punto histórico'; document.getElementById('timeMessage').classList.add('hidden');
 }
 
 function editTimeSpotSecure(id) {
     const spot = adminTimeSpots.find(item => item.id === id); if (!spot) return;
-    showAdminModule('time'); document.getElementById('timeEditIdSecure').value = spot.id; document.getElementById('timeSecureFormTitle').textContent = `Editar: ${spot.title}`;
+    window.VisitaLojaTimeAudio?.cancel(); showAdminModule('time'); document.getElementById('timeEditIdSecure').value = spot.id; document.getElementById('timeSecureFormTitle').textContent = `Editar: ${spot.title}`;
     const values={timeTitle:spot.title,timeTitleEn:spot.titleEn,timeLabelPast:spot.labelPast,timeLabelPresent:spot.labelPresent,timeImagePast:spot.imgPast,timeImagePresent:spot.imgPresent,timeDesc:spot.desc,timeDescEn:spot.descEn,timeAudioUrl:spot.audioUrl,timeAudioUrlEn:spot.audioUrlEn,timeLat:spot.lat,timeLng:spot.lng};
     Object.entries(values).forEach(([id,value])=>document.getElementById(id).value=value??''); syncAdminAudioPreview('timeAudioUrl','timeAudioPreviewEs'); syncAdminAudioPreview('timeAudioUrlEn','timeAudioPreviewEn'); document.getElementById('timeForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
