@@ -80,7 +80,7 @@
 </style>
     <link rel="stylesheet" href="css/admin-v2.css">
 <style>.home-editor-preview{margin-top:20px;background:#fff;color:#172d45;border-radius:14px;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.home-editor-preview img{width:100%;height:auto;object-fit:contain;align-self:center}.home-editor-preview div{padding:20px;overflow-wrap:anywhere}.home-editor-preview strong{font-size:22px}.home-editor-preview p{margin-top:10px;font-size:14px;line-height:1.6}.home-editor-preview:not(:has(img)){display:block}@media(max-width:600px){.home-editor-preview{grid-template-columns:1fr}}</style>
-<script src="js/merchant-access.js?v=82"></script></head>
+<script src="js/merchant-access.js?v=82"></script><script src="js/admin-access-check.js?v=84"></script></head>
 <body class="min-h-screen text-white antialiased">
     <header class="sticky top-0 z-50 border-b border-white/10 bg-[#080b10]/90 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
@@ -1118,18 +1118,7 @@ function friendlyAuthError(error) {
 }
 
 async function resolveAdminAccess(user) {
-    const email = (user?.email || '').toLowerCase();
-    if (!user) return false;
-    if (email === LEGACY_ADMIN_EMAIL) return true;
-    try {
-        const token = await user.getIdTokenResult(true);
-        if (token.claims.admin === true || token.claims.role === 'admin' || token.claims.role === 'owner') return true;
-        const profile = await adminUsersRef.doc(user.uid).get();
-        return profile.exists && profile.data().active === true && ['admin', 'owner'].includes(profile.data().role);
-    } catch (error) {
-        console.warn('No se pudo comprobar el rol administrativo:', error?.code || error);
-        return false;
-    }
+    return window.VisitaLojaAdminAccess.resolve(user,{legacyEmail:LEGACY_ADMIN_EMAIL,adminUsers:adminUsersRef});
 }
 
 async function recordAdminAudit(action, module, summary, details = {}) {
