@@ -1,4 +1,4 @@
-# Edición de contenido público — V67
+# Edición de contenido público — V69
 
 ## Panel
 
@@ -43,3 +43,9 @@ Se agregan diez bloques editables de presentación:
 Cada formulario publica solamente sus propios bloques mediante una escritura parcial con `merge:true`. Los campos de contacto pertenecen exclusivamente al editor de portada. No se duplican editores de eventos, fotografías históricas, audios, categorías ni establecimientos. Los textos originales conservan su presentación hasta que el administrador publique una personalización. Los encabezados de mapa y módulos funcionales no incorporan un control de ocultación: las opciones existentes del módulo conservan autoridad sobre la funcionalidad.
 
 La portada móvil comparte las fotografías del carrusel configurado en Portada e identidad; no tiene un carrusel independiente. Continúan pendientes los restantes mensajes auxiliares, tarjetas de FIAVL, navegación, metadatos generales y orden global de secciones. Se verifica cada publicación con datos aislados, en cuatro anchos de pantalla y ambos idiomas; publicar desde la sesión real del propietario sigue pendiente.
+
+## Ampliación V69: presentación de FIAVL
+
+Eventos incorpora la presentación del festival (distintivo, título, subtítulo, descripción y etiquetas de sus dos botones) y las cuatro tarjetas (título, etiqueta y descripción), en español e inglés. Se conservan los destinos y acciones de los botones, eventos, campañas, QR y validaciones del pasaporte. No se añaden controles de ocultación. Cada bloque mantiene su diseño original hasta publicar una personalización. La publicación parcial del formulario Eventos incluye estos textos y la introducción de la agenda; no modifica registros del festival.
+
+Verificación con almacén aislado, cuatro tamaños y ambos idiomas. La publicación desde una sesión real del propietario sigue pendiente.
