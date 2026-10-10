@@ -270,7 +270,8 @@
 
 <link rel="stylesheet" href="css/public-layout.css?v=67">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
-<link rel="stylesheet" href="css/welcome-v77.css?v=77">
+<link rel="stylesheet" href="css/welcome-v77.css?v=78">
+<link rel="stylesheet" href="css/discovery-cards.css?v=78">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -4524,6 +4525,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     `;
                 });
             }
+            window.VisitaLojaHomepage?.apply();
         }
 
         function renderTrendingUI() {
@@ -4710,6 +4712,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
             renderAdminLocationsList();
             updatePassportUI();
+            window.VisitaLojaHomepage?.apply();
         }
 
         function openQrClaimModal(e, localId) {
@@ -7998,7 +8001,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
     <script src="js/chabaquito-runtime-config.js" defer></script>
     <script src="js/chabaquito-public-v2.js?v=70" defer></script>
-    <script src="js/homepage-content.js?v=75" defer></script>
+    <script src="js/welcome-settings.js?v=78" defer></script>
+    <script src="js/homepage-content.js?v=78" defer></script>
 <script src="js/mobile-ui.js?v=65" defer></script>
 
 <script id="visitaloja-dropdown-navigation-js-v29">

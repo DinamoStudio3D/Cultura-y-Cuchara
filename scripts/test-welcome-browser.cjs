@@ -6,7 +6,7 @@ const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const nav=html.match(/<nav data-vl-surface="dark" class="sticky[\s\S]*?<\/nav>/)[0];
 const start=html.indexOf('<section id="inicio"'),end=html.indexOf('<!-- World Tourism Day',start);
 const welcome=html.slice(start,end);
-const cssFiles=['css/mobile-ui.css','css/public-layout.css','css/public-colors.css','css/welcome-v77.css'];
+const cssFiles=['css/mobile-ui.css','css/public-layout.css','css/public-colors.css','css/welcome-v77.css','css/discovery-cards.css'];
 const css=fs.readFileSync('/tmp/visitaloja-tailwind.css','utf8')+cssFiles.map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n');
 const functions=html.slice(html.indexOf('        function searchFromWelcome(event)'),html.indexOf('        function clearSmartSearch()'));
 (async()=>{
@@ -25,6 +25,7 @@ const functions=html.slice(html.indexOf('        function searchFromWelcome(even
   await page.goto('https://qa.test/fixture');
   await page.setContent('<html lang="es"><head><style>'+css+'</style></head><body>'+nav+'<main>'+welcome+'<section id="establecimientos"><input id="searchInput"></section></main></body></html>');
   // Remote photography is substituted with an existing repository photograph, only in QA.
+  await page.addScriptTag({path:path.join(root,'js/welcome-settings.js')});
   await page.addScriptTag({path:path.join(root,'js/homepage-content.js')});
   await page.addScriptTag({content:'window.searchCalls=0;function searchItems(){window.searchCalls++};'+functions});
   await page.waitForFunction(()=>[...document.querySelectorAll('#heroSlidesContainer img')].every(i=>i.complete));
@@ -45,6 +46,24 @@ const functions=html.slice(html.indexOf('        function searchFromWelcome(even
   assert.equal(await page.locator('.vl-mobile-intro h1').textContent(),'Una nueva aventura');
   await page.evaluate(defaults=>{document.getElementById('heroTitle').textContent=defaults.title;document.querySelector('.vl-mobile-intro h1').textContent=defaults.mobile;document.getElementById('heroSubtitle').textContent='Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.';document.querySelector('.vl-mobile-intro p').textContent='Sabores, cultura y nuevas historias por descubrir.';},defaults);
   if(width===390||width===1440){const bottom=await page.locator('.vl-discovery-nav').evaluate(e=>e.getBoundingClientRect().bottom+scrollY);await page.screenshot({path:path.join(output,`welcome-${width}.png`),clip:{x:0,y:0,width,height:Math.ceil(bottom)}});}
+  // Existing preset controls and new mobile framing affect real computed layout.
+  for(const style of ['cinematic','classic','clean']) {
+    await page.evaluate(style=>VisitaLojaHomepage.apply({heroStyle:style,heroHeight:'compact',heroImageOpacity:85,heroMobilePosition:'80% 50%'}),style);
+    assert.equal(await page.locator('#inicio').getAttribute('data-welcome-style'),style);
+    if(width<=760)assert.equal(await page.locator('#heroSlidesContainer img').evaluate(e=>getComputedStyle(e).objectPosition),'80% 50%');
+    else {
+      const color=await page.locator('#heroTitle').evaluate(e=>getComputedStyle(e).color);
+      assert.equal(color,style==='cinematic'?'rgb(255, 255, 255)':'rgb(37, 50, 65)');
+      if(style!=='cinematic'){const c=await page.locator('.vl-welcome-copy').boundingBox(),v=await page.locator('.vl-welcome-visual').boundingBox();assert(c.x+c.width<=v.x+1);}
+    }
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  }
+  await page.evaluate(()=>VisitaLojaHomepage.apply({homepageContent:{blocks:{welcomePlaces:{enabled:false},welcomePassport:{enabled:false},welcomeMissions:{enabled:false},welcomeAgenda:{enabled:false},welcomePhoto:{enabled:false},welcomeSearch:{title:'Busca tu aventura',placeholder:'Café especial'}}}}));
+  assert.equal(await page.locator('.vl-discovery-nav').isVisible(),false);
+  assert.equal(await page.locator('#welcomeSearch').getAttribute('placeholder'),'Café especial');
+  assert.equal(await page.locator('#welcomeSearchLabel').textContent(),'Busca tu aventura');
+  await page.evaluate(()=>VisitaLojaHomepage.apply({}));
+  assert.equal(await page.locator('.vl-discovery-nav').isVisible(),true);
   // Long editable text must grow rather than hide the search or overflow horizontally.
   await page.evaluate(()=>VisitaLojaHomepage.apply({title:'Historias y experiencias para descubrir todos los rincones de la provincia de Loja',homepageContent:{blocks:{mobileWelcome:{title:'Descubre nuevas historias en cada rincón de Loja',description:'Una experiencia turística para compartir en familia, conocer nuestros sabores y recorrer la provincia a tu ritmo.'}}}}));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));

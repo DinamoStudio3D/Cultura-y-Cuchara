@@ -68,3 +68,26 @@
     .vl-discovery-inner strong { font-size:13px; }
   }
   @media(prefers-reduced-motion:reduce) { .vl-discovery-inner > a:hover { transform:none; } }
+
+/* Existing administration controls now affect the V77 composition. */
+.vl-welcome-shell{min-height:var(--welcome-desktop-height,650px)}
+#heroSlidesContainer img{filter:brightness(var(--welcome-brightness,1))}
+@layer vl-colors {
+  @media(min-width:761px){
+    #inicio.vl-welcome[data-welcome-style="classic"],#inicio.vl-welcome[data-welcome-style="clean"]{background:#fff9ef!important}
+    #inicio:is([data-welcome-style="classic"],[data-welcome-style="clean"]) .vl-welcome-copy{--vl-text:#253241;--vl-muted:#56616c;--vl-accent:#9e4317}
+    #inicio:is([data-welcome-style="classic"],[data-welcome-style="clean"]) .vl-welcome-actions > :is(a,button){background:#fff!important}
+  }
+}
+@media(min-width:761px){
+  #inicio:is([data-welcome-style="classic"],[data-welcome-style="clean"]) .vl-welcome-shell{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px}
+  #inicio:is([data-welcome-style="classic"],[data-welcome-style="clean"]) .vl-welcome-visual{left:52%}
+  #inicio:is([data-welcome-style="classic"],[data-welcome-style="clean"]) .vl-welcome-visual::after{background:linear-gradient(180deg,#09181710,#09181740)}
+  #inicio:is([data-welcome-style="classic"],[data-welcome-style="clean"]) .vl-welcome-actions > :is(a,button){border-color:#e7dfd4}
+  #inicio[data-welcome-style="clean"] .vl-welcome-visual{top:28px;right:28px;bottom:28px;border-radius:28px}
+}
+@media(max-width:760px){
+  .vl-welcome-shell{min-height:0}
+  .vl-welcome-visual{min-height:var(--welcome-mobile-height,360px)}
+  #heroSlidesContainer img{object-position:var(--welcome-mobile-position,50% 50%)!important}
+}

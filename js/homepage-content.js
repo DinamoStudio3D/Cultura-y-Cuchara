@@ -1017,6 +1017,31 @@
       },
     ],
   );
+  for (const id of ["welcomePlaces","welcomePassport","welcomeMissions","welcomeAgenda","welcomePhoto"]) {
+    blocks.find(block=>block.id===id).noVisibility=false;
+  }
+  blocks.find(block=>block.id==="welcomePhoto").fields.push(["location", "Ubicación sobre la foto", ".vl-welcome-location", "LOJA · ECUADOR", "LOJA · ECUADOR"]);
+  blocks.push({id:"welcomeSearch",name:"Buscador de portada",selector:".vl-welcome-search",preserveDefault:true,noVisibility:true,previewAnchor:"inicio",fields:[
+    ["title","Pregunta del buscador","#welcomeSearchLabel","¿Qué quieres descubrir?","What would you like to discover?"],
+    ["button","Botón de búsqueda",".vl-welcome-primary span","Buscar","Search"],
+    ["placeholder","Ejemplo de búsqueda","#welcomeSearch","Café, hotel, comida lojana…","Coffee, hotels, local food…","placeholder"]
+  ]});
+  blocks.find(block=>block.id==="agendaIntro").fields.push(
+    ["categoryAgendaTitle","Tarjeta de agenda entre categorías","#exploreCategoryGrid > button:last-child strong","Agenda cultural","Cultural agenda"],
+    ["categoryAgendaHelp","Descripción de esa tarjeta","#exploreCategoryGrid > button:last-child > span:last-child","Eventos y actividades","Events and activities"]
+  );
+  blocks.push({id:"placesCardText",name:"Textos de las tarjetas de lugares",adminModule:"places",selector:"#localesGrid",noVisibility:true,fields:[
+    ["title","Antetítulo de las tarjetas","#localesGrid .vl-card-kicker","DESCUBRE LOJA","DISCOVER LOJA"],
+    ["button","Invitación a abrir detalles","#localesGrid .vl-card-explore > span:first-child","Ver detalles del lugar","View place details"]
+  ]});
+  // Presentation only: category IDs, associations and passport eligibility stay unchanged.
+  for (const [id,name,nameEn,icon] of [["hotel", "Hoteles y hospedaje", "Hotels & Lodging", "🏨"], ["hueca", "Huecas tradicionales", "Traditional Eateries", "🥘"], ["urbana", "Restaurantes", "Restaurants", "🍽️"], ["cafe", "Cafeterías", "Coffee Shops", "☕"], ["heladeria", "Heladerías", "Ice Cream Shops", "🍦"], ["panaderia", "Panaderías y reposterías", "Bakeries & Pastry Shops", "🥐"], ["bar", "Bares y vida nocturna", "Bars & Nightlife", "🍹"], ["entretenimiento", "Entretenimiento", "Entertainment", "🎳"], ["turismo", "Atractivos turísticos", "Tourist Attractions", "📍"], ["artesania", "Artesanías y comercios locales", "Crafts & Local Shops", "🧵"], ["aliado", "Marcas aliadas", "Partner Brands", "🤝"]]) {
+    const selector=`#exploreCategoryGrid [data-category="${id}"]`;
+    blocks.push({id:`categoryCard_${id}`,name:`Tarjeta de categoría: ${name}`,adminModule:"places",selector,preserveDefault:true,noVisibility:true,previewAnchor:"categorias",fields:[
+      ["title","Nombre en la tarjeta",`${selector} strong`,name,nameEn],
+      ["icon","Icono (emoji o texto breve)",`${selector} > span:first-child`,icon,icon]
+    ]});
+  }
   const contactBlock = blocks.find(block => block.id === "footerContact");
   contactBlock.name = "Contacto y redes sociales";
   contactBlock.optionalHttpsLinks = true;
@@ -1103,6 +1128,7 @@
   let settings = {};
   function apply(data = settings) {
     settings = data || {};
+    root.VisitaLojaWelcomeSettings?.apply(settings);
     const content = normalize(settings.homepageContent);
     const lang =
       document.documentElement.lang === "en" ||
@@ -1113,18 +1139,20 @@
       const saved = content.blocks[block.id],
         element = document.querySelector(block.selector);
       if (!element) continue;
+      if (!block.noVisibility)
+        element.toggleAttribute("data-home-content-hidden", !saved.enabled);
       if (
         block.preserveDefault &&
         !settings.homepageContent?.blocks?.[block.id]
       )
         continue;
-      if (!block.noVisibility)
-        element.toggleAttribute("data-home-content-hidden", !saved.enabled);
-      for (const [key, , selector] of block.fields)
-        setText(
-          document.querySelector(selector),
-          saved[lang === "en" ? key + "En" : key] || saved[key],
-        );
+      for (const [key, , selector, , , attribute] of block.fields) {
+        for (const target of document.querySelectorAll(selector)) {
+          const value = saved[lang === "en" ? key + "En" : key] || saved[key];
+          if (attribute === "placeholder") target.setAttribute("placeholder",value);
+          else setText(target,value);
+        }
+      }
       for (const [key, , selector] of block.links || []) {
         const link = document.querySelector(selector);
         if (!link) continue;
@@ -1160,6 +1188,8 @@
         } else credit?.remove();
       }
     }
+    const discovery = document.querySelector(".vl-discovery-nav");
+    if (discovery) discovery.toggleAttribute("data-home-content-hidden", !document.querySelector('.vl-discovery-inner > a:not([data-home-content-hidden])'));
     const email = content.contactEmail;
     if (/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)) {
       const link = document.querySelector(".vl-footer-contact a");

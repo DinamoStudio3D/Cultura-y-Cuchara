@@ -14,7 +14,7 @@ const audio={name:'voice.wav',mimeType:'audio/wav',buffer:wave()};
  const browser=await chromium.launch({executablePath:executable,headless:true,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage']});
  const report=[]; let lastPage;
  try{
- for(const width of [320,390,768,1440]){
+ for(const width of (process.env.VISITALOJA_QA_WIDTHS?process.env.VISITALOJA_QA_WIDTHS.split(',').map(Number):[320,390,768,1440])){
   const context=await browser.newContext({viewport:{width,height:1000},serviceWorkers:'block'});
   const page=lastPage=await context.newPage(),errors=[],requests=[];
   page.on('pageerror',error=>errors.push(error.message));
@@ -194,6 +194,20 @@ const audio={name:'voice.wav',mimeType:'audio/wav',buffer:wave()};
   await page.locator('#home-content-draft-restore').click();
   if(width===390||width===1440)await page.locator('#home-content-draft-save').scrollIntoViewIfNeeded();
   if(width===390||width===1440)await page.screenshot({path:path.join(output,`draft-${width}.png`)});
+  // V78 settings: existing controls are unique and new framing/fit persist in the real form handler.
+  await page.evaluate(()=>{setAdminUnsavedChanges(false);loadSettingsForm({heroMobilePosition:'80% 50%',cardImageFit:'contain'});});
+  assert.equal(await page.locator('#settingsHeroStyle').count(),1);
+  assert.equal(await page.locator('#settingsHeroMobilePosition').inputValue(),'80% 50%');
+  assert.equal(await page.locator('#settingsCardImageFit').inputValue(),'contain');
+  assert.equal(await page.locator('#settingsHeroMobilePreview').count(),1);
+  assert.equal(await page.locator('#settingsHeroMobilePreview').evaluate(e=>getComputedStyle(e).objectPosition),'80% 50%');
+  await page.locator('#settingsHeroMobilePosition').selectOption('50% 20%');
+  await page.locator('#settingsCardImageFit').selectOption('cover');
+  await page.locator('#settingsSaveBtn').click();
+  await page.waitForFunction(()=>document.getElementById('settingsSaveState').textContent==='Guardado');
+  const presentation=await page.evaluate(()=>fixture.writes.at(-1).data);
+  assert.equal(presentation.heroMobilePosition,'50% 20%');
+  assert.equal(presentation.cardImageFit,'cover');
   // Merchant portal: cancellation and failed save never trigger cleanup of the old file.
   await page.goto('https://qa.test/merchant-profile.html',{waitUntil:'load'});
   await page.evaluate(()=>{
