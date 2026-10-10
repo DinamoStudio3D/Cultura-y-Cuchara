@@ -51,6 +51,7 @@ const audio={name:'voice.wav',mimeType:'audio/wav',buffer:wave()};
   await page.goto('https://qa.test/admin.html',{waitUntil:'load'});
   await page.evaluate(()=>{document.getElementById('loginView').classList.add('hidden');document.getElementById('adminView').classList.remove('hidden');showAdminModule('time');});
   assert.deepEqual(errors,[]);
+  for(const id of ['home-timeIntro-badge','home-timeIntro-badgeEn','home-timeIntro-comparisonHelp','home-timeIntro-comparisonHelpEn'])assert.equal(await page.locator('#'+id).count(),1);
   const old='https://res.cloudinary.com/fixture/image/upload/v1/visitaloja/time/images/old.webp';
   await page.locator('#timeImagePast').fill(old);
   await page.locator('#timePastFile').setInputFiles(photo);

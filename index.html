@@ -272,6 +272,7 @@
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
 <link rel="stylesheet" href="css/discovery-cards.css?v=78">
+    <link rel="stylesheet" href="css/time-discovery-v79.css?v=79">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -980,8 +981,8 @@
 
     <!-- Loja en el Tiempo Section (Antes vs Después) -->
     <section id="loja-tiempo" data-vl-surface="dark" class="py-16 lg:py-24 px-4 md:px-8 lg:px-12 bg-[#0f0f0f] text-white border-t border-brandGold/30 relative overflow-hidden reveal">
-        <div class="max-w-7xl mx-auto relative z-10">
-            <div class="text-center mb-10">
+        <div class="max-w-7xl mx-auto relative z-10 vl-time-layout">
+            <div class="text-center mb-10 vl-time-intro">
                 <span class="bg-brandGold/20 text-brandGold font-bold px-4 py-1.5 rounded-full text-xs uppercase tracking-widest border border-brandGold/40 inline-flex items-center gap-2 shadow-warm-glow mb-3">
                     <i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="timeBadge">Patrimonio Vivo</span>
                 </span>
@@ -999,7 +1000,7 @@
             </div>
 
             <!-- Contenedor del visor Antes / Después -->
-            <div class="max-w-4xl mx-auto bg-black/60 rounded-3xl p-3 sm:p-5 border-2 border-brandGold/40 shadow-2xl">
+            <div class="vl-time-panel max-w-4xl mx-auto bg-black/60 rounded-3xl p-3 sm:p-5 border-2 border-brandGold/40 shadow-2xl">
                 <div id="beforeAfterViewer" class="before-after-container w-full h-[320px] sm:h-[420px] md:h-[480px] rounded-2xl relative shadow-inner overflow-hidden cursor-ew-resize">
                     <!-- Imagen Después (Presente - Fondo) -->
                     <img id="timeImgAfter" src="assets/photos/photo-unavailable.svg" alt="Loja Presente" class="absolute inset-0 w-full h-full object-cover pointer-events-none" decoding="async" loading="lazy">
@@ -1008,7 +1009,7 @@
                     </span>
 
                     <!-- Imagen Antes (Pasado - Overlay recortado) -->
-                    <div id="timeOverlayBefore" class="before-img-overlay pointer-events-none" style="width: 50%;">
+                    <div id="timeOverlayBefore" class="before-img-overlay pointer-events-none" style="width: 100%; clip-path: inset(0 50% 0 0);">
                         <img id="timeImgBefore" src="assets/photos/photo-unavailable.svg" alt="Loja Pasado" class="absolute inset-0 w-full h-full object-cover max-w-none" style="filter: grayscale(100%) contrast(110%);" decoding="async" loading="lazy">
                         <span id="timeLabelBefore" class="absolute bottom-4 left-4 bg-black/85 backdrop-blur text-white border border-gray-600 text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow z-10">
                             Ayer (1945)
@@ -1023,8 +1024,12 @@
                     </div>
                 </div>
 
+                <div class="vl-time-comparison">
+                    <label for="timeComparisonRange" id="timeCompareInstruction">Mueve el control para comparar el ayer y el hoy</label>
+                    <input id="timeComparisonRange" type="range" min="0" max="100" value="50" aria-describedby="timeCompareInstruction">
+                </div>
                 <!-- Detalles del punto histórico -->
-                <div class="mt-4 p-4 rounded-xl bg-[#141414] border border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="vl-time-details mt-4 p-4 rounded-xl bg-[#141414] border border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div>
                         <h3 id="timeSpotTitle" class="text-base sm:text-lg font-black text-brandGold">Puerta de la Ciudad</h3>
                         <p id="timeSpotDesc" class="text-xs text-gray-300 mt-0.5 leading-relaxed">De entrada fortificada a ícono cultural y museo de arte vivo.</p>
@@ -4207,7 +4212,7 @@
 
         function startDragBg(e) {
             isDraggingBg = true;
-            startX = e.clientX || (e.touches && e.touches[0].clientX);
+            startX = e.clientX ?? (e.touches && e.touches[0].clientX);
             startY = e.clientY || (e.touches && e.touches[0].clientY);
             
             document.addEventListener('mousemove', onDragBg);
@@ -5469,8 +5474,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     : "bg-black/50 text-gray-300 border-gray-800 hover:border-brandGold/60";
                 
                 tabsContainer.innerHTML += `
-                    <button type="button" onclick="selectTimeSpot(${idx})" class="px-4 py-2 rounded-xl text-xs font-bold border transition whitespace-nowrap flex items-center gap-1.5 ${activeClass}">
-                        <i class="fa-solid fa-landmark text-brandGold"></i> ${titleText}
+                    <button type="button" aria-pressed="${isActive}" onclick="selectTimeSpot(${idx})" class="px-4 py-2 rounded-xl text-xs font-bold border transition whitespace-nowrap flex items-center gap-1.5 ${activeClass}">
+                        <i class="fa-solid fa-landmark text-brandGold"></i> ${escapeHTML(titleText)}
                     </button>
                 `;
             });
@@ -5495,6 +5500,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 if(labelAfter) labelAfter.innerText = currentSpot.labelPresent || "Hoy";
             }
 
+            window.VisitaLojaHomepage?.apply();
             renderAdminTimeSpotsList();
         }
 
@@ -5528,7 +5534,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function initTimeSliderEvents() {
             const viewer = document.getElementById('beforeAfterViewer');
-            if(!viewer) return;
+            if(!viewer || viewer.dataset.sliderReady) return;
+            viewer.dataset.sliderReady="true";
+            document.getElementById("timeComparisonRange")?.addEventListener("input",event=>setTimeComparison(event.target.value));
 
             const onMove = (e) => {
                 if(!isSlidingTime) return;
@@ -5539,10 +5547,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 let percentage = (offset / rect.width) * 100;
                 percentage = Math.max(0, Math.min(100, percentage));
 
-                const overlay = document.getElementById('timeOverlayBefore');
-                const handle = document.getElementById('timeSliderHandle');
-                if(overlay) overlay.style.width = `${percentage}%`;
-                if(handle) handle.style.left = `${percentage}%`;
+                setTimeComparison(percentage);
             };
 
             const startSlide = (e) => {
@@ -5562,14 +5567,19 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
             window.addEventListener('mouseup', stopSlide);
             window.addEventListener('touchend', stopSlide);
+            window.addEventListener('touchcancel', stopSlide);
+            window.addEventListener('blur', stopSlide);
         }
 
-        function resetTimeSliderPosition() {
-            const overlay = document.getElementById('timeOverlayBefore');
-            const handle = document.getElementById('timeSliderHandle');
-            if(overlay) overlay.style.width = '50%';
-            if(handle) handle.style.left = '50%';
+        function setTimeComparison(value) {
+            const parsed=Number(value), percentage=Number.isFinite(parsed)?Math.max(0,Math.min(100,parsed)):50;
+            const overlay=document.getElementById('timeOverlayBefore'),handle=document.getElementById('timeSliderHandle'),range=document.getElementById('timeComparisonRange');
+            if(overlay){overlay.style.width='100%';overlay.style.clipPath=`inset(0 ${100-percentage}% 0 0)`;}
+            if(handle)handle.style.left=`${percentage}%`;
+            if(range)range.value=String(percentage);
         }
+
+        function resetTimeSliderPosition() { setTimeComparison(50); }
 
         function renderPublicFrameButtons() {
             const container = document.getElementById('postcardFramesContainer');
@@ -8002,7 +8012,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
     <script src="js/chabaquito-runtime-config.js" defer></script>
     <script src="js/chabaquito-public-v2.js?v=70" defer></script>
     <script src="js/welcome-settings.js?v=78" defer></script>
-    <script src="js/homepage-content.js?v=78" defer></script>
+    <script src="js/homepage-content.js?v=79" defer></script>
 <script src="js/mobile-ui.js?v=65" defer></script>
 
 <script id="visitaloja-dropdown-navigation-js-v29">

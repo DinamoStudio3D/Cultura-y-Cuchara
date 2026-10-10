@@ -1042,6 +1042,10 @@
       ["icon","Icono (emoji o texto breve)",`${selector} > span:first-child`,icon,icon]
     ]});
   }
+  blocks.find(block=>block.id==="timeIntro").fields.push(
+    ["badge","Etiqueta de patrimonio",'[data-i18n="timeBadge"]',"Patrimonio Vivo","Living heritage"],
+    ["comparisonHelp","Ayuda del comparador","#timeCompareInstruction","Mueve el control para comparar el ayer y el hoy","Move the control to compare yesterday and today"]
+  );
   const contactBlock = blocks.find(block => block.id === "footerContact");
   contactBlock.name = "Contacto y redes sociales";
   contactBlock.optionalHttpsLinks = true;

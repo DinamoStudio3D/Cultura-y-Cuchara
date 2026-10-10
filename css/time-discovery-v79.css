@@ -1,0 +1,38 @@
+/* Keep the established cascade layers: older surface declarations are important. */
+@layer vl-colors {
+ #loja-tiempo {background:#122b30!important;color:#fff!important;}
+ #loja-tiempo .vl-time-intro h2 {color:#fff!important;}
+ #loja-tiempo .vl-time-intro p,#loja-tiempo #timeSpotDesc {color:#d7e4e3!important;}
+ #loja-tiempo .vl-time-intro h2 span,#loja-tiempo #timeSpotTitle {color:#ffd29b!important;}
+ #lojaTimeTabsContainer button {background:#203c41!important;color:#e8f0ef!important;border-color:#486165!important;}
+ #lojaTimeTabsContainer button[aria-pressed="true"] {background:#ffd29b!important;color:#152e33!important;border-color:#ffd29b!important;}
+ #lojaTimeTabsContainer button i {color:inherit!important;}
+ #loja-tiempo .vl-time-details {background:#18343a!important;border-color:#486165!important;}
+ #loja-tiempo .vl-time-details button {background:#ffd29b!important;color:#152e33!important;border-color:#ffd29b!important;}
+ #loja-tiempo .vl-time-details button :is(span,i) {color:inherit!important;}
+ #loja-tiempo #timeAudioGuideBtn {background:#25474d!important;color:#fff!important;border-color:#6c8b91!important;}
+ #loja-tiempo #timeLabelBefore {background:#13282e!important;color:#fff!important;}
+ #loja-tiempo #timeLabelAfter {background:#fff1dc!important;color:#21353a!important;}
+ #loja-tiempo .vl-time-comparison {color:#e8f0ef!important;}
+}
+@layer vl-layout {
+ #loja-tiempo {padding-block:clamp(48px,7vw,96px)!important;}
+ #loja-tiempo .vl-time-intro {text-align:left!important;margin-bottom:24px!important;}
+ #loja-tiempo .vl-time-intro h2 {font-size:clamp(2rem,4vw,3.7rem)!important;line-height:1.08!important;}
+ #loja-tiempo .vl-time-intro p {font-size:1rem!important;line-height:1.7!important;margin-top:18px!important;}
+ #lojaTimeTabsContainer {justify-content:flex-start!important;flex-wrap:wrap!important;overflow:visible!important;}
+ #lojaTimeTabsContainer button {min-height:44px!important;white-space:normal!important;text-align:left;max-width:100%;}
+ #loja-tiempo .vl-time-panel {width:100%;max-width:none!important;padding:12px!important;border:1px solid #668087!important;border-radius:28px!important;}
+ #beforeAfterViewer {height:clamp(280px,48vw,440px)!important;border-radius:18px!important;touch-action:pan-y;}
+ #timeOverlayBefore {width:100%!important;}
+ #loja-tiempo .vl-time-details {padding:18px!important;margin-top:12px!important;flex-direction:column!important;align-items:stretch!important;}
+ #loja-tiempo .vl-time-details button {min-height:46px!important;}
+ #loja-tiempo #timeSpotTitle {font-size:1.3rem!important;}
+ #loja-tiempo #timeSpotDesc {font-size:.875rem!important;line-height:1.6!important;}
+ .vl-time-comparison {padding:16px 8px 0;display:grid;gap:6px;}
+ .vl-time-comparison label {font-size:.8rem;line-height:1.5;}
+ #timeComparisonRange {width:100%;min-height:44px;accent-color:#ffd29b;cursor:ew-resize;}
+ #loja-tiempo :is(button,input):focus-visible {outline:3px solid #fff!important;outline-offset:4px!important;}
+ @media(min-width:1024px){.vl-time-layout {display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:48px;align-items:center;}.vl-time-intro{margin:0!important;}}
+ @media(max-width:390px){#loja-tiempo .vl-time-details button{width:100%;justify-content:center;}.vl-time-details>div:last-child{width:100%;}}
+}
