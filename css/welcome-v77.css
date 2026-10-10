@@ -1,0 +1,70 @@
+/* V77 welcome: existing content and handlers, photo-first desktop and stacked mobile. */
+@layer vl-colors {
+  #inicio.vl-welcome { --vl-text:#fff; --vl-muted:#e4e9ed; --vl-accent:#ffd5a8; background-color:#162b29!important; }
+  #inicio .vl-welcome-copy { --vl-text:#fff; --vl-muted:#e4e9ed; --vl-accent:#ffd5a8; }
+  #inicio .vl-welcome-search { --vl-text:#253241; --vl-muted:#56616c; --vl-accent:#9e4317; background:#fff!important; }
+  #inicio .vl-welcome-location { --vl-text:#253241; --vl-muted:#56616c; --vl-accent:#9e4317; background:#fff!important; }
+  #inicio .vl-welcome-photo-caption { --vl-text:#fff; --vl-muted:#e4e9ed; --vl-accent:#ffd5a8; background:#162b29f5!important; }
+  #inicio .vl-welcome-actions > :is(a,button) { background:#162b29!important; }
+  .vl-discovery-inner > a { --vl-text:#253241; --vl-muted:#56616c; --vl-accent:#9e4317; background:#fff!important; }
+  .vl-discovery-inner > a:hover { background:#fff0db!important; }
+  @media(max-width:760px) {
+    #inicio.vl-welcome { background:#fff9ef!important; }
+    #inicio .vl-welcome-copy { --vl-text:#253241; --vl-muted:#56616c; --vl-accent:#9e4317; }
+    #inicio .vl-welcome-actions > :is(a,button) { background:#fff!important; }
+  }
+}
+  #inicio.vl-welcome { position:relative;padding:0!important; }
+  .vl-welcome-shell { position:relative;max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.7fr);gap:32px;min-height:650px;padding:64px max(32px,calc((100vw - 1320px)/2)); }
+  .vl-welcome-copy { position:relative;z-index:2;padding:0;max-width:660px;align-self:center; }
+  .vl-welcome-eyebrow { max-width:470px;margin-bottom:22px;letter-spacing:.18em; }
+  #heroTitle { font-size:clamp(54px,5.5vw,82px)!important;line-height:1.04!important;max-width:650px;margin-bottom:20px;overflow-wrap:anywhere; }
+  #heroSubtitle { max-width:570px;font-size:17px!important;line-height:1.65!important;margin-bottom:26px; }
+  .vl-welcome-visual { position:absolute;inset:0;min-height:0;border-radius:0;z-index:0; }
+  .vl-welcome-visual::after { content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(9,24,23,.97) 0%,rgba(9,24,23,.94) 42%,rgba(9,24,23,.76) 65%,rgba(9,24,23,.12) 100%);z-index:1; }
+  #heroSlidesContainer img { object-position:50% 50%; }
+  .vl-welcome-photo-top { left:auto;right:max(32px,calc((100vw - 1320px)/2));top:28px;z-index:2;align-items:center;gap:12px; }
+  .vl-welcome-location { padding:10px 14px;box-shadow:0 4px 20px #0002; }
+  #heroLogoFrame { width:52px;height:52px; }
+  .vl-welcome-photo-caption { z-index:2;left:auto;right:max(32px,calc((100vw - 1320px)/2));bottom:32px;width:300px;padding:22px 24px;border:1px solid #ffffff35;border-radius:20px;box-shadow:0 12px 36px #0002; }
+  .vl-welcome-photo-caption > strong { font-size:36px; }
+  .vl-welcome-photo-caption > span { line-height:1.7; }
+  .vl-welcome-search { width:100%;max-width:570px;border:0;border-radius:18px;padding:18px;box-shadow:0 12px 32px #0002; }
+  .vl-welcome-actions { margin-top:18px;gap:12px; }
+  .vl-welcome-actions > :is(a,button) { border:1px solid #ffffff45;border-radius:12px;padding:10px 14px;text-decoration:none;font-size:13px;min-height:46px; }
+  .vl-welcome-actions > :is(a,button):hover { border-color:currentColor; }
+  .vl-discovery-nav { padding:24px 32px;background:#fff9ef; }
+  .vl-discovery-inner { max-width:1320px;gap:12px;border:0;border-radius:0;background:transparent;overflow:visible; }
+  .vl-discovery-inner > a { border:1px solid #e7dfd4!important;border-radius:16px;min-height:100px;padding:18px;box-shadow:0 4px 16px #25324106; }
+  .vl-discovery-inner > a:hover { transform:translateY(-2px); }
+  .vl-discovery-inner strong { font-size:16px; }
+  .vl-discovery-inner small { font-size:12px; }
+  @media(min-width:761px) and (max-width:1100px) {
+    .vl-welcome-shell { grid-template-columns:minmax(0,1fr) minmax(0,.48fr);padding:56px 28px;min-height:640px; }
+    .vl-welcome-photo-caption { right:28px;width:230px;bottom:28px;padding:18px; }
+    .vl-welcome-photo-caption > strong { font-size:30px; }
+    #heroTitle { font-size:58px!important; }
+    .vl-welcome-copy { max-width:500px; }
+    .vl-welcome-photo-top { right:28px; }
+  }
+  @media(max-width:760px) {
+    .vl-welcome-shell { display:flex;min-height:0;padding:0;gap:0; }
+    .vl-welcome-visual { position:relative;inset:auto;order:-1;width:100%;min-height:360px;display:grid; }
+    .vl-welcome-visual::after { background:linear-gradient(180deg,rgba(9,24,23,.06) 15%,rgba(9,24,23,.3) 48%,rgba(9,24,23,.94) 100%); }
+    .vl-welcome-photo-top { top:18px;left:18px;right:18px;justify-content:space-between; }
+    .vl-mobile-intro { position:relative;inset:auto;align-self:end;z-index:2;margin-top:104px;padding:24px 22px 44px;background:#162b29f2; }
+    .vl-mobile-intro h1 { font-size:clamp(36px,10vw,48px);overflow-wrap:anywhere; }
+    .vl-mobile-intro p { font-size:16px;line-height:1.55;max-width:420px; }
+    .vl-welcome-copy { width:100%;padding:0 18px 20px;max-width:none; }
+    .vl-welcome-search { margin-top:-18px;padding:16px;box-shadow:0 8px 24px #25324112;max-width:none; }
+    .vl-welcome-actions { grid-template-columns:1fr 1fr;gap:10px;margin-top:12px; }
+    .vl-welcome-actions > :is(a,button) { border-color:#e7dfd4;padding:12px 10px;min-height:52px;align-items:center; }
+    .vl-mobile-categories { gap:10px;margin-top:16px; }
+    .vl-mobile-categories a { min-height:58px;border-radius:14px; }
+    .vl-discovery-nav { padding:0 18px 24px; }
+    .vl-discovery-inner { gap:10px; }
+    .vl-discovery-inner > a:first-child,.vl-discovery-inner > a:nth-child(3) { display:flex; }
+    .vl-discovery-inner > a { min-height:76px;padding:12px;gap:8px; }
+    .vl-discovery-inner strong { font-size:13px; }
+  }
+  @media(prefers-reduced-motion:reduce) { .vl-discovery-inner > a:hover { transform:none; } }
