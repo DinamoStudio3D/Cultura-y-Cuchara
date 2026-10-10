@@ -984,7 +984,7 @@ function loadChabaquitoAdminModules(){
         return;
     }
     const marker = document.createElement('meta'); marker.id = 'chabaquitoAdminModulesLoader'; document.head.appendChild(marker);
-    const scripts=['js/admin-chabaquito-missions-v2.js','js/admin-chabaquito-place-config.js'];
+    const scripts=['js/admin-chabaquito-missions-v2.js?v=70','js/admin-chabaquito-place-config.js'];
     scripts.forEach(src => {
         const script=document.createElement('script');
         script.src=src;
@@ -2830,7 +2830,7 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
     finally{button.disabled=false;}
 });
 </script>
-<script src="js/homepage-content.js?v=69"></script>
-<script src="js/homepage-editor.js?v=69"></script>
+<script src="js/homepage-content.js?v=70"></script>
+<script src="js/homepage-editor.js?v=70"></script>
 </body>
 </html>

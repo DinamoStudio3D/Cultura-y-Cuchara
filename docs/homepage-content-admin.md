@@ -1,4 +1,4 @@
-# Edición de contenido público — V69
+# Edición de contenido público — V70
 
 ## Panel
 
@@ -49,3 +49,11 @@ La portada móvil comparte las fotografías del carrusel configurado en Portada 
 Eventos incorpora la presentación del festival (distintivo, título, subtítulo, descripción y etiquetas de sus dos botones) y las cuatro tarjetas (título, etiqueta y descripción), en español e inglés. Se conservan los destinos y acciones de los botones, eventos, campañas, QR y validaciones del pasaporte. No se añaden controles de ocultación. Cada bloque mantiene su diseño original hasta publicar una personalización. La publicación parcial del formulario Eventos incluye estos textos y la introducción de la agenda; no modifica registros del festival.
 
 Verificación con almacén aislado, cuatro tamaños y ambos idiomas. La publicación desde una sesión real del propietario sigue pendiente.
+
+## Ampliación V70: pasaporte y presentación dinámica de misiones
+
+Pasaporte incorpora la presentación pública y los textos de los tres pasos, en español e inglés. Misiones Chabaquito incorpora nueve textos editoriales: cabecera, botón, nota del personaje y encabezados de progreso y lista. Las reglas de ambos modos, contadores, XP, metas, recompensas y validación QR mantienen sus editores y lógica existentes. No se duplican los textos de campañas ni los de cada misión. Los bloques no pueden ocultar funciones. Chabaquito vuelve a aplicar el contenido publicado después de cada render dinámico, incluido el cambio de idioma.
+
+Verificación con almacén aislado; publicación real con la sesión del propietario pendiente.
+
+La prueba end-to-end detectó un error de sintaxis preexistente en el separador de IDs del editor de misiones V2: un salto de línea literal rompía la expresión regular e impedía cargar el script. Se corrige para admitir comas, LF y CRLF; la carga incluye versión para renovar caché.
