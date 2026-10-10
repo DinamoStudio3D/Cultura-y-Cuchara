@@ -1017,6 +1017,26 @@
       },
     ],
   );
+  const contactBlock = blocks.find(block => block.id === "footerContact");
+  contactBlock.name = "Contacto y redes sociales";
+  contactBlock.optionalHttpsLinks = true;
+  contactBlock.links = [
+    ["whatsappUrl", "WhatsApp", "#footerWhatsapp", "https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Visita%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n."],
+    ["youtubeUrl", "YouTube", "#footerYoutube", "https://www.youtube.com/@VisitaLoja"],
+    ["tiktokUrl", "TikTok", "#footerTiktok", "https://www.tiktok.com/@visitaloja.com"],
+    ["instagramUrl", "Instagram", "#footerInstagram", "https://www.instagram.com/visitaloja.oficial/"],
+    ["facebookUrl", "Facebook", "#footerFacebook", "https://www.facebook.com/visitalojaoficial/"]
+  ];
+  blocks.push({
+    id: "footerIdentity", name: "Texto del pie de página", selector: "body > footer",
+    preserveDefault: true, noVisibility: true, previewAnchor: "contacto",
+    fields: [["title", "Texto final", '[data-i18n="footerText"]',
+      "Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística de Loja. © 2026.",
+      "Loja is experienced, tasted and hosted. Endorsed by Loja Municipality & Tourism Board. © 2026."]]
+  });
+  function safeContactUrl(value) {
+    return value === "" || (typeof value === "string" && /^https:\/\//i.test(value) && safeUrl(value));
+  }
   const placeholder = "assets/photos/photo-unavailable.svg";
   function safeUrl(value) {
     if (
@@ -1054,7 +1074,7 @@
         data[key + "En"] = text(saved[key + "En"], en);
       }
       for (const [key, , , url] of block.links || [])
-        data[key] = safeUrl(saved[key]) ? saved[key] : url;
+        data[key] = (block.optionalHttpsLinks ? safeContactUrl(saved[key]) : safeUrl(saved[key])) ? saved[key] : url;
       if (block.image) {
         data.imageUrl =
           saved.imageUrl === ""
@@ -1105,8 +1125,13 @@
           document.querySelector(selector),
           saved[lang === "en" ? key + "En" : key] || saved[key],
         );
-      for (const [key, , selector] of block.links || [])
-        document.querySelector(selector)?.setAttribute("href", saved[key]);
+      for (const [key, , selector] of block.links || []) {
+        const link = document.querySelector(selector);
+        if (!link) continue;
+        if (block.optionalHttpsLinks) link.toggleAttribute("data-home-content-hidden", !saved[key]);
+        if (saved[key]) link.setAttribute("href", saved[key]);
+        else link.removeAttribute("href");
+      }
       if (block.image) {
         const image = document.querySelector(block.image);
         if (image) {
@@ -1159,7 +1184,7 @@
       );
     }
   }
-  root.VisitaLojaHomepage = { blocks, normalize, safeUrl, apply, placeholder };
+  root.VisitaLojaHomepage = { blocks, normalize, safeUrl, safeContactUrl, apply, placeholder };
   if (typeof document !== "undefined" && document.querySelector("#inicio")) {
     let cached = {};
     try {

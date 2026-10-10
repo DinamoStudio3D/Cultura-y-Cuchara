@@ -104,3 +104,16 @@ test("homepage uploads require an administrator and keep their fixed destination
   assert.equal(permitted.body.params.folder, "visitaloja/homepage");
   assert(!JSON.stringify(permitted.body).includes(env.CLOUDINARY_API_SECRET));
 });
+
+ test("contact links preserve old defaults, accept explicit hiding and reject unsafe destinations", () => {
+ const model=globalThis.VisitaLojaHomepage;
+ const base=normalize();
+ assert.equal(base.blocks.footerContact.instagramUrl,"https://www.instagram.com/visitaloja.oficial/");
+ assert.equal(model.safeContactUrl(""),true);
+ for (const value of ["#mapa","http://example.com","javascript:alert(1)","https://user:pass@example.com"]) assert.equal(model.safeContactUrl(value),false);
+ const edited=normalize({blocks:{footerContact:{instagramUrl:"",facebookUrl:"javascript:alert(1)",youtubeUrl:"https://youtube.com/@test"}}});
+ assert.equal(edited.blocks.footerContact.instagramUrl,"");
+ assert.equal(edited.blocks.footerContact.facebookUrl,base.blocks.footerContact.facebookUrl);
+ assert.equal(edited.blocks.footerContact.youtubeUrl,"https://youtube.com/@test");
+ assert.equal(edited.blocks.explore.title,base.blocks.explore.title);
+ });

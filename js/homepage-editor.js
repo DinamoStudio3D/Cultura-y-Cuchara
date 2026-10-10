@@ -36,6 +36,14 @@
         summary.className = "font-black text-lg cursor-pointer";
         summary.textContent = b.name;
         section.append(summary);
+        if (b.id === "footerContact") {
+          const email = form.querySelector("#home-contactEmail");
+          if (email) section.append(email.closest("label"));
+          const help = document.createElement("p");
+          help.className = "text-sm text-gray-300 mt-3";
+          help.textContent = "Usa enlaces HTTPS completos. Deja vacío un enlace para ocultar esa red. Publicar actualiza contacto y redes; no envía mensajes.";
+          section.append(help);
+        }
         const moduleAnchors = {
           places: "categorias",
           events: "agenda",
@@ -214,12 +222,12 @@
         const body = document.createElement("div"),
           title = document.createElement("strong"),
           description = document.createElement("p");
-        title.textContent = saved.title;
-        description.textContent = saved.description;
+        title.textContent = saved.title || saved[b.fields[0]?.[0]] || "";
+        description.textContent = saved.description || saved[b.fields[1]?.[0]] || "";
         body.append(title, description);
         for (const [key, label] of b.links || []) {
           const span = document.createElement("p");
-          span.textContent = label + ": " + saved[key];
+          span.textContent = label + ": " + (saved[key] || (b.optionalHttpsLinks ? "Oculto" : ""));
           body.append(span);
         }
         preview.append(body);
@@ -360,12 +368,12 @@
       for (const b of selectedBlocks) {
         const saved = data.blocks[b.id];
         for (const [key, label] of b.links || [])
-          if (!model.safeUrl(saved[key])) {
+          if (!(b.optionalHttpsLinks ? model.safeContactUrl(saved[key]) : model.safeUrl(saved[key]))) {
             status.textContent =
               b.name +
               ": " +
               label +
-              " debe ser un enlace HTTPS o un destino de la web.";
+              (b.optionalHttpsLinks ? " debe ser un enlace HTTPS válido o quedar vacío." : " debe ser un enlace HTTPS o un destino de la web.");
             return;
           }
         if (b.image && saved.imageUrl && !model.safeUrl(saved.imageUrl)) {
