@@ -292,7 +292,7 @@
                             <label><span class="text-sm font-semibold block mb-2"><i class="fa-solid fa-file-audio text-amber-400 mr-2"></i>Archivo MP3 publicado</span><input id="podcastAudioUrl" class="field" value="cancion-muestra-vive-loja.mp3" placeholder="mi-cancion.mp3"></label>
                             <label><span class="text-sm font-semibold block mb-2"><i class="fa-solid fa-image text-amber-400 mr-2"></i>Ruta o enlace de portada</span><input id="podcastCoverUrl" class="field" placeholder="https://... o assets/portada.png"></label>
                         </div>
-                        <p class="text-xs text-gray-400 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3"><i class="fa-solid fa-circle-info text-amber-400 mr-2"></i>Mientras utilizamos el plan gratuito, los archivos se agregan al repositorio y desde aquí puedes elegir cuál mostrar. El audio de muestra actual ya está incluido.</p>
+                        <p class="text-xs text-gray-400 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3"><i class="fa-solid fa-circle-info text-amber-400 mr-2"></i>Puedes usar una URL HTTPS de un archivo ya alojado o la ruta de un archivo incluido en la web. Cambiar estos enlaces no sube archivos. El audio de muestra actual ya está incluido.</p>
 
                         <label class="flex items-center justify-between gap-4 bg-black/35 rounded-xl p-4 border border-gray-800">
                             <span><strong class="block">Mostrar en la web</strong><span class="text-xs text-gray-400">Puedes ocultarlo sin eliminar sus datos.</span></span>
@@ -865,6 +865,7 @@
     <script src="js/admin-media-guard.js?v=74" defer></script>
     <script src="js/admin-images.js?v=74" defer></script>
     <script src="js/admin-time-audio.js?v=74" defer></script>
+<script src="js/podcast-media.js?v=80"></script>
 <script>
 
 function generateChabaquitoMissionId(value){
@@ -2705,6 +2706,7 @@ document.getElementById('podcastForm').addEventListener('submit', async event =>
     try {
         const audioUrl = document.getElementById('podcastAudioUrl').value.trim();
         const coverUrl = document.getElementById('podcastCoverUrl').value.trim();
+        if ((audioUrl && !VisitaLojaPodcastMedia.safeMediaUrl(audioUrl)) || (coverUrl && !VisitaLojaPodcastMedia.safeMediaUrl(coverUrl))) throw new Error('Usa una URL HTTPS válida o la ruta de un archivo de la web, sin espacios.');
         const data = {
             label: document.getElementById('podcastLabel').value.trim(),
             title: document.getElementById('podcastTitle').value.trim(),
@@ -2821,7 +2823,7 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
 });
 </script>
 <script src="js/welcome-settings.js?v=78"></script>
-<script src="js/homepage-content.js?v=79"></script>
+<script src="js/homepage-content.js?v=80"></script>
 <script src="js/admin-presentation-preview.js?v=78"></script>
 <script src="js/admin-content-drafts.js?v=76"></script>
 <script src="js/homepage-editor.js?v=76"></script>

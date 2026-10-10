@@ -1046,6 +1046,13 @@
     ["badge","Etiqueta de patrimonio",'[data-i18n="timeBadge"]',"Patrimonio Vivo","Living heritage"],
     ["comparisonHelp","Ayuda del comparador","#timeCompareInstruction","Mueve el control para comparar el ayer y el hoy","Move the control to compare yesterday and today"]
   );
+  blocks.find(block=>block.id==="podcastIntro").fields.push(
+    ["eyebrow","Etiqueta de presentación",".vl45-podcast-head > span","HISTORIAS PARA ESCUCHAR","STORIES TO LISTEN TO"],
+    ["headline","Titular de presentación",".vl45-podcast-head > strong","La voz de nuestra tierra.","The voice of our homeland."],
+    ["intro","Introducción de presentación",".vl45-podcast-head > p","Un espacio para descubrir las personas, sabores y tradiciones que hacen especial a Loja.","Discover the people, flavors and traditions that make Loja special."],
+    ["subtitle","Etiqueta sobre el reproductor",'[data-i18n="podSub"]',"Episodios Completos","Full episodes"],
+    ["audioError","Mensaje si falla el audio","#podcastAudioError","No se pudo reproducir el audio. Comprueba tu conexión e inténtalo de nuevo.","The audio could not be played. Check your connection and try again."]
+  );
   const contactBlock = blocks.find(block => block.id === "footerContact");
   contactBlock.name = "Contacto y redes sociales";
   contactBlock.optionalHttpsLinks = true;
