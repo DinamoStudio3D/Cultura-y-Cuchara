@@ -268,8 +268,8 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=64">
-<link rel="stylesheet" href="css/public-colors.css?v=64">
+<link rel="stylesheet" href="css/public-layout.css?v=65">
+<link rel="stylesheet" href="css/public-colors.css?v=65">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -551,11 +551,19 @@
             <label id="welcomeSearchLabel" for="welcomeSearch" data-i18n="welcomeSearchLabel">¿Qué quieres descubrir?</label>
             <div class="vl-welcome-search-row"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="welcomeSearch" type="search" name="q" placeholder="Café, hotel, comida lojana…" data-i18n-placeholder="welcomeSearchPlaceholder" autocomplete="off"><button type="submit" class="vl-welcome-primary"><span data-i18n="welcomeSearchButton">Buscar</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button></div>
           </form>
+          <nav class="vl-mobile-categories" aria-label="Qué descubrir en Loja">
+            <a href="#mapa" onclick="filterMapGroup('food')"><i class="fa-solid fa-utensils" aria-hidden="true"></i><span data-i18n="mobileFood">Gastronomía</span></a>
+            <a href="#mapa" onclick="filterMapGroup('stay')"><i class="fa-solid fa-bed" aria-hidden="true"></i><span data-i18n="mobileHotels">Hoteles</span></a>
+            <a href="#establecimientos" onclick="openCategoryList('turismo')"><i class="fa-solid fa-mountain-sun" aria-hidden="true"></i><span data-i18n="mobileTourism">Turismo</span></a>
+            <a href="#misiones"><i class="fa-solid fa-compass" aria-hidden="true"></i><span data-i18n="mobileExperiences">Experiencias</span></a>
+          </nav>
           <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button></div>
+          <details class="vl-mobile-updates"><summary><i class="fa-regular fa-calendar" aria-hidden="true"></i><span data-i18n="mobileUpdates">Agenda y vídeo</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary></details>
         </div>
         <div class="vl-welcome-visual">
           <div id="heroBgWrapper"><div aria-hidden="true"></div><div id="heroSlidesContainer"><img class="hero-slide active-slide" src="https://i.imgur.com/0QSbhqQ.jpeg" alt="" decoding="async" fetchpriority="high"></div></div>
           <div class="vl-welcome-photo-top"><span class="vl-welcome-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> LOJA · ECUADOR</span><div id="heroLogoFrame"><img id="heroLogoImg" src="https://i.imgur.com/mmWzHK4.png?visita-loja-v4" alt="Visita Loja" decoding="async"></div></div>
+          <div class="vl-mobile-intro" data-vl-surface="dark"><h1 data-i18n="mobileWelcomeTitle">Loja te espera.</h1><p data-i18n="mobileWelcomeDesc">Sabores, cultura y nuevas historias por descubrir.</p></div>
           <div class="vl-welcome-photo-caption" data-vl-surface="dark"><span data-i18n="welcomePhotoKicker">TU PRÓXIMA HISTORIA EMPIEZA AQUÍ</span><strong data-i18n="welcomePhotoTitle">Loja, a tu ritmo.</strong><button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()"><span data-i18n="welcomeNow">¿Qué hacer ahora?</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></button></div>
         </div>
       </div>
@@ -2180,6 +2188,9 @@
                 welcomeSearchLabel: '¿Qué quieres descubrir?',
                 welcomeSearchPlaceholder: 'Café, hotel, comida lojana…',
                 welcomeSearchButton: 'Buscar',
+                mobileWelcomeTitle: 'Loja te espera.',
+                mobileWelcomeDesc: 'Sabores, cultura y nuevas historias por descubrir.',
+                mobileFood: 'Gastronomía', mobileHotels: 'Hoteles', mobileTourism: 'Turismo', mobileExperiences: 'Experiencias', mobileUpdates: 'Agenda y vídeo',
                 welcomeMap: 'Explorar el mapa',
                 welcomeRoute: 'Planificar mi recorrido',
                 welcomePhotoKicker: 'TU PRÓXIMA HISTORIA EMPIEZA AQUÍ',
@@ -2341,6 +2352,9 @@
                 welcomeSearchLabel: 'What would you like to discover?',
                 welcomeSearchPlaceholder: 'Coffee, hotels, local food…',
                 welcomeSearchButton: 'Search',
+                mobileWelcomeTitle: 'Loja awaits.',
+                mobileWelcomeDesc: 'Flavours, culture and new stories to discover.',
+                mobileFood: 'Food', mobileHotels: 'Hotels', mobileTourism: 'Sights', mobileExperiences: 'Experiences', mobileUpdates: 'Events and video',
                 welcomeMap: 'Explore the map',
                 welcomeRoute: 'Plan my route',
                 welcomePhotoKicker: 'YOUR NEXT STORY STARTS HERE',
@@ -7979,7 +7993,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
     <script src="js/chabaquito-runtime-config.js" defer></script>
     <script src="js/chabaquito-public-v2.js?v=62" defer></script>
-    <script src="js/mobile-ui.js?v=64" defer></script>
+    <script src="js/mobile-ui.js?v=65" defer></script>
 
 <script id="visitaloja-dropdown-navigation-js-v29">
 function vl29CloseMenus(){document.querySelectorAll('.vl29-nav-group>button[aria-expanded="true"]').forEach(function(b){b.setAttribute('aria-expanded','false');var p=document.getElementById(b.getAttribute('aria-controls'));if(p)p.hidden=true;});}

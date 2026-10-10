@@ -211,6 +211,11 @@
     const copy = document.querySelector('.vl-welcome-copy');
     const music = document.getElementById('welcomeMusicToggle');
     const menu = document.getElementById('mobileMenu');
+    const updates = document.querySelector('.vl-mobile-updates');
+    const recommendation = document.getElementById('nowRecommendationBtn');
+    if (!updates || !recommendation) return;
+    const recommendationHome = document.createComment('recommendation desktop position');
+    recommendation.before(recommendationHome);
     if (!highlights || !copy || !music || !menu) return;
     const highlightsHome = document.createComment('highlights desktop position');
     const musicHome = document.createComment('music desktop position');
@@ -219,10 +224,12 @@
     const mobile = window.matchMedia('(max-width: 760px)');
     const arrange = () => {
       if (mobile.matches) {
-        copy.append(highlights);
+        updates.append(highlights, recommendation);
         menu.append(music);
       } else {
         highlightsHome.after(highlights);
+        recommendationHome.after(recommendation);
+        updates.open = false;
         musicHome.after(music);
       }
     };
