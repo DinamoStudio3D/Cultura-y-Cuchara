@@ -32,6 +32,7 @@
           "MP3, M4A, WAV, OGG, AAC, FLAC, Opus o WebM · máximo 20 MB.",
         ),
       );
+    document.querySelectorAll('[id^="timeAudioCancel"]').forEach(button => button.classList.add("hidden"));
     updateSave();
   }
   function send(file, auth, job, notice) {
@@ -159,7 +160,13 @@
       notice,
       "MP3, M4A, WAV, OGG, AAC, FLAC, Opus o WebM · máximo 20 MB.",
     );
-    actions.append(upload, remove);
+    const stop = document.createElement("button");
+    stop.type = "button";
+    stop.id = "timeAudioCancel" + language;
+    stop.textContent = "Cancelar subida";
+    stop.className = "hidden rounded-lg border border-gray-600 text-gray-200 px-4 py-2";
+    stop.addEventListener("click", () => jobs.get(language)?.controller.abort());
+    actions.append(upload, stop, remove);
     box.append(file, actions, notice);
     field.after(box);
     upload.addEventListener("click", async () => {
@@ -197,6 +204,7 @@
       jobs.set(language, job);
       updateSave();
       upload.disabled = true;
+      stop.classList.remove("hidden");
       const timer = setTimeout(() => job.controller.abort(), 150000);
       status(notice, "Autorizando subida…");
       try {
@@ -244,6 +252,7 @@
         if (jobs.get(language) === job) {
           jobs.delete(language);
           upload.disabled = false;
+          stop.classList.add("hidden");
           updateSave();
         }
       }
@@ -254,6 +263,7 @@
         job.controller.abort();
         jobs.delete(language);
         upload.disabled = false;
+        stop.classList.add("hidden");
         updateSave();
       }
       field.value = "";

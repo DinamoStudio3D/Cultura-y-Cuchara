@@ -2437,13 +2437,11 @@ auth.onAuthStateChanged(async user => {
             renderSubscriptionCenter();
             renderControlCenter();
             populateAnalyticsPlaces();renderAnalyticsDashboard();
-            migrateLegacyPlacePins();
+            // Read-only subscription: PIN migration requires a separate approved operation.
         }, () => { document.getElementById('placesList').innerHTML = '<p class="text-red-300 text-sm">No fue posible cargar las paradas. Revisa los permisos de Firestore.</p>'; });
         if (timeUnsubscribe) timeUnsubscribe();
-        timeUnsubscribe = timeRef.onSnapshot(async snapshot => {
-            if (snapshot.empty) {
-                const batch = db.batch(); DEFAULT_TIME_SPOTS.forEach(spot => batch.set(timeRef.doc(spot.id), spot)); await batch.commit(); return;
-            }
+        timeUnsubscribe = timeRef.onSnapshot(snapshot => {
+            // An empty collection must stay empty; opening the panel never seeds real data.
             adminTimeSpots = snapshot.docs.map(doc => ({ id:doc.id, ...doc.data() })).sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''),'es'));
             renderAdminTimeSpots();
         }, () => { document.getElementById('timeList').innerHTML='<p class="text-red-300 text-sm">No fue posible cargar los puntos históricos.</p>'; });
