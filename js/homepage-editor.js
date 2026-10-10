@@ -10,6 +10,7 @@
     const container = form.querySelector("[data-home-editor-blocks]");
     let dirty = false,
       uploadPending = false,
+      uploadJob = null,
       latestSettings = window.visitaLojaLoadedSettings || {};
     function field(id, label, value, area = false) {
       const wrap = document.createElement("label");
@@ -130,10 +131,19 @@
             "border border-gray-600 rounded-xl px-4 py-3 text-sm";
           remove.textContent = "Quitar fotografía";
           remove.addEventListener("click", () => {
-            document.getElementById("home-" + b.id + "-imageUrl").value = "";
+            uploadJob?.controller.abort();
+            job.controller.signal.throwIfAborted();
+        document.getElementById("home-" + b.id + "-imageUrl").value = "";
             changed();
           });
           grid.append(remove);
+          const cancelUpload = document.createElement("button");
+          cancelUpload.type = "button";
+          cancelUpload.id = "home-" + b.id + "-cancel";
+          cancelUpload.className = "hidden border border-gray-600 rounded-xl px-4 py-3 text-sm";
+          cancelUpload.textContent = "Cancelar subida";
+          cancelUpload.addEventListener("click", () => uploadJob?.controller.abort());
+          grid.append(cancelUpload);
           file.addEventListener("change", () => uploadPhoto(b, file));
         }
         section.append(grid);
@@ -243,16 +253,22 @@
     async function uploadPhoto(b, input) {
       const file = input.files[0],
         status = document.getElementById(statusId);
-      if (!file) return;
+      if (!file || uploadPending) return;
       if (
         !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-        file.size > 15 * 1024 * 1024
+        !file.size || file.size > 15 * 1024 * 1024
       ) {
         status.textContent = "Usa JPG, PNG o WebP de hasta 15 MB.";
         input.value = "";
         return;
       }
+      const job = uploadJob = {controller: new AbortController()};
+      const cancelButton = document.getElementById("home-" + b.id + "-cancel");
+      cancelButton.classList.remove("hidden");
+      let timedOut = false;
+      const timer = setTimeout(() => {timedOut = true; job.controller.abort();}, 150000);
       uploadPending = true;
+      window.VisitaLojaMediaGuard.begin(form.id, prefix + "-image");
       form
         .querySelectorAll('input[type="file"]')
         .forEach((el) => (el.disabled = true));
@@ -265,45 +281,55 @@
             file,
             window.VisitaLojaImageConfig.CONFIG.compression,
           );
+        job.controller.signal.throwIfAborted();
+        const token = await auth.currentUser.getIdToken();
+        job.controller.signal.throwIfAborted();
         const response = await fetch("/api/sign-homepage-image", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + (await auth.currentUser.getIdToken()),
+            Authorization: "Bearer " + token,
           },
           body: "{}",
+          signal: job.controller.signal,
         });
-        const authorization = await response.json();
+        const authorization = await response.json().catch(() => ({}));
         if (!response.ok)
           throw Error(authorization.error || "No se pudo autorizar la subida.");
         const result =
           await window.VisitaLojaCloudinaryUploader.uploadSignedImage(
             optimized.blob,
             authorization,
-            { filename: "portada-" + Date.now() + ".webp" },
+            { filename: "portada-" + Date.now() + ".webp", signal: job.controller.signal },
           );
+        job.controller.signal.throwIfAborted();
         document.getElementById("home-" + b.id + "-imageUrl").value =
           result.url;
         changed();
         status.textContent =
           "Fotografía subida. Publica los cambios para mostrarla en la web.";
       } catch (error) {
-        status.textContent =
-          "No se pudo subir: " +
-          error.message +
-          " Puedes usar una dirección de imagen.";
+        status.textContent = timedOut
+          ? "La carga agotó el tiempo disponible. Puedes volver a intentarlo."
+          : error.name === "AbortError"
+            ? "Subida cancelada. No se asignó una fotografía nueva."
+            : "No se pudo subir: " + error.message + " Puedes usar una dirección de imagen.";
       } finally {
+        clearTimeout(timer);
+        cancelButton.classList.add("hidden");
+        uploadJob = null;
         uploadPending = false;
         form
           .querySelectorAll('input[type="file"]')
           .forEach((el) => (el.disabled = false));
         input.value = "";
-        document.getElementById(publishId).disabled = false;
+        window.VisitaLojaMediaGuard.end(form.id, prefix + "-image");
       }
     }
     build();
     load(latestSettings);
     document.getElementById(discardId).addEventListener("click", () => {
+      uploadJob?.controller.abort();
       dirty = false;
       if (typeof setAdminUnsavedChanges === "function")
         setAdminUnsavedChanges(editors.some((editor) => editor.isDirty()));
@@ -377,7 +403,7 @@
       }
     });
 
-    return { load, read, isDirty: () => dirty };
+    return { cancelUpload: () => uploadJob?.controller.abort(), load, read, isDirty: () => dirty };
   }
   editors.push(
     createEditor(
@@ -442,6 +468,7 @@
   }
   window.VisitaLojaHomepageEditor = {
     load: (settings) => editors.forEach((editor) => editor.load(settings)),
+    cancelUploads: () => editors.forEach((editor) => editor.cancelUpload()),
     read: () => editors[0].read(),
   };
 })();

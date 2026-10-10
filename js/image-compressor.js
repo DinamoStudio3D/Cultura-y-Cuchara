@@ -2,7 +2,7 @@
   'use strict';
   const DEFAULTS=Object.freeze({maxWidth:1600,maxHeight:1600,quality:.82,mimeType:'image/webp',maxInputBytes:20*1024*1024});
   const ALLOWED_TYPES=new Set(['image/jpeg','image/png','image/webp']);
-  function validateImageFile(file,options){const opts=Object.assign({},DEFAULTS,options||{});if(!file)throw new Error('Selecciona una imagen.');if(!ALLOWED_TYPES.has(file.type))throw new Error('Solo se permiten imágenes JPG, PNG o WebP.');if(file.size>opts.maxInputBytes)throw new Error('La imagen original supera el límite permitido.');return opts}
+  function validateImageFile(file,options){const opts=Object.assign({},DEFAULTS,options||{});if(!file)throw new Error('Selecciona una imagen.');if(!ALLOWED_TYPES.has(file.type))throw new Error('Solo se permiten imágenes JPG, PNG o WebP.');if(!file.size)throw new Error('La imagen seleccionada está vacía.');if(file.size>opts.maxInputBytes)throw new Error('La imagen original supera el límite permitido.');return opts}
   function calculateDimensions(width,height,maxWidth,maxHeight){if(!(width>0)||!(height>0))throw new Error('Dimensiones de imagen no válidas.');const ratio=Math.min(1,maxWidth/width,maxHeight/height);return{width:Math.max(1,Math.round(width*ratio)),height:Math.max(1,Math.round(height*ratio))}}
   function loadImage(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);resolve(img)};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('No se pudo leer la imagen seleccionada.'))};img.src=url})}
   function canvasToBlob(canvas,mimeType,quality){return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('No se pudo optimizar la imagen.')),mimeType,quality))}

@@ -43,7 +43,7 @@ test('cancel upload preserves previous audio and unlocks saving; both languages 
   nodes.get('timeAudioFileEs').files = [{name:'new.mp3',type:'audio/mpeg',size:1024}];
   assert(nodes.get('timeAudioCancelEn'));
   const pending = nodes.get('timeAudioUploadEs').listeners.click();
-  await Promise.resolve(); await Promise.resolve();
+  await new Promise(resolve => setImmediate(resolve));
   assert.equal(nodes.get('timeSaveBtn').disabled, true);
   let prevented = false;
   nodes.get('timeForm').listeners.submit({preventDefault() {prevented=true;}, stopImmediatePropagation() {}});

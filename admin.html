@@ -6,8 +6,8 @@
     <meta name="robots" content="noindex,nofollow">
     <title>Administración | Visita Loja</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="js/image-compressor.js"></script>
-    <script src="js/cloudinary-image-uploader.js"></script>
+    <script src="js/image-compressor.js?v=74"></script>
+    <script src="js/cloudinary-image-uploader.js?v=74"></script>
     <script src="js/visitaloja-image-config.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -861,7 +861,9 @@
     <script src="js/admin-visit-validation-mode.js"></script>
     <script src="js/admin-visit-validation-mode-integration.js"></script>
     <script src="js/admin-visit-qr-mode.js"></script>
-    <script src="js/admin-time-audio.js?v=73" defer></script>
+    <script src="js/admin-media-guard.js?v=74" defer></script>
+    <script src="js/admin-images.js?v=74" defer></script>
+    <script src="js/admin-time-audio.js?v=74" defer></script>
 <script>
 
 function generateChabaquitoMissionId(value){
@@ -1256,7 +1258,7 @@ async function copySystemLink(index){
 function showAdminModule(moduleName) {
     if (moduleName === 'chabaquito' || moduleName === 'chabaquitoMissions') { loadChabaquitoAdminModules(); if(moduleName === 'chabaquitoMissions') setTimeout(loadExistingChabaquitoMissions, 0); }
     if(moduleName!==currentAdminModule&&adminUnsavedChanges&&!window.confirm('Tienes cambios sin guardar. ¿Quieres salir de este módulo y descartarlos?'))return false;
-    if(moduleName!==currentAdminModule)setAdminUnsavedChanges(false);
+    if(moduleName!==currentAdminModule){window.VisitaLojaTimeAudio?.cancel();window.VisitaLojaAdminImages?.cancel();window.VisitaLojaHomepageEditor?.cancelUploads();setAdminUnsavedChanges(false);}
     currentAdminModule=moduleName;
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
     ['dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'chabaquitoMissions', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
@@ -1906,15 +1908,17 @@ function clearAdminAudioPreview(previewId){const audio=document.getElementById(p
 function syncAdminAudioPreview(fieldId,previewId){const field=document.getElementById(fieldId),audio=document.getElementById(previewId);if(!field||!audio)return;const url=field.value.trim();if(!url){clearAdminAudioPreview(previewId);return;}audio.src=url;audio.classList.remove('hidden');}
 
 function resetTimeForm() {
+    window.VisitaLojaAdminImages?.cancel('time');
     window.VisitaLojaTimeAudio?.cancel();
-    document.getElementById('timeForm').reset(); clearAdminAudioPreview('timeAudioPreviewEs'); clearAdminAudioPreview('timeAudioPreviewEn'); document.getElementById('timeEditIdSecure').value = ''; document.getElementById('timeSecureFormTitle').textContent = 'Registrar punto histórico'; document.getElementById('timeMessage').classList.add('hidden');
+    document.getElementById('timeForm').reset(); clearAdminAudioPreview('timeAudioPreviewEs'); clearAdminAudioPreview('timeAudioPreviewEn'); document.getElementById('timeEditIdSecure').value = ''; document.getElementById('timeSecureFormTitle').textContent = 'Registrar punto histórico'; document.getElementById('timeMessage').classList.add('hidden'); window.VisitaLojaAdminImages?.refresh('time');
 }
 
 function editTimeSpotSecure(id) {
     const spot = adminTimeSpots.find(item => item.id === id); if (!spot) return;
+    window.VisitaLojaAdminImages?.cancel('time');
     window.VisitaLojaTimeAudio?.cancel(); showAdminModule('time'); document.getElementById('timeEditIdSecure').value = spot.id; document.getElementById('timeSecureFormTitle').textContent = `Editar: ${spot.title}`;
     const values={timeTitle:spot.title,timeTitleEn:spot.titleEn,timeLabelPast:spot.labelPast,timeLabelPresent:spot.labelPresent,timeImagePast:spot.imgPast,timeImagePresent:spot.imgPresent,timeDesc:spot.desc,timeDescEn:spot.descEn,timeAudioUrl:spot.audioUrl,timeAudioUrlEn:spot.audioUrlEn,timeLat:spot.lat,timeLng:spot.lng};
-    Object.entries(values).forEach(([id,value])=>document.getElementById(id).value=value??''); syncAdminAudioPreview('timeAudioUrl','timeAudioPreviewEs'); syncAdminAudioPreview('timeAudioUrlEn','timeAudioPreviewEn'); document.getElementById('timeForm').scrollIntoView({behavior:'smooth',block:'start'});
+    Object.entries(values).forEach(([id,value])=>document.getElementById(id).value=value??''); syncAdminAudioPreview('timeAudioUrl','timeAudioPreviewEs'); syncAdminAudioPreview('timeAudioUrlEn','timeAudioPreviewEn'); window.VisitaLojaAdminImages?.refresh('time'); document.getElementById('timeForm').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 async function deleteTimeSpotSecure(id) {
@@ -2166,49 +2170,28 @@ function centerGeneralEventLocationMap() {
     generalEventPickerMarker.setLatLng([lat,lng]);
     generalEventPickerMap.setView([lat,lng],15);
 }
-async function uploadGeneralEventPoster() {
- const file=document.getElementById('generalEventImageFile').files[0];
- const status=document.getElementById('generalEventUploadStatus');
- const button=document.getElementById('generalEventUploadBtn');
- if(!file){status.textContent='Selecciona primero una imagen.';return;}
- if(!auth.currentUser){status.textContent='Inicia sesión como administrador.';return;}
- button.disabled=true;
- try {
-  const compressor=window.VisitaLojaImageCompressor;
-  const uploader=window.VisitaLojaCloudinaryUploader;
-  if(!compressor||!uploader)throw new Error('No se cargaron las herramientas de imágenes.');
-  status.textContent='Optimizando afiche...';
-  const optimized=await compressor.compressImageClientSide(file,window.VisitaLojaImageConfig.CONFIG.compression);
-  status.textContent='Autorizando subida a Cloudinary...';
-  const response=await fetch('/api/sign-event-image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+await auth.currentUser.getIdToken()},body:JSON.stringify({purpose:'poster'})});
-  const authorization=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(authorization.error||'No se pudo autorizar la subida ('+response.status+').');
-  status.textContent='Subiendo afiche a Cloudinary...';
-  const result=await uploader.uploadSignedImage(optimized.blob,authorization,{filename:'evento-'+Date.now()+'.webp'});
-  document.getElementById('generalEventImage').value=result.url;
-  status.textContent='Afiche subido correctamente a Cloudinary. Guarda el evento para publicarlo.';
- }catch(error){
-  status.textContent='No se pudo subir a Cloudinary: '+(error.message||'Error desconocido.')+' Puedes pegar una URL mientras lo resolvemos.';
-  console.error('Event Cloudinary upload',error);
- }finally{button.disabled=false;}
-}
+function uploadGeneralEventPoster() { return window.VisitaLojaAdminImages?.uploadEvent(); }
 function resetGeneralEventForm() {
+    window.VisitaLojaAdminImages?.cancel('events');
     document.getElementById('generalEventForm').reset();
     document.getElementById('generalEventEditId').value = '';
     document.getElementById('generalEventFormTitle').textContent = 'Programar un evento';
     document.getElementById('generalEventPublicationStatus').value = 'published';
     document.getElementById('generalEventMessage').classList.add('hidden');
     document.getElementById('generalEventImageFile').value = '';
+    window.VisitaLojaAdminImages?.refresh('events');
 }
 
 function editGeneralEvent(id) {
     const event = generalEvents.find(item => item.id === id);
     if (!event) return;
+    window.VisitaLojaAdminImages?.cancel('events');
     showAdminModule('events');
     document.getElementById('generalEventEditId').value = event.id;
     document.getElementById('generalEventFormTitle').textContent = `Editar: ${event.title || 'evento'}`;
     const values = { generalEventPublicationStatus: event.publicationStatus || 'published', generalEventTitle: event.title, generalEventTitleEn: event.titleEn, generalEventDate: event.date, generalEventTime: event.time || '18:00', generalEventType: event.type, generalEventImage: event.img, generalEventLocation: event.location, generalEventDesc: event.desc, generalEventDescEn: event.descEn, generalEventLat: event.lat, generalEventLng: event.lng };
     Object.entries(values).forEach(([field, value]) => { document.getElementById(field).value = value ?? ''; });
+    window.VisitaLojaAdminImages?.refresh('events');
     initGeneralEventLocationMap();
     document.getElementById('generalEventForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -2350,6 +2333,9 @@ auth.onAuthStateChanged(async user => {
     loginView.classList.toggle('hidden', !!user);
     adminView.classList.toggle('hidden', !user);
     if (!user) {
+        window.VisitaLojaTimeAudio?.cancel();
+        window.VisitaLojaAdminImages?.cancel();
+        window.VisitaLojaHomepageEditor?.cancelUploads();
         if (placesUnsubscribe) placesUnsubscribe();
         if (timeUnsubscribe) timeUnsubscribe();
         if (qrUnsubscribe) qrUnsubscribe();
@@ -2831,6 +2817,6 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
 });
 </script>
 <script src="js/homepage-content.js?v=71"></script>
-<script src="js/homepage-editor.js?v=71"></script>
+<script src="js/homepage-editor.js?v=74"></script>
 </body>
 </html>

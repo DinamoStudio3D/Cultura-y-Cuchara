@@ -10,12 +10,16 @@
     node.className = "text-sm " + (error ? "text-red-300" : "text-gray-300");
   }
   function updateSave() {
+    if (root.VisitaLojaMediaGuard) return;
     $("timeSaveBtn").disabled = jobs.size > 0;
   }
   function cancel() {
-    for (const job of jobs.values()) {
+    for (const [language, job] of jobs) {
+      root.VisitaLojaMediaGuard?.end("timeForm", "audio-" + language);
       job.controller.abort();
       job.xhr?.abort();
+      job.field.disabled = job.previousDisabled;
+      job.file.disabled = false;
     }
     jobs.clear();
     document
@@ -103,7 +107,9 @@
             url.username ||
             url.password ||
             data.resource_type !== "video" ||
-            !data.public_id
+            !data.public_id ||
+            !data.public_id.startsWith("visitaloja/time/audio/") ||
+            !url.pathname.startsWith("/" + auth.cloudName + "/video/upload/")
           )
             throw Error();
           resolve(url.href);
@@ -118,6 +124,7 @@
       job.controller.signal.addEventListener("abort", () => xhr.abort(), {
         once: true,
       });
+      status(notice, "Subiendo audio…");
       xhr.send(body);
     });
   }
@@ -169,6 +176,9 @@
     actions.append(upload, stop, remove);
     box.append(file, actions, notice);
     field.after(box);
+    preview.addEventListener("error", () => {
+      if (field.value.trim()) status(notice, "No se pudo reproducir este audio. Revisa el enlace o prueba una versión MP3 compatible.", true);
+    });
     upload.addEventListener("click", async () => {
       const selected = file.files?.[0];
       if (!selected)
@@ -200,8 +210,10 @@
           "Inicia sesión como administrador para subir el audio.",
           true,
         );
-      const job = { controller: new AbortController() };
+      const job = { controller: new AbortController(), field, file, previousDisabled: field.disabled };
+      field.disabled = file.disabled = true;
       jobs.set(language, job);
+      root.VisitaLojaMediaGuard?.begin("timeForm", "audio-" + language);
       updateSave();
       upload.disabled = true;
       stop.classList.remove("hidden");
@@ -209,6 +221,7 @@
       status(notice, "Autorizando subida…");
       try {
         const token = await user.getIdToken();
+        job.controller.signal.throwIfAborted();
         const response = await fetch("/api/sign-time-audio", {
           method: "POST",
           headers: { Authorization: "Bearer " + token },
@@ -251,6 +264,9 @@
         clearTimeout(timer);
         if (jobs.get(language) === job) {
           jobs.delete(language);
+          root.VisitaLojaMediaGuard?.end("timeForm", "audio-" + language);
+          field.disabled = job.previousDisabled;
+          file.disabled = false;
           upload.disabled = false;
           stop.classList.add("hidden");
           updateSave();
@@ -262,6 +278,9 @@
       if (job) {
         job.controller.abort();
         jobs.delete(language);
+        root.VisitaLojaMediaGuard?.end("timeForm", "audio-" + language);
+        field.disabled = job.previousDisabled;
+        file.disabled = false;
         upload.disabled = false;
         stop.classList.add("hidden");
         updateSave();
