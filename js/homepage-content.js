@@ -831,6 +831,192 @@
       },
     ],
   );
+  blocks.push(
+    ...[
+      {
+        id: "welcomePlaces",
+        name: "Acceso rápido · Comer y alojarse",
+        selector: '.vl-discovery-nav a[href="#establecimientos"]',
+        preserveDefault: true,
+        noVisibility: true,
+        previewAnchor: "inicio",
+        fields: [
+          [
+            "welcomePlaces",
+            "Título",
+            '[data-i18n="welcomePlaces"]',
+            "Comer y alojarse",
+            "Eat and stay",
+          ],
+          [
+            "welcomePlacesHelp",
+            "Descripción breve",
+            '[data-i18n="welcomePlacesHelp"]',
+            "Encuentra tu próxima parada",
+            "Find your next stop",
+          ],
+        ],
+      },
+      {
+        id: "welcomePassport",
+        name: "Acceso rápido · Tu pasaporte",
+        selector: '.vl-discovery-nav a[href="#pasaporte"]',
+        preserveDefault: true,
+        noVisibility: true,
+        previewAnchor: "inicio",
+        fields: [
+          [
+            "welcomePassport",
+            "Título",
+            '[data-i18n="welcomePassport"]',
+            "Tu pasaporte",
+            "Your passport",
+          ],
+          [
+            "welcomePassportHelp",
+            "Descripción breve",
+            '[data-i18n="welcomePassportHelp"]',
+            "Colecciona experiencias",
+            "Collect experiences",
+          ],
+        ],
+      },
+      {
+        id: "welcomeMissions",
+        name: "Acceso rápido · Con Chabaquito",
+        selector: '.vl-discovery-nav a[href="#misiones"]',
+        preserveDefault: true,
+        noVisibility: true,
+        previewAnchor: "inicio",
+        fields: [
+          [
+            "welcomeMissions",
+            "Título",
+            '[data-i18n="welcomeMissions"]',
+            "Con Chabaquito",
+            "With Chabaquito",
+          ],
+          [
+            "welcomeMissionsHelp",
+            "Descripción breve",
+            '[data-i18n="welcomeMissionsHelp"]',
+            "Descubre y cumple misiones",
+            "Discover and complete missions",
+          ],
+        ],
+      },
+      {
+        id: "welcomeAgenda",
+        name: "Acceso rápido · Agenda cultural",
+        selector: '.vl-discovery-nav a[href="#agenda"]',
+        preserveDefault: true,
+        noVisibility: true,
+        previewAnchor: "inicio",
+        fields: [
+          [
+            "welcomeAgenda",
+            "Título",
+            '[data-i18n="welcomeAgenda"]',
+            "Agenda cultural",
+            "Cultural calendar",
+          ],
+          [
+            "welcomeAgendaHelp",
+            "Descripción breve",
+            '[data-i18n="welcomeAgendaHelp"]',
+            "Planea tu próxima salida",
+            "Plan your next outing",
+          ],
+        ],
+      },
+      {
+        id: "welcomePhoto",
+        name: "Mensaje sobre la fotografía de portada",
+        selector: ".vl-welcome-photo-caption",
+        preserveDefault: true,
+        noVisibility: true,
+        previewAnchor: "inicio",
+        fields: [
+          [
+            "welcomePhotoKicker",
+            "Antetítulo",
+            '[data-i18n="welcomePhotoKicker"]',
+            "TU PRÓXIMA HISTORIA EMPIEZA AQUÍ",
+            "YOUR NEXT STORY STARTS HERE",
+          ],
+          [
+            "welcomePhotoTitle",
+            "Título",
+            '[data-i18n="welcomePhotoTitle"]',
+            "Loja, a tu ritmo.",
+            "Loja, at your own pace.",
+          ],
+          [
+            "welcomeNow",
+            "Botón de recomendaciones",
+            '[data-i18n="welcomeNow"]',
+            "¿Qué hacer ahora?",
+            "What can I do now?",
+          ],
+        ],
+      },
+      {
+        id: "welcomeActions",
+        name: "Presentación y botones de bienvenida",
+        selector: ".vl-welcome-actions",
+        preserveDefault: true,
+        noVisibility: true,
+        previewAnchor: "inicio",
+        fields: [
+          [
+            "heroBadge",
+            "Antetítulo de bienvenida",
+            '[data-i18n="heroBadge"]',
+            "LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA",
+            "Loja is experienced, tasted and hosted",
+          ],
+          [
+            "welcomeMap",
+            "Enlace al mapa",
+            '[data-i18n="welcomeMap"]',
+            "Explorar el mapa",
+            "Explore the map",
+          ],
+          [
+            "welcomeRoute",
+            "Botón para planificar recorrido",
+            '[data-i18n="welcomeRoute"]',
+            "Planificar mi recorrido",
+            "Plan my route",
+          ],
+        ],
+      },
+      {
+        id: "footerContact",
+        name: "Presentación del contacto",
+        selector: ".vl-footer-contact",
+        preserveDefault: true,
+        noVisibility: true,
+        previewAnchor: "contacto",
+        fields: [
+          [
+            "footerContactTitle",
+            "Título",
+            '[data-i18n="footerContactTitle"]',
+            "Hablemos de Loja",
+            "Let's talk about Loja",
+          ],
+          [
+            "footerContactHelp",
+            "Descripción",
+            '[data-i18n="footerContactHelp"]',
+            "Consultas, alianzas y asistencia sobre la plataforma.",
+            "Questions, partnerships and platform support.",
+          ],
+        ],
+      },
+    ],
+  );
   const placeholder = "assets/photos/photo-unavailable.svg";
   function safeUrl(value) {
     if (

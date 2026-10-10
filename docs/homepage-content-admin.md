@@ -1,4 +1,4 @@
-# Edición de contenido público — V70
+# Edición de contenido público — V71
 
 ## Panel
 
@@ -57,3 +57,9 @@ Pasaporte incorpora la presentación pública y los textos de los tres pasos, en
 Verificación con almacén aislado; publicación real con la sesión del propietario pendiente.
 
 La prueba end-to-end detectó un error de sintaxis preexistente en el separador de IDs del editor de misiones V2: un salto de línea literal rompía la expresión regular e impedía cargar el script. Se corrige para admitir comas, LF y CRLF; la carga incluye versión para renovar caché.
+
+## Ampliación V71: bienvenida y enlaces de revisión
+
+Contenido de la portada incorpora siete bloques: cuatro accesos rápidos, mensaje sobre la fotografía, antetítulo y botones de bienvenida, y presentación del contacto del pie de página. Todos permiten español e inglés y conservan sus acciones. El correo continúa en su campo existente. Cada bloque del editor ahora incluye un enlace a su sección pública en una pestaña nueva del mismo despliegue; muestra el contenido publicado, no el borrador local. No se añaden opciones para ocultar navegación.
+
+Pruebas con almacén aislado en cuatro anchos, cambio de idioma, destinos de enlaces y escrituras parciales. La publicación con una sesión real sigue pendiente.

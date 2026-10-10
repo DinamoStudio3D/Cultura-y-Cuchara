@@ -35,6 +35,39 @@
         summary.className = "font-black text-lg cursor-pointer";
         summary.textContent = b.name;
         section.append(summary);
+        const moduleAnchors = {
+          places: "categorias",
+          events: "agenda",
+          postcards: "postales",
+          time: "loja-tiempo",
+          podcast: "podcast",
+          settings: "especias",
+          passport: "pasaporte",
+          chabaquitoMissions: "misiones",
+        };
+        const portadaAnchors = {
+          mobileWelcome: "inicio",
+          explore: "categorias",
+          entrepreneurs: "emprendedores",
+          cooking: "especias",
+        };
+        const anchor =
+          b.previewAnchor ||
+          (b.id.startsWith("festival")
+            ? "fiavl"
+            : moduleAnchors[b.adminModule] || portadaAnchors[b.id] || "inicio");
+        const publicLink = document.createElement("a");
+        publicLink.href = "index.html#" + anchor;
+        publicLink.target = "_blank";
+        publicLink.rel = "noopener";
+        publicLink.className =
+          "inline-flex items-center gap-2 text-sm font-bold text-sky-200 underline underline-offset-4 my-3";
+        publicLink.textContent = "Ver esta sección en la web ↗";
+        publicLink.setAttribute(
+          "aria-label",
+          "Ver " + b.name + " en la web (nueva pestaña)",
+        );
+        section.append(publicLink);
         const visible = field(
           "home-" + b.id + "-enabled",
           "Mostrar este bloque",
