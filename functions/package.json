@@ -10,6 +10,6 @@
     "firebase-functions": "^6.4.0"
   },
   "scripts": {
-    "test": "node --test chabaquito-missions-v2-engine.test.js chabaquito-missions-v2-service.test.js chabaquito-v1-visit-validation.test.js chabaquito-v1-discoveries.test.js chabaquito-loyalty-reconciliation.test.js chabaquito-public-ranking.test.js"
+    "test": "node --test *.test.js"
   }
 }

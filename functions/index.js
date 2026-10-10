@@ -10,6 +10,12 @@ const { safeSyncUserMissionsV2 } = require("./chabaquito-missions-v2-service");
 const { shouldReconcileLoyaltyVisit } = require("./chabaquito-loyalty-reconciliation");
 const { publicRankingProjection, rankingDocumentId, rankingPreferencePatch } = require("./chabaquito-public-ranking");
 
+const loyaltyPoints = require('./loyalty-points-service');
+async function pointPlan(action, input) {
+ try { return await loyaltyPoints[action](input); }
+ catch (error) { if (error instanceof loyaltyPoints.LoyaltyError) throw new HttpsError(error.code, error.message); throw error; }
+}
+
 initializeApp();
 const db = getFirestore();
 const REGION = "us-central1";
@@ -38,7 +44,7 @@ async function authorizedMerchant(request) {
   const snap = await ref.get();
   const merchant = snap.exists ? snap.data() : null;
   if (!merchant || merchant.active === false) throw new HttpsError("permission-denied", "Cuenta de negocio no autorizada.");
-  return { uid: request.auth.uid, email: request.auth.token.email || "", ...merchant };
+  return { ...merchant, uid: request.auth.uid, email: request.auth.token.email || "" };
 }
 
 function auditRef() {
@@ -57,6 +63,8 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
     const codeSnap = await tx.get(codeRef);
     if (!codeSnap.exists) throw new HttpsError("not-found", "El código no existe.");
     const code = codeSnap.data();
+    const liveMerchant = await tx.get(db.collection("missionRewardMerchants").doc(request.auth.uid));
+    if (!liveMerchant.exists || liveMerchant.data().active === false || !(liveMerchant.data().placeIds || []).includes(code.placeId)) throw new HttpsError("permission-denied", "Acceso del negocio revocado.");
     if (code.status !== "pending" || !code.expiresAt || code.expiresAt.toMillis() < Date.now()) throw new HttpsError("failed-precondition", "El código venció o ya fue utilizado.");
     if (!(merchant.placeIds || []).includes(code.placeId)) throw new HttpsError("permission-denied", "Este negocio no puede confirmar esta parada.");
 
@@ -93,8 +101,10 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
     const rewardId = cleanId(`${code.userId}_${code.placeId}_${newCycle}`);
     const rewardRef = earned && stockAvailable ? db.collection("loyaltyRewardClaims").doc(rewardId) : null;
 
+    const pointAward = await pointPlan("prepareAward",{tx,db,userId:code.userId,placeId:code.placeId,requestId,now});
+    if(pointAward)pointAward.apply();
     tx.update(codeRef, { status: "confirmed", confirmedAt: now, confirmedBy: merchant.uid, confirmedByName: merchant.businessName || merchant.email, passportAdded: !stampSnap.exists, updatedAt: now });
-    tx.create(visitRef, { requestId, userId: code.userId, userName: code.userName || "", userEmail: code.userEmail || "", placeId: code.placeId, placeName: code.placeName || "", confirmedBy: merchant.uid, confirmedByName: merchant.businessName || "", confirmedAt: now, passportAdded: !stampSnap.exists, purchaseAmount, receiptRef, status: "confirmed", previousVisitCount: Number(counter?.visitCount || 0), previousRewardCycles: oldCycles, previousTotalSpend: Number(counter?.totalSpend || 0), previousDailyVisitCount: previousDaily, previousLastVisitDay: counter?.lastVisitDay || "", previousLastVisitAt: counter?.lastVisitAt || null, previousLastVisitRequestId: counter?.lastVisitRequestId || "", passportStampId: !stampSnap.exists ? stampId : "", rewardClaimId: rewardRef ? rewardId : "" });
+    tx.create(visitRef, { requestId, userId: code.userId, userName: code.userName || "", userEmail: code.userEmail || "", placeId: code.placeId, placeName: code.placeName || "", confirmedBy: merchant.uid, confirmedByName: merchant.businessName || "", confirmedAt: now, passportAdded: !stampSnap.exists, purchaseAmount, receiptRef, status: "confirmed", pointsEarned: pointAward?.amount || 0, previousVisitCount: Number(counter?.visitCount || 0), previousRewardCycles: oldCycles, previousTotalSpend: Number(counter?.totalSpend || 0), previousDailyVisitCount: previousDaily, previousLastVisitDay: counter?.lastVisitDay || "", previousLastVisitAt: counter?.lastVisitAt || null, previousLastVisitRequestId: counter?.lastVisitRequestId || "", passportStampId: !stampSnap.exists ? stampId : "", rewardClaimId: rewardRef ? rewardId : "" });
     const counterData = { visitorType: code.visitorType || "", city: code.city || "", birthMonthDay: code.birthMonthDay || "", visitCount: newCount, rewardCycles: rewardRef ? newCycle : oldCycles, lastVisitDay: today, dailyVisitCount: previousDaily + 1, lastVisitRequestId: requestId, lastVisitAt: now, totalSpend: Number(counter?.totalSpend || 0) + purchaseAmount, updatedAt: now };
     if (counter) tx.set(counterRef, counterData, { merge: true });
     else tx.create(counterRef, { userId: code.userId, userName: code.userName || "", userEmail: code.userEmail || "", placeId: code.placeId, placeName: code.placeName || "", ...counterData, firstVisitAt: now });
@@ -104,7 +114,7 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
       tx.update(programRef, { claimedCount: FieldValue.increment(1), updatedAt: now });
     }
     tx.create(auditRef(), { action: "loyalty_stamp_added", actorUid: merchant.uid, actorEmail: merchant.email, actorName: merchant.businessName || "", userId: code.userId, placeId: code.placeId, requestId, purchaseAmount, receiptRef, createdAt: now });
-    return { visitCount: newCount, target, passportAdded: !stampSnap.exists, rewardCreated: Boolean(rewardRef), chabaquitoUserId: code.userId };
+    return { pointsEarned: pointAward?.amount || 0, visitCount: newCount, target, passportAdded: !stampSnap.exists, rewardCreated: Boolean(rewardRef), chabaquitoUserId: code.userId };
   });
   try { await processValidatedVisit({ db, authenticatedUid: result.chabaquitoUserId, method: "staff", visitId: requestId }); } catch (error) { console.warn("Chabaquito discovery sync skipped after confirmed visit", { requestId, message: error?.message || String(error) }); }
   await safeSyncUserMissionsV2({ db, userId: result.chabaquitoUserId, now: Timestamp.now(), logger: console });
@@ -120,6 +130,8 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
     const visitSnap = await tx.get(visitRef);
     if (!visitSnap.exists) throw new HttpsError("not-found", "La visita no existe.");
     const visit = visitSnap.data();
+    const liveMerchant = await tx.get(db.collection("missionRewardMerchants").doc(request.auth.uid));
+    if (!liveMerchant.exists || liveMerchant.data().active === false || !(liveMerchant.data().placeIds || []).includes(visit.placeId)) throw new HttpsError("permission-denied", "Acceso del negocio revocado.");
     if (visit.status !== "confirmed" || visit.confirmedBy !== merchant.uid) throw new HttpsError("permission-denied", "Solo puede anularla quien la confirmó.");
     if (!(merchant.placeIds || []).includes(visit.placeId)) throw new HttpsError("permission-denied", "Parada no autorizada.");
     if (!visit.confirmedAt || Date.now() > visit.confirmedAt.toMillis() + 15 * 60000) throw new HttpsError("deadline-exceeded", "El plazo para deshacer el sello terminó.");
@@ -134,6 +146,8 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
     const rewardSnap = rewardRef ? await tx.get(rewardRef) : null;
     if (rewardSnap?.exists && rewardSnap.data().status !== "pending") throw new HttpsError("failed-precondition", "El premio generado ya fue entregado.");
     const now = Timestamp.now();
+    const pointReversal = await pointPlan("prepareReversal",{tx,db,visit,requestId,now});
+    if(pointReversal)pointReversal.apply();
     tx.update(visitRef, { status: "reversed", reversedAt: now, reversedBy: merchant.uid });
     tx.set(counterRef, { visitCount: Math.max(0, Number(visit.previousVisitCount || 0)), rewardCycles: Math.max(0, Number(visit.previousRewardCycles || 0)), totalSpend: Math.max(0, Number(visit.previousTotalSpend || 0)), dailyVisitCount: Math.max(0, Number(visit.previousDailyVisitCount || 0)), lastVisitDay: visit.previousLastVisitDay || "", lastVisitAt: visit.previousLastVisitAt || visit.confirmedAt, lastVisitRequestId: visit.previousLastVisitRequestId || "", updatedAt: now }, { merge: true });
     if (stampRef) tx.delete(stampRef);
@@ -273,3 +287,12 @@ exports.deliverRewardSecurely = onCall({ region: REGION, enforceAppCheck: false 
     return { delivered: true };
   });
 });
+
+// V83 remains disabled until isolated infrastructure validation and explicit activation.
+const loyaltyV83 = loyaltyPoints.service({db, timestamp: value => Timestamp.fromMillis(value)});
+for (const [name, action] of Object.entries({configureLoyaltyPoints:'configure', saveLoyaltyPointReward:'saveReward', redeemLoyaltyPoints:'redeem', settleLoyaltyPointClaim:'settle', setLoyaltyFollow:'follow', getLoyaltyPointWallet:'wallet', getLoyaltyPointOverview:'overview'})) {
+ exports[name] = onCall({region:REGION,enforceAppCheck:false}, async request => {
+  try { return await loyaltyV83[action](request.auth,request.data||{}); }
+  catch(error) { if(error instanceof loyaltyPoints.LoyaltyError)throw new HttpsError(error.code,error.message); throw new HttpsError('internal','No se pudo completar la operación.'); }
+ });
+}
