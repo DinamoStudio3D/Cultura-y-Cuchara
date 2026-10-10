@@ -12,7 +12,7 @@
         html.qr-stop-redirect body {
             visibility: hidden !important;
         }
-    
+
         /* La ficha lateral del mapa debe crecer con su contenido.
            Nunca fijar su altura: algunas paradas tienen más servicios y acciones. */
         #mapPreviewCard { height: auto; align-self: start; }
@@ -84,7 +84,7 @@
             if (saved === 'on' || (saved !== 'off' && automatic)) document.documentElement.classList.add('low-data-mode');
         })();
     </script>
-    
+
     <meta property="og:title" content="Visita Loja">
     <meta property="og:description" content="Descubre sabores, historias y destinos de Loja.">
     <meta property="og:image" content="https://www.visitaloja.com/visita-loja-compartir.png">
@@ -154,7 +154,7 @@
     </script>
 
     <link rel="preconnect" href="https://i.imgur.com" crossorigin>
-    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -190,7 +190,7 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 
@@ -204,7 +204,7 @@
 
 
 
-    
+
     <meta property="og:image:secure_url" content="https://www.visitaloja.com/visita-loja-compartir.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1536">
@@ -268,7 +268,7 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=65">
+<link rel="stylesheet" href="css/public-layout.css?v=66">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
@@ -453,7 +453,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="h-48 relative overflow-hidden bg-brandDark">
-                <img id="popupImgEl" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Promoción" class="w-full h-full object-cover" decoding="async">
+                <img id="popupImgEl" src="assets/photos/photo-unavailable.svg" alt="Promoción" class="w-full h-full object-cover" decoding="async">
                 <div class="absolute inset-0 bg-gradient-to-t from-brandDark/90 via-transparent to-transparent flex items-end p-4">
                     <span id="popupBadgeText" class="bg-brandGold text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow">✨ Promoción Exclusiva</span>
                 </div>
@@ -704,7 +704,7 @@
                     Ver todo <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
-            <div class="vl43-explore-feature"><div class="vl43-explore-image"><img src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1300&q=85" alt="Paisaje natural que inspira a descubrir Loja" loading="lazy" decoding="async"><span class="vl43-photo-label"><i class="fa-solid fa-location-dot"></i> LOJA · ECUADOR</span></div><div data-vl-surface="dark" class="vl43-explore-content"><span class="vl43-eyebrow"><i class="fa-solid fa-compass"></i> TU PRÓXIMA EXPERIENCIA</span><h3>Hay mucho más por <em>descubrir.</em></h3><p>Desde un café especial hasta una escapada por la provincia. Elige cómo quieres explorar y encuentra tu siguiente parada.</p><div class="vl43-feature-actions"><a href="#establecimientos"><i class="fa-solid fa-magnifying-glass"></i> Buscar lugares</a><a href="#mapa"><i class="fa-solid fa-map-location-dot"></i> Abrir mapa</a></div></div></div><div class="vl43-categories-heading"><strong>Explora a tu manera</strong><span>Selecciona una categoría para comenzar</span></div><div id="exploreCategoryGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"></div>
+            <div class="vl43-explore-feature"><div class="vl43-explore-image"><img src="assets/photos/loja-puerta.webp" width="1600" height="1200" alt="Puerta de la Ciudad de Loja, Ecuador" loading="lazy" decoding="async"><span class="vl43-photo-label"><i class="fa-solid fa-location-dot"></i> PUERTA DE LA CIUDAD · LOJA</span></div><div data-vl-surface="dark" class="vl43-explore-content"><span class="vl43-eyebrow"><i class="fa-solid fa-compass"></i> TU PRÓXIMA EXPERIENCIA</span><h3>Hay mucho más por <em>descubrir.</em></h3><p>Desde un café especial hasta una escapada por la provincia. Elige cómo quieres explorar y encuentra tu siguiente parada.</p><div class="vl43-feature-actions"><a href="#establecimientos"><i class="fa-solid fa-magnifying-glass"></i> Buscar lugares</a><a href="#mapa"><i class="fa-solid fa-map-location-dot"></i> Abrir mapa</a></div></div></div><div class="vl43-categories-heading"><strong>Explora a tu manera</strong><span>Selecciona una categoría para comenzar</span></div><div id="exploreCategoryGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"></div>
             <nav aria-label="Guías turísticas de la provincia de Loja" class="mt-6 flex flex-wrap gap-3 text-xs font-bold">
                 <a href="/hoteles-en-loja" class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-white hover:border-brandGold hover:text-brandGold transition"><i class="fa-solid fa-bed" aria-hidden="true"></i> Hoteles en Loja</a>
                 <a href="/cafeterias-en-loja" class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-white hover:border-brandGold hover:text-brandGold transition"><i class="fa-solid fa-mug-hot" aria-hidden="true"></i> Cafeterías en Loja</a>
@@ -907,7 +907,7 @@
     <!-- Entrepreneurs -->
     <section id="emprendedores" data-vl-surface="light" class="py-16 px-4 md:px-8 lg:px-12 bg-brandCream border-t border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto">
-            <div class="vl44-entrepreneur-header"><div class="vl44-entrepreneur-copy"><span class="vl44-eyebrow"><i class="fa-solid fa-store"></i> Nuevos Talentos</span><h2>Hecho en Loja, <em>con mucho talento.</em></h2><p>Conoce los emprendimientos que están creando nuevos sabores, productos y experiencias en nuestra provincia.</p><a href="#emprendedoresGridContainer" class="vl44-entrepreneur-link">Descubrir emprendimientos <i class="fa-solid fa-arrow-down"></i></a></div><div class="vl44-entrepreneur-photo"><img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=85" alt="Café artesanal, inspiración para descubrir emprendimientos locales" loading="lazy" decoding="async"><span><i class="fa-solid fa-heart"></i> APOYA LO LOCAL</span></div></div><div class="text-center mb-12 vl44-old-intro">
+            <div class="vl44-entrepreneur-header"><div class="vl44-entrepreneur-copy"><span class="vl44-eyebrow"><i class="fa-solid fa-store"></i> Nuevos Talentos</span><h2>Hecho en Loja, <em>con mucho talento.</em></h2><p>Conoce los emprendimientos que están creando nuevos sabores, productos y experiencias en nuestra provincia.</p><a href="#emprendedoresGridContainer" class="vl44-entrepreneur-link">Descubrir emprendimientos <i class="fa-solid fa-arrow-down"></i></a></div><div class="vl44-entrepreneur-photo"><img src="assets/photos/loja-centro.webp" width="1600" height="1067" alt="Calle peatonal 10 de Agosto, en el centro de Loja" loading="lazy" decoding="async"><span><i class="fa-solid fa-heart"></i> APOYA LO LOCAL</span></div></div><div class="text-center mb-12 vl44-old-intro">
                 <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-store mr-1"></i> Nuevos Talentos</span>
                 <h2 class="text-3xl lg:text-4xl font-black text-brandDark mt-2 mb-3">Emprendedores Lojanos</h2>
                 <p class="text-gray-600 text-sm max-w-xl mx-auto">
@@ -921,7 +921,7 @@
     <!-- Spices Section -->
     <section id="especias" data-vl-surface="light" class="py-16 px-4 md:px-8 lg:px-12 bg-[#f5f8fc] text-[#192f4a] border-t border-[#dce7f0] reveal">
         <div class="max-w-7xl mx-auto">
-            <div class="vl52-spice-feature"><div class="vl52-spice-photo"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1300&q=85" alt="Preparación gastronómica con especias y sabores tradicionales" loading="lazy" decoding="async"><span><i class="fa-solid fa-utensils"></i> SABORES QUE NOS IDENTIFICAN</span></div><div class="vl52-spice-copy"><div class="text-center mb-12">
+            <div class="vl52-spice-feature"><div class="vl52-spice-photo"><img src="assets/photos/repe-lojano.webp" width="734" height="581" alt="Repe lojano con quesillo y cilantro" loading="lazy" decoding="async"><span><i class="fa-solid fa-utensils"></i> REPE LOJANO</span></div><div class="vl52-spice-copy"><div class="text-center mb-12">
                 <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-leaf mr-1"></i> <span data-i18n="ileSub">Tradición y Sabor</span></span>
                 <h2 class="text-3xl lg:text-4xl font-black mt-2 mb-3" data-i18n="ileTitle">Secretos de Cocina con ILE</h2>
                 <p class="text-gray-400 text-sm max-w-xl mx-auto" data-i18n="ileDesc">
@@ -1000,14 +1000,14 @@
             <div class="max-w-4xl mx-auto bg-black/60 rounded-3xl p-3 sm:p-5 border-2 border-brandGold/40 shadow-2xl">
                 <div id="beforeAfterViewer" class="before-after-container w-full h-[320px] sm:h-[420px] md:h-[480px] rounded-2xl relative shadow-inner overflow-hidden cursor-ew-resize">
                     <!-- Imagen Después (Presente - Fondo) -->
-                    <img id="timeImgAfter" src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80" alt="Loja Presente" class="absolute inset-0 w-full h-full object-cover pointer-events-none" decoding="async" loading="lazy">
+                    <img id="timeImgAfter" src="assets/photos/photo-unavailable.svg" alt="Loja Presente" class="absolute inset-0 w-full h-full object-cover pointer-events-none" decoding="async" loading="lazy">
                     <span id="timeLabelAfter" class="absolute bottom-4 right-4 bg-brandDark/85 backdrop-blur text-brandGold border border-brandGold/50 text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow z-10">
                         Presente (Hoy)
                     </span>
 
                     <!-- Imagen Antes (Pasado - Overlay recortado) -->
                     <div id="timeOverlayBefore" class="before-img-overlay pointer-events-none" style="width: 50%;">
-                        <img id="timeImgBefore" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" alt="Loja Pasado" class="absolute inset-0 w-full h-full object-cover max-w-none" style="filter: grayscale(100%) contrast(110%);" decoding="async" loading="lazy">
+                        <img id="timeImgBefore" src="assets/photos/photo-unavailable.svg" alt="Loja Pasado" class="absolute inset-0 w-full h-full object-cover max-w-none" style="filter: grayscale(100%) contrast(110%);" decoding="async" loading="lazy">
                         <span id="timeLabelBefore" class="absolute bottom-4 left-4 bg-black/85 backdrop-blur text-white border border-gray-600 text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow z-10">
                             Ayer (1945)
                         </span>
@@ -1401,6 +1401,7 @@
           <div><strong data-i18n="footerContactTitle">Hablemos de Loja</strong><p data-i18n="footerContactHelp">Consultas, alianzas y asistencia sobre la plataforma.</p></div>
           <a href="mailto:contacto@visitaloja.com?subject=Contacto%20desde%20Visita%20Loja"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span>contacto@visitaloja.com</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
         </div>
+        <details class="vl-photo-credits"><summary>Créditos de fotografía</summary><p>Puerta de la Ciudad: <a href="https://commons.wikimedia.org/wiki/File:LojaCityGates.JPG" target="_blank" rel="noopener noreferrer">The lifted lorax · dominio público</a>.</p><p>Centro de Loja: <a href="https://commons.wikimedia.org/wiki/File:Loja10Agosto.jpg" target="_blank" rel="noopener noreferrer">Jaimalalatete</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p><p>Repe lojano: <a href="https://commons.wikimedia.org/wiki/File:Repe_Lojano_(gastronom%C3%ADa_Ecuatoriana).jpg" target="_blank" rel="noopener noreferrer">Kevinmero</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p><p>Imágenes optimizadas a WebP. Fotografías de archivo; no representan promociones ni productos de establecimientos concretos.</p></details>
     </footer>
 
     <!-- Mascota animada de Visita Loja -->
@@ -1545,7 +1546,7 @@
             </div>
             <div class="p-6 text-center space-y-4">
                 <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg border border-brandGold/30 relative flex flex-col items-center justify-center group cursor-pointer" onclick="openYouTubeDirectLink()">
-                    <img id="modalVideoThumbImg" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Vídeo Estreno" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition duration-500" decoding="async" loading="lazy">
+                    <img id="modalVideoThumbImg" src="assets/photos/photo-unavailable.svg" alt="Vídeo Estreno" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition duration-500" decoding="async" loading="lazy">
                     <div class="absolute inset-0 bg-black/40"></div>
                     <div class="relative z-10 flex flex-col items-center p-6">
                         <div class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-warm-glow mb-3 group-hover:scale-110 transition">
@@ -3476,7 +3477,7 @@
                 audioUrl: "audios/dinamo-the-weight-of-one-note.mp3",
                 audioUrlEn: "",
                 gallery: [
-                    { img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "Dínamo Studio" }
+                    { img: "assets/photos/photo-unavailable.svg", title: "Dínamo Studio" }
                 ]
             },
             {
@@ -3490,7 +3491,7 @@
                 iconClass: "fa-mortar-pestle", category: "hueca", customLogoUrl: "",
                 youtubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 gallery: [
-                    { img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "Cecina Asada al Carbón" }
+                    { img: "assets/photos/photo-unavailable.svg", title: "Cecina Asada al Carbón" }
                 ]
             }
         ];
@@ -3540,7 +3541,7 @@
                 location: 'Plaza de las Flores', 
                 desc: 'Catas abiertas al público y barismo profesional en vivo.', 
                 descEn: 'Open tastings for the public and barista shows.', 
-                img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80',
+                img: 'assets/photos/photo-unavailable.svg',
                 lat: -3.9910, 
                 lng: -79.2030 
             }
@@ -3556,7 +3557,7 @@
                 location: 'Plaza de San Sebastián',
                 desc: 'Evento demostrativo para visualizar la agenda. Recorrido de gastronomía, café y tradiciones lojanas.',
                 descEn: 'Sample event used to preview the agenda with Loja cuisine, coffee and traditions.',
-                img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
+                img: 'assets/photos/photo-unavailable.svg',
                 lat: -4.0007,
                 lng: -79.2019
             },
@@ -3570,7 +3571,7 @@
                 location: 'Parque Recreacional Jipiro',
                 desc: 'Evento demostrativo con música, artesanías y actividades familiares para mostrar el diseño de la agenda.',
                 descEn: 'Sample event with music, crafts and family activities to preview the agenda design.',
-                img: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80',
+                img: 'assets/photos/photo-unavailable.svg',
                 lat: -3.9744,
                 lng: -79.2043
             }
@@ -3589,7 +3590,7 @@
         }
 
         let emprendedoresList = safeReadJSON('cyc_dynamic_emprendedores', [
-            { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
+            { id: 'emp_1', name: 'Café de Altura Olmedo', category: 'Café de Autor', phone: '593999999999', img: 'assets/photos/photo-unavailable.svg', desc: 'Granos selectos cultivados a 1600 msnm con notas florales y chocolate.' }
         ]);
         if (db) {
             db.collection('siteContent').doc('entrepreneurs').onSnapshot(snapshot => {
@@ -3607,8 +3608,8 @@
                 titleEn: 'City Gate (Puerta de la Ciudad)',
                 labelPast: 'Ayer (1950)',
                 labelPresent: 'Hoy (2026)',
-                imgPast: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
-                imgPresent: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80',
+                imgPast: 'assets/photos/photo-unavailable.svg',
+                imgPresent: 'assets/photos/photo-unavailable.svg',
                 desc: 'Antiguo puente y acceso fluvial sobre el río Malacatos, hoy símbolo monumental y centro de exposiciones de Loja.',
                 descEn: 'Historic fortified bridge over the Malacatos river, transformed into a cultural hub and iconic landmark.',
                 lat: -3.9870,
@@ -3620,8 +3621,8 @@
                 titleEn: 'San Sebastián Historic Square',
                 labelPast: 'Ayer (1930)',
                 labelPresent: 'Hoy (2026)',
-                imgPast: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80',
-                imgPresent: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80',
+                imgPast: 'assets/photos/photo-unavailable.svg',
+                imgPresent: 'assets/photos/photo-unavailable.svg',
                 desc: 'La torre del reloj de 32 metros y las tradicionales glorietas que han albergado tertulias, ferias y arte por generaciones.',
                 descEn: 'The 32-meter clock tower and shaded pergolas, heart of local gatherings, cafes and festival events.',
                 lat: -3.9985,
@@ -3633,8 +3634,8 @@
                 titleEn: 'Lourdes Heritage Street',
                 labelPast: 'Ayer (1960)',
                 labelPresent: 'Hoy (2026)',
-                imgPast: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
-                imgPresent: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
+                imgPast: 'assets/photos/photo-unavailable.svg',
+                imgPresent: 'assets/photos/photo-unavailable.svg',
                 desc: 'La calle colonial empedrada más famosa de la ciudad, donde las antiguas casonas cobijan hoy cafés de especialidad y artesanías.',
                 descEn: 'Loja’s most famous cobblestone street, whose adobe colonial houses now host artisan workshops and coffee bars.',
                 lat: -3.9960,
@@ -3657,7 +3658,7 @@
 
         let postcardSettings = safeReadJSON('cyc_postcard_settings', {
             watermark: "VISITA LOJA • FIAVL 2026",
-            sampleImg: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80",
+            sampleImg: "assets/photos/photo-unavailable.svg",
             defaultMsg: "¡Qué elegancia de la de Francia, qué sabor el de mi Loja!"
         });
 
@@ -3907,11 +3908,11 @@
                 premiumVisual:true,heroStyle:'cinematic',heroHeight:'immersive',cardStyle:'elevated',cornerStyle:'large',heroImageOpacity:55,premiumAnimations:true,
                 latestYoutubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
                 latestYoutubeTitle: "La Virgen del Cisne en Loja - Tradición y Fe",
-                latestVideoThumbUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+                latestVideoThumbUrl: "assets/photos/photo-unavailable.svg",
                 popupActive: true,
                 popupTitle: "¡Especial del Día de las Madres!",
                 popupDesc: "Hoy en Mamá Lola tenemos un plato especial y si presentas esta publicación en el local obtienes un 10% de descuento directo.",
-                popupImg: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
+                popupImg: "assets/photos/photo-unavailable.svg",
                 popupWhatsapp: "https://wa.me/593999999999"
             });
             window.__initialSettings = saved;
@@ -4083,7 +4084,7 @@
                 const imgEl = document.getElementById('popupImgEl');
                 if(titleEl) titleEl.innerText = settings.popupTitle || "¡Promoción Especial!";
                 if(descEl) descEl.innerText = settings.popupDesc || "";
-                if(imgEl) imgEl.src = settings.popupImg || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80";
+                if(imgEl) imgEl.src = settings.popupImg || "assets/photos/photo-unavailable.svg";
                 
                 const waBtn = document.getElementById('popupWhatsappBtn');
                 if(waBtn) {
@@ -4536,7 +4537,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             topTrending.forEach((loc,index)=>{
                 const realIndex=locations.findIndex(l=>l.id===loc.id),medalIcon=index===0?"🥇":index===1?"🥈":"🥉";
                 const locTitle=(currentLang==='en'&&loc.titleEn)?loc.titleEn:loc.title,locTag=(currentLang==='en'&&loc.tagEn)?loc.tagEn:loc.tag,locDesc=(currentLang==='en'&&loc.descEn)?loc.descEn:loc.desc;
-                container.innerHTML+=`<div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})"><div class="h-48 md:h-52 overflow-hidden relative"><img src="${loc.gallery&&loc.gallery[0]?loc.gallery[0].img:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="Fotografía de ${locTitle}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async"><span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index+1} EN RUTA</span></div><div class="p-5"><span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${locTag}</span><h3 class="text-base sm:text-lg font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${locTitle}</h3><p class="text-gray-600 text-xs sm:text-sm line-clamp-2">${locDesc}</p></div></div>`;
+                container.innerHTML+=`<div class="glass-card rounded-2xl overflow-hidden shadow-warm-glow border border-gray-200 flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})"><div class="h-48 md:h-52 overflow-hidden relative"><img src="${loc.gallery&&loc.gallery[0]?loc.gallery[0].img:'assets/photos/photo-unavailable.svg'}" alt="Fotografía de ${locTitle}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async"><span class="absolute top-3 left-3 bg-brandDark text-brandGold text-[10px] font-bold px-3 py-1 rounded-full shadow z-10">${medalIcon} TOP ${index+1} EN RUTA</span></div><div class="p-5"><span class="text-[10px] font-bold text-brandGold uppercase tracking-wider block mb-1">${locTag}</span><h3 class="text-base sm:text-lg font-bold text-brandDark mb-1 group-hover:text-brandGold transition-colors">${locTitle}</h3><p class="text-gray-600 text-xs sm:text-sm line-clamp-2">${locDesc}</p></div></div>`;
             });
         }
 
@@ -4665,7 +4666,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 grid.innerHTML += `
                     <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="button" tabindex="0" aria-label="Ver detalles de ${locTitle}" data-location-id="${loc.id}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
-                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                            <img src="${loc.gallery && loc.gallery[0] ? loc.gallery[0].img : 'assets/photos/photo-unavailable.svg'}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
                                 <span class="${loc.category==='aliado'?'bg-violet-700 text-white':'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${loc.category==='aliado'?'<i class="fa-solid fa-handshake mr-1"></i>Marca aliada':locTag}</span>${hasPaidBadge&&loc.category!=='aliado'?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Destacado Visita Loja</span>':''}
                                 ${loc.category==='aliado'?'':openBadge}
@@ -5718,7 +5719,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(!currentUploadedImageObj) {
                 baseImg.crossOrigin = "anonymous";
                 baseImg.onload = () => drawPostcardContent(ctx, baseImg, W, H, userName, userSpot, userMsg);
-                baseImg.src = postcardSettings.sampleImg || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80";
+                baseImg.src = postcardSettings.sampleImg || "assets/photos/photo-unavailable.svg";
             } else {
                 drawPostcardContent(ctx, baseImg, W, H, userName, userSpot, userMsg);
             }
@@ -6311,7 +6312,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 document.getElementById('adminTabPostales').classList.remove('hidden');
                 document.getElementById('tabBtnPostales').className = "px-3 py-2.5 rounded-lg text-brandGold bg-brandGold/10 border border-brandGold/30 transition whitespace-nowrap";
                 document.getElementById('setPostcardWatermark').value = postcardSettings.watermark || "VISITA LOJA • FIAVL 2026";
-                document.getElementById('setPostcardSampleImg').value = postcardSettings.sampleImg || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1080&q=80";
+                document.getElementById('setPostcardSampleImg').value = postcardSettings.sampleImg || "assets/photos/photo-unavailable.svg";
                 document.getElementById('setPostcardDefaultMsg').value = postcardSettings.defaultMsg || "¡Enamorándome de los sabores de Loja!";
                 renderAdminFramesList();
             } else if(tab === 'identidad') {
@@ -6341,7 +6342,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
                 document.getElementById('setLatestYoutubeUrl').value = settings.latestYoutubeUrl || 'https://www.youtube.com/watch?v=n0BJGAkU9cg';
                 document.getElementById('setLatestYoutubeTitle').value = settings.latestYoutubeTitle || 'La Virgen del Cisne en Loja - Tradición y Fe';
-                document.getElementById('setLatestVideoThumbUrl').value = settings.latestVideoThumbUrl || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
+                document.getElementById('setLatestVideoThumbUrl').value = settings.latestVideoThumbUrl || 'assets/photos/photo-unavailable.svg';
                 document.getElementById('setBrandLogoUrl').value = settings.logoUrl || 'https://i.imgur.com/mmWzHK4.png?visita-loja-v4';
             } else if(tab === 'popup') {
                 document.getElementById('adminTabPopup').classList.remove('hidden');
@@ -6351,7 +6352,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 document.getElementById('setPopupActive').checked = settings.popupActive !== undefined ? settings.popupActive : true;
                 document.getElementById('setPopupTitle').value = settings.popupTitle || '¡Especial del Día de las Madres!';
                 document.getElementById('setPopupDesc').value = settings.popupDesc || 'Hoy en Mamá Lola tenemos un plato especial...';
-                document.getElementById('setPopupImg').value = settings.popupImg || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80';
+                document.getElementById('setPopupImg').value = settings.popupImg || 'assets/photos/photo-unavailable.svg';
                 document.getElementById('setPopupWhatsapp').value = settings.popupWhatsapp || 'https://wa.me/593999999999';
             }
         }
@@ -6448,7 +6449,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
             let coords = plusCodeInput.includes(",") ? plusCodeInput.split(",").map(Number) : preset.split(",").map(Number);
 
-            let galleryArray = imgsListInput.trim() ? imgsListInput.split(',').map((u, i) => ({ img: u.trim(), title: `${title} - ${i+1}` })) : [{ img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: title }];
+            let galleryArray = imgsListInput.trim() ? imgsListInput.split(',').map((u, i) => ({ img: u.trim(), title: `${title} - ${i+1}` })) : [{ img: "assets/photos/photo-unavailable.svg", title: title }];
 
             const locData = { pin, tag, tagEn, title, titleEn, desc, descEn, dish, dishEn, hours, openHour, closeHour, address, lat: coords[0], lng: coords[1], gps: `https://www.google.com/maps/search/?api=1&query=${coords[0]},${coords[1]}`, iconClass, customLogoUrl, category, youtubeUrl, gallery: galleryArray };
 
@@ -6740,12 +6741,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         let publicStories=[];let publicStoriesSettings={active:true,title:'Historias de Loja',titleEn:'Stories of Loja',intro:'Relatos que conectan sabores, lugares y tradiciones.',introEn:'Stories connecting flavors, places and traditions.'};let currentStory=null;let activeStoryAudio=null;
         let currentRestaurantMenu=null;
         function mamaLolaDemoDishes(){return[
-            {recommended:true,vegetarian:true,available:true,name:'Repe lojano',nameEn:'Traditional Loja repe',price:'$3.50',category:'Tradición',categoryEn:'Traditional',description:'Sopa cremosa de guineo verde, leche y quesillo.',descriptionEn:'Creamy green banana soup with milk and fresh cheese.',image:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=82'},
-            {recommended:true,available:true,name:'Cecina lojana',nameEn:'Loja-style cecina',price:'$8.50',category:'Platos fuertes',categoryEn:'Main dishes',description:'Cecina asada acompañada de yuca y curtido.',descriptionEn:'Grilled cecina served with cassava and pickled onion.',image:'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=700&q=82'},
-            {isNew:true,available:true,name:'Fritada tradicional',nameEn:'Traditional fritada',price:'$8.00',category:'Platos fuertes',categoryEn:'Main dishes',description:'Preparación tradicional para compartir en familia.',descriptionEn:'A traditional dish made for sharing with family.',image:'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=700&q=82'},
-            {vegetarian:true,available:true,name:'Café lojano',nameEn:'Loja coffee',price:'$2.25',category:'Bebidas',categoryEn:'Drinks',description:'Café aromático cultivado en la provincia de Loja.',descriptionEn:'Aromatic coffee grown in the province of Loja.',image:'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=700&q=82'},
-            {vegetarian:true,available:true,name:'Horchata',nameEn:'Herbal horchata',price:'$1.75',category:'Bebidas',categoryEn:'Drinks',description:'Infusión tradicional de hierbas y flores.',descriptionEn:'Traditional infusion of local herbs and flowers.',image:'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=700&q=82'},
-            {vegetarian:true,available:false,name:'Quesadilla lojana',nameEn:'Loja quesadilla',price:'$2.50',category:'Postres',categoryEn:'Desserts',description:'Dulce tradicional ideal para acompañar el café.',descriptionEn:'Traditional sweet, perfect alongside coffee.',image:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=82'}
+            {recommended:true,vegetarian:true,available:true,name:'Repe lojano',nameEn:'Traditional Loja repe',price:'$3.50',category:'Tradición',categoryEn:'Traditional',description:'Sopa cremosa de guineo verde, leche y quesillo.',descriptionEn:'Creamy green banana soup with milk and fresh cheese.',image:'assets/photos/photo-unavailable.svg'},
+            {recommended:true,available:true,name:'Cecina lojana',nameEn:'Loja-style cecina',price:'$8.50',category:'Platos fuertes',categoryEn:'Main dishes',description:'Cecina asada acompañada de yuca y curtido.',descriptionEn:'Grilled cecina served with cassava and pickled onion.',image:'assets/photos/photo-unavailable.svg'},
+            {isNew:true,available:true,name:'Fritada tradicional',nameEn:'Traditional fritada',price:'$8.00',category:'Platos fuertes',categoryEn:'Main dishes',description:'Preparación tradicional para compartir en familia.',descriptionEn:'A traditional dish made for sharing with family.',image:'assets/photos/photo-unavailable.svg'},
+            {vegetarian:true,available:true,name:'Café lojano',nameEn:'Loja coffee',price:'$2.25',category:'Bebidas',categoryEn:'Drinks',description:'Café aromático cultivado en la provincia de Loja.',descriptionEn:'Aromatic coffee grown in the province of Loja.',image:'assets/photos/photo-unavailable.svg'},
+            {vegetarian:true,available:true,name:'Horchata',nameEn:'Herbal horchata',price:'$1.75',category:'Bebidas',categoryEn:'Drinks',description:'Infusión tradicional de hierbas y flores.',descriptionEn:'Traditional infusion of local herbs and flowers.',image:'assets/photos/photo-unavailable.svg'},
+            {vegetarian:true,available:false,name:'Quesadilla lojana',nameEn:'Loja quesadilla',price:'$2.50',category:'Postres',categoryEn:'Desserts',description:'Dulce tradicional ideal para acompañar el café.',descriptionEn:'Traditional sweet, perfect alongside coffee.',image:'assets/photos/photo-unavailable.svg'}
         ];}
         function restaurantMenuFor(loc){
             if(!loc)return null;const configured=loc.menu||{},dishes=Array.isArray(configured.dishes)?configured.dishes.filter(item=>item?.name&&item?.price):[];
