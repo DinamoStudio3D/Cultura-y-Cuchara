@@ -53,3 +53,7 @@ Los editores `js/homepage-editor.js` y `js/homepage-content.js` ya publican bloq
 - Test nuevo: ruta antigua nunca llama red aunque reciba credenciales/configuración; 410/405 sin commit.
 - Test nuevo de interfaz simulada: español/inglés tienen cancelar; guardar se bloquea durante carga; cancelar conserva audio anterior y desbloquea guardar.
 - Sin pruebas con sesión real, sin borrado remoto, sin migraciones, sin cambios a reglas desplegadas o producción.
+
+### Comprobación adicional de imágenes
+
+`validate-image-pipeline.mjs` falla en dos comprobaciones de cadenas, ya presentes en V72. El portal llama `cleanupAfterSave` después de `update`, pero el validador exige también la URL de API dentro del HTML cuando está en el helper. La carpeta se restringe en `api/delete-merchant-image.js`, aunque el validador la busca en el helper cliente. Son comprobaciones estáticas desactualizadas; queda pendiente reemplazarlas por pruebas de comportamiento de guardado y pertenencia. No se declara este validador aprobado ni borrado remoto verificado.
