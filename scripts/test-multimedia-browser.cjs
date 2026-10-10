@@ -170,6 +170,30 @@ const audio={name:'voice.wav',mimeType:'audio/wav',buffer:wave()};
   assert(await publicPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   if(width===390||width===1440)await publicPage.locator("footer").screenshot({path:path.join(output,`contact-public-${width}.png`)});
   await publicPage.close();
+  // V76 local draft persists across reload; Save and Restore never write Firestore.
+  const beforeDraft=await page.evaluate(()=>fixture.writes.length);
+  await page.locator('#home-contactEmail').fill('draft@example.com');
+  await page.locator('#home-footerContact-instagramUrl').fill('https://instagram.com/draft');
+  await page.locator('#home-content-draft-save').click();
+  await page.waitForFunction(()=>document.getElementById('home-content-status').textContent.startsWith('Borrador guardado'));
+  assert.equal(await page.evaluate(()=>fixture.writes.length),beforeDraft);
+  await page.reload({waitUntil:'load'});
+  await page.evaluate(()=>{document.getElementById('loginView').classList.add('hidden');document.getElementById('adminView').classList.remove('hidden');showAdminModule('settings');});
+  await page.locator('#home-content-draft-restore').click();
+  await page.waitForFunction(()=>document.getElementById('home-content-status').textContent.startsWith('Borrador recuperado'));
+  assert.equal(await page.locator('#home-contactEmail').inputValue(),'draft@example.com');
+  assert.equal(await page.locator('#home-footerContact-instagramUrl').inputValue(),'https://instagram.com/draft');
+  assert.equal(await page.evaluate(()=>fixture.writes.length),0);
+  await page.locator('#home-content-discard').click();
+  assert.equal(await page.locator('#home-contactEmail').inputValue(),'contacto@visitaloja.com');
+  await page.evaluate(()=>auth.currentUser.uid='other-fixture');
+  await page.locator('#home-content-draft-restore').click();
+  await page.waitForFunction(()=>document.getElementById('home-content-status').textContent.startsWith('No hay un borrador'));
+  assert.equal(await page.locator('#home-contactEmail').inputValue(),'contacto@visitaloja.com');
+  await page.evaluate(()=>auth.currentUser.uid='fixture');
+  await page.locator('#home-content-draft-restore').click();
+  if(width===390||width===1440)await page.locator('#home-content-draft-save').scrollIntoViewIfNeeded();
+  if(width===390||width===1440)await page.screenshot({path:path.join(output,`draft-${width}.png`)});
   // Merchant portal: cancellation and failed save never trigger cleanup of the old file.
   await page.goto('https://qa.test/merchant-profile.html',{waitUntil:'load'});
   await page.evaluate(()=>{

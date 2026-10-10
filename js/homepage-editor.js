@@ -240,23 +240,30 @@
       document.getElementById(statusId).textContent = "Cambios sin publicar";
       previews();
     }
-    function load(settings) {
-      latestSettings = settings || {};
-      if (dirty) return;
-      const data = model.normalize(settings?.homepageContent);
+    function fill(data) {
       const email = form.querySelector("#home-contactEmail");
-      if (email) email.value = data.contactEmail;
+      if (email) email.value = typeof data.contactEmail === "string" ? data.contactEmail.slice(0,150) : "";
       for (const b of selectedBlocks) {
-        const saved = data.blocks[b.id];
+        const saved = data.blocks[b.id] || {};
+        const allowed = new Set(["enabled", ...b.fields.flatMap(([key])=>[key,key+"En"]), ...(b.links||[]).map(([key])=>key), ...(b.image ? ["imageUrl","imageAlt","imageCredit"] : [])]);
         for (const [key, value] of Object.entries(saved)) {
+          if (!allowed.has(key)) continue;
           const input = document.getElementById("home-" + b.id + "-" + key);
           if (input) {
-            if (key === "enabled") input.checked = value;
-            else input.value = value;
+            if (key === "enabled") input.checked = value !== false;
+            else if (typeof value === "string") input.value = value.slice(0,input.maxLength > 0 ? input.maxLength : 2000);
           }
         }
       }
       previews();
+    }
+    let loadedUid = null;
+    function load(settings) {
+      latestSettings = settings || {};
+      const uid = auth.currentUser?.uid || null;
+      if (loadedUid !== uid) { dirty = false; loadedUid = uid; }
+      if (dirty) return;
+      fill(model.normalize(settings?.homepageContent));
     }
     async function uploadPhoto(b, input) {
       const file = input.files[0],
@@ -334,6 +341,43 @@
         window.VisitaLojaMediaGuard.end(form.id, prefix + "-image");
       }
     }
+    const draftSave = document.createElement("button"), draftRestore = document.createElement("button");
+    for (const button of [draftSave,draftRestore]) {
+      button.type = "button";
+      button.className = "border border-sky-500/40 rounded-xl px-4 py-3 text-sm font-bold text-sky-200";
+    }
+    draftSave.id = prefix + "-draft-save";
+    draftRestore.id = prefix + "-draft-restore";
+    draftSave.textContent = "Guardar borrador en este dispositivo";
+    draftRestore.textContent = "Recuperar borrador";
+    const actions = document.getElementById(publishId).parentElement;
+    actions.insertBefore(draftSave,document.getElementById(publishId));
+    actions.insertBefore(draftRestore,document.getElementById(publishId));
+    const draftHelp = document.createElement("p");
+    draftHelp.className = "text-xs text-gray-400";
+    draftHelp.textContent = "El borrador se guarda en este navegador, para tu cuenta y esta sección. No cambia la web ni se sincroniza con otros dispositivos. No guarda archivos pendientes de subir. Recuperar reemplaza los cambios del formulario. Publicar sigue siendo una acción independiente.";
+    actions.after(draftHelp);
+    draftSave.addEventListener("click", () => {
+      const status = document.getElementById(statusId);
+      if (uploadPending) { status.textContent = "Espera o cancela la subida antes de guardar el borrador."; return; }
+      try {
+        window.VisitaLojaContentDrafts.save(localStorage,auth.currentUser?.uid,prefix,read());
+        status.textContent = "Borrador guardado en este dispositivo. No publicado.";
+      } catch (error) { status.textContent = "No se guardó el borrador. " + (error.message || "Comprueba el almacenamiento del navegador."); }
+    });
+    draftRestore.addEventListener("click", () => {
+      const status = document.getElementById(statusId);
+      if (uploadPending) { status.textContent = "Espera o cancela la subida antes de recuperar el borrador."; return; }
+      try {
+        const record = window.VisitaLojaContentDrafts.load(localStorage,auth.currentUser?.uid,prefix);
+        if (!record) { status.textContent = "No hay un borrador de tu cuenta para esta sección en este dispositivo."; return; }
+        // Start with published values, then restore only this editor's known fields.
+        fill(model.normalize(latestSettings.homepageContent));
+        fill(record.data);
+        changed();
+        status.textContent = "Borrador recuperado (" + new Date(record.savedAt).toLocaleString("es-EC") + "). Revisa antes de publicar.";
+      } catch (error) { status.textContent = "No se recuperó el borrador. " + error.message; }
+    });
     build();
     load(latestSettings);
     document.getElementById(discardId).addEventListener("click", () => {
