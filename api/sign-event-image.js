@@ -3,7 +3,7 @@ const crypto=require("node:crypto");
 const PROJECT_ID="cultura-y-cuchara";
 const WEB_API_KEY="AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
 const LEGACY_ADMIN_EMAIL="sukogames1996@gmail.com";
-function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}) {
+function createHandler({fetchImpl=fetch,env=process.env,now=Date.now,folder="visitaloja/events/posters"}={}) {
  return async function handler(req,res) {
   res.setHeader("Cache-Control","no-store");
   if(req.method!=="POST")return res.status(405).json({error:"Método no permitido."});
@@ -27,7 +27,7 @@ function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}) {
     }
    }
    if(!authorized)return res.status(403).json({error:"Solo los administradores pueden subir afiches."});
-   const params={folder:"visitaloja/events/posters",timestamp:Math.floor(now()/1000),upload_preset:uploadPreset};
+   const params={folder,timestamp:Math.floor(now()/1000),upload_preset:uploadPreset};
    const signature=crypto.createHash("sha1").update(Object.keys(params).sort().map(k=>k+"="+params[k]).join("&")+apiSecret).digest("hex");
    return res.status(200).json({cloudName,apiKey,params,signature});
   }catch(error){console.error("sign-event-image",error);return res.status(503).json({error:"No se pudo autorizar el afiche."});}

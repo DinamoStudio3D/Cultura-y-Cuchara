@@ -268,7 +268,7 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=66">
+<link rel="stylesheet" href="css/public-layout.css?v=67">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <script src="js/public-color-contract.js?v=55"></script>
 </head>
@@ -2596,13 +2596,14 @@
                 if (node.nodeValue !== desired) node.nodeValue = desired;
             };
             if (root.nodeType === Node.TEXT_NODE) {
+                if(root.parentElement?.closest('[data-home-managed]')) return;
                 translateTextNode(root);
                 return;
             }
             const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
             while (walker.nextNode()) {
                 const node = walker.currentNode;
-                if (!node.parentElement || ['SCRIPT','STYLE'].includes(node.parentElement.tagName)) continue;
+                if (!node.parentElement || node.parentElement.closest('[data-home-managed]') || ['SCRIPT','STYLE'].includes(node.parentElement.tagName)) continue;
                 translateTextNode(node);
             }
             const elements = root.nodeType === Node.ELEMENT_NODE ? [root, ...root.querySelectorAll('[placeholder],[title],[aria-label]')] : [];
@@ -4103,6 +4104,7 @@
         }
 
         function applySettings(s) {
+            window.VisitaLojaHomepage?.apply(s);
             const showTrending = s.showTrendingSection === true;
             document.getElementById("tendencia")?.classList.toggle("hidden", !showTrending);
             document.querySelectorAll("[data-trending-nav]").forEach(el => el.classList.toggle("hidden", !showTrending));
@@ -4119,9 +4121,9 @@
                 badgeEl.classList.remove('hidden');
             }
             if(document.getElementById('heroTitle')) {
-                document.getElementById('heroTitle').innerHTML = s.title ? s.title.replace("Historias", '<span class="text-brandGold">Historias</span>') : "";
+                document.getElementById('heroTitle').textContent = (currentLang === 'en' ? s.titleEn || s.title : s.title) || '';
             }
-            if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = s.subtitle || "";
+            if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = (currentLang === 'en' ? s.subtitleEn || s.subtitle : s.subtitle) || '';
 
             if (s.logoUrl) {
                 ['splashLogoImg', 'navLogoImg', 'heroLogoImg', 'podcastLogoImg', 'footerLogoImg', 'maintenanceLogo'].forEach(id => {
@@ -7948,6 +7950,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 db.collection('settings').doc('main').onSnapshot(snapshot => {
                     if (!snapshot.exists) return;
                     const data = snapshot.data();
+                    applySettings(data);
                     try { localStorage.setItem('cyc_settings', JSON.stringify(data)); } catch (error) {}
                     applyWelcomeMusic(data);
                     applyInstitutionalSupport(data);
@@ -7994,7 +7997,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
     <script src="js/chabaquito-runtime-config.js" defer></script>
     <script src="js/chabaquito-public-v2.js?v=62" defer></script>
-    <script src="js/mobile-ui.js?v=65" defer></script>
+    <script src="js/homepage-content.js?v=67" defer></script>
+<script src="js/mobile-ui.js?v=65" defer></script>
 
 <script id="visitaloja-dropdown-navigation-js-v29">
 function vl29CloseMenus(){document.querySelectorAll('.vl29-nav-group>button[aria-expanded="true"]').forEach(function(b){b.setAttribute('aria-expanded','false');var p=document.getElementById(b.getAttribute('aria-controls'));if(p)p.hidden=true;});}

@@ -1070,3 +1070,5 @@ body:is(.vl-footer-visible,.vl-welcome-visible,.vl-passport-visible,.vl-adventur
 
 /* Photo provenance stays in the footer, outside the image and its subject. */
 footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px solid #ffffff30;padding-top:16px;font-size:13px;line-height:1.7}footer .vl-photo-credits summary{cursor:pointer;width:fit-content;min-height:44px;padding:10px 0;font-weight:700}footer .vl-photo-credits a{text-decoration:underline;text-underline-offset:3px}footer .vl-photo-credits p{margin:6px 0}
+
+[data-home-content-hidden]{display:none!important}.vl-home-image-credit{font-size:12px!important;line-height:1.6!important;margin:16px 0 0!important;overflow-wrap:anywhere}
