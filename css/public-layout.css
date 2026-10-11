@@ -1392,4 +1392,13 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 #emprendedores .vl-enterprise-copy h3{line-height:1.3!important;overflow-wrap:anywhere}
 #emprendedores .vl-enterprise-contact{white-space:normal!important;text-align:center!important;line-height:1.5!important}
 @media(max-width:650px){#emprendedores .vl-enterprise-filters{grid-template-columns:1fr!important}#emprendedores .vl-enterprise-photo{height:240px!important}}
+
+/* V143: filtros de la agenda */
+#agenda .vl-agenda-search{display:grid!important;grid-template-columns:minmax(0,1fr) 260px!important;gap:16px!important;margin:0 0 24px!important;padding:20px!important;border:1px solid #cbd5e1!important;border-radius:16px!important;background:#fff!important}
+#agenda .vl-agenda-search label{font-size:14px!important;font-weight:750!important;line-height:1.5!important;min-width:0}
+#agenda .vl-agenda-search input,#agenda .vl-agenda-search select{display:block;width:100%;margin-top:8px;padding:13px;border:1px solid #a8b7c8;border-radius:10px;background:#f8fafc;color:#17324f;font-size:15px;line-height:1.5}
+#agenda .vl-agenda-search p{grid-column:1/-1;font-size:13px!important;line-height:1.5!important;margin:0!important}
+#agenda .vl-agenda-filter-empty{padding:28px;border:1px dashed #94a3b8;border-radius:16px;background:#fff;text-align:center;grid-column:1/-1}
+#agenda .vl-agenda-search input:focus-visible,#agenda .vl-agenda-search select:focus-visible{outline:3px solid #075bb2;outline-offset:3px}
+@media(max-width:650px){#agenda .vl-agenda-search{grid-template-columns:1fr!important;padding:16px!important}}
 }

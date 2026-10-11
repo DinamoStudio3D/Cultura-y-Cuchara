@@ -1305,7 +1305,7 @@
                 </div>
                 <p id="agendaSavedCount" role="status"></p>
             </div>
-            <div id="agendaGridContainer" class="vl-agenda-grid"></div>
+            <div class="vl-agenda-search"><label for="agendaSearch"><span data-i18n="agendaSearchLabel">Busca un evento</span><input id="agendaSearch" type="search" oninput="renderAgendaUI()" placeholder="Nombre, actividad o lugar"></label><label for="agendaDateFilter"><span data-i18n="agendaDateFilterLabel">Cuándo</span><select id="agendaDateFilter" onchange="renderAgendaUI()"><option value="all">Todas las fechas</option><option value="today">Hoy</option><option value="week">Próximos 7 días</option><option value="undated">Sin fecha confirmada</option></select></label><p id="agendaResultCount" role="status" aria-live="polite"></p></div><div id="agendaGridContainer" class="vl-agenda-grid"></div>
         </div>
     </section>
 
@@ -2341,6 +2341,8 @@
                 agendaFestivalLink: "Programación FIAVL",
                 agendaTitle: "Agenda Cultural y Eventos",
                 agendaDesc: "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
+                agendaSearchLabel: "Busca un evento",
+                agendaDateFilterLabel: "Cuándo",
                 enterpriseSearchLabel: "Busca talento local",
                 enterpriseCategoryLabel: "Categoría",
                 podIntroBadge: "HISTORIAS PARA ESCUCHAR",
@@ -2513,6 +2515,8 @@
                 agendaFestivalLink: "FIAVL program",
                 agendaTitle: "Cultural Agenda & Events",
                 agendaDesc: "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
+                agendaSearchLabel: "Find an event",
+                agendaDateFilterLabel: "When",
                 enterpriseSearchLabel: "Find local talent",
                 enterpriseCategoryLabel: "Category",
                 podIntroBadge: "STORIES TO LISTEN TO",
@@ -5254,9 +5258,19 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             weekLimit.setDate(weekLimit.getDate() + 7);
             const weekLimitStr = weekLimit.toISOString().split('T')[0];
             const itemGroup = item => !item.event.date ? 'undated' : item.event.date < todayStr ? 'past' : item.event.date === todayStr ? 'today' : item.event.date <= weekLimitStr ? 'week' : 'later';
-            const visibleItems = (agendaViewMode === 'saved' ? savedItems : upcomingGeneralItems)
+            const baseItems=agendaViewMode === 'saved' ? savedItems : upcomingGeneralItems;
+            const search=document.getElementById('agendaSearch'),dateFilter=document.getElementById('agendaDateFilter'),query=String(search.value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+            search.placeholder=currentLang==='en'?'Name, activity or place':'Nombre, actividad o lugar';
+            const dateLabels=currentLang==='en'?['All dates','Today','Next 7 days','Date to be confirmed']:['Todas las fechas','Hoy','Próximos 7 días','Sin fecha confirmada'];
+            [...dateFilter.options].forEach((option,index)=>option.textContent=dateLabels[index]);
+            const visibleItems = baseItems.filter(({event})=>{
+                const group=itemGroup({event}),matchesDate=dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value);
+                const text=[event.title,event.titleEn,event.desc,event.descEn,event.description,event.location,event.place,event.type].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+                return matchesDate&&(!query||text.includes(query));
+            })
                 .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')));
 
+            document.getElementById('agendaResultCount').textContent=currentLang==='en'?`${visibleItems.length} of ${baseItems.length} events`:`${visibleItems.length} de ${baseItems.length} eventos`;
             const totalSaved = savedItems.length;
             const allButton = document.getElementById('agendaAllButton');
             const savedButton = document.getElementById('agendaSavedButton');
@@ -5269,6 +5283,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 ? (totalSaved === 1 ? '1 saved event' : totalSaved + ' saved events')
                 : (totalSaved === 1 ? '1 evento guardado' : totalSaved + ' eventos guardados');
 
+            if (!visibleItems.length && baseItems.length) {
+                agendaContainer.innerHTML=`<p class="vl-agenda-filter-empty">${currentLang==='en'?'No events match these filters. Try another date or search.':'No hay eventos con estos filtros. Prueba otra fecha o búsqueda.'}</p>`;
+                renderAdminEventsList();return;
+            }
             if (!visibleItems.length) {
                 agendaContainer.innerHTML = agendaViewMode === 'saved'
                     ? (currentLang === 'en'
