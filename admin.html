@@ -278,19 +278,21 @@
 
                 <section id="podcastModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex items-start justify-between gap-4 mb-6">
-                        <div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Módulo 1</p><h2 class="text-2xl font-black mt-1">Audio de muestra</h2><p class="text-sm text-gray-400 mt-1">Los cambios guardados aparecerán en “El Podcast de Loja”.</p></div>
+                        <div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Módulo 1</p><h2 class="text-2xl font-black mt-1">El Podcast de Loja</h2><p class="text-sm text-gray-400 mt-1">Los cambios guardados aparecerán en “El Podcast de Loja”.</p></div>
                         <span id="saveState" class="text-xs text-gray-400 bg-black/40 rounded-full px-3 py-1.5">Sin cambios</span>
                     </div>
 
+<section id="adminPodcastSaved" class="admin-podcast-saved" aria-label="Audio guardado"><div id="adminPodcastCover" class="admin-podcast-cover"><i class="fa-solid fa-headphones" aria-hidden="true"></i></div><div class="admin-podcast-summary"><p>Contenido guardado</p><h3 id="adminPodcastTitle">Audio de muestra</h3><p id="adminPodcastMeta">Cargando configuración…</p><p id="adminPodcastVisibility" role="status"></p><div id="currentAudioWrap" class="hidden"><p>Escuchar el audio guardado</p><audio id="currentAudio" controls preload="none" class="w-full"></audio><p id="adminPodcastAudioError" hidden role="status">No se pudo cargar el audio. Revisa la ruta del archivo.</p></div></div></section>
                     <form id="podcastForm" class="space-y-5">
-                        <div class="grid md:grid-cols-2 gap-4">
+                        <h3 class="admin-podcast-heading">Datos del contenido</h3>
+<div class="grid md:grid-cols-2 gap-4">
                             <label><span class="text-sm font-semibold block mb-2">Etiqueta</span><input id="podcastLabel" class="field" maxlength="60" value="Canción de muestra"></label>
                             <label><span class="text-sm font-semibold block mb-2">Duración</span><input id="podcastDuration" class="field" maxlength="20" placeholder="3:09"></label>
                         </div>
                         <label class="block"><span class="text-sm font-semibold block mb-2">Título</span><input id="podcastTitle" class="field" maxlength="120" required value="Visita Loja — El Podcast de Loja"></label>
                         <label class="block"><span class="text-sm font-semibold block mb-2">Descripción administrativa</span><textarea id="podcastDescription" class="field min-h-24" maxlength="500" placeholder="Nota interna o descripción del episodio"></textarea></label>
 
-                        <div class="grid md:grid-cols-2 gap-4">
+                        <h3 class="admin-podcast-heading">Audio y portada</h3><div class="grid md:grid-cols-2 gap-4">
                             <label><span class="text-sm font-semibold block mb-2"><i class="fa-solid fa-file-audio text-amber-400 mr-2"></i>Archivo MP3 publicado</span><input id="podcastAudioUrl" class="field" value="cancion-muestra-vive-loja.mp3" placeholder="mi-cancion.mp3"></label>
                             <label><span class="text-sm font-semibold block mb-2"><i class="fa-solid fa-image text-amber-400 mr-2"></i>Ruta o enlace de portada</span><input id="podcastCoverUrl" class="field" placeholder="https://... o assets/portada.png"></label>
                         </div>
@@ -301,7 +303,7 @@
                             <input id="podcastVisible" class="w-5 h-5 accent-amber-500" type="checkbox" checked>
                         </label>
 
-                        <div id="currentAudioWrap" class="hidden bg-black/40 rounded-xl p-4"><p class="text-xs text-gray-400 mb-2">Vista previa del audio guardado</p><audio id="currentAudio" controls class="w-full"></audio></div>
+
                         <div id="formMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
                         <button id="saveBtn" type="submit" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar y publicar contenido</button>
                     </form>
@@ -2434,11 +2436,9 @@ auth.onAuthStateChanged(async user => {
             document.getElementById('podcastVisible').checked = currentData.visible !== false;
             document.getElementById('podcastAudioUrl').value = currentData.audioUrl || 'cancion-muestra-vive-loja.mp3';
             document.getElementById('podcastCoverUrl').value = currentData.coverUrl || '';
-            if (currentData.audioUrl) {
-                document.getElementById('currentAudioWrap').classList.remove('hidden');
-                document.getElementById('currentAudio').src = currentData.audioUrl;
-            }
+
         }
+        renderAdminPodcastSaved(currentData);
         loadFestivalForm(festivalSnapshot.exists ? festivalSnapshot.data() : {});
         loadTourismCampaignForm(tourismDaySnapshot.exists ? tourismDaySnapshot.data() : {});
         loadCustomCampaigns(customCampaignsSnapshot.exists ? customCampaignsSnapshot.data() : {});
@@ -2743,6 +2743,20 @@ document.getElementById('timeForm').addEventListener('submit', async event => {
 document.getElementById('entrepreneurForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('entrepreneurSaveBtn'),formMessage=document.getElementById('entrepreneurMessage');const phone=document.getElementById('entrepreneurPhone').value.replace(/\D/g,'');if(phone.length<10){message(formMessage,'Revisa el número de WhatsApp y agrega el código de país.');return;}const editId=document.getElementById('entrepreneurEditId').value;const data={id:editId||`emp_${Date.now()}`,name:document.getElementById('entrepreneurName').value.trim(),category:document.getElementById('entrepreneurCategory').value.trim(),phone,img:document.getElementById('entrepreneurImage').value.trim(),desc:document.getElementById('entrepreneurDesc').value.trim()};const previous=adminEntrepreneurs.map(x=>({...x}));const index=adminEntrepreneurs.findIndex(x=>x.id===data.id);if(index>=0)adminEntrepreneurs[index]=data;else adminEntrepreneurs.push(data);button.disabled=true;try{await saveAdminEntrepreneurs();if(!editId)resetEntrepreneurForm();message(formMessage,editId?'Emprendimiento actualizado.':'Emprendimiento publicado.',true);}catch(error){adminEntrepreneurs=previous;renderAdminEntrepreneurs();message(formMessage,error.code==='permission-denied'?'Firestore no permitió guardar.':'No se pudo guardar el emprendimiento.');}finally{button.disabled=false;}});
 document.getElementById('qrForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('qrSaveBtn'),notice=document.getElementById('qrMessage'),editId=document.getElementById('qrEditId').value,name=document.getElementById('qrName').value.trim(),type=document.getElementById('qrType').value,targetUrl=document.getElementById('qrTarget').value.trim(),slug=createAdminSlug(document.getElementById('qrSlug').value||name),id=editId||slug,design=qrDesignFromForm();try{new URL(targetUrl,window.location.origin);}catch(_){message(notice,'El enlace de destino no es válido.');return;}button.disabled=true;try{if(!editId&&(await qrRef.doc(id).get()).exists){message(notice,'Ese identificador ya existe. Utiliza otro nombre.');return;}const visitPlaceId=document.getElementById('qrVisitPlaceId')?.value||'',visitValidationMode=document.getElementById('qrVisitValidationMode')?.value||'',visitPurpose=document.getElementById('qrVisitPurpose')?.value||'';const data={name,type,targetUrl,design,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.email};if(visitPlaceId){const place=adminPlaces.find(item=>item.id===visitPlaceId)||{id:visitPlaceId,validationMode:visitValidationMode};const descriptor=window.VisitaLojaVisitQrMode?.buildVisitQrDescriptor(place,visitPlaceId);if(descriptor)data.visit=descriptor;else data.visit={placeId:visitPlaceId,validationMode:visitValidationMode,purpose:visitPurpose};}if(!editId)data.createdAt=firebase.firestore.FieldValue.serverTimestamp();if(visitPlaceId&&visitPurpose==='self_checkin'){const batch=db.batch(),placeRef=placesRef.doc(visitPlaceId);batch.set(qrRef.doc(id),{...data,active:true,discoveryEnabled:true,placeId:visitPlaceId},{merge:true});batch.set(placeRef,{discovery:{enabled:true,method:'proximity',qrId:id},validationMode:'self_checkin',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});await batch.commit();}else{await qrRef.doc(id).set(data,{merge:true});}document.getElementById('qrEditId').value=id;const slugField=document.getElementById('qrSlug');slugField.value=id;slugField.disabled=true;slugField.classList.add('opacity-60','cursor-not-allowed');document.getElementById('qrSlugHelp').classList.remove('hidden');document.getElementById('qrFormTitle').textContent=`Editando: ${name}`;document.getElementById('qrEditBadge').classList.remove('hidden');button.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Guardar cambios';drawQr(qrPublicValue({id,...data}),design,name);message(notice,visitPlaceId&&visitPurpose==='self_checkin'?'QR permanente de visita guardado y vinculado a la parada. Ya puedes descargarlo e imprimirlo.':(editId?'Cambios guardados. El QR conserva el mismo identificador.':'Código QR guardado con su diseño. Ya puedes descargarlo.'),true);}catch(error){message(notice,error.code==='permission-denied'?'Firestore no permitió guardar el código.':'No se pudo guardar el código QR.');}finally{button.disabled=false;}});
 
+function renderAdminPodcastSaved(data = {}) {
+    document.getElementById('adminPodcastTitle').textContent = data.title || 'Visita Loja — El Podcast de Loja';
+    document.getElementById('adminPodcastMeta').textContent = [data.label || 'Canción de muestra', data.duration || 'Duración sin indicar'].join(' · ');
+    document.getElementById('adminPodcastVisibility').textContent = data.visible === false ? 'Oculto en la web' : 'Visible en la web';
+    const cover = VisitaLojaPodcastMedia.safeMediaUrl(data.coverUrl);
+    document.getElementById('adminPodcastCover').innerHTML = cover ? `<img src="${escapeAdminHtml(cover)}" alt="Portada del audio guardado" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span hidden>Portada no disponible</span>` : '<i class="fa-solid fa-headphones" aria-hidden="true"></i><span>Sin portada personalizada</span>';
+    const audio = document.getElementById('currentAudio');
+    document.getElementById('adminPodcastAudioError').hidden = true;
+    audio.onerror = () => { document.getElementById('adminPodcastAudioError').hidden = false; };
+    const url = VisitaLojaPodcastMedia.safeMediaUrl(data.audioUrl || 'cancion-muestra-vive-loja.mp3');
+    if (url) { audio.src = url; document.getElementById('currentAudioWrap').classList.remove('hidden'); }
+    else { audio.removeAttribute('src'); document.getElementById('currentAudioWrap').classList.add('hidden'); }
+}
+
 document.getElementById('podcastForm').addEventListener('submit', async event => {
     event.preventDefault();
     const saveBtn = document.getElementById('saveBtn');
@@ -2767,12 +2781,10 @@ document.getElementById('podcastForm').addEventListener('submit', async event =>
         data.coverUrl = coverUrl;
         await podcastRef.set(data, { merge: true });
         currentData = { ...currentData, ...data };
+        renderAdminPodcastSaved(currentData);
         saveState.textContent = 'Guardado';
         message(formMessage, 'Contenido actualizado correctamente. Ya puedes comprobarlo en la web.', true);
-        if (audioUrl) {
-            document.getElementById('currentAudioWrap').classList.remove('hidden');
-            document.getElementById('currentAudio').src = audioUrl;
-        }
+
     } catch (error) {
         saveState.textContent = 'No guardado';
         const permission = error.code === 'permission-denied';
