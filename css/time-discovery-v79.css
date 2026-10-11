@@ -27,12 +27,25 @@
  #timeOverlayBefore {width:100%!important;}
  #loja-tiempo .vl-time-details {padding:18px!important;margin-top:12px!important;flex-direction:column!important;align-items:stretch!important;}
  #loja-tiempo .vl-time-details button {min-height:46px!important;}
- #loja-tiempo #timeSpotTitle {font-size:1.3rem!important;}
- #loja-tiempo #timeSpotDesc {font-size:.875rem!important;line-height:1.6!important;}
+ #loja-tiempo #timeSpotTitle {font-size:1.65rem!important;line-height:1.3!important;}
+ #loja-tiempo #timeSpotDesc {font-size:1rem!important;line-height:1.75!important;margin-top:10px!important;}
  .vl-time-comparison {padding:16px 8px 0;display:grid;gap:6px;}
  .vl-time-comparison label {font-size:.8rem;line-height:1.5;}
  #timeComparisonRange {width:100%;min-height:44px;accent-color:#ffd29b;cursor:ew-resize;}
  #loja-tiempo :is(button,input):focus-visible {outline:3px solid #fff!important;outline-offset:4px!important;}
  @media(min-width:1024px){.vl-time-layout {display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:48px;align-items:center;}.vl-time-intro{margin:0!important;}}
  @media(max-width:390px){#loja-tiempo .vl-time-details button{width:100%;justify-content:center;}.vl-time-details>div:last-child{width:100%;}}
+
+/* V142: selector visual y búsqueda histórica */
+#loja-tiempo .vl-time-search{display:block;margin-top:22px;font-size:13px;line-height:1.5;font-weight:700}
+#loja-tiempo .vl-time-search input{display:block;width:100%;margin-top:8px;padding:12px 14px;border:1px solid #789399;border-radius:12px;background:#203c41;color:#fff;font-size:14px;line-height:1.5}
+#lojaTimeTabsContainer{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin-top:14px!important}
+#lojaTimeTabsContainer button{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px!important;padding:10px!important;min-width:0!important;font-size:13px!important;line-height:1.45!important}
+#lojaTimeTabsContainer button img{height:90px;width:100%;object-fit:cover;border-radius:8px}
+#lojaTimeTabsContainer button img[hidden]{display:none!important}
+#lojaTimeTabsContainer button span{overflow-wrap:anywhere}
+#loja-tiempo .vl-time-search-empty{grid-column:1/-1;font-size:13px!important;line-height:1.7!important}
+#loja-tiempo .vl-time-panel[hidden]{display:none!important}
+@media(min-width:1024px){.vl-time-layout{gap:30px!important;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr)!important;align-items:start!important}}
+@media(max-width:1023px) and (min-width:650px){#lojaTimeTabsContainer{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 }

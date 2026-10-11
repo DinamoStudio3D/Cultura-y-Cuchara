@@ -994,6 +994,7 @@
                     Desliza el cursor o tu dedo sobre las imágenes para viajar entre el ayer y el hoy de nuestros rincones más queridos.
                 </p>
 
+<label class="vl-time-search" for="timeSpotSearch"><span data-i18n="timeSearchLabel">Encuentra un lugar histórico</span><input id="timeSpotSearch" type="search" oninput="renderLojaTimeUI()" placeholder="Nombre o historia del lugar"></label>
                 <!-- Selector de sitios históricos -->
                 <div class="flex items-center justify-center gap-2 mt-6 overflow-x-auto hide-scrollbar pb-2" id="lojaTimeTabsContainer">
                     <!-- Se llena dinámicamente con JavaScript -->
@@ -2281,6 +2282,7 @@
                 fiavlCard4Tag: "En tu Pasaporte",
                 fiavlCard4Desc: "Visita los puntos artísticos autorizados y obtén validaciones exclusivas en tu pasaporte interactivo.",
                 timeBadge: "Patrimonio Vivo",
+                timeSearchLabel: 'Encuentra un lugar histórico',
                 timeTitle: 'Loja en el <span class="text-brandGold">Tiempo</span>',
                 timeDesc: "Desliza el cursor o tu dedo sobre las imágenes para viajar entre el ayer y el hoy de nuestros rincones más queridos.",
                 postcardBadge: "Comparte tu Experiencia",
@@ -2452,6 +2454,7 @@
                 fiavlCard4Tag: "In your Passport",
                 fiavlCard4Desc: "Visit authorized festival spots and receive exclusive stamps on your smart passport.",
                 timeBadge: "Living Heritage",
+                timeSearchLabel: 'Find a historical place',
                 timeTitle: 'Loja Through <span class="text-brandGold">Time</span>',
                 timeDesc: "Slide your cursor or finger across the images to travel between yesterday and today in our most iconic spots.",
                 postcardBadge: "Share your Journey",
@@ -5495,11 +5498,19 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function renderLojaTimeUI() {
             const tabsContainer = document.getElementById('lojaTimeTabsContainer');
-            if(!tabsContainer || lojaTimeList.length === 0) return;
+            if(!tabsContainer) return;
+            const panel=document.querySelector('#loja-tiempo .vl-time-panel');
+            if(panel)panel.hidden=lojaTimeList.length===0;
+            const search=document.getElementById('timeSpotSearch'),normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+            search.placeholder=currentLang==='en'?'Place name or history':'Nombre o historia del lugar';
+            const query=normalize(search.value).trim();
+            const entries=lojaTimeList.map((spot,idx)=>({spot,idx})).filter(({spot})=>!query||normalize([spot.title,spot.titleEn,spot.desc,spot.descEn].join(' ')).includes(query));
+            if(currentTimeSpotIndex>=lojaTimeList.length||currentTimeSpotIndex<0)currentTimeSpotIndex=0;
             tabsContainer.innerHTML = '';
 
-            lojaTimeList.forEach((spot, idx) => {
+            entries.forEach(({spot,idx}) => {
                 const titleText = (currentLang === 'en' && spot.titleEn) ? spot.titleEn : spot.title;
+                const image=window.VisitaLojaPodcastMedia.safeMediaUrl(String(spot.imgPresent||spot.imgPast||''));
                 const isActive = idx === currentTimeSpotIndex;
                 const activeClass = isActive 
                     ? "bg-brandGold text-white border-brandGold shadow-warm-glow" 
@@ -5507,11 +5518,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 
                 tabsContainer.innerHTML += `
                     <button type="button" aria-pressed="${isActive}" onclick="selectTimeSpot(${idx})" class="px-4 py-2 rounded-xl text-xs font-bold border transition whitespace-nowrap flex items-center gap-1.5 ${activeClass}">
-                        <i class="fa-solid fa-landmark text-brandGold"></i> ${escapeHTML(titleText)}
+                        ${image?`<img src="${escapeHTML(image)}" alt="" loading="lazy" onerror="this.hidden=true">`:''}<span>${escapeHTML(titleText)}</span>
                     </button>
                 `;
             });
 
+            if(!entries.length)tabsContainer.innerHTML=`<p class="vl-time-search-empty">${currentLang==='en'?(lojaTimeList.length?'No places match this search. The current comparison remains below.':'Historical places will appear here.'):(lojaTimeList.length?'No hay lugares con esta búsqueda. La comparación seleccionada sigue disponible.':'Aquí aparecerán los lugares históricos de Loja.')}</p>`;
             const currentSpot = lojaTimeList[currentTimeSpotIndex] || lojaTimeList[0];
             if(currentSpot) {
                 const titleText = (currentLang === 'en' && currentSpot.titleEn) ? currentSpot.titleEn : currentSpot.title;
@@ -5526,8 +5538,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
                 if(titleEl) titleEl.innerText = titleText;
                 if(descEl) descEl.innerText = descText;
-                if(imgBefore) imgBefore.src = currentSpot.imgPast;
-                if(imgAfter) imgAfter.src = currentSpot.imgPresent;
+                if(imgBefore){imgBefore.onerror=()=>{imgBefore.onerror=null;imgBefore.src='assets/photos/photo-unavailable.svg';};imgBefore.src=window.VisitaLojaPodcastMedia.safeMediaUrl(String(currentSpot.imgPast||''))||'assets/photos/photo-unavailable.svg';imgBefore.alt=`${titleText} — ${currentLang==='en'?'past':'antes'}`;}
+                if(imgAfter){imgAfter.onerror=()=>{imgAfter.onerror=null;imgAfter.src='assets/photos/photo-unavailable.svg';};imgAfter.src=window.VisitaLojaPodcastMedia.safeMediaUrl(String(currentSpot.imgPresent||''))||'assets/photos/photo-unavailable.svg';imgAfter.alt=`${titleText} — ${currentLang==='en'?'present':'ahora'}`;}
                 if(labelBefore) labelBefore.innerText = currentSpot.labelPast || "Ayer";
                 if(labelAfter) labelAfter.innerText = currentSpot.labelPresent || "Hoy";
             }
