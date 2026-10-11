@@ -1094,6 +1094,7 @@
                     </div>
 
                     <fieldset class="vl167-photo-options"><legend>Personaliza tu fotografía</legend><div class="vl167-options-grid">
+                        <label>Encuadre<select id="postcardPhotoFit" onchange="setPostcardPhotoFit(this.value)"><option value="cover">Llenar el marco</option><option value="contain">Mostrar foto completa</option></select></label>
                         <label>Ambiente<select id="postcardFilterSelect" onchange="setPostcardFilter(this.value)"><option value="none">Natural</option><option value="sunset">Atardecer cálido</option><option value="sepia">Recuerdo sepia</option><option value="teatro">Blanco y negro</option></select></label>
                         <label>Sello decorativo<select id="postcardStickerSelect" onchange="setPostcardSticker(this.value)"><option value="none">Sin sello</option><option value="cepa" selected>Tradición lojana</option><option value="fiavl">Artes vivas</option><option value="cafe">Ruta del café</option><option value="centinela">Centinela del Sur</option></select></label>
                     </div><div class="vl167-transform-actions"><button type="button" onclick="rotatePostcardPhoto()"><i class="fa-solid fa-rotate-right"></i> Girar foto 90°</button><button type="button" id="postcardMirrorButton" aria-pressed="false" onclick="mirrorPostcardPhoto()"><i class="fa-solid fa-arrows-left-right"></i> Foto en espejo</button></div><p>Los ajustes cambian tu postal; tu fotografía original se conserva.</p></fieldset>
@@ -3733,6 +3734,7 @@
         let postcardSampleImageObj = null, postcardSampleImageUrl = "";
         let postcardImageReady = false, postcardUploadRevision = 0;
         let postcardPhotoZoom = 1;
+        let postcardPhotoFit = "cover";
         let postcardPhotoOffsetX = 0;
         let postcardPhotoOffsetY = 0;
         let postcardDragState = null;
@@ -5820,6 +5822,16 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointercancel', stop);
         }
 
+        function setPostcardPhotoFit(value) {
+            postcardPhotoFit = value === 'contain' ? 'contain' : 'cover';
+            resetPostcardPhotoAdjustment();
+        }
+        function postcardPhotoPlacement(photoWidth, photoHeight, areaWidth, areaHeight, fit, zoom, offsetX, offsetY) {
+            const scale = (fit === 'contain' ? Math.min(areaWidth/photoWidth,areaHeight/photoHeight) : Math.max(areaWidth/photoWidth,areaHeight/photoHeight)) * zoom;
+            const width = photoWidth*scale, height = photoHeight*scale;
+            return { width, height, x:(areaWidth-width)/2 + offsetX/100*Math.abs(width-areaWidth)/2, y:(areaHeight-height)/2 + offsetY/100*Math.abs(height-areaHeight)/2 };
+        }
+
         function rotatePostcardPhoto() {
             postcardPhotoRotation = (postcardPhotoRotation + 90) % 360;
             resetPostcardPhotoAdjustment();
@@ -5953,12 +5965,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     ctx.filter = "contrast(1.05) saturate(1.08)";
                 }
 
-                const scale = Math.max(imgW / img.width, imgH / img.height) * postcardPhotoZoom;
-                const drawW = img.width * scale, drawH = img.height * scale;
-                const travelX = Math.max(0, drawW - imgW) / 2;
-                const travelY = Math.max(0, drawH - imgH) / 2;
-                const drawX = imgX + (imgW - drawW) / 2 + (postcardPhotoOffsetX / 100) * travelX;
-                const drawY = imgY + (imgH - drawH) / 2 + (postcardPhotoOffsetY / 100) * travelY;
+                const placement = postcardPhotoPlacement(img.width,img.height,imgW,imgH,postcardPhotoFit,postcardPhotoZoom,postcardPhotoOffsetX,postcardPhotoOffsetY);
+                const drawW=placement.width,drawH=placement.height,drawX=imgX+placement.x,drawY=imgY+placement.y;
                 ctx.beginPath(); ctx.rect(imgX, imgY, imgW, imgH); ctx.clip();
                 ctx.drawImage(img, drawX, drawY, drawW, drawH);
                 ctx.restore();
