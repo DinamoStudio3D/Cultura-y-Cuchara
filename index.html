@@ -1065,6 +1065,7 @@
             <div class="vl-postcard-workspace grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
                 <!-- Panel de Configuración -->
                 <div class="vl-postcard-editor lg:col-span-6 bg-brandCream p-6 sm:p-8 rounded-3xl border-2 border-brandGold/40 shadow-warm-glow space-y-4">
+                    <div class="vl177-mobile-preview-jump"><button type="button" onclick="document.querySelector('#postales .vl-postcard-preview')?.scrollIntoView({behavior:'smooth',block:'start'})"><i class="fa-solid fa-eye" aria-hidden="true"></i><span data-i18n="pcViewPreview">Ver mi postal</span><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></button></div>
                     <div>
                         <label for="postcardImageInput" class="block text-xs font-black uppercase tracking-wider text-brandDark mb-1.5">
                             <i class="fa-solid fa-cloud-arrow-up text-brandGold mr-1"></i> <span data-i18n="postcardUploadLabel">1. Sube tu Foto de Loja</span>
@@ -1130,7 +1131,7 @@
                 </div>
 
                 <!-- Previsualización en Vivo de la Postal (Formato Historia 9:16) -->
-                <div class="vl-postcard-preview lg:col-span-6 flex flex-col items-center justify-center"><h3 data-i18n="postcardPreviewTitle" class="vl-postcard-preview-title">Tu recuerdo de Loja</h3>
+                <div class="vl-postcard-preview lg:col-span-6 flex flex-col items-center justify-center"><button class="vl177-back-to-editor" type="button" onclick="document.querySelector('#postales .vl-postcard-editor')?.scrollIntoView({behavior:'smooth',block:'start'})"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i><span data-i18n="pcBackEdit">Volver a editar</span></button><h3 data-i18n="postcardPreviewTitle" class="vl-postcard-preview-title">Tu recuerdo de Loja</h3>
                     <div class="postcard-preview-container rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold bg-brandDark p-3 relative flex items-center justify-center">
                         <canvas id="postcardCanvas" class="w-full h-full rounded-2xl shadow-inner bg-black object-contain block cursor-move touch-none"></canvas>
                         <!-- Indicador visual sutil -->
@@ -2297,6 +2298,7 @@
                 postcardPreviewTitle: 'Tu recuerdo de Loja',
                 postcardTitle: 'Crea tu Postal <span class="text-brandGold">Visita Loja</span>',
                 pcResetDesign: "Restablecer ajustes sin borrar mi foto",
+                pcViewPreview: "Ver mi postal", pcBackEdit: "Volver a editar",
                 pcEditPhoto: "Personaliza tu fotografía",
                 pcOutput: "Formato de los marcos Visita Loja",
                 pcStory: "Historia · 9:16",
@@ -2501,6 +2503,7 @@
                 postcardPreviewTitle: 'Your Loja memory',
                 postcardTitle: 'Create your <span class="text-brandGold">Visita Loja</span> Postcard',
                 pcResetDesign: "Reset adjustments without deleting my photo",
+                pcViewPreview: "View my postcard", pcBackEdit: "Back to editing",
                 pcEditPhoto: "Personalize your photo",
                 pcOutput: "Visita Loja frame format",
                 pcStory: "Story · 9:16",

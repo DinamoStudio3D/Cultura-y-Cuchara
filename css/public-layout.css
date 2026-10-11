@@ -1590,3 +1590,18 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 }
 
 @layer vl-layout { #postales .vl169-share-link { display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 0;font-size:13px;font-weight:700;text-decoration:underline;text-underline-offset:4px;line-height:1.5; } }
+
+@layer vl-layout {
+ #postales .vl177-mobile-preview-jump,#postales .vl177-back-to-editor { display:none; }
+ #postales .vl-postcard-preview,#postales .vl-postcard-editor { scroll-margin-top:var(--vl-navigation-offset,106px); }
+ @media(max-width:900px) {
+  #postales .vl177-mobile-preview-jump { display:block; position:sticky; top:var(--vl-navigation-offset,106px); z-index:4; padding:8px 0; }
+  #postales .vl177-mobile-preview-jump button { width:100%; display:flex; align-items:center; justify-content:center; gap:12px; min-height:46px; border-radius:12px; padding:12px 16px; font-size:14px; font-weight:800; box-shadow:0 4px 14px #173d3020; }
+  #postales .vl177-back-to-editor { display:inline-flex; align-items:center; justify-content:center; align-self:flex-start; gap:8px; min-height:44px; padding:10px 14px; margin-bottom:14px; border:1px solid #91a69b; border-radius:12px; font-size:14px; font-weight:700; }
+ }
+}
+@layer vl-colors {
+ #postales .vl177-mobile-preview-jump { background:#fff !important; }
+ #postales .vl177-mobile-preview-jump button { --vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173d30 !important; }
+ #postales .vl177-back-to-editor { --vl-text:#173d30;--vl-muted:#173d30;--vl-accent:#173d30;background:#fff !important; }
+}
