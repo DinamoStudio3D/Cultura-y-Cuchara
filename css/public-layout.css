@@ -1485,3 +1485,28 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   .vl152-copy h2 { max-width:100%; text-wrap:balance; }
  }
 }
+
+/* V159: complete event posters and balanced agenda controls. */
+@layer vl-layout {
+ #agenda .vl-agenda-media { min-height:300px !important; background:#f4f1ea !important; }
+ #agenda .vl-agenda-media>img { object-fit:contain !important; padding:12px; min-height:0 !important; }
+ #agenda .vl-agenda-card-body>h3 { word-break:normal !important; overflow-wrap:normal !important; }
+ #agenda .vl-agenda-card-actions>div { flex-wrap:wrap; gap:8px; }
+ #agenda .vl-agenda-card-actions :is(a,button) { white-space:normal !important; }
+ #agenda .vl-agenda-toolbar>div { display:flex; flex-wrap:wrap; gap:8px; }
+ #agenda .vl-agenda-search :is(input,select) { min-width:0; min-height:48px; }
+ #festival-live #festivalAgendaGrid { align-items:start; }
+ @media(min-width:651px) and (max-width:900px) {
+  #agenda .vl-agenda-card:first-of-type { grid-template-columns:1fr !important; }
+  #agenda .vl-agenda-search { grid-template-columns:1fr !important; }
+ }
+ @media(max-width:650px) {
+  #agenda .vl-agenda-media { min-height:320px !important; }
+  #agenda .vl-agenda-card-body { padding:22px !important; gap:10px !important; }
+  #agenda .vl-agenda-card-body>h3 { font-size:25px !important; line-height:1.3 !important; }
+  #agenda .vl-agenda-header h2 { font-size:clamp(30px,8vw,40px) !important; line-height:1.2 !important; }
+  #agenda .vl-agenda-header p { font-size:15px !important; line-height:1.65 !important; }
+  #festival-live { margin-inline:16px !important; padding:26px 18px !important; }
+  #festival-live #festivalAgendaGrid { grid-template-columns:minmax(0,1fr) !important; }
+ }
+}
