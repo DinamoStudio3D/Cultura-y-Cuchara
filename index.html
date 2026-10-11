@@ -352,7 +352,7 @@
                 <a href="sumar-negocio.html" class="subscription-entry business-signup-entry bg-teal-500/15 text-teal-200 border border-teal-400/40 rounded-lg px-2.5 py-1.5 hover:bg-teal-500 hover:text-white transition-colors"><i class="fa-solid fa-store mr-1"></i>Sumar mi negocio</a>
                 <button id="accountNavButton" type="button" onclick="openAccountModal()" class="bg-white/10 text-white border border-white/20 rounded-lg px-2.5 py-1.5 hover:border-brandGold hover:text-brandGold transition-colors flex items-center gap-1.5 shrink-0"><i class="fa-solid fa-circle-user"></i><span id="accountNavLabel">Ingresar</span></button>
                 
-                <select id="langSelector" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2 py-1 text-xs font-bold outline-none cursor-pointer hover:border-brandGold transition-colors">
+                <select id="langSelector" aria-label="Idioma / Language" onchange="changeLanguage(this.value)" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2 py-1 text-xs font-bold outline-none cursor-pointer hover:border-brandGold transition-colors">
                     <option value="es">🇪🇸 ES</option>
                     <option value="en">🇺🇸 EN</option>
                 </select>
@@ -384,7 +384,7 @@
             
             <div class="flex items-center justify-between py-2 border-t border-gray-800">
                 <span class="text-xs text-gray-400">Idioma / Language:</span>
-                <select id="langSelectorMobile" onchange="changeLanguage(this.value); toggleMobileMenu()" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2 py-1 text-xs font-bold outline-none">
+                <select id="langSelectorMobile" aria-label="Idioma / Language" onchange="changeLanguage(this.value); toggleMobileMenu()" class="bg-black text-brandGold border border-brandGold/50 rounded-lg px-2 py-1 text-xs font-bold outline-none">
                     <option value="es">🇪🇸 Español</option>
                     <option value="en">🇺🇸 English</option>
                 </select>
@@ -872,6 +872,7 @@
                 </div>
                 <div class="w-full lg:w-[430px]">
                     <div class="relative">
+                        <label for="searchInput" class="sr-only" data-i18n="smartSearchFieldLabel">Buscar una parada</label>
                         <input type="search" id="searchInput" oninput="searchItems()" data-i18n-placeholder="smartSearchPlaceholder" placeholder="Ej.: cafetería abierta, hotel cerca, comida lojana…" class="w-full bg-gray-100 border border-gray-200 rounded-full py-3 px-12 text-xs sm:text-sm focus:ring-2 focus:ring-brandGold outline-none transition" autocomplete="off">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-brandGold text-sm"></i>
                         <button id="smartSearchClearButton" type="button" onclick="clearSmartSearch()" class="hidden absolute right-3 top-2.5 w-7 h-7 rounded-full text-gray-400 hover:bg-gray-200" aria-label="Limpiar búsqueda"><i class="fa-solid fa-xmark"></i></button>
@@ -2327,6 +2328,7 @@
                 pcMemory: "Un recuerdo para volver",
                 pcMyPace: "Loja, a mi ritmo",
                 pcCreatorLink: "Compartir el enlace del creador",
+                smartSearchFieldLabel: "Buscar una parada",
                 postcardDesc: "Sube tu foto, escoge tu marco favorito (FIAVL 2026, Ruta del Café o Tradición Lojana), personaliza tu recuerdo y descárgalo con formato listo para tus Historias de Instagram y WhatsApp.",
                 postcardUploadLabel: "1. Sube tu Foto de Loja",
                 postcardFrameLabel: "2. Elige el Estilo del Marco",
@@ -2532,6 +2534,7 @@
                 pcMemory: "A memory to return to",
                 pcMyPace: "Loja, at my own pace",
                 pcCreatorLink: "Share the postcard creator link",
+                smartSearchFieldLabel: "Search for a place",
                 postcardDesc: "Upload your photo, pick a signature frame (FIAVL 2026, Coffee Route or Loja Heritage), customize your memory, and export it ready for your Instagram & WhatsApp Stories.",
                 postcardUploadLabel: "1. Upload your Loja Photo",
                 postcardFrameLabel: "2. Choose Frame Style",
