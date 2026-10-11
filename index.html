@@ -557,12 +557,7 @@
             <label id="welcomeSearchLabel" for="welcomeSearch" data-i18n="welcomeSearchLabel">¿Qué quieres descubrir?</label>
             <div class="vl-welcome-search-row"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="welcomeSearch" type="search" name="q" placeholder="Café, hotel, comida lojana…" data-i18n-placeholder="welcomeSearchPlaceholder" autocomplete="off"><button type="submit" class="vl-welcome-primary"><span data-i18n="welcomeSearchButton">Buscar</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button></div>
           </form>
-          <nav class="vl-mobile-categories" aria-label="Qué descubrir en Loja">
-            <a href="#mapa" onclick="filterMapGroup('food')"><i class="fa-solid fa-utensils" aria-hidden="true"></i><span data-i18n="mobileFood">Gastronomía</span></a>
-            <a href="#mapa" onclick="filterMapGroup('stay')"><i class="fa-solid fa-bed" aria-hidden="true"></i><span data-i18n="mobileHotels">Hoteles</span></a>
-            <a href="#establecimientos" onclick="openCategoryList('turismo')"><i class="fa-solid fa-mountain-sun" aria-hidden="true"></i><span data-i18n="mobileTourism">Turismo</span></a>
-            <a href="#misiones"><i class="fa-solid fa-compass" aria-hidden="true"></i><span data-i18n="mobileExperiences">Experiencias</span></a>
-          </nav>
+          <a class="vl149-category-link" href="#categorias"><i class="fa-solid fa-compass" aria-hidden="true"></i><span data-i18n="welcomeBrowseCategories">Ver categorías de lugares</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
           <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button></div>
           <details class="vl-mobile-updates"><summary><i class="fa-regular fa-calendar" aria-hidden="true"></i><span data-i18n="mobileUpdates">Agenda y vídeo</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary></details>
         </div>
@@ -576,10 +571,8 @@
     </section>
     <nav class="vl-discovery-nav" aria-label="Accesos rápidos a VisitaLoja">
       <div class="vl-discovery-inner">
-        <a href="#establecimientos"><span class="vl-discovery-icon"><i class="fa-solid fa-utensils" aria-hidden="true"></i></span><span><strong data-i18n="welcomePlaces">Comer y alojarse</strong><small data-i18n="welcomePlacesHelp">Encuentra tu próxima parada</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         <a href="#pasaporte"><span class="vl-discovery-icon"><i class="fa-solid fa-passport" aria-hidden="true"></i></span><span><strong data-i18n="welcomePassport">Tu pasaporte</strong><small data-i18n="welcomePassportHelp">Colecciona experiencias</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
         <a href="#misiones"><span class="vl-discovery-icon"><i class="fa-solid fa-compass" aria-hidden="true"></i></span><span><strong data-i18n="welcomeMissions">Con Chabaquito</strong><small data-i18n="welcomeMissionsHelp">Descubre y cumple misiones</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-        <a href="#agenda"><span class="vl-discovery-icon"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i></span><span><strong data-i18n="welcomeAgenda">Agenda cultural</strong><small data-i18n="welcomeAgendaHelp">Planea tu próxima salida</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
       </div>
     </nav>
     <!-- World Tourism Day 2026 -->
@@ -710,7 +703,7 @@
                     Ver todo <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
-            <div class="vl43-explore-feature"><div class="vl43-explore-image"><img src="assets/photos/loja-puerta.webp" width="1600" height="1200" alt="Puerta de la Ciudad de Loja, Ecuador" loading="lazy" decoding="async"><span class="vl43-photo-label"><i class="fa-solid fa-location-dot"></i> PUERTA DE LA CIUDAD · LOJA</span></div><div data-vl-surface="dark" class="vl43-explore-content"><span class="vl43-eyebrow"><i class="fa-solid fa-compass"></i> TU PRÓXIMA EXPERIENCIA</span><h3>Hay mucho más por <em>descubrir.</em></h3><p>Desde un café especial hasta una escapada por la provincia. Elige cómo quieres explorar y encuentra tu siguiente parada.</p><div class="vl43-feature-actions"><a href="#establecimientos"><i class="fa-solid fa-magnifying-glass"></i> Buscar lugares</a><a href="#mapa"><i class="fa-solid fa-map-location-dot"></i> Abrir mapa</a></div></div></div><div class="vl43-categories-heading"><strong>Explora a tu manera</strong><span>Selecciona una categoría para comenzar</span></div><div id="exploreCategoryGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"></div>
+            <div id="exploreCategoryGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"></div>
             <nav aria-label="Guías turísticas de la provincia de Loja" class="mt-6 flex flex-wrap gap-3 text-xs font-bold">
                 <a href="/hoteles-en-loja" class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-white hover:border-brandGold hover:text-brandGold transition"><i class="fa-solid fa-bed" aria-hidden="true"></i> Hoteles en Loja</a>
                 <a href="/cafeterias-en-loja" class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-white hover:border-brandGold hover:text-brandGold transition"><i class="fa-solid fa-mug-hot" aria-hidden="true"></i> Cafeterías en Loja</a>
@@ -2201,7 +2194,7 @@
 
                 footerContactTitle: 'Hablemos de Loja',
                 footerContactHelp: 'Consultas, alianzas y asistencia sobre la plataforma.',
-                welcomeSearchLabel: '¿Qué quieres descubrir?',
+                welcomeBrowseCategories: 'Ver categorías de lugares', welcomeSearchLabel: '¿Qué quieres descubrir?',
                 welcomeSearchPlaceholder: 'Café, hotel, comida lojana…',
                 welcomeSearchButton: 'Buscar',
                 mobileWelcomeTitle: 'Loja te espera.',
@@ -2376,7 +2369,7 @@
 
                 footerContactTitle: "Let's talk about Loja",
                 footerContactHelp: 'Questions, partnerships and platform support.',
-                welcomeSearchLabel: 'What would you like to discover?',
+                welcomeBrowseCategories: 'Browse place categories', welcomeSearchLabel: 'What would you like to discover?',
                 welcomeSearchPlaceholder: 'Coffee, hotels, local food…',
                 welcomeSearchButton: 'Search',
                 mobileWelcomeTitle: 'Loja awaits.',
