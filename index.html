@@ -3710,6 +3710,10 @@
                 if (!snapshot.exists) return;
                 postcardSettings = { ...postcardSettings, ...snapshot.data() };
                 localStorage.setItem('cyc_postcard_settings', JSON.stringify(postcardSettings));
+                if (typeof availableBrandedPostcardFrames === 'function') {
+                    if (currentPostcardTheme.startsWith('brand-') && !availableBrandedPostcardFrames().some(frame=>frame.id===currentPostcardTheme)) currentPostcardTheme='fiavl';
+                    renderPublicFrameButtons();
+                }
                 if (typeof renderPostcardPreview === 'function') renderPostcardPreview();
             }, error => console.warn('No se pudieron sincronizar los ajustes de postales:', error));
 
@@ -5664,6 +5668,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function resetTimeSliderPosition() { setTimeComparison(50); }
 
+        function availableBrandedPostcardFrames() {
+            return brandedPostcardFrames.filter(frame => postcardSettings.brandFrames?.[frame.id]?.enabled !== false).map(frame => {
+                const saved = postcardSettings.brandFrames?.[frame.id] || {};
+                return { ...frame, name:typeof saved.name === 'string' && saved.name.trim() ? saved.name.trim().slice(0,40) : frame.name, color:/^#[0-9a-f]{6}$/i.test(saved.color || '') ? saved.color : frame.color };
+            });
+        }
+
         function renderPublicFrameButtons() {
             const container = document.getElementById('postcardFramesContainer');
             if (!container) return;
@@ -5683,8 +5694,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 </button>
             `;
 
-            brandedPostcardFrames.forEach(frame => {
-                html += `<button type="button" onclick="setPostcardTheme('${frame.id}')" class="vl168-brand-frame" style="border-color:${frame.color}"><span>${frame.icon}</span><span>${frame.name}</span></button>`;
+            availableBrandedPostcardFrames().forEach(frame => {
+                html += `<button type="button" onclick="setPostcardTheme('${frame.id}')" class="vl168-brand-frame" style="border-color:${frame.color}"><span>${frame.icon}</span><span>${escapeHTML(frame.name)}</span></button>`;
             });
 
             customPostcardFrames.forEach(frame => {
@@ -5697,7 +5708,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             });
 
             container.innerHTML = html;
-            const themes=['fiavl','vintage','cafe','polaroid',...brandedPostcardFrames.map(frame=>frame.id),...customPostcardFrames.map(frame=>frame.id)];
+            const themes=['fiavl','vintage','cafe','polaroid',...availableBrandedPostcardFrames().map(frame=>frame.id),...customPostcardFrames.map(frame=>frame.id)];
             container.querySelectorAll('button').forEach((button,index)=>button.setAttribute('aria-pressed',String(themes[index]===currentPostcardTheme)));
         }
 
@@ -5833,19 +5844,21 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
         function drawBrandedPostcard(ctx, frame, W, H, name, place, message) {
             const border = 28, footer = 340;
+            const channels = frame.color.slice(1).match(/../g).map(value => { const channel = parseInt(value,16)/255; return channel <= .04045 ? channel/12.92 : ((channel+.055)/1.055)**2.4; });
+            const ink = channels[0]*.2126 + channels[1]*.7152 + channels[2]*.0722 > .179 ? '#000000' : '#ffffff';
             ctx.fillStyle = frame.color;
             ctx.fillRect(0,0,W,border); ctx.fillRect(0,0,border,H); ctx.fillRect(W-border,0,border,H); ctx.fillRect(0,H-footer,W,footer);
             ctx.fillStyle = '#fff8e9'; ctx.beginPath(); ctx.roundRect(55,55,250,250,34); ctx.fill();
             if (postcardBrandLogo) {
                 const scale = Math.min(210/postcardBrandLogo.width,210/postcardBrandLogo.height),lw=postcardBrandLogo.width*scale,lh=postcardBrandLogo.height*scale;
                 ctx.drawImage(postcardBrandLogo,180-lw/2,180-lh/2,lw,lh);
-            } else { ctx.fillStyle=frame.color; ctx.font='900 32px sans-serif'; ctx.textAlign='center'; ctx.fillText('VISITA LOJA',180,190,220); }
-            ctx.textAlign='left'; ctx.fillStyle='#fff8e9'; ctx.font='900 28px sans-serif'; ctx.fillText(frame.name.toUpperCase(),65,H-280,W-130);
+            } else { ctx.fillStyle='#173d30'; ctx.font='900 32px sans-serif'; ctx.textAlign='center'; ctx.fillText('VISITA LOJA',180,190,220); }
+            ctx.textAlign='left'; ctx.fillStyle=ink; ctx.font='900 28px sans-serif'; ctx.fillText(frame.name.toUpperCase(),65,H-280,W-130);
             ctx.font='800 40px sans-serif'; ctx.fillText(place,65,H-215,W-130);
             ctx.font='500 33px sans-serif'; ctx.fillText(message,65,H-150,W-130);
             ctx.font='700 27px sans-serif'; ctx.fillText(name,65,H-85,W-350);
             ctx.textAlign='right'; ctx.font='700 24px sans-serif'; ctx.fillText('VisitaLoja.com',W-65,H-40);
-            ctx.strokeStyle='#f2bd79';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(65,H-footer+25);ctx.lineTo(W-65,H-footer+25);ctx.stroke();
+            ctx.strokeStyle=ink;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(65,H-footer+25);ctx.lineTo(W-65,H-footer+25);ctx.stroke();
         }
 
         function renderPostcardPreview() {
@@ -5928,7 +5941,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 ctx.restore();
             }
 
-            const brandedFrame = brandedPostcardFrames.find(frame => frame.id === currentPostcardTheme);
+            const brandedFrame = availableBrandedPostcardFrames().find(frame => frame.id === currentPostcardTheme);
             if (brandedFrame) { drawBrandedPostcard(ctx, brandedFrame, W, H, userName, userSpot, userMsg); ctx.restore(); return; }
 
             // 4. Capa de degradado cinematográfico para legibilidad

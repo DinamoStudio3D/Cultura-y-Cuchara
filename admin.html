@@ -787,8 +787,9 @@
                         <label class="block"><span class="text-sm font-semibold block mb-2">Marca inferior</span><input id="postcardWatermark" class="field" maxlength="100" value="VISITA LOJA • FIAVL 2026"></label>
                         <label class="block"><span class="text-sm font-semibold block mb-2">Imagen de muestra</span><input id="postcardSampleImage" class="field" placeholder="https://..."></label>
                         <label class="block"><span class="text-sm font-semibold block mb-2">Frase inicial para el turista</span><input id="postcardDefaultMessage" class="field" maxlength="220"></label>
+<fieldset class="border border-violet-400/30 rounded-xl p-4 space-y-4"><legend class="font-bold px-2">Marcos de Visita Loja</legend><p class="text-sm text-gray-300">El logo se toma de la configuración general. Puedes ocultar un marco sin eliminarlo.</p><div class="grid sm:grid-cols-[1fr_90px] gap-3" data-brand-frame="brand-nature" data-default-name="Loja Natural" data-default-color="#173d30"><label class="flex items-center gap-2 sm:col-span-2"><input type="checkbox" data-brand-enabled checked><span>Loja Natural</span></label><label><span class="block text-sm mb-2">Nombre visible</span><input data-brand-name class="field" maxlength="40" value="Loja Natural"></label><label><span class="block text-sm mb-2">Color</span><input type="color" data-brand-color class="w-full h-11" value="#173d30"></label></div><div class="grid sm:grid-cols-[1fr_90px] gap-3" data-brand-frame="brand-food" data-default-name="Sabores de Loja" data-default-color="#9a3412"><label class="flex items-center gap-2 sm:col-span-2"><input type="checkbox" data-brand-enabled checked><span>Sabores de Loja</span></label><label><span class="block text-sm mb-2">Nombre visible</span><input data-brand-name class="field" maxlength="40" value="Sabores de Loja"></label><label><span class="block text-sm mb-2">Color</span><input type="color" data-brand-color class="w-full h-11" value="#9a3412"></label></div><div class="grid sm:grid-cols-[1fr_90px] gap-3" data-brand-frame="brand-memory" data-default-name="Recuerdo Visita Loja" data-default-color="#123b66"><label class="flex items-center gap-2 sm:col-span-2"><input type="checkbox" data-brand-enabled checked><span>Recuerdo Visita Loja</span></label><label><span class="block text-sm mb-2">Nombre visible</span><input data-brand-name class="field" maxlength="40" value="Recuerdo Visita Loja"></label><label><span class="block text-sm mb-2">Color</span><input type="color" data-brand-color class="w-full h-11" value="#123b66"></label></div></fieldset>
                         <div id="postcardsMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
-                        <button id="postcardsSaveBtn" type="submit" class="bg-violet-500 hover:bg-violet-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar textos</button>
+                        <button id="postcardsSaveBtn" type="submit" class="bg-violet-500 hover:bg-violet-400 disabled:opacity-50 text-white font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar configuración de postales</button>
                     </form>
                     <form id="postcardFrameForm" class="space-y-4 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-6">
                         <h3 class="font-black text-lg text-violet-300">Agregar marco PNG</h3>
@@ -1889,6 +1890,12 @@ function loadMaintenanceForm(data={}) {
 }
 
 function loadPostcardsForm(settings = {}, framesData = {}) {
+    document.querySelectorAll('[data-brand-frame]').forEach(row => {
+        const frame = settings.brandFrames?.[row.dataset.brandFrame] || {};
+        row.querySelector('[data-brand-enabled]').checked = frame.enabled !== false;
+        row.querySelector('[data-brand-name]').value = frame.name || row.dataset.defaultName;
+        row.querySelector('[data-brand-color]').value = /^#[0-9a-f]{6}$/i.test(frame.color || '') ? frame.color : row.dataset.defaultColor;
+    });
     document.getElementById('postcardWatermark').value = settings.watermark || 'VISITA LOJA • FIAVL 2026';
     document.getElementById('postcardSampleImage').value = settings.sampleImg || 'assets/photos/photo-unavailable.svg';
     document.getElementById('postcardDefaultMessage').value = settings.defaultMsg || '¡Qué elegancia de la de Francia, qué sabor el de mi Loja!';
@@ -2749,7 +2756,8 @@ document.getElementById('postcardsSettingsForm').addEventListener('submit', asyn
     const button = document.getElementById('postcardsSaveBtn');
     const state = document.getElementById('postcardsSaveState');
     const formMessage = document.getElementById('postcardsMessage');
-    const data = { watermark: document.getElementById('postcardWatermark').value.trim(), sampleImg: document.getElementById('postcardSampleImage').value.trim(), defaultMsg: document.getElementById('postcardDefaultMessage').value.trim(), updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email };
+    const brandFrames = Object.fromEntries(Array.from(document.querySelectorAll('[data-brand-frame]'), row => [row.dataset.brandFrame, { enabled:row.querySelector('[data-brand-enabled]').checked, name:row.querySelector('[data-brand-name]').value.trim().slice(0,40) || row.dataset.defaultName, color:row.querySelector('[data-brand-color]').value }]));
+    const data = { brandFrames, watermark: document.getElementById('postcardWatermark').value.trim(), sampleImg: document.getElementById('postcardSampleImage').value.trim(), defaultMsg: document.getElementById('postcardDefaultMessage').value.trim(), updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email };
     button.disabled = true; state.textContent = 'Guardando…';
     try { await postcardsRef.set(data, { merge: true }); state.textContent = 'Guardado'; message(formMessage, 'Los ajustes de las postales se actualizaron correctamente.', true); }
     catch (error) { state.textContent = 'No guardado'; message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar las postales.' : 'No se pudieron guardar los ajustes.'); }
