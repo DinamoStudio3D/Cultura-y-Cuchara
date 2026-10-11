@@ -1401,4 +1401,20 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 #agenda .vl-agenda-filter-empty{padding:28px;border:1px dashed #94a3b8;border-radius:16px;background:#fff;text-align:center;grid-column:1/-1}
 #agenda .vl-agenda-search input:focus-visible,#agenda .vl-agenda-search select:focus-visible{outline:3px solid #075bb2;outline-offset:3px}
 @media(max-width:650px){#agenda .vl-agenda-search{grid-template-columns:1fr!important;padding:16px!important}}
+
+/* V144: relatos y navegación */
+#historias .vl-story-search{display:block;max-width:620px;font-size:14px!important;line-height:1.5!important;font-weight:750;margin-bottom:24px}
+#historias .vl-story-search input{display:block;width:100%;margin-top:8px;padding:13px 15px;border:1px solid #8a7966;border-radius:12px;background:#2d241c;color:#fff;font-size:15px;line-height:1.5}
+#historias .vl-story-search input:focus-visible{outline:3px solid #fdba74;outline-offset:3px}
+#historias .vl-public-story-card button{height:100%;display:flex;flex-direction:column;min-width:0}
+#historias .vl-public-story-card button > div{width:100%}
+#historias .vl-public-story-card button > div:last-child{padding:24px!important;flex:1}
+#historias .vl-public-story-card h3{font-size:24px!important;line-height:1.35!important;overflow-wrap:anywhere}
+#historias .vl-public-story-card p{font-size:15px!important;line-height:1.75!important}
+#historias .vl-public-story-card button > div:first-child{aspect-ratio:4/3!important}
+#historias .vl-story-empty{grid-column:1/-1;padding:26px;border:1px dashed #92765e;border-radius:16px;font-size:15px;line-height:1.7;text-align:center}
+@media(min-width:1000px){#historias .vl-public-story-card:first-child{grid-column:span 2}#historias .vl-public-story-card:first-child button{display:grid;grid-template-columns:1fr 1fr;align-items:center}#historias .vl-public-story-card:first-child button > div:first-child{height:100%;min-height:300px;aspect-ratio:auto!important}}
+@media(max-width:650px){#historias .vl-public-story-card button > div:last-child{padding:20px!important}#historias .vl-public-story-card h3{font-size:22px!important;line-height:1.35!important}}
+
+#historias .vl-public-story-card:only-child{grid-column:1/-1!important}
 }
