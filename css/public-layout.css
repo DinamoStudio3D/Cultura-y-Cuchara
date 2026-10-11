@@ -1539,3 +1539,23 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   #restaurantMenuCommerceActions { max-height:25dvh; overflow-y:auto; }
  }
 }
+
+/* V162: comfortable postcard controls and passport mode selection. */
+@layer vl-layout {
+ #postales #postcardPhotoControls input[type=range] { min-width:0; width:100%; min-height:44px; touch-action:pan-y; }
+ #postales #postcardPhotoControls button { min-height:44px; padding:8px 10px; }
+ #postales #postcardFramesContainer>button { min-height:48px !important; white-space:normal !important; word-break:normal !important; overflow-wrap:normal !important; line-height:1.4 !important; }
+ #pasaporteModal #passportModalTitle { white-space:normal !important; word-break:normal !important; line-height:1.3 !important; }
+ #pasaporteModal .vl-passport-modal-cover>.flex { flex-wrap:wrap !important; gap:8px !important; }
+ #pasaporteModal :is(#btnLojano,#btnTurista) { min-height:44px !important; padding:10px 14px !important; white-space:normal !important; line-height:1.4 !important; }
+ #pasaporteModal :is(#passportCampaignIntro,#passportRuleDesc) { font-size:14px !important; line-height:1.6 !important; }
+ @media(max-width:520px) {
+  #postales #postcardPhotoControls>label { grid-template-columns:minmax(0,1fr) 48px !important; gap:4px 10px !important; }
+  #postales #postcardPhotoControls>label>span { grid-column:1 / -1; line-height:1.5 !important; }
+  #postales .vl-postcard-editor input[type=file] { max-width:100%; font-size:13px !important; }
+  #postales #postcardFramesContainer { gap:8px !important; }
+  #pasaporteModal .vl-passport-modal-cover { padding-right:60px !important; }
+  #pasaporteModal .vl-passport-modal-cover:after { display:none !important; }
+  #pasaporteModal #passportGrid { gap:10px !important; }
+ }
+}
