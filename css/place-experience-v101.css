@@ -43,3 +43,17 @@
  @media(max-width:1023px){#mapa #mapPreviewCard{display:flex!important;flex-direction:column!important}#mapa #mapPreviewCard>.vl-preview-photo{max-height:340px}#mapa #mapPreviewCard>div{width:100%}}
  @media(max-width:639px){#mapa #mapPreviewCard{padding:18px!important;gap:18px!important}#mapa #mapPreviewCard>.vl-preview-photo{aspect-ratio:4/3;max-height:none}#establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content{padding:20px!important}}
 }
+
+/* V156: mobile business cards accommodate full names and controls. */
+@layer vl-layout {
+ @media(max-width:760px) {
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content>.flex:first-of-type { flex-wrap:wrap !important; align-items:flex-start !important; gap:8px !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title { flex:1 1 100% !important; min-width:0 !important; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; line-height:1.3 !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl17-media>.absolute { max-width:calc(100% - 24px); flex-wrap:wrap !important; gap:5px !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl17-media>.absolute>span { max-width:100%; white-space:normal !important; line-height:1.4 !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks { gap:8px !important; flex-wrap:wrap !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action { min-width:0 !important; max-width:100% !important; flex:1 1 120px !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action-label { white-space:normal !important; line-height:1.4 !important; }
+  #mapa #previewBusinessProfile :is(a,span) { overflow-wrap:anywhere; }
+ }
+}
