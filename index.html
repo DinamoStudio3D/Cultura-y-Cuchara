@@ -1093,6 +1093,10 @@
                         </div>
                     </div>
 
+                    <fieldset class="vl167-photo-options"><legend>Personaliza tu fotografía</legend><div class="vl167-options-grid">
+                        <label>Ambiente<select id="postcardFilterSelect" onchange="setPostcardFilter(this.value)"><option value="none">Natural</option><option value="sunset">Atardecer cálido</option><option value="sepia">Recuerdo sepia</option><option value="teatro">Blanco y negro</option></select></label>
+                        <label>Sello decorativo<select id="postcardStickerSelect" onchange="setPostcardSticker(this.value)"><option value="none">Sin sello</option><option value="cepa" selected>Tradición lojana</option><option value="fiavl">Artes vivas</option><option value="cafe">Ruta del café</option><option value="centinela">Centinela del Sur</option></select></label>
+                    </div><div class="vl167-transform-actions"><button type="button" onclick="rotatePostcardPhoto()"><i class="fa-solid fa-rotate-right"></i> Girar foto 90°</button><button type="button" id="postcardMirrorButton" aria-pressed="false" onclick="mirrorPostcardPhoto()"><i class="fa-solid fa-arrows-left-right"></i> Foto en espejo</button></div><p>Los ajustes cambian tu postal; tu fotografía original se conserva.</p></fieldset>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label for="postcardUserName" class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardNameLabel">Tu Nombre o Apodo</label>
@@ -1109,6 +1113,7 @@
                         <input type="text" id="postcardUserMsg" oninput="renderPostcardPreview()" maxlength="50" placeholder="¡Enamorándome de los sabores de Loja!" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-brandDark font-bold outline-none focus:border-brandGold">
                     </div>
 
+                    <div class="vl167-phrases"><span>Una frase para empezar</span><div><button type="button" onclick="applyQuickPhrase('Saludos desde Loja')">Saludos desde Loja</button><button type="button" onclick="applyQuickPhrase('Un recuerdo para volver')">Un recuerdo para volver</button><button type="button" onclick="applyQuickPhrase('Loja, a mi ritmo')">Loja, a mi ritmo</button></div></div>
                     <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
                         <button type="button" onclick="downloadPostcardImage()" class="flex-1 bg-brandGold text-white font-black py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider shadow-warm-glow flex items-center justify-center gap-2">
                             <i class="fa-solid fa-download"></i> <span data-i18n="btnDownloadPostcard">Descargar Postal (HD)</span>
@@ -3723,6 +3728,8 @@
         let postcardPhotoOffsetX = 0;
         let postcardPhotoOffsetY = 0;
         let postcardDragState = null;
+        let postcardPhotoRotation = 0;
+        let postcardPhotoMirrored = false;
 
         function lowDataConnectionRecommended() {
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -5693,6 +5700,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if (isCustom) {
                 // Al elegir un marco personalizado, ocultar sticker y textos por defecto para que luzca limpio
                 currentPostcardSticker = 'none';
+                const stickerSelect = document.getElementById('postcardStickerSelect');
+                if (stickerSelect) stickerSelect.value = 'none';
                 const stickerSel = document.getElementById('postcardStickerSelect');
                 if(stickerSel) stickerSel.value = 'none';
 
@@ -5733,6 +5742,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const img = new Image();
                 img.onload = function() {
                     currentUploadedImageObj = img;
+                    postcardPhotoRotation = 0; postcardPhotoMirrored = false;
+                    document.getElementById('postcardMirrorButton')?.setAttribute('aria-pressed', 'false');
+                    resetPostcardPhotoAdjustment();
                     renderPostcardPreview();
                     showToast(currentLang === 'en' ? 'Photo loaded successfully!' : '¡Foto cargada con éxito!');
                 };
@@ -5780,6 +5792,28 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointercancel', stop);
         }
 
+        function rotatePostcardPhoto() {
+            postcardPhotoRotation = (postcardPhotoRotation + 90) % 360;
+            resetPostcardPhotoAdjustment();
+        }
+        function mirrorPostcardPhoto() {
+            postcardPhotoMirrored = !postcardPhotoMirrored;
+            document.getElementById('postcardMirrorButton')?.setAttribute('aria-pressed', String(postcardPhotoMirrored));
+            renderPostcardPreview();
+        }
+        function postcardTransformedPhoto(photo) {
+            if (!postcardPhotoRotation && !postcardPhotoMirrored) return photo;
+            const result = document.createElement('canvas'), sideways = postcardPhotoRotation % 180 !== 0;
+            result.width = sideways ? photo.height : photo.width;
+            result.height = sideways ? photo.width : photo.height;
+            const context = result.getContext('2d');
+            context.translate(result.width / 2, result.height / 2);
+            context.rotate(postcardPhotoRotation * Math.PI / 180);
+            context.scale(postcardPhotoMirrored ? -1 : 1, 1);
+            context.drawImage(photo, -photo.width / 2, -photo.height / 2);
+            return result;
+        }
+
         function renderPostcardPreview() {
             const canvas = document.getElementById('postcardCanvas');
             if(!canvas) return;
@@ -5817,6 +5851,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         function drawPostcardContent(ctx, img, W, H, userName, userSpot, userMsg) {
+            if (img && img.width > 0 && img.height > 0) img = postcardTransformedPhoto(img);
             // 1. Limpiar y Fondo base
             ctx.save();
             ctx.filter = "none";

@@ -1565,3 +1565,17 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
  html:has(#main-content) { scroll-padding-top:0 !important; }
  #main-content>section[id],#main-content #festival-agenda,#main-content #chabaquitoV2Missions { scroll-margin-top:var(--vl-navigation-offset,106px) !important; }
 }
+
+@layer vl-layout {
+ #postales .vl167-photo-options { padding:18px; border:1px solid #cbd5d0; border-radius:16px; min-width:0; }
+ #postales .vl167-photo-options legend { font-size:14px; font-weight:800; padding:0 6px; }
+ #postales .vl167-options-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+ #postales .vl167-options-grid label { min-width:0; }
+ #postales .vl167-options-grid select { width:100%; min-height:46px; margin-top:6px; padding:10px; border:1px solid #9cafa5; border-radius:10px; background:#fff; font-size:14px; }
+ #postales .vl167-transform-actions,#postales .vl167-phrases>div { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+ #postales .vl167-transform-actions button,#postales .vl167-phrases button { min-height:44px; padding:10px 12px; border:1px solid #9cafa5; border-radius:10px; font-size:13px; line-height:1.4; }
+ #postales .vl167-photo-options p { font-size:12px; line-height:1.6; margin-top:12px; }
+ #postales .vl167-phrases>span { font-size:13px; font-weight:750; }
+ @media(max-width:520px){#postales .vl167-options-grid{grid-template-columns:1fr}#postales .vl167-transform-actions button{flex:1 1 130px}}
+}
+@layer vl-colors { #postales .vl167-transform-actions button[aria-pressed=true] { --vl-text:#fff; --vl-muted:#fff; --vl-accent:#fff; background:#173d30 !important; } }
