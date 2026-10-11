@@ -274,3 +274,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 :is(#usersModule,#adminsModule) .field{font-size:14px;line-height:1.5;min-height:44px}#adminsList label{min-width:0;max-width:240px}#adminsList select{width:100%;white-space:normal}
 @media(max-width:850px){.admin-access-guide{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){#usersList article>div>div:last-child{grid-template-columns:minmax(0,1fr)!important}:is(#usersList,#adminsList)>article{padding:16px!important}#adminCreateForm{padding:16px!important}}
+
+/* V124 — application review workspace. */
+.admin-application-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:24px}.admin-application-guide>div{padding:20px;border:1px solid #34424c;border-radius:15px;background:#15222b;min-width:0}.admin-application-guide span{display:block;font-size:12px;font-weight:900;color:#f7ce83;margin-bottom:10px}.admin-application-guide strong{font-size:16px;line-height:1.4}.admin-application-guide p{font-size:13px;line-height:1.6;color:#b7c5d1;margin-top:8px}
+#applicationsModule h2{font-size:clamp(25px,3vw,34px)!important;line-height:1.2!important}#applicationsModule .field{font-size:14px;min-height:44px;line-height:1.5}
+#applicationsList{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}#applicationsList>article{margin:0!important;background:#121d25!important;border-color:#34424c!important;padding:22px!important;min-width:0}
+#applicationsList>article>div{display:block!important}#applicationsList article h3{font-size:22px;line-height:1.3}#applicationsList article p{line-height:1.6}#applicationsList article .grid{gap:12px!important;padding:16px;background:#0c151d;border-radius:12px;font-size:14px!important}#applicationsList article .grid span{overflow-wrap:anywhere;line-height:1.6}
+#applicationsList .admin-application-actions{max-width:none!important;border-top:1px solid #34424c;margin-top:20px;padding-top:16px;gap:10px!important}#applicationsList .admin-application-actions :is(button,a){min-height:44px;font-size:13px!important;padding:10px 15px!important;line-height:1.5}
+#applicationsList article>div>div:first-child>div:first-child>span:last-child{font-size:12px!important;line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:850px){.admin-application-guide{grid-template-columns:minmax(0,1fr)}}@media(max-width:600px){#applicationsList>article{padding:16px!important}.admin-application-guide>div{padding:16px}}
