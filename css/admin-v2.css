@@ -340,3 +340,23 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .admin-entrepreneur-actions{display:flex;flex-wrap:wrap;gap:10px;padding-top:18px;margin-top:auto}.admin-entrepreneur-actions button{min-height:44px;font-size:13px;font-weight:800;padding:10px 14px;border:1px solid #5e7255;border-radius:10px;color:#c6e9b6;line-height:1.5}.admin-entrepreneur-actions .admin-entrepreneur-delete{color:#f2b9b9;border-color:#6f4247}
 #entrepreneurForm{scroll-margin-top:150px;padding:24px!important;background:#101820!important;border-color:#34424c!important}#entrepreneurForm label{min-width:0}#entrepreneurForm .field{min-height:44px;font-size:14px;line-height:1.6}#entrepreneursModule h2{font-size:clamp(25px,3vw,34px)!important;line-height:1.2!important}
 @media(max-width:750px){#entrepreneursList{grid-template-columns:minmax(0,1fr)}}@media(max-width:600px){.admin-entrepreneur-copy{padding:16px}#entrepreneurForm{padding:16px!important;scroll-margin-top:85px}}
+
+/* V133: galería de marcos completos */
+#postcardsModule > div:first-child{flex-wrap:wrap}
+.admin-postcard-directory{margin-bottom:28px}
+.admin-postcard-directory > label{display:block;max-width:520px;font-weight:700;margin-bottom:20px}
+.admin-postcard-directory .field{margin-top:8px}
+.admin-postcard-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.admin-postcard-card{min-width:0;background:#111827;border:1px solid #374151;border-radius:18px;overflow:hidden}
+.admin-postcard-image{height:260px;padding:14px;display:grid;place-items:center;background-color:#e5e7eb;background-image:conic-gradient(#cbd5e1 25%,transparent 0 50%,#cbd5e1 0 75%,transparent 0);background-size:24px 24px;color:#334155}
+.admin-postcard-image img{width:100%;height:100%;min-height:0;object-fit:contain}
+.admin-postcard-image [hidden]{display:none!important}
+.admin-postcard-details{padding:18px;overflow-wrap:anywhere}
+.admin-postcard-details h4{font-size:19px;line-height:1.4;font-weight:800;margin:8px 0;color:#f8fafc}
+.admin-postcard-details p{font-size:12px;color:#c4b5fd}
+.admin-postcard-details .admin-postcard-file{color:#cbd5e1;line-height:1.6}
+.admin-postcard-delete{margin-top:16px;padding:10px 14px;border-radius:10px;background:#7f1d1d;color:#fee2e2;font-weight:700;font-size:13px}
+#postcardsModule .admin-mission-empty{grid-column:1/-1}
+#postcardFramePreviewStatus{line-height:1.7}
+@media(max-width:1200px){.admin-postcard-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.admin-postcard-gallery{grid-template-columns:1fr}.admin-postcard-image{height:300px}}
