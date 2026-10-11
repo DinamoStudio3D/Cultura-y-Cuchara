@@ -873,10 +873,7 @@
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full" id="categoryScroll"></div>
                 <div class="flex overflow-x-auto hide-scrollbar gap-2 w-full">
                     <button type="button" onclick="runSmartSearch(currentLang==='en'?'open now':'abierto ahora')" class="flex-shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-clock mr-1"></i><span data-i18n="smartOpenNow">Abierto ahora</span></button>
-                    <button type="button" onclick="runSmartSearch('café')" class="flex-shrink-0 bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-3 py-1.5 text-[11px] font-bold">☕ Café</button>
                     <button type="button" onclick="runSmartSearch(currentLang==='en'?'Loja food':'comida lojana')" class="flex-shrink-0 bg-orange-50 text-orange-700 border border-orange-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🥘 <span data-i18n="smartLojaFood">Comida lojana</span></button>
-                    <button type="button" onclick="runSmartSearch('hotel hostal')" class="flex-shrink-0 bg-sky-50 text-sky-700 border border-sky-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🏨 <span data-i18n="smartAccommodation">Hospedaje</span></button>
-                    <button type="button" onclick="runSmartSearch('aliado')" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-handshake mr-1"></i><span data-i18n="mapPartners">Marcas aliadas</span></button>
                     <button type="button" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i><span data-i18n="btnGps">Cerca de mí</span></button>
                     <button type="button" onclick="runSmartSearch('pasaporte')" class="flex-shrink-0 bg-rose-50 text-rose-700 border border-rose-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-stamp mr-1"></i><span data-i18n="smartPassport">Para mi pasaporte</span></button>
                 </div>
@@ -888,7 +885,7 @@
                 </div>
             </div>
 
-            <div class="vl39-results-toolbar"><div class="vl39-results-label"><span class="vl39-results-dot"></span><div><strong>Encuentra tu próxima parada</strong><small>Explora opciones de gastronomía, hospedaje y turismo en Loja.</small></div></div><a href="#mapa" class="vl39-map-link"><i class="fa-solid fa-map-location-dot"></i> Ver mapa interactivo <i class="fa-solid fa-arrow-right"></i></a></div>
+            <div class="vl39-results-toolbar"><a href="#mapa" class="vl39-map-link"><i class="fa-solid fa-map-location-dot"></i> Ver mapa interactivo <i class="fa-solid fa-arrow-right"></i></a></div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="localesGrid"></div>
             
             <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
@@ -1284,7 +1281,6 @@
                 <h2 data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
                 <p data-i18n="agendaDesc">Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.</p></div>
                 <nav class="vl-agenda-links" aria-label="Explorar actividades">
-                    <a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="agendaMapLink">Explorar mapa</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
                     <a href="#festival-live"><i class="fa-solid fa-masks-theater" aria-hidden="true"></i><span data-i18n="agendaFestivalLink">Programación FIAVL</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                 </nav>
             </header>
@@ -4515,11 +4511,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         <span class="block text-xs text-gray-400 mt-1"><b style="color:${style.color}">${count}</b> ${places}</span>
                     </button>`;
                 }).join('');
-                exploreGrid.insertAdjacentHTML('beforeend',`<button type="button" onclick="document.getElementById('agenda')?.scrollIntoView({behavior:'smooth',block:'start'})" class="group min-h-[150px] sm:min-h-[170px] rounded-3xl border border-rose-400/20 p-5 text-left hover:-translate-y-1 hover:shadow-2xl transition" style="background:linear-gradient(135deg,rgba(244,63,94,.22),rgba(136,19,55,.13))">
-                    <span class="w-12 h-12 rounded-2xl bg-rose-400/10 text-rose-400 grid place-items-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-calendar-days"></i></span>
-                    <strong class="block text-sm sm:text-base mt-5">Agenda cultural</strong>
-                    <span class="block text-xs text-gray-400 mt-1">Eventos y actividades</span>
-                </button>`);
+
             }
 
             if(catScroll) {
