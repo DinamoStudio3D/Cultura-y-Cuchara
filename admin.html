@@ -798,7 +798,8 @@
                 </section>
 
                 <section id="timeModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
-                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6"><div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Módulo 8</p><h2 class="text-2xl font-black mt-1">Loja en el Tiempo</h2><p class="text-sm text-gray-400 mt-1">Administra las comparaciones históricas del antes y el presente.</p></div><button type="button" onclick="resetTimeForm()" class="bg-amber-500 hover:bg-amber-400 text-black rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nuevo punto</button></div>
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6"><div><p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Módulo 8</p><h2 class="text-2xl font-black mt-1">Loja en el Tiempo</h2><p class="text-sm text-gray-400 mt-1">Administra las comparaciones históricas del antes y el presente.</p></div><button type="button" onclick="resetTimeForm();document.getElementById('timeForm').scrollIntoView({behavior:'smooth',block:'start'})" class="bg-amber-500 hover:bg-amber-400 text-black rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nuevo punto</button></div>
+<section class="admin-story-directory" aria-label="Puntos históricos"><div class="admin-story-filters"><label for="timeSearch">Buscar lugar histórico<input id="timeSearch" type="search" class="field" placeholder="Nombre, época o descripción" oninput="renderAdminTimeSpots()"></label><label for="timeMediaFilter">Fotografías<select id="timeMediaFilter" class="field" onchange="renderAdminTimeSpots()"><option value="all">Todos los lugares</option><option value="complete">Con ambas fotografías</option><option value="missing">Fotografías por completar</option></select></label></div>                    <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Puntos históricos</h3><span id="timeCount" class="text-xs text-gray-400">0 puntos</span></div><div id="timeList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando puntos…</p></div></section>
                     <form id="timeForm" class="space-y-5 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-7">
                         <input id="timeEditIdSecure" type="hidden"><h3 id="timeSecureFormTitle" class="font-black text-lg">Registrar punto histórico</h3>
                         <div class="grid md:grid-cols-2 gap-4"><label><span class="text-sm font-semibold block mb-2">Nombre en español *</span><input id="timeTitle" class="field" required maxlength="140"></label><label><span class="text-sm font-semibold block mb-2">Nombre en inglés</span><input id="timeTitleEn" class="field" maxlength="140"></label></div>
@@ -813,7 +814,7 @@
                         <div id="timeMessage" class="hidden text-sm rounded-xl p-3" role="alert"></div>
                         <div class="flex flex-col sm:flex-row gap-3"><button id="timeSaveBtn" type="submit" class="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-black rounded-xl px-6 py-3"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar punto</button><button type="button" onclick="resetTimeForm()" class="border border-gray-700 hover:border-gray-500 rounded-xl px-5 py-3 text-sm font-bold">Cancelar edición</button></div>
                     </form>
-                    <div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-black text-lg">Puntos históricos</h3><span id="timeCount" class="text-xs text-gray-400">0 puntos</span></div><div id="timeList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando puntos…</p></div>
+
                 </section>
 
                 <section id="entrepreneursModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
@@ -1898,10 +1899,12 @@ async function deleteAdminPostcardFrame(id) {
 }
 
 function renderAdminTimeSpots() {
-    const list = document.getElementById('timeList');
-    document.getElementById('timeCount').textContent = `${adminTimeSpots.length} ${adminTimeSpots.length === 1 ? 'punto' : 'puntos'}`;
-    if (!adminTimeSpots.length) { list.innerHTML = '<p class="text-gray-500 text-sm">Todavía no hay puntos históricos.</p>'; return; }
-    list.innerHTML = adminTimeSpots.map(spot => `<article class="bg-black/30 border border-gray-800 rounded-2xl p-4"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h4 class="font-black">${escapeAdminHtml(spot.title)}</h4><p class="text-xs text-gray-400">${escapeAdminHtml(spot.labelPast)} → ${escapeAdminHtml(spot.labelPresent)}</p></div><div class="flex gap-2"><button type="button" onclick="editTimeSpotSecure('${escapeAdminHtml(spot.id)}')" class="bg-amber-500/15 text-amber-200 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-pen mr-1"></i>Editar</button><button type="button" onclick="deleteTimeSpotSecure('${escapeAdminHtml(spot.id)}')" class="bg-red-500/10 text-red-300 rounded-lg px-3 py-2 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Eliminar</button></div></div></article>`).join('');
+    const list=document.getElementById('timeList'),query=normalizeUserSearch(document.getElementById('timeSearch')?.value||'').trim(),filter=document.getElementById('timeMediaFilter')?.value||'all';
+    const valid=value=>!!String(value||'').trim()&&controlValidResource(value);
+    const items=adminTimeSpots.filter(spot=>{const complete=valid(spot.imgPast)&&valid(spot.imgPresent);return (filter==='all'||(filter==='complete'?complete:!complete))&&(!query||normalizeUserSearch([spot.title,spot.titleEn,spot.labelPast,spot.labelPresent,spot.desc].join(' ')).includes(query));});
+    document.getElementById('timeCount').textContent=items.length+' de '+adminTimeSpots.length+' puntos';
+    const photo=(url,label)=>`<figure>${valid(url)?`<img src="${escapeAdminHtml(url)}" alt="${escapeAdminHtml(label)}" loading="lazy">`:'<div class="admin-time-photo-missing"><i class="fa-solid fa-image" aria-hidden="true"></i><span>Fotografía pendiente</span></div>'}<figcaption>${escapeAdminHtml(label)}</figcaption></figure>`;
+    list.innerHTML=items.length?items.map(spot=>`<article class="admin-time-card"><div class="admin-time-card-header"><h4>${escapeAdminHtml(spot.title||'Lugar sin nombre')}</h4><div><button type="button" onclick="editTimeSpotSecure('${escapeAdminHtml(spot.id)}')">Editar lugar</button><button type="button" onclick="deleteTimeSpotSecure('${escapeAdminHtml(spot.id)}')" class="admin-time-delete">Eliminar</button></div></div><div class="admin-time-comparison">${photo(spot.imgPast,spot.labelPast||'Fotografía antigua')}${photo(spot.imgPresent,spot.labelPresent||'Fotografía actual')}</div><p>${escapeAdminHtml(spot.desc||'Descripción pendiente.')}</p></article>`).join(''):'<p class="admin-mission-empty">No hay lugares históricos con estos filtros. Ajusta la búsqueda o registra uno nuevo.</p>';
 }
 
 function closePlacePreview(){const modal=document.getElementById('placePreviewModal');if(modal)modal.classList.add('hidden');}
