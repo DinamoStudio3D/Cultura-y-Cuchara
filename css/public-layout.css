@@ -1191,3 +1191,36 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   #misiones .vl-mission-medallion { width:64px; height:64px; flex-basis:64px; font-size:31px; }
   #misiones #chabaquitoV2Missions .vl-mission-card h3 { font-size:24px; }
 }
+
+/* V110: an open passport with readable stamps and a Chabaquito cover. */
+@layer vl-layout {
+ #pasaporteModal>div { width:min(100%,680px) !important; max-width:680px !important; border:1px solid #e0c592 !important; border-radius:26px !important; max-height:calc(100dvh - 32px); overflow-y:auto; }
+ #pasaporteModal #passportStampsGrid { max-height:none !important; overflow:visible; gap:14px !important; grid-template-columns:repeat(3,minmax(0,1fr)); padding:0; margin-bottom:24px; }
+ #pasaporteModal>div>.p-6 { padding:26px !important; }
+ #pasaporteModal .vl-passport-modal-cover { padding:30px 180px 28px 28px !important; text-align:left; background:#12382e !important; min-height:185px; border-color:#e0c592 !important; }
+ #pasaporteModal .vl-passport-modal-cover:after { content:""; position:absolute; right:20px; bottom:-18px; width:160px; height:195px; background:url('../mascota-vive-loja.png') center/contain no-repeat; transform:rotate(-8deg); pointer-events:none; }
+ #pasaporteModal #passportModalTitle { font-family:Georgia,serif; font-size:30px; text-transform:none; letter-spacing:-.025em; line-height:1.15; }
+ #pasaporteModal .vl-passport-modal-cover>.flex { justify-content:flex-start; flex-wrap:wrap; gap:8px; }
+ #pasaporteModal #btnLojano,#pasaporteModal #btnTurista { min-height:44px !important; padding:10px 14px !important; border:1px solid #ffffff35; border-radius:10px; }
+ #pasaporteModal>div>button { width:44px; height:44px; background:#fff9ed !important; color:#173c30 !important; right:12px; top:12px; }
+ #pasaporteModal #passportRuleDesc { font-size:14px; padding:12px; border:1px solid #ddcba8; border-radius:12px; background:#f8eedc; margin-bottom:18px; }
+ #pasaporteModal #passportCampaignIntro { font-size:13px; line-height:1.6; margin-bottom:12px; }
+ #pasaporteModal .vl-passport-stamp { position:relative; min-height:148px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:26px 12px 15px; border-radius:18px; text-align:center; }
+ #pasaporteModal .vl-passport-stamped { border:2px solid #b0863b; background:radial-gradient(circle,#fbe9c7,#fff9eb); }
+ #pasaporteModal .vl-passport-pending { border:1px dashed #9ca996; background:#fffdf8; }
+ #pasaporteModal .vl-passport-stamp>i { font-size:32px; color:#35644e !important; }
+ #pasaporteModal .vl-passport-stamped>i { color:#936615 !important; transform:rotate(-12deg); }
+ #pasaporteModal .vl-passport-stamp strong { font-size:13px; line-height:1.35; overflow-wrap:anywhere; }
+ #pasaporteModal .vl-passport-stamp-number { position:absolute; top:10px; left:12px; font-size:10px; font-weight:800; letter-spacing:.1em; color:#526751 !important; }
+ #pasaporteModal .vl-passport-stamp-state { font-size:10px; line-height:1.4; color:#3a604b !important; }
+ #pasaporteModal #passportProgressText { font-size:13px; line-height:1.55; margin-top:8px; }
+ @media(max-width:520px) {
+  #pasaporteModal>div { border-radius:20px !important; }
+  #pasaporteModal>div>.p-6 { padding:20px 16px !important; }
+  #pasaporteModal .vl-passport-modal-cover { padding:30px 100px 24px 20px !important; }
+  #pasaporteModal .vl-passport-modal-cover:after { width:105px; right:0; height:160px; }
+  #pasaporteModal #passportModalTitle { font-size:26px; }
+  #pasaporteModal #passportStampsGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px !important; }
+  #pasaporteModal .vl-passport-stamp { min-height:140px; }
+ }
+}
