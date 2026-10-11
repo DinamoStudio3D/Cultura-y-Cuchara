@@ -1134,6 +1134,7 @@
                             <i class="fa-solid fa-expand mr-1"></i> <span id="postcardFormatLabel">Vertical 9:16</span>
                         </span>
                     </div>
+                    <p id="postcardImageStatus" role="status" aria-live="polite" class="text-sm font-semibold mt-3 text-center"></p>
                     <p class="text-[11px] text-gray-500 mt-2 text-center" data-i18n="postcardHint">
                         💡 Lista para publicar en tus estados de WhatsApp o Stories de Instagram.
                     </p>
@@ -3729,6 +3730,8 @@
         let currentPostcardFilter = 'none';
         let currentPostcardSticker = 'cepa';
         let currentUploadedImageObj = null;
+        let postcardSampleImageObj = null, postcardSampleImageUrl = "";
+        let postcardImageReady = false, postcardUploadRevision = 0;
         let postcardPhotoZoom = 1;
         let postcardPhotoOffsetX = 0;
         let postcardPhotoOffsetY = 0;
@@ -5755,10 +5758,16 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const file = e.target.files && e.target.files[0];
             if(!file) return;
 
+            const uploadRevision = ++postcardUploadRevision;
+            postcardImageReady = false;
+            setPostcardImageStatus(currentLang === 'en' ? 'Loading your photo…' : 'Cargando tu fotografía…');
             const reader = new FileReader();
+            reader.onerror = () => { if (uploadRevision === postcardUploadRevision) { renderPostcardPreview(); showToast('No se pudo leer la fotografía. Prueba con otra imagen.'); } };
             reader.onload = function(evt) {
+                if (uploadRevision !== postcardUploadRevision) return;
                 const img = new Image();
                 img.onload = function() {
+                    if (uploadRevision !== postcardUploadRevision) return;
                     currentUploadedImageObj = img;
                     postcardPhotoRotation = 0; postcardPhotoMirrored = false;
                     document.getElementById('postcardMirrorButton')?.setAttribute('aria-pressed', 'false');
@@ -5766,6 +5775,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     renderPostcardPreview();
                     showToast(currentLang === 'en' ? 'Photo loaded successfully!' : '¡Foto cargada con éxito!');
                 };
+                img.onerror = () => { if (uploadRevision === postcardUploadRevision) { renderPostcardPreview(); showToast(currentLang === 'en' ? 'This photo could not be opened. Try JPG or PNG.' : 'No se pudo abrir la foto. Prueba con JPG o PNG.'); } };
                 img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
@@ -5861,6 +5871,11 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             ctx.strokeStyle=ink;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(65,H-footer+25);ctx.lineTo(W-65,H-footer+25);ctx.stroke();
         }
 
+        function setPostcardImageStatus(message) {
+            const status = document.getElementById('postcardImageStatus');
+            if (status) status.textContent = message;
+        }
+
         function renderPostcardPreview() {
             const canvas = document.getElementById('postcardCanvas');
             if(!canvas) return;
@@ -5888,14 +5903,22 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const userSpot = document.getElementById('postcardUserSpot')?.value.trim() || "Loja, Ecuador";
             const userMsg = document.getElementById('postcardUserMsg')?.value.trim() || postcardSettings.defaultMsg || "¡Qué elegancia de la de Francia, qué sabor el de mi Loja!";
 
-            const baseImg = currentUploadedImageObj || new Image();
-            if(!currentUploadedImageObj) {
-                baseImg.crossOrigin = "anonymous";
-                baseImg.onload = () => drawPostcardContent(ctx, baseImg, W, H, userName, userSpot, userMsg);
-                baseImg.src = postcardSettings.sampleImg || "assets/photos/photo-unavailable.svg";
-            } else {
-                drawPostcardContent(ctx, baseImg, W, H, userName, userSpot, userMsg);
+            postcardImageReady = false;
+            const sampleUrl = postcardSettings.sampleImg || 'assets/photos/photo-unavailable.svg';
+            if (!currentUploadedImageObj && (!postcardSampleImageObj || postcardSampleImageUrl !== sampleUrl)) {
+                postcardSampleImageUrl = sampleUrl;
+                const sample = new Image(); postcardSampleImageObj = sample; sample.crossOrigin = 'anonymous';
+                setPostcardImageStatus(currentLang === 'en' ? 'Loading sample photo…' : 'Cargando fotografía de muestra…');
+                sample.onload = () => { if (postcardSampleImageObj === sample) renderPostcardPreview(); };
+                sample.onerror = () => { if (postcardSampleImageObj === sample) setPostcardImageStatus(currentLang === 'en' ? 'Upload your photo to create the postcard.' : 'Sube tu fotografía para crear la postal.'); };
+                sample.src = sampleUrl;
+                return;
             }
+            const baseImg = currentUploadedImageObj || postcardSampleImageObj;
+            if (!baseImg || !baseImg.complete || !baseImg.naturalWidth) return;
+            drawPostcardContent(ctx, baseImg, W, H, userName, userSpot, userMsg);
+            postcardImageReady = true;
+            setPostcardImageStatus(currentLang === 'en' ? 'Postcard ready to download or share.' : 'Postal lista para descargar o compartir.');
         }
 
         function drawPostcardContent(ctx, img, W, H, userName, userSpot, userMsg) {
@@ -6232,6 +6255,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         function downloadPostcardImage() {
+            if (!postcardImageReady) { showToast(currentLang === 'en' ? 'Wait for the photo to load, or upload another one.' : 'Espera a que cargue la foto o sube otra imagen.'); return; }
             const canvas = document.getElementById('postcardCanvas');
             if(!canvas) return;
             try {
@@ -6251,6 +6275,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         async function sharePostcardWhatsapp() {
+            if (!postcardImageReady) { showToast(currentLang === 'en' ? 'Wait for the photo to load, or upload another one.' : 'Espera a que cargue la foto o sube otra imagen.'); return; }
             const canvas = document.getElementById('postcardCanvas');
             if (!canvas) return;
             try {
