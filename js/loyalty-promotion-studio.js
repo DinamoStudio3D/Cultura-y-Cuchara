@@ -57,7 +57,7 @@
     if (!actor() || !el('promoPlace').value) { list.textContent = 'Selecciona un negocio para ver sus borradores.'; return; }
     try {
       const drafts = readCatalog();
-      list.innerHTML = drafts.length ? drafts.map(draft => `<article class="promotion-draft"><small>BORRADOR · ${esc(policy.scheduleLabel(draft))}</small><h4>${esc(draft.title)}</h4><p>${esc(draft.message)}</p><div class="loyalty-studio-actions"><button type="button" data-promo-edit="${esc(draft.promotionId)}">Editar</button><button type="button" data-promo-delete="${esc(draft.promotionId)}">Eliminar borrador</button></div></article>`).join('') : '<p class="promotion-note">Aún no hay promociones preparadas para este negocio.</p>';
+      list.innerHTML = drafts.length ? drafts.map(draft => `<article class="promotion-draft"><small>BORRADOR · ${esc(policy.scheduleLabel(draft))}</small><h4>${esc(draft.title)}</h4><p>${esc(draft.message)}</p><div class="loyalty-studio-actions"><button type="button" data-promo-edit="${esc(draft.promotionId)}">Editar</button><button type="button" data-promo-delete="${esc(draft.promotionId)}">Eliminar borrador</button><button type="button" data-promo-service="${esc(draft.promotionId)}">Llevar al servicio</button></div></article>`).join('') : '<p class="promotion-note">Aún no hay promociones preparadas para este negocio.</p>';
     } catch (_) { say('No se pudo leer la lista local. No se sobrescribió ningún borrador.'); }
   }
   function refresh() {
@@ -96,10 +96,15 @@
     } catch (error) { say(error.message); }
   };
   el('promoList').onclick = event => {
-    const button = event.target.closest('[data-promo-edit], [data-promo-delete]'); if (!button) return;
+    const button = event.target.closest('[data-promo-edit], [data-promo-delete], [data-promo-service]'); if (!button) return;
     try {
-      const storageKey = key(), drafts = readCatalog(), id = button.dataset.promoEdit || button.dataset.promoDelete;
+      const storageKey = key(), drafts = readCatalog(), id = button.dataset.promoEdit || button.dataset.promoDelete || button.dataset.promoService;
       const draft = drafts.find(value => value.promotionId === id); if (!draft) return;
+      if (button.dataset.promoService) {
+        if (!window.prepareLoyaltyPromotionForService) throw Error('El apartado de avisos todavía no está disponible.');
+        window.prepareLoyaltyPromotionForService({actorUid:actor().uid,draft});
+        say('Borrador enviado al apartado de revisión. No se publicó ni se entregó ningún aviso.'); return;
+      }
       if (button.dataset.promoDelete) {
         if (!window.confirm('¿Eliminar este borrador local?')) return;
         localStorage.setItem(storageKey, JSON.stringify(drafts.filter(value => value.promotionId !== id)));
