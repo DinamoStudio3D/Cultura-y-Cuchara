@@ -6029,6 +6029,11 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const baseImg = currentUploadedImageObj || postcardSampleImageObj;
             if (!baseImg || !baseImg.complete || !baseImg.naturalWidth) return;
             drawPostcardContent(ctx, baseImg, W, H, userName, userSpot, userMsg);
+            const renderedFrame = selectedFrame ? loadedCustomFrameImages[selectedFrame.id] : null;
+            if (selectedFrame && !(renderedFrame?.complete && renderedFrame.naturalWidth > 0)) {
+                setPostcardImageStatus(currentLang === 'en' ? 'Loading the selected frame…' : 'Cargando el marco seleccionado…');
+                return;
+            }
             postcardImageReady = true;
             setPostcardImageStatus(currentLang === 'en' ? 'Postcard ready to download or share.' : 'Postal lista para descargar o compartir.');
         }
@@ -6095,9 +6100,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             // 5. RENDERIZADO DEL MARCO ESPECÍFICO
             if (customFrame) {
                 // Marco PNG personalizado subido por el administrador
-                if (loadedCustomFrameImages[customFrame.id] && loadedCustomFrameImages[customFrame.id].complete) {
+                if (loadedCustomFrameImages[customFrame.id]?.complete && loadedCustomFrameImages[customFrame.id].naturalWidth > 0) {
                     ctx.drawImage(loadedCustomFrameImages[customFrame.id], 0, 0, W, H);
-                } else {
+                } else if (!loadedCustomFrameImages[customFrame.id]) {
                     const cImg = new Image();
                     cImg.crossOrigin = "anonymous";
                     cImg.onload = function() {
@@ -6106,8 +6111,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     };
                     cImg.onerror = function() {
                         loadedCustomFrameImages[customFrame.id] = null;
+                        if (currentPostcardTheme === customFrame.id) setPostcardImageStatus(currentLang === 'en' ? 'Could not load this frame. Choose another frame.' : 'No se pudo cargar este marco. Elige otro marco.');
                         showToast(currentLang === 'en' ? 'The custom frame could not be loaded.' : 'No se pudo cargar el marco personalizado.');
                     };
+                    loadedCustomFrameImages[customFrame.id] = cImg;
                     cImg.src = customFrame.img;
                 }
                 ctx.restore();

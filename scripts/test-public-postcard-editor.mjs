@@ -55,3 +55,9 @@ test('resetting adjustments preserves the source photo, personal text and select
  c.resetPostcardDesign();assert.equal(c.currentUploadedImageObj,photo);assert.equal(nodes.postcardUserName.value,'Ana');assert.equal(nodes.postcardUserMsg.value,'Mi recuerdo');assert.equal(c.currentPostcardTheme,'brand-nature');assert.equal(c.postcardPhotoFit,'cover');assert.equal(c.postcardPhotoRotation,0);assert.equal(c.postcardPhotoMirrored,false);assert.equal(resets,1);
  c.currentPostcardTheme='custom';c.customPostcardFrames=[{id:'custom'}];c.resetPostcardDesign();assert.equal(c.currentPostcardSticker,'none');assert.equal(c.postcardShowTexts,false);assert.equal(c.currentPostcardTheme,'custom');
 });
+
+test('custom PNG must be ready before exporting the composed postcard',()=>{
+ const {context:c}=fixture({currentUploadedImageObj:{complete:true,naturalWidth:800},currentPostcardTheme:'custom',customPostcardFrames:[{id:'custom'}],loadedCustomFrameImages:{custom:{complete:false,naturalWidth:0}}});
+ c.renderPostcardPreview();assert.equal(c.postcardImageReady,false);
+ c.loadedCustomFrameImages.custom={complete:true,naturalWidth:800,naturalHeight:1200};c.renderPostcardPreview();assert.equal(c.postcardImageReady,true);
+});
