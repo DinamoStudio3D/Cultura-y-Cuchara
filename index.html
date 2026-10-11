@@ -918,7 +918,7 @@
                     Apoya el talento local, la repostería artesanal, el café de autor y los productos emergentes de nuestra provincia.
                 </p>
             </div>
-            <div class="vl-entrepreneur-grid" id="emprendedoresGridContainer"></div>
+            <div class="vl-enterprise-filters"><label for="publicEntrepreneurSearch"><span data-i18n="enterpriseSearchLabel">Busca talento local</span><input id="publicEntrepreneurSearch" type="search" oninput="renderEmprendedoresUI()" placeholder="Nombre, producto o descripción"></label><label for="publicEntrepreneurCategory"><span data-i18n="enterpriseCategoryLabel">Categoría</span><select id="publicEntrepreneurCategory" onchange="renderEmprendedoresUI()"><option value="">Todas las categorías</option></select></label><p id="publicEntrepreneurCount" role="status" aria-live="polite"></p></div><div class="vl-entrepreneur-grid" id="emprendedoresGridContainer"></div>
         </div>
     </section>
 
@@ -2339,6 +2339,8 @@
                 agendaFestivalLink: "Programación FIAVL",
                 agendaTitle: "Agenda Cultural y Eventos",
                 agendaDesc: "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
+                enterpriseSearchLabel: "Busca talento local",
+                enterpriseCategoryLabel: "Categoría",
                 podIntroBadge: "HISTORIAS PARA ESCUCHAR",
                 podIntroTitle: "La voz de nuestra tierra.",
                 podIntroDesc: "Un espacio para descubrir las personas, sabores y tradiciones que hacen especial a Loja.",
@@ -2508,6 +2510,8 @@
                 agendaFestivalLink: "FIAVL program",
                 agendaTitle: "Cultural Agenda & Events",
                 agendaDesc: "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map.",
+                enterpriseSearchLabel: "Find local talent",
+                enterpriseCategoryLabel: "Category",
                 podIntroBadge: "STORIES TO LISTEN TO",
                 podIntroTitle: "The voice of our land.",
                 podIntroDesc: "Discover the people, flavours and traditions that make Loja special.",
@@ -5379,10 +5383,19 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function renderEmprendedoresUI() {
             const container = document.getElementById('emprendedoresGridContainer');
             if(!container) return;
-            container.innerHTML = '';
+            const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+            const search=document.getElementById('publicEntrepreneurSearch'),category=document.getElementById('publicEntrepreneurCategory'),selected=category.value,query=normalize(search.value).trim();
+            search.placeholder=currentLang==='en'?'Name, product or description':'Nombre, producto o descripción';
+            const categories=[...new Set(emprendedoresList.map(emp=>String(emp.category||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+            category.innerHTML=`<option value="">${currentLang==='en'?'All categories':'Todas las categorías'}</option>`+categories.map(value=>`<option value="${escapeHTML(value)}">${escapeHTML(value)}</option>`).join('');
+            category.value=categories.includes(selected)?selected:'';
+            const filtered=emprendedoresList.filter(emp=>(!category.value||String(emp.category||'').trim()===category.value)&&(!query||normalize([emp.name,emp.category,emp.desc].join(' ')).includes(query)));
+            document.getElementById('publicEntrepreneurCount').textContent=currentLang==='en'?`${filtered.length} of ${emprendedoresList.length} businesses`:`${filtered.length} de ${emprendedoresList.length} emprendimientos`;
 
-            container.innerHTML = emprendedoresList.map(emp => {
-                const name = escapeHTML(String(emp.name || ''));
+
+            container.innerHTML = filtered.map(emp => {
+                const name = escapeHTML(String(emp.name || (currentLang==='en'?'Local business':'Emprendimiento local')));
+                const image=window.VisitaLojaPodcastMedia.safeMediaUrl(String(emp.img||''));
                 const waText = currentLang === 'en'
                     ? `Hello! I came from the Visita Loja website and would like information about ${emp.name}.`
                     : `¡Hola! Vengo desde la web Visita Loja y deseo más información sobre su emprendimiento ${emp.name}.`;
@@ -5390,20 +5403,20 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const phone = String(emp.phone || '').replace(/\D/g, '');
                 return `
                     <article class="vl-enterprise-card bg-white">
-                        <div class="vl-enterprise-photo">
-                            <img src="${escapeHTML(String(emp.img || ''))}" alt="${name}" decoding="async" loading="lazy" onerror="this.hidden=true;this.parentElement.classList.add('is-unavailable')">
-                            <div class="vl-enterprise-placeholder" aria-hidden="true"><i class="fa-solid fa-store"></i><span>Hecho en Loja</span></div>
+                        <div class="vl-enterprise-photo ${image?'':'is-unavailable'}">
+                            ${image?`<img src="${escapeHTML(image)}" alt="${name}" decoding="async" loading="lazy" onerror="this.hidden=true;this.parentElement.classList.add('is-unavailable')">`: ''}
+                            <div class="vl-enterprise-placeholder" aria-hidden="true"><i class="fa-solid fa-store"></i><span>${currentLang==='en'?'Made in Loja':'Hecho en Loja'}</span></div>
                             <span class="vl-enterprise-category bg-brandDark">${escapeHTML(String(emp.category || ''))}</span>
                         </div>
                         <div class="vl-enterprise-copy">
                             <p class="vl-enterprise-kicker">${currentLang === 'en' ? 'LOCAL ENTREPRENEURSHIP' : 'TALENTO LOCAL'}</p>
                             <h3>${name}</h3>
                             <p class="vl-enterprise-description">${escapeHTML(String(emp.desc || ''))}</p>
-                            ${phone ? `<a href="https://wa.me/${phone}?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener noreferrer" class="vl-enterprise-contact bg-green-500"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> ${contactLabel}<i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>` : ''}
+                            ${phone.length>=8&&phone.length<=15 ? `<a href="https://wa.me/${phone}?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener noreferrer" class="vl-enterprise-contact bg-green-500"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> ${contactLabel}<i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>` : ''}
                         </div>
                     </article>`;
             }).join('');
-            if (!emprendedoresList.length) container.innerHTML = `<p class="vl-enterprise-empty">${currentLang === 'en' ? 'New local businesses will appear here.' : 'Aquí encontrarás los nuevos emprendimientos de Loja.'}</p>`;
+            if (!filtered.length) container.innerHTML = `<p class="vl-enterprise-empty">${currentLang === 'en' ? (emprendedoresList.length?'No businesses match these filters. Try another search.':'New local businesses will appear here.') : (emprendedoresList.length?'No hay emprendimientos con estos filtros. Prueba otra búsqueda.':'Aquí encontrarás los nuevos emprendimientos de Loja.')}</p>`;
             renderAdminEmprendedoresList();
         }
 
