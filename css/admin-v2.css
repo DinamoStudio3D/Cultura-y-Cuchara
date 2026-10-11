@@ -421,3 +421,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 #analyticsModule h3{line-height:1.5}
 @media(max-width:1100px){#analyticsModule .xl\:grid-cols-\[1\.35fr_\.65fr\]{grid-template-columns:1fr!important}}
 @media(max-width:600px){.admin-analytics-rank{padding:14px}#analyticsModule .grid-cols-2{gap:10px}#analyticsModule .grid-cols-2 > div{padding:14px!important}}
+
+/* V138: tareas del resumen */
+.admin-dashboard-attention{padding:24px;border:1px solid #a16207;border-radius:20px;background:linear-gradient(120deg,#332719,#111827);margin-bottom:24px}
+.admin-dashboard-attention h3{font-size:21px;font-weight:800;color:#fef3c7;line-height:1.4}.admin-dashboard-attention > p{font-size:13px;line-height:1.7;color:#d1d5db;margin:8px 0 18px}
+.admin-dashboard-attention-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.admin-dashboard-attention-grid button{display:flex;flex-direction:column;gap:8px;padding:18px;border:1px solid #64748b;border-radius:14px;background:#172033;text-align:left;min-width:0;color:#f8fafc}
+.admin-dashboard-attention-grid strong{font-size:34px;line-height:1.2;color:#fcd34d}.admin-dashboard-attention-grid span{font-size:14px;font-weight:700;line-height:1.5}.admin-dashboard-attention-grid small{font-size:12px;color:#cbd5e1}
+.admin-dashboard-attention-grid button:hover{background:#26334a}.admin-dashboard-attention-grid button:focus-visible{outline:3px solid #fcd34d;outline-offset:3px}
+#dashboardModule .text-gray-400{color:#b8c5d7!important}#dashboardHealthChecked{line-height:1.6!important}#dashboardModule strong[id]{overflow-wrap:anywhere}
+@media(max-width:750px){.admin-dashboard-attention{padding:18px}.admin-dashboard-attention-grid{grid-template-columns:1fr}.admin-dashboard-attention-grid button{display:grid;grid-template-columns:55px minmax(0,1fr);align-items:center}.admin-dashboard-attention-grid small{grid-column:2}}
