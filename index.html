@@ -1093,13 +1093,13 @@
                         </div>
                     </div>
 
-                    <fieldset class="vl167-photo-options"><legend>Personaliza tu fotografía</legend><div class="vl167-options-grid">
-                        <label>Formato de los marcos Visita Loja<select id="postcardOutputFormat" onchange="postcardOutputFormat=this.value;renderPostcardPreview()" disabled><option value="story">Historia · 9:16</option><option value="portrait">Publicación · 4:5</option><option value="square">Cuadrado · 1:1</option></select></label>
-                        <label>Encuadre<select id="postcardPhotoFit" onchange="setPostcardPhotoFit(this.value)"><option value="cover">Llenar el marco</option><option value="contain">Mostrar foto completa</option></select></label>
-                        <label>Ambiente<select id="postcardFilterSelect" onchange="setPostcardFilter(this.value)"><option value="none">Natural</option><option value="sunset">Atardecer cálido</option><option value="sepia">Recuerdo sepia</option><option value="teatro">Blanco y negro</option></select></label>
-                        <label>Sello decorativo<select id="postcardStickerSelect" onchange="setPostcardSticker(this.value)"><option value="none">Sin sello</option><option value="cepa" selected>Tradición lojana</option><option value="fiavl">Artes vivas</option><option value="cafe">Ruta del café</option><option value="centinela">Centinela del Sur</option></select></label>
-                    </div><div class="vl167-transform-actions"><button type="button" onclick="rotatePostcardPhoto()"><i class="fa-solid fa-rotate-right"></i> Girar foto 90°</button><button type="button" id="postcardMirrorButton" aria-pressed="false" onclick="mirrorPostcardPhoto()"><i class="fa-solid fa-arrows-left-right"></i> Foto en espejo</button></div><p>Los ajustes cambian tu postal; tu fotografía original se conserva.</p></fieldset>
-                    <label class="flex items-center gap-3 text-sm font-bold"><input id="postcardShowTextsToggle" type="checkbox" checked onchange="postcardShowTexts=this.checked;renderPostcardPreview()"> Mostrar mi nombre, lugar y frase</label>
+                    <fieldset class="vl167-photo-options"><legend data-i18n="pcEditPhoto">Personaliza tu fotografía</legend><div class="vl167-options-grid">
+                        <label><span data-i18n="pcOutput">Formato de los marcos Visita Loja</span><select id="postcardOutputFormat" onchange="postcardOutputFormat=this.value;renderPostcardPreview()" disabled><option value="story" data-i18n="pcStory">Historia · 9:16</option><option value="portrait" data-i18n="pcPortrait">Publicación · 4:5</option><option value="square" data-i18n="pcSquare">Cuadrado · 1:1</option></select></label>
+                        <label><span data-i18n="pcFit">Encuadre</span><select id="postcardPhotoFit" onchange="setPostcardPhotoFit(this.value)"><option value="cover" data-i18n="pcCover">Llenar el marco</option><option value="contain" data-i18n="pcContain">Mostrar foto completa</option></select></label>
+                        <label><span data-i18n="pcMood">Ambiente</span><select id="postcardFilterSelect" onchange="setPostcardFilter(this.value)"><option value="none" data-i18n="pcNatural">Natural</option><option value="sunset" data-i18n="pcWarm">Atardecer cálido</option><option value="sepia" data-i18n="pcSepia">Recuerdo sepia</option><option value="teatro" data-i18n="pcMono">Blanco y negro</option></select></label>
+                        <label><span data-i18n="pcStamp">Sello decorativo</span><select id="postcardStickerSelect" onchange="setPostcardSticker(this.value)"><option value="none" data-i18n="pcNoStamp">Sin sello</option><option value="cepa" selected data-i18n="pcTradition">Tradición lojana</option><option value="fiavl" data-i18n="pcArts">Artes vivas</option><option value="cafe" data-i18n="pcCoffee">Ruta del café</option><option value="centinela" data-i18n="pcFrontier">Centinela del Sur</option></select></label>
+                    </div><div class="vl167-transform-actions"><button type="button" onclick="rotatePostcardPhoto()"><i class="fa-solid fa-rotate-right"></i> <span data-i18n="pcRotate">Girar foto 90°</span></button><button type="button" id="postcardMirrorButton" aria-pressed="false" onclick="mirrorPostcardPhoto()"><i class="fa-solid fa-arrows-left-right"></i> <span data-i18n="pcMirror">Foto en espejo</span></button></div><p data-i18n="pcOriginal">Los ajustes cambian tu postal; tu fotografía original se conserva.</p></fieldset>
+                    <label class="flex items-center gap-3 text-sm font-bold"><input id="postcardShowTextsToggle" type="checkbox" checked onchange="postcardShowTexts=this.checked;renderPostcardPreview()"> <span data-i18n="pcShowText">Mostrar mi nombre, lugar y frase</span></label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label for="postcardUserName" class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardNameLabel">Tu Nombre o Apodo</label>
@@ -1116,7 +1116,7 @@
                         <input type="text" id="postcardUserMsg" oninput="renderPostcardPreview()" maxlength="50" placeholder="¡Enamorándome de los sabores de Loja!" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-brandDark font-bold outline-none focus:border-brandGold">
                     </div>
 
-                    <div class="vl167-phrases"><span>Una frase para empezar</span><div><button type="button" onclick="applyQuickPhrase('Saludos desde Loja')">Saludos desde Loja</button><button type="button" onclick="applyQuickPhrase('Un recuerdo para volver')">Un recuerdo para volver</button><button type="button" onclick="applyQuickPhrase('Loja, a mi ritmo')">Loja, a mi ritmo</button></div></div>
+                    <div class="vl167-phrases"><span data-i18n="pcPhrases">Una frase para empezar</span><div><button type="button" onclick="applyQuickPhrase(currentLang==='en'?'Greetings from Loja':'Saludos desde Loja')"><span data-i18n="pcHello">Saludos desde Loja</span></button><button type="button" onclick="applyQuickPhrase(currentLang==='en'?'A memory to return to':'Un recuerdo para volver')"><span data-i18n="pcMemory">Un recuerdo para volver</span></button><button type="button" onclick="applyQuickPhrase(currentLang==='en'?'Loja, at my own pace':'Loja, a mi ritmo')"><span data-i18n="pcMyPace">Loja, a mi ritmo</span></button></div></div>
                     <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
                         <button type="button" onclick="downloadPostcardImage()" class="flex-1 bg-brandGold text-white font-black py-3 rounded-xl hover:bg-brandGoldHover transition text-xs uppercase tracking-wider shadow-warm-glow flex items-center justify-center gap-2">
                             <i class="fa-solid fa-download"></i> <span data-i18n="btnDownloadPostcard">Descargar Postal (HD)</span>
@@ -1125,7 +1125,7 @@
                             <i class="fa-solid fa-share-nodes text-sm"></i> <span data-i18n="btnSharePostcard">Compartir</span>
                         </button>
                     </div>
-                    <button type="button" onclick="sharePostcardLink()" class="vl169-share-link"><i class="fa-solid fa-link" aria-hidden="true"></i> Compartir el enlace del creador</button>
+                    <button type="button" onclick="sharePostcardLink()" class="vl169-share-link"><i class="fa-solid fa-link" aria-hidden="true"></i> <span data-i18n="pcCreatorLink">Compartir el enlace del creador</span></button>
                 </div>
 
                 <!-- Previsualización en Vivo de la Postal (Formato Historia 9:16) -->
@@ -2295,6 +2295,34 @@
                 postcardBadge: "Comparte tu Experiencia",
                 postcardPreviewTitle: 'Tu recuerdo de Loja',
                 postcardTitle: 'Crea tu Postal <span class="text-brandGold">Visita Loja</span>',
+                pcEditPhoto: "Personaliza tu fotografía",
+                pcOutput: "Formato de los marcos Visita Loja",
+                pcStory: "Historia · 9:16",
+                pcPortrait: "Publicación · 4:5",
+                pcSquare: "Cuadrado · 1:1",
+                pcFit: "Encuadre",
+                pcCover: "Llenar el marco",
+                pcContain: "Mostrar foto completa",
+                pcMood: "Ambiente",
+                pcNatural: "Natural",
+                pcWarm: "Atardecer cálido",
+                pcSepia: "Recuerdo sepia",
+                pcMono: "Blanco y negro",
+                pcStamp: "Sello decorativo",
+                pcNoStamp: "Sin sello",
+                pcTradition: "Tradición lojana",
+                pcArts: "Artes vivas",
+                pcCoffee: "Ruta del café",
+                pcFrontier: "Centinela del Sur",
+                pcRotate: "Girar foto 90°",
+                pcMirror: "Foto en espejo",
+                pcOriginal: "Los ajustes cambian tu postal; tu fotografía original se conserva.",
+                pcShowText: "Mostrar mi nombre, lugar y frase",
+                pcPhrases: "Una frase para empezar",
+                pcHello: "Saludos desde Loja",
+                pcMemory: "Un recuerdo para volver",
+                pcMyPace: "Loja, a mi ritmo",
+                pcCreatorLink: "Compartir el enlace del creador",
                 postcardDesc: "Sube tu foto, escoge tu marco favorito (FIAVL 2026, Ruta del Café o Tradición Lojana), personaliza tu recuerdo y descárgalo con formato listo para tus Historias de Instagram y WhatsApp.",
                 postcardUploadLabel: "1. Sube tu Foto de Loja",
                 postcardFrameLabel: "2. Elige el Estilo del Marco",
@@ -2470,6 +2498,34 @@
                 postcardBadge: "Share your Journey",
                 postcardPreviewTitle: 'Your Loja memory',
                 postcardTitle: 'Create your <span class="text-brandGold">Visita Loja</span> Postcard',
+                pcEditPhoto: "Personalize your photo",
+                pcOutput: "Visita Loja frame format",
+                pcStory: "Story · 9:16",
+                pcPortrait: "Portrait post · 4:5",
+                pcSquare: "Square · 1:1",
+                pcFit: "Photo fit",
+                pcCover: "Fill the frame",
+                pcContain: "Show the full photo",
+                pcMood: "Photo filter",
+                pcNatural: "Natural",
+                pcWarm: "Warm sunset",
+                pcSepia: "Sepia memory",
+                pcMono: "Black and white",
+                pcStamp: "Decorative stamp",
+                pcNoStamp: "No stamp",
+                pcTradition: "Loja tradition",
+                pcArts: "Performing arts",
+                pcCoffee: "Coffee route",
+                pcFrontier: "Guardian of the South",
+                pcRotate: "Rotate photo 90°",
+                pcMirror: "Mirror photo",
+                pcOriginal: "These adjustments change your postcard; your original photo stays intact.",
+                pcShowText: "Show my name, place and message",
+                pcPhrases: "Start with a message",
+                pcHello: "Greetings from Loja",
+                pcMemory: "A memory to return to",
+                pcMyPace: "Loja, at my own pace",
+                pcCreatorLink: "Share the postcard creator link",
                 postcardDesc: "Upload your photo, pick a signature frame (FIAVL 2026, Coffee Route or Loja Heritage), customize your memory, and export it ready for your Instagram & WhatsApp Stories.",
                 postcardUploadLabel: "1. Upload your Loja Photo",
                 postcardFrameLabel: "2. Choose Frame Style",
