@@ -92,4 +92,4 @@ function service({db,clock=()=>Date.now(),timestamp=value=>value}){
  }
  return {configure,saveReward,redeem,settle,follow,wallet,overview};
 }
-module.exports={service,prepareAward,prepareReversal,key,configData,rewardData,LoyaltyError};
+module.exports={manager,service,prepareAward,prepareReversal,key,configData,rewardData,LoyaltyError};

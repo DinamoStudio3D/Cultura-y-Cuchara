@@ -4,7 +4,7 @@ const crypto = require("node:crypto");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { initializeApp } = require("firebase-admin/app");
-const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
+const { getFirestore, FieldValue, Timestamp, FieldPath } = require("firebase-admin/firestore");
 const { processValidatedVisit } = require("./chabaquito-v1-visit-validation");
 const { safeSyncUserMissionsV2 } = require("./chabaquito-missions-v2-service");
 const { shouldReconcileLoyaltyVisit } = require("./chabaquito-loyalty-reconciliation");
@@ -294,5 +294,14 @@ for (const [name, action] of Object.entries({configureLoyaltyPoints:'configure',
  exports[name] = onCall({region:REGION,enforceAppCheck:false}, async request => {
   try { return await loyaltyV83[action](request.auth,request.data||{}); }
   catch(error) { if(error instanceof loyaltyPoints.LoyaltyError)throw new HttpsError(error.code,error.message); throw new HttpsError('internal','No se pudo completar la operación.'); }
+ });
+}
+
+// Prepared V88 notification service. Separate opt-in gate; no automatic dispatch or scheduler.
+const notificationService = require('./loyalty-notification-service').service({db, timestamp:value=>Timestamp.fromMillis(value),documentId:FieldPath?.documentId?.()||'__name__'});
+for(const [name,action] of Object.entries({configureLoyaltyNotifications:'configure',saveLoyaltyPromotion:'save',publishLoyaltyPromotion:'publish',pauseLoyaltyPromotion:'pause',dispatchLoyaltyPromotionBatch:'dispatch',getLoyaltyPromotionOverview:'overview',getLoyaltyNotificationInbox:'inbox',markLoyaltyNotificationRead:'markRead'})){
+ exports[name]=onCall({region:REGION,enforceAppCheck:false},async request=>{
+  try{return await notificationService[action](request.auth,request.data||{});}
+  catch(error){if(error instanceof loyaltyPoints.LoyaltyError)throw new HttpsError(error.code,error.message);throw new HttpsError('internal','No se pudo completar la operación.');}
  });
 }
