@@ -1125,6 +1125,7 @@
                             <i class="fa-solid fa-share-nodes text-sm"></i> <span data-i18n="btnSharePostcard">Compartir</span>
                         </button>
                     </div>
+                    <button type="button" onclick="resetPostcardDesign()" class="vl169-share-link"><i class="fa-solid fa-arrow-rotate-left" aria-hidden="true"></i><span data-i18n="pcResetDesign">Restablecer ajustes sin borrar mi foto</span></button>
                     <button type="button" onclick="sharePostcardLink()" class="vl169-share-link"><i class="fa-solid fa-link" aria-hidden="true"></i> <span data-i18n="pcCreatorLink">Compartir el enlace del creador</span></button>
                 </div>
 
@@ -2295,6 +2296,7 @@
                 postcardBadge: "Comparte tu Experiencia",
                 postcardPreviewTitle: 'Tu recuerdo de Loja',
                 postcardTitle: 'Crea tu Postal <span class="text-brandGold">Visita Loja</span>',
+                pcResetDesign: "Restablecer ajustes sin borrar mi foto",
                 pcEditPhoto: "Personaliza tu fotografía",
                 pcOutput: "Formato de los marcos Visita Loja",
                 pcStory: "Historia · 9:16",
@@ -2498,6 +2500,7 @@
                 postcardBadge: "Share your Journey",
                 postcardPreviewTitle: 'Your Loja memory',
                 postcardTitle: 'Create your <span class="text-brandGold">Visita Loja</span> Postcard',
+                pcResetDesign: "Reset adjustments without deleting my photo",
                 pcEditPhoto: "Personalize your photo",
                 pcOutput: "Visita Loja frame format",
                 pcStory: "Story · 9:16",
@@ -5882,6 +5885,18 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             });
             const stop = () => { postcardDragState = null; };
             canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointercancel', stop);
+        }
+
+        function resetPostcardDesign() {
+            postcardPhotoRotation=0; postcardPhotoMirrored=false; postcardPhotoFit='cover'; postcardOutputFormat='story'; currentPostcardFilter='none';
+            const custom=customPostcardFrames.some(frame=>frame.id===currentPostcardTheme);
+            currentPostcardSticker=custom?'none':'cepa'; postcardShowTexts=!custom;
+            const values={postcardPhotoFit:'cover',postcardOutputFormat:'story',postcardFilterSelect:'none',postcardStickerSelect:currentPostcardSticker};
+            for(const [id,value] of Object.entries(values)){const input=document.getElementById(id);if(input)input.value=value;}
+            document.getElementById('postcardMirrorButton')?.setAttribute('aria-pressed','false');
+            const textToggle=document.getElementById('postcardShowTextsToggle');if(textToggle)textToggle.checked=postcardShowTexts;
+            resetPostcardPhotoAdjustment();
+            showToast(currentLang==='en'?'Adjustments reset. Your photo and text were kept.':'Ajustes restablecidos. Conservamos tu fotografía y tus textos.');
         }
 
         function setPostcardPhotoFit(value) {

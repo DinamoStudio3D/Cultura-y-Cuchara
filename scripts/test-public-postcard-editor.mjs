@@ -7,7 +7,7 @@ function fixture(overrides={}) {
  const nodes={postcardCanvas:{getContext:()=>({}),closest:()=>null},postcardUserMsg:{value:'Primera frase'}};
  const context={document:{getElementById:id=>nodes[id]||null,createElement:()=>({getContext:()=>({translate(){},rotate(){},scale(){},drawImage(){}})})},Image:class{constructor(){this.complete=false;this.naturalWidth=0}},customPostcardFrames:[],loadedCustomFrameImages:{},brandedPostcardFrames:[{id:'brand-nature',name:'Loja Natural',color:'#173d30'}],currentPostcardTheme:'brand-nature',postcardOutputFormat:'story',postcardSettings:{sampleImg:'photo.png'},currentLang:'es',currentUploadedImageObj:null,postcardSampleImageObj:null,postcardSampleImageUrl:'',postcardImageReady:false,postcardPhotoRotation:0,postcardPhotoMirrored:false,loadPostcardBrandLogo(){},setPostcardImageStatus(){},drawPostcardContent(){},showToast(){},...overrides};
  vm.createContext(context);
- for(const [name,next] of [['postcardPhotoPlacement','rotatePostcardPhoto'],['postcardTransformedPhoto','loadPostcardBrandLogo'],['availableBrandedPostcardFrames','renderPublicFrameButtons'],['renderPostcardPreview','drawPostcardContent'],['sharePostcardWhatsapp','sharePostcardLink']]) {
+ for(const [name,next] of [['resetPostcardDesign','setPostcardPhotoFit'],['postcardPhotoPlacement','rotatePostcardPhoto'],['postcardTransformedPhoto','loadPostcardBrandLogo'],['availableBrandedPostcardFrames','renderPublicFrameButtons'],['renderPostcardPreview','drawPostcardContent'],['sharePostcardWhatsapp','sharePostcardLink']]) {
   const start=source.search(new RegExp(`        (?:async )?function ${name}\\(`));
   const end=source.indexOf(`        function ${next}(`,start);
   assert.ok(start>=0&&end>start);vm.runInContext(source.slice(start,end),context);
@@ -46,4 +46,12 @@ test('sharing sends a PNG, downloads on unsupported devices and does nothing ext
  c.navigator.canShare=()=>false;await c.sharePostcardWhatsapp();assert.equal(downloaded,1);
  c.navigator.canShare=()=>true;c.navigator.share=async()=>{const error=new Error();error.name='AbortError';throw error};await c.sharePostcardWhatsapp();assert.equal(downloaded,1);
  c.postcardImageReady=false;await c.sharePostcardWhatsapp();assert.equal(shared,1);assert.equal(downloaded,1);
+});
+
+test('resetting adjustments preserves the source photo, personal text and selected frame',()=>{
+ const photo={complete:true,naturalWidth:800};let resets=0;
+ const {context:c,nodes}=fixture({currentUploadedImageObj:photo,postcardPhotoRotation:90,postcardPhotoMirrored:true,postcardPhotoFit:'contain',postcardOutputFormat:'square',currentPostcardFilter:'sepia',resetPostcardPhotoAdjustment:()=>resets++});
+ nodes.postcardUserName={value:'Ana'};nodes.postcardUserMsg.value='Mi recuerdo';
+ c.resetPostcardDesign();assert.equal(c.currentUploadedImageObj,photo);assert.equal(nodes.postcardUserName.value,'Ana');assert.equal(nodes.postcardUserMsg.value,'Mi recuerdo');assert.equal(c.currentPostcardTheme,'brand-nature');assert.equal(c.postcardPhotoFit,'cover');assert.equal(c.postcardPhotoRotation,0);assert.equal(c.postcardPhotoMirrored,false);assert.equal(resets,1);
+ c.currentPostcardTheme='custom';c.customPostcardFrames=[{id:'custom'}];c.resetPostcardDesign();assert.equal(c.currentPostcardSticker,'none');assert.equal(c.postcardShowTexts,false);assert.equal(c.currentPostcardTheme,'custom');
 });
