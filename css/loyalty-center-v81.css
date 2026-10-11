@@ -34,3 +34,4 @@
   .loyalty-pass__actions>a { flex:1 1 150px; white-space:normal; line-height:1.5; }
  }
 }
+#loyaltyClearCardFilters{grid-column:1/-1;justify-self:start;min-height:44px;border:1px solid #9ab7b7;border-radius:12px;padding:10px 16px;background:#24494f;color:#fff;font-size:14px;font-weight:750;line-height:1.5}#loyaltyClearCardFilters[hidden]{display:none!important}
