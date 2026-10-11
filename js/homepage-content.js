@@ -2,6 +2,11 @@
 (function (root) {
   "use strict";
   const blocks = [
+    ...[
+      {id:'provinceGateway',name:'Acceso destacado · Cantones',selector:'.vl152-cantons',image:'.vl152-cantons>img',imageUrl:'assets/photos/loja-centro.webp',imageAlt:'Vista de Loja',fields:[['kicker','Antetítulo','.vl152-kicker','MÁS ALLÁ DE LA CAPITAL','BEYOND THE CAPITAL'],['title','Título','.vl152-copy h2','16 cantones. Nuevas historias.','16 cantons. New stories.'],['description','Descripción','.vl152-copy p','Explora los destinos de la provincia y elige tu próxima escapada.','Explore the province and choose your next getaway.'],['button','Botón','.vl152-copy a','Descubrir los cantones','Explore the cantons']]},
+      {id:'shopGateway',name:'Acceso destacado · Tienda',selector:'.vl152-shop',fields:[['kicker','Antetítulo','.vl152-kicker','UN PEDACITO DE LOJA CONTIGO','TAKE A PIECE OF LOJA WITH YOU'],['title','Título','.vl152-copy h2','La tienda de Visita Loja.','The Visita Loja shop.'],['description','Descripción','.vl152-copy p','Conoce nuestro catálogo de recuerdos y productos en un solo lugar.','Browse our souvenirs and products in one place.'],['button','Botón','.vl152-copy a','Explorar la tienda','Explore the shop']]}
+    ],
+
     {
       id: "mobileWelcome",
       name: "Portada móvil",
