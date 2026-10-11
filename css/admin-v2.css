@@ -299,3 +299,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 #auditModule h2{font-size:clamp(25px,3vw,34px)!important;line-height:1.2!important}#auditModule .field{font-size:14px;min-height:44px;line-height:1.5}
 #auditList{display:grid;gap:14px}#auditList>article{margin:0!important;align-items:flex-start!important;padding:22px!important;background:#121d25!important;border-color:#34424c!important;border-left:3px solid #a87877!important;min-width:0}#auditList article strong{font-size:17px;line-height:1.4}#auditList article p{line-height:1.7;overflow-wrap:anywhere}#auditList article p:last-child{font-size:13px!important;color:#a8b8c7!important}
 @media(max-width:650px){.admin-audit-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-audit-summary>div{padding:16px}#auditList>article{padding:16px!important;flex-direction:row!important}}
+
+/* V127 — actionable content review. */
+#controlModule h2{font-size:clamp(25px,3vw,34px)!important;line-height:1.2!important}#controlModule .field{min-height:44px;font-size:14px;line-height:1.5}
+.admin-control-search{display:block;margin-bottom:16px}.admin-control-search>span{display:block;font-size:13px;font-weight:700;color:#b7c5d1;margin-bottom:8px}
+#controlList{display:grid;gap:14px}#controlList>article{margin:0!important;align-items:flex-start!important;padding:22px!important;min-width:0;background:#121d25!important}#controlList article h3{font-size:18px;line-height:1.4;margin-top:8px}#controlList article p{font-size:14px;line-height:1.7;overflow-wrap:anywhere}#controlList article button{min-height:44px;white-space:normal!important;font-size:13px!important;line-height:1.5;text-align:left;flex-shrink:0;max-width:240px}
+#controlModule>.grid>div{padding:20px!important;min-width:0}#controlModule>.grid strong{font-size:30px;line-height:1.2}#controlModule>.grid span{font-size:13px;line-height:1.5}
+@media(max-width:650px){#controlList>article{padding:16px!important}#controlList article button{max-width:none;width:100%}}
