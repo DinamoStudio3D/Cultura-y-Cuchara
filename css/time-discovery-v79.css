@@ -49,3 +49,22 @@
 @media(min-width:1024px){.vl-time-layout{gap:30px!important;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr)!important;align-items:start!important}}
 @media(max-width:1023px) and (min-width:650px){#lojaTimeTabsContainer{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 }
+
+/* V166: full historic place names and adaptable comparison space. */
+@layer vl-layout {
+ #loja-tiempo #lojaTimeTabsContainer button span { word-break:normal !important; overflow-wrap:normal !important; white-space:normal !important; line-height:1.5 !important; }
+ #loja-tiempo .vl-time-search input { min-height:48px; min-width:0; }
+ #loja-tiempo .vl-time-details { align-items:flex-start !important; }
+ #loja-tiempo .vl-time-details>div:first-child { min-width:0; flex:1 1 auto; }
+ #loja-tiempo .vl-time-details>div:last-child { max-width:100%; flex-shrink:1 !important; }
+ #loja-tiempo .vl-time-details button { min-height:44px !important; white-space:normal; line-height:1.4 !important; }
+ #loja-tiempo #timeSpotTitle { word-break:normal; overflow-wrap:normal; }
+ @media(max-width:639px) {
+  #loja-tiempo #beforeAfterViewer { height:clamp(260px,54svh,400px) !important; }
+  #loja-tiempo .vl-time-details { padding:18px !important; gap:16px !important; }
+  #loja-tiempo .vl-time-details>div:last-child { width:100%; display:grid !important; grid-template-columns:1fr 1fr; gap:8px !important; }
+  #loja-tiempo .vl-time-details button { width:100%; justify-content:center; padding:10px !important; }
+  #loja-tiempo #lojaTimeTabsContainer>button:last-child:nth-child(odd) { grid-column:1 / -1; }
+ }
+ @media(max-width:380px) { #loja-tiempo .vl-time-details>div:last-child { grid-template-columns:1fr; } }
+}
