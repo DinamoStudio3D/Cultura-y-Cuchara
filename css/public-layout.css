@@ -1320,3 +1320,41 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   #categorias .vl43-explore-content p { font-size:16px !important; }
  }
 }
+
+/* V116: a compact footer with brand, destinations, social links and contact. */
+@layer vl-layout {
+ body>footer.vl-site-footer { padding:36px clamp(20px,4vw,60px) 24px !important; }
+ .vl-site-footer>.max-w-7xl { display:grid !important; grid-template-columns:minmax(0,1fr) minmax(180px,.7fr) minmax(0,1.15fr) !important; align-items:start !important; gap:32px !important; text-align:left !important; max-width:1280px !important; }
+ .vl-site-footer>.max-w-7xl>div:first-child { align-items:center !important; gap:14px !important; }
+ .vl-site-footer>.max-w-7xl>div:first-child>div:first-child { width:58px !important; height:58px !important; flex:0 0 58px !important; }
+ .vl-site-footer>.max-w-7xl>div:first-child>div:last-child>span { font-size:18px !important; letter-spacing:.05em !important; }
+ .vl-site-footer>.max-w-7xl>div:first-child p { font-size:11px !important; line-height:1.7 !important; margin-top:6px !important; }
+ .vl-site-footer>.max-w-7xl>div:last-child { text-align:left !important; font-size:13px !important; line-height:1.65 !important; }
+ .vl-site-footer>.max-w-7xl>div:last-child>div>div { justify-content:flex-start !important; }
+ .vl-footer-navigation { display:grid !important; align-content:start !important; gap:2px !important; }
+ .vl-footer-navigation>strong { display:block !important; font-size:15px !important; margin-bottom:9px !important; }
+ .vl-footer-navigation>a { display:flex !important; align-items:center !important; justify-content:space-between !important; gap:12px !important; min-height:40px !important; padding:8px 0 !important; font-size:13px !important; border-bottom:1px solid #ffffff15 !important; }
+ .vl-footer-navigation>a>i { font-size:10px !important; }
+ .vl-footer-navigation>a:hover { text-decoration:underline !important; text-underline-offset:4px !important; }
+ .vl-site-footer [aria-label="Redes sociales oficiales de Visita Loja"]>a { width:44px !important; height:44px !important; min-width:44px !important; }
+ .vl-site-footer #contacto { max-width:1280px !important; margin:26px auto 0 !important; padding-top:24px !important; padding-bottom:0 !important; }
+ .vl-site-footer #contacto strong { font-size:28px !important; line-height:1.2 !important; }
+ .vl-site-footer #contacto p { font-size:14px !important; line-height:1.6 !important; margin-top:7px !important; }
+ .vl-site-footer #contacto a { min-width:0 !important; max-width:100% !important; font-size:14px !important; padding:13px 16px !important; }
+ .vl-site-footer #contacto a span { overflow-wrap:anywhere !important; }
+ .vl-site-footer .vl-photo-credits { margin-top:20px !important; padding-top:12px !important; font-size:12px !important; }
+ .vl-site-footer :is(a,button,summary):focus-visible { outline:2px solid #f3cc8f !important; outline-offset:4px !important; }
+ @media(max-width:900px) {
+  .vl-site-footer>.max-w-7xl { grid-template-columns:1fr 1fr !important; gap:26px !important; }
+  .vl-site-footer>.max-w-7xl>div:first-child { grid-column:1/-1 !important; }
+ }
+ @media(max-width:540px) {
+  body>footer.vl-site-footer { padding:28px 20px 20px !important; }
+  .vl-site-footer>.max-w-7xl { grid-template-columns:1fr !important; gap:24px !important; }
+  .vl-footer-navigation { grid-template-columns:1fr 1fr !important; gap:2px 18px !important; }
+  .vl-footer-navigation>strong { grid-column:1/-1 !important; }
+  .vl-site-footer #contacto { align-items:flex-start !important; text-align:left !important; gap:16px !important; }
+  .vl-site-footer #contacto a { width:100% !important; font-size:13px !important; justify-content:space-between !important; }
+  .vl-site-footer #contacto strong { font-size:25px !important; }
+ }
+}
