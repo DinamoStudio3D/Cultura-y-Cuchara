@@ -1224,3 +1224,29 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   #pasaporteModal .vl-passport-stamp { min-height:140px; }
  }
 }
+
+/* V111: one scrollable passport body; the cover and close control remain visible. */
+@layer vl-layout {
+ #pasaporteModal { align-items:center !important; padding:16px !important; overflow:hidden !important; }
+ #pasaporteModal>div { display:flex !important; flex-direction:column !important; height:auto !important; max-height:calc(100dvh - 32px) !important; overflow:hidden !important; min-height:0; }
+ #pasaporteModal .vl-passport-modal-cover { flex:0 0 auto !important; text-align:left !important; padding-right:175px !important; }
+ #pasaporteModal #passportModalTitle { font-size:30px !important; text-transform:none !important; letter-spacing:-.025em !important; line-height:1.15 !important; }
+ #pasaporteModal .vl-passport-modal-cover>.flex { justify-content:flex-start !important; }
+ #pasaporteModal>div>.p-6 { flex:1 1 auto !important; min-height:0 !important; overflow-x:hidden !important; overflow-y:auto !important; overscroll-behavior:contain; scrollbar-gutter:stable; scrollbar-width:auto; scrollbar-color:#8b9f8b #f2eee5; padding-bottom:calc(28px + env(safe-area-inset-bottom)) !important; }
+ #pasaporteModal>div>.p-6::-webkit-scrollbar { width:10px; }
+ #pasaporteModal>div>.p-6::-webkit-scrollbar-thumb { background:#8b9f8b; border:2px solid #f2eee5; border-radius:10px; }
+ #pasaporteModal>div>.p-6::-webkit-scrollbar-track { background:#f2eee5; }
+ #pasaporteModal>div>button { flex:none; z-index:20; }
+ @media(max-width:520px) {
+  #pasaporteModal { padding:8px !important; }
+  #pasaporteModal>div { max-height:calc(100dvh - 16px) !important; }
+  #pasaporteModal .vl-passport-modal-cover { min-height:160px; padding:24px 100px 20px 18px !important; }
+  #pasaporteModal #passportModalTitle { font-size:25px !important; }
+ }
+ @media(max-height:600px) {
+  #pasaporteModal .vl-passport-modal-cover { min-height:0; padding:18px 115px 16px 22px !important; }
+  #pasaporteModal .vl-passport-modal-cover:after { width:100px; height:130px; right:8px; }
+  #pasaporteModal #passportModalTitle { font-size:23px !important; }
+  #pasaporteModal .vl-passport-modal-cover>p { margin-top:8px; }
+ }
+}
