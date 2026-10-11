@@ -147,3 +147,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .static-qr-card-actions .static-qr-action:last-child{color:#fca5a5}
 @media(min-width:1024px){.static-qr-card{grid-template-columns:94px minmax(0,1fr) auto}.static-qr-card-actions{grid-column:auto;max-width:320px}}
 @media(max-width:480px){.static-qr-card{grid-template-columns:72px minmax(0,1fr);gap:.75rem}.static-qr-thumb{width:72px;height:72px}.static-qr-card-actions{grid-column:1/-1}}
+
+/* V117 — task-oriented administrative workspace. */
+#adminSidebar .nav-group-title{font-size:11px!important;letter-spacing:.06em!important;line-height:1.5!important;color:#a8b4c4!important;text-align:left;gap:12px}
+#adminSidebar [data-nav-item]{min-height:44px;white-space:normal;overflow-wrap:break-word}
+#dashboardModule>div:first-child h2{font-size:clamp(25px,3vw,36px)!important;line-height:1.2!important}
+.admin-workspace{margin-bottom:28px}
+.admin-workspace-heading{margin-bottom:16px}
+.admin-workspace-heading h3{font-size:19px;line-height:1.35;font-weight:800;letter-spacing:normal!important}
+.admin-workspace-heading p{font-size:14px;color:#a8b4c4;line-height:1.6;letter-spacing:normal!important;margin-top:5px}
+.admin-workspace-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.admin-workspace-card{display:flex;align-items:center;gap:16px;padding:22px;text-align:left;background:linear-gradient(135deg,#19252b,#111922);border:1px solid #34424c;border-radius:16px;min-width:0;color:#f3f7fa}
+.admin-workspace-card>i:first-child{display:grid;place-items:center;flex:0 0 46px;height:46px;font-size:20px;color:#fbc468;background:#fbc46814;border-radius:13px}
+.admin-workspace-card>span{min-width:0;flex:1}
+.admin-workspace-card strong{display:block;font-size:16px;line-height:1.4;font-weight:800}
+.admin-workspace-card small{display:block;font-size:13px;line-height:1.6;color:#afbdc9;margin-top:5px}
+.admin-workspace-card>i:last-child{font-size:13px;color:#92a5b2}
+.admin-workspace-card:hover{border-color:#fbc468;background:#1d2b32}
+@media(max-width:1100px){.admin-workspace-card{padding:16px;gap:12px}}
+@media(max-width:600px){.admin-workspace-grid{grid-template-columns:minmax(0,1fr)}.admin-workspace-card{padding:18px}.admin-workspace{margin-bottom:24px}}
