@@ -1,18 +1,27 @@
 /* V105: content remains visible; optional sections never reserve blank space. */
 @layer vl-layout {
- body>.reveal,body>section .reveal{opacity:1!important;transform:none!important;transition:color .2s,background-color .2s,border-color .2s!important}
- body>section.hidden,body>section[hidden],body>section[data-home-content-hidden]{display:none!important;margin:0!important;padding:0!important;min-height:0!important}
- body>section:is(#categorias,#establecimientos,#emprendedores,#loja-tiempo,#postales,#podcast,#patrocinadores,#pasaporte,#misiones,#agenda,#promociones,#historias,#tendencia){padding-top:clamp(32px,3.5vw,48px)!important;padding-bottom:clamp(32px,3.5vw,48px)!important}
- body>section#categorias{padding-bottom:28px!important}
- body>section#mapa{padding-top:28px!important;padding-bottom:36px!important}
- body>section#categorias .vl43-explore-feature{margin-bottom:28px!important}
- body>section#categorias nav[aria-label]{margin-top:20px!important}
- body>section#mapa>div:first-child{margin-bottom:22px!important}
- body>section#mapa .vl42-map-actions{margin-top:18px!important}
- body>section#agenda .vl-agenda-header{margin-bottom:24px}
- body>section#agenda .vl-agenda-toolbar{margin-bottom:20px}
- body>section:is(#categorias,#establecimientos,#emprendedores,#loja-tiempo,#postales,#podcast,#promociones)>.max-w-7xl>div:first-child{margin-bottom:24px!important}
- @media(max-width:639px){body>section:is(#categorias,#establecimientos,#emprendedores,#loja-tiempo,#postales,#podcast,#patrocinadores,#pasaporte,#misiones,#agenda,#promociones,#historias,#tendencia){padding-top:30px!important;padding-bottom:30px!important}body>section#categorias{padding-bottom:20px!important}body>section#mapa{padding-top:22px!important;padding-bottom:30px!important}}
+ :is(body,#main-content)>.reveal,:is(body,#main-content)>section .reveal{opacity:1!important;transform:none!important;transition:color .2s,background-color .2s,border-color .2s!important}
+ :is(body,#main-content)>section.hidden,:is(body,#main-content)>section[hidden],:is(body,#main-content)>section[data-home-content-hidden]{display:none!important;margin:0!important;padding:0!important;min-height:0!important}
+ :is(body,#main-content)>section:is(#categorias,#establecimientos,#emprendedores,#loja-tiempo,#postales,#podcast,#patrocinadores,#pasaporte,#misiones,#agenda,#promociones,#historias,#tendencia){padding-top:clamp(32px,3.5vw,48px)!important;padding-bottom:clamp(32px,3.5vw,48px)!important}
+ :is(body,#main-content)>section#categorias{padding-bottom:28px!important}
+ :is(body,#main-content)>section#mapa{padding-top:28px!important;padding-bottom:36px!important}
+ :is(body,#main-content)>section#categorias .vl43-explore-feature{margin-bottom:28px!important}
+ :is(body,#main-content)>section#categorias nav[aria-label]{margin-top:20px!important}
+ :is(body,#main-content)>section#mapa>div:first-child{margin-bottom:22px!important}
+ :is(body,#main-content)>section#mapa .vl42-map-actions{margin-top:18px!important}
+ :is(body,#main-content)>section#agenda .vl-agenda-header{margin-bottom:24px}
+ :is(body,#main-content)>section#agenda .vl-agenda-toolbar{margin-bottom:20px}
+ :is(body,#main-content)>section:is(#categorias,#establecimientos,#emprendedores,#loja-tiempo,#postales,#podcast,#promociones)>.max-w-7xl>div:first-child{margin-bottom:24px!important}
+ @media(max-width:639px){:is(body,#main-content)>section:is(#categorias,#establecimientos,#emprendedores,#loja-tiempo,#postales,#podcast,#patrocinadores,#pasaporte,#misiones,#agenda,#promociones,#historias,#tendencia){padding-top:30px!important;padding-bottom:30px!important}:is(body,#main-content)>section#categorias{padding-bottom:20px!important}:is(body,#main-content)>section#mapa{padding-top:22px!important;padding-bottom:30px!important}}
 }
 /* Standalone destinations and places follow the same compact rhythm. */
 .canton-directory-page #cantones,.canton-detail-page #cantones{padding-bottom:36px}.canton-directory-page .canton-hero{margin-bottom:36px}.canton-directory-page .canton-directory-note{margin-top:18px;padding-top:16px}.canton-detail-page .canton-guide{margin:24px 0;gap:16px}.canton-detail-page .canton-shortcuts{margin-bottom:22px!important}.canton-detail-page #cantonResults{margin-top:32px}.canton-detail-page #cantonMapSection,.canton-detail-page #cantonRoutesSection{margin-top:32px}.place-detail-page #content>section:last-child{padding-top:28px;padding-bottom:28px}.place-detail-page .place-detail-footer{margin-top:12px}
+
+/* V114: the public sections live inside main, and sponsorship follows its heading. */
+@layer vl-layout {
+ #mapa [data-sponsor-experience="netplus"] { text-align:left !important; margin:0 0 14px !important; }
+ #mapa [data-sponsor-experience="netplus"] .vl-experience-sponsor { margin-top:0 !important; padding:9px 12px; border-radius:12px; }
+ #mapa [data-sponsor-experience="netplus"] .vl-experience-sponsor img { width:28px; height:28px; flex:0 0 28px; }
+ #mapa [data-sponsor-experience="netplus"] .vl-experience-sponsor span { font-size:10px; line-height:1.5; }
+ body.vl-browsing-visible :is(#webMascot,#webMascotRestore,#accountFloatingInvite) { visibility:hidden !important; pointer-events:none !important; }
+}

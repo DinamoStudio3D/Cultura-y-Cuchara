@@ -229,8 +229,22 @@
     mobile.addEventListener('change', arrange);
   }
 
+  function keepBrowsingControlsClear() {
+    if (!('IntersectionObserver' in window)) return;
+    const visible = new Set();
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => entry.isIntersecting ? visible.add(entry.target) : visible.delete(entry.target));
+      document.body.classList.toggle('vl-browsing-visible', visible.size > 0);
+    });
+    ['categorias', 'mapa'].forEach(id => {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+  }
+
   function initResponsiveNavigation() {
     createMobileQuickRoute();
+    keepBrowsingControlsClear();
     arrangeMobileWelcome();
     createDesktopExploreMenu();
     renderMesaTuristicaSpotlight();
