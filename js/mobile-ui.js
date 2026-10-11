@@ -8,10 +8,6 @@
     return typeof currentLang !== 'undefined' && currentLang === 'en';
   }
 
-  function openItinerary() {
-    if (typeof window.openModal === 'function') window.openModal('itineraryModal');
-  }
-
   function syncQuickRouteBadge() {
     const source = document.getElementById('itineraryBadge');
     const target = document.getElementById('mobileQuickRouteBadge');
@@ -23,19 +19,14 @@
   }
 
   function createMobileQuickRoute() {
-    if (document.getElementById('mobileQuickRouteButton')) return;
+    // One shared action at every breakpoint; never generate a second route button.
+    const routeButton = document.querySelector('nav.glass-nav .vl28-route-button');
     const menuButton = document.getElementById('mobileMenuButton');
-    if (!menuButton?.parentElement) return;
-    const actions = document.createElement('div');
-    actions.className = 'vl-mobile-nav-actions 2xl:hidden flex items-center gap-2 ml-auto';
-    const routeButton = document.createElement('button');
+    const actions = routeButton?.parentElement;
+    if (!actions || !menuButton || document.getElementById('mobileQuickRouteBadge')) return;
     routeButton.id = 'mobileQuickRouteButton';
-    routeButton.type = 'button';
-    routeButton.className = 'vl-mobile-route-quick relative inline-flex items-center gap-1.5 rounded-xl border border-brandGold/60 bg-brandGold/15 text-brandGold font-black px-3 py-2 text-xs shadow-warm-glow';
-    routeButton.innerHTML = '<i class="fa-solid fa-route" aria-hidden="true"></i><span class="vl-mobile-route-label">Mi Ruta</span><span id="mobileQuickRouteBadge" class="hidden min-w-5 h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-black items-center justify-center">0</span>';
-    routeButton.addEventListener('click', openItinerary);
-    menuButton.parentElement.insertBefore(actions, menuButton);
-    actions.append(routeButton, menuButton);
+    routeButton.innerHTML = '<i class="fa-solid fa-route" aria-hidden="true"></i><span class="vl-mobile-route-label">Mi ruta</span><span id="mobileQuickRouteBadge" class="hidden">0</span>';
+    actions.appendChild(menuButton);
     const legacyRouteButton = document.getElementById('mobileItineraryButton');
     if (legacyRouteButton) legacyRouteButton.classList.add('vl-route-menu-duplicate');
     syncQuickRouteBadge();
@@ -95,6 +86,7 @@
     if (menuButton) menuButton.setAttribute('aria-label', isEnglish() ? 'Open menu' : 'Abrir menú');
     const quickLabel = document.querySelector('.vl-mobile-route-label');
     if (quickLabel) quickLabel.textContent = isEnglish() ? 'My Route' : 'Mi Ruta';
+    document.getElementById('mobileQuickRouteButton')?.setAttribute('aria-label', isEnglish() ? 'Open my route' : 'Abrir mi ruta');
     const exploreLabel = document.querySelector('#desktopExploreMenu summary span');
     if (exploreLabel) exploreLabel.textContent = isEnglish() ? 'Explore' : 'Explorar';
     const mesaLabel = document.querySelector('#desktopMesaTuristicaLink span');

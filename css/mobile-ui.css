@@ -20,7 +20,6 @@
 }
 
 @media (max-width: 767px) {
-  nav.glass-nav .vl28-route-button { display: none !important; }
   /* La franja institucional deja de ocupar dos pisos antes del contenido. */
   body > header:first-of-type { padding-top: calc(.35rem + env(safe-area-inset-top)); padding-bottom: .35rem; }
   body > header:first-of-type > div { flex-direction: row; justify-content: center; gap: .5rem; }
@@ -111,4 +110,33 @@
   .web-mascot > button.block { width: 48px !important; height: 48px !important; }
   .web-mascot-character { width: 44px !important; height: 44px !important; }
   .web-mascot-bubble { left: 44px; bottom: 44px; width: min(196px, calc(100vw - 78px)); }
+}
+
+/* V106: a single, aligned header action group across all screen sizes. */
+@layer vl-layout {
+  nav.glass-nav.sticky .vl28-nav-actions { margin-left:auto !important; gap:8px !important; flex:0 0 auto; }
+  nav.glass-nav.sticky .vl28-route-button { display:inline-flex !important; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:11px 16px !important; border-radius:12px !important; font-size:12px !important; font-weight:800; }
+  nav.glass-nav.sticky .vl29-account,
+  nav.glass-nav.sticky #mobileMenuButton { min-height:44px; border-radius:12px !important; background:rgba(255,255,255,.06); }
+  nav.glass-nav.sticky .vl29-account { padding:11px 14px !important; }
+  nav.glass-nav.sticky #mobileQuickRouteBadge { border-radius:50%; min-width:20px; height:20px; align-items:center; justify-content:center; font-size:10px; background:#173c30; color:white; }
+  nav.glass-nav.sticky .vl28-route-button:focus-visible,
+  nav.glass-nav.sticky .vl29-account:focus-visible,
+  nav.glass-nav.sticky #mobileMenuButton:focus-visible { outline:2px solid #f2bd79; outline-offset:4px; }
+  @media(max-width:1535px) {
+    nav.glass-nav.sticky .vl28-primary-links { display:none !important; }
+    nav.glass-nav.sticky .vl29-account span { display:none; }
+    nav.glass-nav.sticky .vl29-account { width:44px; padding:10px !important; justify-content:center; }
+  }
+  @media(max-width:580px) {
+    nav.glass-nav.sticky>.max-w-\[1500px\] { gap:8px !important; }
+    nav.glass-nav.sticky .vl28-nav-actions { gap:5px !important; }
+    nav.glass-nav.sticky .vl28-route-button { padding:10px !important; gap:5px; }
+    nav.glass-nav.sticky .vl28-route-button i { font-size:14px !important; }
+    nav.glass-nav.sticky #brandNameText { font-size:12px !important; }
+  }
+  @media(max-width:380px) {
+    nav.glass-nav.sticky .vl-mobile-route-label { display:none; }
+    nav.glass-nav.sticky .vl28-route-button { min-width:44px; }
+  }
 }
