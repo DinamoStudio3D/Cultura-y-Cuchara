@@ -853,6 +853,7 @@
         </div>
     </div>
 
+    <script src="js/admin-mission-presentation.js"></script>
     <script src="js/chabaquito-missions-v2-model.js"></script>
     <script src="js/chabaquito-mission-drafts.js"></script>
     <script src="js/chabaquito-place-config.js"></script>
@@ -885,7 +886,7 @@ function loadExistingChabaquitoMissions(){
         const items=snapshot.docs.map(doc=>({id:doc.id,...doc.data()})).sort((a,b)=>String(a.title||a.id).localeCompare(String(b.title||b.id),'es'));
         if(count)count.textContent=items.length+' misión'+(items.length===1?'':'es');
         if(!items.length){list.innerHTML='<p class="text-sm text-gray-500">Todavía no hay misiones creadas.</p>';return;}
-        list.innerHTML=items.map(m=>'<article class="rounded-xl border border-gray-800 bg-black/25 p-4 flex flex-col sm:flex-row gap-3 justify-between"><div><strong>'+esc(m.badge?.icon||'🏅')+' '+esc(m.title||m.id)+'</strong><p class="text-xs text-gray-400 mt-1">Estado: '+esc(m.status||'draft')+' · Meta: '+Number(m.targetCount||1)+'</p></div><button type="button" data-static-mission-edit="'+esc(m.id)+'" class="border border-amber-500/40 text-amber-200 rounded-lg px-3 py-2 text-xs font-bold">Editar</button></article>').join('');
+        list.innerHTML=window.VisitaLojaAdminMissionPresentation?.cards(items,'data-static-mission-edit')||items.map(m=>'<article class="rounded-xl border border-gray-800 bg-black/25 p-4 flex flex-col sm:flex-row gap-3 justify-between"><div><strong>'+esc(m.badge?.icon||'🏅')+' '+esc(m.title||m.id)+'</strong><p class="text-xs text-gray-400 mt-1">Estado: '+esc(m.status||'draft')+' · Meta: '+Number(m.targetCount||1)+'</p></div><button type="button" data-static-mission-edit="'+esc(m.id)+'" class="border border-amber-500/40 text-amber-200 rounded-lg px-3 py-2 text-xs font-bold">Editar</button></article>').join('');
         list.querySelectorAll('[data-static-mission-edit]').forEach(button=>button.onclick=()=>{
             const m=items.find(item=>item.id===button.dataset.staticMissionEdit);if(!m)return;
             const set=(id,value)=>{const el=document.getElementById(id);if(el)el.value=value??'';};
