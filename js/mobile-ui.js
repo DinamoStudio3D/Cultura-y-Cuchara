@@ -242,7 +242,17 @@
     });
   }
 
+  function syncSectionScrollOffset() {
+    const navigation = document.querySelector('nav.glass-nav.sticky');
+    if (!navigation) return;
+    const sync = () => document.documentElement.style.setProperty('--vl-navigation-offset', Math.ceil(navigation.getBoundingClientRect().height + 16) + 'px');
+    sync();
+    if ('ResizeObserver' in window) new ResizeObserver(sync).observe(navigation);
+    else window.addEventListener('resize', sync, { passive: true });
+  }
+
   function initResponsiveNavigation() {
+    syncSectionScrollOffset();
     createMobileQuickRoute();
     keepBrowsingControlsClear();
     arrangeMobileWelcome();
