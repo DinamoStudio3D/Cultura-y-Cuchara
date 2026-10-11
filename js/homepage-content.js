@@ -1075,6 +1075,11 @@
       "Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística de Loja. © 2026.",
       "Loja is experienced, tasted and hosted. Endorsed by Loja Municipality & Tourism Board. © 2026."]]
   });
+  // Retired homepage sections must not remain as ineffective admin controls.
+  const retiredHomepageBlocks = new Set(['explore', 'welcomePlaces', 'welcomeAgenda']);
+  for (let index = blocks.length - 1; index >= 0; index--) {
+    if (retiredHomepageBlocks.has(blocks[index].id)) blocks.splice(index, 1);
+  }
   function safeContactUrl(value) {
     return value === "" || (typeof value === "string" && /^https:\/\//i.test(value) && safeUrl(value));
   }

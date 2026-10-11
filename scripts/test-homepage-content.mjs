@@ -21,11 +21,11 @@ test("content links reject executable schemes and credential-bearing URLs", () =
 });
 test("old settings keep the redesigned defaults; clearing photos uses the neutral marker", () => {
   const base = normalize();
-  assert.equal(base.blocks.explore.imageUrl, "assets/photos/loja-puerta.webp");
+  assert.equal(base.blocks.provinceGateway.imageUrl, "assets/photos/loja-centro.webp");
   assert.equal(base.blocks.mobileWelcome.title, "Loja te espera.");
   const edited = normalize({
     blocks: {
-      explore: {
+      provinceGateway: {
         imageUrl: "",
         enabled: false,
         title: "Mi Loja",
@@ -34,12 +34,12 @@ test("old settings keep the redesigned defaults; clearing photos uses the neutra
     },
   });
   assert.equal(
-    edited.blocks.explore.imageUrl,
+    edited.blocks.provinceGateway.imageUrl,
     "assets/photos/photo-unavailable.svg",
   );
-  assert.equal(edited.blocks.explore.enabled, false);
-  assert.equal(edited.blocks.explore.title, "Mi Loja");
-  assert.equal(edited.blocks.explore.buttonUrl, "#establecimientos");
+  assert.equal(edited.blocks.provinceGateway.enabled, false);
+  assert.equal(edited.blocks.provinceGateway.title, "Mi Loja");
+  assert.equal(base.blocks.explore, undefined);
   assert.equal(
     edited.blocks.entrepreneurs.imageUrl,
     base.blocks.entrepreneurs.imageUrl,
@@ -115,5 +115,5 @@ test("homepage uploads require an administrator and keep their fixed destination
  assert.equal(edited.blocks.footerContact.instagramUrl,"");
  assert.equal(edited.blocks.footerContact.facebookUrl,base.blocks.footerContact.facebookUrl);
  assert.equal(edited.blocks.footerContact.youtubeUrl,"https://youtube.com/@test");
- assert.equal(edited.blocks.explore.title,base.blocks.explore.title);
+ assert.equal(edited.blocks.provinceGateway.title,base.blocks.provinceGateway.title);
  });
