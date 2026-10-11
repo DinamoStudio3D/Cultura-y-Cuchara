@@ -16,3 +16,21 @@
  #wallet .loyalty-wallet-tools :is(input,select){color:#fff!important;background:#102c31!important;border-color:#638489!important}
 }
 .loyalty-pass__conditions{font-size:.8rem;line-height:1.6;color:#d0e4e1;margin-top:14px}
+/* V179: mobile loyalty cards give names and progress independent space. */
+@layer vl-layout {
+ .loyalty-pass__reward>div:last-child { min-width:0; }
+ .loyalty-pass__reward :is(b,p) { white-space:normal; word-break:normal; overflow-wrap:normal; line-height:1.5; }
+ #walletHistory article { flex-wrap:wrap; align-items:flex-start; }
+ #walletHistory article>b { min-width:0; flex:1 1 180px; line-height:1.5; word-break:normal; }
+ #walletHistory article>span { line-height:1.5; }
+ @media(max-width:600px) {
+  #wallet .loyalty-wallet-tools { grid-template-columns:minmax(0,1fr) !important; }
+  .loyalty-pass__head { grid-template-columns:minmax(0,1fr) !important; gap:12px !important; }
+  .loyalty-pass__business { padding-right:0 !important; min-width:0; }
+  .loyalty-pass__name { line-height:1.35 !important; padding-right:0 !important; }
+  .loyalty-pass__count { position:static !important; justify-self:start; margin:0 !important; max-width:100%; white-space:normal; line-height:1.5; }
+  .loyalty-pass__summary { flex-wrap:wrap; gap:12px; }
+  .loyalty-pass__remaining { max-width:none !important; line-height:1.5; }
+  .loyalty-pass__actions>a { flex:1 1 150px; white-space:normal; line-height:1.5; }
+ }
+}
