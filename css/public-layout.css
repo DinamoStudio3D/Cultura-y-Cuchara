@@ -1083,7 +1083,7 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   #misiones .vl-adventure-character>span { --vl-text:#fff5df; --vl-muted:#fff5df; --vl-accent:#fff5df; background:#ffffff12 !important; }
   #misiones .vl-adventure-content { background:#12382e !important; }
 }
-@layer vl-layout {
+/* V108: keep the layout beside the existing unlayered section styles. */
   #pasaporte .vl-passport-feature { grid-template-columns:1fr 1fr; gap:36px; }
   #pasaporte .vl-passport-art { position:relative; isolation:isolate; min-height:450px; overflow:hidden; border:1px solid #e8c997; border-radius:32px; justify-content:flex-end; align-items:flex-start; padding:28px; }
   #pasaporte .vl-passport-art:before { content:""; position:absolute; z-index:-1; right:0; bottom:20px; width:76%; height:92%; background:url('../mascota-vive-loja.png') center/contain no-repeat; filter:drop-shadow(0 16px 18px #70521a20); transform:rotate(5deg); }
@@ -1096,30 +1096,30 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   #pasaporte .vl-passport-steps { border:0; background:transparent; gap:12px; overflow:visible; }
   #pasaporte .vl-passport-steps>li { border:1px solid #e4d7bf; border-radius:18px; background:#fffdf8; }
   #pasaporte .vl-passport-steps>li>span { display:grid; place-items:center; width:36px; height:36px; flex:0 0 36px; padding:0; border-radius:50%; background:#f6ddb1; color:#173c30; }
-  #misiones .vl-adventure-hero { position:relative; isolation:isolate; overflow:hidden; grid-template-columns:1.1fr 1fr; gap:20px; padding:32px 40px; border-radius:32px; border:1px solid #47705a; margin-bottom:20px; }
+  #misiones .vl-adventure-hero { position:relative; isolation:isolate; overflow:hidden; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); gap:12px; padding:28px clamp(28px,4vw,56px); border-radius:32px; border:1px solid #47705a; margin-bottom:20px; }
   #misiones .vl-adventure-hero:before { content:""; position:absolute; z-index:-1; width:600px; height:600px; right:-150px; top:-60px; border:1px solid #ffd28e33; border-radius:50%; box-shadow:0 0 0 60px #ffffff03,0 0 0 120px #ffffff03; }
   #misiones .vl-adventure-copy { position:relative; z-index:1; }
-  #misiones .vl-adventure-copy h2 { font-size:clamp(38px,4.2vw,60px); max-width:600px; margin-bottom:20px; }
+  #misiones .vl-adventure-copy h2 { font-size:clamp(44px,5.2vw,72px); max-width:650px; margin-bottom:20px; }
   #misiones .vl-adventure-kicker { font-size:10px; letter-spacing:.13em; margin-bottom:16px; }
-  #misiones .vl-adventure-copy p { font-size:17px; line-height:1.65; }
+  #misiones .vl-adventure-copy p { font-size:18px; line-height:1.65; }
   #misiones .vl-adventure-start { margin-top:22px; box-shadow:0 8px 24px #0002; }
   #misiones .vl-chaba-journey { display:flex; flex-wrap:wrap; gap:10px 20px; list-style:none; padding:0; margin:24px 0 0; }
   #misiones .vl-chaba-journey li { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700; }
   #misiones .vl-chaba-journey i { color:#ffd28e !important; }
-  #misiones .vl-adventure-character { max-width:none; width:100%; padding:0; gap:10px; }
+  #misiones .vl-adventure-character { max-width:460px; width:100%; justify-self:center; padding:28px 0 30px; gap:0; }
   #misiones .vl-adventure-character:before { display:none; }
-  #misiones .vl-chaba-speech { position:relative; z-index:2; align-self:flex-end; padding:14px 18px; border-radius:18px 18px 3px 18px; box-shadow:0 10px 25px #0002; transform:rotate(3deg); }
+  #misiones .vl-chaba-speech { position:absolute; top:0; right:0; z-index:2; max-width:100%; padding:12px 16px; border-radius:18px 18px 3px 18px; box-shadow:0 10px 25px #0002; transform:rotate(3deg); }
   #misiones .vl-chaba-speech strong { display:block; font-size:16px; }
   #misiones .vl-chaba-speech span { display:block; font-size:12px; margin-top:4px; }
   #misiones .vl-chaba-stage { position:relative; width:100%; display:grid; place-items:center; }
   #misiones .vl-chaba-stage:before { content:""; position:absolute; inset:12% 4% 1%; border:2px dashed #ffd28e88; border-radius:50%; transform:rotate(-18deg); background:radial-gradient(ellipse,#ffda8824,transparent 70%); }
-  #misiones .vl-adventure-character img { position:relative; width:100%; max-width:390px; height:410px; object-fit:contain; filter:drop-shadow(0 18px 22px #0004); }
+  #misiones .vl-adventure-character img { position:relative; width:100%; max-width:430px; height:440px; object-fit:contain; filter:drop-shadow(0 18px 22px #0004); }
   #misiones .vl-chaba-token { position:absolute; display:grid; place-items:center; width:50px; height:50px; background:#fff3d6; color:#173c30 !important; border:4px solid #c99b4e; border-radius:50%; font-size:23px; box-shadow:0 6px 18px #0003; }
   #misiones .vl-chaba-token i { color:#173c30 !important; }
   #misiones .vl-chaba-token-compass { left:1%; top:16%; transform:rotate(-12deg); }
   #misiones .vl-chaba-token-medal { right:1%; top:35%; transform:rotate(12deg); }
   #misiones .vl-chaba-token-map { left:7%; bottom:5%; transform:rotate(-8deg); }
-  #misiones .vl-adventure-character>span { border-color:#ffffff30; font-size:12px; padding:8px 14px; }
+  #misiones .vl-adventure-character>span { position:absolute; bottom:0; border-color:#ffffff30; font-size:12px; padding:8px 14px; }
   #misiones .vl-adventure-content { padding:28px; border:1px solid #47705a; }
   #misiones #chabaquitoV2Missions>article { position:relative; padding:24px; border-radius:20px; background:linear-gradient(145deg,#ffffff0f,#ffffff04); box-shadow:0 8px 20px #0001; }
   #misiones #chabaquitoV2Missions>article>div>div:first-child { width:58px; height:58px; flex:0 0 58px; border-radius:18px; font-size:30px; border:1px solid #e2b76755; }
@@ -1130,8 +1130,9 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
     #pasaporte .vl-passport-art { min-height:400px; padding:20px; }
     #pasaporte .vl-passport-book { width:150px; min-height:230px; padding:18px 12px; }
     #pasaporte .vl-passport-book>strong { font-size:22px; }
-    #misiones .vl-adventure-hero { padding:28px; }
-    #misiones .vl-adventure-character img { height:360px; }
+    #misiones .vl-adventure-hero { padding:26px; }
+    #misiones .vl-adventure-copy h2 { font-size:clamp(40px,5.6vw,56px); }
+    #misiones .vl-adventure-character img { height:390px; }
   }
   @media(max-width:700px) {
     #pasaporte .vl-passport-feature { grid-template-columns:1fr; gap:22px; }
@@ -1143,7 +1144,7 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
     #misiones .vl-adventure-copy h2 { font-size:39px; }
     #misiones .vl-adventure-copy p { font-size:16px; }
     #misiones .vl-adventure-start { width:100%; }
-    #misiones .vl-adventure-character { max-width:380px; margin:auto; }
+    #misiones .vl-adventure-character { max-width:380px; margin:auto; padding-top:42px; }
     #misiones .vl-adventure-character img { height:330px; }
     #misiones .vl-chaba-speech strong { font-size:15px; }
     #misiones .vl-chaba-token { width:44px; height:44px; font-size:20px; }
@@ -1152,4 +1153,3 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
     #misiones #chabaquitoV2Missions>article>div { gap:12px; }
     #misiones #chabaquitoV2Missions>article>div>div:first-child { width:46px; height:46px; flex-basis:46px; font-size:25px; }
   }
-}
