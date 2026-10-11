@@ -390,3 +390,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .admin-brand-save p{font-size:13px;line-height:1.6;color:#d1fae5;margin-bottom:12px}
 @media(max-width:900px){.admin-brand-nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){#settingsForm > div[id]{padding:18px!important}.admin-brand-nav button{padding:12px;gap:8px}.admin-brand-save button{width:100%}}
+
+/* V136: campañas diferenciadas y directorio */
+#festivalModule > div:first-child{flex-wrap:wrap}
+.admin-campaign-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:24px}
+.admin-campaign-nav button{padding:20px;border:1px solid #475569;border-radius:16px;background:#1e293b;text-align:left;color:#f8fafc;display:grid;gap:8px}
+.admin-campaign-nav i{font-size:25px;color:#67e8f9}.admin-campaign-nav strong{font-size:17px}.admin-campaign-nav span{font-size:12px;color:#cbd5e1}
+.admin-campaign-filters{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:16px;margin:20px 0}.admin-campaign-filters label{font-size:13px;font-weight:700}.admin-campaign-filters .field{margin-top:8px}.admin-campaign-filters p{grid-column:1/-1;color:#cbd5e1;font-size:12px}
+.admin-campaign-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.admin-campaign-card{min-width:0;padding:22px;border:1px solid #334155;border-radius:18px;background:linear-gradient(135deg,#142b3b,#111827);overflow-wrap:anywhere}
+.admin-campaign-card-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:#cbd5e1}
+.admin-campaign-state{padding:6px 10px;border-radius:999px;background:#334155;color:#f1f5f9;font-weight:750}.admin-campaign-state.published{background:#064e3b;color:#a7f3d0}.admin-campaign-state.hidden{background:#78350f;color:#fde68a}
+.admin-campaign-card h4{font-size:22px;font-weight:800;line-height:1.4;margin:16px 0 10px;color:#fff}.admin-campaign-card p{font-size:13px;line-height:1.7;color:#cbd5e1}
+.admin-campaign-card dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0;padding:14px;background:#0f172a;border-radius:12px}.admin-campaign-card dt{font-size:11px;color:#94a3b8}.admin-campaign-card dd{font-size:13px;color:#f8fafc;margin-top:5px;line-height:1.5}
+.admin-campaign-actions{display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid #334155;margin-top:16px;padding-top:16px}.admin-campaign-actions button{padding:9px 12px;background:#164e63;color:#cffafe;border-radius:8px;font-size:12px;font-weight:700}.admin-campaign-actions .admin-campaign-delete{background:#7f1d1d;color:#fee2e2}
+#festivalForm,#tourismCampaignForm,#customCampaignSearch{scroll-margin-top:145px}#festivalModule form{padding:22px;border:1px solid #374151;border-radius:18px;background:#111827}#festivalModule label{display:block;min-width:0}#festivalModule label.flex{display:flex}#festivalModule .text-gray-500{color:#aebccc!important}.admin-campaign-gallery .admin-mission-empty{grid-column:1/-1}
+@media(max-width:750px){.admin-campaign-gallery{grid-template-columns:1fr}.admin-campaign-nav{grid-template-columns:1fr}.admin-campaign-nav button{grid-template-columns:32px 1fr;padding:16px}.admin-campaign-nav span{grid-column:2}.admin-campaign-filters{grid-template-columns:1fr}#festivalModule form{padding:16px}}
