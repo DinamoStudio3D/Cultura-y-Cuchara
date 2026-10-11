@@ -21,8 +21,8 @@
   el(formId)?.addEventListener('reset',()=>{cancel(group);file.value='';notice.textContent='';});
  }
  root.VisitaLojaCantonMedia={cancel};
- mount({group:'place',fieldId:'placeGallery',formId:'placeForm',endpoint:'/api/sign-place-gallery-image',target:()=>el('placeEditId').value,multiple:true});
- mount({group:'canton',fieldId:'adminCantonCover',formId:'adminCantonForm',endpoint:'/api/sign-canton-image',target:()=>el('adminCantonSelect').value});
+ mount({group:'place',fieldId:'placeGallery',formId:'placeForm',endpoint:'/api/sign-time-image?purpose=gallery',target:()=>el('placeEditId').value,multiple:true});
+ mount({group:'canton',fieldId:'adminCantonCover',formId:'adminCantonForm',endpoint:'/api/sign-time-image?purpose=canton',target:()=>el('adminCantonSelect').value});
  const cover=el('adminCantonCover'),preview=el('cantonMediaPreview');
  function refreshCover(){if(!preview)return;const url=root.VisitaLojaCantonContent.image(cover.value);preview.hidden=!url;if(url)preview.src=url;else preview.removeAttribute('src');}
  cover?.addEventListener('input',refreshCover);if(preview)preview.addEventListener('error',()=>{preview.hidden=true;el('cantonMediaNotice').textContent='No se pudo visualizar la portada. Revisa el enlace.';});
