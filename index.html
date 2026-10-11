@@ -1051,7 +1051,7 @@
     <!-- Generador de Postales Digitales e Historias -->
     <section id="postales" data-vl-surface="light" class="py-16 lg:py-24 px-4 md:px-8 lg:px-12 bg-white text-brandDark border-t border-b border-gray-200 reveal">
         <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-12">
+            <div class="vl-postcard-heading text-center mb-12">
                 <span class="bg-red-500/10 text-red-600 font-bold px-4 py-1.5 rounded-full text-xs uppercase tracking-widest border border-red-500/20 inline-flex items-center gap-2 mb-3">
                     <i class="fa-solid fa-camera-retro"></i> <span data-i18n="postcardBadge">Comparte tu Experiencia</span>
                 </span>
@@ -1063,11 +1063,11 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
+            <div class="vl-postcard-workspace grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
                 <!-- Panel de Configuración -->
-                <div class="lg:col-span-6 bg-brandCream p-6 sm:p-8 rounded-3xl border-2 border-brandGold/40 shadow-warm-glow space-y-4">
+                <div class="vl-postcard-editor lg:col-span-6 bg-brandCream p-6 sm:p-8 rounded-3xl border-2 border-brandGold/40 shadow-warm-glow space-y-4">
                     <div>
-                        <label class="block text-xs font-black uppercase tracking-wider text-brandDark mb-1.5">
+                        <label for="postcardImageInput" class="block text-xs font-black uppercase tracking-wider text-brandDark mb-1.5">
                             <i class="fa-solid fa-cloud-arrow-up text-brandGold mr-1"></i> <span data-i18n="postcardUploadLabel">1. Sube tu Foto de Loja</span>
                         </label>
                         <input type="file" id="postcardImageInput" accept="image/*" onchange="handlePostcardUpload(event)" class="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brandDark file:text-brandGold hover:file:bg-black cursor-pointer bg-white border border-gray-300 rounded-xl p-1.5">
@@ -1096,17 +1096,17 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardNameLabel">Tu Nombre o Apodo</label>
+                            <label for="postcardUserName" class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardNameLabel">Tu Nombre o Apodo</label>
                             <input type="text" id="postcardUserName" oninput="renderPostcardPreview()" maxlength="25" placeholder="Ej. Alex Viajero" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-brandDark font-bold outline-none focus:border-brandGold">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardSpotLabel">Lugar o Parada</label>
+                            <label for="postcardUserSpot" class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardSpotLabel">Lugar o Parada</label>
                             <input type="text" id="postcardUserSpot" oninput="renderPostcardPreview()" maxlength="30" placeholder="Ej. Calle Lourdes, Loja" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-brandDark font-bold outline-none focus:border-brandGold">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardMsgLabel">Frase o Saludo Corto</label>
+                        <label for="postcardUserMsg" class="block text-xs font-bold text-gray-700 mb-1" data-i18n="postcardMsgLabel">Frase o Saludo Corto</label>
                         <input type="text" id="postcardUserMsg" oninput="renderPostcardPreview()" maxlength="50" placeholder="¡Enamorándome de los sabores de Loja!" class="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-brandDark font-bold outline-none focus:border-brandGold">
                     </div>
 
@@ -1121,7 +1121,7 @@
                 </div>
 
                 <!-- Previsualización en Vivo de la Postal (Formato Historia 9:16) -->
-                <div class="lg:col-span-6 flex flex-col items-center justify-center">
+                <div class="vl-postcard-preview lg:col-span-6 flex flex-col items-center justify-center"><h3 data-i18n="postcardPreviewTitle" class="vl-postcard-preview-title">Tu recuerdo de Loja</h3>
                     <div class="postcard-preview-container rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold bg-brandDark p-3 relative flex items-center justify-center">
                         <canvas id="postcardCanvas" class="w-full h-full rounded-2xl shadow-inner bg-black object-contain block cursor-move touch-none"></canvas>
                         <!-- Indicador visual sutil -->
@@ -2284,6 +2284,7 @@
                 timeTitle: 'Loja en el <span class="text-brandGold">Tiempo</span>',
                 timeDesc: "Desliza el cursor o tu dedo sobre las imágenes para viajar entre el ayer y el hoy de nuestros rincones más queridos.",
                 postcardBadge: "Comparte tu Experiencia",
+                postcardPreviewTitle: 'Tu recuerdo de Loja',
                 postcardTitle: 'Crea tu Postal <span class="text-brandGold">Visita Loja</span>',
                 postcardDesc: "Sube tu foto, escoge tu marco favorito (FIAVL 2026, Ruta del Café o Tradición Lojana), personaliza tu recuerdo y descárgalo con formato listo para tus Historias de Instagram y WhatsApp.",
                 postcardUploadLabel: "1. Sube tu Foto de Loja",
@@ -2449,6 +2450,7 @@
                 timeTitle: 'Loja Through <span class="text-brandGold">Time</span>',
                 timeDesc: "Slide your cursor or finger across the images to travel between yesterday and today in our most iconic spots.",
                 postcardBadge: "Share your Journey",
+                postcardPreviewTitle: 'Your Loja memory',
                 postcardTitle: 'Create your <span class="text-brandGold">Visita Loja</span> Postcard',
                 postcardDesc: "Upload your photo, pick a signature frame (FIAVL 2026, Coffee Route or Loja Heritage), customize your memory, and export it ready for your Instagram & WhatsApp Stories.",
                 postcardUploadLabel: "1. Upload your Loja Photo",
@@ -5615,12 +5617,14 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const isActive = currentPostcardTheme === frame.id;
                 html += `
                     <button type="button" onclick="setPostcardTheme('${frame.id}')" id="btnTheme_${frame.id}" class="${isActive ? 'px-2.5 py-2.5 rounded-xl text-xs font-bold border-2 border-brandGold bg-brandDark text-brandGold transition flex flex-col items-center gap-1 shadow-sm' : 'px-2.5 py-2.5 rounded-xl text-xs font-bold border border-gray-300 bg-white text-gray-700 transition flex flex-col items-center gap-1 hover:border-brandGold'}">
-                        <span>${frame.icon || '🖼️'}</span> <span class="text-[10px] font-bold truncate max-w-[80px]">${frame.name}</span>
+                        <span>${escapeHTML(frame.icon || '🖼️')}</span> <span class="text-[10px] font-bold truncate max-w-[80px]">${escapeHTML(frame.name)}</span>
                     </button>
                 `;
             });
 
             container.innerHTML = html;
+            const themes=['fiavl','vintage','cafe','polaroid',...customPostcardFrames.map(frame=>frame.id)];
+            container.querySelectorAll('button').forEach((button,index)=>button.setAttribute('aria-pressed',String(themes[index]===currentPostcardTheme)));
         }
 
         function setPostcardTheme(theme) {

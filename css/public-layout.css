@@ -1357,4 +1357,25 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   .vl-site-footer #contacto a { width:100% !important; font-size:13px !important; justify-content:space-between !important; }
   .vl-site-footer #contacto strong { font-size:25px !important; }
  }
+
+/* V139: taller de postales con vista previa protagonista */
+#postales{padding-block:76px!important;background:linear-gradient(135deg,#fffaf0,#f1f7fb)!important}
+#postales .vl-postcard-heading{max-width:1120px!important;margin:0 auto 30px!important;text-align:left!important}
+#postales h2{font-size:clamp(34px,4vw,56px)!important;line-height:1.13!important;letter-spacing:-.04em!important}
+#postales .vl-postcard-heading > p{font-size:16px!important;line-height:1.7!important;margin-left:0!important;max-width:760px!important}
+#postales .vl-postcard-workspace{max-width:1120px!important;display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)!important;gap:30px!important;align-items:start!important}
+#postales .vl-postcard-editor,#postales .vl-postcard-preview{grid-column:auto!important;min-width:0!important}
+#postales .vl-postcard-editor{padding:28px!important;background:#fff!important;border:1px solid #dfd4c2!important;box-shadow:0 18px 40px #24364a0d!important}
+#postales .vl-postcard-editor label,#postales .vl-postcard-editor input[type=text]{font-size:14px!important;line-height:1.5!important}
+#postales .vl-postcard-editor input[type=text]{padding:12px!important}
+#postales .vl-postcard-preview{position:sticky!important;top:145px!important;padding:22px!important;border-radius:24px!important;background:#e7edf3!important;border:1px solid #ccd6e0!important}
+#postales .vl-postcard-preview-title{font-size:21px!important;line-height:1.4!important;font-weight:800!important;align-self:flex-start!important;margin-bottom:16px!important}
+#postales .postcard-preview-container{max-width:390px!important;border-width:2px!important;padding:8px!important;width:100%!important}
+#postales #postcardFramesContainer{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+#postales #postcardFramesContainer button{min-height:80px!important;padding:12px!important;font-size:14px!important;line-height:1.4!important}
+#postales #postcardFramesContainer button span:first-child{font-size:24px!important}
+#postales #postcardFramesContainer button span:last-child{font-size:12px!important;line-height:1.5!important;white-space:normal!important;max-width:none!important;overflow-wrap:anywhere!important}
+#postales #postcardFramesContainer button[aria-pressed=true]{box-shadow:0 0 0 2px #b45309!important}
+@media(max-width:900px){#postales .vl-postcard-workspace{grid-template-columns:1fr!important;gap:22px!important}#postales .vl-postcard-preview{position:static!important}#postales .postcard-preview-container{max-width:350px!important}}
+@media(max-width:600px){#postales{padding-block:54px!important}#postales .vl-postcard-editor,#postales .vl-postcard-preview{padding:18px!important}#postales .vl-postcard-heading > p{font-size:14px!important;line-height:1.7!important}}
 }
