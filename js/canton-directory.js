@@ -1,23 +1,19 @@
-/* Canton directory uses the same assignments configured in Paradas y negocios. */
+/* Standalone canton routes share the catalogue and assignments from Admin. */
 (function(){
  'use strict';
- const host=document.getElementById('cantones');if(!host)return;
  const catalogue=window.ChabaquitoPlaceConfig?.CANTONS||[],el=id=>document.getElementById(id);
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
- let selected='';
- function publicPlaces(){return (typeof locations==='undefined'?[]:locations).filter(place=>!place.publicationStatus||place.publicationStatus==='published');}
- function render(){
-  const places=publicPlaces(),query=normalize(el('cantonSearch').value),visible=catalogue.filter(canton=>normalize(canton.name).includes(query));
-  el('cantonGrid').innerHTML=visible.map(canton=>{const count=places.filter(place=>place.cantonId===canton.id).length;return `<button type="button" class="canton-card" data-canton-id="${esc(canton.id)}" aria-pressed="${selected===canton.id}"><span class="canton-card-icon" aria-hidden="true"><i class="fa-solid fa-map-location-dot"></i></span><strong>${esc(canton.name)}</strong><span>${count} ${count===1?'lugar publicado':'lugares publicados'}</span><small>Explorar cantón <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></small></button>`}).join('');
-  el('cantonSearchStatus').textContent=visible.length?visible.length+' cantones para explorar.':'No encontramos un cantón con ese nombre.';
-  const canton=catalogue.find(item=>item.id===selected);el('cantonResults').hidden=!canton;if(!canton)return;
-  const matches=places.filter(place=>place.cantonId===selected);
-  el('cantonResultsTitle').textContent='Lugares de '+canton.name;
-  el('cantonResultsCount').textContent=matches.length+' '+(matches.length===1?'lugar publicado':'lugares publicados')+' con este cantón asignado.';
-  el('cantonPlaces').innerHTML=matches.length?matches.map(place=>{const href=typeof buildLocationShareUrl==='function'?buildLocationShareUrl(place):'/?lugar='+encodeURIComponent(place.id);return `<article class="canton-place"><span>${esc(place.tag||'Parada Visita Loja')}</span><h4>${esc(place.title||place.id)}</h4><p>${esc(place.desc||place.address||'Consulta la ficha para conocer esta parada.')}</p><a href="${esc(href)}">Abrir ficha del lugar <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a></article>`}).join(''):`<p class="canton-empty">Todavía no hay lugares publicados con ${esc(canton.name)} asignado. Puedes explorar los otros cantones; seguiremos incorporando nuevas paradas.</p>`;
+ if(el('cantonGrid')){
+  function render(){const visible=catalogue.filter(c=>normalize(c.name).includes(normalize(el('cantonSearch').value)));el('cantonGrid').innerHTML=visible.map(c=>`<a class="canton-card" href="canton.html?canton=${encodeURIComponent(c.id)}"><span class="canton-card-icon" aria-hidden="true">↗</span><strong>${esc(c.name)}</strong><span>Provincia de Loja</span><small>Conocer ${esc(c.name)} →</small></a>`).join('');el('cantonSearchStatus').textContent=visible.length?visible.length+' cantones para explorar.':'No encontramos un cantón con ese nombre.';}
+  el('cantonSearch').addEventListener('input',render);render();return;
  }
- el('cantonSearch').addEventListener('input',render);
- el('cantonGrid').addEventListener('click',event=>{const button=event.target.closest('[data-canton-id]');if(!button||!catalogue.some(canton=>canton.id===button.dataset.cantonId))return;selected=button.dataset.cantonId;render();el('cantonResults').scrollIntoView?.({behavior:'smooth',block:'nearest'});});
- window.renderLojaCantons=render;render();
+ if(!el('cantonTitle'))return;
+ const canton=catalogue.find(c=>c.id===new URLSearchParams(location.search).get('canton'));
+ if(!canton){el('cantonTitle').textContent='Cantón no encontrado';el('cantonIntro').textContent='Regresa a todos los cantones para escoger uno de los 16 cantones de Loja.';return;}
+ document.title=canton.name+' | Visita Loja';el('cantonTitle').textContent=canton.name;el('cantonIntro').textContent='Explora los lugares y negocios de '+canton.name+'. Abre cada ficha para consultar su descripción, ubicación y más información.';el('cantonResults').hidden=false;
+ function renderPlaces(records){const places=records.filter(p=>p.cantonId===canton.id&&p.active!==false&&(!p.publicationStatus||p.publicationStatus==='published')&&!/motel/i.test([p.category,p.tag,p.title,p.type].join(' ')));el('cantonResultsCount').textContent=places.length+' '+(places.length===1?'lugar publicado':'lugares publicados')+' en '+canton.name+'.';el('cantonPlaces').innerHTML=places.length?places.map(p=>`<article class="canton-place"><span>${esc(p.tag||'Parada Visita Loja')}</span><h3>${esc(p.title||p.id)}</h3><p>${esc(p.desc||p.description||'Consulta la ficha para conocer este lugar.')}</p>${p.address?'<p>'+esc(p.address)+'</p>':''}<a href="/?lugar=${encodeURIComponent(p.id)}">Ver información del lugar →</a></article>`).join(''):`<p class="canton-empty">Estamos preparando más información de ${esc(canton.name)}. Todavía no hay lugares publicados con este cantón asignado.</p>`;}
+ let db;
+ async function load(){el('cantonRetry').hidden=true;el('cantonResultsCount').textContent='Cargando lugares publicados…';el('cantonPlaces').innerHTML='';try{if(!db){if(!window.firebase)throw new Error('SDK unavailable');const app=firebase.initializeApp({apiKey:'AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE',authDomain:'cultura-y-cuchara.firebaseapp.com',projectId:'cultura-y-cuchara',appId:'1:974351327730:web:08573026a46d1bb6598b6b'},'viveLojaCantons');db=app.firestore();}const snapshot=await db.collection('locales').where('cantonId','==',canton.id).get();renderPlaces(snapshot.docs.map(d=>({...d.data(),id:d.id})));}catch(error){el('cantonResultsCount').textContent='No pudimos cargar los lugares de '+canton.name+'. Vuelve a intentarlo.';el('cantonRetry').hidden=false;}}
+ el('cantonRetry').addEventListener('click',load);load();
 })();
