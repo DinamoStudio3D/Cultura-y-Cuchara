@@ -13,6 +13,6 @@ test('existing presentation values are normalized without accepting CSS injectio
 test('new editable fields preserve defaults and visibility choices without deleting data',()=>{
  const home=globalThis.VisitaLojaHomepage;
  const original=home.normalize();assert.equal(original.blocks.welcomeSearch.placeholder,'Café, hotel, comida lojana…');
- const edited=home.normalize({blocks:{welcomePlaces:{enabled:false},welcomePhoto:{enabled:false},welcomeSearch:{title:'Busca una experiencia',placeholder:'Hoteles'}}});
- assert.equal(edited.blocks.welcomePlaces.enabled,false);assert.equal(edited.blocks.welcomePhoto.enabled,false);assert.equal(edited.blocks.welcomeSearch.placeholder,'Hoteles');assert.equal(edited.blocks.explore.title,original.blocks.explore.title);
+ const edited=home.normalize({blocks:{shopGateway:{enabled:false},welcomePhoto:{enabled:false},welcomeSearch:{title:'Busca una experiencia',placeholder:'Hoteles'}}});
+ assert.equal(edited.blocks.shopGateway.enabled,false);assert.equal(edited.blocks.welcomePhoto.enabled,false);assert.equal(edited.blocks.welcomeSearch.placeholder,'Hoteles');assert.equal(edited.blocks.provinceGateway.title,original.blocks.provinceGateway.title);
 });

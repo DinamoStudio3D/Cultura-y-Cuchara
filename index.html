@@ -8041,7 +8041,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             applyWelcomeMusic(cached);
             applyInstitutionalSupport(cached);
             if (db) {
-                db.collection('settings').doc('main').onSnapshot(snapshot => {
+                db.collection('settings').doc('main').onSnapshot({ includeMetadataChanges: true }, snapshot => {
                     if (!snapshot.exists) return;
                     const data = snapshot.data();
                     window.__vlBrandLogoServerConfirmed = !snapshot.metadata.fromCache;
