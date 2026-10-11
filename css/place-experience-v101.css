@@ -1,0 +1,32 @@
+/* V101: existing public cards and preview, preserving admin style/image controls. */
+@layer vl-colors {
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore{--vl-text:#fff;--vl-muted:#e5ede6;--vl-accent:#e7eead;background:#173a31!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore-icon{--vl-text:#173a31;--vl-accent:#173a31;background:#e7eead!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>a{--vl-text:#173a31;--vl-muted:#173a31;--vl-accent:#173a31;background:#e7eddf!important}
+ #mapa .vl-preview-photo{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173a31!important}
+ #mapa .vl-preview-photo>span{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173a31ed!important}
+ #mapa #mapPreviewCard{--vl-text:#253241;--vl-muted:#56616c;--vl-accent:#236043;background:#fff!important}
+}
+@layer vl-layout {
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-kicker{letter-spacing:.12em;font-size:10px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore{margin-top:16px!important;padding:14px 16px!important;border:0!important;border-radius:12px;font-size:13px!important;min-height:48px}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore-icon{border-radius:50%;width:30px;height:30px}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks{flex-wrap:wrap;gap:8px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>:is(a,button){width:auto!important;min-width:44px;height:44px!important;display:inline-flex!important;padding:10px 12px;gap:7px;font-size:13px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action-label{font-size:11px;font-weight:750;white-space:nowrap}
+ #mapa #mapPreviewCard{padding:24px!important;border-width:1px!important;border-radius:var(--premium-radius,1.25rem)!important;gap:24px!important;box-shadow:0 12px 32px #173a3110!important}
+ #mapa .vl-preview-photo{position:relative;padding:0;border:0;border-radius:16px;overflow:hidden;cursor:pointer;width:100%;aspect-ratio:4/3;min-width:0;display:block;align-self:start;text-align:left}
+ #mapa .vl-preview-photo[hidden]{display:none!important}
+ #mapa .vl-preview-photo>img{width:100%;height:100%;object-fit:var(--vl-card-image-fit,cover);display:block}
+ #mapa .vl-preview-photo>span{position:absolute;bottom:12px;left:12px;right:12px;padding:12px 14px;border-radius:12px;font-size:12px;font-weight:800}
+ #mapa #previewTitle{font-size:clamp(24px,2.5vw,34px)!important;line-height:1.2!important;margin-top:10px}
+ #mapa #previewDesc{-webkit-line-clamp:5;font-size:14px!important;line-height:1.75!important}
+ #mapa #previewBusinessProfile :is(a,span){font-size:11px!important;line-height:1.5}
+ #mapa #previewBusinessProfile a{min-height:44px;display:inline-flex;align-items:center}
+ #mapa .vl-place-actions :is(button,a){min-height:44px;font-size:12px!important}
+ #mapa .vl-preview-photo:focus-visible{outline:3px solid #236043;outline-offset:4px}
+ @media(min-width:1200px){#mapa #mapPreviewCard:has(>.vl-preview-photo:not([hidden])){grid-template-columns:minmax(220px,.85fr) minmax(0,1fr) minmax(280px,1fr)!important;align-items:start}#mapa #mapPreviewCard>div:last-of-type{padding-left:22px!important;gap:10px!important}}
+ @media(min-width:1024px) and (max-width:1199px){#mapa #mapPreviewCard>.vl-preview-photo{grid-column:1/-1;aspect-ratio:3/1}#mapa #mapPreviewCard>.vl-preview-photo>img{object-position:center}}
+ @media(max-width:1023px){#mapa #mapPreviewCard{display:flex!important;flex-direction:column!important}#mapa #mapPreviewCard>.vl-preview-photo{max-height:340px}#mapa #mapPreviewCard>div{width:100%}}
+ @media(max-width:639px){#mapa #mapPreviewCard{padding:18px!important;gap:18px!important}#mapa #mapPreviewCard>.vl-preview-photo{aspect-ratio:4/3;max-height:none}#establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content{padding:20px!important}}
+}

@@ -272,6 +272,7 @@
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
 <link rel="stylesheet" href="css/discovery-cards.css?v=78">
+<link rel="stylesheet" href="css/place-experience-v101.css?v=101">
     <link rel="stylesheet" href="css/time-discovery-v79.css?v=79">
     <link rel="stylesheet" href="css/podcast-v80.css?v=80">
 <script src="js/public-color-contract.js?v=55"></script>
@@ -804,6 +805,7 @@
                 <button id="previewFavBtn" type="button" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
+                <button id="previewPhotoButton" type="button" hidden onclick="openMenuGallery()" class="vl-preview-photo" aria-label="Ver fotografías del lugar"><img id="previewPlacePhoto" alt="" decoding="async"><span id="previewPhotoLabel"></span></button>
                 <div>
                     <div class="flex flex-wrap items-center gap-2 mb-2 pr-12">
                         <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded-lg text-xs uppercase">Hueca Tradicional</span>
@@ -2181,6 +2183,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
 
     <script src="js/podcast-media.js?v=80"></script>
+<script src="js/place-preview-media.js?v=101"></script>
     <script>
         const translations = {
             es: {
@@ -4701,14 +4704,14 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             </div>
                             <p class="text-gray-600 text-xs sm:text-sm local-desc line-clamp-2">${locDesc}</p>
                             <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
-                                <i class="fa-solid fa-clock text-brandGold"></i> <span>${loc.hours || 'Lun - Dom: 08:00 - 20:00'}</span>
+                                <i class="fa-solid fa-clock text-brandGold"></i> <span>${loc.hours || (currentLang==='en'?'Hours to be confirmed':'Horario por confirmar')}</span>
                             </div>
                             <div class="vl18-tools">
                                 <div class="vl18-tools-links">
                                                                 <div class="vl18-quicklinks">
-                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)" aria-label="Sellar pasaporte"><i class="fa-solid fa-qrcode"></i></button>`:''}
+                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)" aria-label="Sellar pasaporte"><i class="fa-solid fa-qrcode"></i><span class="vl-card-action-label">${currentLang==='en'?'Stamp':'Sello'}</span></button>`:''}
                                 <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar" aria-label="Cómo llegar">
-                                    <i class="fa-solid fa-diamond-turn-right"></i>
+                                    <i class="fa-solid fa-diamond-turn-right"></i><span class="vl-card-action-label">${currentLang==='en'?'Directions':'Cómo llegar'}</span>
                                 </a>
                             </div>
                                 </div>
@@ -6672,6 +6675,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const titleText = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
             const descText = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
             const dishText = (currentLang === 'en' && loc.dishEn) ? loc.dishEn : loc.dish;
+            window.VisitaLojaPlacePreviewMedia?.render(loc,titleText,currentLang);
             const isOpen = isLocOpenNow(loc);
 
             const tagEl=document.getElementById('previewTag');
@@ -6719,7 +6723,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         : (currentLang === 'en' ? 'Dish: ' : 'Plato: ');
             document.getElementById('previewDish').innerText = detailPrefix + (dishText || '');
             const previewStampButton=document.getElementById('previewStampButton');if(previewStampButton)previewStampButton.classList.toggle('hidden',!['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category));
-            document.getElementById('previewHours').innerText = loc.hours || "Lun - Dom: 08:00 - 20:00";
+            document.getElementById('previewHours').innerText = loc.hours || (currentLang==='en'?'Hours to be confirmed':'Horario por confirmar');
             document.getElementById('previewAddress').innerText = loc.address;
             renderBusinessProfile(loc);
             
