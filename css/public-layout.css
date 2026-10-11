@@ -1421,7 +1421,7 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 
 /* V148: keep mobile map labels whole and controls outside the canvas. */
 @layer vl-layout {
- @media (max-width:639px) {
+ @media (max-width:1023px) {
   #mapa #mapLegendPanel.vl113-map-toolbar { flex-wrap:nowrap !important; overflow-x:auto !important; overscroll-behavior-x:contain; justify-content:flex-start !important; padding:8px !important; margin-top:12px !important; }
   #mapa .vl113-map-toolbar .map-legend-option { flex:0 0 auto !important; min-width:max-content !important; white-space:nowrap !important; padding:8px 10px !important; }
   #mapa .vl113-map-toolbar .map-legend-option>span,
@@ -1461,5 +1461,27 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   .vl152-destinations article { min-height:300px; }
   .vl152-copy { padding:24px; }
   .vl152-shop-art i { font-size:60px; }
+ }
+}
+
+/* V154: finishing pass for readable content and compact section geometry. */
+@layer vl-layout {
+ #main-content>section#provincia-tienda { padding-top:20px !important; padding-bottom:28px !important; }
+ #provincia-tienda:has(>.vl152-cantons[data-home-content-hidden]):has(>.vl152-shop[data-home-content-hidden]) { display:none !important; padding:0 !important; margin:0 !important; }
+ #provincia-tienda>article:only-child,
+ #provincia-tienda>article:first-child:has(+[data-home-content-hidden]),
+ #provincia-tienda>article[data-home-content-hidden]+article { grid-column:1 / -1; }
+ #establecimientos .vl39-results-toolbar { border:0 !important; background:transparent !important; padding:0 !important; margin:0 0 16px !important; justify-content:flex-end !important; }
+ #main-content :is(#categorias,#establecimientos,#emprendedores,#mapa,#agenda,#historias,#promociones) :is(h2,h3,strong) { word-break:normal !important; overflow-wrap:normal !important; }
+ #mapa #previewDesc { font-size:15px !important; line-height:1.65 !important; }
+ #mapa #mapSpotlightIndicator .truncate { white-space:normal !important; overflow:visible !important; text-overflow:clip !important; min-width:0; }
+ #main-content :is(a,button,input,select):focus-visible { outline:3px solid #b45309; outline-offset:3px; }
+ @media(max-width:639px) {
+  #categorias #exploreCategoryGrid>button:last-child:nth-child(odd) { grid-column:1 / -1; min-height:100px !important; }
+  #categorias #exploreCategoryGrid>button:last-child:nth-child(odd)>span:first-child { float:left; margin-right:16px; }
+  #categorias #exploreCategoryGrid>button:last-child:nth-child(odd)>strong { margin-top:3px !important; }
+  #mapa #mapPreviewCard { min-height:0 !important; }
+  #main-content :is(#agenda,#promociones,#historias) :is(h2,h3) { line-height:1.25 !important; }
+  .vl152-copy h2 { max-width:100%; text-wrap:balance; }
  }
 }
