@@ -406,3 +406,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .admin-campaign-actions{display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid #334155;margin-top:16px;padding-top:16px}.admin-campaign-actions button{padding:9px 12px;background:#164e63;color:#cffafe;border-radius:8px;font-size:12px;font-weight:700}.admin-campaign-actions .admin-campaign-delete{background:#7f1d1d;color:#fee2e2}
 #festivalForm,#tourismCampaignForm,#customCampaignSearch{scroll-margin-top:145px}#festivalModule form{padding:22px;border:1px solid #374151;border-radius:18px;background:#111827}#festivalModule label{display:block;min-width:0}#festivalModule label.flex{display:flex}#festivalModule .text-gray-500{color:#aebccc!important}.admin-campaign-gallery .admin-mission-empty{grid-column:1/-1}
 @media(max-width:750px){.admin-campaign-gallery{grid-template-columns:1fr}.admin-campaign-nav{grid-template-columns:1fr}.admin-campaign-nav button{grid-template-columns:32px 1fr;padding:16px}.admin-campaign-nav span{grid-column:2}.admin-campaign-filters{grid-template-columns:1fr}#festivalModule form{padding:16px}}
+
+/* V137: lecture des statistiques */
+.admin-analytics-notice{padding:16px 18px;border:1px solid #475569;border-radius:14px;background:#1e293b;color:#e2e8f0;font-size:13px;line-height:1.7;margin-bottom:20px}
+.admin-analytics-notice[data-state=error]{background:#451a1a;border-color:#f87171;color:#fee2e2}
+.admin-analytics-notice[data-state=ready]{background:#12302b;border-color:#34d399;color:#d1fae5}
+#analyticsDownloadBtn:disabled{opacity:.5;cursor:not-allowed}
+#analyticsModule .text-gray-400,#analyticsModule .text-gray-500{color:#b8c5d7!important}
+#analyticsModule strong[id]{font-size:32px!important;line-height:1.2!important;overflow-wrap:anywhere}
+#analyticsModule .grid > div{min-width:0}
+.admin-analytics-rank{padding:18px;border:1px solid #334155;border-radius:14px;background:#172438}
+.admin-analytics-place{display:block;font-size:17px;line-height:1.5;font-weight:800;overflow-wrap:anywhere;color:#f8fafc;margin:4px 0}
+.admin-analytics-rank .text-gray-400{display:block;font-size:12px;line-height:1.7}
+#analyticsModule h3{line-height:1.5}
+@media(max-width:1100px){#analyticsModule .xl\:grid-cols-\[1\.35fr_\.65fr\]{grid-template-columns:1fr!important}}
+@media(max-width:600px){.admin-analytics-rank{padding:14px}#analyticsModule .grid-cols-2{gap:10px}#analyticsModule .grid-cols-2 > div{padding:14px!important}}
