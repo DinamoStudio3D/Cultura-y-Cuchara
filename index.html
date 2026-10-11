@@ -271,8 +271,8 @@
 <link rel="stylesheet" href="css/public-layout.css?v=67">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
-<link rel="stylesheet" href="css/discovery-cards.css?v=78">
-<link rel="stylesheet" href="css/place-experience-v101.css?v=101">
+<link rel="stylesheet" href="css/discovery-cards.css?v=102">
+<link rel="stylesheet" href="css/place-experience-v101.css?v=102">
     <link rel="stylesheet" href="css/time-discovery-v79.css?v=79">
     <link rel="stylesheet" href="css/podcast-v80.css?v=80">
 <script src="js/public-color-contract.js?v=55"></script>
@@ -4709,8 +4709,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             <div class="vl18-tools">
                                 <div class="vl18-tools-links">
                                                                 <div class="vl18-quicklinks">
-                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)" aria-label="Sellar pasaporte"><i class="fa-solid fa-qrcode"></i><span class="vl-card-action-label">${currentLang==='en'?'Stamp':'Sello'}</span></button>`:''}
-                                <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold w-8 h-8 rounded-full flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar" aria-label="Cómo llegar">
+                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white vl-card-action rounded-xl flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)" aria-label="Sellar pasaporte"><i class="fa-solid fa-qrcode"></i><span class="vl-card-action-label">${currentLang==='en'?'Stamp':'Sello'}</span></button>`:''}
+                                <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold vl-card-action rounded-xl flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar" aria-label="Cómo llegar">
                                     <i class="fa-solid fa-diamond-turn-right"></i><span class="vl-card-action-label">${currentLang==='en'?'Directions':'Cómo llegar'}</span>
                                 </a>
                             </div>

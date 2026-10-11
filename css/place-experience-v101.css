@@ -3,6 +3,8 @@
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore{--vl-text:#fff;--vl-muted:#e5ede6;--vl-accent:#e7eead;background:#173a31!important}
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore-icon{--vl-text:#173a31;--vl-accent:#173a31;background:#e7eead!important}
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>a{--vl-text:#173a31;--vl-muted:#173a31;--vl-accent:#173a31;background:#e7eddf!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-favorite[aria-pressed="false"]{--vl-text:#236043;--vl-muted:#236043;--vl-accent:#236043}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-favorite[aria-pressed="true"]{--vl-text:#a32936;--vl-muted:#a32936;--vl-accent:#a32936}
  #mapa .vl-preview-photo{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173a31!important}
  #mapa .vl-preview-photo>span{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173a31ed!important}
  #mapa #mapPreviewCard{--vl-text:#253241;--vl-muted:#56616c;--vl-accent:#236043;background:#fff!important}
@@ -12,8 +14,13 @@
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore{margin-top:16px!important;padding:14px 16px!important;border:0!important;border-radius:12px;font-size:13px!important;min-height:48px}
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore-icon{border-radius:50%;width:30px;height:30px}
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks{flex-wrap:wrap;gap:8px!important}
- #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>:is(a,button){width:auto!important;min-width:44px;height:44px!important;display:inline-flex!important;padding:10px 12px;gap:7px;font-size:13px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action{width:auto!important;min-width:max-content!important;min-height:44px;height:auto!important;flex:0 0 auto!important;display:inline-flex!important;align-items:center;justify-content:center;padding:12px 14px!important;gap:8px;font-size:13px!important;line-height:1.2!important;box-sizing:border-box}
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action-label{font-size:11px;font-weight:750;white-space:nowrap}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools{flex-wrap:wrap;align-items:center;gap:12px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools-links{flex:1 1 180px;min-width:0;max-width:100%}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action>i{flex:0 0 auto;min-width:1em;text-align:center}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action-label{flex:0 0 auto;line-height:1.2}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-favorite{flex:0 0 46px!important;margin-left:auto}
  #mapa #mapPreviewCard{padding:24px!important;border-width:1px!important;border-radius:var(--premium-radius,1.25rem)!important;gap:24px!important;box-shadow:0 12px 32px #173a3110!important}
  #mapa .vl-preview-photo{position:relative;padding:0;border:0;border-radius:16px;overflow:hidden;cursor:pointer;width:100%;aspect-ratio:4/3;min-width:0;display:block;align-self:start;text-align:left}
  #mapa .vl-preview-photo[hidden]{display:none!important}
