@@ -1094,6 +1094,7 @@
                     </div>
 
                     <fieldset class="vl167-photo-options"><legend>Personaliza tu fotografía</legend><div class="vl167-options-grid">
+                        <label>Formato de los marcos Visita Loja<select id="postcardOutputFormat" onchange="postcardOutputFormat=this.value;renderPostcardPreview()" disabled><option value="story">Historia · 9:16</option><option value="portrait">Publicación · 4:5</option><option value="square">Cuadrado · 1:1</option></select></label>
                         <label>Encuadre<select id="postcardPhotoFit" onchange="setPostcardPhotoFit(this.value)"><option value="cover">Llenar el marco</option><option value="contain">Mostrar foto completa</option></select></label>
                         <label>Ambiente<select id="postcardFilterSelect" onchange="setPostcardFilter(this.value)"><option value="none">Natural</option><option value="sunset">Atardecer cálido</option><option value="sepia">Recuerdo sepia</option><option value="teatro">Blanco y negro</option></select></label>
                         <label>Sello decorativo<select id="postcardStickerSelect" onchange="setPostcardSticker(this.value)"><option value="none">Sin sello</option><option value="cepa" selected>Tradición lojana</option><option value="fiavl">Artes vivas</option><option value="cafe">Ruta del café</option><option value="centinela">Centinela del Sur</option></select></label>
@@ -3736,6 +3737,7 @@
         let postcardImageReady = false, postcardUploadRevision = 0;
         let postcardPhotoZoom = 1;
         let postcardPhotoFit = "cover";
+        let postcardOutputFormat = "story";
         let postcardShowTexts = true;
         let postcardPhotoOffsetX = 0;
         let postcardPhotoOffsetY = 0;
@@ -5918,6 +5920,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const selectedFrame = customPostcardFrames.find(frame => frame.id === currentPostcardTheme);
             const loadedFrame = selectedFrame ? loadedCustomFrameImages[selectedFrame.id] : null;
             let W = 1080, H = 1920;
+            const brandedOutput = availableBrandedPostcardFrames().some(frame=>frame.id===currentPostcardTheme);
+            const outputSelector = document.getElementById('postcardOutputFormat');
+            if (outputSelector) outputSelector.disabled = !brandedOutput;
+            if (brandedOutput) H = postcardOutputFormat === 'square' ? 1080 : postcardOutputFormat === 'portrait' ? 1350 : 1920;
             if (loadedFrame && loadedFrame.naturalWidth && loadedFrame.naturalHeight) {
                 const ratio = loadedFrame.naturalWidth / loadedFrame.naturalHeight;
                 if (ratio >= 1) { W = 1920; H = Math.max(640, Math.round(1920 / ratio)); }
@@ -5928,7 +5934,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const previewContainer = canvas.closest('.postcard-preview-container');
             if (previewContainer) { previewContainer.style.aspectRatio = `${W} / ${H}`; previewContainer.style.maxWidth = W >= H ? '560px' : (Math.abs(W / H - 1) < .12 ? '430px' : '330px'); }
             const formatLabel = document.getElementById('postcardFormatLabel');
-            if (formatLabel) formatLabel.textContent = W > H ? 'Horizontal' : (Math.abs(W - H) < 80 ? 'Cuadrado' : 'Vertical');
+            if (formatLabel) formatLabel.textContent = `${W} × ${H} px`;
 
             // Datos de usuario
             const userName = document.getElementById('postcardUserName')?.value.trim() || (currentLang === 'en' ? "Loja Explorer" : "Viajero en Loja");
