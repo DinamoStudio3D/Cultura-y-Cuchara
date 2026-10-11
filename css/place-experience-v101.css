@@ -9,6 +9,12 @@
  #mapa .vl-preview-photo>span{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173a31ed!important}
  #mapa #mapPreviewCard{--vl-text:#253241;--vl-muted:#56616c;--vl-accent:#236043;background:#fff!important}
 }
+/* V146: contraste del botón Sello en las fichas públicas */
+@layer vl-colors {
+ #establecimientos #localesGrid>.local-item .vl18-quicklinks>button.vl-card-action{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#9a3412!important;color:#fff!important;border-color:#9a3412!important}
+ #establecimientos #localesGrid>.local-item .vl18-quicklinks>button.vl-card-action :is(i,span){color:#fff!important}
+ #establecimientos #localesGrid>.local-item .vl18-quicklinks>button.vl-card-action:hover{background:#7c2d12!important;border-color:#7c2d12!important}
+}
 @layer vl-layout {
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-kicker{letter-spacing:.12em;font-size:10px!important}
  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore{margin-top:16px!important;padding:14px 16px!important;border:0!important;border-radius:12px;font-size:13px!important;min-height:48px}

@@ -519,7 +519,7 @@ html.low-data-mode *, html.low-data-mode *::before, html.low-data-mode *::after 
 #establecimientos #localesGrid .vl18-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:12px}
 #establecimientos #localesGrid .vl18-quicklinks{display:flex;gap:8px;align-items:center}
 #establecimientos #localesGrid .vl18-quicklinks>a,#establecimientos #localesGrid .vl18-quicklinks>button{width:40px!important;height:40px!important;display:grid!important;place-items:center;border-radius:12px!important;box-shadow:none!important;background:#edf2f6!important;border:1px solid #dce3e9;font-size:14px!important}
-#establecimientos #localesGrid .vl18-quicklinks>button{background:#fff0e6!important;border-color:#fed7aa!important}
+#establecimientos #localesGrid .vl18-quicklinks>button{background:#9a3412!important;border-color:#9a3412!important}
 #establecimientos #localesGrid .vl18-favorite{position:static!important;flex-shrink:0;display:grid;place-items:center;background:#fff!important;border:1px solid #e0e5e9!important;box-shadow:none!important;border-radius:12px!important;width:40px!important;height:40px!important}
 #establecimientos #localesGrid .vl18-favorite i{font-size:17px}
 #establecimientos #localesGrid .vl-card-explore{margin-top:3px!important}
