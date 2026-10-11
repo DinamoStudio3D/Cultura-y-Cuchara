@@ -1588,3 +1588,5 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
  #postales .vl168-brand-frame { --vl-text:#173d30;--vl-muted:#173d30;--vl-accent:#173d30;background:#f4f8f2 !important; }
  #postales .vl168-brand-frame[aria-pressed=true] { --vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173d30 !important; }
 }
+
+@layer vl-layout { #postales .vl169-share-link { display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 0;font-size:13px;font-weight:700;text-decoration:underline;text-underline-offset:4px;line-height:1.5; } }

@@ -1119,9 +1119,10 @@
                             <i class="fa-solid fa-download"></i> <span data-i18n="btnDownloadPostcard">Descargar Postal (HD)</span>
                         </button>
                         <button type="button" onclick="sharePostcardWhatsapp()" class="bg-green-500 text-white font-bold px-4 py-3 rounded-xl hover:bg-green-600 transition text-xs flex items-center justify-center gap-1.5 shadow">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> <span data-i18n="btnSharePostcard">Compartir</span>
+                            <i class="fa-solid fa-share-nodes text-sm"></i> <span data-i18n="btnSharePostcard">Compartir</span>
                         </button>
                     </div>
+                    <button type="button" onclick="sharePostcardLink()" class="vl169-share-link"><i class="fa-solid fa-link" aria-hidden="true"></i> Compartir el enlace del creador</button>
                 </div>
 
                 <!-- Previsualización en Vivo de la Postal (Formato Historia 9:16) -->
@@ -6222,7 +6223,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(!canvas) return;
             try {
                 const link = document.createElement('a');
-                link.download = `ViveLoja_Postal_${Date.now()}.png`;
+                link.download = `VisitaLoja_Postal_${Date.now()}.png`;
                 link.href = canvas.toDataURL('image/png', 0.95);
                 link.click();
             } catch (error) {
@@ -6236,13 +6237,28 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             showToast(currentLang === 'en' ? '🎉 Postcard downloaded!' : '🎉 ¡Postal descargada en alta calidad!');
         }
 
-        function sharePostcardWhatsapp() {
-            const userName = document.getElementById('postcardUserName')?.value.trim() || "Un viajero";
-            const userSpot = document.getElementById('postcardUserSpot')?.value.trim() || "Loja";
-            const shareText = currentLang === 'en'
-                ? `📸 Look at my travel postcard from ${userSpot} on Visita Loja! Create yours at: ${window.location.href}`
-                : `📸 ¡Mira mi postal de viaje desde *${userSpot}* en Visita Loja! Hecha por ${userName}. Crea la tuya en: ${window.location.href}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener,noreferrer');
+        async function sharePostcardWhatsapp() {
+            const canvas = document.getElementById('postcardCanvas');
+            if (!canvas) return;
+            try {
+                const blob = await new Promise((resolve, reject) => canvas.toBlob(result => result ? resolve(result) : reject(new Error('empty-image')), 'image/png'));
+                const file = new File([blob], 'VisitaLoja-Postal.png', { type:'image/png' });
+                if (navigator.canShare?.({files:[file]}) && navigator.share) {
+                    await navigator.share({files:[file], title:'Mi postal de Visita Loja'});
+                    showToast(currentLang === 'en' ? 'Postcard shared!' : '¡Postal compartida!');
+                } else {
+                    downloadPostcardImage();
+                    showToast(currentLang === 'en' ? 'Attach the downloaded postcard in WhatsApp or your preferred app.' : 'Adjunta la postal descargada en WhatsApp o en la aplicación que prefieras.');
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') return;
+                showToast(currentLang === 'en' ? 'Could not share this image. Try downloading it.' : 'No se pudo compartir la imagen. Prueba con Descargar postal.');
+            }
+        }
+        function sharePostcardLink() {
+            const url = window.location.origin + window.location.pathname + '#postales';
+            const text = currentLang === 'en' ? 'Create your own travel postcard with Visita Loja: ' : 'Crea tu propia postal de viaje con Visita Loja: ';
+            window.open('https://wa.me/?text=' + encodeURIComponent(text + url), '_blank', 'noopener,noreferrer');
         }
 
         function handleUploadCustomFrame(e) {
