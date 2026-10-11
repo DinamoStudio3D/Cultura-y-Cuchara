@@ -3728,6 +3728,8 @@
         let postcardPhotoOffsetX = 0;
         let postcardPhotoOffsetY = 0;
         let postcardDragState = null;
+        const brandedPostcardFrames = [{id:"brand-nature",name:"Loja Natural",icon:"🌿",color:"#173d30"},{id:"brand-food",name:"Sabores de Loja",icon:"🍽️",color:"#9a3412"},{id:"brand-memory",name:"Recuerdo Visita Loja",icon:"📍",color:"#123b66"}];
+        let postcardBrandLogo = null, postcardBrandLogoUrl = "";
         let postcardPhotoRotation = 0;
         let postcardPhotoMirrored = false;
 
@@ -5680,6 +5682,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 </button>
             `;
 
+            brandedPostcardFrames.forEach(frame => {
+                html += `<button type="button" onclick="setPostcardTheme('${frame.id}')" class="vl168-brand-frame" style="border-color:${frame.color}"><span>${frame.icon}</span><span>${frame.name}</span></button>`;
+            });
+
             customPostcardFrames.forEach(frame => {
                 const isActive = currentPostcardTheme === frame.id;
                 html += `
@@ -5690,7 +5696,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             });
 
             container.innerHTML = html;
-            const themes=['fiavl','vintage','cafe','polaroid',...customPostcardFrames.map(frame=>frame.id)];
+            const themes=['fiavl','vintage','cafe','polaroid',...brandedPostcardFrames.map(frame=>frame.id),...customPostcardFrames.map(frame=>frame.id)];
             container.querySelectorAll('button').forEach((button,index)=>button.setAttribute('aria-pressed',String(themes[index]===currentPostcardTheme)));
         }
 
@@ -5814,10 +5820,38 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             return result;
         }
 
+        function loadPostcardBrandLogo() {
+            if (window.__vlBrandLogoServerConfirmed !== true) return;
+            const source = document.getElementById('navLogoImg')?.src;
+            if (!source || source === postcardBrandLogoUrl) return;
+            postcardBrandLogoUrl = source; postcardBrandLogo = null;
+            const logo = new Image(); logo.crossOrigin = 'anonymous';
+            logo.onload = () => { if (postcardBrandLogoUrl === source) { postcardBrandLogo = logo; renderPostcardPreview(); } };
+            logo.onerror = () => { postcardBrandLogo = null; };
+            logo.src = source;
+        }
+        function drawBrandedPostcard(ctx, frame, W, H, name, place, message) {
+            const border = 28, footer = 340;
+            ctx.fillStyle = frame.color;
+            ctx.fillRect(0,0,W,border); ctx.fillRect(0,0,border,H); ctx.fillRect(W-border,0,border,H); ctx.fillRect(0,H-footer,W,footer);
+            ctx.fillStyle = '#fff8e9'; ctx.beginPath(); ctx.roundRect(55,55,250,250,34); ctx.fill();
+            if (postcardBrandLogo) {
+                const scale = Math.min(210/postcardBrandLogo.width,210/postcardBrandLogo.height),lw=postcardBrandLogo.width*scale,lh=postcardBrandLogo.height*scale;
+                ctx.drawImage(postcardBrandLogo,180-lw/2,180-lh/2,lw,lh);
+            } else { ctx.fillStyle=frame.color; ctx.font='900 32px sans-serif'; ctx.textAlign='center'; ctx.fillText('VISITA LOJA',180,190,220); }
+            ctx.textAlign='left'; ctx.fillStyle='#fff8e9'; ctx.font='900 28px sans-serif'; ctx.fillText(frame.name.toUpperCase(),65,H-280,W-130);
+            ctx.font='800 40px sans-serif'; ctx.fillText(place,65,H-215,W-130);
+            ctx.font='500 33px sans-serif'; ctx.fillText(message,65,H-150,W-130);
+            ctx.font='700 27px sans-serif'; ctx.fillText(name,65,H-85,W-350);
+            ctx.textAlign='right'; ctx.font='700 24px sans-serif'; ctx.fillText('VisitaLoja.com',W-65,H-40);
+            ctx.strokeStyle='#f2bd79';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(65,H-footer+25);ctx.lineTo(W-65,H-footer+25);ctx.stroke();
+        }
+
         function renderPostcardPreview() {
             const canvas = document.getElementById('postcardCanvas');
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
+            loadPostcardBrandLogo();
             
             // El lienzo adopta automáticamente la proporción del marco personalizado.
             const selectedFrame = customPostcardFrames.find(frame => frame.id === currentPostcardTheme);
@@ -5892,6 +5926,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 ctx.drawImage(img, drawX, drawY, drawW, drawH);
                 ctx.restore();
             }
+
+            const brandedFrame = brandedPostcardFrames.find(frame => frame.id === currentPostcardTheme);
+            if (brandedFrame) { drawBrandedPostcard(ctx, brandedFrame, W, H, userName, userSpot, userMsg); ctx.restore(); return; }
 
             // 4. Capa de degradado cinematográfico para legibilidad
             const customFrame = customPostcardFrames.find(f => f.id === currentPostcardTheme);

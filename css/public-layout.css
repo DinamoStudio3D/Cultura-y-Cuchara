@@ -1579,3 +1579,12 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
  @media(max-width:520px){#postales .vl167-options-grid{grid-template-columns:1fr}#postales .vl167-transform-actions button{flex:1 1 130px}}
 }
 @layer vl-colors { #postales .vl167-transform-actions button[aria-pressed=true] { --vl-text:#fff; --vl-muted:#fff; --vl-accent:#fff; background:#173d30 !important; } }
+
+@layer vl-layout {
+ #postales #postcardFramesContainer .vl168-brand-frame { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:14px 10px; border:2px solid; border-radius:12px; min-height:90px !important; font-size:13px; font-weight:750; }
+ #postales .vl168-brand-frame>span:first-child { font-size:24px; }
+}
+@layer vl-colors {
+ #postales .vl168-brand-frame { --vl-text:#173d30;--vl-muted:#173d30;--vl-accent:#173d30;background:#f4f8f2 !important; }
+ #postales .vl168-brand-frame[aria-pressed=true] { --vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173d30 !important; }
+}
