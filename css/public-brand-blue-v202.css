@@ -1,0 +1,47 @@
+/* V202: blue is the public brand color; semantic and category accents remain. */
+@layer vl-colors, vl-layout;
+@layer vl-colors {
+ :root { --vl-brand-blue:#123b66; --vl-brand-blue-action:#075bb2; --vl-brand-blue-pale:#eaf4fc; }
+ nav.glass-nav.sticky { --vl-text:#fff; --vl-muted:#e0eaf5; --vl-accent:#c2e8ff; background:rgba(7,34,63,.78) !important; }
+ #inicio.vl-welcome { background-color:#123b66 !important; }
+ #inicio .vl-welcome-copy { --vl-text:#fff; --vl-muted:#e0eaf5; --vl-accent:#c2e8ff; }
+ #inicio .vl-welcome-photo-caption { --vl-text:#fff; --vl-muted:#e0eaf5; --vl-accent:#c2e8ff; background:rgba(7,34,63,.78) !important; }
+ #inicio .vl-welcome-actions>:is(a,button) { --vl-text:#fff; --vl-muted:#fff; --vl-accent:#c2e8ff; background:#123b66 !important; }
+ #inicio .vl149-category-link { --vl-text:#123b66; --vl-muted:#123b66; --vl-accent:#075bb2; background:#eaf4fc !important; color:#123b66 !important; }
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore,
+ #mapa .vl-preview-photo,
+ #pasaporte .vl-passport-book,
+ #misiones .vl-adventure-hero,
+ #promociones .vl-promotion-cta,
+ #agenda .vl-agenda-card-actions a,
+ .place-detail-page #placeHero,
+ .place-detail-page #loyalty,
+ .canton-hero,.canton-destination-hero,
+ .canton-footer-full,.place-detail-footer {
+  --vl-text:#fff; --vl-muted:#e0eaf5; --vl-accent:#c2e8ff; background:#123b66 !important; color:#fff !important;
+ }
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore-icon,
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>a,
+ #agenda .vl-agenda-card-actions button,
+ .place-detail-page #directions,.place-detail-page #tag {
+  --vl-text:#123b66; --vl-muted:#123b66; --vl-accent:#075bb2; background:#eaf4fc !important; color:#123b66 !important;
+ }
+ .canton-detail-page #cantones .canton-place-actions .canton-place-primary { background:#075bb2 !important; color:#fff !important; }
+ .canton-detail-page #cantones .canton-destination-hero .canton-heading { background:linear-gradient(90deg,rgba(10,57,99,.58),rgba(7,34,63,.78)) !important; }
+ .canton-directory-page .canton-hero:after { background:linear-gradient(90deg,rgba(7,34,63,.78),rgba(10,57,99,.58)) !important; }
+ #mapa .vl-preview-photo>span { --vl-text:#fff; --vl-muted:#fff; --vl-accent:#fff; background:#123b66ed !important; }
+ #wallet .loyalty-pass .loyalty-pass__actions a,
+ #loyaltyClearCardFilters { --vl-text:#fff; --vl-muted:#fff; --vl-accent:#fff; background:#123b66 !important; color:#fff !important; }
+ body:has(#products) { background:#102b4a !important; }
+ body:has(#products) header { --vl-text:#fff; --vl-muted:#e0eaf5; --vl-accent:#c2e8ff; background:rgba(7,34,63,.78) !important; }
+ #products .card,#cartModal aside,#checkoutModal>section { --vl-text:#fff; --vl-muted:#e0eaf5; --vl-accent:#c2e8ff; background:#123b66 !important; }
+ @media(max-width:760px) {
+  #inicio.vl-welcome { background:#f4f8fc !important; }
+  #inicio .vl-welcome-copy { --vl-text:#172d45; --vl-muted:#4d6075; --vl-accent:#075bb2; }
+ }
+}
+/* Use the welcome screen's exact photographic tint, including its alpha values. */
+#inicio .vl-welcome-visual::after { background:linear-gradient(180deg,rgba(10,57,99,.58),rgba(7,34,63,.78)) !important; }
+nav.glass-nav.sticky { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+#inicio :is(#heroTitle,#heroSubtitle) { text-shadow:0 2px 16px #071c36aa; }
+@media(max-width:760px) { #inicio .vl-welcome-visual::after { background:linear-gradient(180deg,rgba(10,57,99,.58),rgba(7,34,63,.78)) !important; } }
