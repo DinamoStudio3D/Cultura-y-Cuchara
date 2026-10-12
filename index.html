@@ -4744,7 +4744,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             
             const grid = document.getElementById('localesGrid');
             if(!grid) return;
-            grid.innerHTML = '';
+            const cards=[];
             const mapCounts={mapCountAll:locations.length,mapCountFood:locations.filter(item=>['hueca','cafe','urbana','heladeria','panaderia','bar'].includes(item.category)).length,mapCountStay:locations.filter(item=>item.category==='hotel').length,mapCountTourism:locations.filter(item=>['turismo','entretenimiento','artesania'].includes(item.category)).length,mapCountPartners:locations.filter(item=>item.category==='aliado').length};
             Object.entries(mapCounts).forEach(([id,value])=>{const element=document.getElementById(id);if(element){element.textContent=value;if(id!=='mapCountAll')element.closest('button')?.classList.toggle('hidden',value===0);}});
 
@@ -4834,7 +4834,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     ? `<span class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> Abierto</span>`
                     : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
-                grid.innerHTML += `
+                cards.push(`
                     <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="button" tabindex="0" aria-label="Ver detalles de ${locTitle}" data-location-id="${loc.id}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
                             <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
@@ -4870,8 +4870,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             <div class="vl-card-explore"><span>Ver detalles del lugar</span><span class="vl-card-explore-icon"><i class="fa-solid fa-arrow-right"></i></span></div>
                         </div></div>
                     </div>
-                `;
+                `);
             });
+            grid.innerHTML=cards.join('');
 
             if(activeMapGroup!=='all')filterMapGroup(activeMapGroup);
             else if(userMarkerInstance) userMarkerInstance.addTo(markersLayer);
