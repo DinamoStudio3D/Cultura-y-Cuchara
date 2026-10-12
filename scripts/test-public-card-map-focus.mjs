@@ -19,3 +19,10 @@ test('missing business or unavailable map never crashes or navigates to an unrel
  const f=fixture({mapReady:false});f.click(99);assert.equal(f.calls.length,0);f.click(0);assert(f.calls.find(x=>x[0]==='select'));assert(f.calls.find(x=>x[0]==='scroll'));assert(!f.calls.find(x=>x[0]==='view'));
  const invalid=fixture({lat:'invalid'});invalid.click(0);assert(!invalid.calls.find(x=>x[0]==='view'));
 });
+test('centering Loja restores the large map without replacing GPS or zooming to the first business',()=>{
+ const source=html.slice(html.indexOf('        function centerOnLoja()'),html.indexOf('        function toggleFavoriteCurrent'));
+ const calls=[],gps={lat:-4.1,lng:-79.3};
+ const context={userCoords:gps,document:{getElementById:()=>({classList:{remove:value=>calls.push(['remove',value])}})},map:{closePopup:()=>calls.push(['close']),invalidateSize:()=>calls.push(['size']),setView:(...args)=>calls.push(['view',...args])},clearSpotlightPin:()=>{},renderMapAndGrid:()=>{},selectLocation:(...args)=>calls.push(['select',...args]),showToast:()=>{}};
+ vm.runInNewContext(source,context);context.centerOnLoja();assert.equal(context.userCoords,gps);assert.deepEqual(calls.find(x=>x[0]==='remove'),['remove','vl192-selected-stop']);assert.equal(calls.find(x=>x[0]==='view')[2],15);assert.deepEqual(calls.find(x=>x[0]==='select'),['select',0,false]);assert(calls.find(x=>x[0]==='size'));
+ context.map=null;assert.doesNotThrow(()=>context.centerOnLoja());
+});

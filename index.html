@@ -4963,11 +4963,11 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function centerOnLoja() {
             const lojaLat = -3.9931;
             const lojaLng = -79.2042;
-            userCoords = { lat: lojaLat, lng: lojaLng };
+            document.getElementById('mapa')?.classList.remove('vl192-selected-stop');
             clearSpotlightPin();
-            if(map) map.setView([lojaLat, lojaLng], 15, { animate: true });
+            if(map) { map.closePopup(); map.invalidateSize({ pan: false }); map.setView([lojaLat, lojaLng], 15, { animate: true }); }
             renderMapAndGrid();
-            selectLocation(0);
+            selectLocation(0, false);
             showToast('Mapa centrado en Loja');
         }
 
