@@ -1080,6 +1080,7 @@ let adminStories=[];
 let storiesSettings={active:true,title:'Historias de Loja',titleEn:'Stories of Loja',intro:'Relatos que conectan sabores, lugares y tradiciones.',introEn:'Stories connecting flavors, places and traditions.'};
 let adminPostcardFrames = [];
 let postcardFramePreviewValid = false;
+let postcardFramePreviewUrl = "";
 let adminTimeSpots = [];
 let timeUnsubscribe = null;
 let adminEntrepreneurs = [];
@@ -1918,24 +1919,38 @@ function previewAdminPostcardFrame() {
     const url = document.getElementById('postcardFrameUrl').value.trim();
     const preview = document.getElementById('postcardFramePreview');
     const status = document.getElementById('postcardFramePreviewStatus');
-    postcardFramePreviewValid = false;
+    postcardFramePreviewValid = false; postcardFramePreviewUrl="";
     if (!url) { preview.classList.add('hidden'); preview.removeAttribute('src'); status.textContent = 'Escribe el nombre del archivo para comprobarlo.'; return; }
+    if (!window.VisitaLojaHomepage.safeUrl(url)) { preview.classList.add('hidden'); status.textContent='Usa una dirección HTTPS válida o un archivo del sitio.'; return; }
+    preview.crossOrigin='anonymous';
     status.textContent = 'Comprobando imagen…';
     preview.classList.add('hidden');
     preview.onload = () => {
-        postcardFramePreviewValid = true;
+        if (document.getElementById('postcardFrameUrl').value.trim() !== url) return;
+        postcardFramePreviewValid = true; postcardFramePreviewUrl=url;
         preview.classList.remove('hidden');
         const ratio = preview.naturalWidth / preview.naturalHeight;
         const recommended = Math.abs(ratio - 9 / 16) < 0.08;
         status.textContent = `${preview.naturalWidth} × ${preview.naturalHeight} px. ${recommended ? 'Proporción vertical correcta.' : 'Funcionará, pero se recomienda proporción 9:16.'}`;
         status.className = `text-xs ${recommended ? 'text-emerald-300' : 'text-amber-300'}`;
     };
-    preview.onerror = () => { postcardFramePreviewValid = false; preview.classList.add('hidden'); status.textContent = 'No se encontró el PNG. Revisa que ya esté publicado en GitHub y que el nombre sea exacto.'; status.className = 'text-xs text-red-300'; };
+    preview.onerror = () => { postcardFramePreviewValid = false; preview.classList.add('hidden'); status.textContent = 'No se pudo cargar este marco para descargar postales. Revisa la dirección y los permisos de la imagen.'; status.className = 'text-xs text-red-300'; };
     preview.src = `${url}${url.includes('?') ? '&' : '?'}preview=${Date.now()}`;
 }
 
-async function saveAdminPostcardFrames() {
-    await postcardFramesRef.set({ frames: adminPostcardFrames, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email });
+async function saveAdminPostcardFrames(operation) {
+    if (!auth.currentUser) throw {code:'unauthenticated'};
+    const updatedBy=auth.currentUser.email||'';
+    adminPostcardFrames=await db.runTransaction(async transaction=>{
+        const snapshot=await transaction.get(postcardFramesRef);
+        const frames=snapshot.exists && Array.isArray(snapshot.data().frames)?snapshot.data().frames:[];
+        let next;
+        if(operation?.type==='add') next=[...frames.filter(frame=>frame.id!==operation.frame.id),operation.frame];
+        else if(operation?.type==='delete') next=frames.filter(frame=>frame.id!==operation.id);
+        else throw new Error('Unsupported frame operation');
+        transaction.set(postcardFramesRef,{frames:next,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy},{merge:true});
+        return next;
+    });
     renderAdminPostcardFrames();
 }
 
@@ -1944,7 +1959,7 @@ async function deleteAdminPostcardFrame(id) {
     if (!frame || !window.confirm(`¿Eliminar el marco “${frame.name}”?`)) return;
     const previous = adminPostcardFrames.map(item => ({ ...item }));
     adminPostcardFrames = adminPostcardFrames.filter(item => item.id !== id);
-    try { await saveAdminPostcardFrames(); message(document.getElementById('postcardsMessage'), 'Marco eliminado correctamente.', true); }
+    try { await saveAdminPostcardFrames({type:'delete',id}); message(document.getElementById('postcardsMessage'), 'Marco eliminado correctamente.', true); }
     catch (_) { adminPostcardFrames = previous; renderAdminPostcardFrames(); message(document.getElementById('postcardsMessage'), 'No se pudo eliminar el marco.'); }
 }
 
@@ -2772,11 +2787,13 @@ document.getElementById('postcardFrameForm').addEventListener('submit', async ev
     event.preventDefault();
     const button = document.getElementById('postcardFrameSaveBtn');
     const formMessage = document.getElementById('postcardsMessage');
+    if (button.disabled) return;
+    if (!auth.currentUser) { message(formMessage,'Tu sesión terminó. Ingresa nuevamente antes de publicar el marco.'); return; }
     const url = document.getElementById('postcardFrameUrl').value.trim();
-    if (!postcardFramePreviewValid) { message(formMessage, 'Primero verifica que la vista previa del marco cargue correctamente.'); return; }
+    if (!postcardFramePreviewValid || postcardFramePreviewUrl !== url) { message(formMessage, 'Primero verifica que la vista previa del marco cargue correctamente.'); return; }
     const frame = { id: `frame_${Date.now()}`, name: document.getElementById('postcardFrameName').value.trim(), icon: document.getElementById('postcardFrameIcon').value.trim() || '🖼️', img: url };
     button.disabled = true; adminPostcardFrames.push(frame);
-    try { await saveAdminPostcardFrames(); document.getElementById('postcardFrameForm').reset(); document.getElementById('postcardFrameIcon').value = '🎭'; postcardFramePreviewValid = false; previewAdminPostcardFrame(); message(formMessage, 'El marco se publicó correctamente y ya puede utilizarse para generar postales.', true); }
+    try { await saveAdminPostcardFrames({type:'add',frame}); document.getElementById('postcardFrameForm').reset(); document.getElementById('postcardFrameIcon').value = '🎭'; postcardFramePreviewValid = false; previewAdminPostcardFrame(); message(formMessage, 'El marco se publicó correctamente y ya puede utilizarse para generar postales.', true); }
     catch (error) { adminPostcardFrames = adminPostcardFrames.filter(item => item.id !== frame.id); renderAdminPostcardFrames(); message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar el marco.' : 'No se pudo publicar el marco.'); }
     finally { button.disabled = false; }
 });
