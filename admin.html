@@ -2739,15 +2739,20 @@ document.getElementById('settingsForm').addEventListener('submit', async event =
     const button = document.getElementById('settingsSaveBtn');
     const state = document.getElementById('settingsSaveState');
     const formMessage = document.getElementById('settingsMessage');
+    if(button.disabled)return;
+    if(!auth.currentUser){state.textContent='No guardado';message(formMessage,'Tu sesión terminó. Inicia sesión nuevamente para publicar.');return;}
     const heroBgUrls = document.getElementById('settingsHeroImages').value.split(/[\n,]+/).map(url => url.trim()).filter(Boolean);
     if (!heroBgUrls.length) { message(formMessage, 'Agrega por lo menos una imagen para la portada.'); return; }
     const trendingMode=document.getElementById('trendingModeManual').checked?'manual':'auto';
     const trendingManualIds=[document.getElementById('trendingManual1').value,document.getElementById('trendingManual2').value,document.getElementById('trendingManual3').value].filter(Boolean);
     if(trendingMode==='manual'&&(trendingManualIds.length!==3||new Set(trendingManualIds).size!==3)){message(formMessage,'Para el modo manual selecciona tres paradas diferentes.');return;}
+    button.disabled=true;state.textContent='Guardando…';
+    try {
     if(trendingMode==='auto')await refreshWeeklyTrendingCache(false);
+    if(!auth.currentUser)throw{code:'session-expired'};
     const data = {
         trendingMode, trendingManualIds, trendingWeekly:currentTrendingSettings.trendingWeekly||[], trendingWeeklyWindowDays:7, trendingWeights:TRENDING_WEIGHTS,
-        premiumVisual:document.getElementById('settingsPremiumVisual').checked,heroStyle:document.getElementById('settingsHeroStyle').value,heroHeight:document.getElementById('settingsHeroHeight').value,cardStyle:document.getElementById('settingsCardStyle').value,cornerStyle:document.getElementById('settingsCornerStyle').value,heroImageOpacity:Number(document.getElementById('settingsHeroImageOpacity').value)||55,premiumAnimations:document.getElementById('settingsPremiumAnimations').checked,
+        premiumVisual:document.getElementById('settingsPremiumVisual').checked,heroStyle:document.getElementById('settingsHeroStyle').value,heroHeight:document.getElementById('settingsHeroHeight').value,cardStyle:document.getElementById('settingsCardStyle').value,cornerStyle:document.getElementById('settingsCornerStyle').value,heroImageOpacity:Number.isFinite(Number(document.getElementById('settingsHeroImageOpacity').value))?Math.min(100,Math.max(0,Number(document.getElementById('settingsHeroImageOpacity').value))):55,premiumAnimations:document.getElementById('settingsPremiumAnimations').checked,
         title: document.getElementById('settingsTitle').value.trim(), titleEn:document.getElementById('settingsTitleEn').value.trim(), subtitleEn:document.getElementById('settingsSubtitleEn').value.trim(), subtitle: document.getElementById('settingsSubtitle').value.trim(), showTrendingSection:document.getElementById('settingsShowTrendingSection').checked, showNowPlanner:document.getElementById('settingsShowNowPlanner').checked, showAccountFloatingButton:document.getElementById('settingsShowAccountFloatingButton').checked,
         logoUrl: document.getElementById('settingsLogo').value.trim(), fiavlImageUrl: document.getElementById('settingsFiavlImage').value.trim(), heroBgUrls, heroBgUrl: heroBgUrls[0],
         heroMobilePosition:document.getElementById('settingsHeroMobilePosition').value,cardImageFit:document.getElementById('settingsCardImageFit').value,heroIntervalSeconds: Number(document.getElementById('settingsHeroInterval').value || 6), heroBgPosition: document.getElementById('settingsHeroPosition').value,
@@ -2757,9 +2762,8 @@ document.getElementById('settingsForm').addEventListener('submit', async event =
         popupActive: document.getElementById('settingsPopupActive').checked, popupTitle: document.getElementById('settingsPopupTitle').value.trim(), popupDesc: document.getElementById('settingsPopupDesc').value.trim(), popupImg: document.getElementById('settingsPopupImage').value.trim(), popupWhatsapp: document.getElementById('settingsPopupWhatsapp').value.trim(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: auth.currentUser.email
     };
-    button.disabled = true; state.textContent = 'Guardando…';
-    try { await settingsRef.set(data, { merge: true }); state.textContent = 'Guardado'; message(formMessage, 'La configuración general se actualizó correctamente.', true); }
-    catch (error) { state.textContent = 'No guardado'; message(formMessage, error.code === 'permission-denied' ? 'Firestore no permitió guardar la configuración.' : 'No se pudo guardar la configuración.'); }
+    await settingsRef.set(data, { merge: true }); state.textContent = 'Guardado'; message(formMessage, 'La configuración general se actualizó correctamente.', true); }
+    catch (error) { state.textContent = 'No guardado'; message(formMessage, error.code === 'session-expired' ? 'Tu sesión terminó. Inicia sesión nuevamente para publicar.' : error.code === 'permission-denied' ? 'Firestore no permitió guardar la configuración.' : 'No se pudo guardar la configuración.'); }
     finally { button.disabled = false; }
 });
 
