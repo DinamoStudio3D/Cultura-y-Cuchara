@@ -4737,9 +4737,15 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);button.setAttribute('aria-pressed',String(active));});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels=currentLang==='en'?{all:'All points',food:'Food & dining',stay:'Accommodation',tourism:'Attractions',partners:'Partner brands'}:{all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;const legend=document.getElementById('mapLegendPanel');if(legend&&!legend.classList.contains('vl113-map-toolbar'))legend.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
 
-        function publicPlaceDirectionsUrl(loc,coords) {
+        function publicPlaceCoordinates(loc) {
+            if(!loc||loc.lat==null||loc.lng==null||String(loc.lat).trim()===''||String(loc.lng).trim()==='')return null;
             const lat=Number(loc.lat),lng=Number(loc.lng);
-            const valid=loc.lat!=null&&loc.lng!=null&&String(loc.lat).trim()!==''&&String(loc.lng).trim()!==''&&Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180;
+            return Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180?[lat,lng]:null;
+        }
+
+        function publicPlaceDirectionsUrl(loc,coords) {
+            const point=publicPlaceCoordinates(loc),valid=!!point;
+            const [lat,lng]=point||[];
             if(valid&&coords&&Number.isFinite(coords.lat)&&Number.isFinite(coords.lng))return `https://www.google.com/maps/dir/?api=1&origin=${coords.lat},${coords.lng}&destination=${lat},${lng}`;
             try{const url=new URL(String(loc.gps||''));if(['https:','http:'].includes(url.protocol)&&!url.username&&!url.password)return url.href;}catch{}
             const destination=valid?`${lat},${lng}`:`${loc.title||''} ${loc.address||'Loja Ecuador'}`;
@@ -4785,7 +4791,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasCustomLogo=Boolean(loc.customLogoUrl&&loc.customLogoUrl.trim()!==''),hasPaidLogoStyle=hasCustomLogo&&paidBenefits.logoPin===true;
                 const markerPalette=mapMarkerPalette(loc.category);
 
-                if(loc.lat && loc.lng) {
+                const coordinates=publicPlaceCoordinates(loc);
+                if(coordinates) {
                     let pinHtml = "";
                     if (hasCustomLogo) {
                         pinHtml = `<div class="${hasPaidLogoStyle?'w-14 h-14 border-[4px]':'w-12 h-12 border-[3px]'} rounded-full overflow-hidden bg-white hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action:none;border-color:${markerPalette.color};box-shadow:0 0 0 ${hasPaidLogoStyle?'5px':'3px'} ${markerPalette.glow},0 12px 25px rgba(0,0,0,.35);">
@@ -4804,7 +4811,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         iconSize: hasPaidLogoStyle?[56,56]:[48,48], iconAnchor: hasPaidLogoStyle?[28,28]:[24,24], popupAnchor: [0, -28]
                     });
 
-                    const marker = L.marker([loc.lat, loc.lng], { icon: customIcon, riseOnHover: true, riseOffset: 1200 });
+                    const marker = L.marker(coordinates, { icon: customIcon, riseOnHover: true, riseOffset: 1200 });
                     
                     let distanciaTexto = "";
                     if (userCoords) {
@@ -4833,8 +4840,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const favBg = isFav ? "bg-red-50 text-red-600 border-red-300" : "bg-black/60 text-brandGold border-brandGold/40";
 
                 let cardDistHtml = "";
-                if (userCoords) {
-                    let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, loc.lat || -3.9931, loc.lng || -79.2042);
+                if (userCoords&&coordinates) {
+                    let km = calcularDistanciaKm(userCoords.lat, userCoords.lng, coordinates[0], coordinates[1]);
                     cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
                 }
 
@@ -7101,7 +7108,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 previewBtn.className = "absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10";
             }
 
-            if(shouldCenterMap && map) map.setView([loc.lat || -3.9931, loc.lng || -79.2042], 16, { animate: true, duration: 0.5 });
+            if(shouldCenterMap&&map){const coordinates=publicPlaceCoordinates(loc);if(coordinates)map.setView(coordinates,16,{animate:true,duration:0.5});else map.closePopup?.();}
         }
 
         function simulateMapClick(index) {
@@ -7111,13 +7118,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             section?.classList.add('vl192-selected-stop');
             selectLocation(index, false);
             if (map) {
-                const lat = Number(loc.lat), lng = Number(loc.lng);
-                if (Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) {
+                const coordinates=publicPlaceCoordinates(loc);
+                if (coordinates) {
                     map.stop();
                     map.invalidateSize({ pan: false });
-                    map.setView([lat, lng], Math.min(18, map.getMaxZoom()), { animate: false });
+                    map.setView(coordinates, Math.min(18, map.getMaxZoom()), { animate: false });
                     markersMap[loc.id]?.openPopup();
-                }
+                } else map.closePopup?.();
             }
             completeChabaquitoMission('mapa');
             const target = document.getElementById('mapCanvasShell') || section;
