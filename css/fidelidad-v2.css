@@ -15,3 +15,13 @@
 .loyalty-pass__rules summary:focus-visible{outline:3px solid #bce0ff;outline-offset:-4px}
 @media(max-width:500px){.loyalty-pass__head{grid-template-columns:1fr;gap:8px}.loyalty-pass__count{justify-self:start;margin-top:0}.loyalty-pass__business{padding-right:0;grid-template-columns:60px minmax(0,1fr)}.loyalty-pass__name{font-size:20px}.loyalty-pass--many .loyalty-stamps{gap:6px}.loyalty-pass__summary{flex-wrap:wrap}.loyalty-pass__remaining{text-align:left;max-width:none}}
 @media(prefers-reduced-motion:reduce){.loyalty-pass{transition:none}.loyalty-pass:hover{transform:none}}
+/* V230: readonly reward state and an explicit reveal for pickup codes. */
+.loyalty-reward{border:1px solid #8cbed251;border-radius:23px;padding:22px;background:linear-gradient(145deg,#123c63,#11273f);color:#edf6ff;overflow-wrap:anywhere}
+.loyalty-reward__head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.64rem;letter-spacing:.05em;color:#bddfff;font-weight:800}
+.loyalty-reward__state{font-size:.72rem;letter-spacing:0;padding:7px 10px;border-radius:8px;border:1px solid #a3c5de59;background:#73abdd1a;color:#e2f0ff}
+.loyalty-reward--available .loyalty-reward__state{background:#a8d6ff;color:#14324a;border-color:#a8d6ff}.loyalty-reward--inactive .loyalty-reward__state{background:#3d3132;color:#ffd6bc;border-color:#ba8e724d}
+.loyalty-reward h3{font-size:1.25rem;font-weight:900;line-height:1.4;margin:15px 0 5px}.loyalty-reward__business{color:#c5dcf0;font-weight:600;font-size:.88rem}
+.loyalty-reward__conditions{border-top:1px solid #a0c0de2e;margin-top:15px;padding-top:13px;white-space:pre-line;line-height:1.65;font-size:.85rem;color:#d5e4f2}
+.loyalty-reward__date{font-size:.78rem;color:#c6d6e7;margin-top:15px;line-height:1.6}.loyalty-reward__note{font-size:.8rem;color:#d1deeb;line-height:1.6;margin-top:12px}
+.loyalty-reward__code{border:1px solid #a2c8ed47;background:#061b2e4d;border-radius:13px;margin-top:17px}.loyalty-reward__code summary{padding:12px 14px;min-height:44px;cursor:pointer;font-weight:800;font-size:.85rem}.loyalty-reward__code code{display:block;width:fit-content;margin:5px 14px 12px;font-size:1.2rem;letter-spacing:.08em;padding:9px 12px;border-radius:9px;background:#ebf5ff;color:#173853;font-weight:900}.loyalty-reward__code p{padding:0 14px 14px;font-size:.8rem;line-height:1.6;color:#cfdeee}.loyalty-reward__code summary:focus-visible{outline:3px solid #b8ddff;outline-offset:-4px}
+@media(max-width:500px){.loyalty-reward{padding:18px}.loyalty-reward h3{font-size:1.1rem}}
