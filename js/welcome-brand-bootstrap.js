@@ -1,15 +1,15 @@
-/* Fetch only the current public logo early; never use a cached settings logo. */
+/* The supplied official logo loads locally first; server settings can update it. */
 (function(){
- const endpoint='https://firestore.googleapis.com/v1/projects/cultura-y-cuchara/databases/(default)/documents/settings/main';
- fetch(endpoint,{cache:'no-store'}).then(response=>response.ok?response.json():null).then(data=>{
-  const raw=data?.fields?.logoUrl?.stringValue;
-  if(!raw)return;
+ const local='assets/brand/visitaloja-official.webp';
+ let revision=0;
+ function loadLogo(raw){
+  const currentRevision=++revision;
   let url;try{url=new URL(raw,location.href);if(url.protocol!=='https:'||url.username||url.password)return;}catch{return;}
   const preload=new Image();
   preload.fetchPriority='high';
   preload.onload=()=>{
    const apply=()=>{
-    if(window.__vlBrandLogoServerConfirmed===true)return;
+    if(currentRevision!==revision||window.__vlBrandLogoServerConfirmed===true)return;
     const image=document.getElementById('splashLogoImg');if(!image)return;
     window.__vlSplashBootstrapLogoUrl=url.href;
     image.onload=()=>{image.parentElement?.classList.add('vl-brand-ready');image.style.visibility='visible';image.classList.remove('opacity-0');const fallback=image.parentElement?.querySelector('[data-splash-brand-fallback]');if(fallback)fallback.hidden=true;window.__vlSplashLogoReady?.();};
@@ -24,5 +24,11 @@
    }
   };
   preload.src=url.href;
+ }
+ loadLogo(local);
+ const endpoint='https://firestore.googleapis.com/v1/projects/cultura-y-cuchara/databases/(default)/documents/settings/main';
+ fetch(endpoint,{cache:'no-store'}).then(response=>response.ok?response.json():null).then(data=>{
+  const raw=data?.fields?.logoUrl?.stringValue;
+  if(raw&&raw!=='https://i.imgur.com/CUsJl0A.png')loadLogo(raw);
  }).catch(()=>{});
 })();
