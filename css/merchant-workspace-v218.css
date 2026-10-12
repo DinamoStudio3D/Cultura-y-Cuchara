@@ -1,0 +1,46 @@
+/* Owner-facing workspace: same operations, one focused section at a time. */
+body{background:radial-gradient(ellipse at 0 0,#075bb22b,transparent 40rem),#0b2038!important;color:#eaf2fa}
+body>header{background:#0b2038f5!important;border-color:#8eb8dc33!important}
+main{max-width:1440px!important}
+.merchant-workspace{display:grid;grid-template-columns:230px minmax(0,1fr);gap:24px;align-items:start}
+.merchant-workspace-nav{position:sticky;top:100px;display:grid;gap:7px;padding:16px;background:#123b6666;border:1px solid #8eb8dc30;border-radius:22px}
+.merchant-workspace-nav>p{font-size:10px;letter-spacing:.17em;font-weight:850;color:#addaff;margin:4px 8px 12px}
+.merchant-workspace-nav button{display:flex;align-items:center;gap:12px;text-align:left;min-height:62px;padding:12px;border:1px solid transparent;border-radius:14px;color:#dbeafa;background:transparent}
+.merchant-workspace-nav button>i{width:20px;flex:none;text-align:center;font-size:16px}
+.merchant-workspace-nav button b{display:block;font-size:14px;line-height:1.4}
+.merchant-workspace-nav button small{display:block;font-size:10px;line-height:1.5;color:#b8cfe4;margin-top:3px}
+.merchant-workspace-nav button[aria-pressed=true]{background:#075bb2;border-color:#5eb6ef;color:#fff;box-shadow:0 8px 22px #0002}
+.merchant-workspace-nav button[aria-pressed=true] small{color:#e1f2ff}
+.merchant-workspace-profile{border-top:1px solid #8eb8dc30;padding:16px 8px 4px;margin-top:9px;font-size:12px;line-height:1.6;color:#bde4ff}
+.merchant-workspace-content{min-width:0;display:grid;gap:18px}
+.merchant-workspace-content>[data-merchant-pane],.merchant-workspace-content>#analyticsPanel{margin:0!important}
+[data-merchant-pane][hidden],#merchantWorkspaceUnavailable[hidden]{display:none!important}
+.merchant-pane-heading{position:static!important;background:transparent!important;border:0!important;padding:4px 0 8px}
+.merchant-pane-heading>p:first-child{font-size:10px;letter-spacing:.15em;font-weight:850;color:#a9d9ff;margin-bottom:9px}
+.merchant-pane-heading h2{font-size:clamp(26px,3vw,36px);font-weight:850;line-height:1.2;letter-spacing:-.035em;margin-bottom:12px;color:#fff;scroll-margin-top:110px}
+.merchant-pane-heading>p:last-child{max-width:74ch;color:#cadcea;font-size:14px;line-height:1.7}
+.merchant-workspace .card{background:#102f4e!important;border-color:#8eb8dc30!important}
+.merchant-workspace .text-gray-400{color:#bacdde!important}
+.merchant-workspace .text-gray-500{color:#adbed0!important}
+.merchant-workspace-empty{border:1px solid #8eb8dc45;border-radius:18px;background:#123b66;padding:22px;color:#dbeafa;line-height:1.7}
+#analyticsPanel>.grid:has(>[data-merchant-pane]){grid-template-columns:minmax(0,1fr)!important}
+#analyticsPanel>.grid:has(>[data-merchant-pane]):not(:has(>[data-merchant-pane]:not([hidden]))){display:none!important}
+#analyticsPanel:not(:has([data-merchant-pane]:not([hidden]))){display:none}
+.merchant-draft-tools{border:1px dashed #8eb8dc55;border-radius:18px;padding:18px;background:#0d2944}
+.merchant-draft-tools>summary{cursor:pointer;font-size:14px;font-weight:750;min-height:44px;line-height:1.5;display:list-item;list-style-position:inside}
+.merchant-draft-tools>p{font-size:13px;line-height:1.6;color:#b8cfe4;margin:8px 0 18px}
+.merchant-workspace :is(button,a,input,select,textarea,summary):focus-visible{outline:3px solid #91d3ff;outline-offset:3px}
+.merchant-workspace :is(input,select,textarea){max-width:100%;min-width:0}
+.merchant-workspace :is(h2,h3,h4,p,label){overflow-wrap:anywhere}
+.merchant-workspace .loyalty-studio-heading{margin-bottom:22px}
+@media(max-width:900px){
+ .merchant-workspace{grid-template-columns:minmax(0,1fr);gap:18px}
+ .merchant-workspace-nav{position:static;display:flex;overflow-x:auto;gap:8px;padding:10px;border-radius:18px;scroll-snap-type:x proximity}
+ .merchant-workspace-nav>p{display:none}
+ .merchant-workspace-nav button{flex:0 0 150px;scroll-snap-align:start;min-height:64px;padding:10px;gap:9px}
+ .merchant-workspace-profile{flex:0 0 160px;border-top:0;border-left:1px solid #8eb8dc30;margin:0;padding:12px;align-self:center}
+ main{padding:20px 14px!important}
+ #placeFilter{min-width:0!important;max-width:100%}
+ .merchant-pane-heading h2{scroll-margin-top:150px}
+}
+@media(prefers-reduced-motion:reduce){.merchant-workspace *{scroll-behavior:auto!important}}
