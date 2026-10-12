@@ -268,7 +268,8 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=67">
+<link rel="stylesheet" href="css/public-layout.css?v=198">
+<script src="js/welcome-brand-bootstrap.js"></script>
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
 <link rel="stylesheet" href="css/discovery-cards.css?v=102">
@@ -4246,6 +4247,7 @@
 
         function applyConfirmedHomepageLogo(image,url) {
             if (!image) return;
+            if(image.id==='splashLogoImg'&&window.__vlSplashBootstrapLogoUrl&&window.__vlBrandLogoServerConfirmed!==true)return;
             image.style.visibility='hidden';
             const reveal=()=>{
                 const confirmed=window.__vlBrandLogoServerConfirmed===true;
