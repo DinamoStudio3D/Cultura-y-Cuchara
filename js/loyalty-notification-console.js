@@ -112,6 +112,8 @@
       if (selected !== normalized.placeId) { el('noticePlace').value = normalized.placeId; selected = normalized.placeId; reset(); }
       prepared = normalized; review = null; reviewPanel();
       say(canWrite()?'Revisa el borrador y guárdalo en el servicio. Todavía no está publicado.':'Borrador listo para revisión. Consulta el servicio para comprobar si permite guardarlo.');
+      window.VisitaLojaAdminFidelityWorkspace?.select('notices',true);
+      window.VisitaLojaMerchantWorkspace?.select('notices',true);
       host.scrollIntoView?.({behavior:'smooth',block:'start'}); return true;
     };
     el('noticeSaveDraft').onclick = () => {
