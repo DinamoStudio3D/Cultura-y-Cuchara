@@ -11,7 +11,7 @@
     if(window.__vlBrandLogoServerConfirmed===true)return;
     const image=document.getElementById('splashLogoImg');if(!image)return;
     window.__vlSplashBootstrapLogoUrl=url.href;
-    image.onload=()=>{image.style.visibility='visible';image.classList.remove('opacity-0');const fallback=image.parentElement?.querySelector('[data-splash-brand-fallback]');if(fallback)fallback.hidden=true;window.__vlSplashLogoReady?.();};
+    image.onload=()=>{image.parentElement?.classList.add('vl-brand-ready');image.style.visibility='visible';image.classList.remove('opacity-0');const fallback=image.parentElement?.querySelector('[data-splash-brand-fallback]');if(fallback)fallback.hidden=true;window.__vlSplashLogoReady?.();};
     image.src=url.href;
     if(image.complete&&image.naturalWidth>0)image.onload();
    };

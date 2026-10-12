@@ -4248,6 +4248,7 @@
         function applyConfirmedHomepageLogo(image,url) {
             if (!image) return;
             if(image.id==='splashLogoImg'&&window.__vlSplashBootstrapLogoUrl&&window.__vlBrandLogoServerConfirmed!==true)return;
+            if(image.src===url&&image.style.visibility==='visible'&&image.complete&&image.naturalWidth>0)return;
             image.style.visibility='hidden';
             const reveal=()=>{
                 const confirmed=window.__vlBrandLogoServerConfirmed===true;
@@ -4257,11 +4258,12 @@
                     image.classList.toggle('opacity-0',!ready);
                     const fallback=image.parentElement?.querySelector('[data-splash-brand-fallback]');
                     if(fallback)fallback.hidden=ready;
+                    image.parentElement?.classList.toggle('vl-brand-ready',ready);
                     if(ready)window.__vlSplashLogoReady?.();
                 }
             };
             image.onload=reveal;
-            image.onerror=()=>{image.style.visibility='hidden';if(image.id==='splashLogoImg'){const fallback=image.parentElement?.querySelector('[data-splash-brand-fallback]');if(fallback)fallback.hidden=false;}};
+            image.onerror=()=>{image.style.visibility='hidden';if(image.id==='splashLogoImg'){const fallback=image.parentElement?.querySelector('[data-splash-brand-fallback]');if(fallback)fallback.hidden=false;image.parentElement?.classList.remove('vl-brand-ready');}};
             image.src=url;
             reveal();
         }
@@ -7335,7 +7337,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 if(finished)return;
                 window.__vlSplashLogoReady=null;
                 clearTimeout(timer);
-                timer=setTimeout(finish,450);
+                timer=setTimeout(finish,900);
             };
             const logo=document.getElementById('splashLogoImg');
             if(logo?.style.visibility==='visible')window.__vlSplashLogoReady?.();

@@ -14,8 +14,8 @@ test('homepage logos stay hidden for cached settings and until the current image
 test('welcome waits for the current logo, remains bounded and preserves fast QR entry',()=>{
  const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');const start=html.indexOf('        function scheduleWelcomeSplashRemoval('),end=html.indexOf("        window.addEventListener('DOMContentLoaded', function() {",start);
  function fixture(visible=false){const timers=new Map();let next=0,removed=0;const context={window:{},document:{getElementById:()=>({style:{visibility:visible?'visible':'hidden'}})},setTimeout(fn,delay){timers.set(++next,{fn,delay});return next},clearTimeout(id){timers.delete(id)},forceRemoveSplash(){removed++}};vm.runInNewContext(html.slice(start,end),context);return{context,timers,get removed(){return removed},fire(){const entry=timers.entries().next().value;timers.delete(entry[0]);entry[1].fn()}}}
- const waiting=fixture();waiting.context.scheduleWelcomeSplashRemoval(false);assert.equal([...waiting.timers.values()][0].delay,2500);waiting.context.window.__vlSplashLogoReady();assert.equal([...waiting.timers.values()][0].delay,450);waiting.fire();assert.equal(waiting.removed,1);
+ const waiting=fixture();waiting.context.scheduleWelcomeSplashRemoval(false);assert.equal([...waiting.timers.values()][0].delay,2500);waiting.context.window.__vlSplashLogoReady();assert.equal([...waiting.timers.values()][0].delay,900);waiting.fire();assert.equal(waiting.removed,1);
  const failed=fixture();failed.context.scheduleWelcomeSplashRemoval(false);failed.fire();assert.equal(failed.removed,1);assert.equal(failed.context.window.__vlSplashLogoReady,null);
  const qr=fixture();qr.context.scheduleWelcomeSplashRemoval(true);assert.equal([...qr.timers.values()][0].delay,100);assert.equal(qr.context.window.__vlSplashLogoReady,null);
- const cached=fixture(true);cached.context.scheduleWelcomeSplashRemoval(false);assert.equal([...cached.timers.values()][0].delay,450);
+ const cached=fixture(true);cached.context.scheduleWelcomeSplashRemoval(false);assert.equal([...cached.timers.values()][0].delay,900);
 });
