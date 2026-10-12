@@ -12,3 +12,10 @@
 body:has(#wallet:not(.hidden))>main,body:has(#wallet:not(.hidden))>header>div{max-width:1100px!important}
 #customerWorkspaceContent .loyalty-points{margin:0}
 @media(max-width:760px){#customerWorkspaceNav{display:flex;overflow-x:auto;gap:7px;scrollbar-width:thin}#customerWorkspaceNav button{flex:0 0 165px;min-height:72px}.customer-pane-heading{padding:16px}#customerPaneTitle{font-size:1.25rem}}
+/* V227: errors stay visible beside the login controls. */
+.customer-login form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.customer-login label{display:grid;gap:6px;font-size:.85rem;font-weight:700;color:#dce9f8}
+.customer-login input{width:100%;min-width:0;min-height:46px;background:#102841;color:#fff;border:1px solid #89b2d955;border-radius:12px;padding:11px 12px}
+.customer-login button{grid-column:1/-1;min-height:46px;border-radius:12px;background:#a4d5ff;color:#10253b;font-weight:900;padding:12px}
+.customer-login-help{color:#c0d0e2;font-size:.8rem;line-height:1.6;margin-top:10px}.customer-login-message{margin-top:15px;border:1px solid #f5c87c66;background:#8c5d2026;color:#ffe6bd;border-radius:12px;padding:14px;line-height:1.6;font-size:.88rem;overflow-wrap:anywhere}.customer-login-message[hidden]{display:none!important}
+.customer-login button:disabled{opacity:.6;cursor:wait}.customer-login :is(input,button):focus-visible{outline:3px solid #b5dfff;outline-offset:3px}
+@media(max-width:560px){.customer-login form{grid-template-columns:1fr}}
