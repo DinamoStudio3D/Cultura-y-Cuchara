@@ -23,3 +23,11 @@ test('brand overrides preserve commerce and category accents and scope the main 
  assert.doesNotMatch(css,/#previewWhatsapp|#previewOrderBtn|#festivalMapToggle|\.filter-btn/);
  assert.match(css,/#inicio \.vl-welcome-visual::after\s*\{[^}]*rgba\(10,57,99,\.58\),rgba\(7,34,63,\.78\)/);
 });
+test('small photograph labels remain readable across light and dark source images',()=>{
+ const section=css.split('/* V208:')[1],rgba=section.match(/background:rgba\((\d+),(\d+),(\d+),([.\d]+)\)/),foreground=section.match(/color:(#[\da-f]+) !important/)[1];
+ assert(rgba);const alpha=Number(rgba[4]),ink=luminance(foreground);
+ for(let r=0;r<=255;r+=51)for(let g=0;g<=255;g+=51)for(let b=0;b<=255;b+=51){
+  const blended='#'+[r,g,b].map((channel,i)=>Math.round(channel*(1-alpha)+Number(rgba[i+1])*alpha).toString(16).padStart(2,'0')).join('');const background=luminance(blended);
+  assert((Math.max(background,ink)+.05)/(Math.min(background,ink)+.05)>=4.5,blended);
+ }
+});

@@ -60,3 +60,15 @@ nav.glass-nav.sticky { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(
  .canton-directory-page .canton-card-number,.canton-directory-page .canton-card-kind { background:#123b66e8 !important; color:#fff !important; }
  .canton-directory-page .canton-card-copy small span { background:#eaf4fc !important; color:#123b66 !important; }
 }
+
+/* V208: small photographic labels keep contrast even over bright images. */
+@layer vl-colors {
+ #inicio #heroBadge,#splash-screen .vl197-loading-eyebrow {
+  --vl-text:#c2e8ff; --vl-muted:#c2e8ff; --vl-accent:#c2e8ff;
+  background:rgba(7,34,63,.88) !important; color:#c2e8ff !important;
+ }
+}
+@layer vl-layout {
+ #inicio #heroBadge { width:fit-content; max-width:100%; padding:8px 12px; border:1px solid #c2e8ff40; border-radius:10px; line-height:1.5; }
+ #splash-screen .vl197-loading-eyebrow { width:fit-content; margin-inline:auto !important; padding:7px 12px; border:1px solid #c2e8ff40; border-radius:10px; line-height:1.5; }
+}
