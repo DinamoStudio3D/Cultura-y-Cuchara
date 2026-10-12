@@ -57,3 +57,22 @@
   #mapa #previewBusinessProfile :is(a,span) { overflow-wrap:anywhere; }
  }
 }
+
+/* V189: every map action owns a complete readable foreground/background pair. */
+@layer vl-colors {
+ #mapa .vl-place-actions #previewStampButton,
+ #mapa .vl-place-actions>button[onclick="openBusinessPageForCurrent()"],
+ #mapa .vl-place-actions #previewRestaurantMenuBtn { --vl-text:#ffffff;--vl-muted:#ffffff;--vl-accent:#ffffff;background:#9a3412 !important;background-image:none !important;color:#ffffff !important;border-color:#9a3412 !important; }
+ #mapa .vl-place-actions #previewStampButton:hover,
+ #mapa .vl-place-actions>button[onclick="openBusinessPageForCurrent()"]:hover,
+ #mapa .vl-place-actions #previewRestaurantMenuBtn:hover { --vl-text:#ffffff;--vl-muted:#ffffff;--vl-accent:#ffffff;background:#7c2d12 !important;background-image:none !important;color:#ffffff !important;border-color:#7c2d12 !important; }
+ #mapa .vl-place-actions #previewWhatsapp,
+ #mapa .vl-place-actions #previewOrderBtn { --vl-text:#ffffff;--vl-muted:#ffffff;--vl-accent:#ffffff;background:#166534 !important;color:#ffffff !important; }
+ #mapa .vl-place-actions #previewReservationBtn { --vl-text:#ffffff;--vl-muted:#ffffff;--vl-accent:#ffffff;background:#075985 !important;color:#ffffff !important; }
+ #mapa .vl-place-actions #previewAudioGuideBtn { --vl-text:#713516;--vl-muted:#713516;--vl-accent:#713516;background:#fff7ed !important;color:#713516 !important; }
+ #mapa .vl-place-actions #previewAudioGuideBtn:hover { --vl-text:#713516;--vl-muted:#713516;--vl-accent:#713516;background:#ffead5 !important;color:#713516 !important; }
+ #mapa .vl-place-actions :is(#previewStampButton,#previewWhatsapp,#previewOrderBtn,#previewReservationBtn,#previewRestaurantMenuBtn,#previewAudioGuideBtn) :is(i,svg,span) { color:var(--vl-text) !important; }
+ #mapa #previewFavBtn { --vl-text:#173d30;--vl-muted:#173d30;--vl-accent:#173d30;background:#e5f5e9 !important;color:#173d30 !important;border-color:#7c9f87 !important; }
+ #mapa #previewFavBtn[class~="bg-red-50"] { --vl-text:#9f1239;--vl-muted:#9f1239;--vl-accent:#9f1239;background:#fff1f2 !important;color:#9f1239 !important;border-color:#e5a1b5 !important; }
+ #mapa #previewFavBtn :is(i,svg) { color:var(--vl-text) !important; }
+}
