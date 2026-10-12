@@ -45,3 +45,18 @@
 nav.glass-nav.sticky { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
 #inicio :is(#heroTitle,#heroSubtitle) { text-shadow:0 2px 16px #071c36aa; }
 @media(max-width:760px) { #inicio .vl-welcome-visual::after { background:linear-gradient(180deg,rgba(10,57,99,.58),rgba(7,34,63,.78)) !important; } }
+
+/* V203: remaining brand surfaces follow the same blue hierarchy. */
+@layer vl-colors {
+ #restaurantMenuModal header,
+ #menuGalleryModal>div>div:first-child,
+ body>footer.bg-brandDark,
+ #wallet .loyalty-pass {
+  --vl-text:#fff; --vl-muted:#e0eaf5; --vl-accent:#c2e8ff; background:#123b66 !important; color:#fff !important;
+ }
+ #wallet .loyalty-pass__reward { --vl-text:#fff; --vl-muted:#e0eaf5; --vl-accent:#c2e8ff; background:#174a7b !important; color:#fff !important; }
+ #wallet .loyalty-pass .loyalty-pass__actions a:first-child { --vl-text:#123b66; --vl-muted:#123b66; --vl-accent:#075bb2; background:#eaf4fc !important; color:#123b66 !important; }
+ .canton-directory-page .canton-card-copy { background:linear-gradient(180deg,#123b6600 25%,#123b6688 55%,#071f3af5 100%) !important; }
+ .canton-directory-page .canton-card-number,.canton-directory-page .canton-card-kind { background:#123b66e8 !important; color:#fff !important; }
+ .canton-directory-page .canton-card-copy small span { background:#eaf4fc !important; color:#123b66 !important; }
+}

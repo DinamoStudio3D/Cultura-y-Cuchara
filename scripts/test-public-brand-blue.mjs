@@ -1,0 +1,25 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const read=path=>fs.readFileSync(new URL('../'+path,import.meta.url),'utf8');
+const css=read('css/public-brand-blue-v202.css');
+function luminance(hex){hex=hex.slice(1);if(hex.length===3)hex=[...hex].map(x=>x+x).join('');return [0,2,4].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4).reduce((sum,x,i)=>sum+x*[.2126,.7152,.0722][i],0)}
+test('solid brand surfaces retain readable primary, secondary and accent text',()=>{
+ let checked=0;
+ for(const block of css.matchAll(/\{([^{}]+)\}/g)){
+  const bg=block[1].match(/background:\s*(#[\da-f]{6})(?![\da-f])/i);if(!bg)continue;
+  for(const fg of block[1].matchAll(/--vl-(?:text|muted|accent):\s*(#[\da-f]{3,6});/gi)){
+   const a=luminance(bg[1]),b=luminance(fg[1]);assert((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5,`${fg[1]} on ${bg[1]}`);checked++;
+  }
+ }
+ assert(checked>=20);
+});
+test('all six core public pages load the shared palette after their existing styles',()=>{
+ for(const page of ['index.html','cantones.html','canton.html','negocio.html','tienda.html','fidelidad.html']){
+  const head=read(page).split('</head>')[0],links=[...head.matchAll(/<link[^>]+rel="stylesheet"[^>]*>/g)];assert.match(links.at(-1)[0],/public-brand-blue-v202.css/);
+ }
+});
+test('brand overrides preserve commerce and category accents and scope the main photograph tint',()=>{
+ assert.doesNotMatch(css,/#previewWhatsapp|#previewOrderBtn|#festivalMapToggle|\.filter-btn/);
+ assert.match(css,/#inicio \.vl-welcome-visual::after\s*\{[^}]*rgba\(10,57,99,\.58\),rgba\(7,34,63,\.78\)/);
+});
