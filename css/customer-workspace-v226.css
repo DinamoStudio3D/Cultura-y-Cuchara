@@ -19,3 +19,6 @@ body:has(#wallet:not(.hidden))>main,body:has(#wallet:not(.hidden))>header>div{ma
 .customer-login-help{color:#c0d0e2;font-size:.8rem;line-height:1.6;margin-top:10px}.customer-login-message{margin-top:15px;border:1px solid #f5c87c66;background:#8c5d2026;color:#ffe6bd;border-radius:12px;padding:14px;line-height:1.6;font-size:.88rem;overflow-wrap:anywhere}.customer-login-message[hidden]{display:none!important}
 .customer-login button:disabled{opacity:.6;cursor:wait}.customer-login :is(input,button):focus-visible{outline:3px solid #b5dfff;outline-offset:3px}
 @media(max-width:560px){.customer-login form{grid-template-columns:1fr}}
+/* V228: one form for existing and new customer accounts. */
+.customer-account-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.customer-account-actions button{background:#153c5d;color:#d9eeff;border:1px solid #a0c8ed59;min-height:44px;padding:10px 14px;font-size:.82rem}
+#customerPasswordConfirmLabel[hidden]{display:none!important}.customer-privacy-link{display:inline-flex;align-items:center;color:#bce0ff;font-size:.8rem;text-decoration:underline;padding:8px 0}
