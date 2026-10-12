@@ -4737,6 +4737,15 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);button.setAttribute('aria-pressed',String(active));});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels=currentLang==='en'?{all:'All points',food:'Food & dining',stay:'Accommodation',tourism:'Attractions',partners:'Partner brands'}:{all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;const legend=document.getElementById('mapLegendPanel');if(legend&&!legend.classList.contains('vl113-map-toolbar'))legend.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
 
+        function publicPlaceDirectionsUrl(loc,coords) {
+            const lat=Number(loc.lat),lng=Number(loc.lng);
+            const valid=loc.lat!=null&&loc.lng!=null&&String(loc.lat).trim()!==''&&String(loc.lng).trim()!==''&&Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180;
+            if(valid&&coords&&Number.isFinite(coords.lat)&&Number.isFinite(coords.lng))return `https://www.google.com/maps/dir/?api=1&origin=${coords.lat},${coords.lng}&destination=${lat},${lng}`;
+            try{const url=new URL(String(loc.gps||''));if(['https:','http:'].includes(url.protocol)&&!url.username&&!url.password)return url.href;}catch{}
+            const destination=valid?`${lat},${lng}`:`${loc.title||''} ${loc.address||'Loja Ecuador'}`;
+            return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(destination.trim());
+        }
+
         function renderMapAndGrid() {
             if(!markersLayer) return;
             markersLayer.clearLayers();
@@ -4818,6 +4827,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     markersLayer.addLayer(marker);
                 }
 
+                const actionId=encodeURIComponent(String(loc.id)).replace(/'/g,'%27');
                 const isFav = favoriteLocations.includes(loc.id);
                 const favClass = isFav ? "fa-solid fa-seedling text-red-500 scale-110" : "fa-solid fa-seedling text-brandGold";
                 const favBg = isFav ? "bg-red-50 text-red-600 border-red-300" : "bg-black/60 text-brandGold border-brandGold/40";
@@ -4828,14 +4838,14 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     cardDistHtml = `<span class="text-[10px] text-blue-600 font-bold ml-2"><i class="fa-solid fa-location-arrow"></i> ${km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'}</span>`;
                 }
 
-                let gpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
+                const gpsUrl=publicPlaceDirectionsUrl(loc,userCoords);
 
                 const openBadge = isOpen 
                     ? `<span class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> Abierto</span>`
                     : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
                 cards.push(`
-                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="button" tabindex="0" aria-label="Ver detalles de ${locTitle}" data-location-id="${loc.id}" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="button" tabindex="0" aria-label="Ver detalles de ${locTitle}" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
                             <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
@@ -4857,14 +4867,14 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             <div class="vl18-tools">
                                 <div class="vl18-tools-links">
                                                                 <div class="vl18-quicklinks">
-                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, '${loc.id}')" class="bg-brandGold text-white vl-card-action rounded-xl flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)" aria-label="Sellar pasaporte"><i class="fa-solid fa-qrcode"></i><span class="vl-card-action-label">${currentLang==='en'?'Stamp':'Sello'}</span></button>`:''}
-                                <a href="${gpsUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent('${loc.id}','directions')" class="bg-brandDark text-brandGold vl-card-action rounded-xl flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar" aria-label="Cómo llegar">
+                                ${['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category)?`<button type="button" onclick="openQrClaimModal(event, decodeURIComponent('${actionId}'))" class="bg-brandGold text-white vl-card-action rounded-xl flex items-center justify-center text-xs shadow hover:bg-brandGoldHover transition" title="Sellar Pasaporte (PIN)" aria-label="Sellar pasaporte"><i class="fa-solid fa-qrcode"></i><span class="vl-card-action-label">${currentLang==='en'?'Stamp':'Sello'}</span></button>`:''}
+                                <a href="${escapeHTML(gpsUrl)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();trackBusinessEvent(decodeURIComponent('${actionId}'),'directions')" class="bg-brandDark text-brandGold vl-card-action rounded-xl flex items-center justify-center text-xs shadow hover:bg-brandGold hover:text-brandDark transition" title="Cómo llegar" aria-label="Cómo llegar">
                                     <i class="fa-solid fa-diamond-turn-right"></i><span class="vl-card-action-label">${currentLang==='en'?'Directions':'Cómo llegar'}</span>
                                 </a>
                             </div>
                                 </div>
-                                <button type="button" onclick="toggleFavoriteCard(event, '${loc.id}')" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta" aria-label="Guardar o quitar de mi ruta" aria-pressed="${favoriteLocations.includes(loc.id) ? 'true' : 'false'}">
-                            <i id="cardFav_${loc.id}" class="${favClass}"></i>
+                                <button type="button" onclick="toggleFavoriteCard(event, decodeURIComponent('${actionId}'))" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta" aria-label="Guardar o quitar de mi ruta" aria-pressed="${favoriteLocations.includes(loc.id) ? 'true' : 'false'}">
+                            <i id="cardFav_${escapeHTML(loc.id)}" class="${favClass}"></i>
                         </button>
                             </div>
                             <div class="vl-card-explore"><span>Ver detalles del lugar</span><span class="vl-card-explore-icon"><i class="fa-solid fa-arrow-right"></i></span></div>
