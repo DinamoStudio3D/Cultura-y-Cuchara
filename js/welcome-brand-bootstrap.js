@@ -6,6 +6,7 @@
   if(!raw)return;
   let url;try{url=new URL(raw,location.href);if(url.protocol!=='https:'||url.username||url.password)return;}catch{return;}
   const preload=new Image();
+  preload.fetchPriority='high';
   preload.onload=()=>{
    const apply=()=>{
     if(window.__vlBrandLogoServerConfirmed===true)return;
@@ -15,7 +16,12 @@
     image.src=url.href;
     if(image.complete&&image.naturalWidth>0)image.onload();
    };
-   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+   if(document.getElementById('splashLogoImg'))apply();
+   else {
+    const observer=new MutationObserver(()=>{if(document.getElementById('splashLogoImg')){observer.disconnect();apply();}});
+    observer.observe(document.documentElement,{childList:true,subtree:true});
+    document.addEventListener('DOMContentLoaded',()=>{observer.disconnect();apply();},{once:true});
+   }
   };
   preload.src=url.href;
  }).catch(()=>{});
