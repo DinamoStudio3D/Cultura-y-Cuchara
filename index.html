@@ -4769,9 +4769,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 if(!loc.id) loc.id = uniqueId;
 
                 const realIndex = locations.findIndex(l => l.id === loc.id);
-                const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
-                const locTag = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
-                const locDesc = (currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc;
+                const locTitle = escapeHTML((currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title);
+                const locTag = escapeHTML((currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag);
+                const locDesc = escapeHTML((currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc);
                 const isOpen = isLocOpenNow(loc);
                 const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasCustomLogo=Boolean(loc.customLogoUrl&&loc.customLogoUrl.trim()!==''),hasPaidLogoStyle=hasCustomLogo&&paidBenefits.logoPin===true;
                 const markerPalette=mapMarkerPalette(loc.category);
@@ -4780,7 +4780,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     let pinHtml = "";
                     if (hasCustomLogo) {
                         pinHtml = `<div class="${hasPaidLogoStyle?'w-14 h-14 border-[4px]':'w-12 h-12 border-[3px]'} rounded-full overflow-hidden bg-white hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action:none;border-color:${markerPalette.color};box-shadow:0 0 0 ${hasPaidLogoStyle?'5px':'3px'} ${markerPalette.glow},0 12px 25px rgba(0,0,0,.35);">
-                                     <img src="${loc.customLogoUrl}" class="w-full h-full object-cover rounded-full" alt="${locTitle}" decoding="async" loading="lazy">
+                                     <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(loc.customLogoUrl)||'assets/photos/photo-unavailable.svg')}" class="w-full h-full object-cover rounded-full" alt="${locTitle}" decoding="async" loading="lazy">
                                    </div>`;
                     } else {
                         const partnerPin=loc.category==='aliado';
@@ -4852,7 +4852,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             </div>
                             <p class="text-gray-600 text-xs sm:text-sm local-desc line-clamp-2">${locDesc}</p>
                             <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
-                                <i class="fa-solid fa-clock text-brandGold"></i> <span>${loc.hours || (currentLang==='en'?'Hours to be confirmed':'Horario por confirmar')}</span>
+                                <i class="fa-solid fa-clock text-brandGold"></i> <span>${escapeHTML(loc.hours || (currentLang==='en'?'Hours to be confirmed':'Horario por confirmar'))}</span>
                             </div>
                             <div class="vl18-tools">
                                 <div class="vl18-tools-links">
