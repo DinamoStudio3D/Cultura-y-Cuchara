@@ -8190,13 +8190,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             });
         }
 
-        let lastFocusedElement = null;
+        const modalReturnFocus = new Map();
         function openModal(id) {
             const accountModal = document.getElementById('accountModal');
             if (id === 'promoPopupModal' && accountModal && !accountModal.classList.contains('hidden')) return;
             const m = document.getElementById(id);
             if(m) {
-                lastFocusedElement = document.activeElement;
+                if(m.classList.contains('hidden'))modalReturnFocus.set(id,document.activeElement);
                 if(id === 'itineraryModal') updateItineraryUI();
                 if(id === 'pasaporteModal') updatePassportUI();
                 if(id === 'adminModal') {
@@ -8207,7 +8207,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 m.setAttribute('aria-modal', 'true');
                 m.setAttribute('aria-hidden', 'false');
                 const focusTarget = m.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-                if (focusTarget) setTimeout(() => focusTarget.focus(), 0);
+                if (focusTarget) setTimeout(() => { if(!m.classList.contains('hidden'))focusTarget.focus(); }, 0);
             }
         }
         function closeModal(id) { 
@@ -8219,7 +8219,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(targetM) {
                 targetM.classList.add('hidden');
                 targetM.setAttribute('aria-hidden', 'true');
-                if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
+                const opener=modalReturnFocus.get(id);
+                modalReturnFocus.delete(id);
+                const remaining=Array.from(document.querySelectorAll('[role="dialog"][aria-modal="true"]')).filter(el=>!el.classList.contains('hidden'));
+                if(opener&&opener.isConnected!==false&&!opener.closest?.('.hidden')&&(!remaining.length||remaining.some(el=>el.contains(opener)))&&typeof opener.focus==='function')opener.focus();
             } 
         }
 
