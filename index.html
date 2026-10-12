@@ -7078,7 +7078,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             document.getElementById('previewAddress').innerText = loc.address;
             renderBusinessProfile(loc);
             
-            let previewGpsUrl = userCoords ? `https://www.google.com/maps/dir/?api=1&origin=${userCoords.lat},${userCoords.lng}&destination=${loc.lat},${loc.lng}` : (loc.gps || `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}`);
+            const previewGpsUrl=publicPlaceDirectionsUrl(loc,userCoords);
             document.getElementById('previewGps').href = previewGpsUrl;document.getElementById('previewGps').onclick=()=>trackBusinessEvent(loc.id,'directions');
             const gpsLabel=document.getElementById('previewGpsLabel');if(gpsLabel)gpsLabel.textContent=currentLang==='en'?'Directions':'Cómo llegar';
             
@@ -7755,7 +7755,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             }).join('');
         }
         function selectNowRecommendation(index){closeModal('whatToDoNowModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
-        function openNowDirections(index){const location=locations[index];if(!location)return;const query=Number.isFinite(Number(location.lat))&&Number.isFinite(Number(location.lng))?`${location.lat},${location.lng}`:`${location.title||''} ${location.address||'Loja Ecuador'}`;window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,'_blank','noopener,noreferrer');}
+        function openNowDirections(index){const location=locations[index];if(!location)return;window.open(publicPlaceDirectionsUrl(location,userCoords),'_blank','noopener,noreferrer');}
 
         function generateSmartRoute(event) {
             event.preventDefault();
