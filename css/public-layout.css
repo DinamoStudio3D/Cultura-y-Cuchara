@@ -1610,3 +1610,22 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 @layer vl-layout {
  body>div[role="dialog"][aria-modal="true"] { z-index:2000 !important; }
 }
+
+/* V191: contain map layers and keep full labels within responsive dialogs. */
+@layer vl-layout {
+ #mapa #mapCanvasShell { position:relative; isolation:isolate; z-index:0; }
+ body>div[id$="Modal"].fixed { z-index:2000 !important; }
+ body>#accountModal,body>#qrClaimModal { z-index:2100 !important; }
+ body>#upcomingEventsModal { z-index:2200 !important; }
+ body>div[id$="Modal"] .truncate,
+ #postcardFramesContainer .truncate { white-space:normal !important; overflow:visible !important; text-overflow:clip !important; overflow-wrap:anywhere; line-height:1.5; }
+ #postcardFramesContainer button { min-width:0; min-height:44px; }
+ #restaurantMenuModal header>button,#menuGalleryModal>div>div:first-child>button { flex-shrink:0; min-width:44px; min-height:44px; }
+ #whatToDoNowResults article .justify-between { flex-wrap:wrap; align-items:start; }
+ #whatToDoNowResults article .justify-between>span { flex-shrink:0; }
+ #restaurantMenuCategories { max-width:100%; min-width:0; }
+ @media(max-width:639px) {
+  #restaurantMenuCommerceActions { max-height:30dvh; overflow-y:auto; }
+  #restaurantMenuCommerceActions button { white-space:normal; line-height:1.5; }
+ }
+}
