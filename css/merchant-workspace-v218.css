@@ -44,3 +44,7 @@ main{max-width:1440px!important}
  .merchant-pane-heading h2{scroll-margin-top:150px}
 }
 @media(prefers-reduced-motion:reduce){.merchant-workspace *{scroll-behavior:auto!important}}
+/* V225: keep illustrative balances separate from service records. */
+.loyalty-points .lp-grid.merchant-points-live{grid-template-columns:minmax(0,1fr)}
+.merchant-points-example{margin-top:18px}.merchant-points-example .merchant-example-note{padding:0 16px;color:#d5e7f7;font-size:.85rem}
+.merchant-points-example>.lp-card{margin:12px;border-color:#95bbd14d}
