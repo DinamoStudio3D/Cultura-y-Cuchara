@@ -7066,9 +7066,23 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         function simulateMapClick(index) {
-            selectLocation(index);
+            const loc = locations[index];
+            if (!loc) return;
+            const section = document.getElementById('mapa');
+            section?.classList.add('vl192-selected-stop');
+            selectLocation(index, false);
+            if (map) {
+                const lat = Number(loc.lat), lng = Number(loc.lng);
+                if (Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) {
+                    map.stop();
+                    map.invalidateSize({ pan: false });
+                    map.setView([lat, lng], Math.min(18, map.getMaxZoom()), { animate: false });
+                    markersMap[loc.id]?.openPopup();
+                }
+            }
             completeChabaquitoMission('mapa');
-            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+            const target = document.getElementById('mapCanvasShell') || section;
+            target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
         }
 
         function setSuggestedRoute(category) {
