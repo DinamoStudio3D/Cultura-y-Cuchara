@@ -297,7 +297,8 @@
     </div>
 
     <div id="splash-screen" data-vl-surface="dark" class="fixed inset-0 bg-brandDark flex flex-col items-center justify-center">
-        <div class="w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl animate-pulse flex items-center justify-center p-2">
+        <div class="relative w-36 h-36 rounded-full border-4 border-brandGold overflow-hidden bg-white shadow-2xl animate-pulse flex items-center justify-center p-2">
+            <span data-splash-brand-fallback class="absolute text-brandDark text-xl font-black text-center leading-tight" aria-hidden="true">VISITA<br>LOJA</span>
             <img id="splashLogoImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Visita Loja" width="144" height="144" fetchpriority="high" class="w-full h-full object-contain opacity-0 transition-opacity duration-200" decoding="async" style="visibility:hidden">
         </div>
         <div class="mt-6 text-brandGold tracking-wider text-sm font-bold uppercase animate-pulse" data-i18n="splashText">✨ Preparando los mejores sabores de Loja para ti...</div>
@@ -4235,10 +4236,16 @@
             const reveal=()=>{
                 const confirmed=window.__vlBrandLogoServerConfirmed===true;
                 image.style.visibility=confirmed&&image.complete&&image.naturalWidth>0?'visible':'hidden';
-                if(image.id==='splashLogoImg')image.classList.toggle('opacity-0',!confirmed);
+                if(image.id==='splashLogoImg') {
+                    const ready=confirmed&&image.complete&&image.naturalWidth>0;
+                    image.classList.toggle('opacity-0',!ready);
+                    const fallback=image.parentElement?.querySelector('[data-splash-brand-fallback]');
+                    if(fallback)fallback.hidden=ready;
+                    if(ready)window.__vlSplashLogoReady?.();
+                }
             };
             image.onload=reveal;
-            image.onerror=()=>{image.style.visibility='hidden';};
+            image.onerror=()=>{image.style.visibility='hidden';if(image.id==='splashLogoImg'){const fallback=image.parentElement?.querySelector('[data-splash-brand-fallback]');if(fallback)fallback.hidden=false;}};
             image.src=url;
             reveal();
         }
@@ -7304,6 +7311,20 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(body) body.classList.remove('overflow-hidden');
         }
 
+        function scheduleWelcomeSplashRemoval(arrivingFromQr) {
+            let finished=false;
+            const finish=()=>{if(finished)return;finished=true;clearTimeout(timer);window.__vlSplashLogoReady=null;forceRemoveSplash();};
+            let timer=setTimeout(finish,arrivingFromQr?100:2500);
+            window.__vlSplashLogoReady=arrivingFromQr?null:()=>{
+                if(finished)return;
+                window.__vlSplashLogoReady=null;
+                clearTimeout(timer);
+                timer=setTimeout(finish,450);
+            };
+            const logo=document.getElementById('splashLogoImg');
+            if(logo?.style.visibility==='visible')window.__vlSplashLogoReady?.();
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
             cargarDatosDesdeFirestore();
             renderFestivalAgenda();
@@ -7323,7 +7344,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             initPostcardCanvasDragging();
             changeLanguage(currentLang);
             const arrivingFromQr = new URLSearchParams(window.location.search).has('checkin');
-            setTimeout(forceRemoveSplash, arrivingFromQr ? 100 : 600);
+            scheduleWelcomeSplashRemoval(arrivingFromQr);
         });
 
         // Ensure Leaflet resizes smoothly without recalculating on every pixel change
