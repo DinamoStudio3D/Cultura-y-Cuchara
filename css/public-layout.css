@@ -1641,3 +1641,32 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   #mapa.vl192-selected-stop #lojaMap { height:clamp(240px,38svh,360px) !important; }
  }
 }
+
+/* V197: photographic welcome with a restrained, indeterminate loading indicator. */
+@layer vl-colors {
+ #splash-screen { --vl-text:#fff; --vl-muted:#e0e8e2; --vl-accent:#f2c68f; background:#10251f !important; color:#fff !important; }
+ #splash-screen .vl197-loading-brand { --vl-text:#173a31; --vl-muted:#4d6075; --vl-accent:#173a31; background:#fff !important; color:#173a31 !important; }
+ #splash-screen .vl197-loading-eyebrow { color:#f2c68f !important; }
+ #splash-screen .vl197-loading-description,#splash-screen .vl197-loading-status { color:#e0e8e2 !important; }
+}
+@layer vl-layout {
+ #splash-screen { display:grid; place-items:center; overflow:auto; padding:32px 24px; min-height:100svh; isolation:isolate; }
+ .vl197-loading-background { position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,#10251fdd,#10251fe8),url('../assets/photos/loja-centro.webp') center/cover no-repeat; }
+ .vl197-loading-content { width:min(100%,680px); margin:auto; text-align:center; }
+ .vl197-loading-eyebrow { font-size:11px; font-weight:800; letter-spacing:.28em; margin:0 0 22px; }
+ .vl197-loading-brand { position:relative; display:grid; place-items:center; width:180px; height:112px; margin:0 auto 28px; padding:14px; border-radius:20px; box-shadow:0 16px 50px #0002; }
+ .vl197-loading-brand img { width:100%; height:100%; object-fit:contain; position:relative; }
+ .vl197-loading-brand [data-splash-brand-fallback] { position:absolute; display:grid; gap:6px; }
+ .vl197-loading-brand [data-splash-brand-fallback][hidden] { display:none !important; }
+ .vl197-loading-brand b { font-family:Georgia,serif; font-size:24px; letter-spacing:-.04em; }
+ .vl197-loading-brand small { font-size:10px; letter-spacing:.12em; }
+ .vl197-loading-title { font-family:Georgia,serif; font-size:clamp(32px,5vw,58px); font-weight:400; line-height:1.12; letter-spacing:-.035em; max-width:17ch; margin:0 auto 18px; text-wrap:balance; }
+ .vl197-loading-description { font-size:clamp(14px,2vw,17px); line-height:1.6; margin:0 auto 32px; }
+ .vl197-loading-track { width:140px; height:3px; margin:0 auto 15px; border-radius:10px; background:#ffffff25; overflow:hidden; }
+ .vl197-loading-track span { display:block; width:45%; height:100%; background:#f2c68f; border-radius:inherit; animation:vl197-loading 1.4s ease-in-out infinite; }
+ .vl197-loading-status { font-size:11px; line-height:1.5; margin:0; }
+ .vl197-loading-footer { position:absolute; bottom:max(20px,env(safe-area-inset-bottom)); left:0; right:0; text-align:center; font-size:9px; letter-spacing:.24em; opacity:.7; }
+ @keyframes vl197-loading { from { transform:translateX(-110%); } to { transform:translateX(330%); } }
+ @media(max-height:540px) { #splash-screen { padding-block:20px; } .vl197-loading-brand { width:140px; height:84px; margin-bottom:16px; } .vl197-loading-eyebrow { margin-bottom:12px; } .vl197-loading-description { margin-bottom:18px; } .vl197-loading-footer { display:none; } }
+ @media(prefers-reduced-motion:reduce) { .vl197-loading-track span { animation:none; width:100%; opacity:.7; } }
+}
