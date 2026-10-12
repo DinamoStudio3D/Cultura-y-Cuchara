@@ -26,7 +26,7 @@
  }
  nav.addEventListener('click',event=>{const button=event.target.closest('[data-fidelity-view]');if(button&&nav.contains(button))select(button.dataset.fidelityView,true);});
  root.VisitaLojaAdminFidelityWorkspace={select};
- function openAnchor(){if(root.location?.hash==='#merchantAccessSection')select('access');}
+ function openAnchor(){const anchor=root.location?.hash?.slice(1);if(anchor==='merchantAccessSection')select('access');else if(views[anchor])select(anchor);}
  select('overview');openAnchor();
  root.addEventListener?.('hashchange',openAnchor);
 })(window);
