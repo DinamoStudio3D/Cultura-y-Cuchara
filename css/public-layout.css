@@ -1633,5 +1633,11 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 /* V192: card selection frames the close-up map and the business detail below it. */
 @layer vl-layout {
  #mapCanvasShell { scroll-margin-top:var(--vl-navigation-offset,106px); }
+ #mapa.vl192-selected-stop #mapCanvasShell { height:clamp(280px,44svh,420px) !important; min-height:0 !important; }
+ #mapa.vl192-selected-stop>div.grid { gap:16px !important; }
  #mapa.vl192-selected-stop #mapPreviewCard { width:100%; margin-inline:auto; }
+ @media(max-width:1023px) {
+  #mapa.vl192-selected-stop #mapCanvasShell { height:auto !important; }
+  #mapa.vl192-selected-stop #lojaMap { height:clamp(240px,38svh,360px) !important; }
+ }
 }
