@@ -91,9 +91,7 @@
     try { await operation(version); }
     catch (error) {
       if (version === generation) {
-        if (read && (error.code?.includes('not-found') || error.code?.includes('unavailable'))) say('El servicio de avisos aún no está disponible.');
-        else if (!read && (error.code?.includes('unavailable') || error.code?.includes('deadline-exceeded') || error.code?.includes('internal'))) say('No se pudo confirmar el resultado. Consulta el estado antes de reintentar. Una entrega reintentada conserva el cursor y no repite avisos ya creados.');
-        else say(error.message || 'No se pudo completar la operación.');
+        say(window.VisitaLojaServiceErrors.message(error,{read,service:'avisos'}));
       }
     } finally { if (version === generation) { busy = false; el('noticeLoad').disabled = false; if (admin) el('noticeSave').disabled = !canWrite(); render(); } }
   }
