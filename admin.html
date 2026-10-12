@@ -1394,27 +1394,18 @@ async function changeAdminRole(userId,role){
         await loadAdminUsers();
     }catch(error){message(document.getElementById('adminsMessage'),'No se pudo cambiar el rol.');await loadAdminUsers();}
 }
+let adminAccountController;
 document.getElementById('adminCreateForm').addEventListener('submit',async event=>{
-    event.preventDefault();
-    const button=document.getElementById('adminCreateBtn'),notice=document.getElementById('adminsMessage');
-    const displayName=document.getElementById('newAdminName').value.trim(),email=document.getElementById('newAdminEmail').value.trim().toLowerCase(),password=document.getElementById('newAdminPassword').value,role=document.getElementById('newAdminRole').value;
-    if(email===LEGACY_ADMIN_EMAIL){message(notice,'La cuenta principal ya tiene acceso protegido.');return;}
-    button.disabled=true;let createdUser=null;
-    try{
-        const credential=await provisioningAuth.createUserWithEmailAndPassword(email,password);
-        createdUser=credential.user;
-        await createdUser.updateProfile({displayName});
-        await adminUsersRef.doc(createdUser.uid).set({email,displayName,role,active:true,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:auth.currentUser.uid});
-        await recordAdminAudit('admin.created','access','Creó un nuevo administrador',{targetUid:createdUser.uid,targetEmail:email,role});
-        event.target.reset();setAdminUnsavedChanges(false);
-        message(notice,'Administrador creado correctamente. Entrega la contraseña temporal de forma privada.',true);
-        await loadAdminUsers();
-    }catch(error){
-        console.error(error);
-        if(createdUser)await createdUser.delete().catch(()=>{});
-        const authErrors={'auth/email-already-in-use':'Ese correo ya tiene una cuenta.','auth/weak-password':'La contraseña temporal debe tener al menos 8 caracteres.','auth/invalid-email':'El correo electrónico no es válido.'};
-        message(notice,authErrors[error.code]||'No se pudo crear el administrador.');
-    }finally{await provisioningAuth.signOut().catch(()=>{});button.disabled=false;}
+ event.preventDefault();const button=document.getElementById('adminCreateBtn'),notice=document.getElementById('adminsMessage');if(button.disabled)return;
+ const actorUid=auth.currentUser?.uid;if(!actorUid){message(notice,'Vuelve a iniciar sesión para continuar.');return;}
+ const input={displayName:document.getElementById('newAdminName').value,email:document.getElementById('newAdminEmail').value,password:document.getElementById('newAdminPassword').value,role:document.getElementById('newAdminRole').value};
+ document.getElementById('newAdminPassword').value='';button.disabled=true;message(notice,'Comprobando autorización y creando cuenta…');
+ const api=window.VisitaLojaAdminAccountManagement;
+ adminAccountController ||= api.createController({auth,secondary:provisioningAuth,persistence:firebase.auth.Auth.Persistence.NONE,legacyEmail:LEGACY_ADMIN_EMAIL,authorize:user=>api.canManage(user,{legacyEmail:LEGACY_ADMIN_EMAIL,adminUsers:adminUsersRef}),timestamp:()=>firebase.firestore.FieldValue.serverTimestamp(),grant:(uid,data)=>db.runTransaction(async transaction=>{const ref=adminUsersRef.doc(uid),existing=await transaction.get(ref);if(existing.exists)throw {code:'access/already-assigned'};transaction.set(ref,data);}),audit:({uid,email,role})=>recordAdminAudit('admin.created','access','Creó un nuevo administrador',{targetUid:uid,targetEmail:email,role})});
+ try{const result=await adminAccountController.create(input);if(auth.currentUser?.uid!==actorUid)return;
+ if(result.status==='complete'){event.target.reset();setAdminUnsavedChanges(false);await loadAdminUsers();}
+ message(notice,api.outcome(result),result.status==='complete');
+ }finally{input.password='';button.disabled=false;}
 });
 
 function renderMerchantCreatePlaces(){
@@ -1430,7 +1421,7 @@ document.getElementById('merchantCreateForm').addEventListener('submit',async ev
  try{const result=await VisitaLojaMerchantAccess.create(input,{primaryAuth:auth,authorize:resolveAdminAccess,knownPlaceIds:adminPlaces.map(p=>p.id),secondaryAuth:merchantProvisioningAuth,persistence:firebase.auth.Auth.Persistence.NONE,merchants:missionRewardMerchantsRef,timestamp:()=>firebase.firestore.FieldValue.serverTimestamp()});
  if(result.status==='complete'){notice.textContent='Cuenta y acceso creados correctamente. UID: '+result.uid+'. Entrega la contraseña de forma privada.';event.target.reset();}
  else if(result.uid){notice.textContent='Cuenta creada, pero el acceso NO quedó completado. UID: '+result.uid+'. Sigue el flujo de solicitud y autorización indicado debajo del formulario; después asigna las paradas en Gestión de fidelidad. No vuelvas a crear la cuenta.';}
- else notice.textContent=result.code==='auth/email-already-in-use'?'Este correo ya tiene una cuenta. No se cambió su contraseña. Sigue las instrucciones de vinculación debajo del formulario.':'No se creó la cuenta. Revisa correo, contraseña, conexión y autorización ('+result.code+').';
+ else notice.textContent=result.code==='auth/email-already-in-use'?'Este correo ya tiene una cuenta. No se cambió su contraseña. Sigue las instrucciones de vinculación debajo del formulario.':'No se confirmó la creación. Revisa los datos y tu autorización; comprueba el acceso antes de reintentar.';
  }catch(_){notice.textContent='No se pudo completar la operación. Verifica el acceso antes de reintentar.';}finally{input.password='';button.disabled=false;}
 });
 function auditDate(value){if(value===null||value===undefined||value==='')return null;try{const date=value?.toDate?value.toDate():new Date(value);return Number.isFinite(date?.getTime())?date:null;}catch(_){return null;}}
@@ -2995,5 +2986,6 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
 <script src="js/homepage-editor.js?v=76"></script>
 <script src="js/canton-content.js?v=99"></script><script src="js/admin-cantons.js?v=99"></script><script src="js/admin-place-gallery.js?v=93"></script><script src="js/admin-canton-media.js?v=94.1"></script><script src="js/admin-workspace-v220.js"></script>
 <script src="js/admin-business-workflow-v222.js"></script>
+<script src="js/admin-account-management-v224.js"></script>
 </body>
 </html>
