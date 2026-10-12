@@ -1605,3 +1605,8 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
  #postales .vl177-mobile-preview-jump button { --vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173d30 !important; }
  #postales .vl177-back-to-editor { --vl-text:#173d30;--vl-muted:#173d30;--vl-accent:#173d30;background:#fff !important; }
 }
+
+/* V190: dialogs sit above navigation and Leaflet controls. */
+@layer vl-layout {
+ body>div[role="dialog"][aria-modal="true"] { z-index:2000 !important; }
+}
