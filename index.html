@@ -8223,11 +8223,26 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             } 
         }
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key !== 'Escape') return;
-            const openDialog = Array.from(document.querySelectorAll('[role="dialog"]')).find(el => !el.classList.contains('hidden'));
-            if (openDialog) closeModal(openDialog.id);
-        });
+        function handlePublicDialogKeyboard(event) {
+            if(event.key!=='Escape'&&event.key!=='Tab')return;
+            const dialogs=Array.from(document.querySelectorAll('[role="dialog"][aria-modal="true"]')).filter(el=>!el.classList.contains('hidden'));
+            const dialog=dialogs.map((element,index)=>({element,index,z:Number.parseInt(window.getComputedStyle(element).zIndex,10)||0})).sort((a,b)=>a.z-b.z||a.index-b.index).at(-1)?.element;
+            if(!dialog)return;
+            if(event.key==='Escape') {
+                event.preventDefault();
+                if(dialog.id==='storyModal')closeStoryModal();
+                else if(dialog.id==='upcomingEventsModal')closeUpcomingEventsModal();
+                else closeModal(dialog.id);
+                return;
+            }
+            const controls=Array.from(dialog.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(el=>el.getClientRects().length>0&&el.tabIndex!==-1);
+            if(!controls.length){event.preventDefault();dialog.setAttribute('tabindex','-1');dialog.focus();return;}
+            const first=controls[0],last=controls.at(-1),active=document.activeElement;
+            if(!dialog.contains(active)||(event.shiftKey&&active===first)||(!event.shiftKey&&active===last)) {
+                event.preventDefault();(event.shiftKey?last:first).focus();
+            }
+        }
+        document.addEventListener('keydown',handlePublicDialogKeyboard);
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js?v=9', { updateViaCache: 'none' }).catch(error => {
