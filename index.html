@@ -7558,14 +7558,28 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             revealOnScroll();
         }
 
-        function toggleMobileMenu() { 
-            const menu = document.getElementById('mobileMenu');
-            const button = document.getElementById('mobileMenuButton');
-            if(menu) {
-                menu.classList.toggle('hidden');
-                if (button) button.setAttribute('aria-expanded', String(!menu.classList.contains('hidden')));
-            }
+        function closeMobileMenu(returnFocus=false) {
+            const menu=document.getElementById('mobileMenu'),button=document.getElementById('mobileMenuButton');
+            if(!menu)return;
+            const wasOpen=!menu.classList.contains('hidden');
+            menu.classList.add('hidden');
+            if(button){button.setAttribute('aria-expanded','false');button.setAttribute('aria-label',currentLang==='en'?'Open menu':'Abrir menú');if(returnFocus&&wasOpen)button.focus();}
         }
+        function toggleMobileMenu() {
+            const menu=document.getElementById('mobileMenu'),button=document.getElementById('mobileMenuButton');
+            if(!menu)return;
+            const open=menu.classList.contains('hidden');
+            if(!open){closeMobileMenu();return;}
+            menu.classList.remove('hidden');
+            if(button){button.setAttribute('aria-expanded','true');button.setAttribute('aria-label',currentLang==='en'?'Close menu':'Cerrar menú');}
+        }
+        document.addEventListener('keydown',event=>{if(event.key==='Escape')closeMobileMenu(true);});
+        document.addEventListener('click',event=>{
+            const menu=document.getElementById('mobileMenu'),button=document.getElementById('mobileMenuButton');
+            if(menu&&!menu.classList.contains('hidden')&&!menu.contains(event.target)&&!button?.contains(event.target))closeMobileMenu();
+        });
+        const desktopMenuBreakpoint=window.matchMedia('(min-width:1536px)');
+        desktopMenuBreakpoint.addEventListener('change',event=>{if(event.matches){closeMobileMenu();vl29CloseMenus();}});
 
         function refreshAudioGuideLabels() {
             const locationLabel = document.getElementById('previewAudioGuideLabel');

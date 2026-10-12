@@ -83,7 +83,7 @@
 
   function updateResponsiveLabels() {
     const menuButton = document.getElementById('mobileMenuButton');
-    if (menuButton) menuButton.setAttribute('aria-label', isEnglish() ? 'Open menu' : 'Abrir menú');
+    if (menuButton) { const open=menuButton.getAttribute('aria-expanded')==='true'; menuButton.setAttribute('aria-label', isEnglish() ? (open?'Close menu':'Open menu') : (open?'Cerrar menú':'Abrir menú')); }
     const quickLabel = document.querySelector('.vl-mobile-route-label');
     if (quickLabel) quickLabel.textContent = isEnglish() ? 'My Route' : 'Mi Ruta';
     document.getElementById('mobileQuickRouteButton')?.setAttribute('aria-label', isEnglish() ? 'Open my route' : 'Abrir mi ruta');

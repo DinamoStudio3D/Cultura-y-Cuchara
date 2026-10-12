@@ -1696,3 +1696,8 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 @layer vl-layout {
  body:has(>div[role="dialog"][aria-modal="true"]:not(.hidden)) { overflow:hidden !important; }
 }
+
+/* V207: small-height navigation remains scrollable below the sticky bar. */
+@layer vl-layout {
+ #mobileMenu { max-height:65dvh; overflow-y:auto; overscroll-behavior:contain; }
+}
