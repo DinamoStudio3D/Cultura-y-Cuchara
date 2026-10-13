@@ -563,7 +563,7 @@
       <div class="vl-welcome-shell">
         <div class="vl-welcome-copy">
           <span id="heroBadge" class="vl-welcome-eyebrow" data-i18n="heroBadge">LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA</span>
-          <h1 id="heroTitle" data-i18n="heroTitle">Sabores, <span class="text-brandGold">Historias</span> y Destinos</h1>
+          <h1 id="heroTitle" data-i18n="heroTitle">Descubre <span class="text-brandGold">Loja</span></h1>
           <p id="heroSubtitle" data-i18n="heroSubtitle">Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.</p>
           <form class="vl-welcome-search" role="search" aria-labelledby="welcomeSearchLabel" onsubmit="searchFromWelcome(event)">
             <label id="welcomeSearchLabel" for="welcomeSearch" data-i18n="welcomeSearchLabel">¿Qué quieres descubrir?</label>
@@ -724,6 +724,31 @@
         </div>
     </section>
 
+
+<style id="vl235-immersive-redesign">
+/* V235: structural home navigation introduced alongside existing content. */
+.vl235-discovery-strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;max-width:1260px;margin:0 auto;padding:30px 24px 34px;background:#fff}
+.vl235-discovery-strip a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:110px;color:#15324f;text-decoration:none;font-size:13px;font-weight:750;text-align:center;border-radius:18px;transition:transform .2s ease,background .2s ease}
+.vl235-discovery-strip a:hover{background:#eef6ff;transform:translateY(-3px)}
+.vl235-discovery-strip a:focus-visible{outline:3px solid #075bb2;outline-offset:2px}
+.vl235-discovery-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#0b78e3;color:#fff;font-size:22px;box-shadow:0 8px 22px #0b78e330}
+.vl235-discovery-strip a:nth-child(2) .vl235-discovery-icon{background:#168657}
+.vl235-discovery-strip a:nth-child(3) .vl235-discovery-icon{background:#e77b27}
+.vl235-discovery-strip a:nth-child(4) .vl235-discovery-icon{background:#cc4168}
+.vl235-discovery-strip a:nth-child(5) .vl235-discovery-icon{background:#6654cc}
+.vl235-discovery-strip a:nth-child(6) .vl235-discovery-icon{background:#b88b10}
+@media(max-width:760px){.vl235-discovery-strip{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:18px 12px}.vl235-discovery-strip a{min-height:98px;font-size:12px}.vl235-discovery-icon{width:48px;height:48px;font-size:19px}}
+@media(prefers-reduced-motion:reduce){.vl235-discovery-strip a{transition:none}.vl235-discovery-strip a:hover{transform:none}}
+</style>
+    <!-- V235: immersive home quick-discovery strip, links to existing sections. -->
+    <nav class="vl235-discovery-strip" aria-label="Explorar VisitaLoja">
+      <a href="#categorias"><span class="vl235-discovery-icon"><i class="fa-solid fa-mountain-sun" aria-hidden="true"></i></span><span>Naturaleza</span></a>
+      <a href="#provincia-tienda"><span class="vl235-discovery-icon"><i class="fa-solid fa-landmark" aria-hidden="true"></i></span><span>Destinos</span></a>
+      <a href="#establecimientos"><span class="vl235-discovery-icon"><i class="fa-solid fa-utensils" aria-hidden="true"></i></span><span>Gastronomía</span></a>
+      <a href="#establecimientos"><span class="vl235-discovery-icon"><i class="fa-solid fa-bed" aria-hidden="true"></i></span><span>Alojamiento</span></a>
+      <a href="#mapa"><span class="vl235-discovery-icon"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i></span><span>Mapa turístico</span></a>
+      <a href="#agenda"><span class="vl235-discovery-icon"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i></span><span>Eventos</span></a>
+    </nav>
 
     <!-- Explora por categoría -->
     <section id="categorias" data-vl-surface="light" class="py-14 sm:py-16 px-4 md:px-8 lg:px-12 bg-[#f5f8fc] text-[#1a304b] border-b border-white/10 relative overflow-hidden">
