@@ -183,3 +183,64 @@ nav.glass-nav.sticky { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(
 @media (min-width: 761px) and (max-width: 1023px) {
  #inicio.vl-welcome .vl-welcome-shell {min-height:620px!important;}
 }
+
+/* V233 immersive tourism hero: photo-led presentation on all viewports.
+   Overrides the experimental V232 desktop split without changing dynamic content. */
+@media(min-width:1024px){
+ #inicio.vl-welcome {background:#082c50!important;}
+ #inicio.vl-welcome .vl-welcome-shell {
+  display:flex!important;align-items:center!important;
+  max-width:none!important;min-height:clamp(690px,88svh,930px)!important;
+  padding:clamp(90px,10vw,150px) max(32px,calc((100vw - 1320px)/2)) 110px!important;
+ }
+ #inicio.vl-welcome .vl-welcome-copy {
+  width:min(100%,720px)!important;max-width:720px!important;
+  padding:0!important;position:relative!important;z-index:3!important;
+  --vl-text:#fff;--vl-muted:#e5eef8;--vl-accent:#c2e8ff;
+  color:#fff!important;
+ }
+ #inicio.vl-welcome #heroTitle {
+  color:#fff!important;font-family:Georgia,serif!important;
+  font-size:clamp(64px,7.2vw,112px)!important;
+  line-height:.98!important;letter-spacing:-.045em!important;
+  text-shadow:0 4px 28px #071d36aa!important;max-width:12ch!important;
+ }
+ #inicio.vl-welcome #heroSubtitle {
+  color:#fff!important;font-size:clamp(17px,1.55vw,21px)!important;
+  line-height:1.55!important;text-shadow:0 2px 15px #071d36aa!important;
+ }
+ #inicio.vl-welcome .vl-welcome-visual {
+  position:absolute!important;inset:0!important;grid-column:auto!important;
+  grid-row:auto!important;min-height:100%!important;width:100%!important;
+  height:100%!important;border-radius:0!important;box-shadow:none!important;
+ }
+ #inicio.vl-welcome .vl-welcome-visual::after {
+  background:linear-gradient(90deg,rgba(5,24,48,.83) 0%,rgba(5,24,48,.55) 45%,rgba(5,24,48,.12) 100%),
+             linear-gradient(0deg,rgba(5,24,48,.5),transparent 42%)!important;
+ }
+ #inicio.vl-welcome .vl-welcome-actions > :is(a,button) {
+  background:rgba(6,28,53,.48)!important;color:#fff!important;
+  border:1px solid #ffffff80!important;backdrop-filter:blur(8px);
+  border-radius:999px!important;
+ }
+ #inicio.vl-welcome .vl149-category-link {
+  width:fit-content!important;background:rgba(6,28,53,.55)!important;
+  color:#fff!important;border-color:#ffffff75!important;
+  backdrop-filter:blur(8px);
+ }
+ #inicio.vl-welcome #heroBadge {
+  background:rgba(6,28,53,.72)!important;color:#e5f4ff!important;
+  border-color:#ffffff55!important;
+ }
+ #inicio.vl-welcome .vl-welcome-search {
+  max-width:670px!important;border-radius:22px!important;
+  box-shadow:0 20px 45px #071d3650!important;
+ }
+ #inicio.vl-welcome .vl-welcome-photo-top {top:28px!important;right:32px!important;}
+ #inicio.vl-welcome .vl-welcome-photo-caption {right:32px!important;bottom:34px!important;}
+}
+@media(min-width:761px) and (max-width:1023px){
+ #inicio.vl-welcome .vl-welcome-visual::after {
+  background:linear-gradient(90deg,rgba(5,24,48,.86),rgba(5,24,48,.28))!important;
+ }
+}
