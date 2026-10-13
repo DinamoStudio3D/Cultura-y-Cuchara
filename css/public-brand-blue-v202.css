@@ -278,3 +278,56 @@ nav.glass-nav.sticky { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(
 @media(max-width:900px){.vl233-shortcuts{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:25px}.vl233-feature-grid{grid-template-columns:1fr 1fr}.vl233-feature-card:last-child{grid-column:1/-1}}
 @media(max-width:600px){.vl233-explore{padding:22px 16px 48px}.vl233-shortcuts{gap:18px 7px;padding-bottom:34px}.vl233-shortcut-icon{width:52px;height:52px;font-size:19px}.vl233-shortcuts a{font-size:11px}.vl233-feature-heading{align-items:start;flex-direction:column}.vl233-feature-heading>a{white-space:normal}.vl233-feature-grid{grid-template-columns:1fr}.vl233-feature-card,.vl233-feature-card:last-child{grid-column:auto;min-height:270px}}
 @media(prefers-reduced-motion:reduce){.vl233-shortcut-icon{transition:none}}
+
+/* V234: align home composition with approved immersive tourism concept.
+   All category buttons and business content remain driven by existing data. */
+@layer vl-layout {
+ #inicio.vl-welcome .vl-welcome-shell { min-height:clamp(700px,88svh,920px); }
+ #inicio.vl-welcome .vl-welcome-copy { max-width:780px!important; }
+ #inicio.vl-welcome #heroTitle { font-family:Georgia,serif!important; font-weight:700!important; }
+ #inicio.vl-welcome .vl-welcome-search {
+   border:1px solid rgba(255,255,255,.8)!important;
+   border-radius:999px!important;padding:9px 10px 9px 23px!important;
+   max-width:730px!important;
+ }
+ #inicio.vl-welcome .vl-welcome-search-row { align-items:center; }
+ #inicio.vl-welcome .vl-welcome-primary { border-radius:999px!important;min-height:48px; }
+ #inicio.vl-welcome .vl-welcome-actions { gap:10px!important; }
+ #inicio.vl-welcome .vl-welcome-actions > :is(a,button) { border-radius:999px!important; }
+ #categorias { background:#fff!important; border:0!important; }
+ #categorias > .max-w-7xl { max-width:1320px!important; }
+ #categorias #exploreCategoryGrid {
+   display:grid!important;
+   grid-template-columns:repeat(4,minmax(0,1fr))!important;
+   gap:16px!important;
+ }
+ #categorias #exploreCategoryGrid > button {
+   border-radius:22px!important;
+   background:#f4f8fd!important;
+   border:1px solid #dbe7f2!important;
+   box-shadow:0 8px 26px rgba(13,52,92,.06)!important;
+   min-height:146px!important;
+   transition:transform .2s ease,box-shadow .2s ease!important;
+ }
+ #categorias #exploreCategoryGrid > button:hover {
+   transform:translateY(-4px)!important;
+   box-shadow:0 16px 34px rgba(13,52,92,.13)!important;
+ }
+ #establecimientos { background:#f5f8fc!important; }
+ #establecimientos #localesGrid > .local-item:not(.hidden-item) {
+   border-radius:22px!important;
+   box-shadow:0 14px 36px rgba(13,52,92,.09)!important;
+ }
+ @media(max-width:900px) {
+  #categorias #exploreCategoryGrid {grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+ }
+ @media(max-width:639px) {
+  #categorias #exploreCategoryGrid {grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;}
+  #categorias #exploreCategoryGrid > button {min-height:122px!important;border-radius:18px!important;}
+  #inicio.vl-welcome .vl-welcome-search {border-radius:22px!important;padding:12px!important;}
+ }
+ @media(prefers-reduced-motion:reduce) {
+  #categorias #exploreCategoryGrid > button {transition:none!important;}
+  #categorias #exploreCategoryGrid > button:hover {transform:none!important;}
+ }
+}
