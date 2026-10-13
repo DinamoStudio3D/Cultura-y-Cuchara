@@ -54,7 +54,7 @@
       let user;
       try { user = auth.currentUser; } catch {}
       if (!user) { notice.textContent = 'Inicia sesión como administrador.'; return; }
-      const job = {controller: new AbortController(), target: $(group === 'time' ? 'timeEditIdSecure' : 'generalEventEditId')?.value};
+      const job = {controller: new AbortController(), target: $(group === 'time' ? 'timeEditIdSecure' : group === 'qr' ? 'qrEditId' : 'generalEventEditId')?.value};
       jobs.set(id, job);
       root.VisitaLojaMediaGuard.begin(formId, id);
       const previousDisabled = field.disabled;
@@ -80,7 +80,7 @@
         field.value = result.url;
         field.dispatchEvent(new Event('input', {bubbles:true}));
         if (typeof setAdminUnsavedChanges === 'function') setAdminUnsavedChanges(true);
-        notice.textContent = 'Fotografía subida. Revisa la vista previa y guarda '+(group === 'time' ? 'el punto' : 'el evento')+' para publicarla.';
+        notice.textContent = 'Fotografía subida. Revisa la vista previa y guarda '+(group === 'time' ? 'el punto' : group === 'qr' ? 'el código QR' : 'el evento')+' para publicarla.';
         file.value = '';
       } catch (error) {
         notice.textContent = job.contextChanged ? hint : timedOut ? 'La carga agotó el tiempo disponible. Puedes volver a intentarlo.' : error.name === 'AbortError' ? 'Subida cancelada. Se conserva la fotografía anterior.' : 'No se pudo subir: '+error.message;
@@ -96,8 +96,9 @@
   function init() {
     mount({id:'timePast',fieldId:'timeImagePast',formId:'timeForm',group:'time',endpoint:'/api/sign-time-image'});
     mount({id:'timePresent',fieldId:'timeImagePresent',formId:'timeForm',group:'time',endpoint:'/api/sign-time-image'});
+    mount({id:'qrMenuImageUpload',fieldId:'qrMenuImageUrl',formId:'qrForm',group:'qr',endpoint:'/api/sign-menu-image'});
     mount({id:'eventPoster',fieldId:'generalEventImage',formId:'generalEventForm',group:'events',endpoint:'/api/sign-event-image',existingFile:'generalEventImageFile',existingButton:'generalEventUploadBtn',existingStatus:'generalEventUploadStatus'});
   }
-  root.VisitaLojaAdminImages = {cancel, refresh, uploadEvent: () => controls.get('eventPoster')?.start()};
+  root.VisitaLojaAdminImages = {cancel, refresh, uploadEvent: () => controls.get('eventPoster')?.start(), uploadQrMenu: () => controls.get('qrMenuImageUpload')?.start()};
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else init();
 })(window);
