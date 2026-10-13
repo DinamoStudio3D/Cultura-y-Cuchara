@@ -988,6 +988,51 @@
         <details class="vl-passport-options"><summary data-i18n="passportOptions">Opciones del progreso guardado</summary><button type="button" onclick="resetPassportProgess()" data-i18n="passReset">Borrar progreso guardado</button></details>
       </div>
     </section>
+    <!-- Huellas de Loja: visual discovery layer. Existing passport and QR flows remain intact. -->
+    <section id="huellas-de-loja" class="vl-huellas-integration" aria-labelledby="huellas-title" data-vl-surface="light">
+      <div class="vl-huellas-container">
+        <div class="vl-huellas-heading">
+          <span class="vl-huellas-eyebrow"><i class="fa-solid fa-sparkles" aria-hidden="true"></i> UNA NUEVA FORMA DE DESCUBRIR LOJA</span>
+          <h2 id="huellas-title">Huellas <em>de Loja</em></h2>
+          <p>Tu pasaporte registra tus visitas. Tus huellas cuentan las historias que vives en el camino.</p>
+          <div class="vl-huellas-cta"><a href="/huellas-funcionamiento.html" class="vl-huellas-main-link"><i class="fa-solid fa-play" aria-hidden="true"></i> Probar cómo funciona</a><button type="button" onclick="openModal('pasaporteModal')"><i class="fa-solid fa-passport" aria-hidden="true"></i> Abrir mi pasaporte actual</button></div>
+        </div>
+        <div class="vl-huellas-tiles">
+          <a href="/huellas-prototipo.html" class="vl-huellas-tile"><span class="vl-huellas-emoji">🖼️</span><strong>Mi álbum</strong><small>Postales y recuerdos coleccionables</small><span class="vl-huellas-preview">Vista de demostración →</span></a>
+          <a href="/huellas-prototipo.html" class="vl-huellas-tile"><span class="vl-huellas-emoji">🗺️</span><strong>Mi mapa</strong><small>Explora los 16 cantones de Loja</small><span class="vl-huellas-preview">Vista de demostración →</span></a>
+          <a href="#misiones" class="vl-huellas-tile"><span class="vl-huellas-emoji">🧭</span><strong>Chabaquito</strong><small>Aventuras y misiones actuales</small><span class="vl-huellas-preview">Ver misiones →</span></a>
+          <a href="/huellas-prototipo.html" class="vl-huellas-tile"><span class="vl-huellas-emoji">🏅</span><strong>Colecciones</strong><small>Desbloquea recuerdos temáticos</small><span class="vl-huellas-preview">Vista de demostración →</span></a>
+        </div>
+        <p class="vl-huellas-disclaimer"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Huellas de Loja está en demostración: el álbum, mapa y colecciones aún no guardan progreso real. El pasaporte y sus validaciones siguen funcionando como antes.</p>
+      </div>
+    </section>
+    <style id="vl-huellas-integration-style">
+      .vl-huellas-integration{background:linear-gradient(150deg,#f0f7fc,#fff 55%,#f7f0e6);color:#173a57;padding:68px 20px}
+      .vl-huellas-container{max-width:1160px;margin:auto}
+      .vl-huellas-heading{text-align:center;max-width:760px;margin:0 auto 34px}
+      .vl-huellas-eyebrow{font-size:12px;letter-spacing:.16em;font-weight:850;color:#117a94}
+      .vl-huellas-heading h2{font:700 clamp(43px,6vw,70px)/1.1 Georgia,serif;color:#123c62;margin:12px 0}
+      .vl-huellas-heading h2 em{color:#b87b39}
+      .vl-huellas-heading p{font-size:17px;line-height:1.6;color:#536e83}
+      .vl-huellas-cta{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:22px}
+      .vl-huellas-cta a,.vl-huellas-cta button{display:inline-flex;align-items:center;gap:10px;border:1px solid #bbd0df;border-radius:13px;padding:14px 20px;font-weight:800;background:white;color:#14446d;text-decoration:none;cursor:pointer}
+      .vl-huellas-cta .vl-huellas-main-link{background:#096ebd;color:white;border-color:#096ebd}
+      .vl-huellas-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
+      .vl-huellas-tile{display:flex;flex-direction:column;align-items:flex-start;min-height:235px;padding:25px 21px;background:#fff;border:1px solid #e1e9ef;border-radius:22px;text-decoration:none;color:#183b59;box-shadow:0 12px 28px #17446d12;transition:transform .2s,box-shadow .2s}
+      .vl-huellas-tile:hover{transform:translateY(-4px);box-shadow:0 17px 32px #17446d24}
+      .vl-huellas-tile:focus-visible,.vl-huellas-cta a:focus-visible,.vl-huellas-cta button:focus-visible{outline:3px solid #ffac41;outline-offset:3px}
+      .vl-huellas-emoji{display:grid;place-items:center;font-size:35px;width:68px;height:68px;background:#eaf3fd;border-radius:18px;margin-bottom:18px}
+      .vl-huellas-tile:nth-child(2) .vl-huellas-emoji{background:#e4f3e8}
+      .vl-huellas-tile:nth-child(3) .vl-huellas-emoji{background:#fff0d8}
+      .vl-huellas-tile:nth-child(4) .vl-huellas-emoji{background:#f1e9fa}
+      .vl-huellas-tile strong{font:700 23px Georgia,serif;margin-bottom:8px}
+      .vl-huellas-tile small{font-size:13px;color:#617a8d;line-height:1.5}
+      .vl-huellas-preview{font-size:12px;color:#0867aa;font-weight:850;margin-top:auto;padding-top:17px}
+      .vl-huellas-disclaimer{margin:23px 0 0;text-align:center;color:#627c8f;font-size:12px}
+      @media(max-width:850px){.vl-huellas-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media(max-width:530px){.vl-huellas-tiles{gap:10px}.vl-huellas-tile{min-height:220px;padding:17px 13px}.vl-huellas-tile strong{font-size:19px}.vl-huellas-emoji{width:54px;height:54px;font-size:29px}.vl-huellas-integration{padding:45px 13px}}
+      @media(prefers-reduced-motion:reduce){.vl-huellas-tile{transition:none}.vl-huellas-tile:hover{transform:none}}
+    </style>
     <!-- Missions own their complete introduction and dynamic content. -->
     <section id="misiones" data-vl-surface="light" class="vl-adventure-section reveal"><div id="chabaquitoV2Public" aria-live="polite"></div></section>
 
