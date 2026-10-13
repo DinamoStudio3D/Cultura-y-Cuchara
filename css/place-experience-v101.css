@@ -1,0 +1,78 @@
+/* V101: existing public cards and preview, preserving admin style/image controls. */
+@layer vl-colors {
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore{--vl-text:#fff;--vl-muted:#e5ede6;--vl-accent:#e7eead;background:#173a31!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore-icon{--vl-text:#173a31;--vl-accent:#173a31;background:#e7eead!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>a{--vl-text:#173a31;--vl-muted:#173a31;--vl-accent:#173a31;background:#e7eddf!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-favorite[aria-pressed="false"]{--vl-text:#236043;--vl-muted:#236043;--vl-accent:#236043}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-favorite[aria-pressed="true"]{--vl-text:#a32936;--vl-muted:#a32936;--vl-accent:#a32936}
+ #mapa .vl-preview-photo{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173a31!important}
+ #mapa .vl-preview-photo>span{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#173a31ed!important}
+ #mapa #mapPreviewCard{--vl-text:#253241;--vl-muted:#56616c;--vl-accent:#236043;background:#fff!important}
+}
+/* V146: contraste del botón Sello en las fichas públicas */
+@layer vl-colors {
+ #establecimientos #localesGrid>.local-item .vl18-quicklinks>button.vl-card-action{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#9a3412!important;color:#fff!important;border-color:#9a3412!important}
+ #establecimientos #localesGrid>.local-item .vl18-quicklinks>button.vl-card-action :is(i,span){color:#fff!important}
+ #establecimientos #localesGrid>.local-item .vl18-quicklinks>button.vl-card-action:hover{background:#7c2d12!important;border-color:#7c2d12!important}
+}
+@layer vl-layout {
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-kicker{letter-spacing:.12em;font-size:10px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore{margin-top:16px!important;padding:14px 16px!important;border:0!important;border-radius:12px;font-size:13px!important;min-height:48px}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore-icon{border-radius:50%;width:30px;height:30px}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks{flex-wrap:wrap;gap:8px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action{width:auto!important;min-width:max-content!important;min-height:44px;height:auto!important;flex:0 0 auto!important;display:inline-flex!important;align-items:center;justify-content:center;padding:12px 14px!important;gap:8px;font-size:13px!important;line-height:1.2!important;box-sizing:border-box}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action-label{font-size:11px;font-weight:750;white-space:nowrap}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools{flex-wrap:wrap;align-items:center;gap:12px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools-links{flex:1 1 180px;min-width:0;max-width:100%}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action>i{flex:0 0 auto;min-width:1em;text-align:center}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action-label{flex:0 0 auto;line-height:1.2}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-favorite{flex:0 0 46px!important;margin-left:auto}
+ #mapa #mapPreviewCard{padding:24px!important;border-width:1px!important;border-radius:var(--premium-radius,1.25rem)!important;gap:24px!important;box-shadow:0 12px 32px #173a3110!important}
+ #mapa .vl-preview-photo{position:relative;padding:0;border:0;border-radius:16px;overflow:hidden;cursor:pointer;width:100%;aspect-ratio:4/3;min-width:0;display:block;align-self:start;text-align:left}
+ #mapa .vl-preview-photo[hidden]{display:none!important}
+ #mapa .vl-preview-photo>img{width:100%;height:100%;object-fit:var(--vl-card-image-fit,cover);display:block}
+ #mapa .vl-preview-photo>span{position:absolute;bottom:12px;left:12px;right:12px;padding:12px 14px;border-radius:12px;font-size:12px;font-weight:800}
+ #mapa #previewTitle{font-size:clamp(24px,2.5vw,34px)!important;line-height:1.2!important;margin-top:10px}
+ #mapa #previewDesc{-webkit-line-clamp:5;font-size:14px!important;line-height:1.75!important}
+ #mapa #previewBusinessProfile :is(a,span){font-size:11px!important;line-height:1.5}
+ #mapa #previewBusinessProfile a{min-height:44px;display:inline-flex;align-items:center}
+ #mapa .vl-place-actions :is(button,a){min-height:44px;font-size:12px!important}
+ #mapa .vl-preview-photo:focus-visible{outline:3px solid #236043;outline-offset:4px}
+ @media(min-width:1200px){#mapa #mapPreviewCard:has(>.vl-preview-photo:not([hidden])){grid-template-columns:minmax(220px,.85fr) minmax(0,1fr) minmax(280px,1fr)!important;align-items:start}#mapa #mapPreviewCard>div:last-of-type{padding-left:22px!important;gap:10px!important}}
+ @media(min-width:1024px) and (max-width:1199px){#mapa #mapPreviewCard>.vl-preview-photo{grid-column:1/-1;aspect-ratio:3/1}#mapa #mapPreviewCard>.vl-preview-photo>img{object-position:center}}
+ @media(max-width:1023px){#mapa #mapPreviewCard{display:flex!important;flex-direction:column!important}#mapa #mapPreviewCard>.vl-preview-photo{max-height:340px}#mapa #mapPreviewCard>div{width:100%}}
+ @media(max-width:639px){#mapa #mapPreviewCard{padding:18px!important;gap:18px!important}#mapa #mapPreviewCard>.vl-preview-photo{aspect-ratio:4/3;max-height:none}#establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content{padding:20px!important}}
+}
+
+/* V156: mobile business cards accommodate full names and controls. */
+@layer vl-layout {
+ @media(max-width:760px) {
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content>.flex:first-of-type { flex-wrap:wrap !important; align-items:flex-start !important; gap:8px !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title { flex:1 1 100% !important; min-width:0 !important; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; line-height:1.3 !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl17-media>.absolute { max-width:calc(100% - 24px); flex-wrap:wrap !important; gap:5px !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl17-media>.absolute>span { max-width:100%; white-space:normal !important; line-height:1.4 !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks { gap:8px !important; flex-wrap:wrap !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action { min-width:0 !important; max-width:100% !important; flex:1 1 120px !important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-action-label { white-space:normal !important; line-height:1.4 !important; }
+  #mapa #previewBusinessProfile :is(a,span) { overflow-wrap:anywhere; }
+ }
+}
+
+/* V189: every map action owns a complete readable foreground/background pair. */
+@layer vl-colors {
+ #mapa .vl-place-actions #previewStampButton,
+ #mapa .vl-place-actions>button[onclick="openBusinessPageForCurrent()"],
+ #mapa .vl-place-actions #previewRestaurantMenuBtn { --vl-text:#ffffff;--vl-muted:#ffffff;--vl-accent:#ffffff;background:#9a3412 !important;background-image:none !important;color:#ffffff !important;border-color:#9a3412 !important; }
+ #mapa .vl-place-actions #previewStampButton:hover,
+ #mapa .vl-place-actions>button[onclick="openBusinessPageForCurrent()"]:hover,
+ #mapa .vl-place-actions #previewRestaurantMenuBtn:hover { --vl-text:#ffffff;--vl-muted:#ffffff;--vl-accent:#ffffff;background:#7c2d12 !important;background-image:none !important;color:#ffffff !important;border-color:#7c2d12 !important; }
+ #mapa .vl-place-actions #previewWhatsapp,
+ #mapa .vl-place-actions #previewOrderBtn { --vl-text:#ffffff;--vl-muted:#ffffff;--vl-accent:#ffffff;background:#166534 !important;color:#ffffff !important; }
+ #mapa .vl-place-actions #previewReservationBtn { --vl-text:#ffffff;--vl-muted:#ffffff;--vl-accent:#ffffff;background:#075985 !important;color:#ffffff !important; }
+ #mapa .vl-place-actions #previewAudioGuideBtn { --vl-text:#713516;--vl-muted:#713516;--vl-accent:#713516;background:#fff7ed !important;color:#713516 !important; }
+ #mapa .vl-place-actions #previewAudioGuideBtn:hover { --vl-text:#713516;--vl-muted:#713516;--vl-accent:#713516;background:#ffead5 !important;color:#713516 !important; }
+ #mapa .vl-place-actions :is(#previewStampButton,#previewWhatsapp,#previewOrderBtn,#previewReservationBtn,#previewRestaurantMenuBtn,#previewAudioGuideBtn) :is(i,svg,span) { color:var(--vl-text) !important; }
+ #mapa #previewFavBtn { --vl-text:#173d30;--vl-muted:#173d30;--vl-accent:#173d30;background:#e5f5e9 !important;color:#173d30 !important;border-color:#7c9f87 !important; }
+ #mapa #previewFavBtn[class~="bg-red-50"] { --vl-text:#9f1239;--vl-muted:#9f1239;--vl-accent:#9f1239;background:#fff1f2 !important;color:#9f1239 !important;border-color:#e5a1b5 !important; }
+ #mapa #previewFavBtn :is(i,svg) { color:var(--vl-text) !important; }
+}

@@ -64,6 +64,7 @@
         total:Number(counter.visitCount||counter.totalVisits||0),
         target:Math.max(1,Number(program.targetVisits||10)),
         reward:rewardTitle(program),
+        rewardDescription:program.rewardDescription||'',
         stampIcon:stampIcon(program),
         program,
         place,

@@ -13,7 +13,7 @@
     <style>
         :root{color-scheme:dark}html,body{min-height:100%;background:#07100e}body{background:radial-gradient(circle at 15% 0,rgba(16,185,129,.2),transparent 32rem),radial-gradient(circle at 100% 20%,rgba(14,165,233,.15),transparent 28rem),#07100e}.card{background:linear-gradient(145deg,rgba(16,31,28,.97),rgba(7,16,14,.98));border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 70px rgba(0,0,0,.4)}.field{width:100%;border:1px solid #334155;background:#091613;border-radius:.85rem;padding:.85rem 1rem;color:#fff;outline:none}.field:focus{border-color:#34d399;box-shadow:0 0 0 3px rgba(52,211,153,.14)}button,a{touch-action:manipulation}@media(max-width:640px){.field,input{font-size:16px!important}button,a{min-height:44px}body{padding-bottom:env(safe-area-inset-bottom)}header{padding-top:env(safe-area-inset-top)}}
     </style>
-</head>
+<script src="js/merchant-reward-state-v231.js"></script></head>
 <body class="text-white antialiased">
     <header class="border-b border-white/10 bg-black/20 backdrop-blur-xl">
         <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
@@ -69,7 +69,7 @@
                 <div class="p-5 sm:p-7">
                     <p class="text-xs text-gray-500 uppercase font-black tracking-widest">Código</p><p id="resultCode" class="text-2xl font-black text-cyan-200 tracking-wider mt-1"></p>
                     <div class="grid sm:grid-cols-2 gap-4 mt-5"><div><p class="text-xs text-gray-500">Visitante</p><p id="resultVisitor" class="font-bold"></p></div><div><p class="text-xs text-gray-500">Campaña</p><p id="resultCampaign" class="font-bold"></p></div><div class="sm:col-span-2"><p class="text-xs text-gray-500">Recompensa</p><p id="resultReward" class="font-bold"></p></div></div>
-                    <p id="resultDate" class="text-xs text-gray-500 mt-4"></p>
+                    <p id="resultConditions" class="text-sm text-gray-200 mt-4 whitespace-pre-line"></p><p id="resultExpiry" class="text-sm text-sky-100 mt-3"></p><p id="resultDate" class="text-xs text-gray-500 mt-4"></p>
                     <button id="deliverButton" type="button" onclick="deliverReward()" class="w-full mt-6 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 text-emerald-950 rounded-xl py-3 font-black"><i class="fa-solid fa-check mr-2"></i>Confirmar entrega</button>
                 </div>
             </article>
@@ -80,7 +80,7 @@
 const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};
 const merchantApp=firebase.initializeApp(firebaseConfig,'viveLojaMerchant'),merchantAuth=merchantApp.auth(),merchantDb=merchantApp.firestore();
 merchantAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-let merchantAccess=null,currentRewardClaim=null,accessUnsubscribe=null;
+let merchantAccess=null,currentRewardClaim=null,accessUnsubscribe=null,rewardDeliveryBusy=false;
 const views=['loginView','pendingView','suspendedView','verifierView'];
 function showView(id){views.forEach(view=>document.getElementById(view).classList.toggle('hidden',view!==id));}
 function showNotice(id,text,success=false){const box=document.getElementById(id);box.textContent=text;box.className=`mt-4 rounded-xl p-3 text-sm ${success?'bg-emerald-500/15 text-emerald-200 border border-emerald-500/25':'bg-red-500/15 text-red-200 border border-red-500/25'}`;}
@@ -100,6 +100,7 @@ merchantAuth.onAuthStateChanged(async user=>{if(accessUnsubscribe){accessUnsubsc
 document.getElementById('verifyCodeForm').addEventListener('submit',event=>{event.preventDefault();verifyRewardCode();});
 function rewardDate(value){const date=value?.toDate?value.toDate():new Date(value||0);return Number.isNaN(date.getTime())?'':date.toLocaleString('es-EC');}
 async function verifyRewardCode(){
+    if(rewardDeliveryBusy)return;
     const code=document.getElementById('rewardCode').value.trim().toUpperCase().replace(/\s/g,''),button=document.getElementById('verifyButton');currentRewardClaim=null;document.getElementById('rewardResult').classList.add('hidden');
     if(!/^[A-Z0-9-]{6,20}$/.test(code)){showNotice('verifyMessage','Revisa el formato del código presentado.');return;}button.disabled=true;
     try{
@@ -119,16 +120,44 @@ async function verifyRewardCode(){
     }catch(_){showNotice('verifyMessage','Código inexistente o no autorizado para este negocio.');}finally{button.disabled=false;}
 }
 function renderRewardResult(){
-    const item=currentRewardClaim;if(!item)return;const labels={pending:'Pendiente por entregar',delivered:'Ya entregado',cancelled:'Anulado'},bar=document.getElementById('rewardStatusBar');document.getElementById('rewardStatus').textContent=labels[item.status]||item.status;bar.className=`px-5 py-3 font-black ${item.status==='pending'?'bg-amber-400 text-amber-950':item.status==='delivered'?'bg-emerald-400 text-emerald-950':'bg-red-400 text-red-950'}`;document.getElementById('resultCode').textContent=item.claimCode;document.getElementById('resultVisitor').textContent=item.userName||'Visitante';document.getElementById('resultCampaign').textContent=item.campaignId||'';document.getElementById('resultReward').textContent=`${item.rewardTitle||'Recompensa'}${item.sponsorName?` · ${item.sponsorName}`:''}`;document.getElementById('resultDate').textContent=`Generado: ${rewardDate(item.createdAt)}`;const button=document.getElementById('deliverButton');button.disabled=item.status!=='pending';button.innerHTML=item.status==='pending'?'<i class="fa-solid fa-check mr-2"></i>Confirmar entrega':'<i class="fa-solid fa-lock mr-2"></i>Este código ya no puede entregarse';document.getElementById('verifyMessage').classList.add('hidden');document.getElementById('rewardResult').classList.remove('hidden');
+ const item=currentRewardClaim;if(!item)return;const state=window.VisitaLojaMerchantRewardState.state(item),bar=document.getElementById('rewardStatusBar');
+ document.getElementById('rewardStatus').textContent=state.label;
+ bar.className=`px-5 py-3 font-black ${state.canDeliver?'bg-amber-400 text-amber-950':item.status==='delivered'?'bg-emerald-400 text-emerald-950':'bg-red-400 text-red-950'}`;
+ document.getElementById('resultCode').textContent=item.claimCode;document.getElementById('resultVisitor').textContent=item.userName||'Visitante';document.getElementById('resultCampaign').textContent=item.campaignId||'';
+ document.getElementById('resultReward').textContent=`${item.rewardTitle||'Recompensa'}${item.sponsorName?` · ${item.sponsorName}`:''}`;
+ document.getElementById('resultConditions').textContent=item.rewardDescription||'';
+ const expiry=window.VisitaLojaMerchantRewardState.expiry(item.expiresAt);
+ document.getElementById('resultExpiry').textContent=expiry!==null?'Vencimiento: '+new Date(expiry).toLocaleString('es-EC',{timeZone:'America/Guayaquil'}):item.type==='loyalty'?'No se pudo confirmar la vigencia. Revisa el premio antes de entregarlo.':'';
+ document.getElementById('resultDate').textContent=`Generado: ${rewardDate(item.createdAt)}`;
+ const button=document.getElementById('deliverButton');button.disabled=rewardDeliveryBusy||!state.canDeliver;
+ button.innerHTML=state.canDeliver?'<i class="fa-solid fa-check mr-2"></i>Confirmar entrega':'<i class="fa-solid fa-lock mr-2"></i>Este premio no está disponible para entrega';
+ document.getElementById('verifyMessage').classList.add('hidden');document.getElementById('rewardResult').classList.remove('hidden');
 }
 async function deliverReward(){
-    if(!currentRewardClaim||currentRewardClaim.status!=='pending')return;if(!confirm(`¿Confirmas la entrega de ${currentRewardClaim.rewardTitle||'la recompensa'}? Esta acción no se puede repetir.`))return;const button=document.getElementById('deliverButton');button.disabled=true;
-    try{
-        const type=currentRewardClaim.type,collection=type==='passport'?'passportCompletions':type==='loyalty'?'loyaltyRewardClaims':'missionRewardClaims',ref=merchantDb.collection(collection).doc(currentRewardClaim.id);
-        await merchantDb.runTransaction(async transaction=>{const snapshot=await transaction.get(ref);if(!snapshot.exists||snapshot.data().status!=='pending')throw new Error('already-used');if(type==='passport')transaction.update(ref,{status:'delivered',deliveredAt:firebase.firestore.FieldValue.serverTimestamp(),deliveredBy:merchantAuth.currentUser.email});else if(type==='loyalty')transaction.update(ref,{status:'delivered',deliveredAt:firebase.firestore.FieldValue.serverTimestamp(),deliveredBy:merchantAuth.currentUser.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});else transaction.update(ref,{status:'delivered',processedAt:firebase.firestore.FieldValue.serverTimestamp(),processedBy:merchantAuth.currentUser.email});});
-        currentRewardClaim.status='delivered';if(currentRewardClaim.placeId)merchantDb.collection('businessEvents').add({placeId:String(currentRewardClaim.placeId),type:'benefit',sessionId:'merchant_'+merchantAuth.currentUser.uid.slice(0,60),createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});renderRewardResult();showNotice('verifyMessage','Recompensa entregada correctamente.',true);
-    }catch(_){await verifyRewardCode();showNotice('verifyMessage','El código ya fue utilizado o no tienes permiso para entregarlo.');}
+ if(rewardDeliveryBusy||!currentRewardClaim||!merchantAuth.currentUser)return;
+ const item=currentRewardClaim,actor={uid:merchantAuth.currentUser.uid,email:merchantAuth.currentUser.email};
+ if(!window.VisitaLojaMerchantRewardState.state(item).canDeliver){renderRewardResult();return;}
+ if(!confirm(`¿Confirmas la entrega de ${item.rewardTitle||'la recompensa'}? Esta acción no se puede repetir.`))return;
+ rewardDeliveryBusy=true;const button=document.getElementById('deliverButton'),verify=document.getElementById('verifyButton');button.disabled=verify.disabled=true;
+ const current=()=>merchantAuth.currentUser?.uid===actor.uid&&currentRewardClaim===item;
+ try{
+  const type=item.type,collection=type==='passport'?'passportCompletions':type==='loyalty'?'loyaltyRewardClaims':'missionRewardClaims',ref=merchantDb.collection(collection).doc(item.id);
+  await merchantDb.runTransaction(async transaction=>{
+   const snapshot=await transaction.get(ref);if(!current())throw new Error('session-changed');
+   if(!snapshot.exists)throw new Error('already-used');
+   const live={...snapshot.data(),type};if(!window.VisitaLojaMerchantRewardState.state(live).canDeliver)throw new Error('not-deliverable');
+   if(type==='passport')transaction.update(ref,{status:'delivered',deliveredAt:firebase.firestore.FieldValue.serverTimestamp(),deliveredBy:actor.email});
+   else if(type==='loyalty')transaction.update(ref,{status:'delivered',deliveredAt:firebase.firestore.FieldValue.serverTimestamp(),deliveredBy:actor.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+   else transaction.update(ref,{status:'delivered',processedAt:firebase.firestore.FieldValue.serverTimestamp(),processedBy:actor.email});
+  });
+  if(!current())return;item.status='delivered';
+  if(item.placeId)merchantDb.collection('businessEvents').add({placeId:String(item.placeId),type:'benefit',sessionId:'merchant_'+actor.uid.slice(0,60),createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+  renderRewardResult();showNotice('verifyMessage','Recompensa entregada correctamente.',true);
+ }catch(error){
+  if(current())showNotice('verifyMessage',error.message==='not-deliverable'?'El premio ya no está disponible: pudo vencer, anularse o entregarse. Vuelve a verificar el código.':'No se pudo confirmar la entrega. Vuelve a consultar el código antes de reintentar.');
+ }finally{rewardDeliveryBusy=false;verify.disabled=false;if(current())button.disabled=true;}
 }
+
 </script>
 </body>
 </html>

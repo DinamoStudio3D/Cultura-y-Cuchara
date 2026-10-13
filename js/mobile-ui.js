@@ -8,10 +8,6 @@
     return typeof currentLang !== 'undefined' && currentLang === 'en';
   }
 
-  function openItinerary() {
-    if (typeof window.openModal === 'function') window.openModal('itineraryModal');
-  }
-
   function syncQuickRouteBadge() {
     const source = document.getElementById('itineraryBadge');
     const target = document.getElementById('mobileQuickRouteBadge');
@@ -23,19 +19,14 @@
   }
 
   function createMobileQuickRoute() {
-    if (document.getElementById('mobileQuickRouteButton')) return;
+    // One shared action at every breakpoint; never generate a second route button.
+    const routeButton = document.querySelector('nav.glass-nav .vl28-route-button');
     const menuButton = document.getElementById('mobileMenuButton');
-    if (!menuButton?.parentElement) return;
-    const actions = document.createElement('div');
-    actions.className = 'vl-mobile-nav-actions 2xl:hidden flex items-center gap-2 ml-auto';
-    const routeButton = document.createElement('button');
+    const actions = routeButton?.parentElement;
+    if (!actions || !menuButton || document.getElementById('mobileQuickRouteBadge')) return;
     routeButton.id = 'mobileQuickRouteButton';
-    routeButton.type = 'button';
-    routeButton.className = 'vl-mobile-route-quick relative inline-flex items-center gap-1.5 rounded-xl border border-brandGold/60 bg-brandGold/15 text-brandGold font-black px-3 py-2 text-xs shadow-warm-glow';
-    routeButton.innerHTML = '<i class="fa-solid fa-route" aria-hidden="true"></i><span class="vl-mobile-route-label">Mi Ruta</span><span id="mobileQuickRouteBadge" class="hidden min-w-5 h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-black items-center justify-center">0</span>';
-    routeButton.addEventListener('click', openItinerary);
-    menuButton.parentElement.insertBefore(actions, menuButton);
-    actions.append(routeButton, menuButton);
+    routeButton.innerHTML = '<i class="fa-solid fa-route" aria-hidden="true"></i><span class="vl-mobile-route-label">Mi ruta</span><span id="mobileQuickRouteBadge" class="hidden">0</span>';
+    actions.appendChild(menuButton);
     const legacyRouteButton = document.getElementById('mobileItineraryButton');
     if (legacyRouteButton) legacyRouteButton.classList.add('vl-route-menu-duplicate');
     syncQuickRouteBadge();
@@ -92,9 +83,10 @@
 
   function updateResponsiveLabels() {
     const menuButton = document.getElementById('mobileMenuButton');
-    if (menuButton) menuButton.setAttribute('aria-label', isEnglish() ? 'Open menu' : 'Abrir menú');
+    if (menuButton) { const open=menuButton.getAttribute('aria-expanded')==='true'; menuButton.setAttribute('aria-label', isEnglish() ? (open?'Close menu':'Open menu') : (open?'Cerrar menú':'Abrir menú')); }
     const quickLabel = document.querySelector('.vl-mobile-route-label');
     if (quickLabel) quickLabel.textContent = isEnglish() ? 'My Route' : 'Mi Ruta';
+    document.getElementById('mobileQuickRouteButton')?.setAttribute('aria-label', isEnglish() ? 'Open my route' : 'Abrir mi ruta');
     const exploreLabel = document.querySelector('#desktopExploreMenu summary span');
     if (exploreLabel) exploreLabel.textContent = isEnglish() ? 'Explore' : 'Explorar';
     const mesaLabel = document.querySelector('#desktopMesaTuristicaLink span');
@@ -111,6 +103,7 @@
     if (!sponsors?.parentElement) return;
     const section = document.createElement('section');
     section.id = 'mesaTuristicaSpotlight';
+    section.dataset.vlSurface = 'dark';
     section.className = 'relative overflow-hidden py-16 sm:py-20 px-4 md:px-8 bg-[#071713] text-white border-t border-white/10';
     section.innerHTML = `
       <div class="absolute -top-28 -left-20 w-80 h-80 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
@@ -204,8 +197,65 @@
     new MutationObserver(sync).observe(container, { childList: true });
   }
 
+  // Reuse the same controls and listeners; desktop returns to its original DOM order.
+  function arrangeMobileWelcome() {
+    const highlights = document.querySelector('.vl-highlights');
+    const copy = document.querySelector('.vl-welcome-copy');
+    const music = document.getElementById('welcomeMusicToggle');
+    const menu = document.getElementById('mobileMenu');
+    const updates = document.querySelector('.vl-mobile-updates');
+    const recommendation = document.getElementById('nowRecommendationBtn');
+    if (!updates || !recommendation) return;
+    const recommendationHome = document.createComment('recommendation desktop position');
+    recommendation.before(recommendationHome);
+    if (!highlights || !copy || !music || !menu) return;
+    const highlightsHome = document.createComment('highlights desktop position');
+    const musicHome = document.createComment('music desktop position');
+    highlights.before(highlightsHome);
+    music.before(musicHome);
+    const mobile = window.matchMedia('(max-width: 760px)');
+    const arrange = () => {
+      if (mobile.matches) {
+        updates.append(highlights, recommendation);
+        menu.append(music);
+      } else {
+        highlightsHome.after(highlights);
+        recommendationHome.after(recommendation);
+        updates.open = false;
+        musicHome.after(music);
+      }
+    };
+    arrange();
+    mobile.addEventListener('change', arrange);
+  }
+
+  function keepBrowsingControlsClear() {
+    if (!('IntersectionObserver' in window)) return;
+    const visible = new Set();
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => entry.isIntersecting ? visible.add(entry.target) : visible.delete(entry.target));
+      document.body.classList.toggle('vl-browsing-visible', visible.size > 0);
+    });
+    ['categorias', 'mapa'].forEach(id => {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+  }
+
+  function syncSectionScrollOffset() {
+    const navigation = document.querySelector('nav.glass-nav.sticky');
+    if (!navigation) return;
+    const sync = () => document.documentElement.style.setProperty('--vl-navigation-offset', Math.ceil(navigation.getBoundingClientRect().height + 16) + 'px');
+    sync();
+    if ('ResizeObserver' in window) new ResizeObserver(sync).observe(navigation);
+    else window.addEventListener('resize', sync, { passive: true });
+  }
+
   function initResponsiveNavigation() {
+    syncSectionScrollOffset();
     createMobileQuickRoute();
+    keepBrowsingControlsClear();
+    arrangeMobileWelcome();
     createDesktopExploreMenu();
     renderMesaTuristicaSpotlight();
     renderPrincipalSponsors();

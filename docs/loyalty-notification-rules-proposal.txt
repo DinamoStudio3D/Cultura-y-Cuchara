@@ -1,0 +1,41 @@
+// PROPOSAL ONLY — NOT included in deployed firestore.rules.
+// Must be reviewed and tested with the existing helpers in an isolated emulator.
+// Backend writes inbox/outbox; merchant cannot read full private customer profiles.
+match /loyaltyFollows/{followId} {
+  allow read: if isViveLojaAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+  allow create: if request.auth != null
+    && request.resource.data.keys().hasOnly(['userId','placeId','active','inAppConsent','pushConsent','consentVersion','createdAt','updatedAt'])
+    && followId == request.auth.uid + '_' + request.resource.data.placeId
+    && request.resource.data.userId == request.auth.uid
+    && request.resource.data.placeId is string
+    && request.resource.data.placeId.size() <= 128
+    && exists(/databases/$(database)/documents/loyaltyPrograms/$(request.resource.data.placeId))
+    && request.resource.data.active is bool
+    && request.resource.data.inAppConsent is bool
+    && request.resource.data.pushConsent is bool
+    && request.resource.data.consentVersion == 1
+    && request.resource.data.createdAt == request.time
+    && request.resource.data.updatedAt == request.time;
+  allow update: if request.auth != null && resource.data.userId == request.auth.uid
+    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['active','inAppConsent','pushConsent','updatedAt'])
+    && request.resource.data.active is bool
+    && request.resource.data.inAppConsent is bool
+    && request.resource.data.pushConsent is bool
+    && request.resource.data.updatedAt == request.time;
+  allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+}
+match /loyaltyCampaigns/{campaignId} {
+  allow read: if isViveLojaAdmin() || isAssignedVisitMerchant(resource.data.placeId);
+  // Creation, publication and scheduling through authenticated backend only.
+  allow write: if false;
+}
+match /loyaltyInbox/{messageId} {
+  allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+  allow update: if request.auth != null && resource.data.userId == request.auth.uid
+    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt'])
+    && request.resource.data.readAt == request.time;
+  allow create, delete: if false;
+}
+match /loyaltyNotificationOutbox/{deliveryId} { allow read, write: if false; }
+// Token storage behind authenticated backend; never expose tokens to a merchant.
+match /loyaltyPushDevices/{deviceId} { allow read, write: if false; }

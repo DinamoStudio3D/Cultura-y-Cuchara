@@ -8,6 +8,10 @@
   ],
   "rewrites": [
     {
+      "source": "/canton/:canton",
+      "destination": "/api/categoria-seo?canton=:canton"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
     },

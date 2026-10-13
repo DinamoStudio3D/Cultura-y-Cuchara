@@ -34,7 +34,7 @@ if (!failed) {
     ['Portal usa límite dinámico de galería', (t) => t.includes('maxGalleryImages')],
     ['Portal conserva URLs HTTPS externas', (t) => /https?:\/\//.test(t)],
     ['Portal solicita firma segura a la API', (t) => t.includes("/api/sign-merchant-image")],
-    ['Portal limpia imágenes solo después del guardado', (t) => t.includes('cleanupAfterSave') && t.includes('/api/delete-merchant-image')]
+    ['Portal limpia imágenes solo después del guardado', (t) => t.includes('js/merchant-image-cleanup.js') && t.indexOf("await db.collection('locales').doc(id).update(data)") >= 0 && t.indexOf('cleanupAfterSave') > t.indexOf("await db.collection('locales').doc(id).update(data)")]
   ]);
 
   const plans = requireText('js/subscription-plan-config.js', [
@@ -51,13 +51,13 @@ if (!failed) {
   ]);
 
   const cleanup = requireText('js/merchant-image-cleanup.js', [
-    ['Cleanup restringe a carpeta VisitaLoja del negocio', (t) => t.includes('visitaloja/places/')],
+    ['Cleanup delega el borrado a la API autenticada', (t) => t.includes('/api/delete-merchant-image') && t.includes('Bearer ')],
     ['Cleanup no trata cualquier URL externa como propia', (t) => t.includes('cloudinary') || t.includes('Cloudinary')]
   ]);
 
   requireText('api/delete-merchant-image.js', [
     ['API de borrado exige owner', (t) => t.includes('owner')],
-    ['API de borrado valida el publicId solicitado', (t) => t.includes('publicId')]
+    ['API de borrado restringe carpeta, parada y propósito', (t) => t.includes('visitaloja/places/${placeId}/${purpose}/') && t.includes('publicId.startsWith(expected)')]
   ]);
 
   // Evita que futuras ediciones vuelvan a un límite fijo de seis en el portal.
