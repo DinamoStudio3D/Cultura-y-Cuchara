@@ -126,3 +126,60 @@ nav.glass-nav.sticky { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(
    #inicio.vl-welcome #heroTitle { font-size:clamp(34px,9vw,52px)!important; }
  }
 }
+
+/* V232: genuine split-layout home hero; keep existing content, translations and admin images. */
+@media (min-width: 1024px) {
+ #inicio.vl-welcome { background:#f1f6fb!important; }
+ #inicio.vl-welcome .vl-welcome-shell {
+   display:grid!important;
+   grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)!important;
+   gap:clamp(24px,4vw,70px)!important;
+   align-items:stretch!important;
+   min-height:680px!important;
+   max-width:1560px!important;
+   margin-inline:auto!important;
+   padding:clamp(34px,5vw,72px) clamp(26px,5vw,80px)!important;
+ }
+ #inicio.vl-welcome .vl-welcome-copy {
+   grid-column:1!important;
+   align-self:center!important;
+   max-width:650px!important;
+   padding:20px 0!important;
+   --vl-text:#15324f;--vl-muted:#435c76;--vl-accent:#075bb2;
+   color:#15324f!important;
+ }
+ #inicio.vl-welcome #heroTitle {
+   color:#102e4e!important;
+   text-shadow:none!important;
+   font-size:clamp(48px,4.7vw,76px)!important;
+ }
+ #inicio.vl-welcome #heroSubtitle { color:#435c76!important;text-shadow:none!important; }
+ #inicio.vl-welcome .vl-welcome-visual {
+   position:relative!important;
+   grid-column:2!important;
+   grid-row:1!important;
+   inset:auto!important;
+   min-height:580px!important;
+   height:100%!important;
+   border-radius:32px!important;
+   overflow:hidden!important;
+   box-shadow:0 24px 65px rgba(12,43,77,.19)!important;
+ }
+ #inicio.vl-welcome .vl-welcome-visual::after {
+   background:linear-gradient(180deg,rgba(7,34,63,.04) 35%,rgba(7,34,63,.78) 100%)!important;
+ }
+ #inicio.vl-welcome .vl-welcome-photo-top {top:22px!important;right:22px!important;}
+ #inicio.vl-welcome .vl-welcome-photo-caption {right:22px!important;bottom:22px!important;}
+ #inicio.vl-welcome .vl-welcome-actions > :is(a,button) {
+   background:#123b66!important;color:#fff!important;border-color:#123b66!important;
+ }
+ #inicio.vl-welcome .vl149-category-link {
+   background:#e0eef9!important;color:#123b66!important;border-color:#c2d9ee!important;
+ }
+ #inicio.vl-welcome #heroBadge {
+   background:#dcecf9!important;color:#123b66!important;border-color:#b9d6ec!important;
+ }
+}
+@media (min-width: 761px) and (max-width: 1023px) {
+ #inicio.vl-welcome .vl-welcome-shell {min-height:620px!important;}
+}
