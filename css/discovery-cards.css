@@ -40,3 +40,32 @@ body[data-card-style="soft"] #establecimientos #localesGrid > .local-item:not(.h
 @media(prefers-reduced-motion:reduce){#categorias #exploreCategoryGrid > button,#establecimientos #localesGrid > .local-item:not(.hidden-item){transition:none!important;transform:none!important}}
 
 }
+
+/* V232: more legible, consistent discovery cards without overriding admin card styles. */
+@layer vl-layout {
+ #establecimientos #localesGrid > .local-item:not(.hidden-item) {
+   min-width:0;
+   overflow:hidden;
+ }
+ #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl-card-content {
+   display:flex;
+   flex-direction:column;
+   min-width:0;
+ }
+ #establecimientos #localesGrid > .local-item:not(.hidden-item) :is(.local-desc,.vl-card-content h3) {
+   overflow-wrap:anywhere;
+ }
+ #establecimientos #localesGrid > .local-item:not(.hidden-item) :is(a,button):focus-visible,
+ #categorias #exploreCategoryGrid > button:focus-visible {
+   outline:3px solid #075bb2 !important;
+   outline-offset:3px;
+ }
+ @media(max-width:639px) {
+   #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl-card-content {
+     padding:18px !important;
+   }
+   #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl-card-explore {
+     min-height:46px;
+   }
+ }
+}
