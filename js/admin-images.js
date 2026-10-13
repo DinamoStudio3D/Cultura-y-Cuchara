@@ -20,7 +20,7 @@
     const upload = existingButton ? $(existingButton) : document.createElement('button');
     const notice = existingStatus ? $(existingStatus) : document.createElement('p');
     const stop = document.createElement('button'), image = document.createElement('img');
-    const hint = group === 'events' ? 'JPG, PNG o WebP · máximo 5 MB. Guarda el evento para publicar el afiche.' : 'JPG, PNG o WebP · máximo 20 MB. Guardar punto publica la fotografía.';
+    const hint = group === 'events' ? 'JPG, PNG o WebP · máximo 5 MB. Guarda el evento para publicar el afiche.' : group === 'qr' ? 'JPG, PNG o WebP · máximo 20 MB. Guarda el QR para publicar el menú.' : 'JPG, PNG o WebP · máximo 20 MB. Guardar punto publica la fotografía.';
     if (!existingFile) {
       file.type = 'file'; file.id = id+'File'; file.accept = 'image/jpeg,image/png,image/webp'; file.className = 'field';
       file.setAttribute('aria-label', 'Elegir '+(id === 'timePast' ? 'fotografía antigua' : 'fotografía actual'));
@@ -63,7 +63,7 @@
       let timedOut = false;
       const timer = setTimeout(() => { timedOut = true; job.controller.abort(); }, 150000);
       try {
-        notice.textContent = 'Optimizando fotografía…';
+        notice.textContent = group === 'qr' ? 'Optimizando imagen del menú…' : 'Optimizando fotografía…';
         const optimized = await root.VisitaLojaImageCompressor.compressImageClientSide(selected, root.VisitaLojaImageConfig.CONFIG.compression);
         job.controller.signal.throwIfAborted();
         notice.textContent = 'Autorizando subida…';
@@ -73,10 +73,10 @@
         const authorization = await response.json().catch(() => ({}));
         if (!response.ok) throw Error(authorization.error || 'No se pudo autorizar la fotografía (HTTP '+response.status+').');
         job.controller.signal.throwIfAborted();
-        notice.textContent = 'Subiendo fotografía a Cloudinary…';
+        notice.textContent = group === 'qr' ? 'Subiendo menú a Cloudinary…' : 'Subiendo fotografía a Cloudinary…';
         const result = await root.VisitaLojaCloudinaryUploader.uploadSignedImage(optimized.blob, authorization, {filename:id+'-'+Date.now()+'.webp',signal:job.controller.signal});
         job.controller.signal.throwIfAborted();
-        if (job.target !== $(group === 'time' ? 'timeEditIdSecure' : 'generalEventEditId')?.value) throw Object.assign(Error('Subida cancelada.'), {name:'AbortError'});
+        if (job.target !== $(group === 'time' ? 'timeEditIdSecure' : group === 'qr' ? 'qrEditId' : 'generalEventEditId')?.value) throw Object.assign(Error('Subida cancelada.'), {name:'AbortError'});
         field.value = result.url;
         field.dispatchEvent(new Event('input', {bubbles:true}));
         if (typeof setAdminUnsavedChanges === 'function') setAdminUnsavedChanges(true);
