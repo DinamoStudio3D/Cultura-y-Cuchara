@@ -72,3 +72,26 @@ nav.glass-nav.sticky { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(
  #inicio #heroBadge { width:fit-content; max-width:100%; padding:8px 12px; border:1px solid #c2e8ff40; border-radius:10px; line-height:1.5; }
  #splash-screen .vl197-loading-eyebrow { width:fit-content; margin-inline:auto !important; padding:7px 12px; border:1px solid #c2e8ff40; border-radius:10px; line-height:1.5; }
 }
+
+/* V232: legibility and touch accessibility across the public navigation. */
+@layer vl-colors {
+  nav.glass-nav.sticky :is(a, button):focus-visible,
+  #mobileMenu :is(a, button):focus-visible {
+    outline: 3px solid #f2bd79 !important;
+    outline-offset: 3px;
+  }
+  #inicio .vl-welcome-copy :is(a, button):focus-visible {
+    outline: 3px solid #075bb2 !important;
+    outline-offset: 3px;
+  }
+}
+@layer vl-layout {
+  #mobileMenu :is(a, button) { min-height: 44px; }
+  #mobileMenu { overscroll-behavior: contain; }
+  @media (max-width: 760px) {
+    #mobileMenu { max-height: min(70dvh, 560px); overflow-y: auto; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  nav.glass-nav.sticky { scroll-behavior: auto; }
+}
