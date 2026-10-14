@@ -639,6 +639,7 @@
 #inicio .vl-hero-carousel-controls{z-index:999!important;bottom:24px!important;box-shadow:0 12px 40px #0009!important;background:rgba(8,25,35,.86)!important}#inicio .vl-hero-carousel-controls>button{background:#ffffff2b!important;color:#fff!important}#inicio .vl-hero-carousel-dots button{background:#ffffffa0!important}#inicio .vl-hero-carousel-dots button[aria-current="true"]{background:#ffcc75!important}#inicio .vl-welcome-visual{pointer-events:auto!important}#inicio #heroBgWrapper{pointer-events:none!important}
 #inicio .vl-welcome-visual{overflow:visible!important}#inicio .vl-hero-carousel-controls{position:absolute!important;left:auto!important;right:clamp(20px,5vw,72px)!important;bottom:32px!important;transform:none!important;display:flex!important;visibility:visible!important;opacity:1!important;z-index:9999!important}#inicio .vl-hero-carousel-controls[hidden]{display:flex!important}#inicio .vl-hero-carousel-dots:empty:after{content:"●  ●  ●  ●  ●";color:#f8d49b;font-size:14px;letter-spacing:4px}#inicio .vl-hero-carousel-controls>button{border:1px solid #ffffffaa!important}#inicio .vl-welcome-visual:after{pointer-events:none!important}@media(max-width:800px){#inicio .vl-hero-carousel-controls{right:16px!important;bottom:16px!important}}
 </style>
+<style id="vl-hero-editorial-feature-style">#inicio .vl-hero-carousel-controls{display:none!important}#inicio .vl-hero-editorial-feature{position:absolute;z-index:8;top:43%;right:5%;transform:translateY(-50%);width:330px;display:flex;align-items:center;gap:15px;padding:13px;border-radius:20px;border:1px solid #ffffff65;background:#071c2bd9;backdrop-filter:blur(14px);box-shadow:0 20px 60px #0007;text-decoration:none!important;pointer-events:auto!important}#inicio .vl-hero-editorial-feature img{width:106px;height:114px;object-fit:cover;border-radius:12px}#inicio .vl-hero-editorial-feature span{display:flex;flex-direction:column;gap:9px}#inicio .vl-hero-editorial-feature small{color:#f5cf8f!important;font-weight:800;letter-spacing:.13em;font-size:10px}#inicio .vl-hero-editorial-feature strong{color:#fff!important;font-size:20px;line-height:1.2}#inicio .vl-hero-editorial-feature em{color:#f8dcae!important;font-size:12px;font-style:normal;font-weight:700}#inicio .vl-hero-editorial-feature:focus-visible{outline:3px solid #f5cf8f}@media(max-width:1100px){#inicio .vl-hero-editorial-feature{top:auto;bottom:100px;right:24px;transform:none}}@media(max-width:800px){#inicio .vl-hero-editorial-feature{display:none!important}}</style>
     <!-- Visitor welcome: configured photography and direct search -->
     <section id="inicio" data-vl-surface="light" class="vl-welcome">
       <div class="vl-welcome-shell">
@@ -656,8 +657,7 @@
         </div>
         <div class="vl-welcome-visual">
           <div id="heroBgWrapper"><div aria-hidden="true"></div><div id="heroSlidesContainer"><img class="hero-slide active-slide" src="assets/photos/centro-loja-torre-reloj.webp" alt="Fotografía 1 de Loja por Geovanny Muñoz" decoding="async" fetchpriority="high"><img class="hero-slide" src="assets/photos/jipiro-laguna.webp" alt="Fotografía 2 de Loja por Geovanny Muñoz" decoding="async" loading="lazy"><img class="hero-slide" src="assets/photos/eolicas-atardecer-panoramica.webp" alt="Fotografía 3 de Loja por Geovanny Muñoz" decoding="async" loading="lazy"><img class="hero-slide" src="assets/photos/atardecer-loja.webp" alt="Fotografía 4 de Loja por Geovanny Muñoz" decoding="async" loading="lazy"><img class="hero-slide" src="assets/photos/jipiro-pagoda-laguna.webp" alt="Fotografía 5 de Loja por Geovanny Muñoz" decoding="async" loading="lazy"></div></div>
-          <div id="vl-hero-carousel-controls" class="vl-hero-carousel-controls" aria-label="Fotografías de la portada"><button type="button" id="vl-hero-carousel-prev" aria-label="Fotografía anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button><div id="vl-hero-carousel-dots" class="vl-hero-carousel-dots" aria-label="Seleccionar fotografía"></div><button type="button" id="vl-hero-carousel-next" aria-label="Fotografía siguiente"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button></div>
-          <div class="vl-welcome-photo-top"><span class="vl-welcome-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> LOJA · ECUADOR</span><div id="heroLogoFrame"><img id="heroLogoImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Visita Loja" decoding="async" style="visibility:hidden"></div></div>
+          
           <div class="vl-mobile-intro" data-vl-surface="dark"><h1 data-i18n="mobileWelcomeTitle">Loja te espera.</h1><p data-i18n="mobileWelcomeDesc">Sabores, cultura y nuevas historias por descubrir.</p></div>
           <div class="vl-welcome-photo-caption" data-vl-surface="dark"><span data-i18n="welcomePhotoKicker">TU PRÓXIMA HISTORIA EMPIEZA AQUÍ</span><strong data-i18n="welcomePhotoTitle">Loja, a tu ritmo.</strong><button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()"><span data-i18n="welcomeNow">¿Qué hacer ahora?</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></button></div>
         </div>
@@ -4484,51 +4484,16 @@
                 });
 
                 if (heroSlideshowInterval) { clearInterval(heroSlideshowInterval); heroSlideshowInterval = null; }
-                const controls = document.getElementById('vl-hero-carousel-controls');
-                const dots = document.getElementById('vl-hero-carousel-dots');
-                const previous = document.getElementById('vl-hero-carousel-prev');
-                const next = document.getElementById('vl-hero-carousel-next');
                 const slides = Array.from(slidesContainer.querySelectorAll('.hero-slide'));
-                const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 let currentIndex = 0;
-                const intervalMs = Math.max(3, Math.min(20, parseInt(s.heroIntervalSeconds, 10) || 6)) * 1000;
-                const goTo = (index) => {
-                    if (!slides.length) return;
-                    currentIndex = (index + slides.length) % slides.length;
-                    slides.forEach((img, i) => {
-                        img.classList.toggle('active-slide', i === currentIndex);
-                        img.setAttribute('aria-hidden', i === currentIndex ? 'false' : 'true');
-                    });
-                    dots?.querySelectorAll('button').forEach((dot, i) => {
-                        dot.setAttribute('aria-current', i === currentIndex ? 'true' : 'false');
-                        dot.setAttribute('aria-label', 'Mostrar fotografía ' + (i + 1) + ' de ' + slides.length);
-                    });
-                };
-                const stop = () => { if (heroSlideshowInterval) { clearInterval(heroSlideshowInterval); heroSlideshowInterval = null; } };
-                const start = () => {
-                    stop();
-                    if (slides.length > 1 && !reduceMotion && !isLowDataMode() && !document.hidden)
-                        heroSlideshowInterval = setInterval(() => goTo(currentIndex + 1), intervalMs);
-                };
-                if (controls && dots) {
-                    controls.hidden = slides.length <= 1;
-                    dots.replaceChildren();
-                    slides.forEach((_, i) => {
-                        const dot = document.createElement('button');
-                        dot.type = 'button';
-                        dot.addEventListener('click', () => { goTo(i); start(); });
-                        dots.appendChild(dot);
-                    });
-                    previous.onclick = () => { goTo(currentIndex - 1); start(); };
-                    next.onclick = () => { goTo(currentIndex + 1); start(); };
-                    controls.onmouseenter = stop;
-                    controls.onmouseleave = start;
-                    controls.onfocusin = stop;
-                    controls.onfocusout = (e) => { if (!controls.contains(e.relatedTarget)) start(); };
-                    document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else start(); }, {once:false});
+                if (slides.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !isLowDataMode()) {
+                    heroSlideshowInterval = setInterval(() => {
+                        if (document.hidden) return;
+                        slides[currentIndex].classList.remove('active-slide');
+                        currentIndex = (currentIndex + 1) % slides.length;
+                        slides[currentIndex].classList.add('active-slide');
+                    }, Math.max(5, parseInt(s.heroIntervalSeconds, 10) || 7) * 1000);
                 }
-                goTo(0);
-                start();
             }
 
             if (s.latestYoutubeTitle) {
@@ -8665,38 +8630,6 @@ function vl29CloseMenus(){document.querySelectorAll('.vl29-nav-group>button[aria
 function vl29ToggleMenu(button){var wasOpen=button.getAttribute('aria-expanded')==='true';vl29CloseMenus();if(!wasOpen){button.setAttribute('aria-expanded','true');var p=document.getElementById(button.getAttribute('aria-controls'));if(p)p.hidden=false;}}
 document.addEventListener('click',function(e){if(e.target.closest('.vl29-dropdown a'))vl29CloseMenus();else if(!e.target.closest('.vl29-nav-group'))vl29CloseMenus();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMenus();});
-</script>
-<style id="vl-carousel-visibility-fix">
-#inicio .vl-hero-carousel-controls{position:absolute!important;z-index:2147480000!important;right:24px!important;left:auto!important;bottom:28px!important;display:flex!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;background:#091f2aee!important;border:2px solid #f4c16f!important;padding:12px 16px!important;transform:none!important}
-#inicio .vl-hero-carousel-controls button{pointer-events:auto!important;color:white!important}
-#inicio .vl-hero-carousel-controls button:focus-visible{outline:3px solid #f7cb80!important}
-#inicio .vl-hero-carousel-controls[hidden]{display:flex!important}
-#inicio .vl-welcome-visual{pointer-events:auto!important;overflow:visible!important}
-#inicio #heroBgWrapper{pointer-events:none!important}
-#inicio #heroSlidesContainer .hero-slide{transition:opacity .9s ease!important}
-</style>
-<script id="vl-carousel-verified-controller">
-(function(){
- const files=['centro-loja-torre-reloj.webp','jipiro-laguna.webp','eolicas-atardecer-panoramica.webp','atardecer-loja.webp','jipiro-pagoda-laguna.webp'];
- const start=()=>{
-   const container=document.getElementById('heroSlidesContainer'),bar=document.getElementById('vl-hero-carousel-controls'),dots=document.getElementById('vl-hero-carousel-dots');
-   if(!container||!bar||!dots)return;
-   // Carrusel de portada independiente del contenido guardado en Firebase.
-   const srcs=files.map(f=>'assets/photos/'+f);
-   container.replaceChildren(...srcs.map((src,i)=>{const img=document.createElement('img');img.className='hero-slide'+(i===0?' active-slide':'');img.src=src;img.alt='Loja, fotografía '+(i+1)+' de Geovanny Muñoz';img.decoding='async';img.loading=i===0?'eager':'lazy';return img;}));
-   let current=0,timer;
-   const render=i=>{current=(i+files.length)%files.length;container.querySelectorAll('img').forEach((img,j)=>img.classList.toggle('active-slide',j===current));dots.querySelectorAll('button').forEach((btn,j)=>btn.setAttribute('aria-current',String(j===current)));};
-   const restart=()=>{clearInterval(timer);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)timer=setInterval(()=>{if(!document.hidden)render(current+1)},6000)};
-   dots.replaceChildren(...files.map((_,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Mostrar fotografía '+(i+1));b.onclick=()=>{render(i);restart()};return b}));
-   document.getElementById('vl-hero-carousel-prev').onclick=()=>{render(current-1);restart()};
-   document.getElementById('vl-hero-carousel-next').onclick=()=>{render(current+1);restart()};
-   bar.hidden=false;render(0);restart();
-   // El editor antiguo también actualiza la portada: mantener este carrusel como fuente visual.
-   const observer=new MutationObserver(()=>{const imgs=Array.from(container.querySelectorAll('img'));if(imgs.length!==files.length||imgs.some((img,i)=>!img.getAttribute('src')?.endsWith(files[i]))){observer.disconnect();start();}});
-   observer.observe(container,{childList:true,subtree:false,attributes:false});
- };
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,500),{once:true});else setTimeout(start,500);
-})();
 </script>
 </body>
 </html>
