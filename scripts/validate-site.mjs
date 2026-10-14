@@ -562,6 +562,15 @@ assert(seoBusiness.includes('id="seoStructuredData"') && seoBusiness.includes('h
 assert(seoBusiness.includes('id="seoTwitterTitle"') && seoBusiness.includes('id="seoTwitterDescription"') && seoBusiness.includes('id="seoTwitterImage"'), 'Las fichas actualizan metadatos completos para Twitter/X');
 
 
+
+const qrViewer = read('menu-digital.html');
+assert(qrViewer.includes("collection('qrCodes').doc(id).get()") && qrViewer.includes('data.menuImageUrl'), 'El QR conserva el menú publicado desde Firestore');
+assert(qrViewer.includes("timeZone:'America/Guayaquil'") && qrViewer.includes('todayEcuador>=start') && qrViewer.includes('todayEcuador<=expiry'), 'Los beneficios QR respetan fechas de suscripción en Ecuador');
+assert(qrViewer.includes('activeBenefits?(data.menuBenefits||{}):{}'), 'La suscripción inactiva oculta beneficios opcionales sin bloquear el menú');
+assert(qrViewer.includes('benefits.logo===true') && qrViewer.includes('benefits.whatsapp===true') && qrViewer.includes('benefits.instagram===true'), 'Logo, WhatsApp e Instagram solo se muestran cuando están habilitados');
+assert(qrViewer.includes("collection('qrMenuViews').add("), 'El visor registra visualizaciones anónimas del menú');
+assert(index.includes('menu-digital.html?id=') && index.includes('location.replace'), 'El QR redirige directamente al visor aprobado sin pasar por otra portada');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
