@@ -571,6 +571,13 @@ assert(qrViewer.includes('benefits.logo===true') && qrViewer.includes('benefits.
 assert(qrViewer.includes("collection('qrMenuViews').add("), 'El visor registra visualizaciones anónimas del menú');
 assert(index.includes('menu-digital.html?id=') && index.includes('location.replace'), 'El QR redirige directamente al visor aprobado sin pasar por otra portada');
 
+// Execute the QR subscription regression suite as part of the existing CI validator.
+const { spawnSync } = await import('node:child_process');
+const qrSubscriptionTests = spawnSync(process.execPath, ['--test', 'scripts/test-qr-subscription-plan-consistency.mjs'], { encoding: 'utf8' });
+if (qrSubscriptionTests.stdout) process.stdout.write(qrSubscriptionTests.stdout);
+if (qrSubscriptionTests.stderr) process.stderr.write(qrSubscriptionTests.stderr);
+assert(qrSubscriptionTests.status === 0, 'Pruebas de planes, vigencia y sincronización QR');
+
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
     process.exit(1);
