@@ -727,6 +727,14 @@
 #inicio.vl-welcome #heroTitle,#inicio.vl-welcome #heroSubtitle{color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.35)!important}
 @media(max-width:800px){#inicio.vl-welcome::after{background:linear-gradient(90deg,rgba(3,22,40,.91),rgba(5,34,57,.66) 65%,rgba(5,34,57,.48)),linear-gradient(0deg,rgba(3,20,36,.55),transparent 55%)!important}}
 </style>
+<style id="vl-carousel-overlay-direct-v2">
+/* Filtro aplicado directamente sobre la misma capa que contiene las fotografías. */
+#inicio .vl-visible-photo-carousel{isolation:isolate!important}
+#inicio .vl-visible-photo-carousel::after{content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:10!important;opacity:1!important;visibility:visible!important;pointer-events:none!important;background:linear-gradient(90deg,rgba(3,21,43,.96) 0%,rgba(4,31,57,.91) 30%,rgba(6,38,66,.73) 60%,rgba(6,41,69,.48) 100%)!important}
+#inicio .vl-visible-photo-carousel img{z-index:1!important}
+#inicio .vl-visible-photo-carousel img.is-current{z-index:2!important}
+@media(max-width:800px){#inicio .vl-visible-photo-carousel::after{background:linear-gradient(90deg,rgba(3,21,43,.94),rgba(4,31,57,.75) 65%,rgba(6,41,69,.60))!important}}
+</style>
 <section id="inicio" data-vl-surface="light" class="vl-welcome">
       <div class="vl-welcome-shell">
         <div class="vl-welcome-copy">
