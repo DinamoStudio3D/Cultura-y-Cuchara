@@ -8666,5 +8666,37 @@ function vl29ToggleMenu(button){var wasOpen=button.getAttribute('aria-expanded')
 document.addEventListener('click',function(e){if(e.target.closest('.vl29-dropdown a'))vl29CloseMenus();else if(!e.target.closest('.vl29-nav-group'))vl29CloseMenus();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMenus();});
 </script>
+<style id="vl-carousel-visibility-fix">
+#inicio .vl-hero-carousel-controls{position:absolute!important;z-index:2147480000!important;right:24px!important;left:auto!important;bottom:28px!important;display:flex!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;background:#091f2aee!important;border:2px solid #f4c16f!important;padding:12px 16px!important;transform:none!important}
+#inicio .vl-hero-carousel-controls button{pointer-events:auto!important;color:white!important}
+#inicio .vl-hero-carousel-controls button:focus-visible{outline:3px solid #f7cb80!important}
+#inicio .vl-hero-carousel-controls[hidden]{display:flex!important}
+#inicio .vl-welcome-visual{pointer-events:auto!important;overflow:visible!important}
+#inicio #heroBgWrapper{pointer-events:none!important}
+#inicio #heroSlidesContainer .hero-slide{transition:opacity .9s ease!important}
+</style>
+<script id="vl-carousel-verified-controller">
+(function(){
+ const files=['centro-loja-torre-reloj.webp','jipiro-laguna.webp','eolicas-atardecer-panoramica.webp','atardecer-loja.webp','jipiro-pagoda-laguna.webp'];
+ const start=()=>{
+   const container=document.getElementById('heroSlidesContainer'),bar=document.getElementById('vl-hero-carousel-controls'),dots=document.getElementById('vl-hero-carousel-dots');
+   if(!container||!bar||!dots)return;
+   // Carrusel de portada independiente del contenido guardado en Firebase.
+   const srcs=files.map(f=>'assets/photos/'+f);
+   container.replaceChildren(...srcs.map((src,i)=>{const img=document.createElement('img');img.className='hero-slide'+(i===0?' active-slide':'');img.src=src;img.alt='Loja, fotografía '+(i+1)+' de Geovanny Muñoz';img.decoding='async';img.loading=i===0?'eager':'lazy';return img;}));
+   let current=0,timer;
+   const render=i=>{current=(i+files.length)%files.length;container.querySelectorAll('img').forEach((img,j)=>img.classList.toggle('active-slide',j===current));dots.querySelectorAll('button').forEach((btn,j)=>btn.setAttribute('aria-current',String(j===current)));};
+   const restart=()=>{clearInterval(timer);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)timer=setInterval(()=>{if(!document.hidden)render(current+1)},6000)};
+   dots.replaceChildren(...files.map((_,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Mostrar fotografía '+(i+1));b.onclick=()=>{render(i);restart()};return b}));
+   document.getElementById('vl-hero-carousel-prev').onclick=()=>{render(current-1);restart()};
+   document.getElementById('vl-hero-carousel-next').onclick=()=>{render(current+1);restart()};
+   bar.hidden=false;render(0);restart();
+   // El editor antiguo también actualiza la portada: mantener este carrusel como fuente visual.
+   const observer=new MutationObserver(()=>{const imgs=Array.from(container.querySelectorAll('img'));if(imgs.length!==files.length||imgs.some((img,i)=>!img.getAttribute('src')?.endsWith(files[i]))){observer.disconnect();start();}});
+   observer.observe(container,{childList:true,subtree:false,attributes:false});
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,500),{once:true});else setTimeout(start,500);
+})();
+</script>
 </body>
 </html>
