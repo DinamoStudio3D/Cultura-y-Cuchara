@@ -65,3 +65,24 @@ test('La validación se ejecuta antes de preparar los datos de guardado', () => 
   const payload = html.indexOf('const data={name,type,targetUrl,design,menuImageUrl:');
   assert.ok(guard >= 0 && guard < payload);
 });
+
+test('El visor conserva el menú aunque los extras no estén vigentes', () => {
+  const viewer = readFileSync(new URL('../menu-digital.html', import.meta.url), 'utf8');
+  const menuLoad = viewer.indexOf('url=data.menuImageUrl;');
+  const activeCheck = viewer.indexOf('const activeBenefits=');
+  const extras = viewer.indexOf('const benefits=activeBenefits?');
+  assert.ok(menuLoad >= 0 && menuLoad < activeCheck && activeCheck < extras);
+  assert.ok(viewer.includes("const benefits=activeBenefits?(data.menuBenefits||{}):{}"));
+});
+
+test('Vigencia QR: futura, vigente, último día y vencida en horario Ecuador', () => {
+  const viewer = readFileSync(new URL('../menu-digital.html', import.meta.url), 'utf8');
+  const snippet = viewer.match(/const activeBenefits=\(!start\|\|todayEcuador>=start\)&&\(!expiry\|\|todayEcuador<=expiry\);/);
+  assert.ok(snippet, 'El visor comprueba ambas fechas de manera inclusiva');
+  const active = new Function('start', 'expiry', 'todayEcuador', snippet[0] + 'return activeBenefits;');
+  assert.equal(active('2026-10-14', '2026-11-14', '2026-10-13'), false);
+  assert.equal(active('2026-10-13', '2026-11-14', '2026-10-13'), true);
+  assert.equal(active('2026-10-01', '2026-10-13', '2026-10-13'), true);
+  assert.equal(active('2026-10-01', '2026-10-12', '2026-10-13'), false);
+  assert.equal(active(null, null, '2026-10-13'), true);
+});
