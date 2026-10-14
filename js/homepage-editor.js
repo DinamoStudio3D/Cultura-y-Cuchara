@@ -133,6 +133,11 @@
           file.accept = "image/jpeg,image/png,image/webp";
           file.removeAttribute("maxlength");
           grid.append(upload);
+          const imageField = document.getElementById("home-" + b.id + "-imageUrl");
+          const locationHint = document.createElement("p");
+          locationHint.className = "text-sm text-sky-200 md:col-span-2";
+          locationHint.textContent = "Fotografía de: " + b.name + ". La vista previa aparece debajo. Tras subirla, pulsa Publicar para verla en la web.";
+          grid.append(locationHint);
           const remove = document.createElement("button");
           remove.type = "button";
           remove.className =
@@ -140,8 +145,9 @@
           remove.textContent = "Quitar fotografía";
           remove.addEventListener("click", () => {
             uploadJob?.controller.abort();
-            job.controller.signal.throwIfAborted();
-        document.getElementById("home-" + b.id + "-imageUrl").value = "";
+            const imageField = document.getElementById("home-" + b.id + "-imageUrl");
+            imageField.value = "";
+            imageField.dispatchEvent(new Event("input", { bubbles: true }));
             changed();
           });
           grid.append(remove);
