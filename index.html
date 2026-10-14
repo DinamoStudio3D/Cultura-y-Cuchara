@@ -695,6 +695,16 @@
 #inicio .vl-editorial-quicklinks{margin-top:14px!important}
 @media(max-width:800px){#inicio .vl-welcome-shell{min-height:690px!important;padding-top:85px!important;padding-bottom:35px!important}#inicio #heroTitle{font-size:clamp(3rem,10vw,4.4rem)!important}#inicio .vl-welcome-visual:after{background:linear-gradient(90deg,rgba(4,18,25,.85),rgba(4,18,25,.35)),linear-gradient(0deg,rgba(4,18,25,.6),transparent 65%)!important}}
 </style>
+<style id="vl-hero-image-layer-repair">
+/* Imagen visible en una capa propia, independiente del carrusel y de los fondos opacos heredados. */
+#inicio.vl-welcome{position:relative!important;isolation:isolate!important;background:#071b24!important}
+#inicio.vl-welcome::before{content:"";position:absolute!important;inset:0!important;display:block!important;background-image:url('/assets/photos/centro-loja-torre-reloj.webp')!important;background-position:center 42%!important;background-size:cover!important;background-repeat:no-repeat!important;opacity:1!important;visibility:visible!important;z-index:0!important;pointer-events:none!important}
+#inicio.vl-welcome::after{content:"";position:absolute!important;inset:0!important;display:block!important;background:linear-gradient(90deg,rgba(4,17,24,.88) 0%,rgba(4,17,24,.65) 40%,rgba(4,17,24,.06) 85%),linear-gradient(0deg,rgba(4,17,24,.30),transparent 55%)!important;z-index:1!important;pointer-events:none!important}
+#inicio .vl-welcome-shell{position:relative!important;z-index:2!important;background:transparent!important}
+#inicio .vl-welcome-visual{z-index:0!important;opacity:0!important;pointer-events:none!important}
+#inicio .vl-welcome-copy{z-index:3!important}
+@media(max-width:800px){#inicio.vl-welcome::after{background:linear-gradient(90deg,rgba(4,17,24,.85),rgba(4,17,24,.28)),linear-gradient(0deg,rgba(4,17,24,.45),transparent 60%)!important}}
+</style>
 <section id="inicio" data-vl-surface="light" class="vl-welcome">
       <div class="vl-welcome-shell">
         <div class="vl-welcome-copy">
