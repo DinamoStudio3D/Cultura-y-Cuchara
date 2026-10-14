@@ -483,18 +483,29 @@
       status.textContent = "Publicando…";
       try {
         if (!auth.currentUser) throw Error("Inicia sesión como administrador.");
-        await settingsRef.set(
-          {
-            homepageContent: data,
+        // Each editor owns only a subset of blocks. Preserve the other sections
+        // when publishing, using the latest server document to avoid overwrites.
+        let publishedContent;
+        await firebase.firestore().runTransaction(async (transaction) => {
+          const snapshot = await transaction.get(settingsRef);
+          const current = snapshot.exists ? snapshot.data() || {} : {};
+          const existing = current.homepageContent || {};
+          publishedContent = {
+            ...existing,
+            version: 1,
+            contactEmail: data.contactEmail !== undefined ? data.contactEmail : existing.contactEmail,
+            blocks: { ...(existing.blocks || {}), ...data.blocks },
+          };
+          transaction.set(settingsRef, {
+            homepageContent: publishedContent,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             updatedBy: auth.currentUser.email,
-          },
-          { merge: true },
-        );
+          }, { merge: true });
+        });
         dirty = false;
         if (typeof setAdminUnsavedChanges === "function")
           setAdminUnsavedChanges(editors.some((editor) => editor.isDirty()));
-        latestSettings = { ...latestSettings, homepageContent: data };
+        latestSettings = { ...latestSettings, homepageContent: publishedContent };
         status.textContent =
           "Publicado. El contenido se actualiza en la web sin otro despliegue.";
       } catch (error) {
