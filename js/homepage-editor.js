@@ -179,6 +179,13 @@
           file.accept = "image/jpeg,image/png,image/webp";
           file.removeAttribute("maxlength");
           grid.append(upload);
+          const uploadFeedback = document.createElement("p");
+          uploadFeedback.id = "home-" + b.id + "-upload-feedback";
+          uploadFeedback.className = "text-sm text-sky-200 md:col-span-2";
+          uploadFeedback.setAttribute("role", "status");
+          uploadFeedback.setAttribute("aria-live", "polite");
+          uploadFeedback.textContent = "Selecciona una imagen JPG, PNG o WebP. Espera la confirmación de subida antes de publicar.";
+          grid.append(uploadFeedback);
           const imageField = document.getElementById("home-" + b.id + "-imageUrl");
           const locationHint = document.createElement("p");
           locationHint.className = "text-sm text-sky-200 md:col-span-2";
@@ -320,13 +327,15 @@
     }
     async function uploadPhoto(b, input) {
       const file = input.files[0],
-        status = document.getElementById(statusId);
+        status = document.getElementById(statusId),
+        feedback = document.getElementById("home-" + b.id + "-upload-feedback");
       if (!file || uploadPending) return;
       if (
         !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
         !file.size || file.size > 15 * 1024 * 1024
       ) {
         status.textContent = "Usa JPG, PNG o WebP de hasta 15 MB.";
+        feedback.textContent = status.textContent;
         input.value = "";
         return;
       }
@@ -344,6 +353,7 @@
       try {
         if (!auth.currentUser) throw Error("Inicia sesión como administrador.");
         status.textContent = "Optimizando y subiendo fotografía…";
+        feedback.textContent = "Subiendo " + file.name + "… No cierres esta página.";
         const optimized =
           await window.VisitaLojaImageCompressor.compressImageClientSide(
             file,
@@ -377,12 +387,14 @@
         window.dispatchEvent(new Event("visitaloja:homepage-photo-updated"));
         status.textContent =
           "Fotografía subida. Publica los cambios para mostrarla en la web.";
+        feedback.textContent = "✓ " + file.name + " subida correctamente. Ahora pulsa Publicar para guardar el cambio.";
       } catch (error) {
         status.textContent = timedOut
           ? "La carga agotó el tiempo disponible. Puedes volver a intentarlo."
           : error.name === "AbortError"
             ? "Subida cancelada. No se asignó una fotografía nueva."
             : "No se pudo subir: " + error.message + " Puedes usar una dirección de imagen.";
+        feedback.textContent = status.textContent;
       } finally {
         clearTimeout(timer);
         cancelButton.classList.add("hidden");
