@@ -97,3 +97,13 @@ test('El visor vuelve a comprobar beneficios cuando cambia la fecha de Ecuador',
   assert.ok(viewer.includes('extras.hidden=!allowed||!extras.childElementCount'));
   assert.ok(viewer.includes('logoSlot.hidden=!allowed||!logoSlot.childElementCount'));
 });
+
+test('El visor detecta cambios publicados sin regenerar el QR', () => {
+  const viewer = readFileSync(new URL('../menu-digital.html', import.meta.url), 'utf8');
+  assert.ok(viewer.includes("const publishedSignature=d=>JSON.stringify("));
+  assert.ok(viewer.includes("doc(id).get({source:'server'})"));
+  assert.ok(viewer.includes('publishedSignature(latest.data())!==initialSignature'));
+  assert.ok(viewer.includes("window.addEventListener('focus',refreshPublishedMenu)"));
+  assert.ok(viewer.includes("document.addEventListener('visibilitychange',()=>"));
+  assert.ok(viewer.includes('if(latest.exists&&publishedSignature(latest.data())!==initialSignature)location.reload()'));
+});
