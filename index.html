@@ -1659,21 +1659,32 @@
       const panel=document.getElementById('vl-chabaquito-install');
       const accept=document.getElementById('vl-install-accept');
       if(!panel||!accept)return;
-      const key='vl-chabaquito-install-dismissed-v1';
+      const key='vl-chabaquito-install-dismissed-v2';
+      const forcePreview=new URLSearchParams(location.search).has('probarInstalacion');
       let deferredPrompt=null;
-      const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches||window.navigator.standalone===true;\n      const installed=()=>standalone()||Boolean(window.getInstalledRelatedApps&&window.__vlKnownInstalledApp);\n      if('getInstalledRelatedApps' in navigator){navigator.getInstalledRelatedApps().then(apps=>{if(apps&&apps.length){window.__vlKnownInstalledApp=true;panel.classList.remove('vl-install-visible')}}).catch(()=>{})}
+      let knownInstalled=false;
+      const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
       const dismissed=()=>{try{return localStorage.getItem(key)==='1'}catch(e){return false}};
-      const close=()=>{panel.classList.remove('vl-install-visible');try{localStorage.setItem(key,'1')}catch(e){}};
-      document.getElementById('vl-install-close').addEventListener('click',close);
-      document.getElementById('vl-install-later').addEventListener('click',close);
+      const hide=(remember=true)=>{panel.classList.remove('vl-install-visible');if(remember){try{localStorage.setItem(key,'1')}catch(e){}}};
+      const show=()=>{if(!standalone()&&!knownInstalled&&(forcePreview||!dismissed()))panel.classList.add('vl-install-visible')};
+      document.getElementById('vl-install-close').addEventListener('click',()=>hide());
+      document.getElementById('vl-install-later').addEventListener('click',()=>hide());
       window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
-      window.addEventListener('appinstalled',()=>{window.__vlKnownInstalledApp=true;close()});
+      window.addEventListener('appinstalled',()=>{knownInstalled=true;hide()});
       accept.addEventListener('click',async()=>{
-        if(deferredPrompt){const p=deferredPrompt;deferredPrompt=null;try{await p.prompt();const result=await p.userChoice;if(result&&result.outcome==='accepted')close()}catch(e){}return}
+        if(deferredPrompt){const p=deferredPrompt;deferredPrompt=null;try{await p.prompt();const result=await p.userChoice;if(result&&result.outcome==='accepted'){knownInstalled=true;hide()}}catch(e){}return}
         if(typeof window.requestVisitaLojaInstall==='function'){try{await window.requestVisitaLojaInstall()}catch(e){}}
-        else{accept.textContent=/iPad|iPhone|iPod/.test(navigator.userAgent)?'Compartir → Añadir a inicio':'Menú del navegador → Instalar aplicación';}
+        else{accept.textContent=/iPad|iPhone|iPod/.test(navigator.userAgent)?'Compartir → Añadir a inicio':'Menú → Instalar aplicación'}
       });
-      window.addEventListener('load',()=>{setTimeout(async()=>{if(installed()||dismissed()||document.visibilityState!=='visible')return;if('getInstalledRelatedApps' in navigator){try{const apps=await navigator.getInstalledRelatedApps();if(apps&&apps.length)return}catch(e){}}if(!installed())panel.classList.add('vl-install-visible')},3000)},{once:true});
+      const initialize=async()=>{
+        if(standalone())return;
+        if('getInstalledRelatedApps' in navigator){
+          try{const apps=await Promise.race([navigator.getInstalledRelatedApps(),new Promise(resolve=>setTimeout(()=>resolve([]),1000))]);if(Array.isArray(apps)&&apps.some(app=>app.platform==='webapp' || app.platform==='play')){knownInstalled=true;return}}catch(e){}
+        }
+        setTimeout(show,3000);
+      };
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});
+      else initialize();
     })();
     </script>
     <!-- Mascota animada de Visita Loja -->
