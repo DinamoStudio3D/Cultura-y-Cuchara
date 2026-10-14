@@ -1633,7 +1633,7 @@
 
     <!-- Invitación discreta de Chabaquito para instalar la aplicación -->
     <style id="vl-chabaquito-install-style">
-      #vl-chabaquito-install{position:fixed;right:clamp(12px,3vw,34px);bottom:clamp(14px,3vw,32px);z-index:2147482000;width:min(410px,calc(100vw - 24px));padding:18px;display:none;gap:14px;align-items:center;background:#fffdf7!important;color:#18332f!important;border:1px solid #d7dfd6;border-radius:23px;box-shadow:0 22px 70px #071e1b55;text-align:left}
+      #vl-chabaquito-install{position:fixed;right:clamp(12px,3vw,34px);bottom:clamp(14px,3vw,32px);z-index:2147482000;width:min(410px,calc(100vw - 24px));padding:18px;display:none;gap:14px;align-items:center;background:linear-gradient(135deg,#fff9dc 0%,#fff3dc 45%,#ffe8dd 100%)!important;color:#18332f!important;border:2px solid #f4b858;border-radius:23px;box-shadow:0 22px 70px #071e1b55,0 0 0 5px rgba(255,191,78,.16);text-align:left}
       #vl-chabaquito-install.vl-install-visible{display:flex!important;animation:vl-install-enter .4s ease both}
       #vl-chabaquito-install .vl-install-mascot{width:82px;height:112px;object-fit:contain;flex:none;align-self:end}
       #vl-chabaquito-install .vl-install-content{min-width:0;flex:1}
@@ -1641,11 +1641,11 @@
       #vl-chabaquito-install h3{font-size:19px!important;line-height:1.2!important;font-weight:900!important;color:#17342d!important;margin:5px 0 7px!important}
       #vl-chabaquito-install p{font-size:13px!important;line-height:1.5!important;color:#3c514c!important;margin:0 0 12px!important}
       #vl-chabaquito-install .vl-install-actions{display:flex;flex-wrap:wrap;gap:8px}
-      #vl-chabaquito-install .vl-install-action{background:#154f40!important;color:#fff!important;border:0;border-radius:12px;padding:11px 15px;font-size:13px;font-weight:800;cursor:pointer}
-      #vl-chabaquito-install .vl-install-later{background:#e9eee9!important;color:#234039!important;border:0;border-radius:12px;padding:11px 12px;font-size:12px;font-weight:800;cursor:pointer}
+      #vl-chabaquito-install .vl-install-action{background:#075a46!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;border:0;border-radius:12px;padding:11px 15px;font-size:13px;font-weight:800;cursor:pointer}
+      #vl-chabaquito-install .vl-install-later{background:#fff!important;color:#173d36!important;-webkit-text-fill-color:#173d36!important;border:1px solid #c5d2c8!important;border:0;border-radius:12px;padding:11px 12px;font-size:12px;font-weight:800;cursor:pointer}
       #vl-chabaquito-install button:focus-visible{outline:3px solid #b37a2c;outline-offset:3px}
       #vl-chabaquito-install .vl-install-close{position:absolute;right:10px;top:8px;border:0;background:transparent;color:#29433c;font-size:21px;cursor:pointer;padding:4px 9px}
-      @keyframes vl-install-enter{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+      #vl-chabaquito-install .vl-install-action *,#vl-chabaquito-install .vl-install-later *{color:inherit!important;-webkit-text-fill-color:inherit!important}\n      #vl-chabaquito-install .vl-install-action:hover{background:#08765b!important}\n      #vl-chabaquito-install .vl-install-eyebrow{color:#9b451a!important}\n      @keyframes vl-install-enter{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
       @media(max-width:540px){#vl-chabaquito-install{left:12px;right:12px;bottom:12px;width:auto;padding:15px;gap:10px}#vl-chabaquito-install .vl-install-mascot{width:70px;height:100px}#vl-chabaquito-install h3{font-size:17px!important}}
       @media(prefers-reduced-motion:reduce){#vl-chabaquito-install.vl-install-visible{animation:none}}
     </style>
@@ -1661,19 +1661,19 @@
       if(!panel||!accept)return;
       const key='vl-chabaquito-install-dismissed-v1';
       let deferredPrompt=null;
-      const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+      const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches||window.navigator.standalone===true;\n      const installed=()=>standalone()||Boolean(window.getInstalledRelatedApps&&window.__vlKnownInstalledApp);\n      if('getInstalledRelatedApps' in navigator){navigator.getInstalledRelatedApps().then(apps=>{if(apps&&apps.length){window.__vlKnownInstalledApp=true;panel.classList.remove('vl-install-visible')}}).catch(()=>{})}
       const dismissed=()=>{try{return localStorage.getItem(key)==='1'}catch(e){return false}};
       const close=()=>{panel.classList.remove('vl-install-visible');try{localStorage.setItem(key,'1')}catch(e){}};
       document.getElementById('vl-install-close').addEventListener('click',close);
       document.getElementById('vl-install-later').addEventListener('click',close);
       window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
-      window.addEventListener('appinstalled',close);
+      window.addEventListener('appinstalled',()=>{window.__vlKnownInstalledApp=true;close()});
       accept.addEventListener('click',async()=>{
         if(deferredPrompt){const p=deferredPrompt;deferredPrompt=null;try{await p.prompt();const result=await p.userChoice;if(result&&result.outcome==='accepted')close()}catch(e){}return}
         if(typeof window.requestVisitaLojaInstall==='function'){try{await window.requestVisitaLojaInstall()}catch(e){}}
         else{accept.textContent=/iPad|iPhone|iPod/.test(navigator.userAgent)?'Compartir → Añadir a inicio':'Menú del navegador → Instalar aplicación';}
       });
-      window.addEventListener('load',()=>{setTimeout(()=>{if(!standalone()&&!dismissed()&&document.visibilityState==='visible')panel.classList.add('vl-install-visible')},3000)},{once:true});
+      window.addEventListener('load',()=>{setTimeout(async()=>{if(installed()||dismissed()||document.visibilityState!=='visible')return;if('getInstalledRelatedApps' in navigator){try{const apps=await navigator.getInstalledRelatedApps();if(apps&&apps.length)return}catch(e){}}if(!installed())panel.classList.add('vl-install-visible')},3000)},{once:true});
     })();
     </script>
     <!-- Mascota animada de Visita Loja -->
