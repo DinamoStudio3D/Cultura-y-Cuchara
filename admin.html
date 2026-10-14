@@ -3038,11 +3038,11 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
   <div class="vl-pa-grid"><div>
    <label for="vl-pa-section">Sección de la web</label><select id="vl-pa-section"><option>Portada principal</option><option>Loja, en cada mirada</option><option>Loja en imágenes</option></select>
    <label for="vl-pa-file">Subir fotografía desde tu dispositivo</label><input type="file" accept="image/jpeg,image/png,image/webp" id="vl-pa-file">
-   <label for="vl-pa-url">O pegar enlace directo de Imgur</label><input type="url" id="vl-pa-url" placeholder="https://i.imgur.com/foto.jpg">
+   <label for="vl-pa-url">Enlace directo de Imgur o Cloudinary</label><input type="url" id="vl-pa-url" placeholder="https://i.imgur.com/foto.jpg">
    <label for="vl-pa-title">Título de la fotografía</label><input id="vl-pa-title" placeholder="Un atardecer inolvidable">
    <label for="vl-pa-credit">Fotógrafo</label><select id="vl-pa-credit"><option>Geovanny Muñoz</option><option>Suko Samaniego</option><option>Otro fotógrafo</option></select>
    <button type="button" class="vl-pa-button" id="vl-pa-preview-btn" style="margin-top:18px">Preparar vista previa</button>
-  </div><div><div class="vl-pa-preview" id="vl-pa-image">📷 Selecciona una fotografía</div><p id="vl-pa-status" style="margin-top:12px;font-size:13px">Formatos admitidos: JPG, PNG y WebP. Se optimiza a WebP cuando el navegador lo permite.</p><div class="vl-pa-note"><strong>Vista previa de diseño.</strong> Todavía no publica, elimina ni modifica fotografías existentes. La conexión de guardado a Firebase y Cloudinary será la siguiente fase.</div></div></div>
+  </div><div><div class="vl-pa-preview" id="vl-pa-image">📷 Selecciona una fotografía</div><p id="vl-pa-status" style="margin-top:12px;font-size:13px">Formatos admitidos: JPG, PNG y WebP. Se optimiza a WebP cuando el navegador lo permite.</p><div class="vl-pa-note"><strong>Vista previa de diseño.</strong> La biblioteca ya permite guardar enlaces, cambiar el orden, ocultar y quitar fotografías desde Firebase. Pendiente: subida directa a Cloudinary y mostrar estas fotos en la web pública.</div></div></div>
  </div>
 </div>
 <script>
