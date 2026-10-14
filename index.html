@@ -681,6 +681,20 @@
 #inicio .vl-welcome-visual:after{background:linear-gradient(90deg,rgba(5,19,28,.94) 0%,rgba(5,19,28,.75) 40%,rgba(5,19,28,.12) 100%),linear-gradient(0deg,rgba(5,19,28,.6),transparent 45%)!important}
 @media(max-width:800px){#inicio #heroTitle{font-size:clamp(3.1rem,12vw,5rem)!important}#inicio .vl-editorial-quicklinks{gap:8px}#inicio .vl-editorial-quicklinks a{font-size:12px;padding:10px 12px}#inicio .vl-welcome-copy{padding-bottom:20px!important}}
 </style>
+<style id="vl-hero-photo-visibility-fix">
+/* Rescate visual de la portada: fotografía siempre visible, contenido dentro del primer pantallazo. */
+#inicio.vl-welcome{background:#071b24 url('assets/photos/centro-loja-torre-reloj.webp') center 42%/cover no-repeat!important}
+#inicio .vl-welcome-shell{min-height:clamp(590px,75svh,730px)!important;padding-top:clamp(70px,8vh,100px)!important;padding-bottom:clamp(35px,5vh,65px)!important}
+#inicio .vl-welcome-visual{opacity:1!important;visibility:visible!important}
+#inicio #heroBgWrapper,#inicio #heroSlidesContainer{opacity:1!important;visibility:visible!important;z-index:0!important}
+#inicio #heroSlidesContainer img.hero-slide.active-slide{opacity:1!important;visibility:visible!important}
+#inicio .vl-welcome-visual:after{background:linear-gradient(90deg,rgba(4,18,25,.90),rgba(4,18,25,.66) 42%,rgba(4,18,25,.12) 85%),linear-gradient(0deg,rgba(4,18,25,.45),transparent 50%)!important}
+#inicio #heroTitle{font-size:clamp(3.3rem,6vw,5.8rem)!important;line-height:1.01!important;max-width:780px!important}
+#inicio .vl-welcome-copy{max-width:780px!important}
+#inicio .vl-welcome-search{margin-top:18px!important}
+#inicio .vl-editorial-quicklinks{margin-top:14px!important}
+@media(max-width:800px){#inicio .vl-welcome-shell{min-height:690px!important;padding-top:85px!important;padding-bottom:35px!important}#inicio #heroTitle{font-size:clamp(3rem,10vw,4.4rem)!important}#inicio .vl-welcome-visual:after{background:linear-gradient(90deg,rgba(4,18,25,.85),rgba(4,18,25,.35)),linear-gradient(0deg,rgba(4,18,25,.6),transparent 65%)!important}}
+</style>
 <section id="inicio" data-vl-surface="light" class="vl-welcome">
       <div class="vl-welcome-shell">
         <div class="vl-welcome-copy">
