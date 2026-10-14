@@ -2,12 +2,12 @@
 (function (root) {
   "use strict";
   const blocks = [
-    {id:"lojaGallery1",name:"Loja en imágenes · Fotografía 1",selector:".vl-photo-gallery-item:nth-child(1)",image:"#vl-gallery-photo-1",imageUrl:"assets/photos/loja-centro.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
-    {id:"lojaGallery2",name:"Loja en imágenes · Fotografía 2",selector:".vl-photo-gallery-item:nth-child(2)",image:"#vl-gallery-photo-2",imageUrl:"assets/photos/loja-centro.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
-    {id:"lojaGallery3",name:"Loja en imágenes · Fotografía 3",selector:".vl-photo-gallery-item:nth-child(3)",image:"#vl-gallery-photo-3",imageUrl:"assets/photos/loja-centro.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
-    {id:"lojaGallery4",name:"Loja en imágenes · Fotografía 4",selector:".vl-photo-gallery-item:nth-child(4)",image:"#vl-gallery-photo-4",imageUrl:"assets/photos/loja-centro.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
-    {id:"lojaGallery5",name:"Loja en imágenes · Fotografía 5",selector:".vl-photo-gallery-item:nth-child(5)",image:"#vl-gallery-photo-5",imageUrl:"assets/photos/loja-centro.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
-    {id:"lojaGallery6",name:"Loja en imágenes · Fotografía 6",selector:".vl-photo-gallery-item:nth-child(6)",image:"#vl-gallery-photo-6",imageUrl:"assets/photos/loja-centro.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
+    {id:"lojaGallery1",name:"Loja en imágenes · Fotografía 1",selector:".vl-photo-gallery-item:nth-child(1)",image:"#vl-gallery-photo-1",imageUrl:"assets/photos/jipiro-laguna.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
+    {id:"lojaGallery2",name:"Loja en imágenes · Fotografía 2",selector:".vl-photo-gallery-item:nth-child(2)",image:"#vl-gallery-photo-2",imageUrl:"assets/photos/eolicas-atardecer-panoramica.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
+    {id:"lojaGallery3",name:"Loja en imágenes · Fotografía 3",selector:".vl-photo-gallery-item:nth-child(3)",image:"#vl-gallery-photo-3",imageUrl:"assets/photos/centro-loja-torre-reloj.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
+    {id:"lojaGallery4",name:"Loja en imágenes · Fotografía 4",selector:".vl-photo-gallery-item:nth-child(4)",image:"#vl-gallery-photo-4",imageUrl:"assets/photos/panoramica-loja-blanco-negro.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
+    {id:"lojaGallery5",name:"Loja en imágenes · Fotografía 5",selector:".vl-photo-gallery-item:nth-child(5)",image:"#vl-gallery-photo-5",imageUrl:"assets/photos/luna-eolicas.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
+    {id:"lojaGallery6",name:"Loja en imágenes · Fotografía 6",selector:".vl-photo-gallery-item:nth-child(6)",image:"#vl-gallery-photo-6",imageUrl:"assets/photos/atardecer-loja.webp",imageAlt:"Fotografía de Loja · Geovanny Muñoz",fields:[],noVisibility:true},
     ...[
       {id:'provinceGateway',name:'Acceso destacado · Cantones',selector:'.vl152-cantons',image:'.vl152-cantons>img',imageUrl:'assets/photos/loja-centro.webp',imageAlt:'Vista de Loja',fields:[['kicker','Antetítulo','.vl152-cantons .vl152-kicker','MÁS ALLÁ DE LA CAPITAL','BEYOND THE CAPITAL'],['title','Título','.vl152-cantons .vl152-copy h2','16 cantones. Nuevas historias.','16 cantons. New stories.'],['description','Descripción','.vl152-cantons .vl152-copy p','Explora los destinos de la provincia y elige tu próxima escapada.','Explore the province and choose your next getaway.'],['button','Botón','.vl152-cantons .vl152-copy a','Descubrir los cantones','Explore the cantons']]},
       {id:'shopGateway',name:'Acceso destacado · Tienda',selector:'.vl152-shop',fields:[['kicker','Antetítulo','.vl152-shop .vl152-kicker','UN PEDACITO DE LOJA CONTIGO','TAKE A PIECE OF LOJA WITH YOU'],['title','Título','.vl152-shop .vl152-copy h2','La tienda de Visita Loja.','The Visita Loja shop.'],['description','Descripción','.vl152-shop .vl152-copy p','Conoce nuestro catálogo de recuerdos y productos en un solo lugar.','Browse our souvenirs and products in one place.'],['button','Botón','.vl152-shop .vl152-copy a','Explorar la tienda','Explore the shop']]}
@@ -105,7 +105,7 @@
       name: "Hecho en Loja",
       selector: ".vl44-entrepreneur-header",
       image: ".vl44-entrepreneur-photo img",
-      imageUrl: "assets/photos/loja-centro.webp",
+      imageUrl: "assets/photos/hecho-en-loja-talento.webp",
       imageAlt: "Calle peatonal 10 de Agosto, en el centro de Loja",
       fields: [
         [
