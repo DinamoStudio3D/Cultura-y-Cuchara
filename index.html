@@ -718,6 +718,15 @@
 @media(max-width:800px){#inicio .vl-photo-carousel-ui{right:16px;bottom:12px;gap:8px}#inicio .vl-photo-carousel-ui button{width:32px;height:32px}#inicio .vl-photo-carousel-ui .vl-photo-credit{display:none}}
 @media(prefers-reduced-motion:reduce){#inicio .vl-visible-photo-carousel img{transition:none}}
 </style>
+<style id="vl-carousel-blue-overlay-fix">
+/* El filtro azul queda encima de las fotos, pero debajo de textos y controles. */
+#inicio.vl-welcome .vl-visible-photo-carousel{z-index:0!important}
+#inicio.vl-welcome::after{z-index:1!important;background:linear-gradient(90deg,rgba(3,22,40,.94) 0%,rgba(5,34,57,.86) 29%,rgba(7,42,67,.60) 57%,rgba(8,44,68,.24) 100%),linear-gradient(0deg,rgba(3,20,36,.48),transparent 48%)!important;pointer-events:none!important}
+#inicio.vl-welcome .vl-welcome-shell{z-index:2!important}
+#inicio.vl-welcome .vl-photo-carousel-ui{z-index:4!important}
+#inicio.vl-welcome #heroTitle,#inicio.vl-welcome #heroSubtitle{color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.35)!important}
+@media(max-width:800px){#inicio.vl-welcome::after{background:linear-gradient(90deg,rgba(3,22,40,.91),rgba(5,34,57,.66) 65%,rgba(5,34,57,.48)),linear-gradient(0deg,rgba(3,20,36,.55),transparent 55%)!important}}
+</style>
 <section id="inicio" data-vl-surface="light" class="vl-welcome">
       <div class="vl-welcome-shell">
         <div class="vl-welcome-copy">
