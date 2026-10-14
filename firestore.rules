@@ -314,7 +314,9 @@ service cloud.firestore {
       allow create: if request.resource.data.keys().hasOnly(['menuId', 'day', 'createdAt'])
         && request.resource.data.keys().hasAll(['menuId', 'day', 'createdAt'])
         && request.resource.data.menuId is string
-        && request.resource.data.menuId.matches('^[A-Za-z0-9_-]{1,100}
+        && request.resource.data.menuId.matches('^[A-Za-z0-9_-]{1,100}$')
+        && request.resource.data.day is string
+        && request.resource.data.day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && request.resource.data.createdAt == request.time;
       allow update, delete: if false;
     }
