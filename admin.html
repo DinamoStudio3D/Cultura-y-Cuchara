@@ -3013,5 +3013,40 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
 <script src="js/canton-content.js?v=99"></script><script src="js/admin-cantons.js?v=99"></script><script src="js/admin-place-gallery.js?v=93"></script><script src="js/admin-canton-media.js?v=94.1"></script><script src="js/admin-workspace-v220.js"></script>
 <script src="js/admin-business-workflow-v222.js"></script>
 <script src="js/admin-account-management-v224.js"></script>
+<style id="vl-photo-admin-preview-style">
+#vl-photo-admin-launch{position:fixed;bottom:20px;right:20px;z-index:9990;background:#f4b74e!important;color:#162e2b!important;padding:14px 19px;border-radius:999px;border:2px solid #fff;font-weight:900;box-shadow:0 12px 35px #0008;cursor:pointer}
+#vl-photo-admin-modal{position:fixed;inset:0;z-index:9991;display:none;align-items:center;justify-content:center;padding:16px;background:#071c20d9}
+#vl-photo-admin-modal.vl-open{display:flex}
+#vl-photo-admin-panel{width:min(960px,100%);max-height:92vh;overflow:auto;border-radius:24px;background:#fffaf0;color:#17342e;padding:clamp(18px,3vw,32px);box-shadow:0 25px 90px #0008}
+#vl-photo-admin-panel h2{font-size:clamp(24px,3vw,34px);font-weight:900;color:#17342e}
+#vl-photo-admin-panel p,#vl-photo-admin-panel label{color:#314d46}
+#vl-photo-admin-panel label{display:block;font-weight:800;font-size:13px;margin:14px 0 6px}
+#vl-photo-admin-panel input,#vl-photo-admin-panel select{display:block;width:100%;border:1px solid #9cb7ab;border-radius:12px;padding:12px;background:white;color:#16332b}
+#vl-photo-admin-panel button{cursor:pointer}
+#vl-photo-admin-panel .vl-pa-button{background:#075d48!important;color:white!important;border-radius:12px;padding:12px 17px;font-weight:800}
+#vl-photo-admin-panel .vl-pa-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:16px}
+#vl-photo-admin-panel .vl-pa-preview{background:#e5efe7;border:2px dashed #8aa89c;border-radius:18px;min-height:260px;display:grid;place-items:center;overflow:hidden}
+#vl-photo-admin-panel .vl-pa-preview img{width:100%;max-height:340px;object-fit:contain}
+#vl-photo-admin-panel .vl-pa-top{display:flex;justify-content:space-between;gap:12px;align-items:start}
+#vl-photo-admin-panel .vl-pa-note{padding:12px;background:#fff0c8;border-radius:12px;font-size:13px;margin-top:14px}
+@media(max-width:690px){#vl-photo-admin-panel .vl-pa-grid{grid-template-columns:1fr}#vl-photo-admin-launch{right:12px;bottom:12px}}
+</style>
+<button id="vl-photo-admin-launch" type="button">📸 Fotografías y portada</button>
+<div id="vl-photo-admin-modal" role="dialog" aria-modal="true" aria-label="Editor de fotografías, vista previa">
+ <div id="vl-photo-admin-panel">
+  <div class="vl-pa-top"><div><span style="font-size:12px;font-weight:900;color:#a55c16">VISITALOJA · ADMINISTRACIÓN</span><h2>Fotografías y portada</h2><p>Organiza las imágenes que dan vida a Loja.</p></div><button type="button" id="vl-pa-close" aria-label="Cerrar" style="font-size:30px;color:#17342e">×</button></div>
+  <div class="vl-pa-grid"><div>
+   <label for="vl-pa-section">Sección de la web</label><select id="vl-pa-section"><option>Portada principal</option><option>Loja, en cada mirada</option><option>Loja en imágenes</option></select>
+   <label for="vl-pa-file">Subir fotografía desde tu dispositivo</label><input type="file" accept="image/jpeg,image/png,image/webp" id="vl-pa-file">
+   <label for="vl-pa-url">O pegar enlace directo de Imgur</label><input type="url" id="vl-pa-url" placeholder="https://i.imgur.com/foto.jpg">
+   <label for="vl-pa-title">Título de la fotografía</label><input id="vl-pa-title" placeholder="Un atardecer inolvidable">
+   <label for="vl-pa-credit">Fotógrafo</label><select id="vl-pa-credit"><option>Geovanny Muñoz</option><option>Suko Samaniego</option><option>Otro fotógrafo</option></select>
+   <button type="button" class="vl-pa-button" id="vl-pa-preview-btn" style="margin-top:18px">Preparar vista previa</button>
+  </div><div><div class="vl-pa-preview" id="vl-pa-image">📷 Selecciona una fotografía</div><p id="vl-pa-status" style="margin-top:12px;font-size:13px">Formatos admitidos: JPG, PNG y WebP. Se optimiza a WebP cuando el navegador lo permite.</p><div class="vl-pa-note"><strong>Vista previa de diseño.</strong> Todavía no publica, elimina ni modifica fotografías existentes. La conexión de guardado a Firebase y Cloudinary será la siguiente fase.</div></div></div>
+ </div>
+</div>
+<script>
+(()=>{const launch=document.getElementById('vl-photo-admin-launch'),modal=document.getElementById('vl-photo-admin-modal'),close=document.getElementById('vl-pa-close'),file=document.getElementById('vl-pa-file'),url=document.getElementById('vl-pa-url'),out=document.getElementById('vl-pa-image'),status=document.getElementById('vl-pa-status');launch.addEventListener('click',()=>modal.classList.add('vl-open'));close.addEventListener('click',()=>modal.classList.remove('vl-open'));modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('vl-open')});document.getElementById('vl-pa-preview-btn').addEventListener('click',async()=>{out.textContent='Preparando imagen…';try{let src='';if(file.files[0]){const compressor=window.VisitaLojaImageCompressor;if(!compressor)throw Error('El optimizador no está disponible');const result=await compressor.compressImageClientSide(file.files[0],{maxWidth:1920,maxHeight:1920,quality:.82});src=URL.createObjectURL(result.blob);status.textContent='Optimizada a '+result.width+' × '+result.height+' · '+Math.round(result.optimizedBytes/1024)+' KB · ahorro '+result.savingsPercent+'%';}else{const raw=url.value.trim(),u=new URL(raw);if(u.protocol!=='https:'||u.hostname!=='i.imgur.com'||!/^\\.(jpe?g|png|webp)$/i.test(u.pathname.slice(u.pathname.lastIndexOf('.'))))throw Error('Usa un enlace directo HTTPS de i.imgur.com que termine en JPG, PNG o WebP.');src=u.href;status.textContent='Vista previa de enlace Imgur. La importación y optimización remota aún no están conectadas.'}out.replaceChildren();const img=document.createElement('img');img.src=src;img.alt='Vista previa de fotografía';img.onerror=()=>{status.textContent='No se pudo cargar la fotografía.'};out.appendChild(img)}catch(e){out.textContent='No se pudo preparar la imagen';status.textContent=e.message||'Error al preparar fotografía'}})})();
+</script>
 </body>
 </html>
