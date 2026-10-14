@@ -690,13 +690,31 @@
         </div>
       </div>
     </section>
+    <style id="vl-story-magazine-redesign">
+/* Diseño editorial: títulos fuera de las fotografías, contraste permanente */
+.vl-geovanny-story .vl-story-magazine{display:grid!important;grid-template-columns:1.3fr 1fr!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:20px!important;align-items:stretch!important}
+.vl-geovanny-story .vl-story-magazine>a{display:flex!important;flex-direction:row!important;align-items:stretch!important;position:relative!important;width:100%!important;min-height:220px!important;height:100%!important;aspect-ratio:auto!important;grid-column:auto!important;grid-row:auto!important;margin:0!important;padding:0!important;border-radius:20px!important;overflow:hidden!important;background:#fff!important;color:#132d3c!important;text-decoration:none!important;border:1px solid #dedbd4!important;box-shadow:0 12px 35px #0a22301a!important}
+.vl-geovanny-story .vl-story-magazine>a:first-child{grid-row:span 2!important;grid-column:1!important;display:flex!important;flex-direction:column!important}
+.vl-geovanny-story .vl-story-magazine>a:nth-child(2),.vl-geovanny-story .vl-story-magazine>a:nth-child(3){grid-column:2!important}
+.vl-geovanny-story .vl-story-magazine>a::after{display:none!important;content:none!important}
+.vl-geovanny-story .vl-story-magazine-image{position:relative!important;display:block!important;flex:0 0 47%!important;min-height:210px!important;overflow:hidden!important;background:#1b3340!important}
+.vl-geovanny-story .vl-story-magazine>a:first-child .vl-story-magazine-image{flex:1 1 auto!important;min-height:340px!important}
+.vl-geovanny-story .vl-story-magazine-image img{display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;transition:transform .35s!important}
+.vl-geovanny-story .vl-story-magazine>a:hover .vl-story-magazine-image img{transform:scale(1.045)!important}
+.vl-geovanny-story .vl-story-magazine-caption{position:relative!important;z-index:3!important;display:flex!important;flex:1!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;gap:10px!important;padding:clamp(18px,2.4vw,32px)!important;background:#fff!important;color:#132d3c!important;text-align:left!important}
+.vl-geovanny-story .vl-story-magazine-caption small{display:block!important;color:#99601e!important;font-size:11px!important;letter-spacing:.12em!important;font-weight:800!important}
+.vl-geovanny-story .vl-story-magazine-caption strong{position:static!important;inset:auto!important;display:block!important;color:#132d3c!important;font-size:clamp(1.35rem,2.1vw,2.1rem)!important;font-weight:800!important;line-height:1.15!important;text-shadow:none!important;white-space:normal!important}
+.vl-geovanny-story .vl-story-magazine-caption>span{display:block!important;color:#48616d!important;font-size:13px!important;font-weight:600!important}
+@media(max-width:850px){.vl-geovanny-story .vl-story-magazine{grid-template-columns:1fr!important;grid-template-rows:auto!important}.vl-geovanny-story .vl-story-magazine>a,.vl-geovanny-story .vl-story-magazine>a:first-child,.vl-geovanny-story .vl-story-magazine>a:nth-child(2),.vl-geovanny-story .vl-story-magazine>a:nth-child(3){grid-column:1!important;grid-row:auto!important;flex-direction:row!important;min-height:210px!important}.vl-geovanny-story .vl-story-magazine>a:first-child .vl-story-magazine-image{flex:0 0 47%!important;min-height:210px!important}}
+@media(max-width:520px){.vl-geovanny-story .vl-story-magazine>a,.vl-geovanny-story .vl-story-magazine>a:first-child{flex-direction:column!important}.vl-geovanny-story .vl-story-magazine-image,.vl-geovanny-story .vl-story-magazine>a:first-child .vl-story-magazine-image{flex:none!important;height:220px!important;min-height:220px!important}.vl-geovanny-story .vl-story-magazine-caption{padding:18px 20px!important}.vl-geovanny-story .vl-story-magazine-caption strong{font-size:1.5rem!important}}
+</style>
     <section class="vl-geovanny-story" aria-label="Postales de Loja">
       <div class="vl-geovanny-story-inner">
         <div class="vl-geovanny-story-heading"><div><span>UNA TIERRA PARA DESCUBRIR</span><h2>Loja, en cada mirada.</h2></div><a href="#loja-en-imagenes">Explorar todas las fotografías ↗</a></div>
-        <div class="vl-geovanny-story-grid">
-          <a href="#loja-en-imagenes" aria-label="Ver fotografías de Jipiro"><img src="assets/photos/jipiro-pagoda-laguna.webp" alt="Parque Jipiro y su laguna" loading="lazy"><strong>La magia de Jipiro</strong></a>
-          <a href="#loja-en-imagenes" aria-label="Ver fotografías de Villonaco"><img src="assets/photos/sol-eolicas.webp" alt="Sol entre aerogeneradores de Villonaco" loading="lazy"><strong>Villonaco al sol</strong></a>
-          <a href="#loja-en-imagenes" aria-label="Ver fotografías de Loja"><img src="assets/photos/atardecer-loja.webp" alt="Atardecer en Loja" loading="lazy"><strong>Atardeceres que inspiran</strong></a>
+        <div class="vl-geovanny-story-grid vl-story-magazine">
+          <a href="#loja-en-imagenes" aria-label="Explorar fotografías del parque Jipiro"><span class="vl-story-magazine-image"><img src="assets/photos/jipiro-pagoda-laguna.webp" alt="Parque Jipiro y su laguna" loading="lazy"></span><span class="vl-story-magazine-caption"><small>01 · NATURALEZA</small><strong>La magia de Jipiro</strong><span>Un rincón para descubrir ↗</span></span></a>
+          <a href="#loja-en-imagenes" aria-label="Explorar fotografías de Villonaco"><span class="vl-story-magazine-image"><img src="assets/photos/sol-eolicas.webp" alt="Sol entre aerogeneradores de Villonaco" loading="lazy"></span><span class="vl-story-magazine-caption"><small>02 · PAISAJES</small><strong>Villonaco al sol</strong><span>Vistas que sorprenden ↗</span></span></a>
+          <a href="#loja-en-imagenes" aria-label="Explorar fotografías de los atardeceres de Loja"><span class="vl-story-magazine-image"><img src="assets/photos/atardecer-loja.webp" alt="Atardecer en Loja" loading="lazy"></span><span class="vl-story-magazine-caption"><small>03 · LA CIUDAD</small><strong>Atardeceres que inspiran</strong><span>La luz de Loja ↗</span></span></a>
         </div>
         <p class="vl-geovanny-story-credit">Fotografías: Geovanny Muñoz · <a href="https://www.instagram.com/geo_munoz/" target="_blank" rel="noopener noreferrer">@geo_munoz</a></p>
       </div>
