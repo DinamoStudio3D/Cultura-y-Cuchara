@@ -3241,7 +3241,15 @@
                         showQrResolverDiagnostic('QR no encontrado', 'Firestore no encontró un documento qrCodes con este identificador.');
                         return;
                     }
-                    const targetUrl = String(snapshot.data()?.targetUrl || '').trim();
+                    const qrData = snapshot.data() || {};
+                    // Los menús digitales registrados siempre abren el visor de menús
+                    // de este mismo sitio, sin depender de URLs antiguas guardadas.
+                    // No cambia el QR impreso ni afecta los QR de visitas u otros destinos.
+                    if (qrData.menuImageUrl && !qrData.visit?.placeId) {
+                        window.location.replace(new URL('/menu-digital.html?id=' + encodeURIComponent(editableQrId), window.location.origin).href);
+                        return;
+                    }
+                    const targetUrl = String(qrData.targetUrl || '').trim();
                     if (!targetUrl) {
                         showQrResolverDiagnostic('QR sin destino', 'El documento existe, pero no tiene un targetUrl válido.');
                         return;
