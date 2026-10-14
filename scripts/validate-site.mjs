@@ -42,7 +42,7 @@ const loyaltyAdmin = read('gestion-fidelidad.html');
 const merchantDashboard = read('merchant-dashboard.html');
 const manifestText = read('manifest.webmanifest');
 const serviceWorker = read('service-worker.js');
-const firestoreRules = read('firestore.rules');
+
 const chabaquitoPublicV2 = read('js/chabaquito-public-v2.js');
 assert(!chabaquitoPublicV2.includes('remaining=remaining') && chabaquitoPublicV2.includes('remaining=Math.max(0,target-current)'), 'Las misiones activas calculan el progreso restante sin romper el render público');
 const backendFunctions = read('functions/index.js');
