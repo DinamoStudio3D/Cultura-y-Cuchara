@@ -86,3 +86,14 @@ test('Vigencia QR: futura, vigente, último día y vencida en horario Ecuador', 
   assert.equal(active('2026-10-01', '2026-10-12', '2026-10-13'), false);
   assert.equal(active(null, null, '2026-10-13'), true);
 });
+
+test('El visor vuelve a comprobar beneficios cuando cambia la fecha de Ecuador', () => {
+  const viewer = readFileSync(new URL('../menu-digital.html', import.meta.url), 'utf8');
+  assert.ok(viewer.includes('const updateExtrasValidity=()=>'));
+  assert.ok(viewer.includes("timeZone:'America/Guayaquil'"));
+  assert.ok(viewer.includes("window.addEventListener('focus',updateExtrasValidity)"));
+  assert.ok(viewer.includes("document.addEventListener('visibilitychange',updateExtrasValidity)"));
+  assert.ok(viewer.includes('setInterval(updateExtrasValidity,60000)'));
+  assert.ok(viewer.includes('extras.hidden=!allowed||!extras.childElementCount'));
+  assert.ok(viewer.includes('logoSlot.hidden=!allowed||!logoSlot.childElementCount'));
+});
