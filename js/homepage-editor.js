@@ -27,11 +27,57 @@
       return wrap;
     }
     function build() {
+      const photoBlocks = selectedBlocks.filter((block) => block.image);
+      if (photoBlocks.length) {
+        const navigator = document.createElement("section");
+        navigator.className = "rounded-2xl border border-sky-500/40 bg-sky-950/30 p-4 space-y-3";
+        const heading = document.createElement("h4");
+        heading.className = "font-black text-lg text-sky-100";
+        heading.textContent = "📸 Fotografías de esta sección";
+        const help = document.createElement("p");
+        help.className = "text-sm text-sky-100";
+        help.textContent = "Selecciona una fotografía para ir directamente a su editor. Después de cambiarla, pulsa Publicar contenido de portada.";
+        const list = document.createElement("div");
+        list.className = "grid grid-cols-2 md:grid-cols-3 gap-3";
+        for (const block of photoBlocks) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "rounded-xl border border-sky-400/40 bg-black/30 p-2 text-left hover:border-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-300";
+          const thumbnail = document.createElement("img");
+          thumbnail.alt = "Fotografía de " + block.name;
+          thumbnail.loading = "lazy";
+          thumbnail.className = "w-full h-24 object-cover rounded-lg bg-gray-800";
+          thumbnail.src = block.imageUrl || model.placeholder;
+          const name = document.createElement("span");
+          name.className = "block mt-2 text-sm font-semibold text-white";
+          name.textContent = block.name;
+          button.append(thumbnail, name);
+          button.addEventListener("click", () => {
+            const editor = container.querySelector('[data-photo-editor="' + block.id + '"]');
+            if (!editor) return;
+            editor.open = true;
+            editor.scrollIntoView({ behavior: "smooth", block: "start" });
+            editor.querySelector('[id$="-imageUrl"]')?.focus({ preventScroll: true });
+          });
+          list.append(button);
+          const updateThumbnail = () => {
+            const value = document.getElementById("home-" + block.id + "-imageUrl")?.value.trim();
+            thumbnail.src = value && model.safeUrl(value) ? value : (block.imageUrl || model.placeholder);
+          };
+          container.addEventListener("input", (event) => {
+            if (event.target.id === "home-" + block.id + "-imageUrl") updateThumbnail();
+          });
+          window.addEventListener("visitaloja:homepage-photo-updated", updateThumbnail);
+        }
+        navigator.append(heading, help, list);
+        container.append(navigator);
+      }
       for (const b of selectedBlocks) {
         const section = document.createElement("details");
         section.className =
           "bg-black/25 border border-gray-700 rounded-2xl p-4 sm:p-5";
         section.open = selectedBlocks.length === 1 || b.id === "mobileWelcome";
+        if (b.image) section.dataset.photoEditor = b.id;
         const summary = document.createElement("summary");
         summary.className = "font-black text-lg cursor-pointer";
         summary.textContent = b.name;
@@ -327,6 +373,7 @@
         document.getElementById("home-" + b.id + "-imageUrl").value =
           result.url;
         changed();
+        window.dispatchEvent(new Event("visitaloja:homepage-photo-updated"));
         status.textContent =
           "Fotografía subida. Publica los cambios para mostrarla en la web.";
       } catch (error) {
