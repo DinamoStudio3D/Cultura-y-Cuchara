@@ -705,6 +705,19 @@
 #inicio .vl-welcome-copy{z-index:3!important}
 @media(max-width:800px){#inicio.vl-welcome::after{background:linear-gradient(90deg,rgba(4,17,24,.85),rgba(4,17,24,.28)),linear-gradient(0deg,rgba(4,17,24,.45),transparent 60%)!important}}
 </style>
+<style id="vl-visible-photo-carousel-style">
+#inicio.vl-welcome::before{display:none!important}
+#inicio .vl-visible-photo-carousel{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+#inicio .vl-visible-photo-carousel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;opacity:0;transition:opacity 1.3s ease;visibility:visible}
+#inicio .vl-visible-photo-carousel img.is-current{opacity:1}
+#inicio .vl-photo-carousel-ui{position:absolute;z-index:5;right:clamp(24px,5vw,80px);bottom:30px;display:flex;align-items:center;gap:12px;color:white}
+#inicio .vl-photo-carousel-ui button{display:grid;place-items:center;width:38px;height:38px;border:1px solid #ffffff9c;border-radius:50%;background:#071c29aa;color:#fff;cursor:pointer;backdrop-filter:blur(8px)}
+#inicio .vl-photo-carousel-ui button:hover,#inicio .vl-photo-carousel-ui button:focus-visible{background:#f4d49c;color:#0b2430}
+#inicio .vl-photo-carousel-ui .vl-photo-counter{font-size:12px;font-weight:800;letter-spacing:.15em;color:#fff}
+#inicio .vl-photo-carousel-ui .vl-photo-credit{font-size:11px;color:#fff;max-width:180px;text-align:right;text-shadow:0 1px 5px #000}
+@media(max-width:800px){#inicio .vl-photo-carousel-ui{right:16px;bottom:12px;gap:8px}#inicio .vl-photo-carousel-ui button{width:32px;height:32px}#inicio .vl-photo-carousel-ui .vl-photo-credit{display:none}}
+@media(prefers-reduced-motion:reduce){#inicio .vl-visible-photo-carousel img{transition:none}}
+</style>
 <section id="inicio" data-vl-surface="light" class="vl-welcome">
       <div class="vl-welcome-shell">
         <div class="vl-welcome-copy">
@@ -720,6 +733,8 @@
           <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button></div>
           <details class="vl-mobile-updates"><summary><i class="fa-regular fa-calendar" aria-hidden="true"></i><span data-i18n="mobileUpdates">Agenda y vídeo</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary></details>
         </div>
+        <div class="vl-visible-photo-carousel" aria-hidden="true"><img class="is-current" src="assets/photos/centro-loja-torre-reloj.webp" alt=""><img src="assets/photos/jipiro-laguna.webp" alt=""><img src="assets/photos/eolicas-atardecer-panoramica.webp" alt=""><img src="assets/photos/atardecer-loja.webp" alt=""><img src="assets/photos/jipiro-pagoda-laguna.webp" alt=""></div>
+        <div class="vl-photo-carousel-ui" aria-label="Controles de fotografías de portada"><span class="vl-photo-credit">Foto: Geovanny Muñoz</span><button type="button" id="vl-photo-prev" aria-label="Fotografía anterior">‹</button><span class="vl-photo-counter" id="vl-photo-counter">01 / 05</span><button type="button" id="vl-photo-next" aria-label="Fotografía siguiente">›</button></div>
         <div class="vl-welcome-visual">
           <div id="heroBgWrapper"><div aria-hidden="true"></div><div id="heroSlidesContainer"><img class="hero-slide active-slide" src="assets/photos/centro-loja-torre-reloj.webp" alt="Fotografía 1 de Loja por Geovanny Muñoz" decoding="async" fetchpriority="high"><img class="hero-slide" src="assets/photos/jipiro-laguna.webp" alt="Fotografía 2 de Loja por Geovanny Muñoz" decoding="async" loading="lazy"><img class="hero-slide" src="assets/photos/eolicas-atardecer-panoramica.webp" alt="Fotografía 3 de Loja por Geovanny Muñoz" decoding="async" loading="lazy"><img class="hero-slide" src="assets/photos/atardecer-loja.webp" alt="Fotografía 4 de Loja por Geovanny Muñoz" decoding="async" loading="lazy"><img class="hero-slide" src="assets/photos/jipiro-pagoda-laguna.webp" alt="Fotografía 5 de Loja por Geovanny Muñoz" decoding="async" loading="lazy"></div></div>
           
@@ -728,6 +743,9 @@
         </div>
       </div>
     </section>
+<script id="vl-visible-photo-carousel-script">
+(()=>{'use strict';const init=()=>{const root=document.querySelector('#inicio'),layer=root?.querySelector('.vl-visible-photo-carousel'),counter=root?.querySelector('#vl-photo-counter'),credit=root?.querySelector('.vl-photo-credit');if(!layer)return;let index=0;const fallback=[...layer.querySelectorAll('img')].map(img=>img.getAttribute('src'));let urls=fallback;const show=()=>{const images=[...layer.querySelectorAll('img')];images.forEach((img,i)=>img.classList.toggle('is-current',i===index));if(counter)counter.textContent=String(index+1).padStart(2,'0')+' / '+String(images.length).padStart(2,'0');if(credit){const original=document.querySelectorAll('#heroSlidesContainer img.hero-slide')[index];const match=original?.alt?.match(/(?:por|Fotografía:)\s+(.+)$/i);credit.textContent='Foto: '+(match?.[1]||'Geovanny Muñoz')}};const sync=()=>{const originals=[...document.querySelectorAll('#heroSlidesContainer img.hero-slide')];const next=originals.map(img=>img.currentSrc||img.src).filter(Boolean);if(!next.length)return;if(next.join('|')===urls.join('|'))return;urls=next;layer.replaceChildren(...urls.map(src=>{const img=document.createElement('img');img.src=src;img.alt='';return img}));index=Math.min(index,urls.length-1);show()};const step=n=>{sync();const count=layer.querySelectorAll('img').length;if(!count)return;index=(index+n+count)%count;show()};root.querySelector('#vl-photo-prev')?.addEventListener('click',()=>step(-1));root.querySelector('#vl-photo-next')?.addEventListener('click',()=>step(1));show();setInterval(()=>{sync();if(!document.hidden&&!matchMedia('(prefers-reduced-motion: reduce)').matches)step(1)},6500);setInterval(sync,4000)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init()})();
+</script>
     <style id="vl-story-magazine-redesign">
 /* Tarjetas editoriales aisladas: imagen arriba, contenido siempre debajo. */
 .vl-geovanny-story .vl-story-magazine{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:auto!important;gap:clamp(16px,2.4vw,30px)!important;align-items:stretch!important}
