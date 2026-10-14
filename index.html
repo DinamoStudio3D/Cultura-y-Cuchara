@@ -62,6 +62,55 @@
         })();
     </script>
     <script>
+        // Resolver QR editable antes de descargar el resto de la portada.
+        // Mantiene compatibles los QR ya impresos con /?qr=...
+        (() => {
+            const id = new URLSearchParams(location.search).get('qr');
+            if (!id || !/^[a-z0-9_-]{1,100}$/i.test(id)) return;
+            document.documentElement.classList.add('qr-fast-resolving');
+            const css = document.createElement('style');
+            css.textContent = 'html.qr-fast-resolving body{visibility:hidden!important}';
+            document.head.appendChild(css);
+            const load = src => new Promise((resolve,reject) => {
+                const script=document.createElement('script');
+                script.src=src;script.onload=resolve;script.onerror=reject;
+                document.head.appendChild(script);
+            });
+            (async () => {
+                try {
+                    await load('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+                    await load('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js');
+                    const app=firebase.apps.find(a=>a.name==='qrFastResolver')||firebase.initializeApp({
+                        apiKey:'AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE',
+                        authDomain:'cultura-y-cuchara.firebaseapp.com',
+                        projectId:'cultura-y-cuchara',
+                        appId:'1:974351327730:web:08573026a46d1bb6598b6b'
+                    },'qrFastResolver');
+                    const snap=await app.firestore().collection('qrCodes').doc(id).get();
+                    if (!snap.exists) throw Error('QR no encontrado');
+                    const data=snap.data()||{};
+                    if(data.menuImageUrl&&!data.visit?.placeId){
+                        location.replace('/menu-digital.html?id='+encodeURIComponent(id));
+                        return;
+                    }
+                    const target=String(data.targetUrl||'').trim();
+                    if(!target)throw Error('QR sin destino');
+                    const dest=new URL(target,location.origin);
+                    if(!['https:','http:'].includes(dest.protocol))throw Error('Destino no permitido');
+                    const ownMenu=dest.pathname==='/menu-digital.html'&&dest.searchParams.get('id')===id&&
+                        (dest.hostname===location.hostname||['visitaloja.com','www.visitaloja.com'].includes(dest.hostname)||/\\.vercel\\.app$/i.test(dest.hostname));
+                    if(/\\.vercel\\.app$/i.test(location.hostname)&&ownMenu){
+                        dest.protocol=location.protocol;dest.host=location.host;
+                    }
+                    location.replace(dest.href);
+                }catch(error){
+                    // El resolvedor existente al final de la página conserva los diagnósticos.
+                    document.documentElement.classList.remove('qr-fast-resolving');
+                }
+            })();
+        })();
+    </script>
+    <script>
         // Mantiene limpia la URL cuando un enlace provisional todavía no tiene destino.
         if (location.hash === '#') history.replaceState(null, '', location.pathname + location.search);
         document.addEventListener('click', (event) => {
