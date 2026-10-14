@@ -316,6 +316,7 @@
       if (loadedUid !== uid) { dirty = false; loadedUid = uid; }
       if (dirty) return;
       fill(model.normalize(settings?.homepageContent));
+      window.dispatchEvent(new Event("visitaloja:homepage-photo-updated"));
     }
     async function uploadPhoto(b, input) {
       const file = input.files[0],
