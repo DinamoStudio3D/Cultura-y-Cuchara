@@ -3252,6 +3252,15 @@
                             showQrResolverDiagnostic('Destino QR no válido', `Protocolo no permitido: ${destination.protocol}`);
                             return;
                         }
+                        // En Preview, conserva el menú en el mismo despliegue para revisar el diseño
+                        // sin modificar la dirección persistida ni el QR ya impreso.
+                        const isPreviewHost = /\\.vercel\\.app$/i.test(window.location.hostname);
+                        const isOwnMenu = destination.pathname === '/menu-digital.html' && destination.searchParams.get('id') === editableQrId &&
+                            (destination.hostname === window.location.hostname || destination.hostname === 'visitaloja.com' || destination.hostname === 'www.visitaloja.com' || /\\.vercel\\.app$/i.test(destination.hostname));
+                        if (isPreviewHost && isOwnMenu) {
+                            destination.protocol = window.location.protocol;
+                            destination.host = window.location.host;
+                        }
                         window.location.replace(destination.href);
                     } catch (error) {
                         showQrResolverDiagnostic('Destino QR no válido', error?.message || 'No se pudo interpretar targetUrl.');
