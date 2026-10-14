@@ -26,3 +26,25 @@ jobs:
 
       - name: Ejecutar pruebas
         run: node scripts/validate-site.mjs
+
+  firestore:
+    name: Compilar reglas Firestore con emulador
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Preparar Java para Firebase
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Compilar reglas con el emulador oficial
+        run: npx --yes firebase-tools@14 emulators:exec --only firestore --project demo-visitaloja 'echo Firestore rules compiled'
