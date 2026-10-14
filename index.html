@@ -4454,6 +4454,8 @@
                 urls = urls.split(',').map(u => u.trim()).filter(u => u !== "");
             }
             if (urls.length === 0) urls = ["assets/photos/centro-loja-torre-reloj.webp","assets/photos/jipiro-laguna.webp","assets/photos/eolicas-atardecer-panoramica.webp","assets/photos/atardecer-loja.webp","assets/photos/jipiro-pagoda-laguna.webp"];
+            // Migrar solo la imagen predeterminada antigua; respetar fotos personalizadas del administrador.
+            if (urls.length === 1 && /^https:\/\/i\.imgur\.com\/0QSbhqQ\.jpeg(?:\?.*)?$/.test(urls[0])) urls = ["assets/photos/centro-loja-torre-reloj.webp","assets/photos/jipiro-laguna.webp","assets/photos/eolicas-atardecer-panoramica.webp","assets/photos/atardecer-loja.webp","assets/photos/jipiro-pagoda-laguna.webp"];
 
             const slidesContainer = document.getElementById('heroSlidesContainer');
             if (slidesContainer) {
