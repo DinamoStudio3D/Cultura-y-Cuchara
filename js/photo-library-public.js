@@ -12,6 +12,6 @@ if(items.some(p=>p.section===sections[2])){const grid=document.querySelector('.v
 const hero=photos.filter(p=>p.section===sections[0]);
 if(items.some(p=>p.section===sections[0])){const container=document.getElementById('heroSlidesContainer');if(container){const sample=container.querySelector('img.hero-slide');if(sample){container.replaceChildren();hero.forEach((p,i)=>{const img=sample.cloneNode(true);img.src=new URL(p.url,location.href).href;img.alt=p.title||'Loja';img.classList.toggle('active-slide',i===0);container.appendChild(img)})}}}
 }
-function boot(){if(!window.firebase?.apps?.length){setTimeout(boot,500);return}const app=firebase.apps.find(a=>a.name==='viveLojaPublic');if(!app){setTimeout(boot,500);return}app.firestore().collection('settings').doc('main').get().then(s=>{const items=s.data()?.photoManagerItems;if(Array.isArray(items)&&items.length)apply(items)}).catch(e=>console.warn('Biblioteca fotográfica no disponible:',e.code||e.message))}
+function boot(){if(!window.firebase?.apps?.length){setTimeout(boot,500);return}const app=firebase.apps.find(a=>a.name==='viveLojaPublic');if(!app){setTimeout(boot,500);return}app.firestore().collection('settings').doc('main').get().then(s=>{const items=s.data()?.photoManagerItems;if(Array.isArray(items)&&(items.length||s.data()?.photoManagerInitialized===true))apply(items)}).catch(e=>console.warn('Biblioteca fotográfica no disponible:',e.code||e.message))}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
