@@ -633,6 +633,9 @@
 .vl-geovanny-story-grid{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:16px}.vl-geovanny-story-grid a{display:block;position:relative;overflow:hidden;aspect-ratio:4/3;border-radius:18px;background:#142a36;box-shadow:0 15px 36px #142a361a}.vl-geovanny-story-grid img{width:100%;height:100%;object-fit:cover;transition:transform .4s}.vl-geovanny-story-grid a:hover img{transform:scale(1.05)}.vl-geovanny-story-grid a:after{content:"";position:absolute;inset:40% 0 0;background:linear-gradient(transparent,#071923b9)}.vl-geovanny-story-grid strong{position:absolute;z-index:2;bottom:20px;left:20px;right:14px;color:#fff!important;font-size:clamp(1.1rem,1.6vw,1.5rem);font-weight:800!important;line-height:1.25;text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 22px rgba(0,0,0,.8)}.vl-geovanny-story-grid a:after{background:linear-gradient(180deg,transparent 0%,rgba(3,14,20,.5) 45%,rgba(3,14,20,.92) 100%)!important;inset:34% 0 0!important;z-index:1!important}.vl-geovanny-story-credit{color:#5b6a70;font-size:12px;margin-top:14px}
 @media(max-width:800px){#inicio .vl-welcome-shell{padding:110px 24px 90px!important}#inicio .vl-welcome-visual:after{background:linear-gradient(90deg,#061724e8,#06172490),linear-gradient(0deg,#06172499,transparent)!important}#inicio .vl-welcome-photo-top,#inicio .vl-welcome-photo-caption{display:none!important}.vl-geovanny-story-grid{grid-template-columns:1fr 1fr}.vl-geovanny-story-grid a:first-child{grid-column:span 2;aspect-ratio:16/9}}
 @media(max-width:520px){#inicio.vl-welcome,#inicio .vl-welcome-shell{min-height:740px!important}#inicio .vl-welcome-shell{padding:96px 20px 70px!important}#inicio #heroTitle{font-size:clamp(2.7rem,12vw,4rem)!important}#inicio .vl-welcome-search{padding:8px!important}#inicio .vl-welcome-copy{width:100%!important}.vl-geovanny-story-heading{display:block}.vl-geovanny-story-heading a{display:inline-block;margin-top:12px}.vl-geovanny-story-grid{gap:10px}.vl-geovanny-story-grid strong{left:12px;bottom:12px;font-size:1rem}}
+
+#inicio #heroSlidesContainer .hero-slide{position:absolute!important;inset:0!important;opacity:0!important;visibility:visible!important;transition:opacity 1.1s ease!important;pointer-events:none!important}#inicio #heroSlidesContainer .hero-slide.active-slide{opacity:1!important}
+#inicio .vl-hero-carousel-controls{position:absolute;z-index:5;left:50%;bottom:24px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 12px;background:rgba(7,21,30,.62);border:1px solid rgba(255,255,255,.3);border-radius:999px;backdrop-filter:blur(12px);pointer-events:auto}#inicio .vl-hero-carousel-controls[hidden]{display:none!important}#inicio .vl-hero-carousel-controls>button{width:36px;height:36px;border-radius:50%;color:#fff;background:rgba(255,255,255,.12);display:grid;place-items:center;cursor:pointer}#inicio .vl-hero-carousel-controls>button:hover{background:rgba(255,255,255,.3)}#inicio .vl-hero-carousel-dots{display:flex;gap:8px;align-items:center}#inicio .vl-hero-carousel-dots button{width:9px;height:9px;border:0;border-radius:50%;background:#ffffff78;cursor:pointer;padding:0;transition:width .25s,background .25s}#inicio .vl-hero-carousel-dots button[aria-current="true"]{width:26px;border-radius:999px;background:#f6ce8a}#inicio .vl-hero-carousel-controls button:focus-visible{outline:3px solid #f6ce8a;outline-offset:3px}@media(max-width:520px){#inicio .vl-hero-carousel-controls{bottom:12px;gap:8px;padding:6px 9px}#inicio .vl-hero-carousel-controls>button{width:32px;height:32px}}@media(prefers-reduced-motion:reduce){#inicio #heroSlidesContainer .hero-slide{transition:none!important}}
 </style>
     <!-- Visitor welcome: configured photography and direct search -->
     <section id="inicio" data-vl-surface="light" class="vl-welcome">
@@ -651,6 +654,7 @@
         </div>
         <div class="vl-welcome-visual">
           <div id="heroBgWrapper"><div aria-hidden="true"></div><div id="heroSlidesContainer"><img class="hero-slide active-slide" src="assets/photos/centro-loja-torre-reloj.webp" alt="Vista fotográfica de Loja por Geovanny Muñoz" decoding="async" fetchpriority="high"></div></div>
+          <div id="vl-hero-carousel-controls" class="vl-hero-carousel-controls" aria-label="Fotografías de la portada" hidden><button type="button" id="vl-hero-carousel-prev" aria-label="Fotografía anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button><div id="vl-hero-carousel-dots" class="vl-hero-carousel-dots" aria-label="Seleccionar fotografía"></div><button type="button" id="vl-hero-carousel-next" aria-label="Fotografía siguiente"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button></div>
           <div class="vl-welcome-photo-top"><span class="vl-welcome-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> LOJA · ECUADOR</span><div id="heroLogoFrame"><img id="heroLogoImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Visita Loja" decoding="async" style="visibility:hidden"></div></div>
           <div class="vl-mobile-intro" data-vl-surface="dark"><h1 data-i18n="mobileWelcomeTitle">Loja te espera.</h1><p data-i18n="mobileWelcomeDesc">Sabores, cultura y nuevas historias por descubrir.</p></div>
           <div class="vl-welcome-photo-caption" data-vl-surface="dark"><span data-i18n="welcomePhotoKicker">TU PRÓXIMA HISTORIA EMPIEZA AQUÍ</span><strong data-i18n="welcomePhotoTitle">Loja, a tu ritmo.</strong><button id="nowRecommendationBtn" type="button" onclick="openWhatToDoNow()"><span data-i18n="welcomeNow">¿Qué hacer ahora?</span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></button></div>
@@ -4191,7 +4195,7 @@
                 subtitle: "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.",
                 logoUrl: "https://i.imgur.com/mmWzHK4.png?visita-loja-v4",
                 trendingMode: "auto", trendingManualIds: [], trendingWeekly: [],
-                heroBgUrls: ["https://i.imgur.com/0QSbhqQ.jpeg"],
+                heroBgUrls: ["assets/photos/centro-loja-torre-reloj.webp","assets/photos/jipiro-laguna.webp","assets/photos/eolicas-atardecer-panoramica.webp","assets/photos/atardecer-loja.webp","assets/photos/jipiro-pagoda-laguna.webp"],
                 heroBgPosition: "50% 50%",
                 heroIntervalSeconds: 6,
                 premiumVisual:true,heroStyle:'cinematic',heroHeight:'immersive',cardStyle:'elevated',cornerStyle:'large',heroImageOpacity:55,premiumAnimations:true,
@@ -4445,11 +4449,11 @@
             const fiavlFeaturedImage = document.getElementById('fiavlFeaturedImage');
             if (fiavlFeaturedImage && s.fiavlImageUrl) fiavlFeaturedImage.src = s.fiavlImageUrl;
 
-            let urls = s.heroBgUrls || [s.heroBgUrl || "https://i.imgur.com/0QSbhqQ.jpeg"];
+            let urls = s.heroBgUrls || [s.heroBgUrl || "assets/photos/centro-loja-torre-reloj.webp"];
             if (typeof urls === 'string') {
                 urls = urls.split(',').map(u => u.trim()).filter(u => u !== "");
             }
-            if (urls.length === 0) urls = ["https://i.imgur.com/0QSbhqQ.jpeg"];
+            if (urls.length === 0) urls = ["assets/photos/centro-loja-torre-reloj.webp","assets/photos/jipiro-laguna.webp","assets/photos/eolicas-atardecer-panoramica.webp","assets/photos/atardecer-loja.webp","assets/photos/jipiro-pagoda-laguna.webp"];
 
             const slidesContainer = document.getElementById('heroSlidesContainer');
             if (slidesContainer) {
@@ -4466,18 +4470,52 @@
                     slidesContainer.appendChild(img);
                 });
 
-                if (heroSlideshowInterval) clearInterval(heroSlideshowInterval);
-                if (urls.length > 1 && !isLowDataMode()) {
-                    let currentIndex = 0;
-                    let intervalSec = parseInt(s.heroIntervalSeconds) || 6;
-                    heroSlideshowInterval = setInterval(() => {
-                        const slides = slidesContainer.querySelectorAll('.hero-slide');
-                        if (slides.length <= 1) return;
-                        slides[currentIndex].classList.remove('active-slide');
-                        currentIndex = (currentIndex + 1) % slides.length;
-                        slides[currentIndex].classList.add('active-slide');
-                    }, intervalSec * 1000);
+                if (heroSlideshowInterval) { clearInterval(heroSlideshowInterval); heroSlideshowInterval = null; }
+                const controls = document.getElementById('vl-hero-carousel-controls');
+                const dots = document.getElementById('vl-hero-carousel-dots');
+                const previous = document.getElementById('vl-hero-carousel-prev');
+                const next = document.getElementById('vl-hero-carousel-next');
+                const slides = Array.from(slidesContainer.querySelectorAll('.hero-slide'));
+                const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                let currentIndex = 0;
+                const intervalMs = Math.max(3, Math.min(20, parseInt(s.heroIntervalSeconds, 10) || 6)) * 1000;
+                const goTo = (index) => {
+                    if (!slides.length) return;
+                    currentIndex = (index + slides.length) % slides.length;
+                    slides.forEach((img, i) => {
+                        img.classList.toggle('active-slide', i === currentIndex);
+                        img.setAttribute('aria-hidden', i === currentIndex ? 'false' : 'true');
+                    });
+                    dots?.querySelectorAll('button').forEach((dot, i) => {
+                        dot.setAttribute('aria-current', i === currentIndex ? 'true' : 'false');
+                        dot.setAttribute('aria-label', 'Mostrar fotografía ' + (i + 1) + ' de ' + slides.length);
+                    });
+                };
+                const stop = () => { if (heroSlideshowInterval) { clearInterval(heroSlideshowInterval); heroSlideshowInterval = null; } };
+                const start = () => {
+                    stop();
+                    if (slides.length > 1 && !reduceMotion && !isLowDataMode() && !document.hidden)
+                        heroSlideshowInterval = setInterval(() => goTo(currentIndex + 1), intervalMs);
+                };
+                if (controls && dots) {
+                    controls.hidden = slides.length <= 1;
+                    dots.replaceChildren();
+                    slides.forEach((_, i) => {
+                        const dot = document.createElement('button');
+                        dot.type = 'button';
+                        dot.addEventListener('click', () => { goTo(i); start(); });
+                        dots.appendChild(dot);
+                    });
+                    previous.onclick = () => { goTo(currentIndex - 1); start(); };
+                    next.onclick = () => { goTo(currentIndex + 1); start(); };
+                    controls.onmouseenter = stop;
+                    controls.onmouseleave = start;
+                    controls.onfocusin = stop;
+                    controls.onfocusout = (e) => { if (!controls.contains(e.relatedTarget)) start(); };
+                    document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else start(); }, {once:false});
                 }
+                goTo(0);
+                start();
             }
 
             if (s.latestYoutubeTitle) {
