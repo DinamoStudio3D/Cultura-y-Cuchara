@@ -23,8 +23,8 @@
     const hint = group === 'events' ? 'JPG, PNG o WebP · máximo 5 MB. Guarda el evento para publicar el afiche.' : group === 'qr' ? 'JPG, PNG o WebP · máximo 20 MB. Guarda el QR para publicar el menú.' : 'JPG, PNG o WebP · máximo 20 MB. Guardar punto publica la fotografía.';
     if (!existingFile) {
       file.type = 'file'; file.id = id+'File'; file.accept = 'image/jpeg,image/png,image/webp'; file.className = 'field';
-      file.setAttribute('aria-label', 'Elegir '+(id === 'timePast' ? 'fotografía antigua' : 'fotografía actual'));
-      upload.type = 'button'; upload.id = id+'Upload'; upload.textContent = 'Subir fotografía';
+      file.setAttribute('aria-label', id === 'qrBusinessLogoUpload' ? 'Seleccionar logo del negocio' : id === 'qrMenuImageUpload' ? 'Seleccionar imagen del menú' : 'Elegir '+(id === 'timePast' ? 'fotografía antigua' : 'fotografía actual'));
+      upload.type = 'button'; upload.id = id+'Upload'; upload.textContent = id === 'qrBusinessLogoUpload' ? 'Subir logo del negocio' : 'Subir fotografía';
       upload.className = 'rounded-lg bg-sky-400 text-black font-black px-4 py-2 disabled:opacity-50';
       notice.id = id+'Status'; notice.textContent = hint;
       box.append(file, upload);
@@ -63,7 +63,7 @@
       let timedOut = false;
       const timer = setTimeout(() => { timedOut = true; job.controller.abort(); }, 150000);
       try {
-        notice.textContent = group === 'qr' ? 'Optimizando imagen del menú…' : 'Optimizando fotografía…';
+        notice.textContent = id === 'qrBusinessLogoUpload' ? 'Optimizando logo del negocio…' : group === 'qr' ? 'Optimizando imagen del menú…' : 'Optimizando fotografía…';
         const optimized = await root.VisitaLojaImageCompressor.compressImageClientSide(selected, root.VisitaLojaImageConfig.CONFIG.compression);
         job.controller.signal.throwIfAborted();
         notice.textContent = 'Autorizando subida…';
@@ -73,14 +73,14 @@
         const authorization = await response.json().catch(() => ({}));
         if (!response.ok) throw Error(authorization.error || 'No se pudo autorizar la fotografía (HTTP '+response.status+').');
         job.controller.signal.throwIfAborted();
-        notice.textContent = group === 'qr' ? 'Subiendo menú a Cloudinary…' : 'Subiendo fotografía a Cloudinary…';
+        notice.textContent = id === 'qrBusinessLogoUpload' ? 'Subiendo logo a Cloudinary…' : group === 'qr' ? 'Subiendo menú a Cloudinary…' : 'Subiendo fotografía a Cloudinary…';
         const result = await root.VisitaLojaCloudinaryUploader.uploadSignedImage(optimized.blob, authorization, {filename:id+'-'+Date.now()+'.webp',signal:job.controller.signal});
         job.controller.signal.throwIfAborted();
         if (job.target !== $(group === 'time' ? 'timeEditIdSecure' : group === 'qr' ? 'qrEditId' : 'generalEventEditId')?.value) throw Object.assign(Error('Subida cancelada.'), {name:'AbortError'});
         field.value = result.url;
         field.dispatchEvent(new Event('input', {bubbles:true}));
         if (typeof setAdminUnsavedChanges === 'function') setAdminUnsavedChanges(true);
-        notice.textContent = 'Fotografía subida. Revisa la vista previa y guarda '+(group === 'time' ? 'el punto' : group === 'qr' ? 'el código QR' : 'el evento')+' para publicarla.';
+        notice.textContent = id === 'qrBusinessLogoUpload' ? 'Logo subido. Activa el beneficio «Mostrar logo del negocio» y guarda los cambios para publicarlo.' : 'Fotografía subida. Revisa la vista previa y guarda '+(group === 'time' ? 'el punto' : group === 'qr' ? 'el código QR' : 'el evento')+' para publicarla.';
         file.value = '';
       } catch (error) {
         notice.textContent = job.contextChanged ? hint : timedOut ? 'La carga agotó el tiempo disponible. Puedes volver a intentarlo.' : error.name === 'AbortError' ? 'Subida cancelada. Se conserva la fotografía anterior.' : 'No se pudo subir: '+error.message;
@@ -97,6 +97,7 @@
     mount({id:'timePast',fieldId:'timeImagePast',formId:'timeForm',group:'time',endpoint:'/api/sign-time-image'});
     mount({id:'timePresent',fieldId:'timeImagePresent',formId:'timeForm',group:'time',endpoint:'/api/sign-time-image'});
     mount({id:'qrMenuImageUpload',fieldId:'qrMenuImageUrl',formId:'qrForm',group:'qr',endpoint:'/api/sign-menu-image'});
+    mount({id:'qrBusinessLogoUpload',fieldId:'qrMenuBusinessLogo',formId:'qrForm',group:'qr',endpoint:'/api/sign-menu-image'});
     mount({id:'eventPoster',fieldId:'generalEventImage',formId:'generalEventForm',group:'events',endpoint:'/api/sign-event-image',existingFile:'generalEventImageFile',existingButton:'generalEventUploadBtn',existingStatus:'generalEventUploadStatus'});
   }
   root.VisitaLojaAdminImages = {cancel, refresh, uploadEvent: () => controls.get('eventPoster')?.start(), uploadQrMenu: () => controls.get('qrMenuImageUpload')?.start()};
