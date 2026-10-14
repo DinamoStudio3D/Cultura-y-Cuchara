@@ -20,11 +20,11 @@
     const upload = existingButton ? $(existingButton) : document.createElement('button');
     const notice = existingStatus ? $(existingStatus) : document.createElement('p');
     const stop = document.createElement('button'), image = document.createElement('img');
-    const hint = group === 'events' ? 'JPG, PNG o WebP · máximo 5 MB. Guarda el evento para publicar el afiche.' : group === 'qr' ? 'JPG, PNG o WebP · máximo 20 MB. Guarda el QR para publicar el menú.' : 'JPG, PNG o WebP · máximo 20 MB. Guardar punto publica la fotografía.';
+    const hint = group === 'events' ? 'JPG, PNG o WebP · máximo 5 MB. Guarda el evento para publicar el afiche.' : id === 'qrBusinessLogoUpload' ? 'Logo JPG, PNG o WebP · máximo 20 MB. Activa el beneficio correspondiente y guarda el QR.' : group === 'qr' ? 'Menú JPG, PNG o WebP · máximo 20 MB. Guarda el QR para publicar el menú.' : 'JPG, PNG o WebP · máximo 20 MB. Guardar punto publica la fotografía.';
     if (!existingFile) {
       file.type = 'file'; file.id = id+'File'; file.accept = 'image/jpeg,image/png,image/webp'; file.className = 'field';
       file.setAttribute('aria-label', id === 'qrBusinessLogoUpload' ? 'Seleccionar logo del negocio' : id === 'qrMenuImageUpload' ? 'Seleccionar imagen del menú' : 'Elegir '+(id === 'timePast' ? 'fotografía antigua' : 'fotografía actual'));
-      upload.type = 'button'; upload.id = id+'Upload'; upload.textContent = id === 'qrBusinessLogoUpload' ? 'Subir logo del negocio' : 'Subir fotografía';
+      upload.type = 'button'; upload.id = id+'Upload'; upload.textContent = id === 'qrBusinessLogoUpload' ? 'Subir logo del negocio' : id === 'qrMenuImageUpload' ? 'Subir imagen del menú' : 'Subir fotografía';
       upload.className = 'rounded-lg bg-sky-400 text-black font-black px-4 py-2 disabled:opacity-50';
       notice.id = id+'Status'; notice.textContent = hint;
       box.append(file, upload);
@@ -33,7 +33,7 @@
     stop.className = 'hidden rounded-lg border border-gray-600 text-gray-200 px-4 py-2';
     notice.setAttribute('role', 'status'); notice.className = 'text-sm text-gray-300';
     image.id = id+'Preview'; image.className = 'hidden w-full rounded-xl border border-gray-700';
-    image.style.cssText = 'max-height:180px;object-fit:contain;background:#0d1420'; image.alt = 'Vista previa de la fotografía';
+    image.style.cssText = 'max-height:180px;object-fit:contain;background:#0d1420'; image.alt = id === 'qrBusinessLogoUpload' ? 'Vista previa del logo del negocio' : id === 'qrMenuImageUpload' ? 'Vista previa del menú digital' : 'Vista previa de la fotografía';
     box.append(stop);
     if (!existingStatus) box.append(notice);
     box.append(image); field.after(box);
