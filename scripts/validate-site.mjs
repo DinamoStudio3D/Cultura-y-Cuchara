@@ -29,6 +29,12 @@ for (const filename of fs.readdirSync('.').filter(name => name.endsWith('.html')
 const index = read('index.html');
 const publicStyles = index + read('css/public-layout.css') + read('css/public-colors.css');
 const admin = read('admin.html');
+const firestoreRules = read('firestore.rules');
+const firestoreLines = firestoreRules.split(/\r?\n/);
+assert(firestoreRules.trimEnd().endsWith('  }\n}'), 'Las reglas Firestore terminan con el cierre de sus bloques principales');
+assert(firestoreLines.every(line => (line.match(/'/g) || []).length % 2 === 0), 'Las reglas Firestore no contienen cadenas simples sin cerrar');
+assert((firestoreRules.match(/match \/qrMenuViews\/\{eventId\}/g) || []).length === 1, 'La regla de visualizaciones QR aparece una sola vez');
+
 const merchantRewards = read('merchant-rewards.html');
 const loyaltyVisitor = read('fidelidad.html');
 const loyaltyMerchant = read('confirmar-visitas.html');
