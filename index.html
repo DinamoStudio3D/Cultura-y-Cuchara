@@ -636,6 +636,7 @@
 
 #inicio #heroSlidesContainer .hero-slide{position:absolute!important;inset:0!important;opacity:0!important;visibility:visible!important;transition:opacity 1.1s ease!important;pointer-events:none!important}#inicio #heroSlidesContainer .hero-slide.active-slide{opacity:1!important}
 #inicio .vl-hero-carousel-controls{position:absolute;z-index:5;left:50%;bottom:24px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 12px;background:rgba(7,21,30,.62);border:1px solid rgba(255,255,255,.3);border-radius:999px;backdrop-filter:blur(12px);pointer-events:auto}#inicio .vl-hero-carousel-controls[hidden]{display:none!important}#inicio .vl-hero-carousel-controls>button{width:36px;height:36px;border-radius:50%;color:#fff;background:rgba(255,255,255,.12);display:grid;place-items:center;cursor:pointer}#inicio .vl-hero-carousel-controls>button:hover{background:rgba(255,255,255,.3)}#inicio .vl-hero-carousel-dots{display:flex;gap:8px;align-items:center}#inicio .vl-hero-carousel-dots button{width:9px;height:9px;border:0;border-radius:50%;background:#ffffff78;cursor:pointer;padding:0;transition:width .25s,background .25s}#inicio .vl-hero-carousel-dots button[aria-current="true"]{width:26px;border-radius:999px;background:#f6ce8a}#inicio .vl-hero-carousel-controls button:focus-visible{outline:3px solid #f6ce8a;outline-offset:3px}@media(max-width:520px){#inicio .vl-hero-carousel-controls{bottom:12px;gap:8px;padding:6px 9px}#inicio .vl-hero-carousel-controls>button{width:32px;height:32px}}@media(prefers-reduced-motion:reduce){#inicio #heroSlidesContainer .hero-slide{transition:none!important}}
+#inicio .vl-hero-carousel-controls{z-index:999!important;bottom:24px!important;box-shadow:0 12px 40px #0009!important;background:rgba(8,25,35,.86)!important}#inicio .vl-hero-carousel-controls>button{background:#ffffff2b!important;color:#fff!important}#inicio .vl-hero-carousel-dots button{background:#ffffffa0!important}#inicio .vl-hero-carousel-dots button[aria-current="true"]{background:#ffcc75!important}#inicio .vl-welcome-visual{pointer-events:auto!important}#inicio #heroBgWrapper{pointer-events:none!important}
 </style>
     <!-- Visitor welcome: configured photography and direct search -->
     <section id="inicio" data-vl-surface="light" class="vl-welcome">
@@ -4456,6 +4457,15 @@
             if (urls.length === 0) urls = ["assets/photos/centro-loja-torre-reloj.webp","assets/photos/jipiro-laguna.webp","assets/photos/eolicas-atardecer-panoramica.webp","assets/photos/atardecer-loja.webp","assets/photos/jipiro-pagoda-laguna.webp"];
             // Migrar solo la imagen predeterminada antigua; respetar fotos personalizadas del administrador.
             if (urls.length === 1 && /^https:\/\/i\.imgur\.com\/0QSbhqQ\.jpeg(?:\?.*)?$/.test(urls[0])) urls = ["assets/photos/centro-loja-torre-reloj.webp","assets/photos/jipiro-laguna.webp","assets/photos/eolicas-atardecer-panoramica.webp","assets/photos/atardecer-loja.webp","assets/photos/jipiro-pagoda-laguna.webp"];
+
+            // Portada fotográfica aprobada: completar con fotos autorizadas si Firestore guarda solo una.
+            const geovannyCarouselPhotos = ["assets/photos/centro-loja-torre-reloj.webp","assets/photos/jipiro-laguna.webp","assets/photos/eolicas-atardecer-panoramica.webp","assets/photos/atardecer-loja.webp","assets/photos/jipiro-pagoda-laguna.webp"];
+            urls = Array.isArray(urls) ? urls.filter(Boolean) : [];
+            if (urls.length < 2) {
+                const first = urls[0];
+                urls = [...(first ? [first] : []), ...geovannyCarouselPhotos.filter(photo => photo !== first)].slice(0,5);
+            }
+            urls = urls.slice(0,5);
 
             const slidesContainer = document.getElementById('heroSlidesContainer');
             if (slidesContainer) {
