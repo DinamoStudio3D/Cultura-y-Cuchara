@@ -25,4 +25,31 @@ jobs:
           node-version: '22'
 
       - name: Ejecutar pruebas
-        run: node scripts/validate-site.mjs
+        run: |
+          node scripts/validate-site.mjs
+          node scripts/test-menu-image-signing.cjs
+
+  firestore:
+    name: Compilar reglas Firestore con emulador
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Preparar Java para Firebase
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Instalar dependencias de pruebas de reglas
+        run: npm install --no-save --ignore-scripts firebase@11 @firebase/rules-unit-testing@4
+
+      - name: Compilar y probar permisos con el emulador oficial
+        run: npx --yes firebase-tools@14 emulators:exec --only firestore --project demo-visitaloja 'node scripts/test-firestore-rules.mjs'

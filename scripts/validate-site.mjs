@@ -29,6 +29,12 @@ for (const filename of fs.readdirSync('.').filter(name => name.endsWith('.html')
 const index = read('index.html');
 const publicStyles = index + read('css/public-layout.css') + read('css/public-colors.css');
 const admin = read('admin.html');
+const firestoreRules = read('firestore.rules');
+const firestoreLines = firestoreRules.split(/\r?\n/);
+assert(firestoreRules.trimEnd().endsWith('  }\n}'), 'Las reglas Firestore terminan con el cierre de sus bloques principales');
+assert(firestoreLines.every(line => (line.match(/'/g) || []).length % 2 === 0), 'Las reglas Firestore no contienen cadenas simples sin cerrar');
+assert((firestoreRules.match(/match \/qrMenuViews\/\{eventId\}/g) || []).length === 1, 'La regla de visualizaciones QR aparece una sola vez');
+
 const merchantRewards = read('merchant-rewards.html');
 const loyaltyVisitor = read('fidelidad.html');
 const loyaltyMerchant = read('confirmar-visitas.html');
@@ -36,7 +42,7 @@ const loyaltyAdmin = read('gestion-fidelidad.html');
 const merchantDashboard = read('merchant-dashboard.html');
 const manifestText = read('manifest.webmanifest');
 const serviceWorker = read('service-worker.js');
-const firestoreRules = read('firestore.rules');
+
 const chabaquitoPublicV2 = read('js/chabaquito-public-v2.js');
 assert(!chabaquitoPublicV2.includes('remaining=remaining') && chabaquitoPublicV2.includes('remaining=Math.max(0,target-current)'), 'Las misiones activas calculan el progreso restante sin romper el render público');
 const backendFunctions = read('functions/index.js');
@@ -97,7 +103,7 @@ if (manifest) {
 const dependencyOrder = [
     'leaflet@1.9.4/dist/leaflet.js', 'confetti.browser.min.js', 'firebase-app-compat.js',
     'firebase-auth-compat.js', 'firebase-firestore-compat.js', 'const translations = {'
-].map(needle => index.indexOf(needle));
+].map(needle => index.lastIndexOf(needle));
 assert(dependencyOrder.every(position => position >= 0), 'Todas las dependencias públicas están presentes');
 assert(dependencyOrder.every((position, i) => i === 0 || position > dependencyOrder[i - 1]), 'Firebase y las bibliotecas cargan en el orden seguro');
 assert(serviceWorker.includes("request.mode === 'navigate'"), 'El modo sin conexión reconoce las navegaciones');
@@ -435,8 +441,8 @@ assert(chabaquitoWorker.includes('await firestoreCommit(accessToken, transaction
 assert(admin.includes("visitPurpose==='self_checkin'"), 'El administrador vincula los QR permanentes de autovisita');
 assert(admin.includes("const linkedQrId=unattended?String(place.discovery?.qrId||'').trim():''"), 'El administrador reutiliza el QR permanente ya vinculado');
 assert(admin.includes('const selfCheckinQrId=qrId'), 'El enlace impreso usa exactamente el ID del QR que se guarda');
-assert(admin.includes('batch.set(qrRef.doc(id),{...data,active:true,discoveryEnabled:true,placeId:visitPlaceId}'), 'El QR permanente se aprovisiona dentro de un batch atómico');
-assert(admin.includes("batch.set(placeRef,{discovery:{enabled:true,method:'proximity',qrId:id}"), 'La asociación QR-parada se guarda en el mismo batch');
+assert(admin.includes("if(visitPlaceId&&visitPurpose==='self_checkin'){tx.set(ref,{...saveData,active:true,discoveryEnabled:true,placeId:visitPlaceId}"), 'El QR permanente se aprovisiona dentro de una transacción atómica');
+assert(admin.includes("tx.set(placesRef.doc(visitPlaceId),{discovery:{enabled:true,method:'proximity',qrId:id}"), 'La asociación QR-parada se guarda en la misma transacción');
 
 assert(admin.includes("discovery:{enabled:true,method:'proximity',qrId:id}"), 'El administrador activa proximidad al guardar un QR sin encargado');
 assert(admin.includes("active:true,discoveryEnabled:true,placeId:visitPlaceId"), 'El QR sin encargado queda activo y asociado a una sola parada');
@@ -555,6 +561,22 @@ assert(seoBusiness.includes('id="seoOgTitle"') && seoBusiness.includes('id="seoO
 assert(seoBusiness.includes('id="seoStructuredData"') && seoBusiness.includes('https://schema.org') && seoBusiness.includes('LocalBusiness'), 'Las fichas publican datos estructurados de negocio');
 assert(seoBusiness.includes('id="seoTwitterTitle"') && seoBusiness.includes('id="seoTwitterDescription"') && seoBusiness.includes('id="seoTwitterImage"'), 'Las fichas actualizan metadatos completos para Twitter/X');
 
+
+
+const qrViewer = read('menu-digital.html');
+assert(qrViewer.includes("collection('qrCodes').doc(id).get()") && qrViewer.includes('data.menuImageUrl'), 'El QR conserva el menú publicado desde Firestore');
+assert(qrViewer.includes("timeZone:'America/Guayaquil'") && qrViewer.includes('todayEcuador>=start') && qrViewer.includes('todayEcuador<=expiry'), 'Los beneficios QR respetan fechas de suscripción en Ecuador');
+assert(qrViewer.includes('activeBenefits?(data.menuBenefits||{}):{}'), 'La suscripción inactiva oculta beneficios opcionales sin bloquear el menú');
+assert(qrViewer.includes('benefits.logo===true') && qrViewer.includes('benefits.whatsapp===true') && qrViewer.includes('benefits.instagram===true'), 'Logo, WhatsApp e Instagram solo se muestran cuando están habilitados');
+assert(qrViewer.includes("collection('qrMenuViews').add("), 'El visor registra visualizaciones anónimas del menú');
+assert(index.includes('menu-digital.html?id=') && index.includes('location.replace'), 'El QR redirige directamente al visor aprobado sin pasar por otra portada');
+
+// Execute the QR subscription regression suite as part of the existing CI validator.
+const { spawnSync } = await import('node:child_process');
+const qrSubscriptionTests = spawnSync(process.execPath, ['--test', 'scripts/test-qr-subscription-plan-consistency.mjs'], { encoding: 'utf8' });
+if (qrSubscriptionTests.stdout) process.stdout.write(qrSubscriptionTests.stdout);
+if (qrSubscriptionTests.stderr) process.stderr.write(qrSubscriptionTests.stderr);
+assert(qrSubscriptionTests.status === 0, 'Pruebas de planes, vigencia y sincronización QR');
 
 if (failures.length) {
     console.error(`\nValidación fallida: ${failures.length} problema(s).`);
