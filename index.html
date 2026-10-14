@@ -744,6 +744,20 @@
 #inicio.vl-welcome::after{z-index:2!important}
 #inicio .vl-welcome-shell{z-index:3!important}
 </style>
+<style id="vl-hero-contrast-emergency-fix">
+/* La foto y su filtro quedan atrás; toda la interfaz permanece arriba y legible. */
+#inicio.vl-welcome{isolation:isolate!important}
+#inicio.vl-welcome::before{z-index:-2!important}
+#inicio.vl-welcome::after{z-index:0!important;pointer-events:none!important}
+#inicio.vl-welcome>.vl-visible-photo-carousel{z-index:-1!important}
+#inicio.vl-welcome>.vl-welcome-shell{z-index:5!important;position:relative!important;opacity:1!important;filter:none!important}
+#inicio.vl-welcome .vl-welcome-copy,#inicio.vl-welcome .vl-welcome-copy *{opacity:1!important;filter:none!important}
+#inicio.vl-welcome #heroTitle,#inicio.vl-welcome #heroSubtitle,#inicio.vl-welcome .vl-welcome-eyebrow{color:#fff!important}
+#inicio.vl-welcome .vl-welcome-search,#inicio.vl-welcome .vl149-category-link{opacity:1!important;filter:none!important}
+#inicio.vl-welcome .vl-welcome-search{background:#fff!important;color:#132a3b!important}
+#inicio.vl-welcome .vl-welcome-search input,#inicio.vl-welcome .vl-welcome-search label{color:#132a3b!important}
+#inicio.vl-welcome .vl-editorial-quicklinks a{color:#fff!important;background:rgba(5,27,43,.75)!important}
+</style>
 <section id="inicio" data-vl-surface="light" class="vl-welcome">
       <div class="vl-welcome-shell">
         <div class="vl-welcome-copy">
