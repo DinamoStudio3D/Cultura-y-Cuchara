@@ -494,7 +494,7 @@
           publishedContent = {
             ...existing,
             version: 1,
-            contactEmail: data.contactEmail !== undefined ? data.contactEmail : existing.contactEmail,
+            ...(data.contactEmail !== undefined ? { contactEmail: data.contactEmail } : existing.contactEmail !== undefined ? { contactEmail: existing.contactEmail } : {}),
             blocks: { ...(existing.blocks || {}), ...data.blocks },
           };
           transaction.set(settingsRef, {
