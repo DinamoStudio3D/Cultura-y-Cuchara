@@ -1317,6 +1317,11 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Catálogo comercial editable únicamente por administradores.
+    match /qrSubscriptionPlans/{planId} {
+      allow read, create, update, delete: if isViveLojaAdmin();
+    }
+
     match /qrCodes/{documentId} {
       allow read: if true;
       allow create, update, delete: if isViveLojaAdmin();
