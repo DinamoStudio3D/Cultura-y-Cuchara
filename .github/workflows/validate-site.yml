@@ -25,7 +25,9 @@ jobs:
           node-version: '22'
 
       - name: Ejecutar pruebas
-        run: node scripts/validate-site.mjs
+        run: |
+          node scripts/validate-site.mjs
+          node scripts/test-menu-image-signing.cjs
 
   firestore:
     name: Compilar reglas Firestore con emulador
