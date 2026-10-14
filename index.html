@@ -349,7 +349,7 @@
     </div>
 
     <div id="splash-screen" data-vl-surface="dark" class="fixed inset-0" role="status" aria-live="polite" aria-label="Cargando Visita Loja">
-        <div class="vl197-loading-background" aria-hidden="true"></div>
+        <div class="vl197-loading-background vl-geovanny-splash" aria-hidden="true"></div>
         <div class="vl197-loading-content">
             <p class="vl197-loading-eyebrow" data-i18n="splashEyebrow">LOJA, ECUADOR</p>
             <div class="vl197-loading-brand vl-brand-ready bg-white">
@@ -1464,6 +1464,12 @@
     <section id="loja-en-imagenes" class="vl-photo-gallery" aria-labelledby="vl-photo-gallery-title">
       <style>
         .vl-photo-gallery{padding:clamp(48px,7vw,96px) 20px;background:#101c27;color:#fff}.vl-photo-gallery-inner{max-width:1240px;margin:auto}.vl-photo-gallery-head{margin-bottom:26px}.vl-photo-gallery-head p{color:#e7c487;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700}.vl-photo-gallery-head h2{font-size:clamp(2rem,4vw,3.3rem);font-weight:800;line-height:1.12;margin:10px 0}.vl-photo-gallery-head .vl-photo-gallery-intro{color:#d1dae0;font-size:1rem;letter-spacing:normal;text-transform:none;font-weight:400}.vl-photo-gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.vl-photo-gallery-item{position:relative;overflow:hidden;border-radius:16px;background:#23313c;aspect-ratio:4/5;margin:0}.vl-photo-gallery-item:first-child,.vl-photo-gallery-item:nth-child(6){grid-column:span 2;aspect-ratio:16/10}.vl-photo-gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}.vl-photo-gallery-item:hover img{transform:scale(1.035)}.vl-photo-gallery-item figcaption{position:absolute;inset:auto 0 0;padding:40px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.82));font-size:.85rem;color:#fff}.vl-photo-gallery-credit{font-size:.77rem;color:#bac8d2;margin-top:18px}@media(max-width:800px){.vl-photo-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.vl-photo-gallery-item:first-child,.vl-photo-gallery-item:nth-child(6){grid-column:span 2}}@media(max-width:480px){.vl-photo-gallery-item{aspect-ratio:3/4}.vl-photo-gallery-item:first-child,.vl-photo-gallery-item:nth-child(6){aspect-ratio:5/4}.vl-photo-gallery-grid{gap:9px}}
+
+        /* Fotografías reales de Geovanny Muñoz: vista completa y portada de carga */
+        #splash-screen .vl-geovanny-splash{background-image:linear-gradient(115deg,rgba(5,16,29,.7),rgba(5,16,29,.16)),url("assets/photos/atardecer-loja.webp")!important;background-size:cover!important;background-position:center!important;opacity:1!important}
+        .vl-photo-gallery{background:#f6f5f1!important;color:#14232b!important}.vl-photo-gallery-head h2{color:#14232b!important}.vl-photo-gallery-head .vl-photo-gallery-intro{color:#465560!important}.vl-photo-gallery-credit{color:#596a75!important}
+        .vl-photo-gallery-item{cursor:zoom-in;aspect-ratio:4/3!important;background:#e2e5e5!important}.vl-photo-gallery-item:first-child,.vl-photo-gallery-item:nth-child(6){aspect-ratio:16/10!important}.vl-photo-gallery-item img{object-fit:contain!important;background:#18252d}.vl-photo-gallery-item figcaption{color:#fff!important;pointer-events:none}.vl-photo-gallery-item:focus-visible{outline:3px solid #b27b2e;outline-offset:3px}
+        .vl-gallery-dialog{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;border:0;padding:clamp(12px,3vw,28px);background:#07131cf5;color:#fff;overflow:auto}.vl-gallery-dialog::backdrop{background:#07131cf5}.vl-gallery-dialog-inner{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.vl-gallery-dialog img{display:block;max-width:100%;max-height:calc(100dvh - 110px);object-fit:contain}.vl-gallery-dialog button{position:absolute;right:20px;top:14px;border:1px solid #ffffff70;border-radius:999px;background:#172833;color:#fff;font-size:25px;min-width:46px;min-height:46px;cursor:pointer}.vl-gallery-dialog p{color:#fff;text-align:center;margin:0}
       </style>
       <div class="vl-photo-gallery-inner">
         <div class="vl-photo-gallery-head"><p>Miradas de nuestra tierra</p><h2 id="vl-photo-gallery-title">Loja en imágenes</h2><p class="vl-photo-gallery-intro">Paisajes, cultura y rincones que nos invitan a descubrir Loja.</p></div>
@@ -1475,9 +1481,14 @@
           <figure class="vl-photo-gallery-item"><img id="vl-gallery-photo-5" src="assets/photos/luna-eolicas.webp" alt="Nuestra ciudad" loading="lazy"><figcaption>Nuestra ciudad</figcaption></figure>
           <figure class="vl-photo-gallery-item"><img id="vl-gallery-photo-6" src="assets/photos/atardecer-loja.webp" alt="Atardeceres de Loja" loading="lazy"><figcaption>Atardeceres de Loja</figcaption></figure>
         </div>
-        <p class="vl-photo-gallery-credit">Fotografías de la colección VisitaLoja · Autor: Geovanny Muñoz. Fotografías utilizadas con autorización de su autor.</p>
+        <p class="vl-photo-gallery-credit">Toca una fotografía para verla completa. Fotografías de la colección VisitaLoja · Autor: Geovanny Muñoz. Fotografías utilizadas con autorización de su autor.</p>
       </div>
     </section>
+
+    <dialog id="vl-gallery-dialog" class="vl-gallery-dialog" aria-label="Fotografía completa"><div class="vl-gallery-dialog-inner"><button type="button" aria-label="Cerrar fotografía" id="vl-gallery-dialog-close">×</button><img id="vl-gallery-dialog-img" alt=""><p id="vl-gallery-dialog-caption"></p></div></dialog>
+    <script>
+      (()=>{const dialog=document.getElementById('vl-gallery-dialog');const photo=dialog?.querySelector('#vl-gallery-dialog-img');const caption=dialog?.querySelector('#vl-gallery-dialog-caption');if(!dialog||!photo)return;document.querySelectorAll('.vl-photo-gallery-item').forEach(item=>{item.tabIndex=0;item.setAttribute('role','button');item.setAttribute('aria-label','Ver fotografía completa');const open=()=>{const img=item.querySelector('img');if(!img)return;photo.src=img.currentSrc||img.src;photo.alt=img.alt;caption.textContent=item.querySelector('figcaption')?.textContent||'';dialog.showModal()};item.addEventListener('click',open);item.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}})});dialog.querySelector('#vl-gallery-dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()})})();
+    </script>
 
     <!-- Footer -->
     <footer data-vl-surface="dark" class="vl-site-footer bg-black text-gray-400 py-8 px-4 md:px-8 border-t border-gray-900 text-xs">
