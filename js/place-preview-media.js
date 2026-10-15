@@ -8,7 +8,8 @@
   const button=el('previewPhotoButton'),photo=el('previewPlacePhoto'),label=el('previewPhotoLabel');
   if(!button||!photo||!label)return;
   const gallery=(Array.isArray(place.gallery)?place.gallery:[]).map(item=>image(item?.img)).filter(Boolean);
-  const partnerLogo=place.category==='aliado'?image(place.customLogoUrl):'';
+  const isCodeproim=place.category==='aliado'&&/codeproim/i.test(String(place.title||title||''));
+  const partnerLogo=isCodeproim?image('https://i.imgur.com/qt6cyZR.png'):(place.category==='aliado'?image(place.customLogoUrl):'');
   activeSources=partnerLogo?[partnerLogo,...gallery.filter(url=>url!==partnerLogo)]:gallery;
   sourceIndex=0;
   button.hidden=!activeSources.length;
