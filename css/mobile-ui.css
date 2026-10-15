@@ -181,3 +181,22 @@
   nav.glass-nav.sticky #mobileMenu #mobileItineraryButton :is(i,span) { color:#fff!important; }
  }
 }
+
+/* Tablet navigation: touch targets and landscape dropdown usability. */
+@layer vl-layout {
+ @media(min-width:768px) and (max-width:1535px) {
+  nav.glass-nav.sticky .vl28-nav-actions{gap:10px!important}
+  nav.glass-nav.sticky .vl28-route-button{min-height:46px;padding:11px 15px!important}
+  nav.glass-nav.sticky #mobileMenuButton{min-width:46px;min-height:46px}
+  nav.glass-nav.sticky #mobileMenu{
+   max-height:calc(100dvh - 110px);overflow-y:auto;overscroll-behavior:contain;
+   padding-bottom:max(16px,env(safe-area-inset-bottom));
+  }
+  nav.glass-nav.sticky #mobileMenu :is(a,button,summary){
+   min-height:44px;line-height:1.4;white-space:normal;
+  }
+ }
+ @media(min-width:768px) and (max-width:1535px) and (orientation:landscape) {
+  nav.glass-nav.sticky #mobileMenu{max-height:calc(100dvh - 90px)}
+ }
+}
