@@ -7624,7 +7624,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
             document.getElementById('galleryTitle').textContent = locTitle;
             immersiveGalleryImages = (Array.isArray(loc.gallery) ? loc.gallery : []).filter(item => item?.img).map(item => ({ img: item.img, title: item.title || locTitle }));
-            if (!immersiveGalleryImages.length && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }];
+            if (loc.category === 'aliado' && /codeproim/i.test(String(loc.title || locTitle || ''))) immersiveGalleryImages = [{ img: 'https://i.imgur.com/qt6cyZR.png', title: 'Logo de Codeproim' }];
+            else if (loc.category === 'aliado' && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }, ...immersiveGalleryImages.filter(item => item.img !== loc.customLogoUrl)];
+            else if (!immersiveGalleryImages.length && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }];
             const video = document.getElementById('youtubeVideoContainer'), direct = document.getElementById('directVideoLinkBtn');
             if (loc.youtubeUrl?.trim()) { direct.href = loc.youtubeUrl; video.classList.remove('hidden'); } else { direct.href = '#'; video.classList.add('hidden'); }
             const grid = document.getElementById('galleryGrid');
