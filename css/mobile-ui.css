@@ -200,3 +200,17 @@
   nav.glass-nav.sticky #mobileMenu{max-height:calc(100dvh - 90px)}
  }
 }
+
+/* Responsive audit: prevent long menu labels and narrow action groups from overflowing. */
+@layer vl-layout {
+ @media(max-width:1535px) {
+  nav.glass-nav.sticky #mobileMenu { max-width:100%; box-sizing:border-box; }
+  nav.glass-nav.sticky #mobileMenu :is(a,button,summary) { min-width:0; overflow-wrap:anywhere; }
+  nav.glass-nav.sticky #mobileMenu :is(a,button,summary):focus-visible { outline:2px solid #f2bd79; outline-offset:2px; }
+ }
+ @media(max-width:430px) {
+  nav.glass-nav.sticky .vl28-nav-actions { min-width:0; }
+  nav.glass-nav.sticky .vl28-route-button { min-width:44px; }
+  nav.glass-nav.sticky #mobileMenu { max-height:calc(100dvh - 88px - env(safe-area-inset-top)); }
+ }
+}
