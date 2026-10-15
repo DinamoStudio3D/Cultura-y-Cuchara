@@ -66,3 +66,32 @@
 #vl-photo-admin-panel .photo-focus-controls input{padding:0;min-height:32px}
 #vl-photo-admin-panel .photo-focus-controls output{font-size:11px;color:#405b73}
 @media(max-width:650px){#photo-section-picker{grid-template-columns:1fr}#vl-photo-admin-panel #photo-section-picker .photo-section-card{display:grid;grid-template-columns:100px 1fr}#vl-photo-admin-panel #photo-section-picker img{grid-row:1/4;height:100%}#vl-photo-admin-panel .photo-focus-controls{grid-template-columns:1fr}}
+/* One location at a time: choose, edit, publish. */
+#vl-photo-admin-panel [hidden]{display:none!important}
+#vl-photo-admin-panel .photo-step{margin:28px 0 12px;font-size:21px}
+#vl-photo-admin-panel #photo-section-picker .photo-section-card{display:flex;gap:0;border-radius:16px;transition:border-color .15s}
+#vl-photo-admin-panel #photo-section-picker .photo-section-card strong{font-size:19px;line-height:1.25;padding:16px 16px 8px}
+#vl-photo-admin-panel #photo-section-picker .photo-section-card>span{font-size:14px;padding:0 16px 14px}
+#vl-photo-admin-panel .photo-location-mock{position:relative;display:block;width:100%;height:176px;padding:12px;background:#dbe7ef;overflow:hidden}
+#vl-photo-admin-panel .photo-location-page{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;background:white;height:100%;padding:12px;border-radius:8px;align-content:start}
+#vl-photo-admin-panel .photo-location-page>span{grid-column:1/-1;padding:0 0 8px;font-size:9px;font-weight:900;letter-spacing:.15em;color:#173d5b}
+#vl-photo-admin-panel .photo-location-page i{display:block;background:#e2e9ef;height:32px;border-radius:3px}
+#vl-photo-admin-panel .photo-location-image{position:absolute;left:24px;right:24px;top:47px;height:92px;overflow:hidden;border:3px solid #287eb7;border-radius:6px;background:#123b58}
+#vl-photo-admin-panel .photo-location-image img{height:100%;width:100%;object-fit:cover}
+#vl-photo-admin-panel .photo-location-overlay{position:absolute;inset:auto 0 0;display:block;background:#08243ce8;color:white!important;padding:6px!important;font-size:11px;font-weight:800;text-align:center}
+#vl-photo-admin-panel .photo-location-loja-miradas .photo-location-image{top:76px;right:50%;height:72px}
+#vl-photo-admin-panel .photo-location-loja-miradas .photo-location-page:after{content:'FONDO DEL INICIO';grid-column:1/-1;grid-row:2;height:26px;background:#e2e9ef;font-size:8px;text-align:center;padding:7px;color:#405b73}
+#vl-photo-admin-panel .photo-location-loja-en-imagenes .photo-location-image{top:106px;height:50px;right:30%}
+#vl-photo-admin-panel .photo-location-loja-en-imagenes .photo-location-page i{height:18px}
+#vl-photo-admin-panel #photo-current-place{margin-top:24px;padding:22px;border-left:5px solid #287eb7;background:#e7f2fb;border-radius:12px}
+#vl-photo-admin-panel #photo-current-place h3{font-size:22px;margin:0 0 8px}
+#vl-photo-admin-panel #photo-current-place p{font-size:15px;margin:0 0 12px}
+#vl-photo-admin-panel #photo-current-place a{color:#124e78;text-decoration:underline;font-weight:750;line-height:1.5}
+#vl-photo-admin-panel #photo-toolbar{grid-template-columns:minmax(0,1fr) auto}
+#vl-photo-admin-panel #photo-workspace{grid-template-columns:minmax(0,1fr)}
+#vl-photo-admin-panel #photo-workspace.photo-is-editing{grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr)}
+#vl-photo-admin-panel .photo-form-destination{padding:12px;border-radius:9px;background:#e7f2fb;color:#123f61;font-size:15px;font-weight:800}
+#vl-photo-admin-panel #photo-change-place{margin:14px 0;padding:12px;border:1px solid #cbd8e3;border-radius:9px}
+#vl-photo-admin-panel #photo-change-place summary{color:#405b73;font-size:13px;cursor:pointer}
+@media(max-width:900px){#vl-photo-admin-panel #photo-workspace.photo-is-editing{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:650px){#vl-photo-admin-panel #photo-section-picker .photo-section-card{display:flex}#vl-photo-admin-panel .photo-location-mock{height:160px}#vl-photo-admin-panel #photo-section-picker img{height:100%}#vl-photo-admin-panel #photo-toolbar{grid-template-columns:minmax(0,1fr)}}
