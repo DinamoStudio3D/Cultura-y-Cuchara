@@ -770,7 +770,7 @@
             <div class="vl-welcome-search-row"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="welcomeSearch" type="search" name="q" placeholder="Café, hotel, comida lojana…" data-i18n-placeholder="welcomeSearchPlaceholder" autocomplete="off"><button type="submit" class="vl-welcome-primary"><span data-i18n="welcomeSearchButton">Buscar</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button></div>
           </form>
           <a class="vl149-category-link" href="#categorias"><i class="fa-solid fa-compass" aria-hidden="true"></i><span data-i18n="welcomeBrowseCategories">Ver categorías de lugares</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-          <nav class="vl-editorial-quicklinks" aria-label="Descubre Loja"><a href="#categorias"><i class="fa-solid fa-utensils" aria-hidden="true"></i> Gastronomía</a><a href="#categorias"><i class="fa-solid fa-bed" aria-hidden="true"></i> Hospedaje</a><a href="#loja-en-imagenes"><i class="fa-solid fa-camera" aria-hidden="true"></i> Postales de Loja</a><a href="#mapa"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Mapa turístico</a></nav>
+          <nav class="vl-editorial-quicklinks" aria-label="Descubre Loja"><a href="#establecimientos" onclick="openCategoryList('food')"><i class="fa-solid fa-utensils" aria-hidden="true"></i> Gastronomía</a><a href="#establecimientos" onclick="openCategoryList('hotel')"><i class="fa-solid fa-bed" aria-hidden="true"></i> Hospedaje</a><a href="#loja-en-imagenes"><i class="fa-solid fa-camera" aria-hidden="true"></i> Postales de Loja</a><a href="#mapa"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Mapa turístico</a></nav>
           <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button></div>
           <details class="vl-mobile-updates"><summary><i class="fa-regular fa-calendar" aria-hidden="true"></i><span data-i18n="mobileUpdates">Agenda y vídeo</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary></details>
         </div>
@@ -7872,7 +7872,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
             let visibleCount = 0;
             document.querySelectorAll('.local-item').forEach(item => {
-                if (category === 'all' || item.classList.contains(category)) { 
+                if (category === 'all' || item.classList.contains(category) || (category === 'food' && ['hueca','cafe','urbana','heladeria','panaderia','bar'].some(type => item.classList.contains(type)))) {
                     item.style.opacity = '1';
                     item.classList.remove('hidden-item');
                     visibleCount++;
