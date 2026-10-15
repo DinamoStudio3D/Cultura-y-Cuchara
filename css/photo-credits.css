@@ -1,0 +1,11 @@
+#inicio .vl-managed-photo-credit{position:relative;z-index:6;display:block;align-self:flex-start;margin-top:20px;padding:8px 12px;max-width:100%;border-radius:8px;background:#08243cdd!important;color:#fff!important;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+#inicio .vl-managed-photo-credit a{color:#fff!important;text-decoration:underline;text-underline-offset:3px}
+#loja-miradas .miradas-author a{color:#174e70!important;text-decoration:underline}
+#loja-miradas[hidden],#loja-en-imagenes[hidden]{display:none!important}
+#loja-en-imagenes .vl-managed-gallery-author{display:block;background:#fff!important;color:#203e56!important;padding:8px 12px;font-size:12px;line-height:1.5}
+#loja-en-imagenes .vl-managed-gallery-author a{color:#174e70!important;text-decoration:underline}
+#loja-en-imagenes .vl-photo-gallery-item.vl-managed-gallery-card{display:flex;flex-direction:column;aspect-ratio:auto!important;height:auto;cursor:zoom-in}
+#loja-en-imagenes .vl-managed-gallery-card img{display:block;width:100%;height:auto!important;aspect-ratio:4/3;object-fit:contain!important}
+#loja-en-imagenes .vl-managed-gallery-card figcaption{position:static;inset:auto;background:#fff!important;color:#203e56!important;padding:12px;align-items:start}
+#loja-en-imagenes .vl-managed-gallery-card figcaption small{color:#405b73!important;white-space:normal}
+#inicio.vl-welcome.vl-photo-library-empty,#inicio.vl-welcome.vl-photo-library-empty::before{background-image:none!important;background-color:#08243c!important}
