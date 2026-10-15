@@ -33,7 +33,7 @@
       .forEach((node) =>
         status(
           node,
-          "MP3, M4A, WAV, OGG, AAC, FLAC, Opus o WebM · máximo 20 MB.",
+          "Compresión automática de voz · entrada hasta 20 MB y 5 minutos · salida MP3 hasta 3 MB.",
         ),
       );
     document.querySelectorAll('[id^="timeAudioCancel"]').forEach(button => button.classList.add("hidden"));
@@ -165,7 +165,7 @@
     notice.setAttribute("role", "status");
     status(
       notice,
-      "MP3, M4A, WAV, OGG, AAC, FLAC, Opus o WebM · máximo 20 MB.",
+      "Compresión automática de voz · entrada hasta 20 MB y 5 minutos · salida MP3 hasta 3 MB.",
     );
     const stop = document.createElement("button");
     stop.type = "button";
@@ -220,6 +220,8 @@
       const timer = setTimeout(() => job.controller.abort(), 150000);
       status(notice, "Autorizando subida…");
       try {
+        const {compressAudio} = await import('/js/admin-audio-compression.js');
+        const optimized = await compressAudio(selected, job.controller.signal, text => status(notice, text));
         const token = await user.getIdToken();
         job.controller.signal.throwIfAborted();
         const response = await fetch("/api/sign-time-audio", {
@@ -236,7 +238,7 @@
             data.error ||
               "No se pudo autorizar el audio (HTTP " + response.status + ").",
           );
-        const url = await send(selected, data, job, notice);
+        const url = await send(optimized.file, data, job, notice);
         if (jobs.get(language) !== job) return;
         field.value = url;
         field.dispatchEvent(new Event("input", { bubbles: true }));
@@ -248,7 +250,7 @@
           setAdminUnsavedChanges(true);
         status(
           notice,
-          "Audio subido. Escúchalo y pulsa Guardar punto para publicarlo.",
+          "Audio subido (" + optimized.summary + "). Escúchalo y pulsa Guardar punto para publicarlo.",
         );
         file.value = "";
       } catch (error) {
