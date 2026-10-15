@@ -5191,15 +5191,15 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const locTag = escapeHTML((currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag);
                 const locDesc = escapeHTML((currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc);
                 const isOpen = isLocOpenNow(loc);
-                const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasCustomLogo=Boolean(loc.customLogoUrl&&loc.customLogoUrl.trim()!==''),hasPaidLogoStyle=hasCustomLogo&&loc.mapMarkerStyle!=='icon'&&paidBenefits.logoPin===true;
+                const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasCustomLogo=Boolean(loc.customLogoUrl&&loc.customLogoUrl.trim()!==''),hasPaidLogoStyle=hasCustomLogo&&paidBenefits.logoPin===true;
                 const markerPalette=mapMarkerPalette(loc.category);
 
                 const coordinates=publicPlaceCoordinates(loc);
                 if(coordinates) {
                     let pinHtml = "";
-                    if (hasCustomLogo && loc.mapMarkerStyle !== 'icon') {
+                    if (hasCustomLogo && (hasPaidLogoStyle || loc.mapMarkerStyle !== 'icon')) {
                         pinHtml = `<div class="${hasPaidLogoStyle?'w-14 h-14 border-[4px]':'w-12 h-12 border-[3px]'} rounded-full overflow-hidden bg-white hover:scale-110 transition-transform pointer-events-auto flex items-center justify-center p-0.5" style="touch-action:none;border-color:${markerPalette.color};box-shadow:0 0 0 ${hasPaidLogoStyle?'5px':'3px'} ${markerPalette.glow},0 12px 25px rgba(0,0,0,.35);">
-                                     <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(loc.customLogoUrl)||'assets/photos/photo-unavailable.svg')}" class="w-full h-full object-cover rounded-full" alt="${locTitle}" decoding="async" loading="lazy">
+                                     <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(loc.customLogoUrl)||'assets/photos/photo-unavailable.svg')}" class="w-full h-full object-contain rounded-full" alt="${locTitle}" decoding="async" loading="lazy">
                                    </div>`;
                     } else {
                         const partnerPin=loc.category==='aliado';
