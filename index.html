@@ -330,7 +330,7 @@
 <script src="js/public-color-contract.js?v=55"></script>
 <link rel="stylesheet" href="css/site-spacing-v105.css?v=105"><link rel="stylesheet" href="/css/public-brand-blue-v202.css">
 <link rel="stylesheet" href="css/photo-credits.css?v=4">
-<script src="js/account-access.js?v=1"></script></head>
+<script src="js/account-access.js?v=2"></script></head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
@@ -3396,8 +3396,8 @@
                 const snapshot = await db.collection('securePassportStamps').where('userId', '==', user.uid).get();
                 if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 const secureIds = snapshot.docs.map(doc => doc.data().placeId).filter(Boolean);
-                if (secureIds.length) {
-                    visitedLocations = [...new Set([...visitedLocations, ...secureIds])];
+                {
+                    visitedLocations = [...new Set(secureIds)];
                     localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
                     updatePassportUI();
                 }
@@ -3410,6 +3410,17 @@
             const generation=++visitorAccountGeneration;
             if(favoritesSyncTimer)clearTimeout(favoritesSyncTimer);
             currentVisitorProfile = null;
+            syncedFavoritesUserId=null;
+            try{
+                VisitaLojaAccountAccess.scopeProgress(localStorage,user?.uid);
+                visitedLocations=safeReadJSON('cyc_visited_locations',[]);
+                favoriteLocations=safeReadJSON('cyc_favorites',[]);
+                passportMode=localStorage.getItem('cyc_passport_mode')||'lojano';
+            }catch(error){visitedLocations=[];favoriteLocations=[];passportMode='lojano';console.warn('No se pudo cambiar el caché local de la cuenta.');}
+            document.getElementById('visitorProfileForm')?.reset();
+            document.getElementById('passportBenefitCodeBox')?.classList.add('hidden');
+            const previousCode=document.getElementById('passportBenefitCode');if(previousCode)previousCode.textContent='';
+            updatePassportUI();refreshFavoritesUI();
             updateVisitorAccountLabels(user);
             if (!user || !db) {
                 showVisitorAccountView('accountSignedOut');
@@ -7712,6 +7723,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const ref=db.collection('passportCompletions').doc(completionId),codeRef=db.collection('passportRewardClaimCodes').doc(claimCode),claimData={campaignId,mode:passportMode,sessionId:businessAnalyticsSession,userId:user.uid,stampsCount:6,claimCode,status:'pending',completedAt:firebase.firestore.FieldValue.serverTimestamp()};
                 const createClaim=includeCodeIndex=>{const batch=db.batch();batch.set(ref,claimData);if(includeCodeIndex)batch.set(codeRef,{completionId,campaignId,mode:passportMode,userId:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});return batch.commit();};
                 let data=claimData,alreadyRegistered=false;try{await createClaim(true);}catch(error){if(error?.code==='permission-denied'){try{await createClaim(false);}catch(_){const existing=await ref.get();if(!existing.exists)throw error;data=existing.data();alreadyRegistered=true;}}else throw error;}
+                if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 document.getElementById('passportBenefitCode').textContent=data.claimCode||claimCode;
                 document.getElementById('passportBenefitCodeBox').classList.remove('hidden');
                 document.getElementById('passportRewardRegistration').classList.add('hidden');
@@ -8851,7 +8863,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
     <script src="js/photo-library-model.js?v=4" defer></script>
     <script src="js/photo-library-public.js?v=4" defer></script>
     <script src="js/chabaquito-runtime-config.js" defer></script>
-    <script src="js/chabaquito-public-v2.js?v=70" defer></script>
+    <script src="js/chabaquito-public-v2.js?v=233-70" defer></script>
     <script src="js/welcome-settings.js?v=78" defer></script>
     <script src="js/homepage-content.js?v=82" defer></script>
 <script src="js/mobile-ui.js?v=65" defer></script>

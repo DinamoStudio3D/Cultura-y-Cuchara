@@ -18,5 +18,12 @@ function errorMessage(error){return messages[error?.code]||'No se pudo iniciar s
 const pending=new WeakMap();
 function google(auth,providerFactory){if(pending.has(auth))return pending.get(auth);let operation;try{const provider=providerFactory();provider.setCustomParameters?.({prompt:'select_account'});/* Invoke synchronously in the click event to retain browser user activation. */operation=Promise.resolve(auth.signInWithPopup(provider))}catch(error){operation=Promise.reject(error)}const work=operation.finally(()=>pending.delete(auth));pending.set(auth,work);return work}
 function sameUser(auth,uid){return !!uid&&auth.currentUser?.uid===uid}
-const api={google,errorMessage,sameUser};root.VisitaLojaAccountAccess=api;if(typeof module==='object')module.exports=api;
+function scopeProgress(storage,uid){
+ const ownerKey='vl_progress_owner',target=uid||'guest',previous=storage.getItem(ownerKey)||'guest';if(previous===target)return;
+ const owned=key=>['cyc_visited_locations','cyc_favorites','cyc_passport_mode','cyc_saved_agenda_events','cyc_saved_festival_events'].includes(key)||key.startsWith('cyc_passport_completed_');
+ const keys=Array.from({length:storage.length},(_,i)=>storage.key(i)).filter(key=>key&&owned(key)),snapshot=Object.fromEntries(keys.map(key=>[key,storage.getItem(key)]));
+ storage.setItem('vl_progress_'+encodeURIComponent(previous),JSON.stringify(snapshot));let restored={};try{restored=JSON.parse(storage.getItem('vl_progress_'+encodeURIComponent(target))||'{}')||{}}catch(_){}
+ keys.forEach(key=>storage.removeItem(key));for(const [key,value]of Object.entries(restored))if(owned(key)&&typeof value==='string')storage.setItem(key,value);storage.setItem(ownerKey,target);
+}
+const api={google,errorMessage,sameUser,scopeProgress};root.VisitaLojaAccountAccess=api;if(typeof module==='object')module.exports=api;
 })(typeof window==='object'?window:globalThis);
