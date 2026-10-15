@@ -5255,9 +5255,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
                 cards.push(`
-                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="button" tabindex="0" aria-label="Ver detalles de ${locTitle}" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="group" tabindex="0" aria-label="Ver detalles de ${locTitle}. Pulsa Enter para abrir" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
-                            <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                            <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="${loc.category==='aliado'?`Logo de ${locTitle}`:'' }" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
                                 <span class="${loc.category==='aliado'?'bg-violet-700 text-white':'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${loc.category==='aliado'?'<i class="fa-solid fa-handshake mr-1"></i>Marca aliada':locTag}</span>${hasPaidBadge&&loc.category!=='aliado'?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Destacado Visita Loja</span>':''}
                                 ${loc.category==='aliado'?'':openBadge}
@@ -5283,7 +5283,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                                 </a>
                             </div>
                                 </div>
-                                <button type="button" onclick="toggleFavoriteCard(event, decodeURIComponent('${actionId}'))" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta" aria-label="Guardar o quitar de mi ruta" aria-pressed="${favoriteLocations.includes(loc.id) ? 'true' : 'false'}">
+                                <button type="button" onclick="toggleFavoriteCard(event, decodeURIComponent('${actionId}'))" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta" aria-label="${favoriteLocations.includes(loc.id) ? 'Quitar de mi ruta' : 'Añadir a mi ruta'}" aria-pressed="${favoriteLocations.includes(loc.id) ? 'true' : 'false'}">
                             <i id="cardFav_${escapeHTML(loc.id)}" class="${favClass}"></i>
                         </button>
                             </div>
@@ -5464,13 +5464,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
                 if(icon) icon.className = "fa-solid fa-seedling text-brandGold";
-                if(parentBtn) { parentBtn.classList.remove("bg-red-50","text-red-600","border-red-300"); parentBtn.classList.add("bg-white","text-brandGold","border-gray-200"); parentBtn.setAttribute("aria-pressed","false"); parentBtn.setAttribute("title","Añadir a mi ruta"); }
+                if(parentBtn) { parentBtn.classList.remove("bg-red-50","text-red-600","border-red-300"); parentBtn.classList.add("bg-white","text-brandGold","border-gray-200"); parentBtn.setAttribute("aria-pressed","false"); parentBtn.setAttribute("title","Añadir a mi ruta"); parentBtn.setAttribute("aria-label","Añadir a mi ruta"); }
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
                 trackBusinessEvent(localId,'favorite');
                 if(icon) icon.className = "fa-solid fa-seedling text-red-500 scale-110";
-                if(parentBtn) { parentBtn.classList.remove("bg-white","bg-black/60","text-brandGold","border-brandGold/40","border-gray-200"); parentBtn.classList.add("bg-red-50","text-red-600","border-red-300"); parentBtn.setAttribute("aria-pressed","true"); parentBtn.setAttribute("title","Quitar de mi ruta"); }
+                if(parentBtn) { parentBtn.classList.remove("bg-white","bg-black/60","text-brandGold","border-brandGold/40","border-gray-200"); parentBtn.classList.add("bg-red-50","text-red-600","border-red-300"); parentBtn.setAttribute("aria-pressed","true"); parentBtn.setAttribute("title","Quitar de mi ruta"); parentBtn.setAttribute("aria-label","Quitar de mi ruta"); }
                 showToast(`¡Añadido a Mi Ruta! ☕`);
                 completeChabaquitoMission('ruta');
             }
