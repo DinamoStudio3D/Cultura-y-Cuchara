@@ -93,3 +93,22 @@
   #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore { width:100%; min-height:48px; }
  }
 }
+
+/* Mobile photo labels and partner logos: keep badges readable without cropping artwork. */
+@layer vl-layout {
+ @media(max-width:639px) {
+  #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media.vl17-partner-media>img {
+   object-fit:contain!important; padding:clamp(16px,6vw,28px)!important; transform:none!important;
+  }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl17-media>.absolute.top-3 {
+   left:10px!important; right:10px!important; max-width:calc(100% - 20px)!important;
+   display:flex; flex-wrap:wrap; gap:5px!important; pointer-events:none;
+  }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl17-media>.absolute.top-3>span {
+   max-width:100%; overflow-wrap:anywhere; line-height:1.35!important;
+  }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action {
+   white-space:normal!important; overflow-wrap:anywhere; text-align:center;
+  }
+ }
+}
