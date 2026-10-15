@@ -9,3 +9,4 @@
 #loja-en-imagenes .vl-managed-gallery-card figcaption{position:static;inset:auto;background:#fff!important;color:#203e56!important;padding:12px;align-items:start}
 #loja-en-imagenes .vl-managed-gallery-card figcaption small{color:#405b73!important;white-space:normal}
 #inicio.vl-welcome.vl-photo-library-empty,#inicio.vl-welcome.vl-photo-library-empty::before{background-image:none!important;background-color:#08243c!important}
+#loja-miradas .vl-photo-highlight,#loja-en-imagenes .vl-photo-highlight{outline:4px solid #287eb7;outline-offset:5px;scroll-margin-top:120px}

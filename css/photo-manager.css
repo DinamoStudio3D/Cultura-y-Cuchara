@@ -33,3 +33,36 @@
 #vl-photo-admin-panel #photo-publish,#vl-photo-admin-panel #photo-stage{background:#124e78;color:white;border-color:#124e78}
 @media(max-width:900px){#vl-photo-admin-panel .photo-workspace{grid-template-columns:minmax(0,1fr)}#vl-photo-admin-panel .photo-toolbar{grid-template-columns:1fr 1fr}#vl-photo-admin-panel .photo-toolbar>button{grid-column:1/-1}}
 @media(max-width:550px){#vl-photo-admin-panel .photo-toolbar{grid-template-columns:1fr}#vl-photo-admin-panel .photo-item{grid-template-columns:72px minmax(0,1fr);padding:12px;gap:12px}#vl-photo-admin-panel .photo-item>img{width:72px;height:72px}#vl-photo-admin-panel h2{font-size:25px}#vl-photo-admin-launch{right:12px;bottom:12px;font-size:12px}}
+#photo-section-picker,#photo-destination-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
+#vl-photo-admin-panel .photo-section-card{padding:0;overflow:hidden;display:flex;flex-direction:column;text-align:left;border:2px solid #cbd8e3;white-space:normal}
+#vl-photo-admin-panel .photo-section-card[aria-pressed=true]{border-color:#124e78;background:#e7f2fb;box-shadow:0 0 0 2px #124e7820}
+#vl-photo-admin-panel .photo-section-card img{width:100%;height:92px;object-fit:cover}
+#vl-photo-admin-panel .photo-section-card strong{display:block;font-size:15px;padding:12px 12px 4px;color:#172d45}
+#vl-photo-admin-panel .photo-section-card span{font-size:12px;line-height:1.5;padding:0 12px 10px;color:#405b73}
+#vl-photo-admin-panel .photo-section-card small{margin-top:auto;padding:0 12px 12px;font-size:12px}
+#photo-destination-picker{gap:8px;grid-template-columns:1fr}
+#vl-photo-admin-panel #photo-destination-picker .photo-section-card{display:grid;grid-template-columns:72px 1fr;column-gap:10px;align-items:center}
+#vl-photo-admin-panel #photo-destination-picker img{grid-row:1/4;height:100%;min-height:80px}
+#vl-photo-admin-panel #photo-destination-picker :is(strong,span,small){padding-left:0}
+#photo-destination-help{font-size:13px}
+#vl-photo-admin-panel .photo-web-link{display:inline-flex;align-items:center;min-height:44px;color:#124e78;text-decoration:underline;font-size:13px;padding:8px}
+#vl-photo-admin-panel .photo-reuse{margin-top:12px;border-top:1px solid #d5e0e8;padding-top:10px}
+#vl-photo-admin-panel .photo-reuse summary{cursor:pointer;color:#124e78;font-weight:750;padding-block:8px}
+#vl-photo-admin-panel .photo-reuse button{margin:6px 6px 0 0;font-size:12px}
+#vl-photo-admin-panel .photo-drag-handle{font-size:12px;margin:0 0 10px;touch-action:none;cursor:grab;color:#405b73}
+#vl-photo-admin-panel .photo-dragging{opacity:.65}
+#vl-photo-admin-panel .photo-drop-target{outline:3px solid #287eb7;outline-offset:2px}
+#photo-framing{border:1px solid #cbd8e3;padding:14px;border-radius:12px;margin-top:18px;min-width:0}
+#photo-framing[hidden]{display:none}
+#photo-framing legend{font-weight:800;padding:0 5px;color:#172d45}
+#photo-framing p{font-size:12px}
+#vl-photo-admin-panel .photo-focus-previews{display:grid;grid-template-columns:1.5fr 1fr;gap:12px;align-items:start}
+#vl-photo-admin-panel .photo-focus-previews figure{margin:0;min-width:0}
+#vl-photo-admin-panel .photo-focus-previews figure>div{position:relative;overflow:hidden;background:#d7e4ed;aspect-ratio:16/9;border-radius:8px}
+#vl-photo-admin-panel .photo-focus-previews figure:last-child>div{aspect-ratio:9/14}
+#vl-photo-admin-panel .photo-focus-previews img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#vl-photo-admin-panel .photo-focus-previews figcaption{font-size:11px;color:#405b73;line-height:1.5;margin-top:6px}
+#vl-photo-admin-panel .photo-focus-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#vl-photo-admin-panel .photo-focus-controls input{padding:0;min-height:32px}
+#vl-photo-admin-panel .photo-focus-controls output{font-size:11px;color:#405b73}
+@media(max-width:650px){#photo-section-picker{grid-template-columns:1fr}#vl-photo-admin-panel #photo-section-picker .photo-section-card{display:grid;grid-template-columns:100px 1fr}#vl-photo-admin-panel #photo-section-picker img{grid-row:1/4;height:100%}#vl-photo-admin-panel .photo-focus-controls{grid-template-columns:1fr}}
