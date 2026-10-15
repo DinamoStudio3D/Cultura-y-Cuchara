@@ -370,6 +370,35 @@
  #mapPreviewCard #previewTitle{font-size:1.2rem}
 }
 </style>
+<style id="vl-place-card-mobile-refinement">
+/* Fichas de paradas: legibilidad, orden y controles táctiles, sin alterar escritorio. */
+#mapPreviewCard{min-width:0}
+#mapPreviewCard #previewDesc,#mapPreviewCard #previewDish,#mapPreviewCard #previewHours,#mapPreviewCard #previewAddress{overflow-wrap:anywhere}
+#mapPreviewCard .vl-place-actions :is(button,a):focus-visible,
+#mapPreviewCard #previewPhotoButton:focus-visible,
+#mapPreviewCard #previewFavBtn:focus-visible{outline:3px solid #d97706;outline-offset:3px}
+@media(max-width:767px){
+ #mapPreviewCard{padding:16px!important;gap:14px!important;min-height:0!important;border-radius:20px;box-shadow:0 10px 30px rgba(15,23,42,.09)}
+ #mapPreviewCard #previewPhotoButton:not([hidden]){display:block;width:100%;max-width:100%;border-radius:16px;overflow:hidden}
+ #mapPreviewCard #previewPhotoButton img{display:block;width:100%;max-height:250px;object-fit:contain;background:#f1f5f9}
+ #mapPreviewCard #previewPhotoLabel{font-size:12px;line-height:1.4}
+ #mapPreviewCard #previewTitle{font-size:clamp(1.25rem,5vw,1.55rem);line-height:1.23;letter-spacing:-.015em;color:#10233f!important}
+ #mapPreviewCard #previewDesc{font-size:14px!important;line-height:1.65!important;color:#334155!important}
+ #mapPreviewCard #previewDistanceBadge{color:#1d4ed8!important}
+ #mapPreviewCard #previewDish,#mapPreviewCard #previewHours,#mapPreviewCard #previewAddress{font-size:13px;line-height:1.5;color:#334155}
+ #mapPreviewCard #previewTag,#mapPreviewCard #previewOpenStatus{max-width:100%;overflow-wrap:anywhere}
+ #mapPreviewCard .vl-place-actions{gap:12px!important}
+ #mapPreviewCard .vl-place-actions :is(button,a){min-height:46px;font-size:12px;line-height:1.4;text-align:center}
+ #mapPreviewCard #previewWhatsapp{background:#15803d!important;color:white!important}
+ #mapPreviewCard #previewGps{background:#e2e8f0!important;color:#0f172a!important}
+ #mapPreviewCard .vl-place-actions .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #mapPreviewCard .vl-place-actions .grid>*{min-width:0}
+}
+@media(max-width:370px){
+ #mapPreviewCard .vl-place-actions .grid{grid-template-columns:minmax(0,1fr)}
+ #mapPreviewCard #previewWhatsapp,#mapPreviewCard #previewGps{font-size:13px}
+}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1094,10 +1123,10 @@
             </div>
 
             <div id="mapPreviewCard" class="glass-card p-4 sm:p-6 rounded-2xl shadow-warm-glow border-2 border-gray-200 flex flex-col gap-4 min-h-[460px] md:min-h-[500px] lg:min-h-[520px] lg:h-auto lg:sticky lg:top-24 relative transition-colors duration-300">
-                <button id="previewFavBtn" type="button" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
+                <button id="previewFavBtn" type="button" aria-label="Añadir o quitar de mi ruta" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
-                <button id="previewPhotoButton" type="button" hidden onclick="openMenuGallery()" class="vl-preview-photo" aria-label="Ver fotografías del lugar"><img id="previewPlacePhoto" alt="" decoding="async"><span id="previewPhotoLabel"></span></button>
+                <button id="previewPhotoButton" type="button" hidden onclick="openMenuGallery()" class="vl-preview-photo" aria-label="Ver fotografías del lugar"><img id="previewPlacePhoto" alt="" decoding="async" loading="lazy"><span id="previewPhotoLabel"></span></button>
                 <div>
                     <div class="flex flex-wrap items-center gap-2 mb-2 pr-12">
                         <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded-lg text-xs uppercase">Hueca Tradicional</span>
