@@ -410,6 +410,29 @@
 @media(max-width:767px){#previewBusinessProfile{margin-top:14px;padding-top:14px}#previewBusinessProfile .vl-profile-links>a{flex:1 1 120px}}
 </style>
 <style id="vl-place-promotion-2026">#previewPromotion:not(.hidden){display:block;border:1px solid #f59e0b;background:linear-gradient(135deg,#fff7ed,#fffbeb);padding:14px;border-radius:14px;color:#78350f}#previewPromotion .vl-promo-eyebrow{display:block;font-size:10px;letter-spacing:.08em;font-weight:900;color:#9a3412;margin-bottom:5px}#previewPromotion strong{font-size:14px;line-height:1.35;color:#7c2d12}#previewPromotion .vl-promo-content>div{min-width:0;overflow-wrap:anywhere;line-height:1.55}#previewPromotion a{display:inline-flex;align-items:center;min-height:40px;padding:6px 0;text-underline-offset:3px;overflow-wrap:anywhere}#previewPromotion a:focus-visible{outline:3px solid #d97706;outline-offset:3px}</style>
+<style id="vl-place-card-visual-redesign">
+/* Diseño editorial de la ficha de la parada: imagen protagonista y datos jerarquizados. */
+#mapPreviewCard{background:linear-gradient(155deg,#fff 0%,#fff 66%,#f8fafc 100%);border:1px solid #e2e8f0!important;box-shadow:0 18px 48px rgba(15,23,42,.12);overflow:hidden}
+#mapPreviewCard #previewPhotoButton:not([hidden]){position:relative;display:block;width:100%;border-radius:17px;overflow:hidden;background:#e9eff5;box-shadow:0 8px 22px rgba(15,23,42,.1)}
+#mapPreviewCard #previewPhotoButton img{display:block;width:100%;height:clamp(185px,24vw,290px);object-fit:contain;background:linear-gradient(135deg,#edf2f7,#fff)}
+#mapPreviewCard #previewPhotoLabel{position:absolute;bottom:10px;left:10px;right:10px;width:max-content;max-width:calc(100% - 20px);padding:8px 12px;border-radius:10px;background:rgba(15,23,42,.86);color:#fff;font-size:12px;font-weight:800;line-height:1.4;backdrop-filter:blur(8px);white-space:normal}
+#mapPreviewCard #previewTitle{color:#142c44;font-weight:900;line-height:1.18;letter-spacing:-.025em}
+#mapPreviewCard #previewDesc{color:#475569;line-height:1.65;font-size:13px}
+#mapPreviewCard #previewTag{letter-spacing:.035em}
+#mapPreviewCard #previewDish,#mapPreviewCard #previewHours,#mapPreviewCard #previewAddress{line-height:1.5;color:#334155}
+#mapPreviewCard .vl-place-actions{border-top:1px solid #e2e8f0}
+#mapPreviewCard .vl-place-actions-head{margin-bottom:4px}
+#mapPreviewCard .vl-place-actions>button,#mapPreviewCard .vl-place-actions>div>button{min-height:43px}
+#mapPreviewCard #previewFavBtn{top:13px;right:13px;background:rgba(15,23,42,.88);color:#fde68a;border-color:rgba(255,255,255,.65)}
+@media(max-width:767px){
+ #mapPreviewCard{padding:14px!important;gap:13px!important;border-radius:20px}
+ #mapPreviewCard #previewPhotoButton img{height:225px;max-height:225px;object-fit:contain}
+ #mapPreviewCard #previewTitle{font-size:clamp(21px,5.6vw,27px)}
+ #mapPreviewCard #previewDesc{font-size:13px}
+ #mapPreviewCard #previewPhotoLabel{font-size:11px;padding:7px 10px}
+}
+@media(max-width:370px){#mapPreviewCard #previewPhotoButton img{height:180px;max-height:180px}}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
