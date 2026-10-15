@@ -786,32 +786,41 @@
 <script id="vl-visible-photo-carousel-script">
 (()=>{'use strict';const init=()=>{const root=document.querySelector('#inicio'),layer=root?.querySelector('.vl-visible-photo-carousel'),counter=root?.querySelector('#vl-photo-counter'),credit=root?.querySelector('.vl-photo-credit');if(!layer)return;let index=0;const fallback=[...layer.querySelectorAll('img')].map(img=>img.getAttribute('src'));let urls=fallback;const show=()=>{const images=[...layer.querySelectorAll('img')];images.forEach((img,i)=>img.classList.toggle('is-current',i===index));if(counter)counter.textContent=String(index+1).padStart(2,'0')+' / '+String(images.length).padStart(2,'0');if(credit){const original=document.querySelectorAll('#heroSlidesContainer img.hero-slide')[index];const match=original?.alt?.match(/(?:por|Fotografía:)\s+(.+)$/i);credit.textContent='Foto: '+(match?.[1]||'Geovanny Muñoz')}};const sync=()=>{const originals=[...document.querySelectorAll('#heroSlidesContainer img.hero-slide')];const next=originals.map(img=>img.getAttribute('src')||img.src).filter(Boolean);if(!next.length)return;if(next.join('|')===urls.join('|'))return;urls=next;layer.replaceChildren(...urls.map(src=>{const img=document.createElement('img');img.src=src;img.alt='';img.addEventListener('error',()=>{img.src='/assets/photos/centro-loja-torre-reloj.webp'},{once:true});return img}));index=Math.min(index,urls.length-1);show()};const step=n=>{sync();const count=layer.querySelectorAll('img').length;if(!count)return;index=(index+n+count)%count;show()};root.querySelector('#vl-photo-prev')?.addEventListener('click',()=>step(-1));root.querySelector('#vl-photo-next')?.addEventListener('click',()=>step(1));show();let timer;const configure=()=>{const s=window.__vlHeroCarouselSettings||{};const seconds=Math.max(2,Math.min(60,Number(s.interval)||6));const position=matchMedia('(max-width:800px)').matches&&s.mobilePosition&&s.mobilePosition!=='same'?s.mobilePosition:(s.position||'50% 50%');layer.style.setProperty('--vl-carousel-position',position);clearInterval(timer);timer=setInterval(()=>{sync();if(!document.hidden&&!matchMedia('(prefers-reduced-motion: reduce)').matches)step(1)},seconds*1000);sync()};window.addEventListener('vl-hero-settings-updated',configure);configure();setInterval(sync,4000)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init()})();
 </script>
-    <style id="vl-story-magazine-redesign">
-/* Tarjetas editoriales aisladas: imagen arriba, contenido siempre debajo. */
-.vl-geovanny-story .vl-story-magazine{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:auto!important;gap:clamp(16px,2.4vw,30px)!important;align-items:stretch!important}
-.vl-geovanny-story .vl-story-magazine>a,.vl-geovanny-story .vl-story-magazine>a:first-child,.vl-geovanny-story .vl-story-magazine>a:nth-child(2),.vl-geovanny-story .vl-story-magazine>a:nth-child(3){grid-column:auto!important;grid-row:auto!important;display:flex!important;flex-direction:column!important;position:relative!important;isolation:isolate!important;width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important;margin:0!important;padding:0!important;overflow:hidden!important;border-radius:22px!important;background:#fff!important;border:1px solid #e5e4de!important;box-shadow:0 14px 40px rgba(12,36,42,.11)!important;text-decoration:none!important;transform:none!important}
-.vl-geovanny-story .vl-story-magazine>a::before,.vl-geovanny-story .vl-story-magazine>a::after{display:none!important;content:none!important}
-.vl-geovanny-story .vl-story-magazine .vl-story-magazine-image,.vl-geovanny-story .vl-story-magazine>a:first-child .vl-story-magazine-image{position:relative!important;inset:auto!important;display:block!important;flex:none!important;width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:4/3!important;overflow:hidden!important;background:#e6e9e5!important}
-.vl-geovanny-story .vl-story-magazine .vl-story-magazine-image img{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;filter:none!important;opacity:1!important;transition:transform .45s ease!important}
-.vl-geovanny-story .vl-story-magazine>a:hover .vl-story-magazine-image img{transform:scale(1.035)!important}
-.vl-geovanny-story .vl-story-magazine .vl-story-magazine-caption{position:relative!important;inset:auto!important;z-index:1!important;display:flex!important;flex:1 1 auto!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;gap:10px!important;width:100%!important;min-height:158px!important;padding:24px 25px 26px!important;background:#fff!important;background-image:none!important;color:#142b33!important;text-align:left!important;opacity:1!important;transform:none!important}
-.vl-geovanny-story .vl-story-magazine .vl-story-magazine-caption small{position:static!important;display:block!important;color:#86511b!important;font-size:11px!important;font-weight:800!important;letter-spacing:.14em!important;text-shadow:none!important}
-.vl-geovanny-story .vl-story-magazine .vl-story-magazine-caption strong{position:static!important;inset:auto!important;display:block!important;color:#142b33!important;font-size:clamp(1.4rem,2vw,1.95rem)!important;line-height:1.18!important;font-weight:800!important;text-shadow:none!important;opacity:1!important;transform:none!important;white-space:normal!important}
-.vl-geovanny-story .vl-story-magazine .vl-story-magazine-caption>span{position:static!important;display:block!important;color:#455e65!important;font-size:14px!important;line-height:1.5!important;font-weight:600!important;text-shadow:none!important}
-.vl-geovanny-story .vl-story-magazine>a:focus-visible{outline:3px solid #ad752c!important;outline-offset:4px!important}
-@media(max-width:850px){.vl-geovanny-story .vl-story-magazine{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-@media(max-width:600px){.vl-geovanny-story .vl-story-magazine{grid-template-columns:minmax(0,1fr)!important;gap:20px!important}.vl-geovanny-story .vl-story-magazine .vl-story-magazine-image{aspect-ratio:16/11!important}.vl-geovanny-story .vl-story-magazine .vl-story-magazine-caption{min-height:0!important;padding:21px 22px 24px!important}}
-@media(prefers-reduced-motion:reduce){.vl-geovanny-story .vl-story-magazine .vl-story-magazine-image img{transition:none!important}}
+    <style id="loja-miradas-editorial">
+/* Independent component: no legacy story-grid selectors or image overlays. */
+#loja-miradas{background:#edf3f7;color:#12364b;padding:clamp(48px,7vw,100px) clamp(20px,4vw,64px)}
+#loja-miradas .miradas-inner{max-width:1280px;margin:auto}
+#loja-miradas .miradas-heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:36px}
+#loja-miradas .miradas-heading span{color:#375c72!important;font-size:11px;font-weight:800;letter-spacing:.2em}
+#loja-miradas h2{color:#12364b!important;font-size:clamp(2.5rem,5vw,4.8rem);font-weight:800;line-height:1.05;letter-spacing:-.055em;margin:12px 0 0}
+#loja-miradas .miradas-heading>a{color:#174e70!important;font-weight:700;text-decoration:underline;text-underline-offset:6px}
+#loja-miradas .miradas-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;align-items:start}
+#loja-miradas .miradas-grid>a{display:flex;flex-direction:column;background:#fff!important;color:#12364b!important;border-radius:4px 4px 22px 22px;overflow:hidden;text-decoration:none;box-shadow:0 14px 36px #12364b12;border:1px solid #d7e2e9}
+#loja-miradas .miradas-grid>a::before,#loja-miradas .miradas-grid>a::after{content:none!important;display:none!important}
+#loja-miradas .miradas-image{display:block;background:#dce6eb}
+#loja-miradas .miradas-image img{display:block;position:static;width:100%;height:auto;max-height:none;object-fit:contain;filter:none;opacity:1;transform:none}
+#loja-miradas .miradas-caption{display:flex;position:static;flex-direction:column;gap:12px;padding:26px;background:#fff!important;color:#12364b!important}
+#loja-miradas .miradas-caption small{color:#375c72!important;font-size:11px;letter-spacing:.16em;font-weight:800}
+#loja-miradas .miradas-title{position:static!important;display:block;color:#12364b!important;font-size:clamp(1.5rem,2.1vw,2rem);font-weight:800;line-height:1.15;text-shadow:none!important}
+#loja-miradas .miradas-caption>span{color:#375c72!important;font-size:14px;line-height:1.5}
+#loja-miradas .miradas-caption .miradas-author{border-top:1px solid #d7e2e9;padding-top:16px;margin-top:8px;font-size:12px;color:#4a6170!important}
+#loja-miradas .miradas-grid>a:hover{box-shadow:0 18px 44px #12364b25}
+#loja-miradas a:focus-visible{outline:3px solid #15628d;outline-offset:5px}
+#loja-miradas .miradas-credit{font-size:13px;color:#375c72!important;margin:28px 0 0}
+#loja-miradas .miradas-credit a{color:#174e70!important;text-decoration:underline}
+@media(min-width:901px){#loja-miradas .miradas-grid>a:nth-child(2){margin-top:64px}#loja-miradas .miradas-grid>a:nth-child(3){margin-top:128px}}
+@media(max-width:900px){#loja-miradas .miradas-grid{gap:18px}#loja-miradas .miradas-caption{padding:20px}#loja-miradas .miradas-heading{align-items:start;flex-direction:column}}
+@media(max-width:650px){#loja-miradas .miradas-grid{grid-template-columns:1fr;gap:28px}#loja-miradas .miradas-caption{padding:24px}#loja-miradas .miradas-heading{margin-bottom:28px}}
 </style>
-    <section class="vl-geovanny-story" aria-label="Postales de Loja">
-      <div class="vl-geovanny-story-inner">
-        <div class="vl-geovanny-story-heading"><div><span>UNA TIERRA PARA DESCUBRIR</span><h2>Loja, en cada mirada.</h2></div><a href="#loja-en-imagenes">Explorar todas las fotografías ↗</a></div>
-        <div class="vl-geovanny-story-grid vl-story-magazine">
-          <a href="#loja-en-imagenes" aria-label="Explorar fotografías del parque Jipiro"><span class="vl-story-magazine-image"><img src="assets/photos/jipiro-pagoda-laguna.webp" alt="Parque Jipiro y su laguna" loading="lazy"></span><span class="vl-story-magazine-caption"><small>01 · NATURALEZA</small><strong>La magia de Jipiro</strong><span>Un rincón para descubrir ↗</span></span></a>
-          <a href="#loja-en-imagenes" aria-label="Explorar fotografías de Villonaco"><span class="vl-story-magazine-image"><img src="assets/photos/sol-eolicas.webp" alt="Sol entre aerogeneradores de Villonaco" loading="lazy"></span><span class="vl-story-magazine-caption"><small>02 · PAISAJES</small><strong>Villonaco al sol</strong><span>Vistas que sorprenden ↗</span></span></a>
-          <a href="#loja-en-imagenes" aria-label="Explorar fotografías de los atardeceres de Loja"><span class="vl-story-magazine-image"><img src="assets/photos/atardecer-loja.webp" alt="Atardecer en Loja" loading="lazy"></span><span class="vl-story-magazine-caption"><small>03 · LA CIUDAD</small><strong>Atardeceres que inspiran</strong><span>La luz de Loja ↗</span></span></a>
+    <section id="loja-miradas" data-vl-surface="light" aria-label="Postales de Loja">
+      <div class="miradas-inner">
+        <div class="miradas-heading"><div><span>UNA TIERRA PARA DESCUBRIR</span><h2>Loja, en cada mirada.</h2></div><a href="#loja-en-imagenes">Explorar todas las fotografías ↗</a></div>
+        <div class="miradas-grid">
+          <a href="#loja-en-imagenes" aria-label="Explorar fotografías del parque Jipiro"><span class="miradas-image"><img src="assets/photos/jipiro-pagoda-laguna.webp" alt="Parque Jipiro y su laguna" loading="lazy"></span><span class="miradas-caption"><small>01 · NATURALEZA</small><strong class="miradas-title">La magia de Jipiro</strong><span>Un rincón para descubrir ↗</span><span class="miradas-author">Fotografía · Geovanny Muñoz</span></span></a>
+          <a href="#loja-en-imagenes" aria-label="Explorar fotografías de Villonaco"><span class="miradas-image"><img src="assets/photos/sol-eolicas.webp" alt="Sol entre aerogeneradores de Villonaco" loading="lazy"></span><span class="miradas-caption"><small>02 · PAISAJES</small><strong class="miradas-title">Villonaco al sol</strong><span>Vistas que sorprenden ↗</span><span class="miradas-author">Fotografía · Geovanny Muñoz</span></span></a>
+          <a href="#loja-en-imagenes" aria-label="Explorar fotografías de los atardeceres de Loja"><span class="miradas-image"><img src="assets/photos/atardecer-loja.webp" alt="Atardecer en Loja" loading="lazy"></span><span class="miradas-caption"><small>03 · LA CIUDAD</small><strong class="miradas-title">Atardeceres que inspiran</strong><span>La luz de Loja ↗</span><span class="miradas-author">Fotografía · Geovanny Muñoz</span></span></a>
         </div>
-        <p class="vl-geovanny-story-credit">Fotografías: Geovanny Muñoz · <a href="https://www.instagram.com/geo_munoz/" target="_blank" rel="noopener noreferrer">@geo_munoz</a></p>
+        <p class="miradas-credit">Fotografías: Geovanny Muñoz · <a href="https://www.instagram.com/geo_munoz/" target="_blank" rel="noopener noreferrer">@geo_munoz</a></p>
       </div>
     </section>
     <nav class="vl-discovery-nav" aria-label="Accesos rápidos a VisitaLoja">
@@ -8831,7 +8840,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 })();
 </script>
 
-    <script src="js/photo-library-public.js?v=1" defer></script>
+    <script src="js/photo-library-public.js?v=2" defer></script>
     <script src="js/chabaquito-runtime-config.js" defer></script>
     <script src="js/chabaquito-public-v2.js?v=70" defer></script>
     <script src="js/welcome-settings.js?v=78" defer></script>
