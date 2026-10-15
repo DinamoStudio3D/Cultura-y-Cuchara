@@ -25,9 +25,9 @@
   const recovery=doc.getElementById('merchantResetPassword');
   let busy=false;
   function lock(value){button.disabled=google.disabled=value;if(recovery)recovery.disabled=value;}
-  async function signIn(action){if(busy)return;busy=true;lock(true);notice.textContent='Ingresando…';try{await action();notice.textContent='';}catch(_){notice.textContent='No se pudo ingresar. Revisa tus credenciales, conexión y método de acceso autorizado.';}finally{password.value='';busy=false;lock(false);}}
+  async function signIn(action){if(busy)return;busy=true;lock(true);notice.textContent='Ingresando…';try{await action();notice.textContent='';}catch(error){notice.textContent=root.VisitaLojaAccountAccess?root.VisitaLojaAccountAccess.errorMessage(error):'No se pudo ingresar. Revisa tus credenciales, conexión y método de acceso autorizado.';}finally{password.value='';busy=false;lock(false);}}
   form.addEventListener('submit',event=>{event.preventDefault();const value=password.value;password.value='';return signIn(()=>auth.signInWithEmailAndPassword(doc.getElementById('merchantLoginEmail').value.trim(),value));});
-  google.onclick=()=>signIn(()=>auth.signInWithPopup(provider()));
+  google.onclick=()=>signIn(()=>root.VisitaLojaAccountAccess?root.VisitaLojaAccountAccess.google(auth,provider):auth.signInWithPopup(provider()));
   if(recovery)recovery.onclick=async()=>{
    if(busy)return;
    const email=doc.getElementById('merchantLoginEmail').value.trim();

@@ -330,7 +330,7 @@
 <script src="js/public-color-contract.js?v=55"></script>
 <link rel="stylesheet" href="css/site-spacing-v105.css?v=105"><link rel="stylesheet" href="/css/public-brand-blue-v202.css">
 <link rel="stylesheet" href="css/photo-credits.css?v=4">
-</head>
+<script src="js/account-access.js?v=1"></script></head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
@@ -3325,6 +3325,7 @@
         }
 
         let syncedFavoritesUserId = null;
+        let visitorAccountGeneration = 0;
         let favoritesSyncTimer = null;
 
         function refreshFavoritesUI() {
@@ -3368,6 +3369,7 @@
             const progressRef = db.collection('userProgress').doc(user.uid);
             try {
                 const snapshot = await progressRef.get({ source: 'server' });
+                if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 const localFavorites = [...new Set(favoriteLocations.map(String))];
                 if (snapshot.exists) {
                     const remoteFavorites = Array.isArray(snapshot.data().favorites) ? snapshot.data().favorites.map(String) : [];
@@ -3392,6 +3394,7 @@
             if (!user || !db) return;
             try {
                 const snapshot = await db.collection('securePassportStamps').where('userId', '==', user.uid).get();
+                if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 const secureIds = snapshot.docs.map(doc => doc.data().placeId).filter(Boolean);
                 if (secureIds.length) {
                     visitedLocations = [...new Set([...visitedLocations, ...secureIds])];
@@ -3404,16 +3407,21 @@
         }
 
         async function handleVisitorAuthState(user) {
+            const generation=++visitorAccountGeneration;
+            if(favoritesSyncTimer)clearTimeout(favoritesSyncTimer);
             currentVisitorProfile = null;
             updateVisitorAccountLabels(user);
             if (!user || !db) {
                 showVisitorAccountView('accountSignedOut');
                 return;
             }
+            showVisitorAccountView('accountSignedOut');
             try {
                 await syncSecurePassportStamps(user);
+                if(generation!==visitorAccountGeneration||!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 await syncAccountFavorites(user);
                 const snapshot = await readVisitorProfileSecurely(user);
+                if(generation!==visitorAccountGeneration||!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 if (snapshot.exists && snapshot.data().profileComplete === true && /^\d{4}-\d{2}-\d{2}$/.test(snapshot.data().birthDate||'') && snapshot.data().documentNumber) {
                     currentVisitorProfile = snapshot.data();
                     renderVisitorReady(user, currentVisitorProfile);
@@ -3422,6 +3430,7 @@
                     showVisitorAccountView('visitorProfileForm');
                 }
             } catch (error) {
+                if(generation!==visitorAccountGeneration||!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 fillVisitorProfileForm(user);
                 showVisitorAccountView('visitorProfileForm');
                 const code = error?.code || 'error-desconocido';
@@ -3443,14 +3452,12 @@
             try {
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
-                const result = await visitorAuth.signInWithPopup(provider);
+                const result = await VisitaLojaAccountAccess.google(visitorAuth,()=>provider);
                 if (!result?.user) throw new Error('auth/no-user-returned');
                 updateVisitorAccountLabels(result.user);
                 openModal('accountModal');
             } catch (error) {
-                const blocked = error?.code === 'auth/popup-blocked';
-                const domain = error?.code === 'auth/unauthorized-domain';
-                setVisitorMessage('visitorAuthMessage', domain ? 'Debes autorizar este dominio en Firebase Authentication para activar el ingreso con Google.' : blocked ? 'El navegador bloqueó la ventana de Google. Permite ventanas emergentes e inténtalo nuevamente.' : 'No se pudo iniciar sesión con Google. Inténtalo nuevamente.', true);
+                setVisitorMessage('visitorAuthMessage', VisitaLojaAccountAccess.errorMessage(error), true);
             } finally {
                 button.disabled = false;
             }

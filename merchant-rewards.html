@@ -13,7 +13,7 @@
     <style>
         :root{color-scheme:dark}html,body{min-height:100%;background:#07100e}body{background:radial-gradient(circle at 15% 0,rgba(16,185,129,.2),transparent 32rem),radial-gradient(circle at 100% 20%,rgba(14,165,233,.15),transparent 28rem),#07100e}.card{background:linear-gradient(145deg,rgba(16,31,28,.97),rgba(7,16,14,.98));border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 70px rgba(0,0,0,.4)}.field{width:100%;border:1px solid #334155;background:#091613;border-radius:.85rem;padding:.85rem 1rem;color:#fff;outline:none}.field:focus{border-color:#34d399;box-shadow:0 0 0 3px rgba(52,211,153,.14)}button,a{touch-action:manipulation}@media(max-width:640px){.field,input{font-size:16px!important}button,a{min-height:44px}body{padding-bottom:env(safe-area-inset-bottom)}header{padding-top:env(safe-area-inset-top)}}
     </style>
-<script src="js/merchant-reward-state-v231.js"></script></head>
+<script src="js/merchant-reward-state-v231.js"></script><script src="js/account-access.js?v=1"></script></head>
 <body class="text-white antialiased">
     <header class="border-b border-white/10 bg-black/20 backdrop-blur-xl">
         <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
@@ -78,7 +78,7 @@
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};
-const merchantApp=firebase.initializeApp(firebaseConfig,'viveLojaMerchant'),merchantAuth=merchantApp.auth(),merchantDb=merchantApp.firestore();
+const merchantApp=firebase.initializeApp(firebaseConfig),merchantAuth=merchantApp.auth(),merchantDb=merchantApp.firestore();
 merchantAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 let merchantAccess=null,currentRewardClaim=null,accessUnsubscribe=null,rewardDeliveryBusy=false;
 const views=['loginView','pendingView','suspendedView','verifierView'];
@@ -87,9 +87,9 @@ function showNotice(id,text,success=false){const box=document.getElementById(id)
 function escapeMerchantHtml(value){return String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));}
 function authMessage(error){return ({'auth/invalid-credential':'Correo o contraseña incorrectos.','auth/user-disabled':'Esta cuenta fue desactivada.','auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','auth/popup-closed-by-user':'Se cerró la ventana de Google antes de ingresar.'})[error?.code]||'No se pudo iniciar sesión. Revisa los datos e inténtalo nuevamente.';}
 function togglePassword(){const field=document.getElementById('merchantPassword');field.type=field.type==='password'?'text':'password';}
-document.getElementById('merchantLoginForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('merchantLoginButton');button.disabled=true;try{await merchantAuth.signInWithEmailAndPassword(document.getElementById('merchantEmail').value.trim(),document.getElementById('merchantPassword').value);}catch(error){showNotice('loginMessage',authMessage(error));}finally{button.disabled=false;}});
-document.getElementById('merchantGoogleButton').addEventListener('click',async()=>{try{await merchantAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());}catch(error){showNotice('loginMessage',authMessage(error));}});
-async function resetMerchantPassword(){const email=document.getElementById('merchantEmail').value.trim();if(!email){showNotice('loginMessage','Escribe primero el correo de acceso.');return;}try{await merchantAuth.sendPasswordResetEmail(email);showNotice('loginMessage','Enviamos las instrucciones para cambiar la contraseña.',true);}catch(error){showNotice('loginMessage',authMessage(error));}}
+document.getElementById('merchantLoginForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('merchantLoginButton');button.disabled=true;try{await merchantAuth.signInWithEmailAndPassword(document.getElementById('merchantEmail').value.trim(),document.getElementById('merchantPassword').value);}catch(error){showNotice('loginMessage',VisitaLojaAccountAccess.errorMessage(error));}finally{button.disabled=false;}});
+document.getElementById('merchantGoogleButton').addEventListener('click',async()=>{try{await VisitaLojaAccountAccess.google(merchantAuth,()=>new firebase.auth.GoogleAuthProvider());}catch(error){showNotice('loginMessage',VisitaLojaAccountAccess.errorMessage(error));}});
+async function resetMerchantPassword(){const email=document.getElementById('merchantEmail').value.trim();if(!email){showNotice('loginMessage','Escribe primero el correo de acceso.');return;}try{await merchantAuth.sendPasswordResetEmail(email);showNotice('loginMessage','Enviamos las instrucciones para cambiar la contraseña.',true);}catch(error){showNotice('loginMessage',VisitaLojaAccountAccess.errorMessage(error));}}
 async function ensureMerchantRequest(user){const ref=merchantDb.collection('missionRewardMerchantRequests').doc(user.uid),snapshot=await ref.get();if(!snapshot.exists)await ref.set({uid:user.uid,email:user.email||'',displayName:user.displayName||'',status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()});document.getElementById('pendingEmail').textContent=user.email||'';showView('pendingView');}
 function applyMerchantAccess(user,data){merchantAccess=data;if(data.active===false){showView('suspendedView');return;}document.getElementById('merchantBusinessName').textContent=data.businessName||data.displayName||'Negocio autorizado';document.getElementById('merchantSessionEmail').textContent=user.email||'';showView('verifierView');loadMerchantInventory(data.campaignIds||[],data.passportGrants||[]);}
 async function loadMerchantInventory(campaignIds,passportGrants){

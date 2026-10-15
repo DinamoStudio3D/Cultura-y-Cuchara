@@ -363,7 +363,7 @@ assert(admin.includes('function authorizeMissionMerchant'), 'El administrador pu
 assert(admin.includes('function prepareExistingMissionRewardCodes'), 'Los códigos anteriores pueden prepararse para el verificador');
 assert(merchantRewards.includes('signInWithEmailAndPassword'), 'El negocio puede ingresar con correo y contraseña');
 assert(merchantRewards.includes('sendPasswordResetEmail'), 'El negocio puede recuperar su contraseña');
-assert(merchantRewards.includes('signInWithPopup'), 'Google permanece como forma alternativa de ingreso');
+assert(merchantRewards.includes('VisitaLojaAccountAccess.google(merchantAuth'), 'Google permanece como forma alternativa de ingreso');
 assert(merchantRewards.includes('function verifyRewardCode'), 'El portal permite verificar un código');
 assert(merchantRewards.includes('function deliverReward'), 'El portal permite confirmar una entrega');
 assert(merchantRewards.includes('function loadMerchantInventory'), 'El negocio ve las existencias exactas de sus campañas');

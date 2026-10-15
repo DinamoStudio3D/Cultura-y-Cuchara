@@ -2,6 +2,7 @@
 (function(root){
  'use strict';
  function errorMessage(error){
+  if(root.VisitaLojaAccountAccess&&['auth/unauthorized-domain','auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request','auth/account-exists-with-different-credential','auth/credential-already-in-use','auth/user-disabled','auth/web-storage-unsupported','auth/operation-not-supported-in-this-environment'].includes(error?.code))return root.VisitaLojaAccountAccess.errorMessage(error);
   return ({'auth/unauthorized-domain':'Google no puede iniciar sesión desde este dominio de Preview. El administrador debe autorizar el dominio en Firebase Authentication. Puedes usar correo si tu cuenta ya tiene contraseña.',
    'auth/popup-blocked':'El navegador bloqueó la ventana de Google. Permite las ventanas emergentes para este sitio y vuelve a intentarlo.',
    'auth/popup-closed-by-user':'La ventana de Google se cerró antes de completar el acceso. Vuelve a intentarlo.',
@@ -31,7 +32,7 @@
    catch(error){say(errorMessage(error));return false;}
    finally{clearSecrets();busy=false;lock(false);}
   }
-  google.onclick=()=>run(()=>auth.signInWithPopup(provider()));
+  google.onclick=()=>run(()=>root.VisitaLojaAccountAccess?root.VisitaLojaAccountAccess.google(auth,provider):auth.signInWithPopup(provider()));
   form.addEventListener('submit',event=>{
    event.preventDefault();if(busy)return;
    const value=password.value,account=email.value.trim();
