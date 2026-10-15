@@ -50,3 +50,21 @@
   body #inicio.vl-welcome .vl-managed-photo-credit {position:relative!important;inset:auto!important;z-index:5!important;max-width:none!important;width:fit-content!important;padding:6px 10px!important;margin:14px 0 0!important;border-radius:8px!important;font-size:11px!important;line-height:1.5!important;}
  }
 }
+
+/* Responsive contrast audit: explicit readable labels, icons and focus states. */
+@layer vl-colors {
+ @media(max-width:760px) {
+  body #inicio.vl-welcome .vl-editorial-quicklinks a :is(span,strong,small,i,svg),
+  body #inicio.vl-welcome .vl-editorial-quicklinks a { color:#17324f!important; }
+  body #inicio.vl-welcome .vl-welcome-actions :is(a,button) :is(span,strong,small,i),
+  body #inicio.vl-welcome .vl-welcome-actions :is(a,button) { color:#fff!important; }
+  body #inicio.vl-welcome .vl-welcome-search :is(label,input) { color:#17324f!important; }
+ }
+}
+@layer vl-layout {
+ @media(max-width:760px) {
+  body #inicio.vl-welcome .vl-editorial-quicklinks a,
+  body #inicio.vl-welcome .vl-welcome-actions :is(a,button) { overflow-wrap:anywhere; }
+  body #inicio.vl-welcome :is(.vl-editorial-quicklinks a,.vl-welcome-actions a,.vl-welcome-actions button,.vl-welcome-primary):focus-visible { outline:3px solid #f2bd79!important; outline-offset:3px!important; }
+ }
+}
