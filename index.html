@@ -409,6 +409,7 @@
 #previewBusinessProfile .vl-profile-links>a:focus-visible{outline:3px solid #d97706;outline-offset:2px}
 @media(max-width:767px){#previewBusinessProfile{margin-top:14px;padding-top:14px}#previewBusinessProfile .vl-profile-links>a{flex:1 1 120px}}
 </style>
+<style id="vl-place-promotion-2026">#previewPromotion:not(.hidden){display:block;border:1px solid #f59e0b;background:linear-gradient(135deg,#fff7ed,#fffbeb);padding:14px;border-radius:14px;color:#78350f}#previewPromotion .vl-promo-eyebrow{display:block;font-size:10px;letter-spacing:.08em;font-weight:900;color:#9a3412;margin-bottom:5px}#previewPromotion strong{font-size:14px;line-height:1.35;color:#7c2d12}#previewPromotion .vl-promo-content>div{min-width:0;overflow-wrap:anywhere;line-height:1.55}#previewPromotion a{display:inline-flex;align-items:center;min-height:40px;padding:6px 0;text-underline-offset:3px;overflow-wrap:anywhere}#previewPromotion a:focus-visible{outline:3px solid #d97706;outline-offset:3px}</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -4409,8 +4410,9 @@
             const title=currentLang==='en'?(promo.titleEn||promo.title||'Current promotion'):(promo.title||promo.titleEn||'Promoción vigente');
             const description=currentLang==='en'?(promo.descriptionEn||promo.description||'Check the benefit available at this stop.'):(promo.description||promo.descriptionEn||'Consulta el beneficio disponible en esta parada.');
             const buttonText=currentLang==='en'?(promo.buttonTextEn||'View promotion'):(promo.buttonText||'Conocer promoción');
-            const action=promo.buttonUrl?`<a href="${escapeHTML(promo.buttonUrl)}" target="_blank" rel="noopener noreferrer" onclick="trackBusinessEvent('${String(loc.id).replace(/'/g,"\\'")}','promo')" class="mt-2 inline-flex items-center font-black text-orange-700 underline">${escapeHTML(buttonText)} <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>`:'';
-            panel.innerHTML=`<div class="flex items-start gap-2"><i class="fa-solid fa-gift text-orange-600 mt-0.5"></i><div><strong class="block">${escapeHTML(title)}</strong><span class="block mt-0.5">${escapeHTML(description)}</span>${action}</div></div>`;
+            const promotionUrl=safeBusinessProfileUrl(promo.buttonUrl);
+            const action=promotionUrl?`<a href="${escapeHTML(promotionUrl)}" target="_blank" rel="noopener noreferrer" onclick="trackBusinessEvent('${String(loc.id).replace(/'/g,"\\'")}','promo')" class="mt-2 inline-flex items-center font-black text-orange-700 underline">${escapeHTML(buttonText)} <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>`:'';
+            panel.innerHTML=`<div class="vl-promo-content flex items-start gap-2"><i class="fa-solid fa-gift text-orange-600 mt-0.5"></i><div class="min-w-0"><span class="vl-promo-eyebrow">${currentLang==="en"?"AVAILABLE PROMOTION":"PROMOCIÓN DISPONIBLE"}</span><strong class="block">${escapeHTML(title)}</strong><span class="block mt-0.5">${escapeHTML(description)}</span>${action}</div></div>`;
             panel.classList.remove('hidden');
         }
 
