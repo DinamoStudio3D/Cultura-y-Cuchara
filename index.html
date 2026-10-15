@@ -344,6 +344,32 @@
  #establecimientos #localesGrid > .local-item .vl18-tools{min-width:0}
 }
 </style>
+<style id="vl-map-place-mobile-polish-2026">
+/* Mobile-first presentation of the selected establishment; desktop remains unchanged. */
+#mapPreviewCard{min-width:0}
+#mapPreviewCard #previewTitle{overflow-wrap:anywhere;line-height:1.2}
+#mapPreviewCard #previewDesc,#mapPreviewCard #previewAddress,#mapPreviewCard #previewDish{overflow-wrap:anywhere}
+#mapPreviewCard :is(a,button):focus-visible{outline:3px solid #e6a326;outline-offset:3px}
+#mapPreviewCard .vl-place-actions :is(a,button){text-align:center}
+@media(max-width:639px){
+ #mapPreviewCard{padding:14px!important;gap:13px!important;min-height:0!important;border-radius:18px}
+ #mapPreviewCard #previewFavBtn{top:12px;right:12px;width:44px;height:44px}
+ #mapPreviewCard .vl-preview-photo{width:100%;max-width:100%;overflow:hidden}
+ #mapPreviewCard .vl-preview-photo img{max-width:100%}
+ #mapPreviewCard #previewTitle{font-size:1.35rem;line-height:1.25;padding-right:46px}
+ #mapPreviewCard #previewDesc{font-size:.875rem;line-height:1.55}
+ #mapPreviewCard #previewTag,#mapPreviewCard #previewOpenStatus{line-height:1.35;white-space:normal}
+ #mapPreviewCard .vl-place-actions{gap:10px}
+ #mapPreviewCard .vl-place-actions :is(a,button){min-height:44px}
+ #mapPreviewCard .vl-place-actions .grid{min-width:0}
+ #mapPreviewCard .vl-place-actions .grid>*{min-width:0;overflow-wrap:anywhere}
+ #mapPreviewCard #previewWhatsapp,#mapPreviewCard #previewGps{padding-inline:8px;gap:3px}
+}
+@media(max-width:360px){
+ #mapPreviewCard #previewWhatsapp,#mapPreviewCard #previewGps{font-size:11px}
+ #mapPreviewCard #previewTitle{font-size:1.2rem}
+}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
