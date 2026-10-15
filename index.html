@@ -330,7 +330,7 @@
 <script src="js/public-color-contract.js?v=55"></script>
 <link rel="stylesheet" href="css/site-spacing-v105.css?v=105"><link rel="stylesheet" href="/css/public-brand-blue-v202.css">
 <link rel="stylesheet" href="css/photo-credits.css?v=4">
-<script src="js/account-access.js?v=2"></script></head>
+<script src="js/account-access.js?v=2"></script><link rel="stylesheet" href="css/visitor-avatars.css?v=1"><script src="js/visitor-avatars.js?v=1"></script></head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
@@ -3176,7 +3176,8 @@
         }
 
         function fillVisitorProfileForm(user, profile = {}) {
-            document.getElementById('visitorAvatar').src = user.photoURL || 'https://i.imgur.com/mmWzHK4.png?visita-loja-v4';
+            document.getElementById('visitorAvatar').src = VisitaLojaAvatars.resolve(profile,user);
+            VisitaLojaAvatars.mount(document.getElementById('visitorProfileForm'),user,profile);
             document.getElementById('visitorWelcome').textContent = profile.fullName ? `Hola, ${profile.fullName}` : 'Completa tu perfil';
             document.getElementById('visitorGoogleEmail').textContent = user.email || '';
             document.getElementById('visitorFullName').value = profile.fullName || user.displayName || '';
@@ -3251,7 +3252,7 @@
         }
 
         function renderVisitorReady(user, profile) {
-            document.getElementById('accountReadyAvatar').src = user.photoURL || 'https://i.imgur.com/mmWzHK4.png?visita-loja-v4';
+            document.getElementById('accountReadyAvatar').src = VisitaLojaAvatars.resolve(profile,user);
             document.getElementById('accountReadyName').textContent = profile.fullName || user.displayName || 'Explorador de Loja';
             document.getElementById('accountReadyEmail').textContent = user.email || '';
             showVisitorAccountView('accountReady');
@@ -3504,7 +3505,7 @@
                     birthDate,
                     documentType: visitorTypeValue==='turista'?'passport':'cedula',
                     documentNumber,
-                    photoURL: user.photoURL || '',
+                    photoURL: document.querySelector('#visitorAvatarPicker input[name=profileAvatarURL]')?.value || user.photoURL || '',
                     profileComplete: true,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
