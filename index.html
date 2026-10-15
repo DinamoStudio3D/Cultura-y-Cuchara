@@ -799,7 +799,7 @@
 #loja-miradas .miradas-grid>a{display:flex;flex-direction:column;background:#fff!important;color:#12364b!important;border-radius:4px 4px 22px 22px;overflow:hidden;text-decoration:none;box-shadow:0 14px 36px #12364b12;border:1px solid #d7e2e9}
 #loja-miradas .miradas-grid>a::before,#loja-miradas .miradas-grid>a::after{content:none!important;display:none!important}
 #loja-miradas .miradas-image{display:block;background:#dce6eb}
-#loja-miradas .miradas-image img{display:block;position:static;width:100%;height:auto;max-height:none;object-fit:contain;filter:none;opacity:1;transform:none}
+#loja-miradas .miradas-image img{display:block;position:static;width:100%;height:clamp(220px,22vw,310px);max-height:none;object-fit:cover;filter:none;opacity:1;transform:none}
 #loja-miradas .miradas-caption{display:flex;position:static;flex-direction:column;gap:12px;padding:26px;background:#fff!important;color:#12364b!important}
 #loja-miradas .miradas-caption small{color:#375c72!important;font-size:11px;letter-spacing:.16em;font-weight:800}
 #loja-miradas .miradas-title{position:static!important;display:block;color:#12364b!important;font-size:clamp(1.5rem,2.1vw,2rem);font-weight:800;line-height:1.15;text-shadow:none!important}
@@ -811,7 +811,7 @@
 #loja-miradas .miradas-credit a{color:#174e70!important;text-decoration:underline}
 @media(min-width:901px){#loja-miradas .miradas-grid>a:nth-child(2),#loja-miradas .miradas-grid>a:nth-child(3){margin-top:0}}
 @media(max-width:900px){#loja-miradas .miradas-grid{gap:18px}#loja-miradas .miradas-caption{padding:20px}#loja-miradas .miradas-heading{align-items:start;flex-direction:column}}
-@media(max-width:650px){#loja-miradas .miradas-grid{grid-template-columns:1fr;gap:28px}#loja-miradas .miradas-caption{padding:24px}#loja-miradas .miradas-heading{margin-bottom:28px}}
+@media(max-width:650px){#loja-miradas .miradas-image img{height:clamp(210px,62vw,300px)}#loja-miradas .miradas-grid{grid-template-columns:1fr;gap:20px}#loja-miradas .miradas-caption{padding:24px}#loja-miradas .miradas-heading{margin-bottom:28px}}
 </style>
     <section id="loja-miradas" data-vl-surface="light" aria-label="Postales de Loja">
       <div class="miradas-inner">
