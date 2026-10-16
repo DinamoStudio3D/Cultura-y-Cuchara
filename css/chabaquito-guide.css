@@ -17,3 +17,4 @@
 @keyframes cg-hello{50%{transform:rotate(-8deg)}}@keyframes cg-hop{50%{transform:translateY(-10px) rotate(5deg)}}
 @media(max-width:420px){#chabaquito-guide .cg-scene{padding:16px;gap:10px}#chabaquito-guide .cg-body{padding:10px 16px 16px}#chabaquito-guide .cg-portrait{flex-basis:85px}#chabaquito-guide img{width:85px;height:115px}#chabaquito-guide h2{font-size:21px!important}}
 @media(prefers-reduced-motion:reduce){#chabaquito-guide img{animation:none!important}}
+#chabaquito-guide button.cg-primary{color:#fff!important;-webkit-text-fill-color:#fff!important}#chabaquito-guide button.cg-primary *{color:inherit!important;-webkit-text-fill-color:inherit!important}
