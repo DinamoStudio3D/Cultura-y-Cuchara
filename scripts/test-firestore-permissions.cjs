@@ -53,6 +53,16 @@ test('owner can edit own commercial fields but not another place',async()=>{
  await assertSucceeds(updateDoc(doc(auth('owner1'),'locales','placeA'),data));
  await assertFails(updateDoc(doc(auth('owner1'),'locales','placeB'),data));
 });
+test('legacy description field can be edited by its assigned owner only',async()=>{
+ await env.withSecurityRulesDisabled(async context=>{
+  await setDoc(doc(context.firestore(),'locales','legacyPlace'),{description:'Descripción anterior',phone:'',whatsapp:'',hours:''});
+  await setDoc(doc(context.firestore(),'missionRewardMerchants','legacyOwner'),{active:true,placeIds:['legacyPlace']});
+ });
+ const update={description:'Descripción actualizada',merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'legacyOwner'};
+ await assertSucceeds(updateDoc(doc(auth('legacyOwner'),'locales','legacyPlace'),update));
+ await assertFails(updateDoc(doc(auth('other'),'locales','legacyPlace'),{description:'Intrusión',merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'other'}));
+ await assertFails(updateDoc(doc(auth('legacyOwner'),'locales','legacyPlace'),{published:false,merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'legacyOwner'}));
+});
 test('businessAccess owner works without legacy merchant assignment',async()=>{
  await env.withSecurityRulesDisabled(async context=>{
   const db=context.firestore();
