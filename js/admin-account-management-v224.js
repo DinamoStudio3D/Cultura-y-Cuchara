@@ -5,9 +5,9 @@
   if(!user?.uid)return false;
   try{
    const token=await user.getIdTokenResult(),claims=token.claims||{};
-   if(claims.admin===true||['admin','owner'].includes(claims.role)||claims.email===legacyEmail)return true;
+   if(claims.admin===true||claims.role==='admin'||claims.email===legacyEmail)return true;
    const doc=await adminUsers.doc(user.uid).get(),data=doc.exists?doc.data():null;
-   return data?.active===true&&data.role==='owner';
+   return data?.active===true&&data.role==='admin';
   }catch(_){return false;}
  }
  function createController(deps){
