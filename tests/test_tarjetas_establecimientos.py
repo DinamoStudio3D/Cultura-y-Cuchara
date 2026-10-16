@@ -21,11 +21,11 @@ class TarjetasEstablecimientos(unittest.TestCase):
         self.assertRegex(HTML, r'css/discovery-cards\.css\?v=\d+')
 
     def test_una_tarjeta_no_se_extiende_indefinidamente(self):
-        self.assertRegex(CSS, r'#establecimientos\s+#localesGrid\s*>\s*\.local-item:not\(\.hidden-item\)\s*\{[^}]*max-width:\s*400px\s*!important', re.S)
+        self.assertRegex(CSS, r'#establecimientos\s+#localesGrid\s*>\s*\.local-item:not\(\.hidden-item\)\s*\{[^}]*max-width:\s*400px\s*!important')
         self.assertIn('justify-self:start!important', CSS)
 
     def test_movil_no_impone_400px(self):
-        self.assertRegex(CSS, r'@media\(max-width:639px\)\s*\{\s*#establecimientos\s+#localesGrid\s*>\s*\.local-item:not\(\.hidden-item\)\s*\{max-width:100%\s*!important', re.S)
+        self.assertRegex(CSS, r'@media\(max-width:639px\)\s*\{\s*#establecimientos\s+#localesGrid\s*>\s*\.local-item:not\(\.hidden-item\)\s*\{max-width:100%\s*!important')
 
     def test_tablet_dos_columnas(self):
         self.assertIn('@media(min-width:640px) and (max-width:1023px)', CSS)
