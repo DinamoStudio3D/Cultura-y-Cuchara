@@ -201,7 +201,9 @@ service cloud.firestore {
 
     // Solo propietarios asignados; no permite editar publicación, plan, SEO ni identidad del negocio.
     function canMerchantEditLocale(documentId) {
-      return (hasBusinessOwnerAccess(documentId) || isAssignedVisitMerchant(documentId))
+      return (hasBusinessOwnerAccess(documentId)
+        || (!exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + documentId))
+          && isAssignedVisitMerchant(documentId)))
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'desc', 'description', 'phone', 'whatsapp', 'hours',
           'customLogoUrl', 'heroImage', 'gallery',
@@ -863,7 +865,9 @@ service cloud.firestore {
     match /businessEntitlements/{placeId} {
       allow read: if isViveLojaAdmin()
         || hasBusinessOwnerAccess(placeId)
-        || isAssignedVisitMerchant(placeId);
+        || (request.auth != null
+          && !exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId))
+          && isAssignedVisitMerchant(placeId));
       allow create, update, delete: if isViveLojaAdmin();
     }
 
