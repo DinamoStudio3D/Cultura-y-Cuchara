@@ -228,12 +228,18 @@ service cloud.firestore {
             && (
               !request.resource.data.diff(resource.data).affectedKeys().hasAny(['gallery'])
               || (
-                exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
-                && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages is int
-                && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages >= 0
-                && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages <= 100
-                && request.resource.data.gallery.size()
-                  <= get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages
+                (
+                  !exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
+                  && request.resource.data.gallery.size() <= 6
+                )
+                || (
+                  exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
+                  && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages is int
+                  && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages >= 0
+                  && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages <= 100
+                  && request.resource.data.gallery.size()
+                    <= get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages
+                )
               )
             )
           ))
