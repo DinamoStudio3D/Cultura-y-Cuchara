@@ -51,7 +51,7 @@ function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return
   const accessId=`${user.localId}_${placeId}`;
   const accessFields=await readDocument(fetchImpl,`businessAccess/${encodeURIComponent(accessId)}`,token);
   let authorized=!!accessFields&&fieldBool(accessFields.active)&&fieldString(accessFields.role)==="owner"&&fieldString(accessFields.placeId)===placeId&&fieldString(accessFields.uid)===user.localId;
-  if(!authorized){
+  if(!authorized&&!accessFields){
    // Compatibilidad temporal con propietarios ya existentes durante la migración.
    const legacy=await readDocument(fetchImpl,`missionRewardMerchants/${encodeURIComponent(user.localId)}`,token);
    if(legacy){const ids=fieldArray(legacy.placeIds).map(v=>fieldString(v));authorized=fieldBool(legacy.active)&&ids.includes(placeId);}
