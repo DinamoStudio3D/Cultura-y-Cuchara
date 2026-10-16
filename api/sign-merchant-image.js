@@ -9,7 +9,7 @@ function fieldInt(f,fallback){if(!f||(f.integerValue===undefined&&f.doubleValue=
 function fieldArray(f){return f?.arrayValue?.values||[]}
 function fieldMap(f){return f?.mapValue?.fields||{}}
 function firestoreUrl(path){return `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${path}`}
-async function readDocument(fetchImpl,path,token){const r=await fetchImpl(firestoreUrl(path),{headers:{Authorization:`Bearer ${token}`}});if(!r.ok)return null;return (await r.json()).fields||{}}
+async function readDocument(fetchImpl,path,token){const r=await fetchImpl(firestoreUrl(path),{headers:{Authorization:`Bearer ${token}`}});if(r.status===404)return null;if(!r.ok)throw new Error(`Firestore read failed (${r.status}) for ${path}`);return (await r.json()).fields||{}}
 function localePlanId(fields){const subscription=fieldMap(fields.subscription);return fieldString(subscription.plan)||fieldString(subscription.planId)||fieldString(subscription.id)}
 function configuredGalleryLimit(settingsFields,planId){
  if(!planId)return DEFAULT_GALLERY_LIMIT;
