@@ -36,6 +36,16 @@ test('owner can read own business access but not another',async()=>{
  await assertSucceeds(getDoc(doc(auth('owner1'),'businessAccess','owner1_placeA')));
  await assertFails(getDoc(doc(auth('other'),'businessAccess','owner1_placeA')));
 });
+test('owner cannot assign access or change subscription entitlements',async()=>{
+ const db=auth('owner1',{role:'owner'});
+ await assertFails(setDoc(doc(db,'businessAccess','owner1_placeB'),{uid:'owner1',placeId:'placeB',role:'owner',active:true}));
+ await assertFails(updateDoc(doc(db,'businessEntitlements','placeA'),{maxGalleryImages:100}));
+ await assertFails(setDoc(doc(db,'businessEntitlements','placeB'),{maxGalleryImages:100}));
+});
+test('unrelated user cannot read private subscription entitlement',async()=>{
+ await assertFails(getDoc(doc(auth('other'),'businessEntitlements','placeA')));
+ await assertSucceeds(getDoc(doc(auth('owner1'),'businessEntitlements','placeA')));
+});
 test('owner can edit own commercial fields but not another place',async()=>{
  const data={desc:'Nuevo',phone:'',whatsapp:'',hours:'',customLogoUrl:'',heroImage:'',gallery:[],merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner1'};
  await assertSucceeds(updateDoc(doc(auth('owner1'),'locales','placeA'),data));
