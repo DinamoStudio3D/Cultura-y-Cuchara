@@ -189,6 +189,16 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    // Acceso por establecimiento: el rol owner aquí no implica administración global.
+    function hasBusinessOwnerAccess(placeId) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId))
+        && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.active == true
+        && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.uid == request.auth.uid
+        && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.placeId == placeId
+        && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.role == 'owner';
+    }
+
     function canMerchantEditLocale(documentId) {
       return isAssignedVisitMerchant(documentId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -815,6 +825,20 @@ service cloud.firestore {
     match /systemAudit/{eventId} {
       allow read: if isViveLojaAdmin();
       allow create, update, delete: if false;
+    }
+
+    match /businessAccess/{accessId} {
+      allow read: if isViveLojaAdmin() || (
+        request.auth != null && resource.data.uid == request.auth.uid
+      );
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /businessEntitlements/{placeId} {
+      allow read: if isViveLojaAdmin()
+        || hasBusinessOwnerAccess(placeId)
+        || isAssignedVisitMerchant(placeId);
+      allow create, update, delete: if isViveLojaAdmin();
     }
 
     match /{document=**} {
