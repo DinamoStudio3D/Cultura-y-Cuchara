@@ -435,6 +435,7 @@
 @media(max-width:370px){#mapPreviewCard #previewPhotoButton img{height:180px;max-height:180px}}
 </style>
 <link rel="stylesheet" href="css/business-card.css?v=104">
+<script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=1">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1189,6 +1190,7 @@
                     </button>
                     
                     <button id="previewRestaurantMenuBtn" type="button" onclick="openRestaurantMenu()" class="hidden w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white py-3 rounded-xl font-black text-xs hover:from-orange-500 hover:to-amber-400 transition shadow-lg items-center justify-center gap-2"><i class="fa-solid fa-book-open"></i><span id="previewRestaurantMenuLabel">Ver menú del restaurante</span></button><div id="previewCommerceActions" class="hidden grid grid-cols-2 gap-2"><button id="previewOrderBtn" type="button" onclick="openCommerceWhatsapp('order')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i><span id="previewOrderLabel">Pedir ahora</span></button><button id="previewReservationBtn" type="button" onclick="openCommerceWhatsapp('reservation')" class="hidden bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-solid fa-calendar-check"></i><span id="previewReservationLabel">Reservar mesa</span></button></div>
+                    <button id="previewBusinessVideoBtn" type="button" hidden class="vl-video-highlight" onclick="openBusinessVideo(currentLocationId)"><i class="fa-solid fa-circle-play" aria-hidden="true"></i><span>Conoce este lugar en vídeo</span></button>
                     <details class="vl-map-more"><summary><span><i class="fa-solid fa-ellipsis"></i> Más opciones del lugar</span><i class="fa-solid fa-chevron-down vl-more-chevron"></i></summary><div class="vl-map-more-body">
                     <button id="previewAudioGuideBtn" type="button" onclick="toggleLocationAudioGuide()" class="w-full bg-brandGold/10 text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-brandGold hover:text-white transition border border-brandGold/40 flex items-center justify-center gap-2" aria-label="Escuchar audioguía del lugar seleccionado">
                         <i class="fa-solid fa-volume-high"></i> <span id="previewAudioGuideLabel">Escuchar audioguía</span>
@@ -4544,6 +4546,7 @@
                     if (isPublicContent(location) && !searchable.includes('motel')) nextLocations.push(location);
                 });
                 locations = nextLocations; // Empty is authoritative, too.
+                window.VisitaLojaPlaceVideo?.sync(locations,paidPlaceBenefits);
                 const selectedId = currentLocationId;
                 if (selectedId) {
                     const index = locations.findIndex(loc => String(loc.id) === String(selectedId));
@@ -5259,6 +5262,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const locDesc = escapeHTML((currentLang === 'en' && loc.descEn) ? loc.descEn : loc.desc);
                 const isOpen = isLocOpenNow(loc);
                 const paidBenefits=paidPlaceBenefits(loc),hasPaidBadge=paidBenefits.badge===true,hasCustomLogo=Boolean(loc.customLogoUrl&&loc.customLogoUrl.trim()!==''),hasPaidLogoStyle=hasCustomLogo&&paidBenefits.logoPin===true;
+                const hasFeaturedVideo=!!window.VisitaLojaPlaceVideo?.eligible(loc,paidBenefits);
                 const markerPalette=mapMarkerPalette(loc.category);
 
                 const coordinates=publicPlaceCoordinates(loc);
@@ -5354,6 +5358,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             <i id="cardFav_${escapeHTML(loc.id)}" class="${favClass}"></i>
                         </button>
                             </div>
+                            ${hasFeaturedVideo?`<button type="button" class="vl-video-highlight" onclick="event.stopPropagation();openBusinessVideo(decodeURIComponent('${actionId}'))" aria-label="${currentLang==='en'?'Watch video of ':'Ver vídeo de '}${locTitle}"><i class="fa-solid fa-circle-play" aria-hidden="true"></i>${currentLang==='en'?'Meet this place on video':'Conoce este lugar en vídeo'}</button>`:''}
                             <div class="vl-card-explore"><span>Ver detalles del lugar</span><span class="vl-card-explore-icon"><i class="fa-solid fa-arrow-right"></i></span></div>
                         </div></div>
                     </div>
@@ -7531,6 +7536,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             currentLocationId = loc.id || null;
             document.getElementById('previewFavBtn')?.removeAttribute('disabled');
             document.getElementById('mapPreviewCard').dataset.empty = 'false';
+            const videoButton=document.getElementById('previewBusinessVideoBtn');
+            videoButton.hidden=!window.VisitaLojaPlaceVideo?.eligible(loc,paidPlaceBenefits(loc));
+            videoButton.querySelector('span').textContent=currentLang==='en'?'Meet this place on video':'Conoce este lugar en vídeo';
             if (trackSelection) trackBusinessEvent(loc.id,'view');
             maybeShowPlacePromotion(loc);
             const restaurantMenu=restaurantMenuFor(loc),menuButton=document.getElementById('previewRestaurantMenuBtn');
@@ -7716,6 +7724,11 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function moveImmersiveGallery(direction) { renderImmersiveGallery(immersiveGalleryIndex + direction); }
 
+        function openBusinessVideo(id) {
+            const place=locations.find(item=>String(item.id)===String(id));
+            if(place)window.VisitaLojaPlaceVideo?.open(place,paidPlaceBenefits(place),currentLang);
+        }
+
         function openMenuGallery() {
             const loc = getCurrentLocation(); if(!loc) return;
             const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
@@ -7725,7 +7738,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             else if (loc.category === 'aliado' && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }, ...immersiveGalleryImages.filter(item => item.img !== loc.customLogoUrl)];
             else if (!immersiveGalleryImages.length && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }];
             const video = document.getElementById('youtubeVideoContainer'), direct = document.getElementById('directVideoLinkBtn');
-            if (loc.youtubeUrl?.trim()) { direct.href = loc.youtubeUrl; video.classList.remove('hidden'); } else { direct.href = '#'; video.classList.add('hidden'); }
+            if (window.VisitaLojaPlaceVideo?.eligible(loc,paidPlaceBenefits(loc))) { direct.removeAttribute('href'); direct.onclick=()=>openBusinessVideo(loc.id); direct.textContent=currentLang==='en'?'Watch business video':'Ver vídeo del negocio'; direct.setAttribute('role','button'); direct.tabIndex=0; direct.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openBusinessVideo(loc.id);}}; video.classList.remove('hidden'); } else { direct.removeAttribute('href'); direct.onclick=null; video.classList.add('hidden'); }
             const grid = document.getElementById('galleryGrid');
             if (immersiveGalleryImages.length) {
                 grid.innerHTML = immersiveGalleryImages.map((item,index) => `<button type="button" data-gallery-index="${index}" onclick="renderImmersiveGallery(${index})" class="shrink-0 w-20 h-16 sm:w-24 sm:h-16 rounded-lg overflow-hidden border-2 border-transparent opacity-60 transition" aria-label="Ver fotografía ${index+1}"><img src="${escapeHTML(item.img)}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async"></button>`).join('');
