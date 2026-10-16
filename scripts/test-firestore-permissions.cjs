@@ -20,10 +20,11 @@ before(async()=>{
 });
 after(async()=>{if(env)await env.cleanup()});
 test('owner cannot create admin users',async()=>{
- await assertFails(setDoc(doc(auth('owner1',{role:'owner'}),'adminUsers','intruder'),{active:true,role:'admin'}));
+ await assertFails(setDoc(doc(auth('owner1',{role:'owner'}),'adminUsers','intruder'),{email:'intruder@example.com',displayName:'Intruder',role:'admin',active:true,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),updatedBy:'owner1'}));
 });
 test('admin profile can read private business access',async()=>{
  await assertSucceeds(getDoc(doc(auth('admin1'),'businessAccess','owner1_placeA')));
+ await assertSucceeds(setDoc(doc(auth('admin1'),'adminUsers','newAdmin'),{email:'admin@example.com',displayName:'Admin',role:'admin',active:true,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),updatedBy:'admin1'}));
 });
 test('owner can read own business access but not another',async()=>{
  await assertSucceeds(getDoc(doc(auth('owner1'),'businessAccess','owner1_placeA')));
