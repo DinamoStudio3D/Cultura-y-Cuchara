@@ -68,3 +68,7 @@
 @layer vl-layout {
  @media(min-width:768px){#mapa #mapPreviewCard .vl-place-actions:not(:has(#previewRestaurantMenuBtn:not(.hidden)))>button:first-of-type{grid-column:1/-1}}
 }
+/* A place card only exists visually after an explicit business selection. */
+@layer vl-layout {
+ #mapa #mapPreviewCard[data-empty="true"]{display:none!important}
+}
