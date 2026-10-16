@@ -58,3 +58,12 @@ test('Merchant image signing fails closed when Firestore reads fail', () => {
   assert.match(api, /if\(!authorized&&!accessFields\)/);
   assert.match(api, /catch\(e\).*return res\.status\(503\)/s);
 });
+
+test('Merchant gallery preview only renders validated HTTPS URLs with escaped attributes', () => {
+  const profile = read('merchant-profile.html');
+  const render = profile.match(/function renderImages\(p\)\{([\s\S]*?)\nfunction loadPlace\(/)?.[1] || '';
+  assert.match(render, /validUrl\(raw\)/);
+  assert.match(render, /replace\(\/&\/g,'&amp;'\)/);
+  assert.match(render, /replace\(\/"\/g,'&quot;'\)/);
+  assert.match(profile, /u\.protocol!=='https:'/);
+});
