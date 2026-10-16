@@ -70,3 +70,29 @@ body[data-card-style="soft"] #establecimientos #localesGrid > .local-item:not(.h
   #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action { overflow-wrap:anywhere; }
  }
 }
+
+/* Rediseño visible 2026: tarjetas de destinos con portada panorámica y
+   ficha editorial. Conserva botones, datos y logos del administrador. */
+#establecimientos #localesGrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))!important;gap:26px!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item){position:relative;isolation:isolate;border:1px solid #d9e5ed!important;border-radius:26px!important;overflow:hidden!important;background:#fff!important;box-shadow:0 16px 38px rgba(12,45,76,.12)!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media{aspect-ratio:16/10!important;border-radius:0!important;background:#e5edf2!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media:not(.vl17-partner-media)::after{content:"";position:absolute;inset:35% 0 0;pointer-events:none;background:linear-gradient(0deg,rgba(5,30,52,.48),transparent)}
+#establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media>img{transition:transform .35s ease!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item):hover>.vl17-media:not(.vl17-partner-media)>img{transform:scale(1.04)}
+#establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media.vl17-partner-media{background:linear-gradient(135deg,#f7fbfe,#e5f0f7)!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media.vl17-partner-media>img{object-fit:contain!important;padding:30px!important;transform:none!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content{padding:24px!important;gap:12px!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title{font-size:clamp(22px,2vw,26px)!important;line-height:1.2!important;color:#102f48!important;letter-spacing:-.025em}
+#establecimientos #localesGrid>.local-item:not(.hidden-item) .local-desc{color:#465d6d!important;line-height:1.55!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools{border-top:1px solid #e5edf2;margin-top:auto!important;padding-top:16px!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore{border-radius:14px!important;min-height:48px!important}
+#establecimientos #localesGrid>.local-item:not(.hidden-item):focus-within{outline:2px solid #0b70ae;outline-offset:3px}
+@media(max-width:639px){
+ #establecimientos #localesGrid{grid-template-columns:minmax(0,1fr)!important;gap:22px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item){border-radius:22px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media{aspect-ratio:16/9!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content{padding:19px 20px 21px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title{font-size:23px!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools{padding-top:14px!important}
+}
+@media(prefers-reduced-motion:reduce){#establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media>img{transition:none!important}}
