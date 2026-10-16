@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <link rel="preconnect" href="https://firestore.googleapis.com">
-    <link rel="preload" as="image" href="assets/brand/visitaloja-official.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="assets/brand/visitaloja-splash.webp" fetchpriority="high">
     <link rel="preload" as="image" href="assets/photos/atardecer-loja.webp" fetchpriority="high">
     <script src="js/welcome-brand-bootstrap.js"></script>
     <style>
@@ -459,7 +459,7 @@
             
             <div class="vl197-loading-brand vl-brand-ready">
                 <span data-splash-brand-fallback aria-hidden="true"><b>Visita Loja</b><small>visitaloja.com</small></span>
-                <img id="splashLogoImg" src="assets/brand/visitaloja-official.webp" alt="Visita Loja" width="180" height="112" fetchpriority="high" class="" decoding="async" style="visibility:visible">
+                <img id="splashLogoImg" src="assets/brand/visitaloja-splash.webp" alt="Visita Loja" width="180" height="112" fetchpriority="high" class="" decoding="async" style="visibility:visible">
             </div>
             <h1 class="vl197-loading-title" data-i18n="splashTitle">Tu próxima historia empieza en Loja.</h1>
             <p class="vl197-loading-description" data-i18n="splashDescription">Lugares, sabores y momentos por descubrir.</p>
@@ -4792,7 +4792,7 @@
             if(document.getElementById('heroSubtitle')) document.getElementById('heroSubtitle').innerText = (currentLang === 'en' ? s.subtitleEn || s.subtitle : s.subtitle) || '';
 
             if (s.logoUrl) {
-                ['splashLogoImg','navLogoImg','heroLogoImg','podcastLogoImg','footerLogoImg','maintenanceLogo'].forEach(id => applyConfirmedHomepageLogo(document.getElementById(id),s.logoUrl));
+                ['navLogoImg','heroLogoImg','podcastLogoImg','footerLogoImg','maintenanceLogo'].forEach(id => applyConfirmedHomepageLogo(document.getElementById(id),s.logoUrl));
             }
             const fiavlFeaturedImage = document.getElementById('fiavlFeaturedImage');
             if (fiavlFeaturedImage && s.fiavlImageUrl) fiavlFeaturedImage.src = s.fiavlImageUrl;
