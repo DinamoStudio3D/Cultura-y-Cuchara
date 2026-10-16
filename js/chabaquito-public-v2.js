@@ -21,7 +21,20 @@
 
   function bindRankingControls(){const opt=document.getElementById('chabaquitoRankingOptIn'),alias=document.getElementById('chabaquitoRankingAlias'),save=document.getElementById('chabaquitoRankingSave');if(!opt||!alias||!save)return;opt.addEventListener('change',()=>{alias.disabled=!opt.checked;});save.addEventListener('click',saveRankingPreference);}
   async function saveRankingPreference(){if(!state.user||state.rankingSaving)return;const opt=document.getElementById('chabaquitoRankingOptIn'),alias=document.getElementById('chabaquitoRankingAlias'),status=document.getElementById('chabaquitoRankingStatus');const participateInRanking=opt?.checked===true,publicAlias=String(alias?.value||'').trim();if(participateInRanking&&!publicAlias){if(status)status.textContent=text('Escribe un alias para participar.','Enter an alias to join.');return;}state.rankingSaving=true;renderProfile();try{const token=await state.user.getIdToken();const response=await fetch((window.VisitaLojaChabaquitoConfig?.workerUrl||'https://visitaloja-chabaquito-preview.sukogames1996.workers.dev')+'/ranking-preference',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({participateInRanking,publicAlias})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||text('No se pudo guardar.','Could not save.'));}catch(error){console.warn('Chabaquito V2: no se pudo guardar el ranking.',error);const el=document.getElementById('chabaquitoRankingStatus');if(el)el.textContent=error?.message||text('No se pudo guardar.','Could not save.');}finally{state.rankingSaving=false;renderProfile();}}
+  function renderHostMission(){
+    const title=document.getElementById('chaba-host-mission-title'),description=document.getElementById('chaba-host-mission-description'),progress=document.getElementById('chaba-host-progress');
+    if(!title||!description||!progress)return;
+    const mission=state.missions.find(m=>!state.progress.get(m.id)?.completed)||state.missions[0];
+    title.textContent=mission?.title||text('Tu próxima aventura','Your next adventure');
+    description.textContent=mission?.description||text('Descubre las misiones de Chabaquito y las insignias que puedes conseguir explorando Loja.','Discover Chabaquito missions and the badges you can earn exploring Loja.');
+    progress.replaceChildren();progress.hidden=!mission||!state.user;
+    if(progress.hidden)return;
+    const p=state.progress.get(mission.id)||{},safe=n=>Number.isFinite(Number(n))?Math.max(0,Math.floor(Number(n))):0,target=Math.max(1,safe(p.target||mission.targetCount||1)),current=Math.min(target,safe(p.current));
+    const label=document.createElement('p');label.textContent=p.completed?text('¡Lo lograste! Vamos por otra aventura.','You did it! On to the next adventure.'):`${current} / ${target} · ${text('Tu avance','Your progress')}`;
+    const bar=document.createElement('progress');bar.max=target;bar.value=current;bar.setAttribute('aria-label',mission.title);progress.append(label,bar);
+  }
   function renderMissions() {
+    renderHostMission();
     const el=document.getElementById('chabaquitoV2Missions');
     if(!el)return;
     if(!state.missions.length){
