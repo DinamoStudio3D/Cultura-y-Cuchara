@@ -229,6 +229,10 @@ service cloud.firestore {
             && request.resource.data.gallery.size() <= 100
             && (
               !request.resource.data.diff(resource.data).affectedKeys().hasAny(['gallery'])
+              // Una reducción de plan no borra fotos existentes: solo permite conservar o quitar entradas.
+              || (resource.data.gallery is list
+                && resource.data.gallery.size() >= request.resource.data.gallery.size()
+                && resource.data.gallery.hasAll(request.resource.data.gallery))
               || (
                 (
                   !exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
