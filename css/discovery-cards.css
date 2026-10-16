@@ -71,3 +71,17 @@ body[data-card-style="soft"] #establecimientos #localesGrid > .local-item:not(.h
  }
 }
 
+
+/* Evita que una sola parada (p. ej. Hospedaje) se amplíe a pantalla completa.
+   Mantiene las tarjetas y la proporción de sus fotografías existentes. */
+@layer vl-layout {
+ #establecimientos #localesGrid{justify-content:start!important}
+ #establecimientos #localesGrid>.local-item:not(.hidden-item){
+  width:100%!important;
+  max-width:400px!important;
+  justify-self:start!important;
+ }
+ @media(max-width:639px){
+  #establecimientos #localesGrid>.local-item:not(.hidden-item){max-width:100%!important}
+ }
+}
