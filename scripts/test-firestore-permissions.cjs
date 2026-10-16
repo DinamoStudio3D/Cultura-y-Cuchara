@@ -41,6 +41,20 @@ test('owner can edit own commercial fields but not another place',async()=>{
  await assertSucceeds(updateDoc(doc(auth('owner1'),'locales','placeA'),data));
  await assertFails(updateDoc(doc(auth('owner1'),'locales','placeB'),data));
 });
+test('businessAccess owner works without legacy merchant assignment',async()=>{
+ await env.withSecurityRulesDisabled(async context=>{
+  const db=context.firestore();
+  await setDoc(doc(db,'businessAccess','owner2_placeB'),{active:true,uid:'owner2',placeId:'placeB',role:'owner'});
+ });
+ await assertSucceeds(updateDoc(doc(auth('owner2'),'locales','placeB'),{desc:'Propietario autorizado',merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner2'}));
+ await assertFails(updateDoc(doc(auth('owner2'),'locales','placeA'),{desc:'Acceso indebido',merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner2'}));
+});
+test('revoked businessAccess owner cannot edit',async()=>{
+ await env.withSecurityRulesDisabled(async context=>{
+  await updateDoc(doc(context.firestore(),'businessAccess','owner2_placeB'),{active:false});
+ });
+ await assertFails(updateDoc(doc(auth('owner2'),'locales','placeB'),{desc:'No autorizado',merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner2'}));
+});
 test('owner cannot change administrative publication fields',async()=>{
  await assertFails(updateDoc(doc(auth('owner1'),'locales','placeA'),{published:false,merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner1'}));
 });
