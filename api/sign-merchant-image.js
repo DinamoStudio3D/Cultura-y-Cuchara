@@ -33,8 +33,9 @@ async function resolveGalleryLimit(fetchImpl,token,placeId,localeFields){
  if(entitlement&&entitlement.maxGalleryImages){
   return fieldInt(entitlement.maxGalleryImages,DEFAULT_GALLERY_LIMIT);
  }
- const settings=await readDocument(fetchImpl,"settings/subscriptions",token);
- return configuredGalleryLimit(settings||{},localePlanId(localeFields||{}));
+ // Sin entitlement, Firestore permite un máximo de seis imágenes.
+ // No usar aquí el límite comercial del plan: podría autorizar una carga que Firestore rechace.
+ return DEFAULT_GALLERY_LIMIT;
 }
 function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return async function handler(req,res){
  res.setHeader("Cache-Control","no-store");
