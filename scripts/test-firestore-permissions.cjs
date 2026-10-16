@@ -1,7 +1,13 @@
 const {test,before,after}=require('node:test');
 const {readFileSync}=require('node:fs');
 const {initializeTestEnvironment,assertSucceeds,assertFails}=require('@firebase/rules-unit-testing');
-const {doc,getDoc,setDoc,updateDoc,serverTimestamp}=require('firebase/firestore');
+const firebase=require('firebase/compat/app');
+require('firebase/compat/firestore');
+const serverTimestamp=()=>firebase.firestore.FieldValue.serverTimestamp();
+const doc=(db,collection,id)=>db.collection(collection).doc(id);
+const getDoc=ref=>ref.get();
+const setDoc=(ref,data)=>ref.set(data);
+const updateDoc=(ref,data)=>ref.update(data);
 let env;
 const projectId='demo-visitaloja-security';
 const auth=(uid,claims={})=>env.authenticatedContext(uid,claims).firestore();
