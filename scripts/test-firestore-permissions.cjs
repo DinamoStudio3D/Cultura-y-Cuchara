@@ -8,11 +8,13 @@ const doc=(db,collection,id)=>db.collection(collection).doc(id);
 const getDoc=ref=>ref.get();
 const setDoc=(ref,data)=>ref.set(data);
 const updateDoc=(ref,data)=>ref.update(data);
+const storageRef=(db,path)=>db.ref(path);
 let env;
 const projectId='demo-visitaloja-security';
 const auth=(uid,claims={})=>env.authenticatedContext(uid,claims).firestore();
+const storageAuth=(uid,claims={})=>env.authenticatedContext(uid,claims).storage();
 before(async()=>{
- env=await initializeTestEnvironment({projectId,firestore:{host:'127.0.0.1',port:8080,rules:readFileSync('firestore.rules','utf8')}});
+ env=await initializeTestEnvironment({projectId,firestore:{host:'127.0.0.1',port:8080,rules:readFileSync('firestore.rules','utf8')},storage:{host:'127.0.0.1',port:9199,rules:readFileSync('storage.rules','utf8')}});
  await env.withSecurityRulesDisabled(async context=>{
   const db=context.firestore();
   await setDoc(doc(db,'adminUsers','admin1'),{active:true,role:'admin'});
@@ -87,4 +89,18 @@ test('unconfigured business gallery has six-image compatibility cap',async()=>{
  const db=auth('legacy');
  await assertSucceeds(updateDoc(doc(db,'locales','placeB'),{gallery:Array.from({length:6},(_,i)=>({img:String(i)})),merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'legacy'}));
  await assertFails(updateDoc(doc(db,'locales','placeB'),{gallery:Array.from({length:7},(_,i)=>({img:String(i)})),merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'legacy'}));
+});
+
+test('Storage: owner can upload an image only to own business path',async()=>{
+ const db=storageAuth('owner1');
+ const image=new Uint8Array([137,80,78,71]);
+ await assertSucceeds(storageRef(db,'merchants/owner1/placeA/test.png').put(image,{contentType:'image/png'}));
+ await assertFails(storageRef(db,'merchants/owner1/placeB/test.png').put(image,{contentType:'image/png'}));
+});
+test('Storage: revoked owner cannot upload even with legacy assignment',async()=>{
+ const db=storageAuth('owner2');
+ await assertFails(storageRef(db,'merchants/owner2/placeB/test.png').put(new Uint8Array([137,80,78,71]),{contentType:'image/png'}));
+});
+test('Storage: wrong account cannot write another owner folder',async()=>{
+ await assertFails(storageRef(storageAuth('other'),'merchants/owner1/placeA/test.png').put(new Uint8Array([137,80,78,71]),{contentType:'image/png'}));
 });
