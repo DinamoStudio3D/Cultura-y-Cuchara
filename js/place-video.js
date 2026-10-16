@@ -31,7 +31,7 @@
   if((benefits||s.benefits||{}).video!==true)return null;
   return parse(place.youtubeUrl);
  }
- let dialog,media,title,link,opener,activeId=null,activeUrl=null;
+ let dialog,media,title,opener,activeId=null,activeUrl=null;
  function close(){if(dialog?.open)dialog.close();}
  function open(place,benefits,language){
   const source=eligible(place,benefits);if(!source)return false;
@@ -39,7 +39,7 @@
   if(!dialog){
    dialog=document.createElement('dialog');dialog.className='vl-business-video-dialog';dialog.setAttribute('aria-labelledby','vlBusinessVideoTitle');
    const header=document.createElement('div');header.className='vl-video-header';title=document.createElement('h2');title.id='vlBusinessVideoTitle';const button=document.createElement('button');button.type='button';button.className='vl-video-close';button.textContent='✕';button.setAttribute('aria-label',en?'Close video':'Cerrar vídeo');button.onclick=close;header.append(title,button);
-   media=document.createElement('div');media.className='vl-video-player';link=document.createElement('a');link.target='_blank';link.rel='noopener noreferrer';link.className='vl-video-original';dialog.append(header,media,link);document.body.append(dialog);
+   media=document.createElement('div');media.className='vl-video-player';dialog.append(header,media);document.body.append(dialog);
    dialog.addEventListener('close',()=>{if(dialog.open)return;media.replaceChildren();activeId=null;activeUrl=null;if(opener?.isConnected)opener.focus();});
    dialog.addEventListener('click',event=>{if(event.target===dialog)close();});
   }
@@ -48,8 +48,8 @@
   const player=document.createElement(source.type==='youtube'?'iframe':'video');
   if(source.type==='youtube'){
    player.title=(en?'Business video: ':'Vídeo del negocio: ')+((en&&place.titleEn)||place.title||'');player.allow='encrypted-media; picture-in-picture; fullscreen';player.allowFullscreen=true;player.referrerPolicy='strict-origin-when-cross-origin';player.src=source.embed;
-  }else{player.controls=true;player.playsInline=true;player.preload='metadata';player.src=source.url;player.addEventListener('error',()=>{if(!dialog.open||media.firstElementChild!==player)return;media.replaceChildren();const text=document.createElement('p');text.textContent=en?'This video could not be loaded. Open the original link below.':'No se pudo cargar el vídeo. Puedes abrir el enlace original de abajo.';media.append(text);});}
-  media.append(player);link.href=source.url;link.textContent=en?'Open original video ↗':'Abrir vídeo original ↗';
+  }else{player.controls=true;player.playsInline=true;player.preload='metadata';player.src=source.url;player.addEventListener('error',()=>{if(!dialog.open||media.firstElementChild!==player)return;media.replaceChildren();const text=document.createElement('p');text.textContent=en?'This video could not be loaded. Please try again later.':'No se pudo cargar el vídeo. Inténtalo de nuevo más tarde.';media.append(text);});}
+  media.append(player);
   dialog.querySelector('.vl-video-close').setAttribute('aria-label',en?'Close video':'Cerrar vídeo');
   if(!dialog.open)dialog.showModal();return true;
  }
