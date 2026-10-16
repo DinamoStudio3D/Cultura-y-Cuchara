@@ -6,7 +6,6 @@ service firebase.storage {
       return request.auth != null
         && (request.auth.token.admin == true
           || request.auth.token.role == 'admin'
-          || request.auth.token.role == 'owner'
           || request.auth.token.email == 'sukogames1996@gmail.com');
     }
 
