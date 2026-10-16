@@ -877,7 +877,7 @@
           </form>
           <a class="vl149-category-link" href="#categorias"><i class="fa-solid fa-compass" aria-hidden="true"></i><span data-i18n="welcomeBrowseCategories">Ver categorías de lugares</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
           <nav class="vl-editorial-quicklinks" aria-label="Descubre Loja"><a href="#establecimientos" onclick="openCategoryList('food')"><i class="fa-solid fa-utensils" aria-hidden="true"></i> Gastronomía</a><a href="#establecimientos" onclick="openCategoryList('hotel')"><i class="fa-solid fa-bed" aria-hidden="true"></i> Hospedaje</a><a href="#loja-en-imagenes"><i class="fa-solid fa-camera" aria-hidden="true"></i> Postales de Loja</a><a href="#mapa"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Mapa turístico</a></nav>
-          <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button></div>
+          <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button><button type="button" onclick="ChabaquitoGuide.open()"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i><span>Habla con Chabaquito</span></button></div>
           <details class="vl-mobile-updates"><summary><i class="fa-regular fa-calendar" aria-hidden="true"></i><span data-i18n="mobileUpdates">Agenda y vídeo</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary></details>
         </div>
         <div class="vl-visible-photo-carousel" aria-hidden="true"><img class="is-current" src="assets/photos/centro-loja-torre-reloj.webp" alt=""><img src="assets/photos/jipiro-laguna.webp" alt=""><img src="assets/photos/eolicas-atardecer-panoramica.webp" alt=""><img src="assets/photos/atardecer-loja.webp" alt=""><img src="assets/photos/jipiro-pagoda-laguna.webp" alt=""></div>
@@ -900,14 +900,6 @@
         <a href="#misiones"><span class="vl-discovery-icon"><i class="fa-solid fa-compass" aria-hidden="true"></i></span><span><strong data-i18n="welcomeMissions">Con Chabaquito</strong><small data-i18n="welcomeMissionsHelp">Descubre y cumple misiones</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
       </div>
     </nav>
-    <link rel="stylesheet" href="css/chabaquito-host.css?v=1">
-    <section id="chabaquito-anfitrion" aria-labelledby="chaba-host-title" data-vl-surface="light">
-      <div class="chaba-host-inner">
-        <div class="chaba-host-stage"><span class="chaba-host-orbit" aria-hidden="true">✦</span><img src="mascota-vive-loja.png" alt="Chabaquito, tu compañero para descubrir Loja" width="1122" height="1402" loading="lazy"><span class="chaba-host-tag">HECHO DE HISTORIAS LOJANAS</span></div>
-        <div class="chaba-host-copy"><span class="chaba-host-kicker">TU ANFITRIÓN EN LOJA</span><h2 id="chaba-host-title">¡Soy Chabaquito!<br><em>¿Qué descubrimos hoy?</em></h2><p>Loja tiene historias que merecen vivirse. Te acompaño a descubrir sus sabores, explorar sus rincones y coleccionar aventuras.</p><div class="chaba-host-choices"><a href="#establecimientos" onclick="openCategoryList('food')">☕ Tengo hambre</a><a href="#mapa">🧭 Quiero explorar</a><a href="#agenda">🎭 Ver la agenda</a></div><a class="chaba-host-primary" href="#misiones">Vamos a explorar <span aria-hidden="true">↗</span></a></div>
-        <aside class="chaba-host-mission" aria-label="Tu próxima aventura"><span class="chaba-host-kicker">UN RETO, UNA NUEVA HISTORIA</span><span class="chaba-host-medal" aria-hidden="true">🏅</span><h3 id="chaba-host-mission-title">Tu próxima aventura</h3><p id="chaba-host-mission-description">Descubre las misiones de Chabaquito y las insignias que puedes conseguir explorando Loja.</p><div id="chaba-host-progress" hidden></div><a href="#misiones">Elegir mi misión <span aria-hidden="true">→</span></a></aside>
-      </div>
-    </section>
     <!-- World Tourism Day 2026 -->
     <section id="dia-turismo" data-vl-surface="dark" class="relative overflow-hidden text-white py-16 px-4 border-y border-emerald-400/25" style="background:linear-gradient(135deg,#071f1b,#0b3028,#121212)">
         <div id="tourismCampaignGlow" class="absolute inset-0 pointer-events-none opacity-30" style="background:radial-gradient(circle at 15% 20%,#10b981 0,transparent 28%),radial-gradient(circle at 85% 80%,#ea580c 0,transparent 30%)"></div>
@@ -1916,7 +1908,7 @@
             <i class="fa-solid fa-xmark"></i>
         </button>
         <div id="webMascotBubble" class="web-mascot-bubble" role="status" aria-live="polite">¡Hola! Soy tu guía de Visita Loja. ¿Empezamos la ruta?</div>
-        <button type="button" class="block w-full bg-transparent border-0 p-0" onclick="toggleMascotBubble()" aria-label="Escuchar consejo de la mascota">
+        <button type="button" class="block w-full bg-transparent border-0 p-0" onclick="ChabaquitoGuide.open()" aria-label="Hablar con Chabaquito">
             <img src="mascota-vive-loja.png" onerror="this.onerror=null;this.src='https://visitaloja.com/mascota-vive-loja.png'" alt="Mascota cultural de Visita Loja" width="1122" height="1402" class="web-mascot-character" loading="lazy" decoding="async">
         </button>
     </aside>
@@ -8715,7 +8707,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function toggleMascotBubble() {
             const bubble = document.getElementById('webMascotBubble');
-            if (bubble) bubble.classList.toggle('is-quiet');
+            window.ChabaquitoGuide?.open();
         }
 
         function dismissWebMascot() {
@@ -9001,7 +8993,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
     <script src="js/photo-library-model.js?v=4" defer></script>
     <script src="js/photo-library-public.js?v=4" defer></script>
     <script src="js/chabaquito-runtime-config.js" defer></script>
-    <script src="js/chabaquito-public-v2.js?v=chaba-host-1" defer></script>
+    <script src="js/chabaquito-public-v2.js?v=233-70" defer></script>
+    <link rel="stylesheet" href="css/chabaquito-guide.css?v=1">
+    <script src="js/chabaquito-guide.js?v=1" defer></script>
     <script src="js/welcome-settings.js?v=78" defer></script>
     <script src="js/homepage-content.js?v=82" defer></script>
 <script src="js/mobile-ui.js?v=65" defer></script>

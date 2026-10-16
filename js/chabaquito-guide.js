@@ -1,0 +1,23 @@
+/* A guided interaction using the existing public places; no generated claims. */
+(()=>{'use strict';
+let dialog,body,message,portrait,selectedId=null,previousId=null;
+const en=()=>document.documentElement.lang==='en',t=(es,english)=>en()?english:es;
+function button(label,action,primary=false){const b=document.createElement('button');b.type='button';b.className=primary?'cg-primary':'cg-choice';b.textContent=label;b.addEventListener('click',action);return b;}
+function say(text,mood){message.textContent=text;portrait.dataset.mood=mood||'hello';}
+function reset(){selectedId=null;body.replaceChildren();say(t('¡Hagamos un plan! ¿Qué te apetece descubrir?','Let’s make a plan! What would you like to discover?'),'hello');const choices=document.createElement('div');choices.className='cg-choices';[['☕ Un cafecito','☕ Coffee','cafe'],['🍽️ Algo rico','🍽️ Food','food'],['🧭 Un paseo','🧭 A walk','culture'],['🛎️ Descansar','🛎️ Somewhere to stay','stay']].forEach(([es,english,key])=>choices.append(button(t(es,english),()=>recommend(key))));body.append(choices,button(t('🏅 Quiero cumplir una misión','🏅 I want a mission'),()=>{dialog.close();location.hash='misiones';}),button(t('Armar una ruta conmigo →','Build a route with me →'),()=>{dialog.close();openSmartRoutePlanner();}));}
+function recommend(interest){
+ body.replaceChildren();say(t('A ver… busquemos tu próxima historia.','Let’s find your next story.'),'think');
+ const places=typeof locations==='undefined'?[]:locations;
+ const candidates=places.filter(p=>p.category!=='aliado'&&nowInterestMatches(p,interest));
+ // Prefer confirmed open places, but describe the status honestly for every result.
+ candidates.sort((a,b)=>Number(isLocOpenNow(b))-Number(isLocOpenNow(a)));
+ const fresh=candidates.filter(p=>p.id!==previousId);const p=(fresh.length?fresh:candidates)[0];
+ if(!p){say(t('Todavía no tengo una parada de este tipo. ¿Probamos otra aventura?','I don’t have a stop of this kind yet. Shall we try another adventure?'),'hello');body.append(button(t('Elegir otra idea','Choose another idea'),reset,true));return;}
+ selectedId=p.id;previousId=p.id;say(t('¡Encontré una opción para ti!','I found an option for you!'),'celebrate');
+ const card=document.createElement('article');card.className='cg-result';const kicker=document.createElement('small');kicker.textContent=t('TU PRÓXIMA PARADA','YOUR NEXT STOP');const title=document.createElement('h3');title.textContent=en()&&p.titleEn?p.titleEn:p.title;const desc=document.createElement('p');desc.textContent=(en()&&p.dishEn?p.dishEn:p.dish)||p.tag||'';const address=document.createElement('p');address.textContent=p.address||t('Loja, Ecuador','Loja, Ecuador');const status=document.createElement('span');status.className='cg-status';status.textContent=isLocOpenNow(p)?t('Abierto según su horario publicado','Open according to its published hours'):t('Consulta su horario antes de ir','Check its hours before visiting');card.append(kicker,title,desc,address,status);body.append(card,button(t('¡Vamos! Ver este lugar →','Let’s go! View this place →'),()=>{
+ const index=locations.findIndex(item=>item.id===selectedId);if(index<0){recommend(interest);return;}dialog.close();selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});
+ },true),button(t('Sorpréndeme con otra opción','Show me another option'),()=>recommend(interest)),button(t('← Cambiar de plan','← Change plans'),reset));
+}
+function init(){dialog=document.createElement('dialog');dialog.id='chabaquito-guide';dialog.setAttribute('aria-labelledby','cg-title');dialog.innerHTML='<div class="cg-top"><span>VISITALOJA · '+t('TU COMPAÑERO DE AVENTURAS','YOUR ADVENTURE COMPANION')+'</span><button type="button" class="cg-close" aria-label="'+t('Cerrar','Close')+'">×</button></div><div class="cg-scene"><div class="cg-portrait"><span class="cg-spark" aria-hidden="true">✦</span><img src="mascota-vive-loja.png" alt="Chabaquito" width="1122" height="1402"><span class="cg-thought" aria-hidden="true">···</span></div><div class="cg-speech"><h2 id="cg-title">'+t('¡Aquí está tu compañero!','Your companion is here!')+'</h2><p id="cg-message" role="status"></p></div></div><div class="cg-body"></div><p class="cg-foot">'+t('Tú eliges el plan. Yo te acompaño.','You choose the plan. I’ll join you.')+'</p>';document.body.append(dialog);body=dialog.querySelector('.cg-body');message=dialog.querySelector('#cg-message');portrait=dialog.querySelector('.cg-portrait');dialog.querySelector('.cg-close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});}
+window.ChabaquitoGuide=Object.freeze({open(){if(!dialog)init();reset();if(!dialog.open)dialog.showModal();}});
+})();

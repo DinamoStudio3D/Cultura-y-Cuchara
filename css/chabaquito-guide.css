@@ -1,0 +1,19 @@
+#chabaquito-guide{width:min(470px,calc(100vw - 24px));max-height:90dvh;padding:0;border:1px solid #c7dbef;border-radius:26px;background:#f5f9ff;color:#19344f;box-shadow:0 30px 100px #071d3a70;overflow:auto;margin:auto}
+#chabaquito-guide::backdrop{background:#061b36a8;backdrop-filter:blur(5px)}
+#chabaquito-guide .cg-top{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid #dce8f5;color:#3b5c80;font-size:9px;font-weight:900;letter-spacing:.1em}
+#chabaquito-guide button{font:inherit;cursor:pointer}#chabaquito-guide .cg-close{background:white;color:#19344f;border:1px solid #c7dbef;border-radius:50%;width:32px;height:32px;font-size:24px;flex:none}
+#chabaquito-guide .cg-scene{display:flex;align-items:center;gap:14px;padding:22px 22px 10px;background:radial-gradient(circle at 15% 50%,#d7eaff,transparent 52%)}
+#chabaquito-guide .cg-portrait{position:relative;flex:0 0 112px}#chabaquito-guide img{width:112px;height:145px;object-fit:contain;filter:drop-shadow(0 10px 8px #15386124)}
+#chabaquito-guide .cg-spark{position:absolute;top:8px;left:0;color:#e8a322;font-size:26px}#chabaquito-guide .cg-thought{display:none;position:absolute;top:0;right:0;background:white;border-radius:20px;padding:0 10px;font-size:22px;color:#234f79}
+#chabaquito-guide [data-mood=think] .cg-thought{display:block}#chabaquito-guide [data-mood=hello] img{animation:cg-hello .65s ease-in-out 2}#chabaquito-guide [data-mood=celebrate] img{animation:cg-hop .5s ease-out 2}
+#chabaquito-guide h2{font-size:23px!important;line-height:1.15;font-weight:900;color:#163955!important;margin:0 0 10px}#chabaquito-guide p{font-size:14px;line-height:1.55;color:#496179!important;margin:0}
+#chabaquito-guide .cg-body{display:grid;gap:9px;padding:12px 22px 18px}#chabaquito-guide .cg-choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#chabaquito-guide .cg-choice,#chabaquito-guide .cg-primary{padding:13px;border:1px solid #c6d8eb;border-radius:13px;text-align:left;font-size:13px;font-weight:800;background:white;color:#234b72!important}
+#chabaquito-guide .cg-primary{background:#1c5c98!important;color:white!important;border-color:#1c5c98}#chabaquito-guide .cg-choice:hover{background:#e7f1ff}#chabaquito-guide button:focus-visible{outline:3px solid #da9b30;outline-offset:2px}
+#chabaquito-guide .cg-result{background:white;border:1px solid #c6d8eb;border-radius:17px;padding:17px}#chabaquito-guide small{font-size:9px;letter-spacing:.12em;color:#497093;font-weight:900}#chabaquito-guide h3{font-size:23px!important;line-height:1.2;font-weight:900;color:#173e62!important;margin:8px 0}#chabaquito-guide .cg-result p{margin-bottom:8px}#chabaquito-guide .cg-status{display:block;color:#375f80;font-size:11px;font-weight:700;border-top:1px solid #e0e8f1;padding-top:10px}
+#chabaquito-guide .cg-foot{text-align:center;font-size:11px;padding:0 20px 17px}
+/* Keep the existing admin visibility and visitor dismissal preferences. */
+#webMascot .web-mascot-character{cursor:pointer}#webMascotRestore{color:#fff!important;background:#1c5c98!important}
+@keyframes cg-hello{50%{transform:rotate(-8deg)}}@keyframes cg-hop{50%{transform:translateY(-10px) rotate(5deg)}}
+@media(max-width:420px){#chabaquito-guide .cg-scene{padding:16px;gap:10px}#chabaquito-guide .cg-body{padding:10px 16px 16px}#chabaquito-guide .cg-portrait{flex-basis:85px}#chabaquito-guide img{width:85px;height:115px}#chabaquito-guide h2{font-size:21px!important}}
+@media(prefers-reduced-motion:reduce){#chabaquito-guide img{animation:none!important}}
