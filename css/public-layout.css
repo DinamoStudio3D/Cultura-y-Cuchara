@@ -1645,13 +1645,13 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 /* V197: photographic welcome with a restrained, indeterminate loading indicator. */
 @layer vl-colors {
  #splash-screen { --vl-text:#fff; --vl-muted:#e0e8e2; --vl-accent:#f2c68f; background:#10251f !important; color:#fff !important; }
- #splash-screen .vl197-loading-brand { --vl-text:#173a31; --vl-muted:#4d6075; --vl-accent:#173a31; background:#fff !important; color:#173a31 !important; }
+ #splash-screen .vl197-loading-brand { --vl-text:#fff; --vl-muted:#e0e8e2; --vl-accent:#c2e8ff; background:transparent !important; color:#fff !important; }
  #splash-screen .vl197-loading-eyebrow { color:#f2c68f !important; }
  #splash-screen .vl197-loading-description,#splash-screen .vl197-loading-status { color:#e0e8e2 !important; }
 }
 @layer vl-layout {
  #splash-screen { display:grid; place-items:center; overflow:auto; padding:32px 24px; min-height:100svh; isolation:isolate; }
- .vl197-loading-background { position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,#10251fdd,#10251fe8),url('../assets/photos/loja-centro.webp') center/cover no-repeat; }
+ .vl197-loading-background { position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,#10251fdd,#10251fe8),url('../assets/photos/atardecer-loja.webp') center/cover no-repeat; }
  .vl197-loading-content { width:min(100%,680px); margin:auto; text-align:center; }
  .vl197-loading-eyebrow { font-size:11px; font-weight:800; letter-spacing:.28em; margin:0 0 22px; }
  .vl197-loading-brand { position:relative; display:grid; place-items:center; width:180px; height:112px; margin:0 auto 28px; padding:14px; border-radius:20px; box-shadow:0 16px 50px #0002; }
@@ -1677,7 +1677,7 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
  #splash-screen .vl197-loading-eyebrow { color:#c2e8ff !important; }
 }
 @layer vl-layout {
- #splash-screen .vl197-loading-background { background:linear-gradient(180deg,rgba(10,57,99,.58),rgba(7,34,63,.78)),url('../assets/photos/loja-centro.webp') center/cover no-repeat; }
+ #splash-screen .vl197-loading-background { background:linear-gradient(180deg,rgba(10,57,99,.58),rgba(7,34,63,.78)),url('../assets/photos/atardecer-loja.webp') center/cover no-repeat; }
  #splash-screen .vl197-loading-title { font-family:Georgia,serif !important; font-size:clamp(32px,5vw,58px) !important; font-weight:400 !important; line-height:1.12 !important; max-width:17ch !important; margin:0 auto 18px !important; text-align:center !important; }
  #splash-screen .vl197-loading-track span { background:#c2e8ff; }
 }
@@ -1700,4 +1700,10 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 /* V207: small-height navigation remains scrollable below the sticky bar. */
 @layer vl-layout {
  #mobileMenu { max-height:65dvh; overflow-y:auto; overscroll-behavior:contain; }
+}
+
+/* V209: splash stays visually stable from first paint to removal. */
+@layer vl-layout {
+ #splash-screen .vl197-loading-brand { box-shadow:none !important; border-radius:0 !important; padding:0 !important; }
+ #splash-screen .vl197-loading-background { background-image:linear-gradient(115deg,rgba(5,16,29,.7),rgba(5,16,29,.16)),url('../assets/photos/atardecer-loja.webp') !important; background-position:center !important; background-size:cover !important; }
 }
