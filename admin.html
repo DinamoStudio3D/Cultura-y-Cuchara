@@ -2157,8 +2157,10 @@ function renderPlaceCommercialSummary(place,galleryCount){
     const field=(label,value)=>'<p class="min-w-0 break-words"><span class="text-gray-400">'+label+':</span> '+safe(value)+'</p>';
     const plan=subscription.plan?subscriptionPlanName(subscription.plan):'Sin plan registrado';
     const expires=subscription.endAt||subscription.endDate||'Sin fecha registrada';
-    const owner=application?.ownerName||subscription.contactName||'Sin contacto registrado';
-    const ownerNote=application?.ownerName?'Solicitante registrado (asignación de acceso por verificar)':'Contacto comercial; no confirma acceso de propietario';
+    const assigned=adminMissionMerchants.filter(item=>Array.isArray(item.placeIds)&&item.placeIds.includes(place.id));
+    const activeAssigned=assigned.filter(item=>item.active!==false);
+    const owner=activeAssigned.length?activeAssigned.map(item=>item.displayName||item.businessName||item.email||'Cuenta sin nombre').join(', '):(application?.ownerName||subscription.contactName||'Sin contacto registrado');
+    const ownerNote=activeAssigned.length?activeAssigned.length+' cuenta(s) activa(s) vinculada(s) por ID de parada':assigned.length?'Cuenta vinculada, pero suspendida':application?.ownerName?'Solicitante registrado; acceso sin verificar':'Contacto comercial; no confirma acceso de propietario';
     const benefitState=subscription.status?String(subscription.status):'Sin estado registrado';
     return field('Publicación',adminPublicationMeta(place).label)+field('Fotografías',galleryCount)+
         field('Contacto',owner)+field('Verificación',ownerNote)+
