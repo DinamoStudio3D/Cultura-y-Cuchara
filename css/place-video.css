@@ -24,3 +24,16 @@ body:has(.vl-business-video-dialog[open]){overflow:hidden}
 @layer vl-colors {
  #mapa #mapPreviewCard #previewBusinessVideoBtn,#mapa #mapPreviewCard #previewBusinessVideoBtn :is(i,svg,span){--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#075bb2!important;color:#fff!important}
 }
+/* Featured audiovisual businesses stand apart in the public directory. */
+@layer vl-layout {
+ #establecimientos #localesGrid>.local-item.vl-has-video:not(.hidden-item){border:2px solid #075bb2!important;box-shadow:0 12px 34px #075bb224!important}
+ #establecimientos #localesGrid>.local-item.vl-has-video:not(.hidden-item)>.vl17-media{border-top:4px solid #075bb2;box-sizing:border-box}
+ #establecimientos #localesGrid>.local-item.vl-has-video .vl17-media::after{content:'';position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#08294c99);pointer-events:none}
+ #establecimientos #localesGrid .vl-video-photo-badge{position:absolute;bottom:14px;right:14px;z-index:2;display:inline-flex;align-items:center;gap:8px;border:1px solid #ffffff9c;border-radius:999px;padding:10px 14px;font:800 12px/1.3 system-ui;letter-spacing:.06em;box-shadow:0 4px 18px #08294c40;pointer-events:none}
+ #establecimientos #localesGrid .vl-video-photo-badge i,#establecimientos #localesGrid .vl-video-photo-badge svg{font-size:20px;width:20px;height:20px}
+}
+@layer vl-colors {
+ #establecimientos #localesGrid>.local-item.vl-has-video:not(.hidden-item)>.vl17-detail{background:linear-gradient(155deg,#eff6ff,#fff 70%)!important}
+ #establecimientos #localesGrid>.local-item.vl-has-video .vl-video-photo-badge,#establecimientos #localesGrid>.local-item.vl-has-video .vl-video-photo-badge :is(i,svg){--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#075bb2!important;color:#fff!important}
+ #establecimientos #localesGrid>.local-item.vl-has-video .vl-card-kicker,#establecimientos #localesGrid>.local-item.vl-has-video .vl-card-kicker :is(i,svg){--vl-text:#075bb2;--vl-muted:#075bb2;--vl-accent:#075bb2;color:#075bb2!important}
+}

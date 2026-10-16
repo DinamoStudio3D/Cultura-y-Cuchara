@@ -435,7 +435,7 @@
 @media(max-width:370px){#mapPreviewCard #previewPhotoButton img{height:180px;max-height:180px}}
 </style>
 <link rel="stylesheet" href="css/business-card.css?v=104">
-<script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=1">
+<script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=2">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -5326,7 +5326,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
                 cards.push(`
-                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="group" tabindex="0" aria-label="Ver detalles de ${locTitle}. Pulsa Enter para abrir" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                    <div class="local-item ${loc.category} ${hasFeaturedVideo?'vl-has-video':''} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="group" tabindex="0" aria-label="Ver detalles de ${locTitle}. Pulsa Enter para abrir" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
                             <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.category==='aliado'&&hasCustomLogo?loc.customLogoUrl:loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="${loc.category==='aliado'&&hasCustomLogo?`Logo de ${locTitle}`:''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
@@ -5334,9 +5334,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                                 ${loc.category==='aliado'?'':openBadge}
                             </div>
 
+                            ${hasFeaturedVideo?`<span class="vl-video-photo-badge"><i class="fa-solid fa-circle-play" aria-hidden="true"></i>${currentLang==='en'?'ON VIDEO':'EN VÍDEO'}</span>`:''}
                         </div>
                         <div class="vl17-detail"><div class="vl-card-content p-5 relative">
-                            <div class="vl-card-kicker"><i class="fa-solid fa-location-dot"></i> DESCUBRE LOJA</div>
+                            <div class="vl-card-kicker"><i class="fa-solid ${hasFeaturedVideo?'fa-film':'fa-location-dot'}"></i> ${hasFeaturedVideo?(currentLang==='en'?'BUSINESS ON VIDEO':'CONTENIDO AUDIOVISUAL'):'DESCUBRE LOJA'}</div>
                             <div class="flex items-center justify-between mb-1">
                                 <h3 class="text-lg font-bold text-brandDark group-hover:text-brandGold transition-colors local-title">${locTitle}</h3>
                                 ${cardDistHtml}
