@@ -1263,26 +1263,26 @@
             </div>
 
             <div id="mapPreviewCard" class="glass-card p-4 sm:p-6 rounded-2xl shadow-warm-glow border-2 border-gray-200 flex flex-col gap-4 min-h-[460px] md:min-h-[500px] lg:min-h-[520px] lg:h-auto lg:sticky lg:top-24 relative transition-colors duration-300">
-                <button id="previewFavBtn" type="button" aria-label="Añadir o quitar de mi ruta" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
+                <button id="previewFavBtn" type="button" disabled aria-label="Añadir o quitar de mi ruta" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
                 <button id="previewPhotoButton" type="button" hidden onclick="openMenuGallery()" class="vl-preview-photo" aria-label="Ver fotografías del lugar"><img id="previewPlacePhoto" alt="" decoding="async" loading="lazy"><span id="previewPhotoLabel"></span></button>
                 <div>
                     <div class="flex flex-wrap items-center gap-2 mb-2 pr-12">
-                        <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded-lg text-xs uppercase">Hueca Tradicional</span>
-                        <span id="previewOpenStatus" class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded-md text-[10px]">Abierto ahora</span>
+                        <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded-lg text-xs uppercase">Explora Loja</span>
+                        <span id="previewOpenStatus" class="hidden bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded-md text-[10px]">Abierto ahora</span>
                     </div>
-                    <h3 id="previewTitle" class="text-xl font-bold mb-1 pr-8 text-brandDark">El Rincón Lojano</h3>
+                    <h3 id="previewTitle" class="text-xl font-bold mb-1 pr-8 text-brandDark">Selecciona un lugar en el mapa</h3>
                     <div id="previewDistanceBadge" class="inline-flex items-center gap-1.5 text-xs text-blue-600 font-bold mb-2 hidden">
                         <i class="fa-solid fa-location-arrow"></i> <span></span>
                     </div>
-                    <p id="previewDesc" class="text-gray-600 text-xs sm:text-sm mb-3 leading-relaxed">Tradición familiar preparando el mejor repe lojano.</p>
+                    <p id="previewDesc" class="text-gray-600 text-xs sm:text-sm mb-3 leading-relaxed">Selecciona una parada publicada para consultar su información.</p>
                     
                     <div id="previewPromotion" class="hidden mb-3 rounded-xl border border-amber-300 bg-gradient-to-r from-orange-50 to-amber-50 p-3 text-xs text-amber-900"></div>
                     <div class="space-y-2.5 text-xs sm:text-sm text-gray-700 border-t border-gray-100 pt-3">
-                        <div class="flex items-center gap-2"><i id="previewDetailIcon" class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish">Plato: Repe blanco con quesillo</span></div>
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours">Lun - Sáb: 08:00 - 16:00</span></div>
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress">Mercado Central / Local 14</span></div>
+                        <div class="flex items-center gap-2"><i id="previewDetailIcon" class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish"></span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-brandGold w-4"></i> <span id="previewHours"></span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandGold w-4"></i> <span id="previewAddress"></span></div>
                     </div><div id="previewBusinessProfile" class="hidden mt-3 pt-3 border-t border-gray-100"></div>
                 </div>
 
@@ -4192,39 +4192,7 @@
         let categories = safeReadJSON('cyc_dynamic_cats', defaultCategories);
         defaultCategories.forEach(defaultCategory=>{const existing=categories.find(category=>category.id===defaultCategory.id);if(existing)Object.assign(existing,defaultCategory);else categories.push({...defaultCategory});});
         localStorage.setItem('cyc_dynamic_cats', JSON.stringify(categories));
-        let locations = [
-            {
-                id: "dinamo_studio",
-                tag: "Institucional / Merchandising", tagEn: "Institutional / Merchandising",
-                title: "Dínamo Studio", titleEn: "Dínamo Studio",
-                desc: "Estudio creativo y desarrollo tecnológico oficial del proyecto.",
-                descEn: "Official creative studio and tech development of the project.",
-                dish: "Kit de bienvenida institucional", dishEn: "Institutional welcome kit", 
-                hours: "Lun - Vie: 09:00 - 18:00", openHour: 9, closeHour: 18,
-                address: "Loja, Ecuador", lat: -3.9931, lng: -79.2042, gps: "https://www.google.com/maps/search/?api=1&query=-3.9931,-79.2042",
-                iconClass: "fa-seedling", category: "urbana", customLogoUrl: "",
-                youtubeUrl: "",
-                audioUrl: "audios/dinamo-the-weight-of-one-note.mp3",
-                audioUrlEn: "",
-                gallery: [
-                    { img: "assets/photos/photo-unavailable.svg", title: "Dínamo Studio" }
-                ]
-            },
-            {
-                id: "dona_rosita",
-                tag: "Hueca Tradicional", tagEn: "Traditional Local Eatery", title: "Picantería Doña Rosita", titleEn: "Doña Rosita Picantería",
-                desc: "El auténtico sabor de la cecina lojana asada al carbón acompañada de yuca y curtido.",
-                descEn: "The authentic taste of Loja's charcoal-grilled cecina served with cassava and pickled onion.",
-                dish: "Cecina tradicional asada al carbón", dishEn: "Traditional charcoal-grilled cecina", 
-                hours: "Lun - Sáb: 08:00 - 16:00", openHour: 8, closeHour: 16,
-                address: "Mercado Central / Local 14", lat: -3.9945, lng: -79.2028, gps: "https://www.google.com/maps/search/?api=1&query=-3.9945,-79.2028",
-                iconClass: "fa-mortar-pestle", category: "hueca", customLogoUrl: "",
-                youtubeUrl: "https://www.youtube.com/watch?v=n0BJGAkU9cg",
-                gallery: [
-                    { img: "assets/photos/photo-unavailable.svg", title: "Cecina Asada al Carbón" }
-                ]
-            }
-        ];
+        let locations = []; // Server-confirmed public places only.
 
         function isPublicContent(item) {
             return !item?.publicationStatus || item.publicationStatus === 'published';
@@ -4234,10 +4202,10 @@
         const LOCATIONS_CACHE_TIME_KEY = 'visita_loja_locations_cache_time_v1';
         function readLocationsCache() {
             const cached = safeReadJSON(LOCATIONS_CACHE_KEY, []);
-            return Array.isArray(cached) ? cached.filter(item => item && item.id) : [];
+            return []; // Never trust stale cached business listings.
         }
         function saveLocationsCache(items) {
-            if (!Array.isArray(items) || !items.length) return;
+            if (!Array.isArray(items)) return;
             try {
                 localStorage.setItem(LOCATIONS_CACHE_KEY, JSON.stringify(items));
                 localStorage.setItem(LOCATIONS_CACHE_TIME_KEY, new Date().toISOString());
@@ -4259,7 +4227,7 @@
             status.classList.remove('hidden');
         }
         const cachedPublicLocations = readLocationsCache();
-        if (cachedPublicLocations.length) locations = cachedPublicLocations;
+        // Wait for a confirmed Firestore snapshot.
 
         let eventsList = safeReadJSON('cyc_dynamic_events', [
             { 
@@ -4484,7 +4452,7 @@
             showToast(currentLang === 'en' ? (active ? 'Data saver enabled.' : 'Data saver disabled.') : (active ? 'Modo ahorro de datos activado.' : 'Modo ahorro de datos desactivado.'));
         }
 
-        let currentLocationIndex = 0;
+        let currentLocationIndex = -1;
         let currentLocationId = null;
         function getCurrentLocation() {
             if (currentLocationId) {
@@ -4495,9 +4463,7 @@
                     return byId;
                 }
             }
-            const fallback = locations[currentLocationIndex] || null;
-            if (fallback?.id) currentLocationId = fallback.id;
-            return fallback;
+            return null; // Require explicit selection.
         }
         let visitedLocations = safeReadJSON('cyc_visited_locations', []);
         let favoriteLocations = safeReadJSON('cyc_favorites', []);
@@ -4678,34 +4644,49 @@
             }
 
             db.collection("locales").onSnapshot({includeMetadataChanges:true},(snapshot) => {
-                if(!snapshot.empty) {
-                    const nextLocations = [];
-                    snapshot.forEach((doc) => {
-                        const location={ id: doc.id, ...doc.data() };
-                        const normalizedLocationName = String(location.title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-                        if (!location.audioUrl && (doc.id === 'dinamo_studio' || normalizedLocationName.includes('dinamo'))) location.audioUrl = 'audios/dinamo-the-weight-of-one-note.mp3';
-                        const searchable=[location.category,location.tag,location.title,location.type].join(' ').toLowerCase();
-                        if(isPublicContent(location) && !searchable.includes('motel')) nextLocations.push(location);
-                    });
-                    if(nextLocations.length){
-                        locations=nextLocations;
-                        if(currentLocationId){
-                            const selectedIndex=locations.findIndex(loc=>String(loc.id)===String(currentLocationId));
-                            if(selectedIndex>=0) currentLocationIndex=selectedIndex;
+                if (snapshot.metadata.fromCache) {
+                    setLocationsSyncStatus('loading', 'Verificando paradas publicadas…');
+                    return;
+                }
+                const nextLocations = [];
+                snapshot.forEach((doc) => {
+                    const location = { id: doc.id, ...doc.data() };
+                    const normalizedLocationName = String(location.title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                    if (!location.audioUrl && (doc.id === 'dinamo_studio' || normalizedLocationName.includes('dinamo'))) location.audioUrl = 'audios/dinamo-the-weight-of-one-note.mp3';
+                    const searchable = [location.category, location.tag, location.title, location.type].join(' ').toLowerCase();
+                    if (isPublicContent(location) && !searchable.includes('motel')) nextLocations.push(location);
+                });
+                locations = nextLocations; // An empty server response also clears old businesses.
+                if (currentLocationId) {
+                    const selectedIndex = locations.findIndex(loc => String(loc.id) === String(currentLocationId));
+                    if (selectedIndex >= 0) currentLocationIndex = selectedIndex;
+                    else {
+                        currentLocationId = null;
+                        currentLocationIndex = -1;
+                        for (const [id, value] of Object.entries({
+                            previewTitle: 'Selecciona un lugar en el mapa',
+                            previewDesc: 'Selecciona una parada publicada para consultar su información.',
+                            previewDish: '', previewHours: '', previewAddress: ''
+                        })) {
+                            const element = document.getElementById(id);
+                            if (element) element.textContent = value;
                         }
-                        saveLocationsCache(nextLocations);
+                        document.getElementById('previewOpenStatus')?.classList.add('hidden');
+                        document.getElementById('previewFavBtn')?.setAttribute('disabled', '');
+                        document.getElementById('previewPhotoButton')?.setAttribute('hidden', '');
                     }
                 }
+                saveLocationsCache(nextLocations);
                 categories=categories.filter(category=>!String(category.id+' '+category.name+' '+(category.nameEn||'')).toLowerCase().includes('motel'));
                 scheduleSubscriptionRefresh();
                 renderEverything();
                 checkLiveEventsBanner();
                 checkUrlParamForCheckin();
-                if(snapshot.metadata.fromCache&&!navigator.onLine)setLocationsSyncStatus('offline');else if(snapshot.empty)setLocationsSyncStatus(locations.length?'cached':'error');else setLocationsSyncStatus('ready');
+                setLocationsSyncStatus('ready');
             }, (error) => {
                 console.error("Firestore error:", error);
-                const cached=readLocationsCache();if(cached.length){locations=cached;if(currentLocationId){const selectedIndex=locations.findIndex(loc=>String(loc.id)===String(currentLocationId));if(selectedIndex>=0)currentLocationIndex=selectedIndex;}}
-                setLocationsSyncStatus(cached.length?'cached':'error');
+                // Never restore stale business records.
+                setLocationsSyncStatus('error', 'No se pudo verificar las paradas publicadas');
                 renderEverything();
                 checkLiveEventsBanner();
                 checkUrlParamForCheckin();
@@ -7636,6 +7617,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(!loc) return;
             currentLocationIndex = index;
             currentLocationId = loc.id || null;
+            document.getElementById('previewFavBtn')?.removeAttribute('disabled');
             trackBusinessEvent(loc.id,'view');
             maybeShowPlacePromotion(loc);
             const restaurantMenu=restaurantMenuFor(loc),menuButton=document.getElementById('previewRestaurantMenuBtn');
