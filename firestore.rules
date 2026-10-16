@@ -867,28 +867,11 @@ service cloud.firestore {
     }
 
     match /businessAccess/{accessId} {
-      // Permitir consultar un acceso propio aun si el documento no existe.
-      // El firmador de Cloudinary necesita recibir 404 para usar el acceso heredado.
-      // No expone documentos de otros usuarios ni concede escrituras.
+      // Un propietario puede consultar su identificador, aunque aun no exista.
+      // Las consultas de otros identificadores y las escrituras siguen bloqueadas.
       allow get: if isViveLojaAdmin() || (
         request.auth != null
-        && accessId.matches('^' + request.auth.uid + '_[A-Za-z0-9_-]{1,180}
-
-    match /businessEntitlements/{placeId} {
-      allow read: if isViveLojaAdmin()
-        || hasBusinessOwnerAccess(placeId)
-        || (request.auth != null
-          && !exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId))
-          && isAssignedVisitMerchant(placeId));
-      allow create, update, delete: if isViveLojaAdmin();
-    }
-
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
-}
-)
+        && accessId.matches('^' + request.auth.uid + '_.*')
         && (!exists(/databases/$(database)/documents/businessAccess/$(accessId))
           || resource.data.uid == request.auth.uid)
       );
