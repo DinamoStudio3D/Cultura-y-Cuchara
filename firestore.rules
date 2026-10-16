@@ -236,11 +236,18 @@ service cloud.firestore {
                 )
                 || (
                   exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
+                  && (!('active' in get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data)
+                    || get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.active == true)
                   && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages is int
                   && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages >= 0
                   && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages <= 100
                   && request.resource.data.gallery.size()
                     <= get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages
+                )
+                || (
+                  exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
+                  && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.active == false
+                  && request.resource.data.gallery.size() <= 6
                 )
               )
             )
