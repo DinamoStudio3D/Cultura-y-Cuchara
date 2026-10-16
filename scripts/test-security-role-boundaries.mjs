@@ -24,6 +24,10 @@ test('Storage does not grant global access to business owners', () => {
   assert.match(admin, /role == 'admin'/);
   assert.doesNotMatch(admin, /role == 'owner'/);
   assert.match(rules, /isAssignedMerchant\(placeId\)/);
+  assert.match(rules, /function hasBusinessOwnerAccess\(placeId\)/);
+  assert.match(rules, /function canManageMerchantImages\(placeId\)/);
+  assert.match(rules, /!firestore\.exists\(/);
+  assert.match(rules, /&& canManageMerchantImages\(placeId\)/);
 });
 
 test('Image signing does not grant admin permissions to owner role', () => {
