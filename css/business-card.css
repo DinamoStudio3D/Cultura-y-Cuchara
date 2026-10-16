@@ -1,0 +1,70 @@
+@layer vl-layout {
+/* Consolidated business card, v104. Keep imagery bounded and actions close to content. */
+#mapa #mapPreviewCard{display:grid!important;grid-template-columns:minmax(0,1fr);align-items:start;gap:20px!important;padding:22px!important;min-height:0!important;height:auto!important;position:relative!important;top:auto!important;border:1px solid #dce6ef!important;border-radius:22px!important;background:#fff!important;color:#1e293b;box-shadow:0 14px 40px #12365412}
+#mapa #mapPreviewCard>*{min-width:0}
+#mapa #mapPreviewCard [hidden]{display:none!important}
+#mapa #mapPreviewCard #previewPhotoButton:not([hidden]){margin:0!important;border-radius:14px;box-shadow:none;background:#f1f5f9;align-self:start}
+#mapa #mapPreviewCard #previewPhotoButton img{width:100%;height:220px!important;max-height:220px!important;padding:8px;object-fit:contain!important;background:#f1f5f9}
+#mapa #mapPreviewCard #previewPhotoLabel{font-size:11px;left:12px;bottom:12px;padding:7px 10px;background:#123654;color:#fff}
+#mapa #mapPreviewCard #previewTitle{font-size:clamp(23px,2.3vw,30px)!important;line-height:1.2!important;color:#123654!important;letter-spacing:-.025em;margin:8px 0 12px}
+#mapa #mapPreviewCard #previewDesc{font-size:14px!important;line-height:1.7!important;color:#475569!important;white-space:pre-line;overflow-wrap:anywhere;margin-bottom:8px}
+#mapa #mapPreviewCard .vl-description-collapsed{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+#mapa #mapPreviewCard #previewReadMore{color:#075bb2;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 12px;margin:0 0 14px;font-size:13px;font-weight:700;min-height:40px;cursor:pointer}
+#mapa #mapPreviewCard #previewTag{background:#eff6ff!important;color:#17446c!important;border:1px solid #c6deef!important}
+#mapa #mapPreviewCard>div.vl-place-actions{gap:10px!important;min-width:0;padding:18px 0 0!important;border-top:1px solid #e2e8f0;border-left:0;background:transparent}
+#mapa #mapPreviewCard .vl-place-actions-head{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:space-between;color:#123654;margin-bottom:6px}
+#mapa #mapPreviewCard .vl-place-actions-head small{color:#64748b}
+#mapa #mapPreviewCard .vl-place-actions :is(button,a){min-height:44px;line-height:1.4;white-space:normal;overflow-wrap:anywhere;border-radius:10px;font-size:12px}
+#mapa #mapPreviewCard .vl-place-actions>button:first-of-type,#mapa #mapPreviewCard #previewRestaurantMenuBtn{background:#075bb2!important;color:#fff!important;border-color:#075bb2!important;box-shadow:none}
+#mapa #mapPreviewCard #previewGps{background:#eff6ff!important;color:#123654!important}
+#mapa #mapPreviewCard #previewWhatsapp{background:#166534!important;color:#fff!important}
+#mapa #mapPreviewCard #previewFavBtn{top:12px!important;right:12px!important;width:40px;height:40px;border-radius:50%!important;display:flex!important;align-items:center;justify-content:center;background:#123654!important;color:#fff!important}
+#mapa #mapPreviewCard :is(button,a,summary):focus-visible{outline:3px solid #075bb2;outline-offset:3px}
+#mapa #mapPreviewCard[data-empty="true"]{grid-template-columns:minmax(0,1fr)!important}
+#mapa #mapPreviewCard[data-empty="true"] .vl-place-actions,#mapa #mapPreviewCard[data-empty="true"] #previewBusinessProfile,#mapa #mapPreviewCard[data-empty="true"] #previewPromotion,#mapa #mapPreviewCard[data-empty="true"] #previewPhotoButton,#mapa #mapPreviewCard[data-empty="true"] #previewFavBtn,#mapa #mapPreviewCard[data-empty="true"] #previewReadMore{display:none!important}
+#mapa #mapPreviewCard[data-empty="true"]>div{grid-column:1!important}
+@media(min-width:768px){
+ #mapa #mapPreviewCard{grid-template-columns:minmax(180px,28%) minmax(0,1fr);column-gap:24px!important}
+ #mapa #mapPreviewCard #previewPhotoButton{grid-column:1;grid-row:1}
+ #mapa #mapPreviewCard>div:not(.vl-place-actions){grid-column:2;grid-row:1}
+ #mapa #mapPreviewCard:has(#previewPhotoButton[hidden])>div:not(.vl-place-actions){grid-column:1/-1}
+ #mapa #mapPreviewCard>div.vl-place-actions{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+ #mapa #mapPreviewCard .vl-place-actions-head,#mapa #mapPreviewCard .vl-map-more{grid-column:1/-1}
+ #mapa #mapPreviewCard .vl-map-more{order:5}
+ #mapa #mapPreviewCard .vl-place-actions>.grid{align-self:start}
+}
+@media(max-width:767px){#mapa #mapPreviewCard{padding:16px!important;gap:16px!important}#mapa #mapPreviewCard #previewPhotoButton img{height:200px!important;max-height:200px!important}#mapa #mapPreviewCard .vl-place-actions-head{flex-direction:column}#mapa #mapPreviewCard .vl-place-actions .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){#mapa #mapPreviewCard{transition:none}}
+
+}
+@layer vl-layout {
+ #mapa #mapPreviewCard .hidden{display:none!important}
+ #mapa #mapPreviewCard #previewDesc.vl-description-collapsed{display:-webkit-box!important;-webkit-line-clamp:4!important;-webkit-box-orient:vertical;overflow:hidden}
+ #mapa #mapPreviewCard #previewReadMore{border:1px solid #bfdbfe!important;background:#eff6ff!important;color:#075bb2!important;border-radius:8px!important;padding:8px 12px!important;min-height:40px!important}
+ @media(min-width:768px){
+  #mapa #mapPreviewCard{grid-template-columns:minmax(180px,28%) minmax(0,1fr)!important}
+  #mapa #mapPreviewCard #previewPhotoButton{grid-column:1!important;grid-row:1!important}
+  #mapa #mapPreviewCard>div:not(.vl-place-actions){grid-column:2!important;grid-row:1!important;padding:0!important}
+  #mapa #mapPreviewCard:has(#previewPhotoButton[hidden])>div:not(.vl-place-actions){grid-column:1/-1!important}
+  #mapa #mapPreviewCard>div.vl-place-actions{grid-column:1/-1!important;grid-row:auto!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:auto!important;max-width:none!important;margin:0!important;padding:18px 0 0!important;border-left:0!important;border-top:1px solid #e2e8f0!important}
+ }
+ @media(max-width:767px){#mapa #mapPreviewCard{grid-template-columns:minmax(0,1fr)!important}#mapa #mapPreviewCard>div{padding:0!important}#mapa #mapPreviewCard>div.vl-place-actions{display:flex!important;margin:0!important;padding-top:16px!important}}
+}
+@layer vl-colors {
+ #mapa #mapPreviewCard #previewGps{--vl-text:#123654;--vl-muted:#123654;--vl-accent:#075bb2;background:#eff6ff!important;color:#123654!important}
+ #mapa #mapPreviewCard #previewReadMore{--vl-text:#075bb2;--vl-muted:#075bb2;--vl-accent:#075bb2;background:#eff6ff!important;color:#075bb2!important}
+ #mapa #mapPreviewCard .vl-place-actions>button:first-of-type,#mapa #mapPreviewCard #previewRestaurantMenuBtn{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#075bb2!important;color:#fff!important;border-color:#075bb2!important}
+ #mapa #mapPreviewCard #previewFavBtn{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#123654!important;color:#fff!important;border-color:#cbd5e1!important}
+}
+@layer vl-layout {
+ #mapa #mapPreviewCard #previewFavBtn{position:absolute!important;z-index:2}
+ #mapa #mapPreviewCard #previewDesc.vl-description-collapsed{white-space:normal!important}
+ #mapa #mapPreviewCard>div.vl-place-actions:last-of-type{padding:18px 0 0!important;border-left:0!important;border-top:1px solid #e2e8f0!important;margin:0!important;gap:10px!important}
+ #mapa #mapPreviewCard .vl-place-actions>:is(button,div,details){width:100%;min-width:0}
+ #mapa #mapPreviewCard .vl-place-actions :is(button,a){display:flex;align-items:center;justify-content:center;padding:10px 12px}
+ #mapa #mapPreviewCard .vl-place-actions .hidden{display:none!important}
+ @media(min-width:768px){#mapa #mapPreviewCard>div.vl-place-actions:last-of-type{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+}
+@layer vl-layout {
+ @media(min-width:768px){#mapa #mapPreviewCard .vl-place-actions:not(:has(#previewRestaurantMenuBtn:not(.hidden)))>button:first-of-type{grid-column:1/-1}}
+}

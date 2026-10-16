@@ -38,7 +38,6 @@
  #mapa #previewBusinessProfile a{min-height:44px;display:inline-flex;align-items:center}
  #mapa .vl-place-actions :is(button,a){min-height:44px;font-size:12px!important}
  #mapa .vl-preview-photo:focus-visible{outline:3px solid #236043;outline-offset:4px}
- @media(min-width:1200px){#mapa #mapPreviewCard:has(>.vl-preview-photo:not([hidden])){grid-template-columns:minmax(220px,.85fr) minmax(0,1fr) minmax(280px,1fr)!important;align-items:start}#mapa #mapPreviewCard>div:last-of-type{padding-left:22px!important;gap:10px!important}}
  @media(min-width:1024px) and (max-width:1199px){#mapa #mapPreviewCard>.vl-preview-photo{grid-column:1/-1;aspect-ratio:3/1}#mapa #mapPreviewCard>.vl-preview-photo>img{object-position:center}}
  @media(max-width:1023px){#mapa #mapPreviewCard{display:flex!important;flex-direction:column!important}#mapa #mapPreviewCard>.vl-preview-photo{max-height:340px}#mapa #mapPreviewCard>div{width:100%}}
  @media(max-width:639px){#mapa #mapPreviewCard{padding:18px!important;gap:18px!important}#mapa #mapPreviewCard>.vl-preview-photo{aspect-ratio:4/3;max-height:none}#establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content{padding:20px!important}}

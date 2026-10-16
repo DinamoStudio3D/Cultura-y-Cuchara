@@ -24,6 +24,6 @@ test('centering Loja restores the large map without replacing GPS or zooming to 
  const source=html.slice(html.indexOf('        function centerOnLoja()'),html.indexOf('        function toggleFavoriteCurrent'));
  const calls=[],gps={lat:-4.1,lng:-79.3};
  const context={userCoords:gps,document:{getElementById:()=>({classList:{remove:value=>calls.push(['remove',value])}})},map:{closePopup:()=>calls.push(['close']),invalidateSize:()=>calls.push(['size']),setView:(...args)=>calls.push(['view',...args])},clearSpotlightPin:()=>{},renderMapAndGrid:()=>{},selectLocation:(...args)=>calls.push(['select',...args]),showToast:()=>{}};
- vm.runInNewContext(source,context);context.centerOnLoja();assert.equal(context.userCoords,gps);assert.deepEqual(calls.find(x=>x[0]==='remove'),['remove','vl192-selected-stop']);assert.equal(calls.find(x=>x[0]==='view')[2],15);assert.deepEqual(calls.find(x=>x[0]==='select'),['select',0,false]);assert(calls.find(x=>x[0]==='size'));
+ vm.runInNewContext(source,context);context.centerOnLoja();assert.equal(context.userCoords,gps);assert.deepEqual(calls.find(x=>x[0]==='remove'),['remove','vl192-selected-stop']);assert.equal(calls.find(x=>x[0]==='view')[2],15);assert.equal(calls.find(x=>x[0]==='select'),undefined);assert(calls.find(x=>x[0]==='size'));
  context.map=null;assert.doesNotThrow(()=>context.centerOnLoja());
 });

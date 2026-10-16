@@ -320,11 +320,11 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=198">
+<link rel="stylesheet" href="css/public-layout.css?v=199">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
 <link rel="stylesheet" href="css/discovery-cards.css?v=105">
-<link rel="stylesheet" href="css/place-experience-v101.css?v=103">
+<link rel="stylesheet" href="css/place-experience-v101.css?v=104">
 <link rel="stylesheet" href="css/discovery-sections-v104.css?v=104">
     <link rel="stylesheet" href="css/time-discovery-v79.css?v=79">
     <link rel="stylesheet" href="css/podcast-v80.css?v=80">
@@ -434,111 +434,7 @@
 }
 @media(max-width:370px){#mapPreviewCard #previewPhotoButton img{height:180px;max-height:180px}}
 </style>
-<style id="vl-business-detail-editorial-v2">
-/* Editorial business detail: desktop redesign with existing actions and data intact. */
-@media(min-width:1024px){
-  #mapPreviewCard{
-    display:grid!important;
-    grid-template-columns:minmax(235px, 30%) minmax(0, 1fr) minmax(270px, 30%);
-    grid-template-rows:auto;
-    align-items:start;
-    gap:0!important;
-    padding:0!important;
-    min-height:0!important;
-    border:1px solid #dce6ef!important;
-    border-radius:24px!important;
-    background:#fff!important;
-    box-shadow:0 22px 65px rgba(16,45,77,.11)!important;
-    overflow:hidden;
-  }
-  #mapPreviewCard #previewPhotoButton:not([hidden]){
-    grid-column:1;
-    align-self:stretch;
-    margin:0!important;
-    border-radius:0!important;
-    box-shadow:none!important;
-    background:linear-gradient(155deg,#e8f1fa,#f6f9fc)!important;
-    min-height:440px;
-    display:flex!important;
-    align-items:center;
-    justify-content:center;
-  }
-  #mapPreviewCard #previewPhotoButton img{
-    height:auto!important;
-    max-height:440px!important;
-    width:100%;
-    padding:22px;
-    object-fit:contain!important;
-    background:transparent!important;
-  }
-  #mapPreviewCard #previewPhotoLabel{left:18px;bottom:18px}
-  #mapPreviewCard > div:not(.vl-place-actions){
-    grid-column:2;
-    min-width:0;
-    padding:32px 28px 34px;
-  }
-  #mapPreviewCard #previewTitle{
-    font-size:clamp(25px,2.3vw,38px)!important;
-    line-height:1.13!important;
-    margin:12px 0 18px;
-    color:#123654!important;
-  }
-  #mapPreviewCard #previewDesc{
-    font-size:14px!important;
-    line-height:1.75!important;
-    color:#43576b!important;
-  }
-  #mapPreviewCard #previewTag{
-    background:#e8f2fb!important;
-    color:#17446c!important;
-    border:1px solid #c6deef;
-    border-radius:999px;
-  }
-  #mapPreviewCard .vl-place-actions{
-    grid-column:3;
-    align-self:stretch;
-    min-width:0;
-    padding:32px 22px!important;
-    border-top:0!important;
-    border-left:1px solid #e1e9f0;
-    background:#f5f9fd;
-    gap:12px!important;
-  }
-  #mapPreviewCard .vl-place-actions-head{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-start;
-    gap:7px;
-    margin-bottom:12px;
-  }
-  #mapPreviewCard .vl-place-actions > button:first-of-type{
-    min-height:54px;
-    background:#164b76!important;
-    border-color:#164b76!important;
-    color:#fff!important;
-    font-size:13px!important;
-    box-shadow:0 8px 22px rgba(22,75,118,.18);
-  }
-  #mapPreviewCard #previewGps{
-    background:#e2edf8!important;
-    color:#123654!important;
-  }
-  #mapPreviewCard #previewFavBtn{
-    top:14px!important;
-    right:14px!important;
-    width:43px;
-    height:43px;
-  }
-}
-@media(min-width:1024px) and (max-width:1200px){
-  #mapPreviewCard{grid-template-columns:minmax(205px,27%) minmax(0,1fr) minmax(245px,29%)}
-  #mapPreviewCard > div:not(.vl-place-actions){padding:26px 20px}
-  #mapPreviewCard .vl-place-actions{padding:28px 15px!important}
-}
-@media(min-width:768px) and (max-width:1023px){
-  #mapPreviewCard{border-radius:22px!important}
-}
-</style>
+<link rel="stylesheet" href="css/business-card.css?v=104">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1262,7 +1158,7 @@
                 </div>
             </div>
 
-            <div id="mapPreviewCard" class="glass-card p-4 sm:p-6 rounded-2xl shadow-warm-glow border-2 border-gray-200 flex flex-col gap-4 min-h-[460px] md:min-h-[500px] lg:min-h-[520px] lg:h-auto lg:sticky lg:top-24 relative transition-colors duration-300">
+            <div id="mapPreviewCard" data-empty="true" class="glass-card p-4 sm:p-6 rounded-2xl shadow-warm-glow border-2 border-gray-200 flex flex-col gap-4 min-h-[460px] md:min-h-[500px] lg:min-h-[520px] lg:h-auto lg:sticky lg:top-24 relative transition-colors duration-300">
                 <button id="previewFavBtn" type="button" disabled aria-label="Añadir o quitar de mi ruta" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
@@ -1277,7 +1173,7 @@
                         <i class="fa-solid fa-location-arrow"></i> <span></span>
                     </div>
                     <p id="previewDesc" class="text-gray-600 text-xs sm:text-sm mb-3 leading-relaxed">Selecciona una parada publicada para consultar su información.</p>
-                    
+                    <button id="previewReadMore" type="button" hidden aria-expanded="false" aria-controls="previewDesc" onclick="togglePreviewDescription()">Leer más</button>
                     <div id="previewPromotion" class="hidden mb-3 rounded-xl border border-amber-300 bg-gradient-to-r from-orange-50 to-amber-50 p-3 text-xs text-amber-900"></div>
                     <div class="space-y-2.5 text-xs sm:text-sm text-gray-700 border-t border-gray-100 pt-3">
                         <div class="flex items-center gap-2"><i id="previewDetailIcon" class="fa-solid fa-utensils text-brandGold w-4"></i> <span id="previewDish"></span></div>
@@ -4200,25 +4096,16 @@
 
         const LOCATIONS_CACHE_KEY = 'visita_loja_locations_cache_v1';
         const LOCATIONS_CACHE_TIME_KEY = 'visita_loja_locations_cache_time_v1';
-        function readLocationsCache() {
-            const cached = safeReadJSON(LOCATIONS_CACHE_KEY, []);
-            return []; // Never trust stale cached business listings.
-        }
-        function saveLocationsCache(items) {
-            if (!Array.isArray(items)) return;
-            try {
-                localStorage.setItem(LOCATIONS_CACHE_KEY, JSON.stringify(items));
-                localStorage.setItem(LOCATIONS_CACHE_TIME_KEY, new Date().toISOString());
-            } catch (error) { console.warn('No se pudo actualizar la caché de paradas.'); }
-        }
+        // Retire the legacy listing cache; only server-confirmed locales are displayed.
+        try { localStorage.removeItem(LOCATIONS_CACHE_KEY); localStorage.removeItem(LOCATIONS_CACHE_TIME_KEY); } catch (_) {}
         function setLocationsSyncStatus(state, detail = '') {
             const status = document.getElementById('dataSyncStatus');
             if (!status) return;
             const states = {
                 loading: ['fa-cloud-arrow-down text-cyan-300', detail || 'Actualizando paradas…'],
                 cached: ['fa-clock-rotate-left text-amber-300', detail || 'Mostrando la última información disponible'],
-                offline: ['fa-wifi text-amber-300', detail || 'Sin conexión · usando información guardada'],
-                error: ['fa-triangle-exclamation text-red-300', detail || 'No se pudo actualizar · conservamos las paradas anteriores']
+                offline: ['fa-wifi text-amber-300', detail || 'Sin conexión · conecta para verificar las paradas'],
+                error: ['fa-triangle-exclamation text-red-300', detail || 'No se pudo verificar las paradas publicadas']
             };
             if (state === 'ready') { status.classList.add('hidden'); return; }
             const [icon, text] = states[state] || states.loading;
@@ -4226,7 +4113,7 @@
             status.querySelector('span').textContent = text;
             status.classList.remove('hidden');
         }
-        const cachedPublicLocations = readLocationsCache();
+
         // Wait for a confirmed Firestore snapshot.
 
         let eventsList = safeReadJSON('cyc_dynamic_events', [
@@ -4635,7 +4522,7 @@
             setLocationsSyncStatus(navigator.onLine ? 'loading' : 'offline');
 
             if (!db) {
-                setLocationsSyncStatus(cachedPublicLocations.length ? 'cached' : 'error');
+                setLocationsSyncStatus('error');
                 renderEverything();
                 checkLiveEventsBanner();
                 maybeTriggerPopup(initial);
@@ -4650,33 +4537,19 @@
                 }
                 const nextLocations = [];
                 snapshot.forEach((doc) => {
-                    const location = { id: doc.id, ...doc.data() };
+                    const location = { ...doc.data(), id: doc.id };
                     const normalizedLocationName = String(location.title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
                     if (!location.audioUrl && (doc.id === 'dinamo_studio' || normalizedLocationName.includes('dinamo'))) location.audioUrl = 'audios/dinamo-the-weight-of-one-note.mp3';
                     const searchable = [location.category, location.tag, location.title, location.type].join(' ').toLowerCase();
                     if (isPublicContent(location) && !searchable.includes('motel')) nextLocations.push(location);
                 });
-                locations = nextLocations; // An empty server response also clears old businesses.
-                if (currentLocationId) {
-                    const selectedIndex = locations.findIndex(loc => String(loc.id) === String(currentLocationId));
-                    if (selectedIndex >= 0) currentLocationIndex = selectedIndex;
-                    else {
-                        currentLocationId = null;
-                        currentLocationIndex = -1;
-                        for (const [id, value] of Object.entries({
-                            previewTitle: 'Selecciona un lugar en el mapa',
-                            previewDesc: 'Selecciona una parada publicada para consultar su información.',
-                            previewDish: '', previewHours: '', previewAddress: ''
-                        })) {
-                            const element = document.getElementById(id);
-                            if (element) element.textContent = value;
-                        }
-                        document.getElementById('previewOpenStatus')?.classList.add('hidden');
-                        document.getElementById('previewFavBtn')?.setAttribute('disabled', '');
-                        document.getElementById('previewPhotoButton')?.setAttribute('hidden', '');
-                    }
+                locations = nextLocations; // Empty is authoritative, too.
+                const selectedId = currentLocationId;
+                if (selectedId) {
+                    const index = locations.findIndex(loc => String(loc.id) === String(selectedId));
+                    if (index >= 0) selectLocation(index, false, false);
+                    else clearCurrentLocation();
                 }
-                saveLocationsCache(nextLocations);
                 categories=categories.filter(category=>!String(category.id+' '+category.name+' '+(category.nameEn||'')).toLowerCase().includes('motel'));
                 scheduleSubscriptionRefresh();
                 renderEverything();
@@ -4763,9 +4636,12 @@
             );
             if (index < 0) return;
             handledLocationUrl = true;
+            const selectedId = locations[index].id;
             setTimeout(() => {
-                selectLocation(index, true);
-                const loc = locations[index];
+                const currentIndex = locations.findIndex(loc => String(loc.id) === String(selectedId));
+                if (currentIndex < 0) return;
+                selectLocation(currentIndex, true);
+                const loc = locations[currentIndex];
                 const title = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                 document.title = `${title} | Visita Loja`;
                 document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -5607,7 +5483,6 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             clearSpotlightPin();
             if(map) { map.closePopup(); map.invalidateSize({ pan: false }); map.setView([lojaLat, lojaLng], 15, { animate: true }); }
             renderMapAndGrid();
-            selectLocation(0, false);
             showToast('Mapa centrado en Loja');
         }
 
@@ -7611,18 +7486,56 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
-        function selectLocation(index, shouldCenterMap = true) {
+        function togglePreviewDescription() {
+            const button = document.getElementById('previewReadMore');
+            const expanded = button.getAttribute('aria-expanded') !== 'true';
+            button.setAttribute('aria-expanded', String(expanded));
+            document.getElementById('previewDesc').classList.toggle('vl-description-collapsed', !expanded);
+            button.textContent = currentLang === 'en' ? (expanded ? 'Read less' : 'Read more') : (expanded ? 'Leer menos' : 'Leer más');
+        }
+        function clearCurrentLocation() {
+            stopAudioGuide();
+            currentLocationId = null;
+            currentLocationIndex = -1;
+            document.getElementById('mapPreviewCard').dataset.empty = 'true';
+            document.getElementById('mapa')?.classList.remove('vl192-selected-stop');
+            for (const [id, value] of Object.entries({previewTitle: currentLang === 'en' ? 'Select a place on the map' : 'Selecciona un lugar en el mapa', previewDesc: currentLang === 'en' ? 'Choose a published place to see its details.' : 'Selecciona una parada publicada para consultar su información.', previewTag: 'Explora Loja', previewDish: '', previewHours: '', previewAddress: ''})) {
+                document.getElementById(id).textContent = value;
+            }
+            for (const id of ['previewPromotion', 'previewBusinessProfile', 'previewCommerceActions']) {
+                document.getElementById(id).classList.add('hidden');
+            }
+            document.getElementById('previewReadMore').hidden = true;
+            document.getElementById('previewOpenStatus').classList.add('hidden');
+            document.getElementById('previewDistanceBadge').classList.add('hidden');
+            document.getElementById('previewFavBtn').disabled = true;
+            window.VisitaLojaPlacePreviewMedia?.render({}, '', currentLang);
+            for (const id of ['previewWhatsapp', 'previewGps']) {
+                const link = document.getElementById(id);
+                link.removeAttribute('href'); link.onclick = null;
+            }
+            document.querySelectorAll('#mapPreviewCard details').forEach(details => details.open = false);
+            currentRestaurantMenu = null;
+            for (const id of ['restaurantMenuModal', 'menuModal', 'qrClaimModal']) {
+                const modal = document.getElementById(id);
+                if (modal && !modal.classList.contains('hidden')) closeModal(id);
+            }
+            map?.closePopup();
+        }
+
+        function selectLocation(index, shouldCenterMap = true, trackSelection = true) {
             stopAudioGuide();
             const loc = locations[index];
             if(!loc) return;
             currentLocationIndex = index;
             currentLocationId = loc.id || null;
             document.getElementById('previewFavBtn')?.removeAttribute('disabled');
-            trackBusinessEvent(loc.id,'view');
+            document.getElementById('mapPreviewCard').dataset.empty = 'false';
+            if (trackSelection) trackBusinessEvent(loc.id,'view');
             maybeShowPlacePromotion(loc);
             const restaurantMenu=restaurantMenuFor(loc),menuButton=document.getElementById('previewRestaurantMenuBtn');
             if(menuButton){menuButton.classList.toggle('hidden',!restaurantMenu);menuButton.classList.toggle('flex',!!restaurantMenu);const label=document.getElementById('previewRestaurantMenuLabel');if(label)label.textContent=currentLang==='en'?'View restaurant menu':'Ver menú del restaurante';}renderCommerceActions(loc);
-            completeChabaquitoMission('mapa');
+            if (trackSelection) completeChabaquitoMission('mapa');
             
             const tagText = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
             const titleText = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
@@ -7666,7 +7579,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             }
 
             document.getElementById('previewTitle').innerText = titleText || '';
-            document.getElementById('previewDesc').innerText = descText || '';
+            document.getElementById('previewDesc').textContent = descText || '';
+            const description = document.getElementById('previewDesc');
+            description.classList.toggle('vl-description-collapsed', String(descText || '').length > 240);
+            const readMore = document.getElementById('previewReadMore');
+            readMore.hidden = String(descText || '').length <= 240;
+            readMore.setAttribute('aria-expanded', 'false');
+            readMore.textContent = currentLang === 'en' ? 'Read more' : 'Leer más';
             const detailPrefix = loc.category === 'hotel'
                 ? (currentLang === 'en' ? 'Benefit: ' : 'Beneficio: ')
                 : loc.category === 'aliado'
@@ -7677,7 +7596,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             document.getElementById('previewDish').innerText = detailPrefix + (dishText || '');
             const previewStampButton=document.getElementById('previewStampButton');if(previewStampButton)previewStampButton.classList.toggle('hidden',!['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(loc.category));
             document.getElementById('previewHours').innerText = loc.hours || (currentLang==='en'?'Hours to be confirmed':'Horario por confirmar');
-            document.getElementById('previewAddress').innerText = loc.address;
+            document.getElementById('previewAddress').innerText = loc.address || (currentLang === 'en' ? 'Ask the business for its address' : 'Consulta la dirección con el negocio');
             renderBusinessProfile(loc);
             
             const previewGpsUrl=publicPlaceDirectionsUrl(loc,userCoords);
