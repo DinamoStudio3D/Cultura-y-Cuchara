@@ -465,6 +465,16 @@
                         <button id="newPlaceBtn" type="button" onclick="resetPlaceForm()" class="bg-cyan-500 hover:bg-cyan-400 text-black rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nueva parada</button>
                     </div>
 
+                    <div aria-label="Herramientas relacionadas con la gestión de negocios" class="mb-6 rounded-2xl border border-cyan-500/25 bg-cyan-500/5 p-4">
+                        <p class="text-sm font-bold text-cyan-200 mb-1">Gestiona todo lo relacionado con tus paradas</p>
+                        <p class="text-xs text-gray-300 mb-3">Accede a las herramientas existentes sin salir del administrador. Guarda cualquier cambio pendiente en esta ficha antes de cambiar de módulo.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="showAdminModule('merchants')" class="rounded-xl border border-gray-600 px-3 py-2.5 text-sm font-semibold text-gray-100 hover:bg-white/10"><i class="fa-solid fa-user-gear mr-1" aria-hidden="true"></i>Propietarios y accesos</button>
+                            <button type="button" onclick="showAdminModule('subscriptions')" class="rounded-xl border border-gray-600 px-3 py-2.5 text-sm font-semibold text-gray-100 hover:bg-white/10"><i class="fa-solid fa-handshake mr-1" aria-hidden="true"></i>Planes y suscripciones</button>
+                            <button type="button" onclick="showAdminModule('fidelity')" class="rounded-xl border border-gray-600 px-3 py-2.5 text-sm font-semibold text-gray-100 hover:bg-white/10"><i class="fa-solid fa-gift mr-1" aria-hidden="true"></i>Fidelización y beneficios</button>
+                        </div>
+                    </div>
+
                     <form id="placeForm" class="space-y-5 bg-black/25 border border-gray-800 rounded-2xl p-4 sm:p-5 mb-7">
                         <input id="placeEditId" type="hidden">
                         <input id="placeApplicationId" type="hidden">
