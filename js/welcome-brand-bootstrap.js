@@ -1,6 +1,6 @@
 /* The supplied official logo loads locally first; server settings can update it. */
 (function(){
- const local='assets/brand/visitaloja-official.webp';
+ const local='assets/brand/visitaloja-splash.webp';
  let revision=0;
  function loadLogo(raw){
   const currentRevision=++revision;
