@@ -434,7 +434,7 @@
 }
 @media(max-width:370px){#mapPreviewCard #previewPhotoButton img{height:180px;max-height:180px}}
 </style>
-<link rel="stylesheet" href="css/business-card.css?v=104">
+<link rel="stylesheet" href="css/business-card.css?v=actions-2-104">
 <script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=2">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
@@ -1147,21 +1147,24 @@
                     </div><div id="previewBusinessProfile" class="hidden mt-3 pt-3 border-t border-gray-100"></div>
                 </div>
 
-                <div class="vl-place-actions pt-3 border-t border-gray-100 flex flex-col gap-2">
-                    <div class="vl-place-actions-head"><span><i class="fa-solid fa-compass"></i> Explora este lugar</span><small>Elige cómo continuar tu visita</small></div>
-                    <button type="button" onclick="openBusinessPageForCurrent()" class="w-full bg-orange-50 text-orange-800 py-2.5 rounded-xl font-bold text-xs hover:bg-orange-100 transition shadow border border-orange-200 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-store"></i> Ver página completa
-                    </button>
-                    
-                    <button id="previewRestaurantMenuBtn" type="button" onclick="openRestaurantMenu()" class="hidden w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white py-3 rounded-xl font-black text-xs hover:from-orange-500 hover:to-amber-400 transition shadow-lg items-center justify-center gap-2"><i class="fa-solid fa-book-open"></i><span id="previewRestaurantMenuLabel">Ver menú del restaurante</span></button><div id="previewCommerceActions" class="hidden grid grid-cols-2 gap-2"><button id="previewOrderBtn" type="button" onclick="openCommerceWhatsapp('order')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i><span id="previewOrderLabel">Pedir ahora</span></button><button id="previewReservationBtn" type="button" onclick="openCommerceWhatsapp('reservation')" class="hidden bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-solid fa-calendar-check"></i><span id="previewReservationLabel">Reservar mesa</span></button></div>
-                    <button id="previewBusinessVideoBtn" type="button" hidden class="vl-video-highlight" onclick="openBusinessVideo(currentLocationId)"><i class="fa-solid fa-circle-play" aria-hidden="true"></i><span>Conoce este lugar en vídeo</span></button>
-                    <details class="vl-map-more"><summary><span><i class="fa-solid fa-ellipsis"></i> Más opciones del lugar</span><i class="fa-solid fa-chevron-down vl-more-chevron"></i></summary><div class="vl-map-more-body">
-                    <button id="previewAudioGuideBtn" type="button" onclick="toggleLocationAudioGuide()" class="w-full bg-brandGold/10 text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-brandGold hover:text-white transition border border-brandGold/40 flex items-center justify-center gap-2" aria-label="Escuchar audioguía del lugar seleccionado">
-                        <i class="fa-solid fa-volume-high"></i> <span id="previewAudioGuideLabel">Escuchar audioguía</span>
-                    </button>
-                    <button type="button" onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
+                <div class="vl-place-actions vl-actions-organized pt-3 border-t border-gray-100">
+                    <div class="vl-place-actions-head"><span><i class="fa-solid fa-compass"></i> Explora este lugar</span><small>Todo lo que necesitas para tu visita</small></div>
+                    <div class="vl-action-panel vl-action-visit"><h3><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Planifica tu visita</h3><div class="vl-action-grid"><button id="previewRestaurantMenuBtn" type="button" onclick="openRestaurantMenu()" class="hidden w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white py-3 rounded-xl font-black text-xs hover:from-orange-500 hover:to-amber-400 transition shadow-lg items-center justify-center gap-2"><i class="fa-solid fa-book-open"></i><span id="previewRestaurantMenuLabel">Ver menú del restaurante</span></button><div id="previewCommerceActions" class="hidden grid grid-cols-2 gap-2"><button id="previewOrderBtn" type="button" onclick="openCommerceWhatsapp('order')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i><span id="previewOrderLabel">Pedir ahora</span></button><button id="previewReservationBtn" type="button" onclick="openCommerceWhatsapp('reservation')" class="hidden bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-solid fa-calendar-check"></i><span id="previewReservationLabel">Reservar mesa</span></button></div><a id="previewWhatsapp" href="#" target="_blank" rel="noopener noreferrer" class="min-h-11 bg-green-500 text-white px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
+                            <i class="fa-brands fa-whatsapp mr-1.5 text-base"></i> <span>WhatsApp</span>
+                        </a>
+                        <a id="previewGps" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="min-h-11 bg-gray-100 text-brandDark px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
+                            <i class="fa-solid fa-diamond-turn-right text-brandGold mr-1.5"></i><span id="previewGpsLabel">Cómo llegar</span>
+                        </a></div></div>
+                    <div class="vl-action-panel vl-action-discover"><h3><i class="fa-regular fa-compass" aria-hidden="true"></i> Conoce el lugar</h3><div class="vl-action-grid"><button id="previewBusinessVideoBtn" type="button" hidden class="vl-video-highlight" onclick="openBusinessVideo(currentLocationId)"><i class="fa-solid fa-circle-play" aria-hidden="true"></i><span>Conoce este lugar en vídeo</span></button><button type="button" onclick="openMenuGallery()" class="w-full bg-brandDark text-brandGold py-2.5 rounded-xl font-bold text-xs hover:bg-black transition shadow flex items-center justify-center border border-brandGold/30 mb-1">
                         <i class="fa-solid fa-film mr-2"></i> <span data-i18n="btnMedia">Ver Vídeo y Galería de Fotos</span>
-                    </button>
+                    </button><button id="previewAudioGuideBtn" type="button" onclick="toggleLocationAudioGuide()" class="w-full bg-brandGold/10 text-brandDark py-2.5 rounded-xl font-bold text-xs hover:bg-brandGold hover:text-white transition border border-brandGold/40 flex items-center justify-center gap-2" aria-label="Escuchar audioguía del lugar seleccionado">
+                        <i class="fa-solid fa-volume-high"></i> <span id="previewAudioGuideLabel">Escuchar audioguía</span>
+                    </button><button type="button" onclick="openBusinessPageForCurrent()" class="w-full bg-orange-50 text-orange-800 py-2.5 rounded-xl font-bold text-xs hover:bg-orange-100 transition shadow border border-orange-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-store"></i> Ver página completa
+                    </button></div></div>
+                    <details class="vl-map-more"><summary><span><i class="fa-solid fa-ellipsis"></i> Tu experiencia y recuerdos</span><i class="fa-solid fa-chevron-down vl-more-chevron"></i></summary><div class="vl-map-more-body">
+                    
+
                     <button id="previewStampButton" type="button" onclick="openQrClaimForCurrent()" class="w-full bg-brandGold text-white py-2.5 rounded-xl font-bold text-xs hover:bg-brandGoldHover transition shadow flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-qrcode"></i> Obtener sello de esta parada
                     </button>
@@ -1175,14 +1178,6 @@
                     </button>
 
                     </div></details>
-                    <div class="grid grid-cols-2 gap-2">
-                        <a id="previewWhatsapp" href="#" target="_blank" rel="noopener noreferrer" class="min-h-11 bg-green-500 text-white px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-green-600 transition shadow" title="Compartir por WhatsApp">
-                            <i class="fa-brands fa-whatsapp mr-1.5 text-base"></i> <span>WhatsApp</span>
-                        </a>
-                        <a id="previewGps" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="min-h-11 bg-gray-100 text-brandDark px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
-                            <i class="fa-solid fa-diamond-turn-right text-brandGold mr-1.5"></i><span id="previewGpsLabel">Cómo llegar</span>
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
