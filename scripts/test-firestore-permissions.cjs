@@ -49,9 +49,10 @@ test('businessAccess owner works without legacy merchant assignment',async()=>{
  await assertSucceeds(updateDoc(doc(auth('owner2'),'locales','placeB'),{desc:'Propietario autorizado',merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner2'}));
  await assertFails(updateDoc(doc(auth('owner2'),'locales','placeA'),{desc:'Acceso indebido',merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner2'}));
 });
-test('revoked businessAccess owner cannot edit',async()=>{
+test('revoked businessAccess owner cannot edit even with legacy assignment',async()=>{
  await env.withSecurityRulesDisabled(async context=>{
   await updateDoc(doc(context.firestore(),'businessAccess','owner2_placeB'),{active:false});
+  await setDoc(doc(context.firestore(),'missionRewardMerchants','owner2'),{active:true,placeIds:['placeB']});
  });
  await assertFails(updateDoc(doc(auth('owner2'),'locales','placeB'),{desc:'No autorizado',merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner2'}));
 });
