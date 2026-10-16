@@ -199,24 +199,44 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.role == 'owner';
     }
 
+    // Solo propietarios asignados; no permite editar publicación, plan, SEO ni identidad del negocio.
     function canMerchantEditLocale(documentId) {
-      return isAssignedVisitMerchant(documentId)
+      return (hasBusinessOwnerAccess(documentId) || isAssignedVisitMerchant(documentId))
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'description',
-          'phone',
-          'whatsapp',
-          'hours',
-          'merchantUpdatedAt',
-          'merchantUpdatedBy'
+          'desc', 'description', 'phone', 'whatsapp', 'hours',
+          'customLogoUrl', 'heroImage', 'gallery',
+          'merchantUpdatedAt', 'merchantUpdatedBy'
         ])
-        && request.resource.data.description is string
-        && request.resource.data.description.size() <= 1200
-        && request.resource.data.phone is string
-        && request.resource.data.phone.size() <= 30
-        && request.resource.data.whatsapp is string
-        && request.resource.data.whatsapp.size() <= 30
-        && request.resource.data.hours is string
-        && request.resource.data.hours.size() <= 600
+        && (!('desc' in request.resource.data)
+          || (request.resource.data.desc is string && request.resource.data.desc.size() <= 1200))
+        && (!('description' in request.resource.data)
+          || (request.resource.data.description is string && request.resource.data.description.size() <= 1200))
+        && (!('phone' in request.resource.data)
+          || (request.resource.data.phone is string && request.resource.data.phone.size() <= 30))
+        && (!('whatsapp' in request.resource.data)
+          || (request.resource.data.whatsapp is string && request.resource.data.whatsapp.size() <= 30))
+        && (!('hours' in request.resource.data)
+          || (request.resource.data.hours is string && request.resource.data.hours.size() <= 600))
+        && (!('customLogoUrl' in request.resource.data)
+          || (request.resource.data.customLogoUrl is string && request.resource.data.customLogoUrl.size() <= 2000))
+        && (!('heroImage' in request.resource.data)
+          || (request.resource.data.heroImage is string && request.resource.data.heroImage.size() <= 2000))
+        && (!('gallery' in request.resource.data)
+          || (
+            request.resource.data.gallery is list
+            && request.resource.data.gallery.size() <= 100
+            && (
+              !request.resource.data.diff(resource.data).affectedKeys().hasAny(['gallery'])
+              || (
+                exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
+                && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages is int
+                && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages >= 0
+                && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages <= 100
+                && request.resource.data.gallery.size()
+                  <= get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages
+              )
+            )
+          ))
         && request.resource.data.merchantUpdatedAt == request.time
         && request.resource.data.merchantUpdatedBy == request.auth.uid;
     }
