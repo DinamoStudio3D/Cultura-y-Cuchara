@@ -28,7 +28,7 @@ function configuredGalleryLimit(settingsFields,planId){
 async function resolveGalleryLimit(fetchImpl,token,placeId,localeFields){
  const entitlement=await readDocument(fetchImpl,`businessEntitlements/${encodeURIComponent(placeId)}`,token);
  // Un entitlement explícitamente inactivo no debe seguir concediendo su límite anterior.
- // Se ignora y se resuelve desde el plan vigente o, si no existe, desde compatibilidad.
+ // Se aplica el límite de compatibilidad para coincidir con Firestore.
  if(entitlement&&entitlement.active&&!fieldBool(entitlement.active))return DEFAULT_GALLERY_LIMIT;
  if(entitlement&&entitlement.maxGalleryImages){
   return fieldInt(entitlement.maxGalleryImages,DEFAULT_GALLERY_LIMIT);
