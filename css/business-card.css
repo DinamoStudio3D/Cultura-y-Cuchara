@@ -97,3 +97,8 @@
  #mapa #mapPreviewCard .vl-actions-organized #previewBusinessVideoBtn{--vl-text:#075bb2;--vl-accent:#075bb2;background:#eaf3ff!important;color:#075bb2!important;-webkit-text-fill-color:#075bb2!important;border-color:#b7d1ee!important}
  #mapa #mapPreviewCard .vl-actions-organized :is(button,a):hover{filter:brightness(.97)}
 }
+@layer vl-colors {
+ #mapa #mapPreviewCard .vl-actions-organized #previewWhatsapp{--vl-text:#244765;--vl-muted:#244765;--vl-accent:#244765;background:#fff!important;color:#244765!important;-webkit-text-fill-color:#244765!important;border-color:#cad9e6!important}
+ #mapa #mapPreviewCard .vl-actions-organized :is(button,a) :is(span,i){background:transparent!important;border-color:transparent!important}
+ #mapa #mapPreviewCard .vl-actions-organized #previewBusinessVideoBtn :is(span,i){--vl-text:#075bb2;--vl-muted:#075bb2;--vl-accent:#075bb2;background:transparent!important;color:#075bb2!important;-webkit-text-fill-color:#075bb2!important}
+}
