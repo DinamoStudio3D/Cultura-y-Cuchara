@@ -50,3 +50,11 @@ test('Gallery upload fallback matches Firestore compatibility limit', () => {
   assert.match(plans, /DEFAULT_GALLERY_LIMIT = 6/);
   assert.match(read('firestore.rules'), /gallery\.size\(\) <= 6/);
 });
+
+test('Merchant image signing fails closed when Firestore reads fail', () => {
+  const api = read('api/sign-merchant-image.js');
+  assert.match(api, /if\(r\.status===404\)return null/);
+  assert.match(api, /if\(!r\.ok\)throw new Error/);
+  assert.match(api, /if\(!authorized&&!accessFields\)/);
+  assert.match(api, /catch\(e\).*return res\.status\(503\)/s);
+});
