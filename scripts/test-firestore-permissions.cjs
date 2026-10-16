@@ -64,6 +64,14 @@ test('gallery respects business entitlement limit',async()=>{
  await assertSucceeds(updateDoc(doc(db,'locales','placeA'),{gallery:[{img:'a'},{img:'b'}],merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner1'}));
  await assertFails(updateDoc(doc(db,'locales','placeA'),{gallery:[{img:'a'},{img:'b'},{img:'c'}],merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner1'}));
 });
+test('inactive entitlement cannot grant previous gallery capacity',async()=>{
+ await env.withSecurityRulesDisabled(async context=>{
+  await updateDoc(doc(context.firestore(),'businessEntitlements','placeA'),{active:false,maxGalleryImages:20});
+ });
+ const db=auth('owner1');
+ await assertSucceeds(updateDoc(doc(db,'locales','placeA'),{gallery:Array.from({length:6},(_,i)=>({img:String(i)})),merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner1'}));
+ await assertFails(updateDoc(doc(db,'locales','placeA'),{gallery:Array.from({length:7},(_,i)=>({img:String(i)})),merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner1'}));
+});
 test('unconfigured business gallery has six-image compatibility cap',async()=>{
  await env.withSecurityRulesDisabled(async context=>{await setDoc(doc(context.firestore(),'missionRewardMerchants','legacy'),{active:true,placeIds:['placeB']})});
  const db=auth('legacy');
