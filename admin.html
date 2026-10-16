@@ -2173,6 +2173,10 @@ function openPlaceManagement(placeId,moduleName){
     if(showAdminModule(moduleName)===false)return;
     const label=document.getElementById('adminSelectedPlaceNotice');
     if(label){label.textContent='Parada de referencia: '+String(place.title||place.id)+'. Comprueba la selección dentro de este módulo antes de guardar.';label.hidden=false;}
+    if(moduleName==='fidelity'){
+        const frame=document.getElementById('fidelityFrame');
+        if(frame){const url='gestion-fidelidad.html?embed=1&placeId='+encodeURIComponent(placeId);if(frame.getAttribute('src')!==url)frame.setAttribute('src',url);}
+    }
     if(moduleName==='subscriptions'){
         const search=document.getElementById('subscriptionCenterSearch');
         if(search){search.value=String(place.title||'');search.dispatchEvent(new Event('input',{bubbles:true}));}
