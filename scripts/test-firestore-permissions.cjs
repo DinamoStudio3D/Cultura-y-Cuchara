@@ -38,6 +38,13 @@ test('owner can read own business access but not another',async()=>{
  await assertSucceeds(getDoc(doc(auth('owner1'),'businessAccess','owner1_placeA')));
  await assertFails(getDoc(doc(auth('other'),'businessAccess','owner1_placeA')));
 });
+test('legacy owner can GET absent own business access so image signing can fall back',async()=>{
+ const missing=doc(auth('legacyOwner'),'businessAccess','legacyOwner_legacyPlace');
+ const snapshot=await assertSucceeds(getDoc(missing));
+ if(snapshot.exists)throw new Error('Expected absent access document');
+ await assertFails(getDoc(doc(auth('other'),'businessAccess','legacyOwner_legacyPlace')));
+ await assertFails(getDoc(doc(auth('legacyOwner'),'businessAccess','other_legacyPlace')));
+});
 test('owner cannot assign access or change subscription entitlements',async()=>{
  const db=auth('owner1',{role:'owner'});
  await assertFails(setDoc(doc(db,'businessAccess','owner1_placeB'),{uid:'owner1',placeId:'placeB',role:'owner',active:true}));
