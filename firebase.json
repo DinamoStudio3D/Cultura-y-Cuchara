@@ -1,7 +1,18 @@
 {
   "functions": [
-    { "source": "functions", "codebase": "default" },
-    { "source": "functions-self-checkin", "codebase": "self-checkin" }
+    {
+      "source": "functions",
+      "codebase": "default"
+    },
+    {
+      "source": "functions-self-checkin",
+      "codebase": "self-checkin"
+    }
   ],
-  "firestore": { "rules": "firestore.rules" }
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  }
 }

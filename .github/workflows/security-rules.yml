@@ -1,0 +1,35 @@
+name: Security rules checks
+on:
+  push:
+    branches:
+      - admin/accesos-gestion-negocios
+  pull_request:
+    paths:
+      - 'firestore.rules'
+      - 'storage.rules'
+      - 'firebase.json'
+      - 'api/sign-event-image.js'
+      - 'api/sign-merchant-image.js'
+      - 'js/subscription-plan-config.js'
+      - 'scripts/test-security-role-boundaries.mjs'
+      - 'scripts/test-firestore-permissions.cjs'
+      - '.github/workflows/security-rules.yml'
+  workflow_dispatch:
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Static role checks
+        run: node --test scripts/test-security-role-boundaries.mjs scripts/test-admin-access-check.mjs scripts/test-admin-account-management-v224.mjs
+      - name: Install Firebase emulator dependencies
+        run: npm install --no-save --package-lock=false firebase-tools firebase @firebase/rules-unit-testing
+      - name: Firestore permission tests
+        run: npx firebase emulators:exec --project demo-visitaloja-security --only firestore,storage "node --test scripts/test-firestore-permissions.cjs"

@@ -5,11 +5,11 @@ const WEB_API_KEY="AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
 const DEFAULT_GALLERY_LIMIT=6;
 function fieldString(f){return f&&typeof f.stringValue==="string"?f.stringValue:""}
 function fieldBool(f){return !!(f&&f.booleanValue===true)}
-function fieldInt(f,fallback){const n=Number(f&&(f.integerValue??f.doubleValue));return Number.isFinite(n)?Math.max(0,Math.min(100,Math.trunc(n))):fallback}
+function fieldInt(f,fallback){if(!f||(f.integerValue===undefined&&f.doubleValue===undefined))return fallback;const n=Number(f.integerValue??f.doubleValue);return Number.isFinite(n)?Math.max(0,Math.min(100,Math.trunc(n))):fallback}
 function fieldArray(f){return f?.arrayValue?.values||[]}
 function fieldMap(f){return f?.mapValue?.fields||{}}
 function firestoreUrl(path){return `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${path}`}
-async function readDocument(fetchImpl,path,token){const r=await fetchImpl(firestoreUrl(path),{headers:{Authorization:`Bearer ${token}`}});if(!r.ok)return null;return (await r.json()).fields||{}}
+async function readDocument(fetchImpl,path,token){const r=await fetchImpl(firestoreUrl(path),{headers:{Authorization:`Bearer ${token}`}});if(r.status===404)return null;if(!r.ok)throw new Error(`Firestore read failed (${r.status}) for ${path}`);return (await r.json()).fields||{}}
 function localePlanId(fields){const subscription=fieldMap(fields.subscription);return fieldString(subscription.plan)||fieldString(subscription.planId)||fieldString(subscription.id)}
 function configuredGalleryLimit(settingsFields,planId){
  if(!planId)return DEFAULT_GALLERY_LIMIT;
@@ -28,12 +28,17 @@ function configuredGalleryLimit(settingsFields,planId){
 async function resolveGalleryLimit(fetchImpl,token,placeId,localeFields){
  const entitlement=await readDocument(fetchImpl,`businessEntitlements/${encodeURIComponent(placeId)}`,token);
  // Un entitlement explícitamente inactivo no debe seguir concediendo su límite anterior.
- // Se ignora y se resuelve desde el plan vigente o, si no existe, desde compatibilidad.
- if(entitlement&&(!entitlement.active||fieldBool(entitlement.active))&&entitlement.maxGalleryImages){
-  return fieldInt(entitlement.maxGalleryImages,DEFAULT_GALLERY_LIMIT);
+ // Se aplica el límite de compatibilidad para coincidir con Firestore.
+ if(entitlement&&entitlement.active&&!fieldBool(entitlement.active))return DEFAULT_GALLERY_LIMIT;
+ if(entitlement){
+  // Firestore rechaza límites ausentes o fuera de rango: no autorizar cargas adicionales.
+  const raw=entitlement.maxGalleryImages;
+  const limit=raw&&(raw.integerValue!==undefined||raw.doubleValue!==undefined)?Number(raw.integerValue??raw.doubleValue):NaN;
+  return Number.isInteger(limit)&&limit>=0&&limit<=100?limit:0;
  }
- const settings=await readDocument(fetchImpl,"settings/subscriptions",token);
- return configuredGalleryLimit(settings||{},localePlanId(localeFields||{}));
+ // Sin entitlement, Firestore permite un máximo de seis imágenes.
+ // No usar aquí el límite comercial del plan: podría autorizar una carga que Firestore rechace.
+ return DEFAULT_GALLERY_LIMIT;
 }
 function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return async function handler(req,res){
  res.setHeader("Cache-Control","no-store");
@@ -51,7 +56,7 @@ function createHandler({fetchImpl=fetch,env=process.env,now=Date.now}={}){return
   const accessId=`${user.localId}_${placeId}`;
   const accessFields=await readDocument(fetchImpl,`businessAccess/${encodeURIComponent(accessId)}`,token);
   let authorized=!!accessFields&&fieldBool(accessFields.active)&&fieldString(accessFields.role)==="owner"&&fieldString(accessFields.placeId)===placeId&&fieldString(accessFields.uid)===user.localId;
-  if(!authorized){
+  if(!authorized&&!accessFields){
    // Compatibilidad temporal con propietarios ya existentes durante la migración.
    const legacy=await readDocument(fetchImpl,`missionRewardMerchants/${encodeURIComponent(user.localId)}`,token);
    if(legacy){const ids=fieldArray(legacy.placeIds).map(v=>fieldString(v));authorized=fieldBool(legacy.active)&&ids.includes(placeId);}

@@ -66,8 +66,7 @@ function createHandler({
       let authorized =
         String(user.email || "").toLowerCase() === LEGACY_ADMIN_EMAIL ||
         claims.admin === true ||
-        claims.role === "admin" ||
-        claims.role === "owner";
+        claims.role === "admin";
       if (!authorized) {
         const profile = await fetchImpl(
           "https://firestore.googleapis.com/v1/projects/" +
@@ -80,7 +79,7 @@ function createHandler({
           const fields = (await profile.json()).fields || {};
           authorized =
             fields.active?.booleanValue === true &&
-            ["admin", "owner"].includes(fields.role?.stringValue);
+            fields.role?.stringValue === "admin";
         }
       }
       if (!authorized)

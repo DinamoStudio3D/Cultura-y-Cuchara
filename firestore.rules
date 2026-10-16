@@ -5,7 +5,7 @@ service cloud.firestore {
 
     function hasAdminClaim() {
       return request.auth != null
-        && (request.auth.token.admin == true || request.auth.token.role == 'admin' || request.auth.token.role == 'owner');
+        && (request.auth.token.admin == true || request.auth.token.role == 'admin');
     }
 
     function isLegacyAdmin() {
@@ -16,7 +16,7 @@ service cloud.firestore {
       return request.auth != null
         && exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
         && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.active == true
-        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role in ['admin', 'owner'];
+        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isViveLojaAdmin() {
@@ -31,7 +31,7 @@ service cloud.firestore {
     }
 
     function canManageAdminUsers() {
-      return hasAdminClaim() || hasOwnerProfile() || isLegacyAdmin();
+      return isViveLojaAdmin();
     }
 
     function isProfileOwner(userId) {
@@ -189,24 +189,73 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    // Acceso por establecimiento: el rol owner aquí no implica administración global.
+    function hasBusinessOwnerAccess(placeId) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId))
+        && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.active == true
+        && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.uid == request.auth.uid
+        && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.placeId == placeId
+        && get(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId)).data.role == 'owner';
+    }
+
+    // Solo propietarios asignados; no permite editar publicación, plan, SEO ni identidad del negocio.
     function canMerchantEditLocale(documentId) {
-      return isAssignedVisitMerchant(documentId)
+      return (hasBusinessOwnerAccess(documentId)
+        || (!exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + documentId))
+          && isAssignedVisitMerchant(documentId)))
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'description',
-          'phone',
-          'whatsapp',
-          'hours',
-          'merchantUpdatedAt',
-          'merchantUpdatedBy'
+          'desc', 'description', 'phone', 'whatsapp', 'hours',
+          'customLogoUrl', 'heroImage', 'gallery',
+          'merchantUpdatedAt', 'merchantUpdatedBy'
         ])
-        && request.resource.data.description is string
-        && request.resource.data.description.size() <= 1200
-        && request.resource.data.phone is string
-        && request.resource.data.phone.size() <= 30
-        && request.resource.data.whatsapp is string
-        && request.resource.data.whatsapp.size() <= 30
-        && request.resource.data.hours is string
-        && request.resource.data.hours.size() <= 600
+        && (!('desc' in request.resource.data)
+          || (request.resource.data.desc is string && request.resource.data.desc.size() <= 1200))
+        && (!('description' in request.resource.data)
+          || (request.resource.data.description is string && request.resource.data.description.size() <= 1200))
+        && (!('phone' in request.resource.data)
+          || (request.resource.data.phone is string && request.resource.data.phone.size() <= 30))
+        && (!('whatsapp' in request.resource.data)
+          || (request.resource.data.whatsapp is string && request.resource.data.whatsapp.size() <= 30))
+        && (!('hours' in request.resource.data)
+          || (request.resource.data.hours is string && request.resource.data.hours.size() <= 600))
+        && (!('customLogoUrl' in request.resource.data)
+          || (request.resource.data.customLogoUrl is string && request.resource.data.customLogoUrl.size() <= 2000))
+        && (!('heroImage' in request.resource.data)
+          || (request.resource.data.heroImage is string && request.resource.data.heroImage.size() <= 2000))
+        && (!('gallery' in request.resource.data)
+          || (
+            request.resource.data.gallery is list
+            && request.resource.data.gallery.size() <= 100
+            && (
+              !request.resource.data.diff(resource.data).affectedKeys().hasAny(['gallery'])
+              // Una reducción de plan no borra fotos existentes: solo permite conservar o quitar entradas.
+              || (resource.data.gallery is list
+                && resource.data.gallery.size() >= request.resource.data.gallery.size()
+                && resource.data.gallery.hasAll(request.resource.data.gallery))
+              || (
+                (
+                  !exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
+                  && request.resource.data.gallery.size() <= 6
+                )
+                || (
+                  exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
+                  && (!('active' in get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data)
+                    || get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.active == true)
+                  && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages is int
+                  && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages >= 0
+                  && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages <= 100
+                  && request.resource.data.gallery.size()
+                    <= get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.maxGalleryImages
+                )
+                || (
+                  exists(/databases/$(database)/documents/businessEntitlements/$(documentId))
+                  && get(/databases/$(database)/documents/businessEntitlements/$(documentId)).data.active == false
+                  && request.resource.data.gallery.size() <= 6
+                )
+              )
+            )
+          ))
         && request.resource.data.merchantUpdatedAt == request.time
         && request.resource.data.merchantUpdatedBy == request.auth.uid;
     }
@@ -815,6 +864,28 @@ service cloud.firestore {
     match /systemAudit/{eventId} {
       allow read: if isViveLojaAdmin();
       allow create, update, delete: if false;
+    }
+
+    match /businessAccess/{accessId} {
+      // Un propietario puede consultar su identificador, aunque aun no exista.
+      // Las consultas de otros identificadores y las escrituras siguen bloqueadas.
+      allow get: if isViveLojaAdmin() || (
+        request.auth != null
+        && accessId.matches('^' + request.auth.uid + '_.*')
+        && (!exists(/databases/$(database)/documents/businessAccess/$(accessId))
+          || resource.data.uid == request.auth.uid)
+      );
+      allow list: if isViveLojaAdmin();
+      allow create, update, delete: if isViveLojaAdmin();
+    }
+
+    match /businessEntitlements/{placeId} {
+      allow read: if isViveLojaAdmin()
+        || hasBusinessOwnerAccess(placeId)
+        || (request.auth != null
+          && !exists(/databases/$(database)/documents/businessAccess/$(request.auth.uid + '_' + placeId))
+          && isAssignedVisitMerchant(placeId));
+      allow create, update, delete: if isViveLojaAdmin();
     }
 
     match /{document=**} {
