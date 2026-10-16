@@ -5,7 +5,7 @@ service cloud.firestore {
 
     function hasAdminClaim() {
       return request.auth != null
-        && (request.auth.token.admin == true || request.auth.token.role == 'admin' || request.auth.token.role == 'owner');
+        && (request.auth.token.admin == true || request.auth.token.role == 'admin');
     }
 
     function isLegacyAdmin() {
@@ -16,7 +16,7 @@ service cloud.firestore {
       return request.auth != null
         && exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
         && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.active == true
-        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role in ['admin', 'owner'];
+        && get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isViveLojaAdmin() {
@@ -31,7 +31,7 @@ service cloud.firestore {
     }
 
     function canManageAdminUsers() {
-      return hasAdminClaim() || hasOwnerProfile() || isLegacyAdmin();
+      return isViveLojaAdmin();
     }
 
     function isProfileOwner(userId) {
