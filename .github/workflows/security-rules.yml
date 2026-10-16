@@ -1,5 +1,8 @@
 name: Security rules checks
 on:
+  push:
+    branches:
+      - admin/accesos-gestion-negocios
   pull_request:
     paths:
       - 'firestore.rules'
