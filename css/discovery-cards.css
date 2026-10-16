@@ -85,3 +85,18 @@ body[data-card-style="soft"] #establecimientos #localesGrid > .local-item:not(.h
   #establecimientos #localesGrid>.local-item:not(.hidden-item){max-width:100%!important}
  }
 }
+
+/* Refinamiento movil: tarjetas mas equilibradas sin recortar logotipos aliados. */
+@layer vl-layout {
+ @media(max-width:639px) {
+  #establecimientos #localesGrid>.local-item:not(.hidden-item){border-radius:18px!important;overflow:hidden}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media{aspect-ratio:16/11}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media.vl17-partner-media{aspect-ratio:4/3}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content{padding:16px!important;gap:8px!important}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title{font-size:20px!important;line-height:1.25!important}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-desc{font-size:13px!important;line-height:1.55!important}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools{padding-top:12px!important}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks{flex-wrap:wrap!important;gap:8px!important}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action{min-width:0!important;max-width:100%!important;white-space:normal!important}
+ }
+}
