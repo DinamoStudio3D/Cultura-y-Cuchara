@@ -2161,7 +2161,7 @@ function renderPlaceCommercialSummary(place,galleryCount){
     const activeAssigned=assigned.filter(item=>item.active!==false);
     const owner=activeAssigned.length?activeAssigned.map(item=>item.displayName||item.businessName||item.email||'Cuenta sin nombre').join(', '):(application?.ownerName||subscription.contactName||'Sin contacto registrado');
     const ownerNote=activeAssigned.length?activeAssigned.length+' cuenta(s) activa(s) vinculada(s) por ID de parada':assigned.length?'Cuenta vinculada, pero suspendida':application?.ownerName?'Solicitante registrado; acceso sin verificar':'Contacto comercial; no confirma acceso de propietario';
-    const benefitState=subscription.status?String(subscription.status):'Sin estado registrado';
+    const benefitState=subscription.plan?subscriptionCenterState(place).label:'Sin suscripción registrada';
     return field('Publicación',adminPublicationMeta(place).label)+field('Fotografías',galleryCount)+
         field('Contacto',owner)+field('Verificación',ownerNote)+
         field('Plan',plan)+field('Vencimiento',expires)+
