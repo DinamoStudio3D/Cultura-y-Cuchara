@@ -26,9 +26,5 @@
   preload.src=url.href;
  }
  loadLogo(local);
- const endpoint='https://firestore.googleapis.com/v1/projects/cultura-y-cuchara/databases/(default)/documents/settings/main';
- fetch(endpoint,{cache:'no-store'}).then(response=>response.ok?response.json():null).then(data=>{
-  const raw=data?.fields?.logoUrl?.stringValue;
-  if(raw&&raw!=='https://i.imgur.com/CUsJl0A.png')loadLogo(raw);
- }).catch(()=>{});
+ // Keep the splash logo fixed during startup; remote branding may update the rest of the site later.
 })();
