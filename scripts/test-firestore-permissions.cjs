@@ -104,3 +104,19 @@ test('Storage: revoked owner cannot upload even with legacy assignment',async()=
 test('Storage: wrong account cannot write another owner folder',async()=>{
  await assertFails(storageRef(storageAuth('other'),'merchants/owner1/placeA/test.png').put(new Uint8Array([137,80,78,71]),{contentType:'image/png'}));
 });
+
+test('downgraded gallery preserves existing images and allows removal but no additions',async()=>{
+ const gallery=Array.from({length:4},(_,i)=>({img:'existing-'+i}));
+ await env.withSecurityRulesDisabled(async context=>{
+  const db=context.firestore();
+  await updateDoc(doc(db,'locales','placeA'),{gallery});
+  await setDoc(doc(db,'businessEntitlements','placeA'),{maxGalleryImages:2,active:true});
+ });
+ const place=doc(auth('owner1'),'locales','placeA');
+ const update=images=>updateDoc(place,{gallery:images,merchantUpdatedAt:serverTimestamp(),merchantUpdatedBy:'owner1'});
+ await assertSucceeds(update(gallery));
+ await assertSucceeds(update(gallery.slice(0,3)));
+ await assertFails(update([...gallery.slice(0,3),{img:'new-photo'}]));
+ await assertFails(update([...gallery,{img:'new-photo'}]));
+ await assertSucceeds(update(gallery.slice(0,2)));
+});
