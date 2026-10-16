@@ -30,8 +30,11 @@ async function resolveGalleryLimit(fetchImpl,token,placeId,localeFields){
  // Un entitlement explícitamente inactivo no debe seguir concediendo su límite anterior.
  // Se aplica el límite de compatibilidad para coincidir con Firestore.
  if(entitlement&&entitlement.active&&!fieldBool(entitlement.active))return DEFAULT_GALLERY_LIMIT;
- if(entitlement&&entitlement.maxGalleryImages){
-  return fieldInt(entitlement.maxGalleryImages,DEFAULT_GALLERY_LIMIT);
+ if(entitlement){
+  // Firestore rechaza límites ausentes o fuera de rango: no autorizar cargas adicionales.
+  const raw=entitlement.maxGalleryImages;
+  const limit=raw&&(raw.integerValue!==undefined||raw.doubleValue!==undefined)?Number(raw.integerValue??raw.doubleValue):NaN;
+  return Number.isInteger(limit)&&limit>=0&&limit<=100?limit:0;
  }
  // Sin entitlement, Firestore permite un máximo de seis imágenes.
  // No usar aquí el límite comercial del plan: podría autorizar una carga que Firestore rechace.
