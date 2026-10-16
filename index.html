@@ -434,6 +434,111 @@
 }
 @media(max-width:370px){#mapPreviewCard #previewPhotoButton img{height:180px;max-height:180px}}
 </style>
+<style id="vl-business-detail-editorial-v2">
+/* Editorial business detail: desktop redesign with existing actions and data intact. */
+@media(min-width:1024px){
+  #mapPreviewCard{
+    display:grid!important;
+    grid-template-columns:minmax(235px, 30%) minmax(0, 1fr) minmax(270px, 30%);
+    grid-template-rows:auto;
+    align-items:start;
+    gap:0!important;
+    padding:0!important;
+    min-height:0!important;
+    border:1px solid #dce6ef!important;
+    border-radius:24px!important;
+    background:#fff!important;
+    box-shadow:0 22px 65px rgba(16,45,77,.11)!important;
+    overflow:hidden;
+  }
+  #mapPreviewCard #previewPhotoButton:not([hidden]){
+    grid-column:1;
+    align-self:stretch;
+    margin:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:linear-gradient(155deg,#e8f1fa,#f6f9fc)!important;
+    min-height:440px;
+    display:flex!important;
+    align-items:center;
+    justify-content:center;
+  }
+  #mapPreviewCard #previewPhotoButton img{
+    height:auto!important;
+    max-height:440px!important;
+    width:100%;
+    padding:22px;
+    object-fit:contain!important;
+    background:transparent!important;
+  }
+  #mapPreviewCard #previewPhotoLabel{left:18px;bottom:18px}
+  #mapPreviewCard > div:not(.vl-place-actions){
+    grid-column:2;
+    min-width:0;
+    padding:32px 28px 34px;
+  }
+  #mapPreviewCard #previewTitle{
+    font-size:clamp(25px,2.3vw,38px)!important;
+    line-height:1.13!important;
+    margin:12px 0 18px;
+    color:#123654!important;
+  }
+  #mapPreviewCard #previewDesc{
+    font-size:14px!important;
+    line-height:1.75!important;
+    color:#43576b!important;
+  }
+  #mapPreviewCard #previewTag{
+    background:#e8f2fb!important;
+    color:#17446c!important;
+    border:1px solid #c6deef;
+    border-radius:999px;
+  }
+  #mapPreviewCard .vl-place-actions{
+    grid-column:3;
+    align-self:stretch;
+    min-width:0;
+    padding:32px 22px!important;
+    border-top:0!important;
+    border-left:1px solid #e1e9f0;
+    background:#f5f9fd;
+    gap:12px!important;
+  }
+  #mapPreviewCard .vl-place-actions-head{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:7px;
+    margin-bottom:12px;
+  }
+  #mapPreviewCard .vl-place-actions > button:first-of-type{
+    min-height:54px;
+    background:#164b76!important;
+    border-color:#164b76!important;
+    color:#fff!important;
+    font-size:13px!important;
+    box-shadow:0 8px 22px rgba(22,75,118,.18);
+  }
+  #mapPreviewCard #previewGps{
+    background:#e2edf8!important;
+    color:#123654!important;
+  }
+  #mapPreviewCard #previewFavBtn{
+    top:14px!important;
+    right:14px!important;
+    width:43px;
+    height:43px;
+  }
+}
+@media(min-width:1024px) and (max-width:1200px){
+  #mapPreviewCard{grid-template-columns:minmax(205px,27%) minmax(0,1fr) minmax(245px,29%)}
+  #mapPreviewCard > div:not(.vl-place-actions){padding:26px 20px}
+  #mapPreviewCard .vl-place-actions{padding:28px 15px!important}
+}
+@media(min-width:768px) and (max-width:1023px){
+  #mapPreviewCard{border-radius:22px!important}
+}
+</style>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
