@@ -120,3 +120,13 @@ test('downgraded gallery preserves existing images and allows removal but no add
  await assertFails(update([...gallery,{img:'new-photo'}]));
  await assertSucceeds(update(gallery.slice(0,2)));
 });
+
+test('Storage: owner cannot upload unsupported file types or files over 5 MB',async()=>{
+ const db=storageAuth('owner1');
+ await assertFails(storageRef(db,'merchants/owner1/placeA/document.svg').put(new Uint8Array([60,115,118,103,62]),{contentType:'image/svg+xml'}));
+ await assertFails(storageRef(db,'merchants/owner1/placeA/oversize.jpg').put(new Uint8Array(5*1024*1024+1),{contentType:'image/jpeg'}));
+});
+test('Storage: unauthenticated users cannot upload business images',async()=>{
+ const db=env.unauthenticatedContext().storage();
+ await assertFails(storageRef(db,'merchants/owner1/placeA/anonymous.png').put(new Uint8Array([1,2,3]),{contentType:'image/png'}));
+});
