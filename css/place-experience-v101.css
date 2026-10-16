@@ -76,3 +76,39 @@
  #mapa #previewFavBtn[class~="bg-red-50"] { --vl-text:#9f1239;--vl-muted:#9f1239;--vl-accent:#9f1239;background:#fff1f2 !important;color:#9f1239 !important;border-color:#e5a1b5 !important; }
  #mapa #previewFavBtn :is(i,svg) { color:var(--vl-text) !important; }
 }
+
+/* Mobile stop cards: scoped to the public directory; desktop remains unchanged. */
+@layer vl-layout {
+ @media (max-width:639px) {
+  #establecimientos #localesGrid { grid-template-columns:minmax(0,1fr)!important; gap:18px!important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) { width:100%; max-width:100%; overflow:hidden; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media { aspect-ratio:4/3; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content { padding:16px!important; gap:10px!important; min-width:0; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title { font-size:21px!important; line-height:1.3!important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-desc { font-size:14px!important; line-height:1.55!important; overflow-wrap:anywhere; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools { width:100%; gap:10px!important; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools-links { flex:1 1 100%; width:100%; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks { width:100%; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action { flex:1 1 calc(50% - 8px)!important; min-width:0!important; min-height:44px; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore { width:100%; min-height:48px; }
+ }
+}
+
+/* Mobile photo labels and partner logos: keep badges readable without cropping artwork. */
+@layer vl-layout {
+ @media(max-width:639px) {
+  #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media.vl17-partner-media>img {
+   object-fit:contain!important; padding:clamp(16px,6vw,28px)!important; transform:none!important;
+  }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl17-media>.absolute.top-3 {
+   left:10px!important; right:10px!important; max-width:calc(100% - 20px)!important;
+   display:flex; flex-wrap:wrap; gap:5px!important; pointer-events:none;
+  }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl17-media>.absolute.top-3>span {
+   max-width:100%; overflow-wrap:anywhere; line-height:1.35!important;
+  }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action {
+   white-space:normal!important; overflow-wrap:anywhere; text-align:center;
+  }
+ }
+}

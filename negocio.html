@@ -1,4 +1,66 @@
 <!DOCTYPE html><html lang="es"><head><base href="/"><script>(()=>{const p=localStorage.getItem('cyc_low_data_mode'),c=navigator.connection||navigator.mozConnection||navigator.webkitConnection,a=!!(c?.saveData||['slow-2g','2g'].includes(c?.effectiveType));if(p==='on'||(p!=='off'&&a))document.documentElement.classList.add('low-data-mode')})();</script><style>html.low-data-mode *,html.low-data-mode *::before,html.low-data-mode *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}</style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#121212"><meta name="description" content="Descubre negocios, gastronomía y experiencias de Loja en VisitaLoja.com."><meta name="robots" content="index, follow, max-image-preview:large"><link id="seoCanonical" rel="canonical" href="https://www.visitaloja.com/"><meta id="seoOgTitle" property="og:title" content="Parada | VisitaLoja.com"><meta id="seoOgDescription" property="og:description" content="Descubre esta parada en Loja, Ecuador."><meta id="seoOgUrl" property="og:url" content="https://www.visitaloja.com/"><meta id="seoOgImage" property="og:image" content="https://www.visitaloja.com/visita-loja-compartir.png"><meta property="og:type" content="website"><meta property="og:site_name" content="VisitaLoja.com"><meta name="twitter:card" content="summary_large_image"><meta id="seoTwitterTitle" name="twitter:title" content="Parada | VisitaLoja.com"><meta id="seoTwitterDescription" name="twitter:description" content="Descubre esta parada en Loja, Ecuador."><meta id="seoTwitterImage" name="twitter:image" content="https://www.visitaloja.com/visita-loja-compartir.png"><script id="seoStructuredData" type="application/ld+json">{}</script><title>Parada | VisitaLoja.com</title><script src="https://cdn.tailwindcss.com"></script><script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script><style>body{background:#f7f3ec;color:#171717}.dark{background:#111715;color:#fff}.glass{background:rgba(10,15,13,.88);backdrop-filter:blur(14px)}.hide-scroll::-webkit-scrollbar{display:none}</style><link rel="stylesheet" href="css/public-colors.css?v=65"><link rel="stylesheet" href="css/place-detail-v103.css?v=103"><link rel="stylesheet" href="css/site-spacing-v105.css?v=105"><link rel="stylesheet" href="/css/public-brand-blue-v202.css">
+<style id="vl-place-detail-editorial-2026">
+/* Página individual: portada fotográfica, jerarquía editorial y acciones táctiles. */
+.place-detail-page{background:#f3f6fa;color:#17324b}
+.place-detail-page #placeHero{min-height:560px;background:#102b43}
+.place-detail-page #heroImage{opacity:.74;object-position:center 42%}
+.place-detail-page #placeHero>.absolute.bg-gradient-to-t{background:linear-gradient(0deg,rgba(7,24,42,.96) 0%,rgba(8,30,51,.78) 30%,rgba(8,30,51,.15) 100%)}
+.place-detail-page #placeHero>div.relative{min-height:560px;padding-top:90px;padding-bottom:62px}
+.place-detail-page #placeHero #title{line-height:1.07;letter-spacing:-.035em;text-shadow:0 3px 24px rgba(0,0,0,.28)}
+.place-detail-page #placeHero #description{line-height:1.6;max-width:640px;color:#f1f5f9}
+.place-detail-page #placeHero #logo:not(.hidden){box-shadow:0 12px 30px rgba(0,0,0,.22);border:3px solid rgba(255,255,255,.85);flex-shrink:0}
+.place-detail-page #placeHero #directions,.place-detail-page #placeHero #whatsapp,.place-detail-page #placeHero #visit{display:inline-flex;align-items:center;justify-content:center;min-height:48px;transition:transform .18s,filter .18s}
+.place-detail-page #placeHero #whatsapp.hidden{display:none}
+.place-detail-page #placeHero :is(#directions,#whatsapp,#visit):hover{transform:translateY(-2px);filter:brightness(1.05)}
+.place-detail-page #content>section.grid article{box-shadow:0 10px 30px rgba(15,35,55,.045);border-color:#dce5ed}
+.place-detail-page #content>section.grid article h2{color:#18344d;letter-spacing:-.02em}
+.place-detail-page #content #gallery img{transition:transform .2s}
+.place-detail-page #content #gallery img:hover{transform:scale(1.025)}
+.place-detail-page :is(a,button,select):focus-visible{outline:3px solid #f59e0b;outline-offset:3px}
+@media(max-width:767px){
+ .place-detail-page #placeHero{min-height:0}
+ .place-detail-page #placeHero>div.relative{min-height:520px;padding:88px 18px 34px;align-items:flex-end}
+ .place-detail-page #heroImage{object-position:center}
+ .place-detail-page #placeHero #title{font-size:clamp(29px,8vw,43px);line-height:1.12;overflow-wrap:anywhere}
+ .place-detail-page #placeHero #description{font-size:14px;line-height:1.55;margin-top:14px}
+ .place-detail-page #placeHero #logo:not(.hidden){width:65px;height:65px;padding:5px}
+ .place-detail-page #placeHero #directions,.place-detail-page #placeHero #whatsapp,.place-detail-page #placeHero #visit{flex:1 1 135px;min-width:0;padding:12px;font-size:13px}
+ .place-detail-page #content>section.grid{padding-top:25px}
+ .place-detail-page #content>section.grid article{padding:19px;border-radius:20px}
+ .place-detail-page #content #gallery{gap:9px}
+}
+@media(prefers-reduced-motion:reduce){.place-detail-page #placeHero :is(#directions,#whatsapp,#visit),.place-detail-page #content #gallery img{transition:none}}
+</style>
+<style id="vl-place-gallery-menu-2026">
+/* Galería editorial y menú: mismos datos del administrador, nueva presentación. */
+.place-detail-page #gallerySection,.place-detail-page #menuSection{overflow:hidden}
+.place-detail-page #gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.place-detail-page #gallery>button{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:#e9eef4;border:1px solid #dbe4ec;box-shadow:0 6px 16px rgba(15,23,42,.07)}
+.place-detail-page #gallery>button:first-child:nth-last-child(n+3){grid-column:span 2;grid-row:span 2;aspect-ratio:auto;min-height:260px}
+.place-detail-page #gallery>button img{width:100%;height:100%;object-fit:cover;transition:transform .25s}
+.place-detail-page #gallery>button:hover img{transform:scale(1.045)}
+.place-detail-page #gallery>button:focus-visible{outline:3px solid #d97706;outline-offset:3px}
+.place-detail-page #menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.place-detail-page #menu>article{min-width:0;background:#fff;border:1px solid #dbe4ec;border-radius:18px;overflow:hidden;box-shadow:0 8px 22px rgba(15,23,42,.06)}
+.place-detail-page #menu>article img{aspect-ratio:4/3;width:100%;object-fit:cover}
+.place-detail-page #menu>article>div{padding:16px}
+.place-detail-page #menu>article b{color:#18344d;font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.place-detail-page #menu>article strong{color:#b45309;white-space:nowrap;font-size:15px}
+.place-detail-page #menu>article p{line-height:1.6;color:#475569}
+@media(max-width:640px){
+ .place-detail-page #gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .place-detail-page #gallery>button{aspect-ratio:1}
+ .place-detail-page #gallery>button:first-child:nth-last-child(n+3){grid-column:span 2;grid-row:auto;aspect-ratio:16/10;min-height:0}
+ .place-detail-page #menu{grid-template-columns:minmax(0,1fr);gap:13px}
+ .place-detail-page #menu>article{display:grid;grid-template-columns:112px minmax(0,1fr);min-height:112px}
+ .place-detail-page #menu>article:not(:has(img)){display:block}
+ .place-detail-page #menu>article img{height:100%;min-height:112px;aspect-ratio:auto}
+ .place-detail-page #menu>article>div{padding:13px}
+ .place-detail-page #menu>article b,.place-detail-page #menu>article strong{font-size:13px}
+ .place-detail-page #menu>article .flex{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){.place-detail-page #gallery>button img{transition:none}}
+</style>
 </head>
 <body data-vl-surface="light" class="min-h-screen place-detail-page"><header data-vl-surface="dark" class="glass text-white sticky top-0 z-30 border-b border-orange-500/25"><div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center gap-3"><a href="./" class="flex items-center gap-3"><span class="w-10 h-10 rounded-full bg-orange-500 grid place-items-center"><i class="fa-solid fa-location-dot"></i></span><div><b class="block">VISITA LOJA</b><small class="text-orange-300" data-es="Página de la parada" data-en="Stop page">Página de la parada</small></div></a><div class="flex gap-2"><select id="lang" onchange="setLang(this.value)" class="bg-black/30 border border-white/15 rounded-xl px-2 text-xs"><option value="es">ES</option><option value="en">EN</option></select><button onclick="sharePage()" class="border border-white/15 rounded-xl px-3 py-2 text-sm"><i class="fa-solid fa-share-nodes mr-1"></i><span data-es="Compartir" data-en="Share">Compartir</span></button></div></div></header>
 <div id="loading" class="min-h-[70vh] grid place-items-center text-center"><div><i class="fa-solid fa-circle-notch fa-spin text-4xl text-orange-500"></i><p class="mt-3 text-gray-500" data-es="Cargando la parada…" data-en="Loading stop…">Cargando la parada…</p></div></div><div id="error" class="hidden max-w-xl mx-auto m-6 rounded-3xl bg-red-50 border border-red-200 text-red-800 p-8 text-center"></div>

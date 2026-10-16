@@ -152,3 +152,65 @@
   #dataSyncStatus { max-width:calc(100vw - 32px) !important; white-space:normal !important; text-align:center; }
  }
 }
+
+/* Responsive navigation contrast: dark menu surfaces, readable labels and controls. */
+@layer vl-colors {
+ @media(max-width:1535px) {
+  nav.glass-nav.sticky #mobileMenu {
+   --vl-text:#fff; --vl-muted:#dce8f5; --vl-accent:#c2e8ff;
+   background:#102f50!important; color:#fff!important;
+  }
+  nav.glass-nav.sticky #mobileMenu :is(.vl29-mobile-home,.vl29-mobile-section>summary) {
+   --vl-text:#fff; --vl-muted:#dce8f5; --vl-accent:#c2e8ff;
+   color:#fff!important;
+  }
+  nav.glass-nav.sticky #mobileMenu .vl29-mobile-items :is(a,button) {
+   --vl-text:#17324f; --vl-muted:#4d6075; --vl-accent:#075bb2;
+   color:#17324f!important;
+  }
+  nav.glass-nav.sticky #mobileMenu #langSelectorMobile {
+   --vl-text:#17324f; --vl-muted:#4d6075; --vl-accent:#075bb2;
+   background:#fff!important; color:#17324f!important; border-color:#9bb6cf!important;
+  }
+  nav.glass-nav.sticky #mobileMenu #lowDataToggleMobile,
+  nav.glass-nav.sticky #mobileMenu #mobileItineraryButton {
+   --vl-text:#fff; --vl-muted:#fff; --vl-accent:#fff;
+   background:#075bb2!important; color:#fff!important;
+  }
+  nav.glass-nav.sticky #mobileMenu #lowDataToggleMobile :is(i,span),
+  nav.glass-nav.sticky #mobileMenu #mobileItineraryButton :is(i,span) { color:#fff!important; }
+ }
+}
+
+/* Tablet navigation: touch targets and landscape dropdown usability. */
+@layer vl-layout {
+ @media(min-width:768px) and (max-width:1535px) {
+  nav.glass-nav.sticky .vl28-nav-actions{gap:10px!important}
+  nav.glass-nav.sticky .vl28-route-button{min-height:46px;padding:11px 15px!important}
+  nav.glass-nav.sticky #mobileMenuButton{min-width:46px;min-height:46px}
+  nav.glass-nav.sticky #mobileMenu{
+   max-height:calc(100dvh - 110px);overflow-y:auto;overscroll-behavior:contain;
+   padding-bottom:max(16px,env(safe-area-inset-bottom));
+  }
+  nav.glass-nav.sticky #mobileMenu :is(a,button,summary){
+   min-height:44px;line-height:1.4;white-space:normal;
+  }
+ }
+ @media(min-width:768px) and (max-width:1535px) and (orientation:landscape) {
+  nav.glass-nav.sticky #mobileMenu{max-height:calc(100dvh - 90px)}
+ }
+}
+
+/* Responsive audit: prevent long menu labels and narrow action groups from overflowing. */
+@layer vl-layout {
+ @media(max-width:1535px) {
+  nav.glass-nav.sticky #mobileMenu { max-width:100%; box-sizing:border-box; }
+  nav.glass-nav.sticky #mobileMenu :is(a,button,summary) { min-width:0; overflow-wrap:anywhere; }
+  nav.glass-nav.sticky #mobileMenu :is(a,button,summary):focus-visible { outline:2px solid #f2bd79; outline-offset:2px; }
+ }
+ @media(max-width:430px) {
+  nav.glass-nav.sticky .vl28-nav-actions { min-width:0; }
+  nav.glass-nav.sticky .vl28-route-button { min-width:44px; }
+  nav.glass-nav.sticky #mobileMenu { max-height:calc(100dvh - 88px - env(safe-area-inset-top)); }
+ }
+}

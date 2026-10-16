@@ -260,7 +260,7 @@
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1536">
     <meta property="og:image:height" content="1536">
-    <link rel="stylesheet" href="css/mobile-ui.css?v=64">
+    <link rel="stylesheet" href="css/mobile-ui.css?v=65">
     <!-- Modernización visual V1: solo presentación de portada, sin alterar funcionalidades -->
 
 
@@ -322,15 +322,118 @@
 <link rel="stylesheet" href="css/public-layout.css?v=198">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
-<link rel="stylesheet" href="css/discovery-cards.css?v=102">
-<link rel="stylesheet" href="css/place-experience-v101.css?v=102">
+<link rel="stylesheet" href="css/discovery-cards.css?v=104">
+<link rel="stylesheet" href="css/place-experience-v101.css?v=103">
 <link rel="stylesheet" href="css/discovery-sections-v104.css?v=104">
     <link rel="stylesheet" href="css/time-discovery-v79.css?v=79">
     <link rel="stylesheet" href="css/podcast-v80.css?v=80">
 <script src="js/public-color-contract.js?v=55"></script>
 <link rel="stylesheet" href="css/site-spacing-v105.css?v=105"><link rel="stylesheet" href="/css/public-brand-blue-v202.css">
-<link rel="stylesheet" href="css/photo-credits.css?v=4"><link rel="stylesheet" href="css/mobile-welcome.css?v=1">
-<script src="js/account-access.js?v=2"></script><link rel="stylesheet" href="css/visitor-avatars.css?v=1"><script src="js/visitor-avatars.js?v=1"></script></head>
+<link rel="stylesheet" href="css/photo-credits.css?v=4"><link rel="stylesheet" href="css/mobile-welcome.css?v=2">
+<script src="js/account-access.js?v=2"></script><link rel="stylesheet" href="css/visitor-avatars.css?v=1"><script src="js/visitor-avatars.js?v=1"></script>
+<style id="vl-card-accessibility-2026">
+/* Visible keyboard focus and usable touch targets for establishment cards. */
+#establecimientos #localesGrid > .local-item:focus-visible,
+#establecimientos #localesGrid > .local-item :is(button,a):focus-visible {
+ outline:3px solid #f2a900!important;outline-offset:3px!important;
+ box-shadow:0 0 0 5px rgba(15,48,84,.28)!important;
+}
+@media(max-width:639px){
+ #establecimientos #localesGrid > .local-item .vl18-quicklinks{display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+ #establecimientos #localesGrid > .local-item .vl18-quicklinks > .vl-card-action{min-height:44px;min-width:44px;max-width:100%;white-space:normal}
+ #establecimientos #localesGrid > .local-item .vl18-tools{min-width:0}
+}
+</style>
+<style id="vl-map-place-mobile-polish-2026">
+/* Mobile-first presentation of the selected establishment; desktop remains unchanged. */
+#mapPreviewCard{min-width:0}
+#mapPreviewCard #previewTitle{overflow-wrap:anywhere;line-height:1.2}
+#mapPreviewCard #previewDesc,#mapPreviewCard #previewAddress,#mapPreviewCard #previewDish{overflow-wrap:anywhere}
+#mapPreviewCard :is(a,button):focus-visible{outline:3px solid #e6a326;outline-offset:3px}
+#mapPreviewCard .vl-place-actions :is(a,button){text-align:center}
+@media(max-width:639px){
+ #mapPreviewCard{padding:14px!important;gap:13px!important;min-height:0!important;border-radius:18px}
+ #mapPreviewCard #previewFavBtn{top:12px;right:12px;width:44px;height:44px}
+ #mapPreviewCard .vl-preview-photo{width:100%;max-width:100%;overflow:hidden}
+ #mapPreviewCard .vl-preview-photo img{max-width:100%}
+ #mapPreviewCard #previewTitle{font-size:1.35rem;line-height:1.25;padding-right:46px}
+ #mapPreviewCard #previewDesc{font-size:.875rem;line-height:1.55}
+ #mapPreviewCard #previewTag,#mapPreviewCard #previewOpenStatus{line-height:1.35;white-space:normal}
+ #mapPreviewCard .vl-place-actions{gap:10px}
+ #mapPreviewCard .vl-place-actions :is(a,button){min-height:44px}
+ #mapPreviewCard .vl-place-actions .grid{min-width:0}
+ #mapPreviewCard .vl-place-actions .grid>*{min-width:0;overflow-wrap:anywhere}
+ #mapPreviewCard #previewWhatsapp,#mapPreviewCard #previewGps{padding-inline:8px;gap:3px}
+}
+@media(max-width:360px){
+ #mapPreviewCard #previewWhatsapp,#mapPreviewCard #previewGps{font-size:11px}
+ #mapPreviewCard #previewTitle{font-size:1.2rem}
+}
+</style>
+<style id="vl-place-card-mobile-refinement">
+/* Fichas de paradas: legibilidad, orden y controles táctiles, sin alterar escritorio. */
+#mapPreviewCard{min-width:0}
+#mapPreviewCard #previewDesc,#mapPreviewCard #previewDish,#mapPreviewCard #previewHours,#mapPreviewCard #previewAddress{overflow-wrap:anywhere}
+#mapPreviewCard .vl-place-actions :is(button,a):focus-visible,
+#mapPreviewCard #previewPhotoButton:focus-visible,
+#mapPreviewCard #previewFavBtn:focus-visible{outline:3px solid #d97706;outline-offset:3px}
+@media(max-width:767px){
+ #mapPreviewCard{padding:16px!important;gap:14px!important;min-height:0!important;border-radius:20px;box-shadow:0 10px 30px rgba(15,23,42,.09)}
+ #mapPreviewCard #previewPhotoButton:not([hidden]){display:block;width:100%;max-width:100%;border-radius:16px;overflow:hidden}
+ #mapPreviewCard #previewPhotoButton img{display:block;width:100%;max-height:250px;object-fit:contain;background:#f1f5f9}
+ #mapPreviewCard #previewPhotoLabel{font-size:12px;line-height:1.4}
+ #mapPreviewCard #previewTitle{font-size:clamp(1.25rem,5vw,1.55rem);line-height:1.23;letter-spacing:-.015em;color:#10233f!important}
+ #mapPreviewCard #previewDesc{font-size:14px!important;line-height:1.65!important;color:#334155!important}
+ #mapPreviewCard #previewDistanceBadge{color:#1d4ed8!important}
+ #mapPreviewCard #previewDish,#mapPreviewCard #previewHours,#mapPreviewCard #previewAddress{font-size:13px;line-height:1.5;color:#334155}
+ #mapPreviewCard #previewTag,#mapPreviewCard #previewOpenStatus{max-width:100%;overflow-wrap:anywhere}
+ #mapPreviewCard .vl-place-actions{gap:12px!important}
+ #mapPreviewCard .vl-place-actions :is(button,a){min-height:46px;font-size:12px;line-height:1.4;text-align:center}
+ #mapPreviewCard #previewWhatsapp{background:#15803d!important;color:white!important}
+ #mapPreviewCard #previewGps{background:#e2e8f0!important;color:#0f172a!important}
+ #mapPreviewCard .vl-place-actions .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #mapPreviewCard .vl-place-actions .grid>*{min-width:0}
+}
+@media(max-width:370px){
+ #mapPreviewCard .vl-place-actions .grid{grid-template-columns:minmax(0,1fr)}
+ #mapPreviewCard #previewWhatsapp,#mapPreviewCard #previewGps{font-size:13px}
+}
+</style>
+<style id="vl-business-profile-organization">
+#previewBusinessProfile .vl-profile-section-title{display:flex;align-items:center;gap:7px;margin:0 0 9px;font-size:12px;font-weight:800;color:#233b57;letter-spacing:.01em}
+#previewBusinessProfile .vl-profile-section-title i{color:#b45309}
+#previewBusinessProfile .vl-profile-contact-title{margin-top:15px}
+#previewBusinessProfile .vl-profile-chip-list>span{font-size:11px!important;line-height:1.45;padding:6px 10px;overflow-wrap:anywhere;background:#f5f3ff;color:#4c1d95;border-color:#ddd6fe}
+#previewBusinessProfile .vl-profile-links{margin-top:0!important}
+#previewBusinessProfile .vl-profile-links>a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;font-size:12px!important;text-decoration:none;overflow-wrap:anywhere}
+#previewBusinessProfile .vl-profile-links>a:focus-visible{outline:3px solid #d97706;outline-offset:2px}
+@media(max-width:767px){#previewBusinessProfile{margin-top:14px;padding-top:14px}#previewBusinessProfile .vl-profile-links>a{flex:1 1 120px}}
+</style>
+<style id="vl-place-promotion-2026">#previewPromotion:not(.hidden){display:block;border:1px solid #f59e0b;background:linear-gradient(135deg,#fff7ed,#fffbeb);padding:14px;border-radius:14px;color:#78350f}#previewPromotion .vl-promo-eyebrow{display:block;font-size:10px;letter-spacing:.08em;font-weight:900;color:#9a3412;margin-bottom:5px}#previewPromotion strong{font-size:14px;line-height:1.35;color:#7c2d12}#previewPromotion .vl-promo-content>div{min-width:0;overflow-wrap:anywhere;line-height:1.55}#previewPromotion a{display:inline-flex;align-items:center;min-height:40px;padding:6px 0;text-underline-offset:3px;overflow-wrap:anywhere}#previewPromotion a:focus-visible{outline:3px solid #d97706;outline-offset:3px}</style>
+<style id="vl-place-card-visual-redesign">
+/* Diseño editorial de la ficha de la parada: imagen protagonista y datos jerarquizados. */
+#mapPreviewCard{background:linear-gradient(155deg,#fff 0%,#fff 66%,#f8fafc 100%);border:1px solid #e2e8f0!important;box-shadow:0 18px 48px rgba(15,23,42,.12);overflow:hidden}
+#mapPreviewCard #previewPhotoButton:not([hidden]){position:relative;display:block;width:100%;border-radius:17px;overflow:hidden;background:#e9eff5;box-shadow:0 8px 22px rgba(15,23,42,.1)}
+#mapPreviewCard #previewPhotoButton img{display:block;width:100%;height:clamp(185px,24vw,290px);object-fit:contain;background:linear-gradient(135deg,#edf2f7,#fff)}
+#mapPreviewCard #previewPhotoLabel{position:absolute;bottom:10px;left:10px;right:10px;width:max-content;max-width:calc(100% - 20px);padding:8px 12px;border-radius:10px;background:rgba(15,23,42,.86);color:#fff;font-size:12px;font-weight:800;line-height:1.4;backdrop-filter:blur(8px);white-space:normal}
+#mapPreviewCard #previewTitle{color:#142c44;font-weight:900;line-height:1.18;letter-spacing:-.025em}
+#mapPreviewCard #previewDesc{color:#475569;line-height:1.65;font-size:13px}
+#mapPreviewCard #previewTag{letter-spacing:.035em}
+#mapPreviewCard #previewDish,#mapPreviewCard #previewHours,#mapPreviewCard #previewAddress{line-height:1.5;color:#334155}
+#mapPreviewCard .vl-place-actions{border-top:1px solid #e2e8f0}
+#mapPreviewCard .vl-place-actions-head{margin-bottom:4px}
+#mapPreviewCard .vl-place-actions>button,#mapPreviewCard .vl-place-actions>div>button{min-height:43px}
+#mapPreviewCard #previewFavBtn{top:13px;right:13px;background:rgba(15,23,42,.88);color:#fde68a;border-color:rgba(255,255,255,.65)}
+@media(max-width:767px){
+ #mapPreviewCard{padding:14px!important;gap:13px!important;border-radius:20px}
+ #mapPreviewCard #previewPhotoButton img{height:225px;max-height:225px;object-fit:contain}
+ #mapPreviewCard #previewTitle{font-size:clamp(21px,5.6vw,27px)}
+ #mapPreviewCard #previewDesc{font-size:13px}
+ #mapPreviewCard #previewPhotoLabel{font-size:11px;padding:7px 10px}
+}
+@media(max-width:370px){#mapPreviewCard #previewPhotoButton img{height:180px;max-height:180px}}
+</style>
+</head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
@@ -799,7 +902,7 @@
 #loja-miradas .miradas-grid>a{display:flex;flex-direction:column;background:#fff!important;color:#12364b!important;border-radius:4px 4px 22px 22px;overflow:hidden;text-decoration:none;box-shadow:0 14px 36px #12364b12;border:1px solid #d7e2e9}
 #loja-miradas .miradas-grid>a::before,#loja-miradas .miradas-grid>a::after{content:none!important;display:none!important}
 #loja-miradas .miradas-image{display:block;background:#dce6eb}
-#loja-miradas .miradas-image img{display:block;position:static;width:100%;height:auto;max-height:none;object-fit:contain;filter:none;opacity:1;transform:none}
+#loja-miradas .miradas-image img{display:block;position:static;width:100%;height:clamp(220px,22vw,310px);max-height:none;object-fit:cover;filter:none;opacity:1;transform:none}
 #loja-miradas .miradas-caption{display:flex;position:static;flex-direction:column;gap:12px;padding:26px;background:#fff!important;color:#12364b!important}
 #loja-miradas .miradas-caption small{color:#375c72!important;font-size:11px;letter-spacing:.16em;font-weight:800}
 #loja-miradas .miradas-title{position:static!important;display:block;color:#12364b!important;font-size:clamp(1.5rem,2.1vw,2rem);font-weight:800;line-height:1.15;text-shadow:none!important}
@@ -809,9 +912,9 @@
 #loja-miradas a:focus-visible{outline:3px solid #15628d;outline-offset:5px}
 #loja-miradas .miradas-credit{font-size:13px;color:#375c72!important;margin:28px 0 0}
 #loja-miradas .miradas-credit a{color:#174e70!important;text-decoration:underline}
-@media(min-width:901px){#loja-miradas .miradas-grid>a:nth-child(2){margin-top:64px}#loja-miradas .miradas-grid>a:nth-child(3){margin-top:128px}}
+@media(min-width:901px){#loja-miradas .miradas-grid>a:nth-child(2),#loja-miradas .miradas-grid>a:nth-child(3){margin-top:0}}
 @media(max-width:900px){#loja-miradas .miradas-grid{gap:18px}#loja-miradas .miradas-caption{padding:20px}#loja-miradas .miradas-heading{align-items:start;flex-direction:column}}
-@media(max-width:650px){#loja-miradas .miradas-grid{grid-template-columns:1fr;gap:28px}#loja-miradas .miradas-caption{padding:24px}#loja-miradas .miradas-heading{margin-bottom:28px}}
+@media(max-width:650px){#loja-miradas .miradas-image img{height:clamp(210px,62vw,300px)}#loja-miradas .miradas-grid{grid-template-columns:1fr;gap:20px}#loja-miradas .miradas-caption{padding:24px}#loja-miradas .miradas-heading{margin-bottom:28px}}
 </style>
     <section id="loja-miradas" data-vl-surface="light" aria-label="Postales de Loja">
       <div class="miradas-inner">
@@ -821,7 +924,7 @@
           <a href="#loja-en-imagenes" aria-label="Explorar fotografías de Villonaco"><span class="miradas-image"><img src="assets/photos/sol-eolicas.webp" alt="Sol entre aerogeneradores de Villonaco" loading="lazy"></span><span class="miradas-caption"><small>02 · PAISAJES</small><strong class="miradas-title">Villonaco al sol</strong><span>Vistas que sorprenden ↗</span><span class="miradas-author">Fotografía · Geovanny Muñoz</span></span></a>
           <a href="#loja-en-imagenes" aria-label="Explorar fotografías de los atardeceres de Loja"><span class="miradas-image"><img src="assets/photos/atardecer-loja.webp" alt="Atardecer en Loja" loading="lazy"></span><span class="miradas-caption"><small>03 · LA CIUDAD</small><strong class="miradas-title">Atardeceres que inspiran</strong><span>La luz de Loja ↗</span><span class="miradas-author">Fotografía · Geovanny Muñoz</span></span></a>
         </div>
-        <p class="miradas-credit">Fotografías: Geovanny Muñoz · <a href="https://www.instagram.com/geo_munoz/" target="_blank" rel="noopener noreferrer">@geo_munoz</a></p>
+        
       </div>
     </section>
     <nav class="vl-discovery-nav" aria-label="Accesos rápidos a VisitaLoja">
@@ -1054,10 +1157,10 @@
             </div>
 
             <div id="mapPreviewCard" class="glass-card p-4 sm:p-6 rounded-2xl shadow-warm-glow border-2 border-gray-200 flex flex-col gap-4 min-h-[460px] md:min-h-[500px] lg:min-h-[520px] lg:h-auto lg:sticky lg:top-24 relative transition-colors duration-300">
-                <button id="previewFavBtn" type="button" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
+                <button id="previewFavBtn" type="button" aria-label="Añadir o quitar de mi ruta" onclick="toggleFavoriteCurrent(this)" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur border border-brandGold/40 text-brandGold flex items-center justify-center hover:bg-brandGold hover:text-brandDark transition shadow-lg text-lg z-10" title="Añadir a mi ruta">
                     <i id="previewFav" class="fa-solid fa-seedling"></i>
                 </button>
-                <button id="previewPhotoButton" type="button" hidden onclick="openMenuGallery()" class="vl-preview-photo" aria-label="Ver fotografías del lugar"><img id="previewPlacePhoto" alt="" decoding="async"><span id="previewPhotoLabel"></span></button>
+                <button id="previewPhotoButton" type="button" hidden onclick="openMenuGallery()" class="vl-preview-photo" aria-label="Ver fotografías del lugar"><img id="previewPlacePhoto" alt="" decoding="async" loading="lazy"><span id="previewPhotoLabel"></span></button>
                 <div>
                     <div class="flex flex-wrap items-center gap-2 mb-2 pr-12">
                         <span id="previewTag" class="bg-brandGold/20 text-brandDark font-bold px-3 py-1 rounded-lg text-xs uppercase">Hueca Tradicional</span>
@@ -4330,8 +4433,9 @@
             const title=currentLang==='en'?(promo.titleEn||promo.title||'Current promotion'):(promo.title||promo.titleEn||'Promoción vigente');
             const description=currentLang==='en'?(promo.descriptionEn||promo.description||'Check the benefit available at this stop.'):(promo.description||promo.descriptionEn||'Consulta el beneficio disponible en esta parada.');
             const buttonText=currentLang==='en'?(promo.buttonTextEn||'View promotion'):(promo.buttonText||'Conocer promoción');
-            const action=promo.buttonUrl?`<a href="${escapeHTML(promo.buttonUrl)}" target="_blank" rel="noopener noreferrer" onclick="trackBusinessEvent('${String(loc.id).replace(/'/g,"\\'")}','promo')" class="mt-2 inline-flex items-center font-black text-orange-700 underline">${escapeHTML(buttonText)} <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>`:'';
-            panel.innerHTML=`<div class="flex items-start gap-2"><i class="fa-solid fa-gift text-orange-600 mt-0.5"></i><div><strong class="block">${escapeHTML(title)}</strong><span class="block mt-0.5">${escapeHTML(description)}</span>${action}</div></div>`;
+            const promotionUrl=safeBusinessProfileUrl(promo.buttonUrl);
+            const action=promotionUrl?`<a href="${escapeHTML(promotionUrl)}" target="_blank" rel="noopener noreferrer" onclick="trackBusinessEvent('${String(loc.id).replace(/'/g,"\\'")}','promo')" class="mt-2 inline-flex items-center font-black text-orange-700 underline">${escapeHTML(buttonText)} <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>`:'';
+            panel.innerHTML=`<div class="vl-promo-content flex items-start gap-2"><i class="fa-solid fa-gift text-orange-600 mt-0.5"></i><div class="min-w-0"><span class="vl-promo-eyebrow">${currentLang==="en"?"AVAILABLE PROMOTION":"PROMOCIÓN DISPONIBLE"}</span><strong class="block">${escapeHTML(title)}</strong><span class="block mt-0.5">${escapeHTML(description)}</span>${action}</div></div>`;
             panel.classList.remove('hidden');
         }
 
@@ -5255,9 +5359,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
                 cards.push(`
-                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="button" tabindex="0" aria-label="Ver detalles de ${locTitle}" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
+                    <div class="local-item ${loc.category} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="group" tabindex="0" aria-label="Ver detalles de ${locTitle}. Pulsa Enter para abrir" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
-                            <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                            <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.category==='aliado'&&hasCustomLogo?loc.customLogoUrl:loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="${loc.category==='aliado'&&hasCustomLogo?`Logo de ${locTitle}`:''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
                                 <span class="${loc.category==='aliado'?'bg-violet-700 text-white':'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${loc.category==='aliado'?'<i class="fa-solid fa-handshake mr-1"></i>Marca aliada':locTag}</span>${hasPaidBadge&&loc.category!=='aliado'?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Destacado Visita Loja</span>':''}
                                 ${loc.category==='aliado'?'':openBadge}
@@ -5283,7 +5387,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                                 </a>
                             </div>
                                 </div>
-                                <button type="button" onclick="toggleFavoriteCard(event, decodeURIComponent('${actionId}'))" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="Añadir a mi ruta" aria-label="Guardar o quitar de mi ruta" aria-pressed="${favoriteLocations.includes(loc.id) ? 'true' : 'false'}">
+                                <button type="button" onclick="toggleFavoriteCard(event, decodeURIComponent('${actionId}'))" class="vl18-favorite w-10 h-10 rounded-full ${favBg} backdrop-blur border flex items-center justify-center hover:scale-110 transition shadow-lg text-lg" title="${favoriteLocations.includes(loc.id) ? 'Quitar de mi ruta' : 'Añadir a mi ruta'}" aria-label="${favoriteLocations.includes(loc.id) ? 'Quitar de mi ruta' : 'Añadir a mi ruta'}" aria-pressed="${favoriteLocations.includes(loc.id) ? 'true' : 'false'}">
                             <i id="cardFav_${escapeHTML(loc.id)}" class="${favClass}"></i>
                         </button>
                             </div>
@@ -5464,13 +5568,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if (index > -1) {
                 favoriteLocations.splice(index, 1);
                 if(icon) icon.className = "fa-solid fa-seedling text-brandGold";
-                if(parentBtn) { parentBtn.classList.remove("bg-red-50","text-red-600","border-red-300"); parentBtn.classList.add("bg-white","text-brandGold","border-gray-200"); parentBtn.setAttribute("aria-pressed","false"); parentBtn.setAttribute("title","Añadir a mi ruta"); }
+                if(parentBtn) { parentBtn.classList.remove("bg-red-50","text-red-600","border-red-300"); parentBtn.classList.add("bg-white","text-brandGold","border-gray-200"); parentBtn.setAttribute("aria-pressed","false"); parentBtn.setAttribute("title","Añadir a mi ruta"); parentBtn.setAttribute("aria-label","Añadir a mi ruta"); }
                 showToast(`Quitado de tu ruta`);
             } else {
                 favoriteLocations.push(localId);
                 trackBusinessEvent(localId,'favorite');
                 if(icon) icon.className = "fa-solid fa-seedling text-red-500 scale-110";
-                if(parentBtn) { parentBtn.classList.remove("bg-white","bg-black/60","text-brandGold","border-brandGold/40","border-gray-200"); parentBtn.classList.add("bg-red-50","text-red-600","border-red-300"); parentBtn.setAttribute("aria-pressed","true"); parentBtn.setAttribute("title","Quitar de mi ruta"); }
+                if(parentBtn) { parentBtn.classList.remove("bg-white","bg-black/60","text-brandGold","border-brandGold/40","border-gray-200"); parentBtn.classList.add("bg-red-50","text-red-600","border-red-300"); parentBtn.setAttribute("aria-pressed","true"); parentBtn.setAttribute("title","Quitar de mi ruta"); parentBtn.setAttribute("aria-label","Quitar de mi ruta"); }
                 showToast(`¡Añadido a Mi Ruta! ☕`);
                 completeChabaquitoMission('ruta');
             }
@@ -7413,7 +7517,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         function safeBusinessProfileUrl(value){const url=String(value||'').trim();return/^https?:\/\//i.test(url)?url:'';}
-        function renderBusinessProfile(loc){const container=document.getElementById('previewBusinessProfile');if(!container)return;const profile=loc?.businessProfile||{},amenities=profile.amenities||{},payments=Array.isArray(profile.paymentMethods)?profile.paymentMethods:[],en=currentLang==='en',features=[['wifi','fa-wifi',en?'Wi-Fi':'Wi‑Fi'],['parking','fa-square-parking',en?'Parking':'Estacionamiento'],['accessible','fa-wheelchair',en?'Accessible':'Accesibilidad'],['familyFriendly','fa-people-roof',en?'Family friendly':'Para familias'],['petFriendly','fa-paw',en?'Pet friendly':'Acepta mascotas'],['takeaway','fa-bag-shopping',en?'Takeaway':'Para llevar'],['delivery','fa-motorcycle',en?'Delivery':'Entrega'],['outdoorSeating','fa-umbrella-beach',en?'Outdoor seating':'Mesas exteriores']].filter(([key])=>amenities[key]===true),paymentLabels={cash:en?'Cash':'Efectivo',card:en?'Card':'Tarjeta',transfer:en?'Bank transfer':'Transferencia',qr:en?'QR payment':'Pago QR'},links=[['website','fa-globe','Web'],['instagram','fa-brands fa-instagram','Instagram'],['facebook','fa-brands fa-facebook-f','Facebook'],['tiktok','fa-brands fa-tiktok','TikTok']].map(([key,icon,label])=>({url:safeBusinessProfileUrl(profile[key]),icon,label})).filter(item=>item.url),phone=String(profile.phone||'').trim(),whatsapp=String(profile.whatsapp||'').replace(/\D/g,''),hasContent=features.length||payments.length||links.length||phone||whatsapp||profile.priceRange;if(!hasContent){container.classList.add('hidden');container.innerHTML='';return;}const chips=[...(profile.priceRange?[{icon:'fa-wallet',label:`${en?'Price':'Precio'} ${profile.priceRange}`}]:[]),...payments.map(key=>({icon:key==='cash'?'fa-money-bill-wave':key==='card'?'fa-credit-card':key==='transfer'?'fa-building-columns':'fa-qrcode',label:paymentLabels[key]||key})),...features.map(([,icon,label])=>({icon,label}))];container.innerHTML=`${chips.length?`<div class="flex flex-wrap gap-1.5">${chips.map(item=>`<span class="bg-violet-50 text-violet-800 border border-violet-100 rounded-full px-2.5 py-1 text-[9px] font-bold"><i class="fa-solid ${item.icon} mr-1"></i>${escapeHTML(item.label)}</span>`).join('')}</div>`:''}${phone||whatsapp||links.length?`<div class="flex flex-wrap gap-2 mt-3">${phone?`<a href="tel:${escapeHTML(phone.replace(/[^\d+]/g,''))}" class="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-[10px] font-black"><i class="fa-solid fa-phone mr-1"></i>${en?'Call':'Llamar'}</a>`:''}${whatsapp?`<a href="https://wa.me/${whatsapp}" target="_blank" rel="noopener noreferrer" class="bg-emerald-500 text-white rounded-lg px-3 py-2 text-[10px] font-black"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a>`:''}${links.map(item=>`<a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer" class="bg-violet-50 text-violet-800 rounded-lg px-3 py-2 text-[10px] font-black"><i class="${item.icon} mr-1"></i>${item.label}</a>`).join('')}</div>`:''}`;container.classList.remove('hidden');}
+        function renderBusinessProfile(loc){const container=document.getElementById('previewBusinessProfile');if(!container)return;const profile=loc?.businessProfile||{},amenities=profile.amenities||{},payments=Array.isArray(profile.paymentMethods)?profile.paymentMethods:[],en=currentLang==='en',features=[['wifi','fa-wifi',en?'Wi-Fi':'Wi‑Fi'],['parking','fa-square-parking',en?'Parking':'Estacionamiento'],['accessible','fa-wheelchair',en?'Accessible':'Accesibilidad'],['familyFriendly','fa-people-roof',en?'Family friendly':'Para familias'],['petFriendly','fa-paw',en?'Pet friendly':'Acepta mascotas'],['takeaway','fa-bag-shopping',en?'Takeaway':'Para llevar'],['delivery','fa-motorcycle',en?'Delivery':'Entrega'],['outdoorSeating','fa-umbrella-beach',en?'Outdoor seating':'Mesas exteriores']].filter(([key])=>amenities[key]===true),paymentLabels={cash:en?'Cash':'Efectivo',card:en?'Card':'Tarjeta',transfer:en?'Bank transfer':'Transferencia',qr:en?'QR payment':'Pago QR'},links=[['website','fa-globe','Web'],['instagram','fa-brands fa-instagram','Instagram'],['facebook','fa-brands fa-facebook-f','Facebook'],['tiktok','fa-brands fa-tiktok','TikTok']].map(([key,icon,label])=>({url:safeBusinessProfileUrl(profile[key]),icon,label})).filter(item=>item.url),phone=String(profile.phone||'').trim(),whatsapp=String(profile.whatsapp||'').replace(/\D/g,''),hasContent=features.length||payments.length||links.length||phone||whatsapp||profile.priceRange;if(!hasContent){container.classList.add('hidden');container.innerHTML='';return;}const chips=[...(profile.priceRange?[{icon:'fa-wallet',label:`${en?'Price':'Precio'} ${profile.priceRange}`}]:[]),...payments.map(key=>({icon:key==='cash'?'fa-money-bill-wave':key==='card'?'fa-credit-card':key==='transfer'?'fa-building-columns':'fa-qrcode',label:paymentLabels[key]||key})),...features.map(([,icon,label])=>({icon,label}))];container.innerHTML=`${chips.length?`<div class="vl-profile-section-title"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> ${en?'Services and payment options':'Servicios y formas de pago'}</div><div class="vl-profile-chip-list flex flex-wrap gap-1.5">${chips.map(item=>`<span class="bg-violet-50 text-violet-800 border border-violet-100 rounded-full px-2.5 py-1 text-[9px] font-bold"><i class="fa-solid ${item.icon} mr-1"></i>${escapeHTML(item.label)}</span>`).join('')}</div>`:''}${phone||whatsapp||links.length?`<div class="vl-profile-section-title vl-profile-contact-title"><i class="fa-solid fa-address-card" aria-hidden="true"></i> ${en?'Contact and social media':'Contacto y redes sociales'}</div><div class="vl-profile-links flex flex-wrap gap-2 mt-3">${phone?`<a href="tel:${escapeHTML(phone.replace(/[^\d+]/g,''))}" class="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-[10px] font-black"><i class="fa-solid fa-phone mr-1"></i>${en?'Call':'Llamar'}</a>`:''}${whatsapp?`<a href="https://wa.me/${whatsapp}" target="_blank" rel="noopener noreferrer" class="bg-emerald-500 text-white rounded-lg px-3 py-2 text-[10px] font-black"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp</a>`:''}${links.map(item=>`<a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer" class="bg-violet-50 text-violet-800 rounded-lg px-3 py-2 text-[10px] font-black"><i class="${item.icon} mr-1"></i>${item.label}</a>`).join('')}</div>`:''}`;container.classList.remove('hidden');}
 
         window.handlePopupClick = function(index) {
             selectLocation(index);
@@ -7610,7 +7714,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const locTitle = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
             document.getElementById('galleryTitle').textContent = locTitle;
             immersiveGalleryImages = (Array.isArray(loc.gallery) ? loc.gallery : []).filter(item => item?.img).map(item => ({ img: item.img, title: item.title || locTitle }));
-            if (!immersiveGalleryImages.length && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }];
+            if (loc.category === 'aliado' && /codeproim/i.test(String(loc.title || locTitle || ''))) immersiveGalleryImages = [{ img: 'https://i.imgur.com/qt6cyZR.png', title: 'Logo de Codeproim' }];
+            else if (loc.category === 'aliado' && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }, ...immersiveGalleryImages.filter(item => item.img !== loc.customLogoUrl)];
+            else if (!immersiveGalleryImages.length && loc.customLogoUrl) immersiveGalleryImages = [{ img: loc.customLogoUrl, title: locTitle }];
             const video = document.getElementById('youtubeVideoContainer'), direct = document.getElementById('directVideoLinkBtn');
             if (loc.youtubeUrl?.trim()) { direct.href = loc.youtubeUrl; video.classList.remove('hidden'); } else { direct.href = '#'; video.classList.add('hidden'); }
             const grid = document.getElementById('galleryGrid');

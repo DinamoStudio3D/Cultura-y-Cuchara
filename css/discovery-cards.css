@@ -40,3 +40,34 @@ body[data-card-style="soft"] #establecimientos #localesGrid > .local-item:not(.h
 @media(prefers-reduced-motion:reduce){#categorias #exploreCategoryGrid > button,#establecimientos #localesGrid > .local-item:not(.hidden-item){transition:none!important;transform:none!important}}
 
 }
+
+/* Tablet layout for public stop cards. */
+@layer vl-layout {
+ @media(min-width:640px) and (max-width:1023px) {
+  #establecimientos #localesGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item){min-width:0;max-width:100%;overflow:hidden}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content{padding:18px!important;min-width:0}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title{font-size:20px!important;overflow-wrap:anywhere}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks{flex-wrap:wrap!important;gap:8px!important}
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action{flex:1 1 120px!important;min-width:0!important;max-width:100%!important;white-space:normal!important}
+ }
+}
+
+/* Card audit: explicit readable text and action pairs for public stops. */
+@layer vl-colors {
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content {
+  --vl-text:#253241; --vl-muted:#56616c; --vl-accent:#075bb2;
+ }
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) :is(.local-title,.local-desc) { overflow-wrap:anywhere; }
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore {
+  --vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;color:#fff!important;
+ }
+ #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore :is(span,i,svg) {color:#fff!important;}
+}
+@layer vl-layout {
+ @media(max-width:639px) {
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools { min-width:0; flex-wrap:wrap; }
+  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action { overflow-wrap:anywhere; }
+ }
+}
+
