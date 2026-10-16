@@ -5,7 +5,7 @@ const WEB_API_KEY="AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE";
 const DEFAULT_GALLERY_LIMIT=6;
 function fieldString(f){return f&&typeof f.stringValue==="string"?f.stringValue:""}
 function fieldBool(f){return !!(f&&f.booleanValue===true)}
-function fieldInt(f,fallback){const n=Number(f&&(f.integerValue??f.doubleValue));return Number.isFinite(n)?Math.max(0,Math.min(100,Math.trunc(n))):fallback}
+function fieldInt(f,fallback){if(!f||(f.integerValue===undefined&&f.doubleValue===undefined))return fallback;const n=Number(f.integerValue??f.doubleValue);return Number.isFinite(n)?Math.max(0,Math.min(100,Math.trunc(n))):fallback}
 function fieldArray(f){return f?.arrayValue?.values||[]}
 function fieldMap(f){return f?.mapValue?.fields||{}}
 function firestoreUrl(path){return `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${path}`}
