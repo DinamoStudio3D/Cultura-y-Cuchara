@@ -102,3 +102,8 @@
  #mapa #mapPreviewCard .vl-actions-organized :is(button,a) :is(span,i){background:transparent!important;border-color:transparent!important}
  #mapa #mapPreviewCard .vl-actions-organized #previewBusinessVideoBtn :is(span,i){--vl-text:#075bb2;--vl-muted:#075bb2;--vl-accent:#075bb2;background:transparent!important;color:#075bb2!important;-webkit-text-fill-color:#075bb2!important}
 }
+@layer vl-layout {
+ #mapa #mapPreviewCard .vl-actions-organized #previewGps{grid-column:1/-1!important}
+ #mapa #mapPreviewCard .vl-actions-organized .vl-map-more-body{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ @media(max-width:540px){#mapa #mapPreviewCard .vl-actions-organized .vl-map-more-body{grid-template-columns:1fr!important}}
+}
