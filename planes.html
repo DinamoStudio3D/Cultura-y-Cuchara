@@ -17,13 +17,17 @@
 <link rel="stylesheet" href="css/public-colors.css?v=58"><script src="/js/plan-offer.js?v=1"></script>
 <style>
 @layer vl-colors {
-#plansGrid .plan-card{--vl-text:#17324f;--vl-muted:#334e68;--vl-accent:#075bb2;background:#fff!important;color:#17324f!important;border:1px solid #cbd9e7!important}
-#plansGrid .plan-card :is(p,li,.period){color:#334e68!important}
-#plansGrid .plan-card>span{color:#075bb2!important}
-#plansGrid .plan-card>button{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#075bb2!important;color:#fff!important;border:1px solid #075bb2!important;min-height:44px}
-#plansGrid .plan-card[data-offer-plan="featured"]{border:2px solid #075bb2!important;box-shadow:0 10px 28px #075bb224}
-#plansGrid .plan-card>span.absolute{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#075bb2!important;color:#fff!important}
-#plansGrid .plan-card>button:focus-visible{outline:3px solid #b66b00;outline-offset:3px}
+#plansGrid .plan-card{--vl-text:#fff;--vl-muted:#dbe7f5;--vl-accent:#9bdcff;background:linear-gradient(155deg,#20364e,#101f31)!important;color:#fff!important;border:1px solid #456078!important;box-shadow:0 16px 36px #0003}
+#plansGrid .plan-card :is(p,li,.period){color:var(--vl-muted)!important}
+#plansGrid .plan-card>span{color:var(--vl-accent)!important}
+#plansGrid .plan-card>button{--vl-text:#123452;--vl-muted:#123452;--vl-accent:#123452;background:#e6f2ff!important;color:#123452!important;border:1px solid #b3d6f4!important;min-height:48px}
+#plansGrid .plan-card[data-offer-plan="impulse"]{--vl-text:#17324f;--vl-muted:#334e68;--vl-accent:#075bb2;background:linear-gradient(155deg,#fff,#eaf4ff)!important;color:#17324f!important;border-color:#abd3f5!important}
+#plansGrid .plan-card[data-offer-plan="impulse"]>button{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#075bb2!important;color:#fff!important;border-color:#075bb2!important}
+#plansGrid .plan-card[data-offer-plan="featured"]{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:linear-gradient(155deg,#0965bd,#073769)!important;color:#fff!important;border:2px solid #7bc5ff!important;box-shadow:0 16px 44px #167bd63d}
+#plansGrid .plan-card[data-offer-plan="premium"]{--vl-text:#fff;--vl-muted:#f2e8d7;--vl-accent:#ffd58a;background:radial-gradient(ellipse at top right,#6b4b2455,transparent 65%),linear-gradient(155deg,#242e40,#101b2b)!important;color:#fff!important;border:1px solid #d7ac65!important}
+#plansGrid .plan-card[data-offer-plan="premium"]>button{--vl-text:#30210b;--vl-muted:#30210b;--vl-accent:#30210b;background:#f4ce88!important;color:#30210b!important;border-color:#f4ce88!important}
+#plansGrid .plan-card>span.absolute{--vl-text:#30210b;--vl-muted:#30210b;--vl-accent:#30210b;background:#f4ce88!important;color:#30210b!important}
+#plansGrid .plan-card>button:focus-visible{outline:3px solid #ffd58a;outline-offset:4px}
 }
 </style></head>
 <body data-vl-surface="light" class="bg-cream text-slate-900">
