@@ -1,0 +1,7 @@
+const test=require('node:test'),assert=require('node:assert/strict');const {destination}=require('../js/qr-entry.js');const origin='https://preview.vercel.app';
+test('printed QR requests use the lightweight page before homepage routes',()=>{const v=require('../vercel.json');assert.deepEqual(v.rewrites[0],{source:'/',has:[{type:'query',key:'qr'}],destination:'/qr.html'});});
+test('menu image always opens local menu viewer, preserving printed ID',()=>{assert.equal(destination('sport-burger',{menuImageUrl:'https://i.imgur.com/a.png',targetUrl:'https://old.example'},origin),origin+'/menu-digital.html?id=sport-burger');});
+test('visit QR keeps its existing destination',()=>{assert.equal(destination('visit',{menuImageUrl:'img',visit:{placeId:'a'},targetUrl:'/?checkin=a'},origin),origin+'/?checkin=a');});
+test('other editable QR destinations remain supported',()=>{assert.equal(destination('x',{targetUrl:'https://example.com/page'},origin),'https://example.com/page');});
+test('owned menu URLs stay in the current deployment',()=>{assert.equal(destination('x',{targetUrl:'https://www.visitaloja.com/menu-digital.html?id=x'},origin),origin+'/menu-digital.html?id=x');});
+test('invalid, missing, executable and looping destinations fail without exposing the homepage',()=>{for(const [id,data] of [['../x',{}],['x',null],['x',{}],['x',{targetUrl:'javascript:alert(1)'}],['x',{targetUrl:'https://user:pass@example.com'}],['x',{targetUrl:'/?qr=x'}]])assert.throws(()=>destination(id,data,origin));});

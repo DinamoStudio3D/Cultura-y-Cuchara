@@ -8,6 +8,16 @@
   ],
   "rewrites": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "qr"
+        }
+      ],
+      "destination": "/qr.html"
+    },
+    {
       "source": "/canton/:canton",
       "destination": "/api/categoria-seo?canton=:canton"
     },
