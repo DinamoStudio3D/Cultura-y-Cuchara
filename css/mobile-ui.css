@@ -166,7 +166,8 @@
   }
   nav.glass-nav.sticky #mobileMenu .vl29-mobile-items :is(a,button) {
    --vl-text:#17324f; --vl-muted:#4d6075; --vl-accent:#075bb2;
-   color:#17324f!important;
+   background:#ffffff!important; color:#17324f!important; -webkit-text-fill-color:#17324f!important;
+   border:1px solid #cbd9e7!important;
   }
   nav.glass-nav.sticky #mobileMenu #langSelectorMobile {
    --vl-text:#17324f; --vl-muted:#4d6075; --vl-accent:#075bb2;
@@ -213,4 +214,26 @@
   nav.glass-nav.sticky .vl28-route-button { min-width:44px; }
   nav.glass-nav.sticky #mobileMenu { max-height:calc(100dvh - 88px - env(safe-area-inset-top)); }
  }
+}
+
+/* Navigation links own both colors: never inherit a dark surface behind dark text. */
+@layer vl-colors {
+ nav.glass-nav.sticky #mobileMenu .vl29-mobile-items :is(a,button):is(:hover,:focus-visible),
+ nav.glass-nav.sticky .vl29-dropdown :is(a,button):is(:hover,:focus-visible){
+  --vl-text:#123452;--vl-muted:#123452;--vl-accent:#123452;
+  background:#e5f0ff!important;color:#123452!important;-webkit-text-fill-color:#123452!important;
+ }
+ nav.glass-nav.sticky #mobileMenu .vl29-mobile-items :is(a,button) :is(span,i),
+ nav.glass-nav.sticky .vl29-dropdown :is(a,button) :is(span,i){background:transparent!important;color:inherit!important;-webkit-text-fill-color:inherit!important}
+ nav.glass-nav.sticky .vl29-dropdown,
+ nav.glass-nav.sticky .vl29-dropdown :is(a,button){
+  --vl-text:#17324f;--vl-muted:#17324f;--vl-accent:#17324f;
+  background:#fff!important;color:#17324f!important;-webkit-text-fill-color:#17324f!important;
+ }
+ nav.glass-nav.sticky #mobileMenu :is(.vl29-mobile-home,.vl29-mobile-section>summary){
+  --vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;
+  background:#163c59!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+ }
+ nav.glass-nav.sticky #mobileMenu .vl29-mobile-items :is(a,button):focus-visible,
+ nav.glass-nav.sticky .vl29-dropdown :is(a,button):focus-visible{outline:3px solid #c48217;outline-offset:1px}
 }
