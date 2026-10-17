@@ -1,0 +1,43 @@
+/* Mobile refinements preserve the approved desktop layout and feature visibility. */
+@layer vl-layout {
+ @media(max-width:767px){
+  #inicio.vl-welcome .vl-welcome-shell{min-height:0!important;padding-top:38px!important;padding-bottom:30px!important}
+  #inicio.vl-welcome .vl-welcome-copy{width:100%!important;min-width:0;max-width:100%!important}
+  #inicio.vl-welcome #heroTitle{font-size:clamp(36px,10vw,48px)!important;line-height:1.07!important;overflow-wrap:normal}
+  #inicio.vl-welcome #heroSubtitle{font-size:15px!important;line-height:1.6!important}
+  #inicio.vl-welcome .vl-welcome-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  #inicio.vl-welcome .vl-welcome-actions>:last-child{grid-column:1/-1!important;justify-content:center!important;min-height:48px!important}
+  #inicio.vl-welcome .vl-editorial-quicklinks{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #inicio.vl-welcome .vl-editorial-quicklinks a{padding:11px 10px!important;min-height:44px!important;border-radius:12px!important;font-size:12px!important;gap:7px!important;white-space:normal!important}
+  #inicio #welcomeSearch,#establecimientos #searchInput,#mobileMenu select,#chabaquito-guide input{font-size:16px!important;min-width:0!important}
+  #inicio .vl-welcome-search-row{min-width:0;gap:8px!important}
+  #inicio .vl-welcome-search-row input{width:0;flex:1 1 0!important}
+  #inicio .vl-welcome-search-row button{flex-shrink:0;min-height:44px!important}
+  #mapa #mapPreviewCard .vl-actions-organized .vl-action-grid{align-items:stretch!important}
+  #mapa #mapPreviewCard .vl-actions-organized :is(button,a){min-height:48px!important}
+  #mapa #mapPreviewCard #previewAddress{overflow-wrap:anywhere}
+  #mapa .vl-map-controls{max-width:calc(100% - 24px);flex-wrap:wrap!important}
+  #mapa .vl-map-controls :is(button,label){min-height:44px}
+  #mapa,#establecimientos,#categorias,#misiones,#agenda{scroll-margin-top:92px!important}
+  #chabaquito-guide{max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overscroll-behavior:contain;scroll-padding-top:65px}
+  #chabaquito-guide .cg-top{position:sticky;top:0;z-index:2;background:#f5f9ff}
+  #chabaquito-guide .cg-close{width:44px!important;height:44px!important;min-width:44px}
+  #chabaquito-guide .cg-body button{min-height:46px!important;white-space:normal;overflow-wrap:anywhere}
+  #chabaquito-guide .cg-result h3{overflow-wrap:anywhere}
+  #chabaquito-guide .cg-result p{overflow-wrap:anywhere}
+  #mobileMenu{max-height:calc(100dvh - 100px - env(safe-area-inset-bottom))!important;overscroll-behavior:contain}
+  /* An install invitation must not cover navigation, focused forms, or selected details. */
+  body:has(#mobileMenu:not(.hidden)) #vl-chabaquito-install,
+  body:has(dialog[open]) #vl-chabaquito-install,
+  body:has(#mapPreviewCard:not([data-empty="true"])) #vl-chabaquito-install,
+  body:has(input:focus,textarea:focus,select:focus) #vl-chabaquito-install{display:none!important}
+  body:has(#mobileMenu:not(.hidden)) :is(#webMascot,#webMascotRestore),
+  body:has(dialog[open]) :is(#webMascot,#webMascotRestore){visibility:hidden!important;pointer-events:none!important}
+  #vl-chabaquito-install{bottom:max(12px,env(safe-area-inset-bottom))!important;max-height:calc(100dvh - 120px);overflow:auto}
+ }
+ @media(max-width:380px){
+  #mapa #mapPreviewCard .vl-actions-organized .vl-action-grid{grid-template-columns:minmax(0,1fr)!important}
+  #chabaquito-guide .cg-choices{grid-template-columns:minmax(0,1fr)!important}
+  #inicio.vl-welcome .vl-welcome-actions{grid-template-columns:minmax(0,1fr)!important}
+ }
+}
