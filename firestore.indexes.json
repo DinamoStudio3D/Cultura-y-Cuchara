@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "businessEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "placeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

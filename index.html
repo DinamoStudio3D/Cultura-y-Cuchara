@@ -440,7 +440,7 @@
 </style>
 <link rel="stylesheet" href="css/business-card.css?v=actions-3-104">
 <script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=2">
-<script src="/js/plan-offer.js?v=1"></script>
+<script src="/js/plan-offer.js?v=1"></script><script src="/js/business-analytics.js?v=1"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -3689,7 +3689,7 @@
         try {
             const visitorFirebaseApp = firebase.initializeApp(firebaseConfig, 'viveLojaPublic');
             db = visitorFirebaseApp.firestore();
-            db.collection('settings').doc('subscriptions').onSnapshot(snapshot=>window.VisitaLojaPlanOffer.configure(snapshot.exists?snapshot.data().plans:[]),()=>{});
+            db.collection('settings').doc('subscriptions').onSnapshot(snapshot=>{const plans=snapshot.exists?snapshot.data().plans:[];window.VisitaLojaPlanOffer.configure(plans);window.VisitaLojaBusinessAnalytics.configure(plans)},()=>{});
             visitorAuth = visitorFirebaseApp.auth();
             const visitorFunctions = visitorFirebaseApp.functions('us-central1');
             document.addEventListener('DOMContentLoaded', () => window.ChabaquitoPublicV2?.start({ db, auth: visitorAuth, functions: visitorFunctions }), { once: true });
@@ -4386,7 +4386,9 @@
         const businessAnalyticsSession=localStorage.getItem('cyc_analytics_session')||(`visit_${Date.now()}_${Math.random().toString(36).slice(2,9)}`);localStorage.setItem('cyc_analytics_session',businessAnalyticsSession);
         function scheduleTime(value,endOfDay=false){if(!value)return null;const normalized=/^\d{4}-\d{2}-\d{2}$/.test(value)?`${value}T${endOfDay?'23:59:59':'00:00:00'}`:value,time=new Date(normalized).getTime();return Number.isFinite(time)?time:null;}
         function paidPlaceBenefits(loc){const subscription=loc?.subscription||{};if(['paused','pending','expired','suspended'].includes(subscription.status)||subscription.plan==='free'||!subscription.plan)return{};const now=Date.now(),start=scheduleTime(subscription.startAt||subscription.startDate),end=scheduleTime(subscription.endAt||subscription.endDate,true);if((start&&now<start)||(end&&now>end))return{};return subscription.benefits||{};}
-        function trackBusinessEvent(placeId,type){if(!db||!placeId||!['view','directions','favorite','stamp','promo','whatsapp','product','benefit'].includes(type))return;const loc=locations.find(item=>item.id===placeId);if(!loc||paidPlaceBenefits(loc).stats!==true)return;const onceKey=`cyc_metric_${businessAnalyticsSession}_${placeId}_${type}`;if(type==='view'&&sessionStorage.getItem(onceKey))return;if(type==='view')sessionStorage.setItem(onceKey,'1');db.collection('businessEvents').add({placeId,type,sessionId:businessAnalyticsSession,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});}
+        let businessEventTracker;
+        function trackBusinessEvent(placeId,type){if(!db)return Promise.resolve(false);businessEventTracker ||= window.VisitaLojaBusinessAnalytics.tracker({db});return businessEventTracker(locations.find(item=>item.id===placeId),type);}
+
         function placePromotionIsVisible(loc){const subscription=loc?.subscription||{},promo=subscription.promotion||{},now=Date.now(),start=scheduleTime(promo.startAt||promo.startDate),end=scheduleTime(promo.endAt||promo.endDate,true);return paidPlaceBenefits(loc).promo===true&&promo.active===true&&(!start||now>=start)&&(!end||now<=end);}
         function scheduleSubscriptionRefresh(){if(subscriptionScheduleTimer)clearTimeout(subscriptionScheduleTimer);const now=Date.now(),moments=[];locations.forEach(loc=>{const subscription=loc.subscription||{},promo=subscription.promotion||{};[scheduleTime(subscription.startAt||subscription.startDate),scheduleTime(subscription.endAt||subscription.endDate,true),scheduleTime(promo.startAt||promo.startDate),scheduleTime(promo.endAt||promo.endDate,true)].forEach(time=>{if(time&&time>now)moments.push(time);});});if(!moments.length)return;const wait=Math.min(Math.min(...moments)-now+750,2147483000);subscriptionScheduleTimer=setTimeout(()=>{renderEverything();scheduleSubscriptionRefresh();},Math.max(1000,wait));}
         function maybeShowPlacePromotion(loc){
