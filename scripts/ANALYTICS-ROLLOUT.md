@@ -18,3 +18,20 @@ Los registros operativos de fidelidad conservan sus permisos para validar visita
 - Con Firebase CLI, `@firebase/rules-unit-testing` y `firebase` instalados, ejecutar `firebase emulators:exec --only firestore --project demo-visitaloja 'node --test scripts/test-business-analytics-rules.cjs'`. El test rechaza ejecución remota sin emulador y usa únicamente el proyecto demo. `VL_RULES_TEST_ROOT` permite resolver dependencias desde una carpeta de pruebas externa.
 
 No existe un reporte mensual enviado automáticamente. Los datos se consultan al abrir o actualizar el panel. Las aperturas de productos representan consultas del apartado, no ventas ni clics de un producto individual. Los consumos son importes registrados en visitas confirmadas, no facturación automática.
+
+## Consumo obligatorio y auditoría
+
+La pantalla nueva verifica `/health.consumptionPolicyVersion >= 1` antes de enviar una confirmación o anulación. Si el Worker aún no está actualizado, no se envía la operación. La Preview Vercel no despliega Cloudflare ni las funciones de Firebase.
+
+Antes de activar este bloque hay que publicar el Worker actualizado y autorizar expresamente el origen utilizado para las pruebas. No abrir todos los dominios Preview con un comodín. La ruta de `wrangler.jsonc` ahora se resuelve desde su propia carpeta y se verificó con `wrangler deploy --dry-run`.
+
+También se actualizó la función alternativa `confirmLoyaltyVisit` / `reverseLastLoyaltyVisit` para mantener la misma política si se utiliza. No cambiar el sistema actual de alojamiento ni activar Firebase Blaze para probarla.
+
+- Compra: importe positivo, hasta dos decimales y máximo $100.000; mínimo adicional configurable por negocio.
+- Cortesía: importe cero y motivo obligatorio. Se identifica en el historial, sin presentarse como una venta.
+- Turismo: exención solo si el servidor comprueba `locales.category == turismo`.
+- Anulación: motivo obligatorio, autor original, último sello y plazo existente de 15 minutos. Se conserva el registro original y se añade auditoría.
+- La bitácora `systemAudit` se escribe en la misma transacción que la visita. Las reglas bloquean escrituras directas de clientes a `loyaltyVisits` para evitar saltarse la validación.
+- Los registros históricos sin importe/tipo no se convierten en compras de cero: se identifican y excluyen del promedio.
+
+`/scripts/review-consumption.html` es una demostración aislada sin Firebase. Reutiliza la validación compartida y los campos de la pantalla real; nunca registra sellos.

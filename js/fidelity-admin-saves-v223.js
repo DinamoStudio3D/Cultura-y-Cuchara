@@ -30,6 +30,7 @@
     if(!deps.validForm())throw Error('Revisa los campos del programa antes de guardar.');
     const place=deps.places().find(item=>item.id===data.placeId);
     if(!place)throw Error('Selecciona una parada disponible.');
+    if(!Number.isFinite(Number(data.minimumSpend??0))||Number(data.minimumSpend??0)<0||Number(data.minimumSpend??0)>100000||Math.abs(Number(data.minimumSpend??0)*100-Math.round(Number(data.minimumSpend??0)*100))>0.000001)throw Error('Revisa el consumo mínimo: entre $0 y $100.000, con máximo dos decimales.');
     const integer=(value,min,max)=>Number.isSafeInteger(value)&&value>=min&&value<=max;
     if(!integer(data.targetVisits,10,30)||!integer(data.maxVisitsPerDay,1,3)||!integer(data.rewardValidityDays,1,365)||!(data.stock===null||integer(data.stock,0,Number.MAX_SAFE_INTEGER)))throw Error('Revisa las visitas, el límite diario, la validez y el stock.');
     if(!data.rewardTitle||data.rewardTitle.length>100||data.rewardDescription.length>400||!['product','discount','surprise'].includes(data.rewardType))throw Error('Completa el nombre, tipo y condiciones del premio.');
@@ -47,7 +48,7 @@
   say:(id,text)=>get(id).textContent=text,error:error=>root.VisitaLojaServiceErrors.message(error),refresh:()=>loadAll(),
   merchants:()=>merchants,places:()=>places,assignment:uid=>[...document.querySelector('[data-merchant="'+CSS.escape(uid)+'"]').selectedOptions].map(option=>option.value),
   validForm:()=>get('programForm').reportValidity(),
-  programData:()=>({placeId:get('programPlace').value,active:get('programActive').checked,targetVisits:Number(get('programTarget').value),maxVisitsPerDay:Number(get('programDaily').value),rewardTitle:get('programReward').value.trim(),rewardDescription:get('programDescription').value.trim(),rewardType:get('programType').value,rewardValidityDays:Number(get('programValidity').value),stock:get('programStock').value===''?null:Number(get('programStock').value)}),
+  programData:()=>({placeId:get('programPlace').value,active:get('programActive').checked,targetVisits:Number(get('programTarget').value),maxVisitsPerDay:Number(get('programDaily').value),minimumSpend:Number(get('programMinimum').value),rewardTitle:get('programReward').value.trim(),rewardDescription:get('programDescription').value.trim(),rewardType:get('programType').value,rewardValidityDays:Number(get('programValidity').value),stock:get('programStock').value===''?null:Number(get('programStock').value)}),
   saveAssignment:({uid,placeIds})=>db.collection('missionRewardMerchants').doc(uid).update({placeIds,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}),
   saveProgram:(data,session)=>db.collection('loyaltyPrograms').doc(data.placeId).set({...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:session.email},{merge:true})
  });

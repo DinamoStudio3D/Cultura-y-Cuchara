@@ -725,20 +725,9 @@ service cloud.firestore {
       allow read: if isViveLojaAdmin()
         || (request.auth != null && resource.data.userId == request.auth.uid)
         || isAssignedVisitMerchant(resource.data.placeId);
-      allow create: if isAssignedVisitMerchant(request.resource.data.placeId)
-        && request.resource.data.requestId == requestId
-        && request.resource.data.confirmedBy == request.auth.uid
-        && request.resource.data.confirmedAt == request.time
-        && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.userId == request.resource.data.userId
-        && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.placeId == request.resource.data.placeId;
-      allow update: if isAssignedVisitMerchant(resource.data.placeId)
-        && resource.data.status == 'confirmed'
-        && resource.data.confirmedBy == request.auth.uid
-        && request.time <= resource.data.confirmedAt + duration.value(15, 'm')
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reversedAt', 'reversedBy'])
-        && request.resource.data.status == 'reversed'
-        && request.resource.data.reversedBy == request.auth.uid
-        && request.resource.data.reversedAt == request.time;
+      // Confirmation and reversal run only through authenticated server transactions.
+      // This prevents bypassing consumption validation or the immutable audit trail.
+      allow create, update: if false;
       allow delete: if isViveLojaAdmin();
     }
 

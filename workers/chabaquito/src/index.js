@@ -1,3 +1,4 @@
+import consumptionPolicy from "../../../functions/loyalty-consumption.js";
 const PROJECT_ID = "cultura-y-cuchara";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const FIRESTORE_SCOPE = "https://www.googleapis.com/auth/datastore";
@@ -275,11 +276,6 @@ async function confirmMerchantVisit(env, user, input) {
   const requestId = String(input?.requestId || "").trim();
   if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
 
-  const amountRaw = Number(input?.purchaseAmount || 0);
-  const purchaseAmount = Number.isFinite(amountRaw)
-    ? Math.max(0, Math.min(100000, Math.round(amountRaw * 100) / 100))
-    : 0;
-  const receiptRef = String(input?.receiptRef || "").trim().slice(0, 80);
   const accessToken = await getGoogleAccessToken(env);
   const transaction = await firestoreBeginTransaction(accessToken);
 
@@ -308,15 +304,19 @@ async function confirmMerchantVisit(env, user, input) {
   const counterPath = `loyaltyCounters/${counterId}`;
   const programPath = `loyaltyPrograms/${code.placeId}`;
 
-  const [visitDocument, counterDocument, programDocument] = await Promise.all([
+  const [visitDocument, counterDocument, programDocument, placeDocument] = await Promise.all([
     firestoreGetDocumentInTransaction(accessToken, visitPath, transaction),
     firestoreGetDocumentInTransaction(accessToken, counterPath, transaction),
-    firestoreGetDocumentInTransaction(accessToken, programPath, transaction)
+    firestoreGetDocumentInTransaction(accessToken, programPath, transaction),
+    firestoreGetDocumentInTransaction(accessToken, `locales/${code.placeId}`, transaction)
   ]);
   if (visitDocument) throw new Error("Visit was already registered");
 
   const counter = counterDocument ? decodeFirestoreDocument(counterDocument) : null;
   const program = programDocument ? decodeFirestoreDocument(programDocument) : null;
+  if(!placeDocument)throw new Error("La parada no existe.");
+  const consumption=consumptionPolicy.validate(input,decodeFirestoreDocument(placeDocument),program||{});
+  const {purchaseAmount,receiptRef}=consumption;
   const today = ecuadorDay();
   const maxDaily = Math.max(1, Math.min(3, Number(program?.maxVisitsPerDay || 1)));
   const previousDaily = counter?.lastVisitDay === today ? Number(counter.dailyVisitCount || 0) : 0;
@@ -344,8 +344,7 @@ async function confirmMerchantVisit(env, user, input) {
     confirmedBy: user.uid,
     confirmedByName: merchantName,
     confirmedAt: now,
-    purchaseAmount,
-    receiptRef,
+    ...consumption,
     status: "confirmed",
     previousVisitCount: Number(counter?.visitCount || 0),
     previousTotalSpend: Number(counter?.totalSpend || 0),
@@ -371,6 +370,7 @@ async function confirmMerchantVisit(env, user, input) {
   if (!counter) counterFields.firstVisitAt = now;
 
   const writes = [
+    {update:{name:documentName(`systemAudit/${requestId}_added`),fields:firestoreFields({action:"loyalty_stamp_added",actorUid:user.uid,actorName:merchantName,userId:code.userId,placeId:code.placeId,requestId,...consumption,createdAt:now})},currentDocument:{exists:false}},
     { update: { name: documentName(codePath), fields: firestoreFields(codeFields) }, updateMask: { fieldPaths: Object.keys(codeFields) } },
     { update: { name: documentName(visitPath), fields: firestoreFields(visitFields) }, currentDocument: { exists: false } },
     {
@@ -382,13 +382,14 @@ async function confirmMerchantVisit(env, user, input) {
 
   await firestoreCommit(accessToken, transaction, writes);
   const missions = await syncUserMissionProgress(env, code.userId);
-  return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId, missions };
+  return { consumptionPolicyVersion:1, visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId, missions };
 }
 
 async function reverseMerchantVisit(env, user, input) {
   const requestId = String(input?.requestId || "").trim();
   if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
 
+  const reversalReason=consumptionPolicy.reason(input?.reversalReason,"Motivo de la anulación");
   const accessToken = await getGoogleAccessToken(env);
   const transaction = await firestoreBeginTransaction(accessToken);
   const merchantDocument = await firestoreGetDocumentInTransaction(
@@ -443,6 +444,7 @@ async function reverseMerchantVisit(env, user, input) {
     reversedAt: now,
     reversedBy: user.uid,
     reversedByName: merchant.businessName || user.email || "",
+    reversalReason,
     updatedAt: now
   };
   const counterFields = {
@@ -455,6 +457,7 @@ async function reverseMerchantVisit(env, user, input) {
     updatedAt: now
   };
   const writes = [
+    {update:{name:documentName(`systemAudit/${requestId}_reversed`),fields:firestoreFields({action:"loyalty_stamp_reversed",actorUid:user.uid,actorName:merchant.businessName||"",userId:visit.userId,placeId:visit.placeId,requestId,purchaseAmount:Number(visit.purchaseAmount||0),recordKind:visit.recordKind||"legacy",reversalReason,createdAt:now})},currentDocument:{exists:false}},
     {
       update: { name: documentName(visitPath), fields: firestoreFields(visitFields) },
       updateMask: { fieldPaths: Object.keys(visitFields) },
@@ -923,7 +926,7 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
     if (request.method === "GET" && url.pathname === "/health") {
-      return json({ ok: true, service: "chabaquito", project: env.FIREBASE_PROJECT_ID || PROJECT_ID });
+      return withCors(json({ ok: true, service: "chabaquito", consumptionPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
     }
 
     if (request.method === "POST" && url.pathname === "/proximity-visit") {
