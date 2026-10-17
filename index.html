@@ -2,6 +2,10 @@
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
+    <script>
+    // Legacy printed QR links must leave the homepage before branding or media load.
+    (()=>{const params=new URLSearchParams(location.search);if(!params.has('qr')||params.has('checkin'))return;document.documentElement.style.visibility='hidden';const target=new URL('/qr.html',location.origin);target.searchParams.set('qr',params.get('qr')||'');location.replace(target.href);})();
+    </script>
     <meta property="og:title" content="Visita Loja">
     <meta property="og:description" content="Descubre sabores, historias y destinos de Loja.">
     <meta property="og:image" content="https://www.visitaloja.com/visitaloja-compartir-v2.jpg">
