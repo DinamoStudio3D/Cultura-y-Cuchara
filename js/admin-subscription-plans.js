@@ -52,13 +52,15 @@
     const rawAnnual = Number(plan && plan.annual);
     return {
       ...plan,
+      offerVersion: normalized.offerVersion,
+      benefits: normalized.benefits,
       id: normalized.id,
       name: api.commercialPlanName(normalized.id, normalized.name),
       active: normalized.active,
       ...(Number.isFinite(rawMonthly) ? { monthly: rawMonthly } : {}),
       ...(Number.isFinite(rawAnnual) ? { annual: rawAnnual } : {}),
       features: {
-        ...((plan && plan.features) || {}),
+        ...normalized.features,
         maxGalleryImages: normalized.features.maxGalleryImages,
         analyticsPeriodMonths: normalized.features.analyticsPeriodMonths
       },

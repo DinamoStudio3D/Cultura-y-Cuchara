@@ -67,6 +67,7 @@
   }
 
   function normalizePlan(plan, index) {
+    plan = global.VisitaLojaPlanOffer ? global.VisitaLojaPlanOffer.upgrade(plan) : plan;
     const source = plan && typeof plan === 'object' ? plan : {};
     const features = source.features && typeof source.features === 'object' ? source.features : {};
     const id = cleanText(source.id || source.key || source.slug || source.code || source.name) || ('plan-' + (index + 1));
@@ -132,7 +133,7 @@
       plan,
       assignedPlan,
       planInactive: Boolean(assignedPlan && assignedPlan.active === false),
-      maxGalleryImages: normalizeGalleryLimit(features.maxGalleryImages, DEFAULT_GALLERY_LIMIT),
+      maxGalleryImages: normalizeGalleryLimit(features.maxGalleryImages, global.VisitaLojaPlanOffer?.spec(planId)?.photos ?? DEFAULT_GALLERY_LIMIT),
       analyticsPeriodMonths: normalizeAnalyticsPeriodMonths(features.analyticsPeriodMonths, defaultAnalyticsMonths),
       analyticsEnabled: normalizeAnalyticsPeriodMonths(features.analyticsPeriodMonths, defaultAnalyticsMonths) > 0,
       currentGalleryCount: galleryCount(place && place.gallery),

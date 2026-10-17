@@ -440,6 +440,7 @@
 </style>
 <link rel="stylesheet" href="css/business-card.css?v=actions-3-104">
 <script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=2">
+<script src="/js/plan-offer.js?v=1"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -3688,6 +3689,7 @@
         try {
             const visitorFirebaseApp = firebase.initializeApp(firebaseConfig, 'viveLojaPublic');
             db = visitorFirebaseApp.firestore();
+            db.collection('settings').doc('subscriptions').onSnapshot(snapshot=>window.VisitaLojaPlanOffer.configure(snapshot.exists?snapshot.data().plans:[]),()=>{});
             visitorAuth = visitorFirebaseApp.auth();
             const visitorFunctions = visitorFirebaseApp.functions('us-central1');
             document.addEventListener('DOMContentLoaded', () => window.ChabaquitoPublicV2?.start({ db, auth: visitorAuth, functions: visitorFunctions }), { once: true });
@@ -7544,7 +7546,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if (trackSelection) trackBusinessEvent(loc.id,'view');
             maybeShowPlacePromotion(loc);
             const restaurantMenu=restaurantMenuFor(loc),menuButton=document.getElementById('previewRestaurantMenuBtn');
-            if(menuButton){menuButton.classList.toggle('hidden',!restaurantMenu);menuButton.classList.toggle('flex',!!restaurantMenu);const label=document.getElementById('previewRestaurantMenuLabel');if(label)label.textContent=currentLang==='en'?'View restaurant menu':'Ver menú del restaurante';}renderCommerceActions(loc);
+            if(menuButton){menuButton.classList.toggle('hidden',!restaurantMenu);menuButton.classList.toggle('flex',!!restaurantMenu);const label=document.getElementById('previewRestaurantMenuLabel');if(label)label.textContent=currentLang==='en'?'View featured products':'Ver productos destacados';}renderCommerceActions(loc);
             if (trackSelection) completeChabaquitoMission('mapa');
             
             const tagText = (currentLang === 'en' && loc.tagEn) ? loc.tagEn : loc.tag;
@@ -7675,10 +7677,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             {vegetarian:true,available:false,name:'Quesadilla lojana',nameEn:'Loja quesadilla',price:'$2.50',category:'Postres',categoryEn:'Desserts',description:'Dulce tradicional ideal para acompañar el café.',descriptionEn:'Traditional sweet, perfect alongside coffee.',image:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=82'}
         ];}
         function restaurantMenuFor(loc){
-            if(!loc)return null;const configured=loc.menu||{},dishes=Array.isArray(configured.dishes)?configured.dishes.filter(item=>item?.name&&item?.price):[];
-            if(configured.active===true&&dishes.length&&paidPlaceBenefits(loc).menu===true)return{title:configured.title||`Menú de ${loc.title}`,titleEn:configured.titleEn||`Menu at ${loc.titleEn||loc.title}`,dishes,demo:false};
+            if(!loc)return null;const configured=loc.menu||{},dishes=window.VisitaLojaPlanOffer.products(loc);
+            if(configured.active===true&&dishes.length&&paidPlaceBenefits(loc).menu===true)return{title:`Productos destacados de ${loc.title}`,titleEn:`Featured products at ${loc.titleEn||loc.title}`,dishes,demo:false};
             const normalized=String(loc.title||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-            return normalized.includes('mama lola')?{title:'Menú demostrativo · Mamá Lola',titleEn:'Sample menu · Mamá Lola',dishes:mamaLolaDemoDishes(),demo:true}:null;
+            return null;
         }
         function commerceConfigFor(loc){const commerce=loc?.commerce||{},phone=String(commerce.whatsapp||loc?.subscription?.contactWhatsapp||'').replace(/\D/g,'');return{phone,orderActive:commerce.orderActive===true&&!!phone,reservationActive:commerce.reservationActive===true&&!!phone,orderMessage:commerce.orderMessage||'Hola, deseo realizar un pedido en {negocio}.',orderMessageEn:commerce.orderMessageEn||'Hello, I would like to place an order at {negocio}.',reservationMessage:commerce.reservationMessage||'Hola, deseo reservar una mesa en {negocio}. Fecha: ___ Hora: ___ Personas: ___',reservationMessageEn:commerce.reservationMessageEn||'Hello, I would like to reserve a table at {negocio}. Date: ___ Time: ___ Guests: ___'};}
         function openCommerceWhatsapp(type){const loc=getCurrentLocation();if(!loc)return;const commerce=commerceConfigFor(loc),isReservation=type==='reservation',enabled=isReservation?commerce.reservationActive:commerce.orderActive;if(!enabled)return;trackBusinessEvent(loc.id,'whatsapp');const template=currentLang==='en'?(isReservation?commerce.reservationMessageEn:commerce.orderMessageEn):(isReservation?commerce.reservationMessage:commerce.orderMessage),business=(currentLang==='en'&&loc.titleEn)||loc.title||'',message=String(template||'').replace(/\{negocio\}/gi,business);window.open(`https://wa.me/${commerce.phone}?text=${encodeURIComponent(message)}`,'_blank','noopener');}
