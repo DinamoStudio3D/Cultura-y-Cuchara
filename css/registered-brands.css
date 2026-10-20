@@ -42,3 +42,24 @@
 #registeredBrands .vr-brand[data-institution=mesa] .vr-name{color:#fff!important}
 }
 #registeredBrands .vr-brand[data-institution=mesa] .vr-logo{background:transparent!important;max-width:100%;object-fit:contain}
+
+/* Desktop: a compact introduction beside a continuous, closely spaced logo strip. */
+#registeredBrands .vr-layout,#registeredBrands .vr-intro{display:contents}
+@media(min-width:1000px){
+ #registeredBrands{padding:30px 32px}
+ #registeredBrands .vr-layout{display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.8fr);column-gap:36px;row-gap:10px;align-items:center;max-width:min(1120px,calc(360px + var(--vr-count,4) * (var(--vr-card-width,180px) + 20px)));margin:0 auto}
+ #registeredBrands .vr-intro{display:block;grid-column:1;grid-row:1 / span 2}
+ #registeredBrands .vr-title{font-size:27px;line-height:1.18;text-align:left;margin:0 0 12px;letter-spacing:-.025em}
+ #registeredBrands .vr-subtitle{font-size:14px;line-height:1.65;text-align:left;margin:0;padding:0;max-width:330px}
+ #registeredBrands .vr-viewport{grid-column:2;grid-row:1;min-width:0;width:100%;max-width:calc(var(--vr-count,4) * (var(--vr-card-width,180px) + 20px));justify-self:end;padding:3px 0}
+ #registeredBrands .vr-group{min-width:0!important;justify-content:flex-start;gap:20px;padding-right:20px;flex-shrink:0}
+ #registeredBrands .vr-brand{width:var(--vr-card-width,180px);flex-basis:var(--vr-card-width,180px);height:104px;padding:18px 22px;border-radius:15px}
+ #registeredBrands[data-size=small] .vr-brand{width:144px;flex-basis:144px;height:84px}
+ #registeredBrands[data-size=large] .vr-brand{width:210px;flex-basis:210px;height:124px}
+ #registeredBrands .vr-pause{grid-column:2;grid-row:2;margin:0;justify-self:end}
+ #registeredBrands[data-motion=false] .vr-viewport{grid-row:1 / span 2}
+ #registeredBrands[data-motion=false] .vr-group{justify-content:center;padding-right:0}
+}
+@media(min-width:1000px) and (prefers-reduced-motion:reduce){
+ #registeredBrands .vr-group{justify-content:center;padding-right:0}
+}
