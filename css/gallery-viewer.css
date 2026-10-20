@@ -1,0 +1,21 @@
+#vl-gallery-dialog{height:100dvh!important;max-height:100dvh!important;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;box-sizing:border-box;overflow:hidden!important}
+#vl-gallery-dialog .vl-gallery-dialog-inner{display:grid!important;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;height:100%;width:100%;max-width:1320px;margin:auto;min-height:0}
+#vl-gallery-dialog .vg-toolbar{display:flex;align-items:center;gap:16px;width:100%;font-size:14px;font-weight:750}
+#vl-gallery-dialog #vl-gallery-counter{margin-left:auto;font-size:13px;font-variant-numeric:tabular-nums}
+#vl-gallery-dialog button{position:static!important;min-width:48px;min-height:48px;border:1px solid #8ba1b5;border-radius:12px;padding:10px 16px;font-size:14px;line-height:1.4}
+#vl-gallery-dialog #vl-gallery-dialog-close{font-size:28px;padding:0;width:48px;height:48px}
+#vl-gallery-dialog .vg-stage{display:flex;align-items:center;justify-content:center;min-height:0;min-width:0;overflow:hidden;touch-action:pan-y pinch-zoom}
+#vl-gallery-dialog #vl-gallery-dialog-img{display:block;width:100%;height:100%;max-height:100%!important;min-height:0;object-fit:contain;user-select:none}
+#vl-gallery-dialog .vg-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%}
+#vl-gallery-dialog #vl-gallery-dialog-caption{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;min-width:0;overflow:auto;max-height:22dvh;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+#vl-gallery-dialog #vl-gallery-dialog-caption strong{font-size:16px;font-weight:750}
+#vl-gallery-dialog #vl-gallery-dialog-caption a{text-decoration:underline;text-underline-offset:3px}
+#vl-gallery-dialog .vg-nav{display:flex;gap:10px;flex-shrink:0}
+#vl-gallery-dialog .vg-nav button[hidden]{display:none!important}
+#vl-gallery-dialog :is(button,a):focus-visible{outline:3px solid #f1c46b;outline-offset:2px}
+@layer vl-colors{
+#vl-gallery-dialog,#vl-gallery-dialog .vl-gallery-dialog-inner{--vl-text:#fff;--vl-muted:#d5e0ea;background:#07131c!important;color:#fff!important}
+#vl-gallery-dialog :is(.vg-toolbar,#vl-gallery-dialog-caption,#vl-gallery-dialog-caption *,button){color:#fff!important}
+#vl-gallery-dialog button{background:#17324f!important}
+}
+@media(max-width:650px){#vl-gallery-dialog .vg-toolbar{font-size:13px;gap:10px}#vl-gallery-dialog .vg-footer{flex-direction:column;gap:12px;align-items:stretch}#vl-gallery-dialog .vg-nav{justify-content:space-between}#vl-gallery-dialog .vg-nav button{flex:1}#vl-gallery-dialog #vl-gallery-dialog-caption{max-height:18dvh}#vl-gallery-dialog #vl-gallery-dialog-caption strong{font-size:14px}}

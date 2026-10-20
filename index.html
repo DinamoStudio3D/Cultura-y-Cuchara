@@ -445,6 +445,7 @@
 <link rel="stylesheet" href="css/registered-brands.css?v=7">
 <link rel="stylesheet" href="css/mobile-home-v2.css?v=2">
 <link rel="stylesheet" href="css/promo-dialog.css?v=1">
+<link rel="stylesheet" href="css/gallery-viewer.css?v=1">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1767,10 +1768,13 @@
       </div>
     </section>
 
-    <dialog id="vl-gallery-dialog" class="vl-gallery-dialog" aria-label="Fotografía completa"><div class="vl-gallery-dialog-inner"><button type="button" aria-label="Cerrar fotografía" id="vl-gallery-dialog-close">×</button><img id="vl-gallery-dialog-img" alt=""><p id="vl-gallery-dialog-caption"></p></div></dialog>
-    <script>
-      (()=>{const dialog=document.getElementById('vl-gallery-dialog');const photo=dialog?.querySelector('#vl-gallery-dialog-img');const caption=dialog?.querySelector('#vl-gallery-dialog-caption');if(!dialog||!photo)return;document.querySelectorAll('.vl-photo-gallery-item').forEach(item=>{item.tabIndex=0;item.setAttribute('role','button');item.setAttribute('aria-label','Ver fotografía completa');const open=()=>{const img=item.querySelector('img');if(!img)return;photo.src=img.currentSrc||img.src;photo.alt=img.alt;caption.textContent=item.querySelector('figcaption')?.textContent||'';dialog.showModal()};item.addEventListener('click',open);item.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}})});dialog.querySelector('#vl-gallery-dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()})})();
-    </script>
+<dialog id="vl-gallery-dialog" class="vl-gallery-dialog" aria-label="Loja en imágenes">
+<div class="vl-gallery-dialog-inner" data-vl-surface="dark">
+<header class="vg-toolbar"><span>Loja en imágenes</span><span id="vl-gallery-counter" role="status" aria-live="polite"></span><button type="button" aria-label="Cerrar fotografías" id="vl-gallery-dialog-close">×</button></header>
+<div id="vl-gallery-stage" class="vg-stage"><img id="vl-gallery-dialog-img" alt=""></div>
+<footer class="vg-footer"><p id="vl-gallery-dialog-caption"></p><nav class="vg-nav" aria-label="Navegar fotografías"><button id="vl-gallery-prev" type="button" aria-label="Fotografía anterior">← Anterior</button><button id="vl-gallery-next" type="button" aria-label="Fotografía siguiente">Siguiente →</button></nav></footer>
+</div></dialog>
+<script src="js/gallery-viewer.js?v=1"></script>
 
     <!-- Footer -->
     <footer data-vl-surface="dark" class="vl-site-footer bg-black text-gray-400 py-8 px-4 md:px-8 border-t border-gray-900 text-xs">
@@ -8996,7 +9000,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 </script>
 
     <script src="js/photo-library-model.js?v=4" defer></script>
-    <script src="js/photo-library-public.js?v=4" defer></script>
+    <script src="js/photo-library-public.js?v=5" defer></script>
     <script src="js/chabaquito-runtime-config.js" defer></script>
     <script src="js/chabaquito-public-v2.js?v=233-70" defer></script>
     <link rel="stylesheet" href="css/chabaquito-guide.css?v=1">
