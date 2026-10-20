@@ -499,7 +499,8 @@
         // Each editor owns only a subset of blocks. Preserve the other sections
         // when publishing, using the latest server document to avoid overwrites.
         let publishedContent;
-        await firebase.firestore().runTransaction(async (transaction) => {
+        // Use the named, authenticated admin app; no default app exists here.
+        await db.runTransaction(async (transaction) => {
           const snapshot = await transaction.get(settingsRef);
           const current = snapshot.exists ? snapshot.data() || {} : {};
           const existing = current.homepageContent || {};
