@@ -1,10 +1,10 @@
 #brandsConfigForm label{display:block;font-size:14px;line-height:1.5}
-#brandsConfigForm :is(input:not([type=checkbox]),select){display:block;width:100%;padding:11px 12px;margin-top:5px;background:#111827;color:#f8fafc;border:1px solid #64748b;border-radius:10px;font:inherit}
+#brandsConfigForm :is(input:not([type=checkbox]),select,textarea){display:block;width:100%;padding:11px 12px;margin-top:5px;background:#111827;color:#f8fafc;border:1px solid #64748b;border-radius:10px;font:inherit}
 #brandsConfigForm input[type=checkbox]{accent-color:#2563eb;width:18px;height:18px;vertical-align:middle;margin-right:7px}
 #brandsConfigForm small{display:block;color:#cbd5e1;font-size:12px;margin-top:4px}
 #brandsConfigForm button:not(.vr-brand,.vr-pause){min-height:40px;padding:8px 12px;border-radius:9px;border:1px solid #64748b;font:inherit}
 #brandsConfigForm button:disabled{opacity:.45;cursor:not-allowed}
-#brandsConfigForm :is(button,input,select):focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
+#brandsConfigForm :is(button,input,select,textarea):focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
 #brandsConfigForm .brands-admin-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #334155}
 #brandsConfigForm .brands-admin-row label{display:flex;align-items:center;gap:9px;flex:1;min-width:0;overflow-wrap:anywhere}
 #brandsConfigForm .brands-admin-row img{width:56px;height:40px;object-fit:contain;background:#fff;border-radius:5px}

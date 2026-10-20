@@ -29,3 +29,7 @@
 #registeredBrands[data-motion=false] .vr-group{min-width:0;flex-wrap:wrap;width:100%;padding:0 16px;justify-content:center}
 #registeredBrands .vr-pause{display:block;margin:12px auto 0;padding:7px 13px;border:1px solid #9aafc3;border-radius:18px;background:#fff;color:#17324f;font-family:inherit;font-size:12px;font-weight:600;line-height:1.4;cursor:pointer}
 @layer vl-colors{#registeredBrands .vr-pause{color:#17324f!important;background:#fff!important}}
+
+#registeredBrands .vr-title{margin-bottom:8px}
+#registeredBrands .vr-subtitle{max-width:650px;margin:0 auto 20px;padding:0 18px;text-align:center;font-size:14px;line-height:1.55;color:#4d6075}
+@layer vl-colors{#registeredBrands .vr-subtitle{color:#4d6075!important}}

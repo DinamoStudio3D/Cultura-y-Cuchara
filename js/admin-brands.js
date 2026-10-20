@@ -1,13 +1,13 @@
 (function(root){'use strict';
 const model=root.VisitaLojaBrandsModel,form=document.getElementById('brandsConfigForm');if(!form||!model)return;
-const el=id=>document.getElementById(id),fields={active:'brandsActive',title:'brandsTitle',titleEn:'brandsTitleEn',mode:'brandsMode',size:'brandsSize',duration:'brandsDuration',direction:'brandsDirection',motion:'brandsMotion',pauseOnHover:'brandsPause',showNames:'brandsShowNames',clickable:'brandsClickable'};
+const el=id=>document.getElementById(id),fields={active:'brandsActive',title:'brandsTitle',titleEn:'brandsTitleEn',subtitle:'brandsSubtitle',subtitleEn:'brandsSubtitleEn',mode:'brandsMode',size:'brandsSize',duration:'brandsDuration',direction:'brandsDirection',motion:'brandsMotion',pauseOnHover:'brandsPause',showNames:'brandsShowNames',clickable:'brandsClickable'};
 let places=[],draft=model.normalize(),saved=model.normalize(),revision=0,dirty=false,ready=false,placesReady=false,ref=null,unsubscribe=null,saving=false;
 const status=text=>{el('brandsStatus').textContent=text;};
 function mark(value){dirty=value;if(typeof setAdminUnsavedChanges==='function')setAdminUnsavedChanges(value);}
 function read(){for(const[k,id]of Object.entries(fields)){const f=el(id);draft[k]=f.type==='checkbox'?f.checked:f.value;}draft=model.normalize(draft);}
 function fill(){for(const[k,id]of Object.entries(fields)){const f=el(id);if(f.type==='checkbox')f.checked=draft[k];else f.value=draft[k];}rows();preview();}
 function preview(){root.VisitaLojaRegisteredBrands.render(places,{host:el('registeredBrands'),config:draft,open:id=>{if(typeof editAdminPlace==='function'){if(showAdminModule('places')!==false)editAdminPlace(id);}}});el('brandsPreviewEmpty').hidden=!el('registeredBrands').hidden;}
-function ordered(){const rank=new Map(draft.orderIds.map((id,i)=>[id,i]));return places.filter(model.publicPlace).map((p,i)=>({p,i})).sort((a,b)=>(rank.get(String(a.p.id))??100000+a.i)-(rank.get(String(b.p.id))??100000+b.i)).map(x=>x.p);}
+function ordered(){const rank=new Map(draft.orderIds.map((id,i)=>[id,i]));return places.filter(p=>model.eligible(p)).map((p,i)=>({p,i})).sort((a,b)=>(rank.get(String(a.p.id))??100000+a.i)-(rank.get(String(b.p.id))??100000+b.i)).map(x=>x.p);}
 function selected(id){return draft.mode==='all'?!draft.excludedIds.includes(id):draft.selectedIds.includes(id);}
 function choose(id,on){if(draft.mode==='all')draft.excludedIds=on?draft.excludedIds.filter(x=>x!==id):[...new Set([...draft.excludedIds,id])];else draft.selectedIds=on?[...new Set([...draft.selectedIds,id])]:draft.selectedIds.filter(x=>x!==id);}
 function button(text,label,action){const b=document.createElement('button');b.type='button';b.textContent=text;b.setAttribute('aria-label',label);b.addEventListener('click',action);return b;}
@@ -16,9 +16,9 @@ function rows(){const list=el('brandsPlaceList');list.replaceChildren();const it
  const index=items.indexOf(p),move=delta=>{const ids=items.map(x=>String(x.id));[ids[index],ids[index+delta]]=[ids[index+delta],ids[index]];draft.orderIds=ids;mark(true);rows();preview();};
  const up=button('↑','Subir '+p.title,()=>move(-1)),down=button('↓','Bajar '+p.title,()=>move(1));up.disabled=index===0;down.disabled=index===items.length-1;
  row.append(up,down,button('Editar logo','Editar ficha de '+p.title,()=>{if(showAdminModule('places')!==false)editAdminPlace(id);}));list.append(row);});
- if(!showing.length){const text=document.createElement('p');text.textContent=placesReady?'No hay paradas públicas que coincidan.':'Cargando paradas…';list.append(text);}counts();
+ if(!showing.length){const text=document.createElement('p');text.textContent=placesReady?'No hay paradas con un plan de pago vigente que coincidan.':'Cargando paradas…';list.append(text);}counts();
 }
-function counts(){el('brandsCount').textContent=model.select(places,draft).length+' de '+places.filter(model.publicPlace).length+' paradas seleccionadas';}
+function counts(){el('brandsCount').textContent=model.select(places,draft).length+' de '+places.filter(p=>model.eligible(p)).length+' paradas con plan vigente seleccionadas';}
 function available(){el('brandsSave').disabled=!ready||!placesReady||saving;}
 function setPlaces(value){places=Array.isArray(value)?value:[];placesReady=true;rows();preview();available();}
 function discard(){draft=model.normalize(saved);mark(false);fill();}

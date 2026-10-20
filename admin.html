@@ -531,14 +531,15 @@
                 </section>
 
                 <section id="brandsModule" class="hidden panel rounded-2xl p-5 sm:p-7">
-<h2 class="text-2xl font-black">Carrusel de marcas</h2><p class="text-gray-300 mt-2">Configura la franja de paradas de la portada. Los logos se toman de las fichas de cada parada.</p>
+<h2 class="text-2xl font-black">Carrusel de marcas</h2><p class="text-gray-300 mt-2">Configura la franja de paradas de la portada. Solo participan paradas públicas con un plan de pago vigente, desde el más económico. Los logos se toman de sus fichas; al vencer o suspenderse el plan dejan de aparecer.</p>
 <form id="brandsConfigForm" class="mt-6 space-y-5">
 <div class="grid sm:grid-cols-2 gap-4">
 <label><input id="brandsActive" type="checkbox"> Mostrar la franja en la web</label>
 <label><input id="brandsClickable" type="checkbox"> Abrir la ficha al pulsar el logo</label>
 <label>Título en español<input id="brandsTitle" maxlength="120" required></label>
 <label>Título en inglés<input id="brandsTitleEn" maxlength="120"></label>
-<label>Paradas que se muestran<select id="brandsMode"><option value="all">Todas automáticamente (excepto las desmarcadas)</option><option value="selected">Solo las que seleccione</option></select></label>
+<label>Descripción en español<textarea id="brandsSubtitle" maxlength="300" rows="2"></textarea></label><label>Descripción en inglés<textarea id="brandsSubtitleEn" maxlength="300" rows="2"></textarea></label>
+<label>Paradas que se muestran<select id="brandsMode"><option value="all">Todos los planes de pago vigentes (excepto las desmarcadas)</option><option value="selected">Planes de pago vigentes que seleccione</option></select></label>
 <label>Tamaño de los logos<select id="brandsSize"><option value="small">Pequeño</option><option value="medium">Mediano</option><option value="large">Grande</option></select></label>
 <label>Duración de una vuelta (segundos)<input id="brandsDuration" type="number" min="20" max="120" step="1" required><small>Menos segundos = más rápido.</small></label>
 <label>Dirección<select id="brandsDirection"><option value="left">De derecha a izquierda</option><option value="right">De izquierda a derecha</option></select></label>
@@ -546,8 +547,8 @@
 <label><input id="brandsPause" type="checkbox"> Pausar al pasar el cursor</label>
 <label><input id="brandsShowNames" type="checkbox"> Mostrar el nombre debajo del logo</label>
 </div>
-<div class="rounded-xl border border-gray-700 p-4"><h3 class="font-bold mb-2">Paradas y orden</h3><p class="text-sm text-gray-300 mb-3">Solo se muestran paradas públicas. En modo automático las nuevas se añaden al final. Usa las flechas para ordenar.</p><input id="brandsSearch" type="search" placeholder="Buscar una parada…" aria-label="Buscar una parada"><div class="flex flex-wrap gap-2 my-3"><button id="brandsSelectAll" type="button">Seleccionar todas</button><button id="brandsSelectNone" type="button">Desmarcar todas</button><span id="brandsCount" role="status"></span></div><div id="brandsPlaceList"></div></div>
-<div><h3 class="font-bold mb-3">Vista previa sin guardar</h3><p id="brandsPreviewEmpty" class="text-gray-300 mb-2" hidden>No hay paradas seleccionadas o la franja está oculta.</p><div id="registeredBrands" data-vl-surface="light" aria-labelledby="registeredBrandsTitle" hidden></div></div>
+<div class="rounded-xl border border-gray-700 p-4"><h3 class="font-bold mb-2">Paradas y orden</h3><p class="text-sm text-gray-300 mb-3">Solo se muestran paradas públicas con plan de pago vigente. En modo automático las nuevas suscripciones se añaden al final. Una selección manual no permite incluir planes gratuitos, vencidos o en prueba. Usa las flechas para ordenar.</p><input id="brandsSearch" type="search" placeholder="Buscar una parada…" aria-label="Buscar una parada"><div class="flex flex-wrap gap-2 my-3"><button id="brandsSelectAll" type="button">Seleccionar todas</button><button id="brandsSelectNone" type="button">Desmarcar todas</button><span id="brandsCount" role="status"></span></div><div id="brandsPlaceList"></div></div>
+<div><h3 class="font-bold mb-3">Vista previa sin guardar</h3><p id="brandsPreviewEmpty" class="text-gray-300 mb-2" hidden>No hay paradas seleccionadas con un plan de pago vigente, o la franja está oculta.</p><div id="registeredBrands" data-vl-surface="light" aria-labelledby="registeredBrandsTitle" hidden></div></div>
 <div class="flex flex-wrap gap-3"><button id="brandsSave" type="submit" class="bg-blue-600 text-white font-bold px-5 py-3 rounded-xl" disabled>Guardar configuración</button><button id="brandsReload" type="button">Descartar cambios y recargar</button><button id="brandsDefaults" type="button">Restablecer opciones</button><a href="/#registeredBrands" target="_blank" rel="noopener">Ver franja en la web ↗</a></div>
 <p id="brandsStatus" role="status" aria-live="polite">Inicia sesión para cargar la configuración.</p>
 <p class="text-sm text-gray-400">Restablecer modifica esta vista previa. Los cambios se aplican a la web al guardar. Para cambiar un logo, edita la ficha de su parada.</p>
@@ -3113,11 +3114,11 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
 <link rel="stylesheet" href="css/photo-manager.css?v=5">
 <script src="js/photo-library-model.js?v=4"></script>
 <script src="js/admin-photo-manager.js?v=6"></script>
-<link rel="stylesheet" href="css/registered-brands.css?v=3">
-<link rel="stylesheet" href="css/admin-brands.css?v=1">
-<script src="js/brands-config.js?v=1"></script>
+<link rel="stylesheet" href="css/registered-brands.css?v=4">
+<link rel="stylesheet" href="css/admin-brands.css?v=2">
+<script src="js/brands-config.js?v=2"></script>
 
-<script src="js/registered-brands.js?v=3"></script>
-<script src="js/admin-brands.js?v=1"></script>
+<script src="js/registered-brands.js?v=4"></script>
+<script src="js/admin-brands.js?v=2"></script>
 </body>
 </html>
