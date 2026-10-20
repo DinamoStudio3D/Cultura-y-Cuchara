@@ -70,83 +70,34 @@
 @media(max-width:900px){#eventsSpotlight .ve-upcoming{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){#eventsSpotlight .ve-feature{grid-template-columns:1fr}#eventsSpotlight .ve-poster-featured{height:300px}#eventsSpotlight .ve-upcoming{display:grid;grid-template-columns:1fr;overflow:visible;padding-bottom:0}#eventsSpotlight .ve-small{grid-template-columns:95px minmax(0,1fr)}#eventsSpotlight .ve-small-copy{padding:18px}}
 
-/* Compact, automatic homepage billboard. */
+
+/* One horizontal event banner, integrated immediately after the hero search. */
 @layer vl-colors{
- #eventsBillboard{--vl-text:var(--vl-ink-light,#172d45);--vl-muted:var(--vl-muted-light,#4d6075);--vl-accent:var(--vl-accent-light,#075bb2);background:var(--vl-surface-light,#f8fafc)!important}
- #eventsBillboard .vb-slide{--vl-text:#172d45;--vl-muted:#4d6075;background:#fff!important}
- #eventsBillboard .vb-detail{--vl-text:#fff;--vl-muted:#fff;background:var(--vl-action,#075bb2)!important;color:#fff!important}
- #eventsBillboard :is(.vb-map,.vb-all){--vl-text:var(--vl-action,#075bb2);color:var(--vl-action,#075bb2)!important}
- #eventsBillboard .vb-calendar{--vl-text:#172d45;background:#edf4fa!important}
- #eventsBillboard .vb-dot[aria-current=true]{background:var(--vl-action,#075bb2)!important}
+ body #inicio #eventsBillboard{background:transparent!important;--vl-text:#fff;--vl-muted:#fff}
+ body #inicio #eventsBillboard .vb-art{background:#082b50!important;color:#fff!important}
+ body #inicio #eventsBillboard :is(.vb-arrow,.vb-pause,.vb-counter){background:#082b50!important;color:#fff!important;--vl-text:#fff;--vl-muted:#fff}
+ body #inicio #eventsBillboard .vb-dot{background:#a5b8ca!important;border-color:transparent!important}
+ body #inicio #eventsBillboard .vb-dot[aria-current=true]{background:#fff!important}
 }
 #eventsBillboard[hidden]{display:none!important}
-#eventsBillboard{padding:24px 24px 28px;scroll-margin-top:100px}
-#eventsBillboard .vb-shell{max-width:1280px;margin:auto}
-#eventsBillboard .vb-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:14px}
-#eventsBillboard .vb-heading-copy{display:flex;align-items:baseline;gap:16px}
-#eventsBillboard .vb-eyebrow{font-size:9px;letter-spacing:.14em;font-weight:800}
-#eventsBillboard .vb-title{font-family:inherit;font-size:22px;line-height:1.2;font-weight:850;letter-spacing:-.025em;margin:0}
-#eventsBillboard .vb-all{font-size:12px;font-weight:800;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
-#eventsBillboard .vb-slide{display:grid;grid-template-columns:180px minmax(0,1fr);border:1px solid #d7e3ef;border-radius:20px;overflow:hidden;box-shadow:0 7px 24px #17324f09;min-height:0}
-#eventsBillboard .vb-poster{display:flex;align-items:center;justify-content:center;height:210px;padding:8px;background:#edf3f9;overflow:hidden}
-#eventsBillboard .vb-poster img{display:block;width:100%;height:100%;object-fit:contain}
-#eventsBillboard .vb-copy{padding:20px 28px;display:flex;flex-direction:column;justify-content:center;align-items:start;min-width:0}
-#eventsBillboard .vb-date{font-size:12px;font-weight:850;text-transform:capitalize;margin:0 0 8px}
-#eventsBillboard .vb-event-title{font-family:inherit;font-size:clamp(22px,2.3vw,30px);font-weight:850;letter-spacing:-.025em;line-height:1.15;margin:0 0 9px;overflow-wrap:anywhere}
-#eventsBillboard .vb-location{font-size:13px;line-height:1.5;margin:0 0 14px}
-#eventsBillboard .vb-actions{display:flex;flex-wrap:wrap;gap:10px}
-#eventsBillboard button{font-family:inherit;cursor:pointer}
-#eventsBillboard .vb-detail,#eventsBillboard .vb-map{font-size:12px;font-weight:800;padding:10px 15px;min-height:42px;border-radius:10px;line-height:1.5}
-#eventsBillboard .vb-detail{border:1px solid transparent}
-#eventsBillboard .vb-map{border:1px solid #b7cbdf;background:transparent}
-#eventsBillboard .vb-footer{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:10px 0 0}
-#eventsBillboard .vb-controls,#eventsBillboard .vb-dots{display:flex;align-items:center;gap:6px}
-#eventsBillboard .vb-arrow{border:1px solid #ccdae8;border-radius:50%;background:#fff;width:38px;height:38px;font-size:18px}
-#eventsBillboard .vb-pause{border:0;background:transparent;font-size:11px;font-weight:750;padding:10px;min-height:38px}
-#eventsBillboard .vb-counter{font-size:11px;font-weight:800;min-width:46px;text-align:center}
-#eventsBillboard .vb-dot{width:28px;height:28px;border:9px solid #f8fafc;border-radius:50%;background:#c4d3e2;background-clip:padding-box;padding:0}
-#eventsBillboard .vb-calendar{flex-direction:column;gap:7px;text-align:center}
-#eventsBillboard .vb-calendar strong{font-size:60px;font-weight:900;line-height:1}
-#eventsBillboard .vb-calendar span{font-size:11px;font-weight:750}
-#eventsBillboard :is(button,a):focus-visible{outline:3px solid #d7880a;outline-offset:3px}
-#eventsBillboard .vb-stage{touch-action:pan-y}
-@media(max-width:650px){
- #eventsBillboard{padding:20px 18px}
- #eventsBillboard .vb-heading-copy{display:block}
- #eventsBillboard .vb-eyebrow{display:block;margin-bottom:6px;font-size:8px}
- #eventsBillboard .vb-title{font-size:19px}
- #eventsBillboard .vb-all{font-size:11px;white-space:nowrap}
- #eventsBillboard .vb-slide{grid-template-columns:105px minmax(0,1fr);border-radius:16px}
- #eventsBillboard .vb-poster{height:auto;min-height:210px;padding:7px}
- #eventsBillboard .vb-poster img{max-height:220px}
- #eventsBillboard .vb-copy{padding:16px}
- #eventsBillboard .vb-event-title{font-size:21px;line-height:1.18}
- #eventsBillboard .vb-date{font-size:10px}
- #eventsBillboard .vb-location{font-size:11px;margin-bottom:10px}
- #eventsBillboard .vb-detail,#eventsBillboard .vb-map{min-height:40px;padding:8px 10px;font-size:11px}
- #eventsBillboard .vb-actions{gap:8px}
- #eventsBillboard .vb-dots{gap:0;max-width:45%;overflow:auto}
- #eventsBillboard .vb-dot{flex-shrink:0}
-}
-
-#eventsBillboard .vb-has-banner{grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr)}
-#eventsBillboard .vb-has-banner .vb-poster{padding:0}
-#eventsBillboard .vb-has-banner .vb-poster img{object-fit:contain}
-@media(max-width:650px){#eventsBillboard .vb-has-banner{grid-template-columns:1fr}#eventsBillboard .vb-has-banner .vb-poster{height:auto;min-height:0;aspect-ratio:3/1}#eventsBillboard .vb-has-banner .vb-poster img{max-height:none;height:100%}#eventsBillboard .vb-has-banner .vb-copy{padding:16px 18px}#eventsBillboard .vb-has-banner .vb-event-title{font-size:20px}}
-
-/* Poster-led strip: the artwork is the entire event link. */
-#eventsBillboard{overflow:hidden;padding:28px 0 22px}
-#eventsBillboard .vb-shell{max-width:1280px}
-#eventsBillboard .vb-heading,#eventsBillboard .vb-footer{padding-left:24px;padding-right:24px}
-#eventsBillboard .vb-title{font-size:clamp(23px,3vw,32px)}
-#eventsBillboard .vb-stage{overflow:hidden;padding:12px 0 22px}
-#eventsBillboard .vb-track{--vb-width:280px;--vb-gap:22px;display:flex;gap:var(--vb-gap);padding-left:24px;transform:translateX(calc(var(--vb-index,0) * (var(--vb-width) + var(--vb-gap)) * -1));transition:transform .85s cubic-bezier(.22,.61,.36,1);will-change:transform}
-#eventsBillboard .vb-art{flex:0 0 var(--vb-width);width:var(--vb-width);height:374px;padding:0;border:0;border-radius:14px;overflow:hidden;background:#e7eef5;box-shadow:0 9px 20px #172d4520;transition:transform .3s;position:relative}
-#eventsBillboard .vb-art:hover{transform:translateY(-5px)}
-#eventsBillboard .vb-art img{display:block;width:100%;height:100%;object-fit:contain;background:#e7eef5}
-#eventsBillboard .vb-fallback{display:flex;align-items:center;justify-content:center;height:100%;padding:24px;color:#172d45;background:#e7eef5;font-size:24px}
-#eventsBillboard .vb-footer{padding-top:0}
-#eventsBillboard .vb-dots{max-width:45%;overflow:auto}
-@media(min-width:900px){#eventsBillboard .vb-track{padding-left:calc((100% - 280px)/2)}}
-@media(max-width:650px){#eventsBillboard .vb-track{--vb-width:72vw;--vb-gap:16px;padding-left:14vw}#eventsBillboard .vb-art{height:96vw;max-height:440px}#eventsBillboard .vb-title{font-size:23px}#eventsBillboard .vb-heading,#eventsBillboard .vb-footer{padding-left:18px;padding-right:18px}}
-@media(prefers-reduced-motion:reduce){#eventsBillboard .vb-track,#eventsBillboard .vb-art{transition:none}}
+body #inicio #eventsBillboard{position:relative;padding:0;margin:16px 0 0;width:100%;max-width:660px;min-width:0;scroll-margin-top:120px}
+#eventsBillboard .vb-shell{position:relative}
+#eventsBillboard .vb-heading{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#eventsBillboard .vb-stage{position:relative;overflow:hidden;aspect-ratio:3/1;border-radius:14px;border:1px solid #ffffff45;box-shadow:0 8px 22px #00152b25;touch-action:pan-y}
+#eventsBillboard .vb-track{position:absolute;inset:0}
+#eventsBillboard .vb-art{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .8s ease,visibility .8s;cursor:pointer;overflow:hidden}
+#eventsBillboard .vb-art[aria-current=true]{opacity:1;visibility:visible;pointer-events:auto;z-index:1}
+#eventsBillboard .vb-art img{display:block;width:100%;height:100%;object-fit:contain}
+#eventsBillboard .vb-fallback{display:flex;height:100%;align-items:center;justify-content:center;padding:24px;font-size:22px}
+#eventsBillboard .vb-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0 0}
+#eventsBillboard .vb-footer[hidden]{display:none}
+#eventsBillboard .vb-dots,#eventsBillboard .vb-controls{display:flex;align-items:center;gap:4px}
+#eventsBillboard .vb-dots{max-width:42%;overflow:auto}
+#eventsBillboard button{font-family:inherit}
+#eventsBillboard .vb-dot{width:24px;height:24px;border:7px solid transparent;border-radius:50%;padding:0;background-clip:padding-box!important;flex-shrink:0;cursor:pointer}
+#eventsBillboard .vb-arrow{width:32px;height:32px;border:1px solid #b4c6d8;border-radius:50%;font-size:17px;cursor:pointer}
+#eventsBillboard .vb-counter{font-size:10px;padding:4px 7px;border-radius:12px}
+#eventsBillboard .vb-pause{font-size:10px;min-height:32px;padding:5px 9px;border:1px solid #b4c6d8;border-radius:18px;cursor:pointer}
+#eventsBillboard :is(a,button):focus-visible{outline:3px solid #f4c567;outline-offset:-4px}
+@media(max-width:760px){body #inicio #eventsBillboard{margin:14px 0 0;max-width:none}#eventsBillboard .vb-stage{border-color:#c9d8e6;border-radius:12px}#eventsBillboard .vb-fallback{font-size:16px}}
+@media(prefers-reduced-motion:reduce){#eventsBillboard .vb-art{transition:none}}

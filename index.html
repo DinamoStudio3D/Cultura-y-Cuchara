@@ -441,7 +441,7 @@
 <link rel="stylesheet" href="css/business-card.css?v=actions-3-104">
 <script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=2">
 <script src="/js/plan-offer.js?v=1"></script>
-<link rel="stylesheet" href="css/events-spotlight.css?v=2">
+<link rel="stylesheet" href="css/events-spotlight.css?v=4">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -881,6 +881,7 @@
             <label id="welcomeSearchLabel" for="welcomeSearch" data-i18n="welcomeSearchLabel">¿Qué quieres descubrir?</label>
             <div class="vl-welcome-search-row"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="welcomeSearch" type="search" name="q" placeholder="Café, hotel, comida lojana…" data-i18n-placeholder="welcomeSearchPlaceholder" autocomplete="off"><button type="submit" class="vl-welcome-primary"><span data-i18n="welcomeSearchButton">Buscar</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button></div>
           </form>
+          <section id="eventsBillboard" data-vl-surface="light" aria-labelledby="eventsBillboardTitle" hidden></section>
           <a class="vl149-category-link" href="#categorias"><i class="fa-solid fa-compass" aria-hidden="true"></i><span data-i18n="welcomeBrowseCategories">Ver categorías de lugares</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
           <nav class="vl-editorial-quicklinks" aria-label="Descubre Loja"><a href="#establecimientos" onclick="openCategoryList('food')"><i class="fa-solid fa-utensils" aria-hidden="true"></i> Gastronomía</a><a href="#establecimientos" onclick="openCategoryList('hotel')"><i class="fa-solid fa-bed" aria-hidden="true"></i> Hospedaje</a><a href="#loja-en-imagenes"><i class="fa-solid fa-camera" aria-hidden="true"></i> Postales de Loja</a><a href="#mapa"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Mapa turístico</a></nav>
           <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button><button type="button" onclick="ChabaquitoGuide.open()"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i><span>Habla con Chabaquito</span></button></div>
@@ -896,7 +897,7 @@
         </div>
       </div>
     </section>
-<section id="eventsBillboard" data-vl-surface="light" aria-labelledby="eventsBillboardTitle" hidden></section>
+
 
 <script id="vl-visible-photo-carousel-script">
 (()=>{'use strict';const init=()=>{const root=document.querySelector('#inicio'),layer=root?.querySelector('.vl-visible-photo-carousel'),counter=root?.querySelector('#vl-photo-counter'),credit=root?.querySelector('.vl-photo-credit');if(!layer)return;let index=0;const fallback=[...layer.querySelectorAll('img')].map(img=>img.getAttribute('src'));let urls=fallback,focusApplied=false;const show=()=>{const images=[...layer.querySelectorAll('img')];images.forEach((img,i)=>img.classList.toggle('is-current',i===index));if(counter)counter.textContent=String(index+1).padStart(2,'0')+' / '+String(images.length).padStart(2,'0');if(credit){const original=document.querySelectorAll('#heroSlidesContainer img.hero-slide')[index];const match=original?.alt?.match(/(?:por|Fotografía:)\s+(.+)$/i);credit.textContent='Foto: '+(match?.[1]||'Geovanny Muñoz')}};const sync=()=>{const originals=[...document.querySelectorAll('#heroSlidesContainer img.hero-slide')];const next=originals.map(img=>img.getAttribute('src')||img.src).filter(Boolean);if(!next.length){if(layer.hidden){urls=[];layer.replaceChildren()}return}const focusId=new URLSearchParams(location.search).get('foto');const focused=originals.findIndex(img=>img.dataset.photoId===focusId);if(!focusApplied&&focused>=0){index=focused;focusApplied=true}if(next.join('|')===urls.join('|')){show();return;}urls=next;layer.replaceChildren(...urls.map(src=>{const img=document.createElement('img');img.src=src;img.alt='';img.addEventListener('error',()=>{img.src='/assets/photos/centro-loja-torre-reloj.webp'},{once:true});return img}));index=Math.min(index,urls.length-1);show()};const step=n=>{sync();const count=layer.querySelectorAll('img').length;if(!count)return;index=(index+n+count)%count;show()};root.querySelector('#vl-photo-prev')?.addEventListener('click',()=>step(-1));root.querySelector('#vl-photo-next')?.addEventListener('click',()=>step(1));show();let timer;const configure=()=>{const s=window.__vlHeroCarouselSettings||{};const seconds=Math.max(2,Math.min(60,Number(s.interval)||6));const position=matchMedia('(max-width:800px)').matches&&s.mobilePosition&&s.mobilePosition!=='same'?s.mobilePosition:(s.position||'50% 50%');layer.style.setProperty('--vl-carousel-position',position);clearInterval(timer);timer=setInterval(()=>{sync();if(!document.hidden&&!matchMedia('(prefers-reduced-motion: reduce)').matches)step(1)},seconds*1000);sync()};window.addEventListener('vl-hero-settings-updated',configure);window.addEventListener('vl-photo-library-updated',()=>{sync();show()});configure();setInterval(sync,4000)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init()})();
@@ -9014,6 +9015,6 @@ document.addEventListener('click',function(e){if(e.target.closest('.vl29-dropdow
 document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMenus();});
 </script>
 <script src="js/events-spotlight.js?v=2"></script>
-<script src="js/events-billboard.js?v=2"></script>
+<script src="js/events-billboard.js?v=4"></script>
 </body>
 </html>

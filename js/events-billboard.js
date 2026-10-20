@@ -28,7 +28,7 @@ function render(events,options={}){
  items.forEach(event=>{
   const card=button('vb-art', '',()=>options.open?.(event));
   card.setAttribute('aria-label',(en?'View event: ':'Ver evento: ')+((en&&event.titleEn)||event.title||''));
-  const image=api.safeImage(event.img)||api.safeImage(event.bannerImg);
+  const image=api.safeImage(event.bannerImg)||api.safeImage(event.img);if(api.safeImage(event.bannerImg))card.classList.add('vb-landscape');
   if(image){
    const img=node('img');img.src=image;img.alt=(en&&event.titleEn)||event.title||'Evento';img.loading='lazy';img.decoding='async';
    img.addEventListener('error',()=>{img.remove();card.append(node('strong','vb-fallback',event.title||'Evento en Loja'));},{once:true});
@@ -39,7 +39,7 @@ function render(events,options={}){
  function show(manual=false){
   state.id=items[state.index].id;stage.setAttribute('aria-live',manual?'polite':'off');
   track.style.setProperty('--vb-index',String(state.index));
-  [...track.children].forEach((card,index)=>{card.setAttribute('aria-current',String(index===state.index));});
+  [...track.children].forEach((card,index)=>{card.setAttribute('aria-current',String(index===state.index));card.setAttribute('aria-hidden',String(index!==state.index));card.tabIndex=index===state.index?0:-1;});
   [...dots.children].forEach((dot,index)=>dot.setAttribute('aria-current',index===state.index?'true':'false'));
   counter.textContent=String(state.index+1).padStart(2,'0')+' / '+String(items.length).padStart(2,'0');updateControl();
  }
