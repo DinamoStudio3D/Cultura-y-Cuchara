@@ -441,7 +441,7 @@
 <link rel="stylesheet" href="css/business-card.css?v=actions-3-104">
 <script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=2">
 <script src="/js/plan-offer.js?v=1"></script>
-<link rel="stylesheet" href="css/events-spotlight.css?v=1">
+<link rel="stylesheet" href="css/events-spotlight.css?v=2">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -896,7 +896,7 @@
         </div>
       </div>
     </section>
-<section id="eventsSpotlight" data-vl-surface="light" aria-labelledby="eventsSpotlightTitle" hidden></section>
+<section id="eventsBillboard" data-vl-surface="light" aria-labelledby="eventsBillboardTitle" hidden></section>
 
 <script id="vl-visible-photo-carousel-script">
 (()=>{'use strict';const init=()=>{const root=document.querySelector('#inicio'),layer=root?.querySelector('.vl-visible-photo-carousel'),counter=root?.querySelector('#vl-photo-counter'),credit=root?.querySelector('.vl-photo-credit');if(!layer)return;let index=0;const fallback=[...layer.querySelectorAll('img')].map(img=>img.getAttribute('src'));let urls=fallback,focusApplied=false;const show=()=>{const images=[...layer.querySelectorAll('img')];images.forEach((img,i)=>img.classList.toggle('is-current',i===index));if(counter)counter.textContent=String(index+1).padStart(2,'0')+' / '+String(images.length).padStart(2,'0');if(credit){const original=document.querySelectorAll('#heroSlidesContainer img.hero-slide')[index];const match=original?.alt?.match(/(?:por|Fotografía:)\s+(.+)$/i);credit.textContent='Foto: '+(match?.[1]||'Geovanny Muñoz')}};const sync=()=>{const originals=[...document.querySelectorAll('#heroSlidesContainer img.hero-slide')];const next=originals.map(img=>img.getAttribute('src')||img.src).filter(Boolean);if(!next.length){if(layer.hidden){urls=[];layer.replaceChildren()}return}const focusId=new URLSearchParams(location.search).get('foto');const focused=originals.findIndex(img=>img.dataset.photoId===focusId);if(!focusApplied&&focused>=0){index=focused;focusApplied=true}if(next.join('|')===urls.join('|')){show();return;}urls=next;layer.replaceChildren(...urls.map(src=>{const img=document.createElement('img');img.src=src;img.alt='';img.addEventListener('error',()=>{img.src='/assets/photos/centro-loja-torre-reloj.webp'},{once:true});return img}));index=Math.min(index,urls.length-1);show()};const step=n=>{sync();const count=layer.querySelectorAll('img').length;if(!count)return;index=(index+n+count)%count;show()};root.querySelector('#vl-photo-prev')?.addEventListener('click',()=>step(-1));root.querySelector('#vl-photo-next')?.addEventListener('click',()=>step(1));show();let timer;const configure=()=>{const s=window.__vlHeroCarouselSettings||{};const seconds=Math.max(2,Math.min(60,Number(s.interval)||6));const position=matchMedia('(max-width:800px)').matches&&s.mobilePosition&&s.mobilePosition!=='same'?s.mobilePosition:(s.position||'50% 50%');layer.style.setProperty('--vl-carousel-position',position);clearInterval(timer);timer=setInterval(()=>{sync();if(!document.hidden&&!matchMedia('(prefers-reduced-motion: reduce)').matches)step(1)},seconds*1000);sync()};window.addEventListener('vl-hero-settings-updated',configure);window.addEventListener('vl-photo-library-updated',()=>{sync();show()});configure();setInterval(sync,4000)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init()})();
@@ -1660,7 +1660,7 @@
                 <p id="agendaSavedCount" class="text-xs font-bold text-gray-600 px-3"></p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="agendaGridContainer"></div>
+            <section id="eventsSpotlight" data-vl-surface="light" aria-label="Próximos eventos de Loja" hidden></section><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="agendaGridContainer"></div>
         </div>
     </section>
 
@@ -4895,7 +4895,9 @@
         }
         function upcomingSortedEvents() {
             const now = Date.now();
-            return (Array.isArray(eventsList) ? eventsList : [])
+            const source=window.VisitaLojaEventDesignExamples||eventsList;
+            if(window.VisitaLojaEventsSpotlight)return window.VisitaLojaEventsSpotlight.upcoming(source,now);
+            return (Array.isArray(source) ? source : [])
                 .filter(event => event && event.date && upcomingEventTimestamp(event) + 60 * 60 * 1000 > now && upcomingEventTimestamp(event) !== Infinity)
                 .sort((a, b) => upcomingEventTimestamp(a) - upcomingEventTimestamp(b));
         }
@@ -4906,7 +4908,7 @@
             document.body.style.overflow = '';
         }
         function openUpcomingEventsModal() {
-            const items = upcomingSortedEvents().slice(0, 15);
+            const items = upcomingSortedEvents();
             if (!items.length) {
                 const modal = document.getElementById('upcomingEventsModal');
                 if (!modal) return;
@@ -4932,13 +4934,13 @@
             renderUpcomingEventModal();
         }
         function stepUpcomingEvent(direction) {
-            const items = upcomingSortedEvents().slice(0, 15);
+            const items = upcomingSortedEvents();
             if (!items.length) return;
             upcomingEventModalIndex = (upcomingEventModalIndex + direction + items.length) % items.length;
             renderUpcomingEventModal();
         }
         function renderUpcomingEventModal() {
-            const items = upcomingSortedEvents().slice(0, 15);
+            const items = upcomingSortedEvents();
             const event = items[upcomingEventModalIndex];
             if (!event) return;
             const title = currentLang === 'en' && event.titleEn ? event.titleEn : event.title || 'Evento en Loja';
@@ -5025,11 +5027,12 @@
                 else { upcomingEventModalIndex = Math.min(upcomingEventModalIndex, upcomingSortedEvents().length - 1); renderUpcomingEventModal(); }
             }
         }, 60 * 1000);
-        function checkLiveEventsBanner() {
-            window.VisitaLojaEventsSpotlight?.render(typeof eventsList==='undefined'?[]:eventsList,{
+        function renderEventsDiscovery() {
+            const source=window.VisitaLojaEventDesignExamples||(typeof eventsList==='undefined'?[]:eventsList);
+            const options={
                 lang:currentLang,
                 open:event=>{
-                    const items=upcomingSortedEvents().slice(0,15);
+                    const items=upcomingSortedEvents();
                     const index=items.findIndex(item=>item===event||item.id===event.id);
                     if(index<0)return;
                     openUpcomingEventsModal();
@@ -5037,7 +5040,16 @@
                     renderUpcomingEventModal();
                 },
                 map:event=>focusEventOnMap(Number(event.lat),Number(event.lng),(currentLang==='en'&&event.titleEn)||event.title||'',event.date||'',event.location||'',event.type||'')
-            });
+            };
+            window.VisitaLojaEventsBillboard?.render(source,options);
+            window.VisitaLojaEventsSpotlight?.render(source,{...options,embedded:true});
+            const detail=document.getElementById('eventsSpotlight'),grid=document.getElementById('agendaGridContainer');
+            const saved=typeof agendaViewMode!=='undefined'&&agendaViewMode==='saved';
+            if(saved&&detail)detail.hidden=true;
+            if(grid)grid.hidden=Boolean(detail&&!detail.hidden);
+        }
+        function checkLiveEventsBanner() {
+            renderEventsDiscovery();
             const banner = document.getElementById('liveEventBanner');
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
@@ -5860,6 +5872,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function renderAgendaUI() {
             const agendaContainer = document.getElementById('agendaGridContainer');
             if (!agendaContainer) return;
+            renderEventsDiscovery();
             agendaContainer.innerHTML = '';
 
             const todayStr = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -9002,6 +9015,7 @@ function vl29ToggleMenu(button){var wasOpen=button.getAttribute('aria-expanded')
 document.addEventListener('click',function(e){if(e.target.closest('.vl29-dropdown a'))vl29CloseMenus();else if(!e.target.closest('.vl29-nav-group'))vl29CloseMenus();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMenus();});
 </script>
-<script src="js/events-spotlight.js?v=1"></script>
+<script src="js/events-spotlight.js?v=2"></script>
+<script src="js/events-billboard.js?v=2"></script>
 </body>
 </html>

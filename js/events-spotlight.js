@@ -25,7 +25,7 @@
   const title=node('h2','ve-title',en?'Make a date with Loja.':'Loja tiene un plan para ti.');title.id='eventsSpotlightTitle';
   heading.append(title,node('p','ve-intro',en?'Culture, music and encounters worth going out for.':'Cultura, música y encuentros para salir a vivir Loja.'));
   const all=link('ve-all',en?'See the full agenda ↗':'Ver toda la agenda ↗',options.agendaUrl||'#agenda');
-  head.append(heading,all);shell.append(head);
+  head.append(heading,all);if(!options.embedded)shell.append(head);
   const layout=node('div','ve-layout');
   function poster(event,featured){
    const media=node('div','ve-poster'+(featured?' ve-poster-featured':''));
@@ -34,7 +34,7 @@
    if(url){const img=node('img');img.src=url;img.alt=(en?'Poster: ':'Afiche: ')+(event.title||'');img.loading=featured?'eager':'lazy';img.addEventListener('error',fallback,{once:true});media.append(img);}else fallback();
    return media;
   }
-  const featured=items[0],feature=node('article','ve-feature');feature.setAttribute('data-vl-surface','dark');
+  const featured=items[0],feature=node('article','ve-feature');feature.setAttribute('data-vl-surface','light');
   feature.append(poster(featured,true));const copy=node('div','ve-feature-copy');
   copy.append(node('span','ve-next',en?'UP NEXT':'PRÓXIMO EVENTO'),node('p','ve-date',dateLabel(featured,options.lang)+(featured.time?' · '+featured.time:'')),node('h3','ve-feature-title',en&&featured.titleEn?featured.titleEn:featured.title||'Evento en Loja'),node('p','ve-place','⌖ '+(featured.location||'Loja')));
   const desc=en?(featured.descEn||featured.desc):featured.desc;if(desc)copy.append(node('p','ve-description',desc));
@@ -42,7 +42,7 @@
   if(Number.isFinite(Number(featured.lat))&&Number.isFinite(Number(featured.lng))&&featured.lat!==''&&featured.lng!==''&&featured.lat!=null&&featured.lng!=null)actions.append(button('ve-secondary',en?'Directions':'Cómo llegar',()=>options.map?.(featured)));
   copy.append(actions);feature.append(copy);layout.append(feature);
   if(items.length>1){const aside=node('div','ve-more'),asideTitle=node('h3','ve-more-title',en?'Also coming up':'También en la agenda'),list=node('div','ve-upcoming');list.setAttribute('role','list');
-   for(const event of items.slice(1,4)){
+   for(const event of items.slice(1,options.embedded?items.length:4)){
     const card=node('article','ve-small');card.setAttribute('role','listitem');card.setAttribute('data-vl-surface','light');card.append(poster(event,false));const body=node('div','ve-small-copy');body.append(node('p','ve-date',dateLabel(event,options.lang)+(event.time?' · '+event.time:'')),node('h4','',en&&event.titleEn?event.titleEn:event.title||'Evento en Loja'),node('p','ve-place',event.location||'Loja'),button('ve-text-button',en?'View details →':'Ver detalles →',()=>options.open?.(event)));card.append(body);list.append(card);
    }
    aside.append(asideTitle,list);layout.append(aside);
