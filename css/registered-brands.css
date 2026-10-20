@@ -17,3 +17,15 @@
 @keyframes vr-travel{to{transform:translateX(-50%)}}
 @media(max-width:650px){#registeredBrands{padding:20px 0}#registeredBrands .vr-brand{flex-basis:130px;width:130px;height:72px}#registeredBrands .vr-group{gap:12px;padding-right:12px}}
 @media(prefers-reduced-motion:reduce){#registeredBrands .vr-track{animation:none;width:100%}#registeredBrands .vr-group{min-width:0;flex-wrap:wrap;padding:0 16px;width:100%}#registeredBrands .vr-group[aria-hidden=true]{display:none}}
+
+#registeredBrands .vr-brand{flex-direction:column;gap:6px}
+#registeredBrands .vr-brand:has(.vr-name) .vr-logo{max-height:60%}
+#registeredBrands[data-size=small] .vr-brand{width:120px;flex-basis:120px;height:68px}
+#registeredBrands[data-size=large] .vr-brand{width:190px;flex-basis:190px;height:112px}
+#registeredBrands[data-direction=right] .vr-track{animation-direction:reverse}
+#registeredBrands[data-pause=false] .vr-viewport:hover .vr-track{animation-play-state:running}
+#registeredBrands .vr-viewport:focus-within .vr-track,#registeredBrands[data-stopped=true] .vr-track{animation-play-state:paused!important}
+#registeredBrands[data-motion=false] .vr-track{animation:none;width:100%}
+#registeredBrands[data-motion=false] .vr-group{min-width:0;flex-wrap:wrap;width:100%;padding:0 16px;justify-content:center}
+#registeredBrands .vr-pause{display:block;margin:12px auto 0;padding:7px 13px;border:1px solid #9aafc3;border-radius:18px;background:#fff;color:#17324f;font-family:inherit;font-size:12px;font-weight:600;line-height:1.4;cursor:pointer}
+@layer vl-colors{#registeredBrands .vr-pause{color:#17324f!important;background:#fff!important}}

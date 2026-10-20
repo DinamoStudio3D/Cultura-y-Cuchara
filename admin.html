@@ -146,6 +146,7 @@
 </div></div>
 <div class="nav-group collapsed"><button type="button" class="nav-group-title w-full flex items-center justify-between" onclick="toggleAdminNavGroup(this)" aria-expanded="false" aria-controls="adminNavArea4"><span>Contenido turístico<small>Agenda, campañas e historias</small></span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button><div class="nav-items" id="adminNavArea4">
 <button data-nav-item id="photosNavBtn" data-search-terms="fotografías fotos imágenes autores créditos portada galería" type="button" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-images w-6"></i>Fotografías y créditos</button>
+<button data-nav-item id="brandsNavBtn" type="button" onclick="showAdminModule('brands')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-images w-6"></i>Carrusel de marcas</button>
 <button data-nav-item id="eventsNavBtn" type="button" onclick="showAdminModule('events')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-calendar w-6"></i>Eventos y agenda</button>
 <button data-nav-item id="festivalNavBtn" type="button" onclick="showAdminModule('festival')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-bullhorn w-6"></i>Campañas y festivales</button>
 <button data-nav-item id="storiesNavBtn" type="button" onclick="showAdminModule('stories')" class="w-full text-left text-gray-300 hover:bg-white/5 font-bold rounded-xl px-4 py-3"><i class="fa-solid fa-book-open-reader w-6"></i>Historias de Loja</button>
@@ -529,7 +530,29 @@
                     <div id="placesList" class="space-y-3"><p class="text-gray-500 text-sm">Cargando paradas…</p></div>
                 </section>
 
-                <section id="eventsModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
+                <section id="brandsModule" class="hidden panel rounded-2xl p-5 sm:p-7">
+<h2 class="text-2xl font-black">Carrusel de marcas</h2><p class="text-gray-300 mt-2">Configura la franja de paradas de la portada. Los logos se toman de las fichas de cada parada.</p>
+<form id="brandsConfigForm" class="mt-6 space-y-5">
+<div class="grid sm:grid-cols-2 gap-4">
+<label><input id="brandsActive" type="checkbox"> Mostrar la franja en la web</label>
+<label><input id="brandsClickable" type="checkbox"> Abrir la ficha al pulsar el logo</label>
+<label>Título en español<input id="brandsTitle" maxlength="120" required></label>
+<label>Título en inglés<input id="brandsTitleEn" maxlength="120"></label>
+<label>Paradas que se muestran<select id="brandsMode"><option value="all">Todas automáticamente (excepto las desmarcadas)</option><option value="selected">Solo las que seleccione</option></select></label>
+<label>Tamaño de los logos<select id="brandsSize"><option value="small">Pequeño</option><option value="medium">Mediano</option><option value="large">Grande</option></select></label>
+<label>Duración de una vuelta (segundos)<input id="brandsDuration" type="number" min="20" max="120" step="1" required><small>Menos segundos = más rápido.</small></label>
+<label>Dirección<select id="brandsDirection"><option value="left">De derecha a izquierda</option><option value="right">De izquierda a derecha</option></select></label>
+<label><input id="brandsMotion" type="checkbox"> Movimiento automático</label>
+<label><input id="brandsPause" type="checkbox"> Pausar al pasar el cursor</label>
+<label><input id="brandsShowNames" type="checkbox"> Mostrar el nombre debajo del logo</label>
+</div>
+<div class="rounded-xl border border-gray-700 p-4"><h3 class="font-bold mb-2">Paradas y orden</h3><p class="text-sm text-gray-300 mb-3">Solo se muestran paradas públicas. En modo automático las nuevas se añaden al final. Usa las flechas para ordenar.</p><input id="brandsSearch" type="search" placeholder="Buscar una parada…" aria-label="Buscar una parada"><div class="flex flex-wrap gap-2 my-3"><button id="brandsSelectAll" type="button">Seleccionar todas</button><button id="brandsSelectNone" type="button">Desmarcar todas</button><span id="brandsCount" role="status"></span></div><div id="brandsPlaceList"></div></div>
+<div><h3 class="font-bold mb-3">Vista previa sin guardar</h3><p id="brandsPreviewEmpty" class="text-gray-300 mb-2" hidden>No hay paradas seleccionadas o la franja está oculta.</p><div id="registeredBrands" data-vl-surface="light" aria-labelledby="registeredBrandsTitle" hidden></div></div>
+<div class="flex flex-wrap gap-3"><button id="brandsSave" type="submit" class="bg-blue-600 text-white font-bold px-5 py-3 rounded-xl" disabled>Guardar configuración</button><button id="brandsReload" type="button">Descartar cambios y recargar</button><button id="brandsDefaults" type="button">Restablecer opciones</button><a href="/#registeredBrands" target="_blank" rel="noopener">Ver franja en la web ↗</a></div>
+<p id="brandsStatus" role="status" aria-live="polite">Inicia sesión para cargar la configuración.</p>
+<p class="text-sm text-gray-400">Restablecer modifica esta vista previa. Los cambios se aplican a la web al guardar. Para cambiar un logo, edita la ficha de su parada.</p>
+</form></section>
+<section id="eventsModule" class="hidden panel rounded-2xl p-5 sm:p-7 lg:col-start-2">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                         <div><p class="text-blue-400 text-xs font-bold uppercase tracking-widest">Módulo 4</p><h2 class="text-2xl font-black mt-1">Agenda y eventos</h2><p class="text-sm text-gray-400 mt-1">Administra aquí los eventos de la cartelera de portada, la agenda y el mapa.</p></div>
                         <button type="button" onclick="resetGeneralEventForm()" class="bg-blue-500 hover:bg-blue-400 text-white rounded-xl px-4 py-2.5 text-sm font-black"><i class="fa-solid fa-plus mr-1"></i>Nuevo evento</button>
@@ -1235,7 +1258,7 @@ document.addEventListener('change',event=>{if(adminFieldChangesContent(event.tar
 document.addEventListener('reset',event=>{if(event.target.closest('#adminView'))setTimeout(()=>setAdminUnsavedChanges(false),0);});
 window.addEventListener('beforeunload',event=>{if(!adminUnsavedChanges)return;event.preventDefault();event.returnValue='';});
 
-const ADMIN_MODULE_LABELS={merchants:'Cuentas de negocios',cantons:'Cantones de Loja',fidelity:'Fidelidad por negocio',dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',chabaquitoMissions:'Misiones Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Apariencia y Marca',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
+const ADMIN_MODULE_LABELS={brands:'Carrusel de marcas',merchants:'Cuentas de negocios',cantons:'Cantones de Loja',fidelity:'Fidelidad por negocio',dashboard:'Inicio y resumen',admins:'Administradores',audit:'Historial de auditoría',users:'Usuarios registrados',control:'Control de paradas',analytics:'Estadísticas y reportes',qr:'Centro de QR',podcast:'Audios y Podcast',festival:'Centro de campañas',applications:'Solicitudes de paradas',places:'Paradas',events:'Eventos',stories:'Historias de Loja',chabaquito:'Chabaquito',chabaquitoMissions:'Misiones Chabaquito',passport:'Pasaporte y premios',subscriptions:'Planes y suscripciones',settings:'Apariencia y Marca',links:'Enlaces del sistema',maintenance:'Estado de la web',postcards:'Postales',time:'Loja en el Tiempo',entrepreneurs:'Emprendedores'};
 function toggleAdminSidebar(){const sidebar=document.getElementById('adminSidebar'),button=document.getElementById('mobileAdminNavToggle');if(!sidebar)return;const opening=sidebar.classList.contains('mobile-closed');sidebar.classList.toggle('mobile-closed',!opening);if(button)button.setAttribute('aria-expanded',String(opening));}
 function toggleAdminNavGroup(button){const group=button.closest('.nav-group'),collapsed=!group.classList.contains('collapsed');group.classList.toggle('collapsed',collapsed);button.setAttribute('aria-expanded',String(!collapsed));}
 const adminNavSearchCollapsed=new Map();
@@ -1321,11 +1344,12 @@ function showAdminModule(moduleName) {
     if (moduleName === 'chabaquito' || moduleName === 'chabaquitoMissions') { loadChabaquitoAdminModules(); if(moduleName === 'chabaquitoMissions') setTimeout(loadExistingChabaquitoMissions, 0); }
     if(moduleName!==currentAdminModule){window.VisitaLojaCantonMedia?.cancel();window.VisitaLojaTimeAudio?.cancel();window.VisitaLojaAdminImages?.cancel();window.VisitaLojaHomepageEditor?.cancelUploads();setAdminUnsavedChanges(false);}
     const navSearch=document.getElementById('adminNavSearch');if(navSearch?.value){navSearch.value='';filterAdminNavigation('');}
+    if(currentAdminModule==='brands'&&moduleName!=='brands')window.VisitaLojaBrandsAdmin?.discard();
     currentAdminModule=moduleName;
     window.VisitaLojaAdminWorkspace?.update(moduleName);
     document.querySelectorAll('#adminSidebar button[data-nav-item]').forEach(button=>{if(button.id===moduleName+'NavBtn')button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
     const currentTitle=document.getElementById('currentModuleName');if(currentTitle)currentTitle.textContent=ADMIN_MODULE_LABELS[moduleName]||'Administración';const activeNav=document.getElementById(moduleName+'NavBtn'),activeGroup=activeNav?.closest('.nav-group');if(activeGroup){activeGroup.classList.remove('collapsed');activeGroup.querySelector('.nav-group-title')?.setAttribute('aria-expanded','true');}if(window.innerWidth<1024){document.getElementById('adminSidebar')?.classList.add('mobile-closed');document.getElementById('mobileAdminNavToggle')?.setAttribute('aria-expanded','false');}
-    ['cantons','fidelity','merchants','dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'chabaquitoMissions', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
+    ['brands','cantons','fidelity','merchants','dashboard','admins','audit','users','control','analytics','qr', 'podcast', 'festival', 'applications', 'places', 'events', 'stories', 'chabaquito', 'chabaquitoMissions', 'passport', 'subscriptions', 'settings', 'links', 'maintenance', 'postcards', 'time', 'entrepreneurs'].forEach(name => document.getElementById(`${name}Module`).classList.toggle('hidden', name !== moduleName));
     document.getElementById('merchantsNavBtn').classList.toggle('bg-indigo-500',moduleName==='merchants');
     if(moduleName==='merchants')renderMerchantCreatePlaces();
     if (moduleName === 'events') setTimeout(initGeneralEventLocationMap, 100);
@@ -2558,6 +2582,7 @@ auth.onAuthStateChanged(async user => {
     loginView.classList.toggle('hidden', !!user);
     adminView.classList.toggle('hidden', !user);
     if (!user) {
+        window.VisitaLojaBrandsAdmin?.stop();
         window.VisitaLojaTimeAudio?.cancel();
         window.VisitaLojaAdminImages?.cancel();
         window.VisitaLojaHomepageEditor?.cancelUploads();
@@ -2597,7 +2622,8 @@ auth.onAuthStateChanged(async user => {
     }
     await recordAdminAudit('admin.login', 'access', 'Inicio de sesión administrativo');
     document.getElementById('sessionEmail').textContent = user.email || 'Usuario administrador';
-    if(new URLSearchParams(location.search).get('module')==='events')showAdminModule('events');
+    window.VisitaLojaBrandsAdmin?.start(db);
+    if(['events','brands'].includes(new URLSearchParams(location.search).get('module')))showAdminModule(new URLSearchParams(location.search).get('module'));
     try {
         const [snapshot, festivalSnapshot, tourismDaySnapshot, customCampaignsSnapshot, generalEventsSnapshot, chabaquitoSnapshot, passportSnapshot, settingsSnapshot, postcardsSnapshot, framesSnapshot, entrepreneursSnapshot, maintenanceSnapshot, subscriptionsSnapshot, storiesSnapshot] = await Promise.all([podcastRef.get(), festivalRef.get(), tourismDayRef.get(), customCampaignsRef.get(), generalEventsRef.get(), chabaquitoRef.get(), passportRef.get(), settingsRef.get(), postcardsRef.get(), postcardFramesRef.get(), entrepreneursRef.get(), maintenanceRef.get(), subscriptionsRef.get(), storiesRef.get()]);
         if (snapshot.exists) {
@@ -2642,6 +2668,7 @@ auth.onAuthStateChanged(async user => {
                     : [];
                 populateTrendingManualOptions(savedTrendingIds);
             }
+            window.VisitaLojaBrandsAdmin?.setPlaces(adminPlaces);
             renderAdminPlaces();
             window.VisitaLojaCantonAdmin?.renderPlaces();
             storyRelatedOptions([...document.getElementById('storyRelatedPlaces').selectedOptions].map(option=>option.value));
@@ -3086,5 +3113,11 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
 <link rel="stylesheet" href="css/photo-manager.css?v=5">
 <script src="js/photo-library-model.js?v=4"></script>
 <script src="js/admin-photo-manager.js?v=6"></script>
+<link rel="stylesheet" href="css/registered-brands.css?v=3">
+<link rel="stylesheet" href="css/admin-brands.css?v=1">
+<script src="js/brands-config.js?v=1"></script>
+
+<script src="js/registered-brands.js?v=3"></script>
+<script src="js/admin-brands.js?v=1"></script>
 </body>
 </html>
