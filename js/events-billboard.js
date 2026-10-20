@@ -6,7 +6,17 @@ function render(events,options={}){
  if(!host||!api)return;
  let previous=states.get(host);if(previous?.timer)root.clearInterval(previous.timer);
  const items=api.upcoming(events,options.now).slice(0,15),en=options.lang==='en',doc=host.ownerDocument;
- host.hidden=!items.length;host.replaceChildren();if(!items.length){states.delete(host);return;}
+ host.hidden=false;host.replaceChildren();host.classList.remove('vb-is-empty');
+ if(!items.length){
+  states.delete(host);host.classList.add('vb-is-empty');host.removeAttribute('aria-roledescription');
+  host.onmouseenter=host.onmouseleave=host.onkeydown=host.onpointerdown=host.onpointerup=null;
+  const link=doc.createElement('a');link.className='vb-empty-link';link.href='#agenda';
+  const copy=doc.createElement('span');copy.className='vb-empty-copy';
+  const title=doc.createElement('strong');title.id='eventsBillboardTitle';title.textContent=en?'Agenda in Loja':'Agenda de Loja';
+  const detail=doc.createElement('span');detail.textContent=en?'Explore cultural activities and events.':'Consulta las actividades culturales y los eventos.';
+  copy.append(title,detail);const arrow=doc.createElement('span');arrow.textContent='↗';arrow.setAttribute('aria-hidden','true');
+  link.append(copy,arrow);host.append(link);return;
+ }
  const reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
  const selected=previous?.id?items.findIndex(e=>e.id===previous.id):-1;
  const state={index:Math.max(0,selected),playing:previous?previous.playing:!reduced,id:null,hovered:false,timer:null};states.set(host,state);
@@ -33,6 +43,7 @@ function render(events,options={}){
    const img=node('img');img.src=image;img.alt=(en&&event.titleEn)||event.title||'Evento';img.loading='lazy';img.decoding='async';
    img.addEventListener('error',()=>{img.remove();card.append(node('strong','vb-fallback',event.title||'Evento en Loja'));},{once:true});
    card.append(img);
+   if(!api.safeImage(event.bannerImg))card.append(node('span','vb-mobile-caption',(en&&event.titleEn)||event.title||'Evento'));
   }else card.append(node('strong','vb-fallback',event.title||'Evento en Loja'));
   track.append(card);
  });

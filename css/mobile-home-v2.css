@@ -1,0 +1,48 @@
+/* Mobile homepage hierarchy; desktop retains its existing composition. */
+@layer vl-layout{
+ @media(max-width:760px){
+ body #inicio.vl-welcome .vl-welcome-copy{display:flex!important;flex-direction:column!important;padding-top:112px!important;min-width:0!important}
+ body #inicio.vl-welcome .vl-welcome-copy::before{order:0}
+ body #inicio.vl-welcome #heroTitle{order:1;font-size:30px!important;line-height:1.12!important;margin-bottom:22px!important;max-width:330px!important}
+ body #inicio.vl-welcome .vl-visible-photo-carousel{height:285px!important}
+ body #inicio.vl-welcome .vl-welcome-search{order:2;padding:13px!important;width:100%!important}
+ body #inicio.vl-welcome #eventsBillboard{order:3;width:100%!important;min-width:0!important}
+ body #inicio.vl-welcome .vl-editorial-quicklinks{order:4;margin-top:14px!important}
+ body #inicio.vl-welcome .vl-welcome-actions{order:5;grid-template-columns:1fr 1fr!important}
+ body #inicio.vl-welcome .vl-welcome-actions>a[href="#mapa"]{display:none!important}
+ body #inicio.vl-welcome .vl-mobile-updates{order:6;margin-top:12px!important}
+ body #inicio.vl-welcome .vl-managed-photo-credit{order:7}
+ }
+}
+#eventsBillboard.vb-is-empty{display:none!important}
+#eventsBillboard .vb-mobile-caption{display:none}
+@media(max-width:760px){
+ body #inicio #eventsBillboard{margin-top:16px}
+ body #inicio #eventsBillboard.vb-is-empty{display:block!important}
+ body #inicio #eventsBillboard .vb-heading{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 9px}
+ body #inicio #eventsBillboard .vb-title{margin:0;font-size:15px;font-weight:800;line-height:1.4}
+ body #inicio #eventsBillboard .vb-all{display:flex;align-items:center;min-height:44px;font-size:12px;font-weight:750;text-decoration:none}
+ body #inicio #eventsBillboard .vb-stage{min-height:118px;aspect-ratio:3/1}
+ body #inicio #eventsBillboard .vb-art:not(.vb-landscape){display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:12px;padding:10px 14px;text-align:left}
+ body #inicio #eventsBillboard .vb-art:not(.vb-landscape)>img{height:96px;width:76px;object-fit:contain}
+ body #inicio #eventsBillboard .vb-art:not(.vb-landscape) .vb-mobile-caption{display:block;font-family:inherit;font-size:16px;font-weight:750;line-height:1.3;overflow-wrap:anywhere}
+ body #inicio #eventsBillboard .vb-art:not(.vb-landscape) .vb-fallback{grid-column:1/-1;font-size:17px;padding:12px}
+ body #inicio #eventsBillboard .vb-footer{gap:6px}
+ body #inicio #eventsBillboard .vb-arrow{width:44px;height:44px}
+ body #inicio #eventsBillboard .vb-pause{min-height:44px}
+ body #inicio #eventsBillboard .vb-dots{max-width:30%}
+ body #inicio #eventsBillboard .vb-counter{padding:3px;font-size:10px}
+ body #inicio #eventsBillboard .vb-empty-link{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid #bfd1e2;border-radius:12px;padding:16px;min-height:76px;text-decoration:none}
+ body #inicio #eventsBillboard .vb-empty-copy{display:block;font-size:13px;line-height:1.5}
+ body #inicio #eventsBillboard .vb-empty-copy strong{display:block;font-size:15px;margin-bottom:3px}
+ body #registeredBrands{padding-top:20px;padding-bottom:20px}
+ body #registeredBrands .vr-title{font-size:18px;line-height:1.35}
+ body #registeredBrands .vr-subtitle{font-size:13px;max-width:370px}
+}
+@layer vl-colors{
+ @media(max-width:760px){
+ body #inicio #eventsBillboard :is(.vb-title,.vb-all,.vb-empty-link,.vb-empty-copy,.vb-empty-copy strong){--vl-text:#17324f;--vl-muted:#4d6075;color:#17324f!important}
+ body #inicio #eventsBillboard .vb-empty-link{background:#fff!important}
+ body #inicio #eventsBillboard .vb-mobile-caption{color:#fff!important}
+ }
+}

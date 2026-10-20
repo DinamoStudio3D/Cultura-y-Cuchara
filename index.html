@@ -443,6 +443,7 @@
 <script src="/js/plan-offer.js?v=1"></script>
 <link rel="stylesheet" href="css/events-spotlight.css?v=4">
 <link rel="stylesheet" href="css/registered-brands.css?v=6">
+<link rel="stylesheet" href="css/mobile-home-v2.css?v=1">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -886,7 +887,7 @@
           <a class="vl149-category-link" href="#categorias"><i class="fa-solid fa-compass" aria-hidden="true"></i><span data-i18n="welcomeBrowseCategories">Ver categorías de lugares</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
           <nav class="vl-editorial-quicklinks" aria-label="Descubre Loja"><a href="#establecimientos" onclick="openCategoryList('food')"><i class="fa-solid fa-utensils" aria-hidden="true"></i> Gastronomía</a><a href="#establecimientos" onclick="openCategoryList('hotel')"><i class="fa-solid fa-bed" aria-hidden="true"></i> Hospedaje</a><a href="#loja-en-imagenes"><i class="fa-solid fa-camera" aria-hidden="true"></i> Postales de Loja</a><a href="#mapa"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Mapa turístico</a></nav>
           <div class="vl-welcome-actions"><a href="#mapa"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><span data-i18n="welcomeMap">Explorar el mapa</span></a><button type="button" onclick="openSmartRoutePlanner()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="welcomeRoute">Planificar mi recorrido</span></button><button type="button" onclick="ChabaquitoGuide.open()"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i><span>Habla con Chabaquito</span></button></div>
-          <details class="vl-mobile-updates"><summary><i class="fa-regular fa-calendar" aria-hidden="true"></i><span data-i18n="mobileUpdates">Agenda y vídeo</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary></details>
+          <details class="vl-mobile-updates"><summary><i class="fa-regular fa-calendar" aria-hidden="true"></i><span data-i18n="mobileUpdates">Vídeo y recomendaciones</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary></details>
         </div>
         <div class="vl-visible-photo-carousel" aria-hidden="true"><img class="is-current" src="assets/photos/centro-loja-torre-reloj.webp" alt=""><img src="assets/photos/jipiro-laguna.webp" alt=""><img src="assets/photos/eolicas-atardecer-panoramica.webp" alt=""><img src="assets/photos/atardecer-loja.webp" alt=""><img src="assets/photos/jipiro-pagoda-laguna.webp" alt=""></div>
         
@@ -2678,7 +2679,7 @@
                 welcomeSearchButton: 'Buscar',
                 mobileWelcomeTitle: 'Loja te espera.',
                 mobileWelcomeDesc: 'Sabores, cultura y nuevas historias por descubrir.',
-                mobileFood: 'Gastronomía', mobileHotels: 'Hoteles', mobileTourism: 'Turismo', mobileExperiences: 'Experiencias', mobileUpdates: 'Agenda y vídeo',
+                mobileFood: 'Gastronomía', mobileHotels: 'Hoteles', mobileTourism: 'Turismo', mobileExperiences: 'Experiencias', mobileUpdates: 'Vídeo y recomendaciones',
                 welcomeMap: 'Explorar el mapa',
                 welcomeRoute: 'Planificar mi recorrido',
                 welcomePhotoKicker: 'TU PRÓXIMA HISTORIA EMPIEZA AQUÍ',
@@ -9018,7 +9019,7 @@ document.addEventListener('click',function(e){if(e.target.closest('.vl29-dropdow
 document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMenus();});
 </script>
 <script src="js/events-spotlight.js?v=2"></script>
-<script src="js/events-billboard.js?v=4"></script>
+<script src="js/events-billboard.js?v=5"></script>
 <script src="js/brands-config.js?v=3"></script>
 <script src="js/registered-brands.js?v=6"></script>
 </body>
