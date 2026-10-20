@@ -35,3 +35,10 @@
 @layer vl-colors{#registeredBrands .vr-subtitle{color:#4d6075!important}}
 
 #registeredBrands a.vr-brand{text-decoration:none}
+
+/* Institutional logo uses its own high-contrast brand surface. */
+@layer vl-colors{
+#registeredBrands .vr-brand[data-institution=mesa]{background:#123b66!important;color:#fff!important;--vl-text:#fff;--vl-muted:#fff;border-color:#123b66!important}
+#registeredBrands .vr-brand[data-institution=mesa] .vr-name{color:#fff!important}
+}
+#registeredBrands .vr-brand[data-institution=mesa] .vr-logo{background:transparent!important;max-width:100%;object-fit:contain}
