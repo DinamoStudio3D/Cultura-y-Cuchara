@@ -1,6 +1,6 @@
 (function(root){'use strict';
 const model=root.VisitaLojaBrandsModel,form=document.getElementById('brandsConfigForm');if(!form||!model)return;
-const el=id=>document.getElementById(id),fields={active:'brandsActive',title:'brandsTitle',titleEn:'brandsTitleEn',subtitle:'brandsSubtitle',subtitleEn:'brandsSubtitleEn',mode:'brandsMode',size:'brandsSize',duration:'brandsDuration',direction:'brandsDirection',motion:'brandsMotion',pauseOnHover:'brandsPause',showNames:'brandsShowNames',clickable:'brandsClickable'};
+const el=id=>document.getElementById(id),fields={active:'brandsActive',includeMesa:'brandsIncludeMesa',title:'brandsTitle',titleEn:'brandsTitleEn',subtitle:'brandsSubtitle',subtitleEn:'brandsSubtitleEn',mode:'brandsMode',size:'brandsSize',duration:'brandsDuration',direction:'brandsDirection',motion:'brandsMotion',pauseOnHover:'brandsPause',showNames:'brandsShowNames',clickable:'brandsClickable'};
 let places=[],draft=model.normalize(),saved=model.normalize(),revision=0,dirty=false,ready=false,placesReady=false,ref=null,unsubscribe=null,saving=false;
 const status=text=>{el('brandsStatus').textContent=text;};
 function mark(value){dirty=value;if(typeof setAdminUnsavedChanges==='function')setAdminUnsavedChanges(value);}
