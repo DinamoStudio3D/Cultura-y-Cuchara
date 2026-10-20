@@ -243,10 +243,13 @@
             .getElementById("home-" + b.id + "-" + key + "En")
             .value.trim();
         }
-        for (const [key] of b.links || [])
-          saved[key] = document
+        for (const [key, , , defaultUrl] of b.links || []) {
+          const value = document
             .getElementById("home-" + b.id + "-" + key)
             .value.trim();
+          // Required buttons keep their section destination when left blank.
+          saved[key] = value || (b.optionalHttpsLinks ? "" : defaultUrl);
+        }
         if (b.image)
           for (const key of ["imageUrl", "imageAlt", "imageCredit"])
             saved[key] = document
