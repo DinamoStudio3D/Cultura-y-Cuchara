@@ -1,0 +1,32 @@
+/* Announcement stays above site navigation and respects the mobile viewport. */
+#promoPopupModal{position:fixed!important;inset:0!important;width:100%!important;max-width:none!important;height:100dvh!important;max-height:none!important;margin:0!important;border:0!important;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;box-sizing:border-box!important;overflow:hidden;z-index:2147483000!important;background:transparent!important;align-items:center!important;justify-items:center!important;overscroll-behavior:contain}
+#promoPopupModal[open],#promoPopupModal[data-fallback=true]{display:grid!important}
+#promoPopupModal.hidden,#promoPopupModal:not([open]):not([data-fallback=true]){display:none!important}
+#promoPopupModal::backdrop{background:rgba(3,17,34,.8);backdrop-filter:blur(5px)}
+#promoPopupModal[data-fallback=true]{background:rgba(3,17,34,.8)!important}
+#promoPopupModal .vl-promo-card{position:relative;width:min(100%,430px);max-height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;border:1px solid #c5d5e5;border-radius:20px;box-shadow:0 24px 80px #00132666;margin:auto;animation:none!important}
+#promoPopupModal .vl-promo-header{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 12px 10px 18px;border-bottom:1px solid #dbe5ee}
+#promoPopupModal .vl-promo-header>span{font-weight:800;font-size:14px}
+#promoPopupModal .vl-promo-close{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;min-height:44px;border:1px solid #c4d5e5;border-radius:50%;font-size:19px;cursor:pointer}
+#promoPopupModal .vl-promo-image{display:flex;justify-content:center;align-items:center;background:#edf3f8}
+#promoPopupModal .vl-promo-image img{display:block;width:100%;height:auto;max-height:min(32dvh,260px);object-fit:contain}
+#promoPopupModal .vl-promo-content{padding:20px;display:flex;flex-direction:column;gap:14px;text-align:left}
+#promoPopupModal .vl-promo-badge{width:fit-content;border-radius:20px;padding:5px 10px;font-size:11px;font-weight:800}
+#promoPopupModal #popupTitleText{margin:0;font-size:clamp(20px,5vw,26px);font-weight:850;line-height:1.2;overflow-wrap:anywhere}
+#promoPopupModal #popupDescText{margin:0;font-size:14px;line-height:1.65;overflow-wrap:anywhere;white-space:pre-line}
+#promoPopupModal #popupWhatsappBtn{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;border-radius:12px;text-decoration:none;font-size:14px;font-weight:750;padding:12px}
+#promoPopupModal #popupWhatsappBtn.hidden{display:none!important}
+#promoPopupModal .vl-promo-continue{min-height:44px;background:transparent;border:0;text-decoration:underline;text-underline-offset:3px;font-size:13px;cursor:pointer}
+#promoPopupModal :is(a,button):focus-visible{outline:3px solid #e6a72e;outline-offset:-3px}
+body.vl-promo-open{overflow:hidden!important}
+body.vl-promo-open :is(#webMascot,#webMascotRestore,#accountFloatingInvite,#accountFloatingButton,#appInstallPrompt){visibility:hidden!important;pointer-events:none!important}
+@layer vl-colors{
+ #promoPopupModal .vl-promo-card,#promoPopupModal .vl-promo-header{--vl-text:#17324f;--vl-muted:#4d6075;background:#fff!important;color:#17324f!important}
+ #promoPopupModal :is(.vl-promo-header>span,#popupTitleText,.vl-promo-close,.vl-promo-continue){color:#17324f!important}
+ #promoPopupModal .vl-promo-close{background:#f1f6fb!important}
+ #promoPopupModal #popupDescText{color:#4d6075!important}
+ #promoPopupModal .vl-promo-badge{background:#e9f2fb!important;color:#075bb2!important}
+ #promoPopupModal #popupWhatsappBtn,#promoPopupModal #popupWhatsappBtn *{--vl-text:#fff;color:#fff!important;background:#075bb2!important}
+}
+@media(max-width:600px){#promoPopupModal .vl-promo-content{padding:17px}#promoPopupModal .vl-promo-card{border-radius:16px}}
+@media(max-height:520px){#promoPopupModal .vl-promo-image img{max-height:120px}}

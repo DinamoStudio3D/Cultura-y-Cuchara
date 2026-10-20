@@ -444,6 +444,7 @@
 <link rel="stylesheet" href="css/events-spotlight.css?v=4">
 <link rel="stylesheet" href="css/registered-brands.css?v=7">
 <link rel="stylesheet" href="css/mobile-home-v2.css?v=2">
+<link rel="stylesheet" href="css/promo-dialog.css?v=1">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -628,30 +629,20 @@
     </div>
 
     <main id="main-content">
-    <!-- Promo Popup Modal -->
-    <div id="promoPopupModal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white text-brandDark w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border-4 border-brandGold relative flex flex-col animate-bounce-slight">
-            <button type="button" onclick="closeModal('promoPopupModal')" class="absolute top-4 right-4 z-20 w-9 h-9 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-brandGold transition text-lg shadow">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="h-48 relative overflow-hidden bg-brandDark">
-                <img id="popupImgEl" src="assets/photos/photo-unavailable.svg" alt="Promoción" class="w-full h-full object-cover" decoding="async">
-                <div class="absolute inset-0 bg-gradient-to-t from-brandDark/90 via-transparent to-transparent flex items-end p-4">
-                    <span id="popupBadgeText" class="bg-brandGold text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow">✨ Promoción Exclusiva</span>
-                </div>
-            </div>
-            <div class="p-6 text-center space-y-3">
-                <h3 id="popupTitleText" class="text-xl font-black text-brandDark">¡Especial del Día de las Madres!</h3>
-                <p id="popupDescText" class="text-xs sm:text-sm text-gray-600 leading-relaxed">Visita nuestros aliados locales para canjear promociones exclusivas.</p>
-                <div class="pt-2 flex flex-col gap-2">
-                    <a id="popupWhatsappBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 transition shadow flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-base"></i> Consultar Disponibilidad
-                    </a>
-                    <button type="button" onclick="closeModal('promoPopupModal')" class="text-xs text-gray-400 hover:text-brandDark underline py-1">Continuar navegando en la web</button>
-                </div>
-            </div>
+    <!-- Special occasion announcement -->
+    <dialog id="promoPopupModal" class="hidden" aria-labelledby="popupTitleText" aria-describedby="popupDescText" aria-hidden="true">
+      <article class="vl-promo-card" data-vl-surface="light">
+        <header class="vl-promo-header"><span>VisitaLoja.com</span><button type="button" class="vl-promo-close" aria-label="Cerrar anuncio" onclick="closeModal('promoPopupModal')"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></header>
+        <div class="vl-promo-image"><img id="popupImgEl" src="assets/photos/photo-unavailable.svg" alt="Imagen del anuncio" decoding="async"></div>
+        <div class="vl-promo-content">
+          <span id="popupBadgeText" class="vl-promo-badge">Anuncio especial</span>
+          <h3 id="popupTitleText">¡Promoción especial!</h3>
+          <p id="popupDescText"></p>
+          <a id="popupWhatsappBtn" href="#" target="_blank" rel="noopener noreferrer" class="hidden"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Consultar disponibilidad</a>
+          <button type="button" class="vl-promo-continue" onclick="closeModal('promoPopupModal')">Continuar navegando</button>
         </div>
-    </div>
+      </article>
+    </dialog>
 
     <!-- QR / PIN Claim Modal for Passport Stamps -->
     <div id="qrClaimModal" class="fixed inset-0 z-[120] bg-black/90 backdrop-blur hidden flex items-center justify-center p-4">
@@ -8780,6 +8771,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     switchAdminTab('locales');
                 }
                 m.classList.remove('hidden');
+                if(id==='promoPopupModal')window.VisitaLojaPromoDialog?.open();
                 m.setAttribute('role', 'dialog');
                 m.setAttribute('aria-modal', 'true');
                 m.setAttribute('aria-hidden', 'false');
@@ -8794,6 +8786,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             }
             const targetM = document.getElementById(id);
             if(targetM) {
+                if(id==='promoPopupModal')window.VisitaLojaPromoDialog?.close();
                 targetM.classList.add('hidden');
                 targetM.setAttribute('aria-hidden', 'true');
                 const opener=modalReturnFocus.get(id);
@@ -9023,5 +9016,6 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMen
 <script src="js/brands-config.js?v=3"></script>
 <script src="js/registered-brands.js?v=7"></script>
 <script src="js/mobile-photo-layout.js?v=1"></script>
+<script src="js/promo-dialog.js?v=1"></script>
 </body>
 </html>
