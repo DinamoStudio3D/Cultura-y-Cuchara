@@ -1624,24 +1624,39 @@
     </section>
 
     <!-- Agenda -->
-    <section id="agenda" data-vl-surface="light" class="vl-agenda-section reveal">
-        <div class="vl-agenda-shell">
-            <header class="vl-agenda-header">
-                <div><span class="vl-agenda-kicker" data-i18n="agendaSub">Loja en Movimiento</span>
-                <h2 data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
-                <p data-i18n="agendaDesc">Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.</p></div>
-                <nav class="vl-agenda-links" aria-label="Explorar actividades">
-                    <a href="#festival-live"><i class="fa-solid fa-masks-theater" aria-hidden="true"></i><span data-i18n="agendaFestivalLink">Programación FIAVL</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-                </nav>
-            </header>
-            <div class="vl-agenda-toolbar">
-                <div role="group" aria-label="Filtrar agenda">
-                    <button id="agendaAllButton" type="button" onclick="setAgendaView('all')"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span data-i18n="agendaAll">Todos</span></button>
-                    <button id="agendaSavedButton" type="button" onclick="setAgendaView('saved')"><i class="fa-solid fa-bookmark" aria-hidden="true"></i><span data-i18n="agendaSaved">Mis guardados</span></button>
-                </div>
-                <p id="agendaSavedCount" role="status"></p>
+    <section id="agenda" data-vl-surface="light" class="py-16 px-4 md:px-8 lg:px-12 bg-white border-t border-gray-200 reveal">
+        <style id="restored-agenda-layout">
+#agenda .vl40-agenda-intro{display:flex;align-items:center;gap:18px;padding:23px 25px;margin:0 0 35px;border:1px solid #e1e8f0;border-radius:22px;background:#f9fbfd}#agenda .vl40-agenda-icon{flex-shrink:0;width:57px;height:57px;border-radius:17px;display:grid;place-items:center;background:#e7f2ff;font-size:24px}#agenda .vl40-agenda-intro>div:nth-child(2){flex:1}#agenda .vl40-agenda-intro strong{font-size:17px;font-weight:850;}#agenda .vl40-agenda-intro p{font-size:12px;line-height:1.7;margin-top:5px}#agenda .vl40-agenda-map{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;padding:12px 16px;background:#fff;border:1px solid #dbe5f0;border-radius:12px;font-size:12px;font-weight:850;text-decoration:none}#agenda .vl40-agenda-map:hover{background:#edf6ff}#agenda .vl40-agenda-map:focus-visible{outline:3px solid #00bdf2;outline-offset:3px}#agenda #agendaGridContainer{gap:23px!important}#agenda #agendaGridContainer>div,#agenda #agendaGridContainer>article{border-radius:20px!important;overflow:hidden;transition:transform .2s,box-shadow .2s}#agenda #agendaGridContainer>div:hover,#agenda #agendaGridContainer>article:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(20,48,80,.10)!important}#agenda #agendaAllButton,#agenda #agendaSavedButton{min-height:42px}#agenda #agendaSavedButton:focus-visible,#agenda #agendaAllButton:focus-visible{outline:3px solid #00bdf2;outline-offset:2px}@media(max-width:700px){#agenda .vl40-agenda-intro{flex-wrap:wrap;padding:18px;gap:13px}#agenda .vl40-agenda-icon{width:45px;height:45px;font-size:19px}#agenda .vl40-agenda-intro>div:nth-child(2){flex-basis:calc(100% - 65px)}#agenda .vl40-agenda-map{width:100%;justify-content:center}#agenda #agendaGridContainer{gap:16px!important}}@media(prefers-reduced-motion:reduce){#agenda #agendaGridContainer>div,#agenda #agendaGridContainer>article{transition:none!important}#agenda #agendaGridContainer>div:hover,#agenda #agendaGridContainer>article:hover{transform:none!important}}
+
+
+#agenda .vl-agenda-legacy-header h2{font-family:inherit;font-size:clamp(30px,3vw,36px);font-weight:900;line-height:1.2;margin:8px 0 12px}
+#agenda .vl-agenda-legacy-header p{font-size:14px;line-height:1.65}
+#agenda .vl-agenda-card:first-of-type{grid-column:auto;display:flex;flex-direction:column}
+#agenda .vl-agenda-card:first-of-type h3{font-size:24px}
+#agenda .vl-agenda-card:first-of-type .vl-agenda-media{min-height:0}
+</style>
+<div class="max-w-7xl mx-auto"><div data-vl-surface="dark" class="vl40-agenda-intro"><div class="vl40-agenda-icon"><i class="fa-solid fa-ticket"></i></div><div><strong>Tu próxima experiencia en Loja comienza aquí</strong><p>Descubre actividades culturales, guarda las que te interesan y consulta su ubicación desde la agenda.</p></div><a href="#mapa" class="vl40-agenda-map"><i class="fa-solid fa-map-location-dot"></i> Explorar mapa <i class="fa-solid fa-arrow-right"></i></a></div>
+            <div class="vl-agenda-legacy-header text-center mb-12">
+                <span class="text-brandGold font-bold uppercase tracking-widest text-xs"><i class="fa-solid fa-calendar-days mr-1"></i> <span data-i18n="agendaSub">Loja en Movimiento</span></span>
+                <h2 class="text-3xl lg:text-4xl font-black text-brandDark mt-2 mb-3" data-i18n="agendaTitle">Agenda Cultural y Eventos</h2>
+                <p class="text-gray-600 text-sm max-w-xl mx-auto" data-i18n="agendaDesc">
+                    Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.
+                </p>
             </div>
-            <div class="vl-agenda-search"><label for="agendaSearch"><span data-i18n="agendaSearchLabel">Busca un evento</span><input id="agendaSearch" type="search" oninput="renderAgendaUI()" placeholder="Nombre, actividad o lugar"></label><label for="agendaDateFilter"><span data-i18n="agendaDateFilterLabel">Cuándo</span><select id="agendaDateFilter" onchange="renderAgendaUI()"><option value="all">Todas las fechas</option><option value="today">Hoy</option><option value="week">Próximos 7 días</option><option value="undated">Sin fecha confirmada</option></select></label><p id="agendaResultCount" role="status" aria-live="polite"></p></div><div id="agendaGridContainer" class="vl-agenda-grid"></div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-7 p-2.5 bg-orange-50 border border-orange-100 rounded-2xl">
+                <div class="flex items-center gap-2" role="group" aria-label="Filtrar agenda">
+                    <button id="agendaAllButton" type="button" onclick="setAgendaView('all')" class="px-4 py-2 rounded-xl text-xs font-black transition">
+                        <i class="fa-solid fa-calendar-days mr-1.5"></i><span data-i18n="agendaAll">Todos</span>
+                    </button>
+                    <button id="agendaSavedButton" type="button" onclick="setAgendaView('saved')" class="px-4 py-2 rounded-xl text-xs font-black transition">
+                        <i class="fa-solid fa-bookmark mr-1.5"></i><span data-i18n="agendaSaved">Mis guardados</span>
+                    </button>
+                </div>
+                <p id="agendaSavedCount" class="text-xs font-bold text-gray-600 px-3"></p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="agendaGridContainer"></div>
         </div>
     </section>
 
@@ -5850,18 +5865,18 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const weekLimitStr = weekLimit.toISOString().split('T')[0];
             const itemGroup = item => !item.event.date ? 'undated' : item.event.date < todayStr ? 'past' : item.event.date === todayStr ? 'today' : item.event.date <= weekLimitStr ? 'week' : 'later';
             const baseItems=agendaViewMode === 'saved' ? savedItems : upcomingGeneralItems;
-            const search=document.getElementById('agendaSearch'),dateFilter=document.getElementById('agendaDateFilter'),query=String(search.value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-            search.placeholder=currentLang==='en'?'Name, activity or place':'Nombre, actividad o lugar';
+            const search=document.getElementById('agendaSearch'),dateFilter=document.getElementById('agendaDateFilter'),query=String(search?.value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+            if(search)search.placeholder=currentLang==='en'?'Name, activity or place':'Nombre, actividad o lugar';
             const dateLabels=currentLang==='en'?['All dates','Today','Next 7 days','Date to be confirmed']:['Todas las fechas','Hoy','Próximos 7 días','Sin fecha confirmada'];
-            [...dateFilter.options].forEach((option,index)=>option.textContent=dateLabels[index]);
+            [...(dateFilter?.options||[])].forEach((option,index)=>option.textContent=dateLabels[index]);
             const visibleItems = baseItems.filter(({event})=>{
-                const group=itemGroup({event}),matchesDate=dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value);
+                const group=itemGroup({event}),matchesDate=!dateFilter||dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value);
                 const text=[event.title,event.titleEn,event.desc,event.descEn,event.description,event.location,event.place,event.type].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
                 return matchesDate&&(!query||text.includes(query));
             })
                 .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')));
 
-            document.getElementById('agendaResultCount').textContent=currentLang==='en'?`${visibleItems.length} of ${baseItems.length} events`:`${visibleItems.length} de ${baseItems.length} eventos`;
+            if(document.getElementById('agendaResultCount'))document.getElementById('agendaResultCount').textContent=currentLang==='en'?`${visibleItems.length} of ${baseItems.length} events`:`${visibleItems.length} de ${baseItems.length} eventos`;
             const totalSaved = savedItems.length;
             const allButton = document.getElementById('agendaAllButton');
             const savedButton = document.getElementById('agendaSavedButton');
