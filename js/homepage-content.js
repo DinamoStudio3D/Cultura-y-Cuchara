@@ -276,7 +276,7 @@
       {
         id: "agendaIntro",
         name: "Agenda: presentación",
-        selector: ".vl-agenda-header",
+        selector: ".vl-agenda-legacy-header",
         adminModule: "events",
         noVisibility: true,
         preserveDefault: true,
