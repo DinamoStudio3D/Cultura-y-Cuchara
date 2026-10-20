@@ -5042,11 +5042,9 @@
                 map:event=>focusEventOnMap(Number(event.lat),Number(event.lng),(currentLang==='en'&&event.titleEn)||event.title||'',event.date||'',event.location||'',event.type||'')
             };
             window.VisitaLojaEventsBillboard?.render(source,options);
-            window.VisitaLojaEventsSpotlight?.render(source,{...options,embedded:true});
             const detail=document.getElementById('eventsSpotlight'),grid=document.getElementById('agendaGridContainer');
-            const saved=typeof agendaViewMode!=='undefined'&&agendaViewMode==='saved';
-            if(saved&&detail)detail.hidden=true;
-            if(grid)grid.hidden=Boolean(detail&&!detail.hidden);
+            if(detail){detail.hidden=true;detail.replaceChildren();}
+            if(grid)grid.hidden=false;
         }
         function checkLiveEventsBanner() {
             renderEventsDiscovery();

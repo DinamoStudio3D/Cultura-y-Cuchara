@@ -133,3 +133,20 @@
 #eventsBillboard .vb-has-banner .vb-poster{padding:0}
 #eventsBillboard .vb-has-banner .vb-poster img{object-fit:contain}
 @media(max-width:650px){#eventsBillboard .vb-has-banner{grid-template-columns:1fr}#eventsBillboard .vb-has-banner .vb-poster{height:auto;min-height:0;aspect-ratio:3/1}#eventsBillboard .vb-has-banner .vb-poster img{max-height:none;height:100%}#eventsBillboard .vb-has-banner .vb-copy{padding:16px 18px}#eventsBillboard .vb-has-banner .vb-event-title{font-size:20px}}
+
+/* Poster-led strip: the artwork is the entire event link. */
+#eventsBillboard{overflow:hidden;padding:28px 0 22px}
+#eventsBillboard .vb-shell{max-width:1280px}
+#eventsBillboard .vb-heading,#eventsBillboard .vb-footer{padding-left:24px;padding-right:24px}
+#eventsBillboard .vb-title{font-size:clamp(23px,3vw,32px)}
+#eventsBillboard .vb-stage{overflow:hidden;padding:12px 0 22px}
+#eventsBillboard .vb-track{--vb-width:280px;--vb-gap:22px;display:flex;gap:var(--vb-gap);padding-left:24px;transform:translateX(calc(var(--vb-index,0) * (var(--vb-width) + var(--vb-gap)) * -1));transition:transform .85s cubic-bezier(.22,.61,.36,1);will-change:transform}
+#eventsBillboard .vb-art{flex:0 0 var(--vb-width);width:var(--vb-width);height:374px;padding:0;border:0;border-radius:14px;overflow:hidden;background:#e7eef5;box-shadow:0 9px 20px #172d4520;transition:transform .3s;position:relative}
+#eventsBillboard .vb-art:hover{transform:translateY(-5px)}
+#eventsBillboard .vb-art img{display:block;width:100%;height:100%;object-fit:contain;background:#e7eef5}
+#eventsBillboard .vb-fallback{display:flex;align-items:center;justify-content:center;height:100%;padding:24px;color:#172d45;background:#e7eef5;font-size:24px}
+#eventsBillboard .vb-footer{padding-top:0}
+#eventsBillboard .vb-dots{max-width:45%;overflow:auto}
+@media(min-width:900px){#eventsBillboard .vb-track{padding-left:calc((100% - 280px)/2)}}
+@media(max-width:650px){#eventsBillboard .vb-track{--vb-width:72vw;--vb-gap:16px;padding-left:14vw}#eventsBillboard .vb-art{height:96vw;max-height:440px}#eventsBillboard .vb-title{font-size:23px}#eventsBillboard .vb-heading,#eventsBillboard .vb-footer{padding-left:18px;padding-right:18px}}
+@media(prefers-reduced-motion:reduce){#eventsBillboard .vb-track,#eventsBillboard .vb-art{transition:none}}
