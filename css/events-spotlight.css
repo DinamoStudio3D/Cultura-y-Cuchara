@@ -101,3 +101,7 @@ body #inicio #eventsBillboard{position:relative;padding:0;margin:16px 0 0;width:
 #eventsBillboard :is(a,button):focus-visible{outline:3px solid #f4c567;outline-offset:-4px}
 @media(max-width:760px){body #inicio #eventsBillboard{margin:14px 0 0;max-width:none}#eventsBillboard .vb-stage{border-color:#c9d8e6;border-radius:12px}#eventsBillboard .vb-fallback{font-size:16px}}
 @media(prefers-reduced-motion:reduce){#eventsBillboard .vb-art{transition:none}}
+
+/* Override inherited hero opacity rules for the crossfade itself. */
+body #inicio.vl-welcome .vl-welcome-copy #eventsBillboard .vb-art{opacity:0!important}
+body #inicio.vl-welcome .vl-welcome-copy #eventsBillboard .vb-art[aria-current=true]{opacity:1!important}
