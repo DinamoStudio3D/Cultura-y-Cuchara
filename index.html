@@ -441,6 +441,7 @@
 <link rel="stylesheet" href="css/business-card.css?v=actions-3-104">
 <script src="js/place-video.js?v=1"></script><link rel="stylesheet" href="css/place-video.css?v=2">
 <script src="/js/plan-offer.js?v=1"></script>
+<link rel="stylesheet" href="css/events-spotlight.css?v=1">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -895,6 +896,8 @@
         </div>
       </div>
     </section>
+<section id="eventsSpotlight" data-vl-surface="light" aria-labelledby="eventsSpotlightTitle" hidden></section>
+
 <script id="vl-visible-photo-carousel-script">
 (()=>{'use strict';const init=()=>{const root=document.querySelector('#inicio'),layer=root?.querySelector('.vl-visible-photo-carousel'),counter=root?.querySelector('#vl-photo-counter'),credit=root?.querySelector('.vl-photo-credit');if(!layer)return;let index=0;const fallback=[...layer.querySelectorAll('img')].map(img=>img.getAttribute('src'));let urls=fallback,focusApplied=false;const show=()=>{const images=[...layer.querySelectorAll('img')];images.forEach((img,i)=>img.classList.toggle('is-current',i===index));if(counter)counter.textContent=String(index+1).padStart(2,'0')+' / '+String(images.length).padStart(2,'0');if(credit){const original=document.querySelectorAll('#heroSlidesContainer img.hero-slide')[index];const match=original?.alt?.match(/(?:por|Fotografía:)\s+(.+)$/i);credit.textContent='Foto: '+(match?.[1]||'Geovanny Muñoz')}};const sync=()=>{const originals=[...document.querySelectorAll('#heroSlidesContainer img.hero-slide')];const next=originals.map(img=>img.getAttribute('src')||img.src).filter(Boolean);if(!next.length){if(layer.hidden){urls=[];layer.replaceChildren()}return}const focusId=new URLSearchParams(location.search).get('foto');const focused=originals.findIndex(img=>img.dataset.photoId===focusId);if(!focusApplied&&focused>=0){index=focused;focusApplied=true}if(next.join('|')===urls.join('|')){show();return;}urls=next;layer.replaceChildren(...urls.map(src=>{const img=document.createElement('img');img.src=src;img.alt='';img.addEventListener('error',()=>{img.src='/assets/photos/centro-loja-torre-reloj.webp'},{once:true});return img}));index=Math.min(index,urls.length-1);show()};const step=n=>{sync();const count=layer.querySelectorAll('img').length;if(!count)return;index=(index+n+count)%count;show()};root.querySelector('#vl-photo-prev')?.addEventListener('click',()=>step(-1));root.querySelector('#vl-photo-next')?.addEventListener('click',()=>step(1));show();let timer;const configure=()=>{const s=window.__vlHeroCarouselSettings||{};const seconds=Math.max(2,Math.min(60,Number(s.interval)||6));const position=matchMedia('(max-width:800px)').matches&&s.mobilePosition&&s.mobilePosition!=='same'?s.mobilePosition:(s.position||'50% 50%');layer.style.setProperty('--vl-carousel-position',position);clearInterval(timer);timer=setInterval(()=>{sync();if(!document.hidden&&!matchMedia('(prefers-reduced-motion: reduce)').matches)step(1)},seconds*1000);sync()};window.addEventListener('vl-hero-settings-updated',configure);window.addEventListener('vl-photo-library-updated',()=>{sync();show()});configure();setInterval(sync,4000)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init()})();
 </script>
@@ -5023,6 +5026,18 @@
             }
         }, 60 * 1000);
         function checkLiveEventsBanner() {
+            window.VisitaLojaEventsSpotlight?.render(typeof eventsList==='undefined'?[]:eventsList,{
+                lang:currentLang,
+                open:event=>{
+                    const items=upcomingSortedEvents().slice(0,15);
+                    const index=items.findIndex(item=>item===event||item.id===event.id);
+                    if(index<0)return;
+                    openUpcomingEventsModal();
+                    upcomingEventModalIndex=index;
+                    renderUpcomingEventModal();
+                },
+                map:event=>focusEventOnMap(Number(event.lat),Number(event.lng),(currentLang==='en'&&event.titleEn)||event.title||'',event.date||'',event.location||'',event.type||'')
+            });
             const banner = document.getElementById('liveEventBanner');
             const textEl = document.getElementById('liveEventText');
             const btnEl = document.getElementById('liveEventBtn');
@@ -8987,5 +9002,6 @@ function vl29ToggleMenu(button){var wasOpen=button.getAttribute('aria-expanded')
 document.addEventListener('click',function(e){if(e.target.closest('.vl29-dropdown a'))vl29CloseMenus();else if(!e.target.closest('.vl29-nav-group'))vl29CloseMenus();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMenus();});
 </script>
+<script src="js/events-spotlight.js?v=1"></script>
 </body>
 </html>
