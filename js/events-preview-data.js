@@ -1,0 +1,6 @@
+(function(root){'use strict';
+const dates=[1,3,5,7].map(days=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Guayaquil',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(Date.now()+days*86400000)));
+const examples=[{id:'demo-music',title:'Una noche para sentir la música',type:'Música',date:dates[0],time:'19:30',location:'Centro histórico de Loja',desc:'Voces, instrumentos y una ciudad que se encuentra al caer la tarde. Descubre los detalles del evento y organiza tu próxima salida.',img:'assets/events-preview/music.svg',bannerImg:'assets/events-preview/music-banner.svg',lat:-3.9931,lng:-79.2042},{id:'demo-theater',title:'Historias que toman el escenario',type:'Teatro',date:dates[1],time:'18:00',location:'Teatro de Loja',img:'assets/events-preview/theater.svg',bannerImg:'assets/events-preview/theater-banner.svg'},{id:'demo-food',title:'Un encuentro con los sabores lojanos',type:'Gastronomía',date:dates[2],time:'12:00',location:'Plaza de San Sebastián',img:'assets/events-preview/food.svg',bannerImg:'assets/events-preview/food-banner.svg'},{id:'demo-culture',title:'Arte para vivir la ciudad',type:'Cultura',date:dates[3],time:'17:00',location:'Centro de Loja',img:'assets/events-preview/culture.svg',bannerImg:'assets/events-preview/culture-banner.svg'}];
+
+root.VisitaLojaEventDesignExamples=examples;
+})(window);

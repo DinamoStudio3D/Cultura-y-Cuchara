@@ -20,11 +20,11 @@
     const upload = existingButton ? $(existingButton) : document.createElement('button');
     const notice = existingStatus ? $(existingStatus) : document.createElement('p');
     const stop = document.createElement('button'), image = document.createElement('img');
-    const hint = group === 'events' ? 'JPG, PNG o WebP · máximo 5 MB. Guarda el evento para publicar el afiche.' : id === 'qrBusinessLogoUpload' ? 'Logo JPG, PNG o WebP · máximo 20 MB. Activa el beneficio correspondiente y guarda el QR.' : group === 'qr' ? 'Menú JPG, PNG o WebP · máximo 20 MB. Guarda el QR para publicar el menú.' : 'JPG, PNG o WebP · máximo 20 MB. Guardar punto publica la fotografía.';
+    const hint = id === 'eventBanner' ? 'Banner horizontal JPG, PNG o WebP · máximo 5 MB. Guarda el evento para publicarlo en la cartelera.' : group === 'events' ? 'JPG, PNG o WebP · máximo 5 MB. Guarda el evento para publicar el afiche.' : id === 'qrBusinessLogoUpload' ? 'Logo JPG, PNG o WebP · máximo 20 MB. Activa el beneficio correspondiente y guarda el QR.' : group === 'qr' ? 'Menú JPG, PNG o WebP · máximo 20 MB. Guarda el QR para publicar el menú.' : 'JPG, PNG o WebP · máximo 20 MB. Guardar punto publica la fotografía.';
     if (!existingFile) {
       file.type = 'file'; file.id = id+'File'; file.accept = 'image/jpeg,image/png,image/webp'; file.className = 'field';
-      file.setAttribute('aria-label', id === 'qrBusinessLogoUpload' ? 'Seleccionar logo del negocio' : id === 'qrMenuImageUpload' ? 'Seleccionar imagen del menú' : 'Elegir '+(id === 'timePast' ? 'fotografía antigua' : 'fotografía actual'));
-      upload.type = 'button'; upload.id = id+'Upload'; upload.textContent = id === 'qrBusinessLogoUpload' ? 'Subir logo del negocio' : id === 'qrMenuImageUpload' ? 'Subir imagen del menú' : 'Subir fotografía';
+      file.setAttribute('aria-label', id === 'eventBanner' ? 'Seleccionar banner horizontal del evento' : id === 'qrBusinessLogoUpload' ? 'Seleccionar logo del negocio' : id === 'qrMenuImageUpload' ? 'Seleccionar imagen del menú' : 'Elegir '+(id === 'timePast' ? 'fotografía antigua' : 'fotografía actual'));
+      upload.type = 'button'; upload.id = id+'Upload'; upload.textContent = id === 'eventBanner' ? 'Subir banner de portada' : id === 'qrBusinessLogoUpload' ? 'Subir logo del negocio' : id === 'qrMenuImageUpload' ? 'Subir imagen del menú' : 'Subir fotografía';
       upload.className = 'rounded-lg bg-sky-400 text-black font-black px-4 py-2 disabled:opacity-50';
       notice.id = id+'Status'; notice.textContent = hint;
       box.append(file, upload);
@@ -98,6 +98,7 @@
     mount({id:'timePresent',fieldId:'timeImagePresent',formId:'timeForm',group:'time',endpoint:'/api/sign-time-image'});
     mount({id:'qrMenuImageUpload',fieldId:'qrMenuImageUrl',formId:'qrForm',group:'qr',endpoint:'/api/sign-menu-image'});
     mount({id:'qrBusinessLogoUpload',fieldId:'qrMenuBusinessLogo',formId:'qrForm',group:'qr',endpoint:'/api/sign-menu-image'});
+    mount({id:'eventBanner',fieldId:'generalEventBanner',formId:'generalEventForm',group:'events',endpoint:'/api/sign-event-image'});
     mount({id:'eventPoster',fieldId:'generalEventImage',formId:'generalEventForm',group:'events',endpoint:'/api/sign-event-image',existingFile:'generalEventImageFile',existingButton:'generalEventUploadBtn',existingStatus:'generalEventUploadStatus'});
   }
   root.VisitaLojaAdminImages = {cancel, refresh, uploadEvent: () => controls.get('eventPoster')?.start(), uploadQrMenu: () => controls.get('qrMenuImageUpload')?.start()};

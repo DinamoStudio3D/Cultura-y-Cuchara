@@ -1,0 +1,107 @@
+/* All colors join the existing first-layer contract so nested controls stay legible. */
+@layer vl-colors {
+ #eventsSpotlight{--vl-text:#172d45;--vl-muted:#4d6075;--vl-accent:#075bb2;background:#f5f8fc!important;color:#172d45!important}
+ #eventsSpotlight .ve-feature{--vl-text:#172d45;--vl-muted:#4d6075;--vl-accent:#075bb2;background:#fff!important}
+ #eventsSpotlight .ve-small{--vl-text:#172d45;--vl-muted:#4d6075;--vl-accent:#075bb2;background:#fff!important}
+ #eventsSpotlight .ve-primary{--vl-text:#fff;--vl-muted:#fff;background:var(--vl-action,#075bb2)!important;color:#fff!important}
+ #eventsSpotlight .ve-secondary{--vl-text:#075bb2;background:transparent!important;color:#075bb2!important}
+ #eventsSpotlight .ve-all,#eventsSpotlight .ve-text-button{--vl-text:#075bb2;color:#075bb2!important}
+ #eventsSpotlight .ve-poster-empty{--vl-text:#173c62;background:#e8f0f8!important;color:#173c62!important}
+ #eventsSpotlight .ve-next{--vl-text:#075bb2;color:#075bb2!important}
+}
+#eventsSpotlight[hidden]{display:none!important}
+#eventsSpotlight{padding:56px 24px 64px;scroll-margin-top:100px}
+#eventsSpotlight .ve-shell{max-width:1280px;margin:auto}
+#eventsSpotlight .ve-heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:28px}
+#eventsSpotlight .ve-eyebrow{font-size:11px!important;font-weight:850!important;letter-spacing:.18em;margin-bottom:12px}
+#eventsSpotlight .ve-title{font-family:inherit;font-weight:850;font-size:clamp(30px,3.6vw,48px);letter-spacing:-.045em;line-height:1.12;margin:0 0 12px}
+#eventsSpotlight .ve-intro{font-size:15px;line-height:1.6;margin:0}
+#eventsSpotlight .ve-all{flex-shrink:0;display:inline-flex;align-items:center;border:1px solid #c4d2e1;border-radius:999px;padding:13px 19px;font-size:13px;font-weight:800;text-decoration:none;background:#fff}
+#eventsSpotlight .ve-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr);gap:26px;align-items:start}
+#eventsSpotlight .ve-layout.ve-single{grid-template-columns:minmax(0,920px)}
+#eventsSpotlight .ve-feature{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);min-width:0;overflow:hidden;border-radius:24px;box-shadow:0 14px 36px #17324f10;min-height:410px}
+#eventsSpotlight .ve-poster{position:relative;overflow:hidden;background:#e8eff5;min-width:0}
+#eventsSpotlight .ve-poster img{display:block;width:100%;height:100%;object-fit:contain;max-height:460px}
+#eventsSpotlight .ve-poster-featured{display:flex;align-items:center;justify-content:center;padding:14px}
+#eventsSpotlight .ve-feature-copy{padding:30px 26px;display:flex;flex-direction:column;align-items:start;justify-content:center;min-width:0}
+#eventsSpotlight .ve-next{font-size:10px;font-weight:850;letter-spacing:.13em;margin-bottom:24px}
+#eventsSpotlight .ve-date{font-size:12px;font-weight:800;line-height:1.5;margin:0 0 10px;text-transform:capitalize}
+#eventsSpotlight .ve-feature-title{font-size:clamp(24px,2.3vw,34px);font-weight:850;letter-spacing:-.035em;line-height:1.14;margin:0 0 16px;overflow-wrap:anywhere}
+#eventsSpotlight .ve-place{font-size:13px;line-height:1.5;margin:0 0 16px}
+#eventsSpotlight .ve-description{font-size:13px;line-height:1.7;margin:0 0 22px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+#eventsSpotlight .ve-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+#eventsSpotlight button{cursor:pointer;font-family:inherit}
+#eventsSpotlight .ve-primary,#eventsSpotlight .ve-secondary{min-height:44px;border-radius:10px;padding:11px 14px;font-size:12px;font-weight:850;line-height:1.5}
+#eventsSpotlight .ve-secondary{border:1px solid #a0b8d0}
+#eventsSpotlight .ve-more-title{font-size:13px;font-weight:850;margin:0 0 14px}
+#eventsSpotlight .ve-upcoming{display:grid;gap:12px}
+#eventsSpotlight .ve-small{display:grid;grid-template-columns:90px minmax(0,1fr);border:1px solid #d9e3ee;border-radius:16px;overflow:hidden;min-width:0;min-height:116px}
+#eventsSpotlight .ve-small .ve-poster{padding:8px;display:flex;align-items:center}
+#eventsSpotlight .ve-small .ve-poster img{max-height:125px}
+#eventsSpotlight .ve-small-copy{padding:15px;min-width:0}
+#eventsSpotlight .ve-small h4{font-size:15px;font-weight:850;line-height:1.3;margin:0 0 6px;overflow-wrap:anywhere}
+#eventsSpotlight .ve-small .ve-date{font-size:10px;margin-bottom:6px}
+#eventsSpotlight .ve-small .ve-place{font-size:11px;margin-bottom:4px}
+#eventsSpotlight .ve-text-button{border:0;background:transparent;padding:7px 0;min-height:36px;font-size:11px;font-weight:850;text-align:left}
+#eventsSpotlight .ve-poster-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:18px}
+#eventsSpotlight .ve-poster-empty strong{font-size:64px;font-weight:850;line-height:1}
+#eventsSpotlight .ve-poster-empty span{font-size:12px;font-weight:750}
+#eventsSpotlight .ve-small .ve-poster-empty strong{font-size:32px}
+#eventsSpotlight .ve-small .ve-poster-empty span{font-size:9px}
+#eventsSpotlight :is(a,button):focus-visible{outline:3px solid #dd960b;outline-offset:4px}
+/* The old banner stays mounted for compatibility with its existing modal controls. */
+#liveEventBanner{display:none!important}
+.vl-highlights>div:has(#latestVideoBanner){grid-template-columns:1fr!important;max-width:1280px}
+@media(max-width:1050px){#eventsSpotlight .ve-layout{grid-template-columns:1fr}#eventsSpotlight .ve-upcoming{grid-template-columns:repeat(3,minmax(0,1fr))}#eventsSpotlight .ve-small{grid-template-columns:1fr}#eventsSpotlight .ve-small .ve-poster{height:170px;justify-content:center}#eventsSpotlight .ve-small .ve-poster img{max-height:154px}}
+@media(max-width:650px){#eventsSpotlight{padding:34px 18px 40px}#eventsSpotlight .ve-heading{align-items:start;flex-direction:column;gap:18px}#eventsSpotlight .ve-title{font-size:32px}#eventsSpotlight .ve-intro{font-size:14px}#eventsSpotlight .ve-feature{grid-template-columns:1fr;min-height:0}#eventsSpotlight .ve-poster-featured{height:320px}#eventsSpotlight .ve-poster img{max-height:100%}#eventsSpotlight .ve-feature-copy{padding:25px}#eventsSpotlight .ve-next{margin-bottom:16px}#eventsSpotlight .ve-feature-title{font-size:28px}#eventsSpotlight .ve-upcoming{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding-bottom:12px}#eventsSpotlight .ve-small{flex:0 0 78%;scroll-snap-align:start}#eventsSpotlight .ve-all{min-height:44px}#eventsSpotlight .ve-small-copy{padding:18px}#eventsSpotlight .ve-small h4{font-size:18px}}
+
+/* Detailed events share the existing agenda instead of repeating its listing. */
+#agendaGridContainer[hidden]{display:none!important}
+#agenda #eventsSpotlight{padding:0;background:transparent!important}
+#eventsSpotlight .ve-layout{display:block}
+#eventsSpotlight .ve-feature{grid-template-columns:minmax(180px,.8fr) minmax(0,1.7fr);min-height:0;border:1px solid #d8e3ee;border-radius:20px;box-shadow:0 8px 24px #17324f0b}
+#eventsSpotlight .ve-poster-featured{height:310px}
+#eventsSpotlight .ve-feature-title{font-size:30px}
+#eventsSpotlight .ve-more{margin-top:24px}
+#eventsSpotlight .ve-upcoming{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+#eventsSpotlight .ve-small{grid-template-columns:100px minmax(0,1fr)}
+#eventsSpotlight .ve-small .ve-poster{height:auto}
+#eventsSpotlight .ve-small .ve-poster img{max-height:150px}
+@media(max-width:900px){#eventsSpotlight .ve-upcoming{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){#eventsSpotlight .ve-feature{grid-template-columns:1fr}#eventsSpotlight .ve-poster-featured{height:300px}#eventsSpotlight .ve-upcoming{display:grid;grid-template-columns:1fr;overflow:visible;padding-bottom:0}#eventsSpotlight .ve-small{grid-template-columns:95px minmax(0,1fr)}#eventsSpotlight .ve-small-copy{padding:18px}}
+
+
+/* One horizontal event banner, integrated immediately after the hero search. */
+@layer vl-colors{
+ body #inicio #eventsBillboard{background:transparent!important;--vl-text:#fff;--vl-muted:#fff}
+ body #inicio #eventsBillboard .vb-art{background:#082b50!important;color:#fff!important}
+ body #inicio #eventsBillboard :is(.vb-arrow,.vb-pause,.vb-counter){background:#082b50!important;color:#fff!important;--vl-text:#fff;--vl-muted:#fff}
+ body #inicio #eventsBillboard .vb-dot{background:#a5b8ca!important;border-color:transparent!important}
+ body #inicio #eventsBillboard .vb-dot[aria-current=true]{background:#fff!important}
+}
+#eventsBillboard[hidden]{display:none!important}
+body #inicio #eventsBillboard{position:relative;padding:0;margin:16px 0 0;width:100%;max-width:660px;min-width:0;scroll-margin-top:120px}
+#eventsBillboard .vb-shell{position:relative}
+#eventsBillboard .vb-heading{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#eventsBillboard .vb-stage{position:relative;overflow:hidden;aspect-ratio:3/1;border-radius:14px;border:1px solid #ffffff45;box-shadow:0 8px 22px #00152b25;touch-action:pan-y}
+#eventsBillboard .vb-track{position:absolute;inset:0}
+#eventsBillboard .vb-art{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .8s ease,visibility .8s;cursor:pointer;overflow:hidden}
+#eventsBillboard .vb-art[aria-current=true]{opacity:1;visibility:visible;pointer-events:auto;z-index:1}
+#eventsBillboard .vb-art img{display:block;width:100%;height:100%;object-fit:contain}
+#eventsBillboard .vb-fallback{display:flex;height:100%;align-items:center;justify-content:center;padding:24px;font-size:22px}
+#eventsBillboard .vb-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0 0}
+#eventsBillboard .vb-footer[hidden]{display:none}
+#eventsBillboard .vb-dots,#eventsBillboard .vb-controls{display:flex;align-items:center;gap:4px}
+#eventsBillboard .vb-dots{max-width:42%;overflow:auto}
+#eventsBillboard button{font-family:inherit}
+#eventsBillboard .vb-dot{width:24px;height:24px;border:7px solid transparent;border-radius:50%;padding:0;background-clip:padding-box!important;flex-shrink:0;cursor:pointer}
+#eventsBillboard .vb-arrow{width:32px;height:32px;border:1px solid #b4c6d8;border-radius:50%;font-size:17px;cursor:pointer}
+#eventsBillboard .vb-counter{font-size:10px;padding:4px 7px;border-radius:12px}
+#eventsBillboard .vb-pause{font-size:10px;min-height:32px;padding:5px 9px;border:1px solid #b4c6d8;border-radius:18px;cursor:pointer}
+#eventsBillboard :is(a,button):focus-visible{outline:3px solid #f4c567;outline-offset:-4px}
+@media(max-width:760px){body #inicio #eventsBillboard{margin:14px 0 0;max-width:none}#eventsBillboard .vb-stage{border-color:#c9d8e6;border-radius:12px}#eventsBillboard .vb-fallback{font-size:16px}}
+@media(prefers-reduced-motion:reduce){#eventsBillboard .vb-art{transition:none}}
+
+/* Override inherited hero opacity rules for the crossfade itself. */
+body #inicio.vl-welcome .vl-welcome-copy #eventsBillboard .vb-art{opacity:0!important}
+body #inicio.vl-welcome .vl-welcome-copy #eventsBillboard .vb-art[aria-current=true]{opacity:1!important}

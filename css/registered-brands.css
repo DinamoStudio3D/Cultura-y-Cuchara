@@ -1,0 +1,44 @@
+@layer vl-colors{
+#registeredBrands{background:#f8fafc!important;--vl-text:#17324f;--vl-muted:#4d6075}
+#registeredBrands :is(.vr-title,.vr-name){color:#17324f!important}
+#registeredBrands .vr-brand{background:#fff!important;color:#17324f!important}
+}
+#registeredBrands[hidden]{display:none!important}
+#registeredBrands{padding:24px 0 28px;overflow:hidden;border-bottom:1px solid #dce6ef}
+#registeredBrands .vr-title{margin:0 18px 18px;text-align:center;font-size:clamp(14px,2vw,18px);font-weight:750}
+#registeredBrands .vr-viewport{overflow:hidden}
+#registeredBrands .vr-track{display:flex;width:max-content;animation:vr-travel var(--vr-duration,35s) linear infinite}
+#registeredBrands .vr-group{display:flex;align-items:center;gap:18px;padding-right:18px;min-width:100vw;justify-content:space-around}
+#registeredBrands .vr-brand{display:flex;align-items:center;justify-content:center;flex:0 0 154px;width:154px;height:82px;padding:13px 18px;border:1px solid #dce6ef;border-radius:12px;cursor:pointer}
+#registeredBrands .vr-logo{display:block;max-width:100%;max-height:100%;object-fit:contain}
+#registeredBrands .vr-name{font-family:inherit;font-size:14px;font-weight:750;line-height:1.3;text-align:center}
+#registeredBrands .vr-viewport:hover .vr-track,#registeredBrands .vr-viewport:focus-within .vr-track{animation-play-state:paused}
+#registeredBrands .vr-brand:focus-visible{outline:3px solid #075bb2;outline-offset:-3px}
+@keyframes vr-travel{to{transform:translateX(-50%)}}
+@media(max-width:650px){#registeredBrands{padding:20px 0}#registeredBrands .vr-brand{flex-basis:130px;width:130px;height:72px}#registeredBrands .vr-group{gap:12px;padding-right:12px}}
+@media(prefers-reduced-motion:reduce){#registeredBrands .vr-track{animation:none;width:100%}#registeredBrands .vr-group{min-width:0;flex-wrap:wrap;padding:0 16px;width:100%}#registeredBrands .vr-group[aria-hidden=true]{display:none}}
+
+#registeredBrands .vr-brand{flex-direction:column;gap:6px}
+#registeredBrands .vr-brand:has(.vr-name) .vr-logo{max-height:60%}
+#registeredBrands[data-size=small] .vr-brand{width:120px;flex-basis:120px;height:68px}
+#registeredBrands[data-size=large] .vr-brand{width:190px;flex-basis:190px;height:112px}
+#registeredBrands[data-direction=right] .vr-track{animation-direction:reverse}
+#registeredBrands[data-pause=false] .vr-viewport:hover .vr-track{animation-play-state:running}
+#registeredBrands .vr-viewport:focus-within .vr-track,#registeredBrands[data-stopped=true] .vr-track{animation-play-state:paused!important}
+#registeredBrands[data-motion=false] .vr-track{animation:none;width:100%}
+#registeredBrands[data-motion=false] .vr-group{min-width:0;flex-wrap:wrap;width:100%;padding:0 16px;justify-content:center}
+#registeredBrands .vr-pause{display:block;margin:12px auto 0;padding:7px 13px;border:1px solid #9aafc3;border-radius:18px;background:#fff;color:#17324f;font-family:inherit;font-size:12px;font-weight:600;line-height:1.4;cursor:pointer}
+@layer vl-colors{#registeredBrands .vr-pause{color:#17324f!important;background:#fff!important}}
+
+#registeredBrands .vr-title{margin-bottom:8px}
+#registeredBrands .vr-subtitle{max-width:650px;margin:0 auto 20px;padding:0 18px;text-align:center;font-size:14px;line-height:1.55;color:#4d6075}
+@layer vl-colors{#registeredBrands .vr-subtitle{color:#4d6075!important}}
+
+#registeredBrands a.vr-brand{text-decoration:none}
+
+/* Institutional logo uses its own high-contrast brand surface. */
+@layer vl-colors{
+#registeredBrands .vr-brand[data-institution=mesa]{background:#123b66!important;color:#fff!important;--vl-text:#fff;--vl-muted:#fff;border-color:#123b66!important}
+#registeredBrands .vr-brand[data-institution=mesa] .vr-name{color:#fff!important}
+}
+#registeredBrands .vr-brand[data-institution=mesa] .vr-logo{background:transparent!important;max-width:100%;object-fit:contain}
