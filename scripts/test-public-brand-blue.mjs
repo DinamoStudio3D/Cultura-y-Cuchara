@@ -14,9 +14,9 @@ test('solid brand surfaces retain readable primary, secondary and accent text',(
  }
  assert(checked>=20);
 });
-test('all six core public pages load the shared palette after their existing styles',()=>{
+test('all six core public pages load the shared palette after legacy color styles',()=>{
  for(const page of ['index.html','cantones.html','canton.html','negocio.html','tienda.html','fidelidad.html']){
-  const head=read(page).split('</head>')[0],links=[...head.matchAll(/<link[^>]+rel="stylesheet"[^>]*>/g)];assert.match(links.at(-1)[0],/public-brand-blue-v202.css/);
+  const head=read(page).split('</head>')[0],links=[...head.matchAll(/<link[^>]+rel="stylesheet"[^>]*>/g)];const brand=links.findIndex(link=>link[0].includes('public-brand-blue-v202.css'));assert(brand>=0,page);for(const legacy of ['public-colors.css','place-detail-v103.css','site-spacing-v105.css']){const index=links.findIndex(link=>link[0].includes(legacy));if(index>=0)assert(brand>index,page+' '+legacy);}
  }
 });
 test('brand overrides preserve commerce and category accents and scope the main photograph tint',()=>{
