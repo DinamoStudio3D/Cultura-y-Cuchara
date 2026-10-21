@@ -1,19 +1,19 @@
 "use strict";
 const PROJECT_ID="cultura-y-cuchara";
 const BASE="https://www.visitaloja.com";
-const CATEGORY_PATHS={"hoteles-en-loja":["hotel","hoteles","hostal","hostales","hospedaje","alojamiento","alojamientos"],"restaurantes-en-loja":["restaurante","restaurantes","restaurant","comida tipica","gastronomia","picanteria","hueca","asadero","cevicheria"],"cafeterias-en-loja":["cafeteria","cafeterias","cafe","coffee shop"],"que-hacer-en-loja":["turismo","atractivo turistico","atractivos turisticos","experiencia turistica","experiencias turisticas","lugar turistico","sitio turistico","atractivo","naturaleza","cultura","aventura","destino turistico"]};
+const CATEGORY_PATHS=Object.fromEntries(Object.entries(require("./categoria-seo.js")._test.CONFIG).map(([path,config])=>[path,config.categories]));
 const normalize=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const STATIC_PATHS=["/","/aliados.html","/mesa-turistica.html","/planes.html","/sumar-negocio.html","/cantones.html"];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[c]));
 const slug=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-function value(v){if(!v)return"";if("stringValue"in v)return v.stringValue;if("booleanValue"in v)return v.booleanValue;if("integerValue"in v)return Number(v.integerValue);if("timestampValue"in v)return v.timestampValue;return""}
+function value(v){if(!v)return"";if("stringValue"in v)return v.stringValue;if("booleanValue"in v)return v.booleanValue;if("integerValue"in v)return Number(v.integerValue);if("timestampValue"in v)return v.timestampValue;if("arrayValue"in v)return(v.arrayValue.values||[]).map(value);return""}
 async function locales(fetchImpl){
  const out=[];let token="";
  do{
   const u=new URL(`https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/locales`);
   u.searchParams.set("pageSize","300");if(token)u.searchParams.set("pageToken",token);
   const r=await fetchImpl(u);if(!r.ok)throw new Error(`Firestore ${r.status}`);
-  const j=await r.json();for(const d of j.documents||[]){const f=d.fields||{},statuses=[value(f.publicationStatus),value(f.status)].filter(v=>v!==undefined&&v!==null&&String(v).trim()!=="").map(v=>String(v).toLowerCase());if(statuses.some(v=>!["published","active"].includes(v)))continue;const id=decodeURIComponent(d.name.split("/").pop()),s=slug(value(f.slug)||value(f.title)||id);if(s)out.push({slug:s,cantonId:require("../js/canton-content.js").cantonId({cantonId:value(f.cantonId)}),cantonPublic:require("../js/canton-content.js").publicPlace({cantonId:value(f.cantonId),active:value(f.active),publicationStatus:value(f.publicationStatus),category:value(f.category),tag:value(f.tag),title:value(f.title),type:value(f.type)},require("../js/canton-content.js").cantonId({cantonId:value(f.cantonId)})),updated:value(f.updatedAt)||value(f.publishedAt)||"",category:[value(f.category),value(f.categoria),value(f.type),value(f.tipo)].map(normalize)})}token=j.nextPageToken||"";
+  const j=await r.json();for(const d of j.documents||[]){const f=d.fields||{},statuses=[value(f.publicationStatus),value(f.status)].filter(v=>v!==undefined&&v!==null&&String(v).trim()!=="").map(v=>String(v).toLowerCase());if(statuses.some(v=>!["published","active"].includes(v)))continue;const data=Object.fromEntries(Object.entries(f).map(([k,v])=>[k,value(v)]));if(!require("./categoria-seo.js")._test.published(data))continue;const id=decodeURIComponent(d.name.split("/").pop()),s=slug(value(f.slug)||value(f.title)||id);if(s)out.push({slug:s,cantonId:require("../js/canton-content.js").cantonId({cantonId:value(f.cantonId)}),cantonPublic:require("../js/canton-content.js").publicPlace({cantonId:value(f.cantonId),active:value(f.active),publicationStatus:value(f.publicationStatus),category:value(f.category),tag:value(f.tag),title:value(f.title),type:value(f.type)},require("../js/canton-content.js").cantonId({cantonId:value(f.cantonId)})),updated:value(f.updatedAt)||value(f.publishedAt)||"",category:[value(f.category),value(f.categoria),value(f.type),value(f.tipo)].flat().map(normalize)})}token=j.nextPageToken||"";
  }while(token);return out
 }
 module.exports=async function handler(req,res){
