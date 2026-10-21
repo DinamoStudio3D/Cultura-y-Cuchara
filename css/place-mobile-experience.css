@@ -12,3 +12,4 @@
 }
 
 @media(min-width:1024px){.place-detail-page #content>section.grid{grid-template-areas:"story information" "story extras";grid-template-rows:min-content 1fr;align-items:start}.place-detail-page #content>section.grid>div{grid-area:story}.place-detail-page #placeInfo{grid-area:information}.place-detail-page #content>section.grid>aside{grid-area:extras}}
+@layer vl-colors{.place-detail-page dialog#lightbox{--vl-text:#fff;--vl-muted:#e0eaf5;--vl-accent:#c2e8ff;background:#0a223c!important;color:#fff!important}.place-detail-page dialog#lightbox::backdrop{background:#06182fed!important}}
