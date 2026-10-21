@@ -10,3 +10,5 @@
  .place-detail-page #placeHero .place-story-link{--vl-text:#e3f0ff;--vl-muted:#e3f0ff;--vl-accent:#e3f0ff;color:#e3f0ff!important;background:transparent!important}
  .place-detail-page #lightbox .place-gallery-navigation button{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;color:#fff!important;background:#173e65!important}
 }
+
+@media(min-width:1024px){.place-detail-page #content>section.grid{grid-template-areas:"story information" "story extras";grid-template-rows:min-content 1fr;align-items:start}.place-detail-page #content>section.grid>div{grid-area:story}.place-detail-page #placeInfo{grid-area:information}.place-detail-page #content>section.grid>aside{grid-area:extras}}
