@@ -48,6 +48,34 @@
     {
       "source": "/que-hacer-en-loja",
       "destination": "/api/categoria-seo?categoria=que-hacer-en-loja"
+    },
+    {
+      "source": "/huecas-en-loja",
+      "destination": "/api/categoria-seo?categoria=huecas-en-loja"
+    },
+    {
+      "source": "/panaderias-en-loja",
+      "destination": "/api/categoria-seo?categoria=panaderias-en-loja"
+    },
+    {
+      "source": "/heladerias-en-loja",
+      "destination": "/api/categoria-seo?categoria=heladerias-en-loja"
+    },
+    {
+      "source": "/bares-en-loja",
+      "destination": "/api/categoria-seo?categoria=bares-en-loja"
+    },
+    {
+      "source": "/entretenimiento-en-loja",
+      "destination": "/api/categoria-seo?categoria=entretenimiento-en-loja"
+    },
+    {
+      "source": "/artesanias-en-loja",
+      "destination": "/api/categoria-seo?categoria=artesanias-en-loja"
+    },
+    {
+      "source": "/marcas-aliadas-en-loja",
+      "destination": "/api/categoria-seo?categoria=marcas-aliadas-en-loja"
     }
   ]
 }
