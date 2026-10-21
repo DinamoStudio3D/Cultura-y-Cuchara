@@ -39,3 +39,4 @@ test('installed apps hide the action and ignore additional install offers', () =
     assert(app.classes.has('hidden'));
     app.events.get('appinstalled')(); assert(app.classes.has('hidden'));
 });
+test('callers can distinguish unsupported installation and consumed native choices',async()=>{const app=setup();assert.equal(await app.window.requestVisitaLojaInstall(),false);app.events.get('beforeinstallprompt')({preventDefault(){},async prompt(){},userChoice:Promise.resolve({outcome:'dismissed'})});assert.equal(await app.window.requestVisitaLojaInstall(),'dismissed');assert.equal(await app.window.requestVisitaLojaInstall(),false)});

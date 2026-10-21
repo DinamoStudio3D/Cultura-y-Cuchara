@@ -1831,61 +1831,13 @@
     </footer>
 
     <!-- Invitación discreta de Chabaquito para instalar la aplicación -->
-    <style id="vl-chabaquito-install-style">
-      #vl-chabaquito-install{position:fixed;right:clamp(12px,3vw,34px);bottom:clamp(14px,3vw,32px);z-index:2147482000;width:min(410px,calc(100vw - 24px));padding:18px;display:none;gap:14px;align-items:center;background:linear-gradient(135deg,#fff9dc 0%,#fff3dc 45%,#ffe8dd 100%)!important;color:#18332f!important;border:2px solid #f4b858;border-radius:23px;box-shadow:0 22px 70px #071e1b55,0 0 0 5px rgba(255,191,78,.16);text-align:left}
-      #vl-chabaquito-install.vl-install-visible{display:flex!important;animation:vl-install-enter .4s ease both}
-      #vl-chabaquito-install .vl-install-mascot{width:82px;height:112px;object-fit:contain;flex:none;align-self:end}
-      #vl-chabaquito-install .vl-install-content{min-width:0;flex:1}
-      #vl-chabaquito-install .vl-install-eyebrow{font-size:10px;font-weight:900;letter-spacing:.12em;color:#84571b!important}
-      #vl-chabaquito-install h3{font-size:19px!important;line-height:1.2!important;font-weight:900!important;color:#17342d!important;margin:5px 0 7px!important}
-      #vl-chabaquito-install p{font-size:13px!important;line-height:1.5!important;color:#3c514c!important;margin:0 0 12px!important}
-      #vl-chabaquito-install .vl-install-actions{display:flex;flex-wrap:wrap;gap:8px}
-      #vl-chabaquito-install .vl-install-action{background:#075a46!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;border:0;border-radius:12px;padding:11px 15px;font-size:13px;font-weight:800;cursor:pointer}
-      #vl-chabaquito-install .vl-install-later{background:#fff!important;color:#173d36!important;-webkit-text-fill-color:#173d36!important;border:1px solid #c5d2c8!important;border:0;border-radius:12px;padding:11px 12px;font-size:12px;font-weight:800;cursor:pointer}
-      #vl-chabaquito-install button:focus-visible{outline:3px solid #b37a2c;outline-offset:3px}
-      #vl-chabaquito-install .vl-install-close{position:absolute;right:10px;top:8px;border:0;background:transparent;color:#29433c;font-size:21px;cursor:pointer;padding:4px 9px}
-      #vl-chabaquito-install .vl-install-action *,#vl-chabaquito-install .vl-install-later *{color:inherit!important;-webkit-text-fill-color:inherit!important}\n      #vl-chabaquito-install .vl-install-action:hover{background:#08765b!important}\n      #vl-chabaquito-install .vl-install-eyebrow{color:#9b451a!important}\n      @keyframes vl-install-enter{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-      @media(max-width:540px){#vl-chabaquito-install{left:12px;right:12px;bottom:12px;width:auto;padding:15px;gap:10px}#vl-chabaquito-install .vl-install-mascot{width:70px;height:100px}#vl-chabaquito-install h3{font-size:17px!important}}
-      @media(prefers-reduced-motion:reduce){#vl-chabaquito-install.vl-install-visible{animation:none}}
-    </style>
+    <link rel="stylesheet" href="css/chabaquito-install.css?v=1">
     <aside id="vl-chabaquito-install" role="dialog" aria-label="Invitación de Chabaquito para instalar VisitaLoja" aria-modal="false">
       <button type="button" class="vl-install-close" id="vl-install-close" aria-label="Cerrar invitación">×</button>
       <img class="vl-install-mascot" src="mascota-vive-loja.png" alt="Chabaquito" loading="lazy" data-chabaquito-image="1">
-      <div class="vl-install-content"><span class="vl-install-eyebrow">TU COMPAÑERO DE AVENTURAS</span><h3>¡Hola, soy Chabaquito! 🐾</h3><p>¿Llevamos Loja contigo? Instala VisitaLoja y descubre lugares, sabores y rutas desde tu celular.</p><div class="vl-install-actions"><button type="button" class="vl-install-action" id="vl-install-accept">Instalar VisitaLoja ↗</button><button type="button" class="vl-install-later" id="vl-install-later">Ahora no</button></div></div>
+      <div class="vl-install-content"><span class="vl-install-eyebrow">TU COMPAÑERO DE AVENTURAS</span><h3>¡Hola, soy Chabaquito! 🐾</h3><p>¿Llevamos Loja contigo? Instala VisitaLoja y descubre lugares, sabores y rutas desde tu celular.</p><div class="vl-install-actions"><button type="button" class="vl-install-action" id="vl-install-accept">Instalar VisitaLoja ↗</button><button type="button" class="vl-install-later" id="vl-install-later">Ahora no</button></div><p id="vl-install-help" role="status" hidden></p></div>
     </aside>
-    <script>
-    (() => {
-      const panel=document.getElementById('vl-chabaquito-install');
-      const accept=document.getElementById('vl-install-accept');
-      if(!panel||!accept)return;
-      const key='vl-chabaquito-install-dismissed-v2';
-      const forcePreview=new URLSearchParams(location.search).has('probarInstalacion');
-      let deferredPrompt=null;
-      let knownInstalled=false;
-      const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
-      const dismissed=()=>{try{return localStorage.getItem(key)==='1'}catch(e){return false}};
-      const hide=(remember=true)=>{panel.classList.remove('vl-install-visible');if(remember){try{localStorage.setItem(key,'1')}catch(e){}}};
-      const show=()=>{if(!standalone()&&!knownInstalled&&(forcePreview||!dismissed()))panel.classList.add('vl-install-visible')};
-      document.getElementById('vl-install-close').addEventListener('click',()=>hide());
-      document.getElementById('vl-install-later').addEventListener('click',()=>hide());
-      window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
-      window.addEventListener('appinstalled',()=>{knownInstalled=true;hide()});
-      accept.addEventListener('click',async()=>{
-        if(deferredPrompt){const p=deferredPrompt;deferredPrompt=null;try{await p.prompt();const result=await p.userChoice;if(result&&result.outcome==='accepted'){knownInstalled=true;hide()}}catch(e){}return}
-        if(typeof window.requestVisitaLojaInstall==='function'){try{await window.requestVisitaLojaInstall()}catch(e){}}
-        else{accept.textContent=/iPad|iPhone|iPod/.test(navigator.userAgent)?'Compartir → Añadir a inicio':'Menú → Instalar aplicación'}
-      });
-      const initialize=async()=>{
-        if(standalone())return;
-        if('getInstalledRelatedApps' in navigator){
-          try{const apps=await Promise.race([navigator.getInstalledRelatedApps(),new Promise(resolve=>setTimeout(()=>resolve([]),1000))]);if(Array.isArray(apps)&&apps.some(app=>app.platform==='webapp' || app.platform==='play')){knownInstalled=true;return}}catch(e){}
-        }
-        setTimeout(show,3000);
-      };
-      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});
-      else initialize();
-    })();
-    </script>
+    <script src="js/chabaquito-install.js?v=1"></script>
     <!-- Mascota animada de Visita Loja -->
     <aside id="webMascot" class="web-mascot" aria-label="Mascota guía de Visita Loja">
         <button type="button" class="web-mascot-close" onclick="dismissWebMascot()" aria-label="Ocultar mascota" title="Ocultar mascota">
@@ -4471,14 +4423,15 @@
             console.warn('Map initialization:', e); 
         }
 
-        function isLocOpenNow(loc) {
-            if (loc.openHour === undefined || loc.closeHour === undefined) return true;
-            const currentHour = Number(new Intl.DateTimeFormat('en-US', {
-                timeZone: 'America/Guayaquil',
-                hour: '2-digit',
-                hour12: false
-            }).format(new Date())) % 24;
-            return currentHour >= loc.openHour && currentHour < loc.closeHour;
+        function isLocOpenNow(loc,now=new Date()) {
+            const schedule=[loc.hours,loc.hoursEn].join(' ').toLowerCase();
+            if(/\b24\s*(?:\/\s*7|horas?|hours?|h)\b/.test(schedule))return true;
+            if(loc.openHour===undefined||loc.closeHour===undefined)return true;
+            const start=Number(loc.openHour),end=Number(loc.closeHour);
+            if(!Number.isFinite(start)||!Number.isFinite(end)||start<0||start>24||end<0||end>24)return true;
+            const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Guayaquil',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(now);
+            const hour=(Number(parts.find(p=>p.type==='hour').value)%24)+Number(parts.find(p=>p.type==='minute').value)/60;
+            return start>end?hour>=start||hour<end:hour>=start&&hour<end;
         }
 
         (function() {
@@ -8830,7 +8783,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             });
         }
     </script>
-    <script src="js/app-install.js?v=55"></script>
+    <script src="js/app-install.js?v=56"></script>
     <audio id="welcomeMusic" preload="auto" aria-hidden="true"></audio>
     <button id="welcomeMusicToggle" type="button" class="hidden fixed right-3 top-24 sm:right-5 z-[68] w-10 h-10 rounded-full bg-black/70 hover:bg-black/85 text-white border border-white/20 shadow-lg backdrop-blur flex items-center justify-center transition" aria-label="Pausar música de bienvenida" title="Pausar música"><i class="fa-solid fa-volume-high"></i></button>
     <script src="js/audio-focus.js?v=188"></script>

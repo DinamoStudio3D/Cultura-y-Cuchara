@@ -7,16 +7,18 @@
     const installed = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
     const hide = () => { button?.classList.add('hidden'); if (button) button.disabled = false; };
     window.requestVisitaLojaInstall = async () => {
-        if (!pendingPrompt || busy || installed()) return;
+        if (!pendingPrompt || busy || installed()) return false;
         const prompt = pendingPrompt;
         pendingPrompt = null;
         busy = true;
         if (button) button.disabled = true;
         try {
             await prompt.prompt();
-            await prompt.userChoice;
+            const choice = await prompt.userChoice;
+            return choice?.outcome || 'dismissed';
         } catch (error) {
             console.warn('No se pudo abrir la instalación de Visita Loja:', error);
+            return false;
         } finally {
             busy = false;
             hide();
