@@ -326,7 +326,8 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=199">
+<link rel="stylesheet" href="css/public-layout.css?v=200">
+<link rel="stylesheet" href="css/business-cards.css?v=1">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
 <link rel="stylesheet" href="css/discovery-cards.css?v=105">
@@ -5306,7 +5307,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                                 ${cardDistHtml}
                             </div>
                             <p class="text-gray-600 text-xs sm:text-sm local-desc line-clamp-2">${locDesc}</p>
-                            <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
+                            <div class="vl-card-hours mt-3 text-[11px] text-gray-500 flex items-center gap-1.5">
                                 <i class="fa-solid fa-clock text-brandGold"></i> <span>${escapeHTML(loc.hours || (currentLang==='en'?'Hours to be confirmed':'Horario por confirmar'))}</span>
                             </div>
                             <div class="vl18-tools">
@@ -5323,7 +5324,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         </button>
                             </div>
                             ${hasFeaturedVideo?`<button type="button" class="vl-video-highlight" onclick="event.stopPropagation();openBusinessVideo(decodeURIComponent('${actionId}'))" aria-label="${currentLang==='en'?'Watch video of ':'Ver vídeo de '}${locTitle}"><i class="fa-solid fa-circle-play" aria-hidden="true"></i>${currentLang==='en'?'Meet this place on video':'Conoce este lugar en vídeo'}</button>`:''}
-                            <div class="vl-card-explore"><span>Ver detalles del lugar</span><span class="vl-card-explore-icon"><i class="fa-solid fa-arrow-right"></i></span></div>
+                            <button type="button" class="vl-card-explore" onclick="event.stopPropagation();simulateMapClick(${realIndex})" aria-label="${currentLang==='en'?'Explore ':'Explorar '}${locTitle}"><span>${currentLang==='en'?'Explore this place':'Explorar este lugar'}</span><span class="vl-card-explore-icon"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span></button>
                         </div></div>
                     </div>
                 `);
