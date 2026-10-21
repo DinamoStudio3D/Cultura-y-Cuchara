@@ -1844,7 +1844,7 @@
         <button type="button" class="web-mascot-close" onclick="dismissWebMascot()" aria-label="Ocultar mascota" title="Ocultar mascota">
             <i class="fa-solid fa-xmark"></i>
         </button>
-        <div id="webMascotBubble" class="web-mascot-bubble" role="status" aria-live="polite">¡Hola! Soy tu guía de Visita Loja. ¿Empezamos la ruta?</div>
+        <div id="webMascotBubble" class="web-mascot-bubble" hidden role="status" aria-live="polite">¡Hola! Soy tu guía de Visita Loja. ¿Empezamos la ruta?</div>
         <button type="button" class="block w-full bg-transparent border-0 p-0" onclick="ChabaquitoGuide.open()" aria-label="Hablar con Chabaquito">
             <img src="mascota-vive-loja.png" onerror="this.onerror=null;this.src='https://visitaloja.com/mascota-vive-loja.png'" alt="Mascota cultural de Visita Loja" width="1122" height="1402" class="web-mascot-character" loading="lazy" decoding="async">
         </button>
@@ -8661,11 +8661,20 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             db.collection('siteContent').doc('passport').onSnapshot(snapshot=>{if(!snapshot.exists)return;const data=snapshot.data();passportCampaignLoaded=true;passportCampaignConfig={...passportCampaignConfig,...data,tourist:{...passportCampaignConfig.tourist,...(data.tourist||{})},local:{...passportCampaignConfig.local,...(data.local||{})}};const intro=document.getElementById('passportCampaignIntro');if(intro)intro.textContent=passportCampaignConfig.introText||'';updatePassportUI();},error=>console.warn('No se pudo sincronizar el Pasaporte:',error));
         }
 
+        let mascotMessageTimer;
         function setMascotMessage(message) {
             const bubble = document.getElementById('webMascotBubble');
+            clearTimeout(mascotMessageTimer);
             if (!bubble) return;
             bubble.textContent = message;
-            bubble.classList.remove('is-quiet');
+            // On phones the guide is available on demand, without covering content.
+            const mobile = window.matchMedia('(max-width: 767px)').matches;
+            bubble.hidden = mobile;
+            bubble.classList.toggle('is-quiet', mobile);
+            if (!mobile) mascotMessageTimer = setTimeout(() => {
+                bubble.hidden = true;
+                bubble.classList.add('is-quiet');
+            }, 6000);
         }
 
         function toggleMascotBubble() {
