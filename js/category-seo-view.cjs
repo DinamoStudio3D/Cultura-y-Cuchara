@@ -4,6 +4,7 @@ const css = fs.readFileSync(require.resolve('../css/category-guides.css'), 'utf8
 const BASE = 'https://www.visitaloja.com';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const plain = value => String(value || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+const excerpt = value => { const text = plain(value); if (text.length <= 230) return text; const cut = text.slice(0, 230); return cut.slice(0, cut.lastIndexOf(' ')) + '…'; };
 const slug = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function imageURL(value) {
   if (!value || typeof value !== 'string') return '';
@@ -23,7 +24,7 @@ module.exports = function render(key, items, availableKeys, config) {
     const name = plain(x.title_es || x.title || x.id), href = '/parada/' + encodeURIComponent(slug(x.slug || x.title || x.id));
     const gallery = Array.isArray(x.gallery) ? x.gallery : [];
     const photo = [x.heroImage, ...gallery.map(g => typeof g === 'string' ? g : g?.img), x.cover, x.image].map(imageURL).find(Boolean);
-    const address = plain(x.address_es || x.address), summary = plain(x.desc_es || x.desc).slice(0, 230);
+    const address = plain(x.address_es || x.address), summary = excerpt(x.desc_es || x.desc);
     return `<article class="place-card"><a class="place-link" href="${esc(href)}"><div class="place-media">${photo ? `<img src="${esc(photo)}" alt="${esc(name)}" loading="lazy" decoding="async" onerror="this.hidden=true">` : ''}<span class="photo-fallback" aria-hidden="true">${pin}<span>Tu próxima parada en Loja</span></span><span class="place-number">${String(i + 1).padStart(2, '0')}</span></div><div class="place-details"><span class="eyebrow">${esc(e.short)} · Loja, Ecuador</span><h3>${esc(name)}</h3>${address ? `<p class="address">${pin}<span>${esc(address)}</span></p>` : ''}${summary ? `<p class="summary">${esc(summary)}</p>` : ''}<span class="place-action">Conoce este lugar ${arrow}</span></div></a></article>`;
   }).join('');
   const schema = {'@context':'https://schema.org','@graph':[
