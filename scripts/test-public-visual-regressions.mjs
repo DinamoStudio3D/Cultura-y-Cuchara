@@ -8,12 +8,12 @@ function menuFixture(){
  const elements=new Map();
  const document={getElementById(id){if(!elements.has(id))elements.set(id,{innerHTML:'',textContent:''});return elements.get(id)}};
  const context={document,window:{},URL,currentLang:'es',paidPlaceBenefits:()=>({menu:true}),escapeHTML:value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))};
- vm.createContext(context);vm.runInContext(read('js/podcast-media.js').replace(/if\(typeof document!=='undefined'\)/,"if(false)"),context);
+ vm.createContext(context);vm.runInContext(read('js/plan-offer.js'),context);vm.runInContext(read('js/podcast-media.js').replace(/if\(typeof document!=='undefined'\)/,"if(false)"),context);
  vm.runInContext(html.slice(html.indexOf('        let currentRestaurantMenu=null;'),html.indexOf('        function selectRestaurantMenuCategory')),context);
  return {context,elements,run:code=>vm.runInContext(code,context)};
 }
 test('configured restaurant dishes take precedence over the demo without replacing their photos',()=>{
- const f=menuFixture();f.context.place={title:'Mamá Lola',menu:{active:true,dishes:[{name:'Plato propio',price:'$7',image:'https://example.com/own.jpg'}]}};
+ const f=menuFixture();f.context.place={title:'Mamá Lola',subscription:{plan:'featured',status:'active',benefits:{menu:true}},menu:{active:true,dishes:[{name:'Plato propio',price:'$7',image:'https://example.com/own.jpg'}]}};
  const menu=f.run('restaurantMenuFor(place)');assert.equal(menu.demo,false);assert.equal(menu.dishes[0].image,f.context.place.menu.dishes[0].image);
 });
 test('the six sample menu photos remain configured and distinct',()=>{
