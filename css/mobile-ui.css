@@ -241,7 +241,9 @@
 /* Keep editable text comfortably readable on narrow screens, including iPhone forms.
    Do not restrict viewport scaling: visitors can still zoom the entire page. */
 @media (max-width: 767px) {
-  body :is(input:not([type]),input[type="text"],input[type="search"],input[type="email"],input[type="password"],input[type="tel"],input[type="url"],input[type="number"],input[type="date"],input[type="datetime-local"],input[type="time"],textarea,select) {
+  body#body-content #searchInput,
+  body#body-content #postales input[type="text"],
+  body#body-content :is(input:not([type]),input[type="text"],input[type="search"],input[type="email"],input[type="password"],input[type="tel"],input[type="url"],input[type="number"],input[type="date"],input[type="datetime-local"],input[type="time"],textarea,select) {
     font-size: max(16px, 1rem) !important;
   }
 }
