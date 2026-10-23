@@ -18,8 +18,25 @@ test('admin save is isolated and public players are click-loaded with an inline 
 test('homepage gallery reads published videos using the named public Firebase app',async()=>{
  const vm=await import('node:vm'),model=require('../js/video-gallery-model.js');
  class Element{constructor(){this.children=[];this.hidden=false;}append(...nodes){this.children.push(...nodes);}setAttribute(){}replaceChildren(...nodes){this.children=nodes;}querySelector(){return null;}}
- const host=new Element(),calls=[],document={getElementById:id=>id==='loja-en-video'?host:null,createElement:()=>new Element(),addEventListener(){}};
+ const host=new Element(),calls=[],document={getElementById:id=>id==='loja-en-video'?host:null,createElement:()=>new Element(),querySelectorAll:()=>[],addEventListener(){}};
  const firestore={collection(name){calls.push(name);return{doc(id){calls.push(id);return{onSnapshot(next){next({exists:true,data:()=>({active:true,items:[{title:'Jipiro',url:'https://youtu.be/n0BJGAkU9cg',published:true}]})});}};}};}};
  const context={window:{VisitaLojaVideos:model},document,firebase:{app(name){assert.equal(name,'viveLojaPublic');return{firestore:()=>firestore};},firestore(){throw Error('No default Firebase app');}}};
  vm.runInNewContext(fs.readFileSync(new URL('../js/video-gallery.js',import.meta.url),'utf8'),context);assert.deepEqual(calls,['settings','videoGallery']);assert.equal(host.hidden,false);assert.equal(host.children[1].children.length,1);
+});
+
+test('switching and closing gallery videos releases audio focus and restores the play buttons',async()=>{
+ const vm=await import('node:vm');
+ class Element{constructor(tag){this.tag=tag;this.children=[];this.hidden=false;}append(...nodes){this.children.push(...nodes);}setAttribute(){}replaceChildren(...nodes){this.children=nodes;}querySelector(tag){return this.children.find(x=>x.tag===tag)||null;}focus(){}remove(){}}
+ const host=new Element('section'),links=[{},{}],events={},log=[],otherAudio={pause(){log.push('pause-other');}};
+ host.id='loja-en-video';
+ const document={getElementById:id=>id==='loja-en-video'?host:null,createElement:tag=>new Element(tag),querySelectorAll:selector=>selector==='[data-video-gallery-link]'?links:[otherAudio],addEventListener:(name,fn)=>{events[name]=fn;}};
+ const window={VisitaLojaVideos:model,VisitaLojaAudioFocus:{hold(){log.push('hold');return()=>log.push('release');},cancelSpeech(){}}};
+ const context={window,document,firebase:{app(){return{firestore(){return{collection(){return{doc(){return{onSnapshot(fn){fn({exists:true,data:()=>({active:true,items:['n0BJGAkU9cg','Anuqx6u0cxE'].map((id,i)=>({title:'Video '+i,url:'https://youtu.be/'+id,published:true}))})});}};}};}};}};}}};
+ vm.runInNewContext(fs.readFileSync(new URL('../js/video-gallery.js',import.meta.url),'utf8'),context);
+ const stages=host.children[1].children.map(card=>card.children[0]);
+ assert.equal(links.every(link=>link.hidden===false),true);
+ stages[0].querySelector('button').onclick();assert.equal(stages[0].children[0].tag,'iframe');
+ stages[1].querySelector('button').onclick();assert.equal(stages[0].children[0].tag,'button');
+ stages[1].querySelector('button').onclick();assert.equal(stages[1].children[0].tag,'button');
+ assert.deepEqual(log,['hold','pause-other','release','hold','pause-other','release']);
 });
