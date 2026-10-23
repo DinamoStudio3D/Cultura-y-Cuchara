@@ -77,5 +77,6 @@
       "source": "/marcas-aliadas-en-loja",
       "destination": "/api/categoria-seo?categoria=marcas-aliadas-en-loja"
     }
-  ]
+  ],
+  "buildCommand": "npm run build:css"
 }
