@@ -2564,7 +2564,7 @@
             </div>
             <div class="p-6">
                 <p id="passportCampaignIntro" class="text-xs text-gray-600 mb-2 text-center">Visita las paradas participantes, consigue seis sellos y desbloquea una recompensa especial.</p>
-                <p class="text-xs text-gray-700 mb-4 text-center font-black" id="passportRuleDesc">Meta: 1 Hotel + 5 Gastronomía</p>
+                <p class="text-xs text-gray-700 mb-4 text-center font-black" id="passportRuleDesc">Meta: 1 Hotel + 5 Gastronomía</p><p id="passportUniqueStopHint" class="text-xs text-gray-700 mb-4 text-center">Cada parada aporta un solo sello al pasaporte. Las visitas repetidas pueden seguir sumando en la tarjeta de fidelidad del negocio.</p>
                 <div class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto p-1" id="passportStampsGrid"></div>
                 <div class="bg-gray-100 rounded-xl p-4 text-center border border-gray-200">
                     <p class="text-sm font-bold text-brandDark mb-1"><i class="fa-solid fa-gift text-brandGold mr-1"></i> <span data-i18n="passRewardTitle">Progreso de Recompensa</span></p>
@@ -3319,7 +3319,7 @@
 
         function renderVisitorExperience() {
             if (!visitorAuth?.currentUser || !currentVisitorProfile?.profileComplete) return;
-            const stampCount=visitedLocations.length,favoriteCount=favoriteLocations.length,routeCount=currentSmartRoute.length,total=6,percentage=Math.min(100,Math.round((stampCount/total)*100));
+            const stampCount=passportVisitedPlaceIds(visitedLocations).length,favoriteCount=favoriteLocations.length,routeCount=currentSmartRoute.length,total=6,percentage=Math.min(100,Math.round((stampCount/total)*100));
             const setText=(id,value)=>{const element=document.getElementById(id);if(element)element.textContent=value;};
             const savedAgendaIds=(typeof getSavedAgendaEvents==='function'?getSavedAgendaEvents():[]);
             const savedFestivalIds=safeReadJSON('cyc_saved_festival_events',[]).map(String);
@@ -3444,7 +3444,7 @@
                 if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 const secureIds = snapshot.docs.map(doc => doc.data().placeId).filter(Boolean);
                 {
-                    visitedLocations = [...new Set(secureIds)];
+                    visitedLocations = passportVisitedPlaceIds(secureIds);
                     localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
                     updatePassportUI();
                 }
@@ -3460,7 +3460,7 @@
             syncedFavoritesUserId=null;
             try{
                 VisitaLojaAccountAccess.scopeProgress(localStorage,user?.uid);
-                visitedLocations=safeReadJSON('cyc_visited_locations',[]);
+                visitedLocations=passportVisitedPlaceIds(safeReadJSON('cyc_visited_locations',[]));
                 favoriteLocations=safeReadJSON('cyc_favorites',[]);
                 passportMode=localStorage.getItem('cyc_passport_mode')||'lojano';
             }catch(error){visitedLocations=[];favoriteLocations=[];passportMode='lojano';console.warn('No se pudo cambiar el caché local de la cuenta.');}
@@ -4294,7 +4294,7 @@
             }
             return null; // Require explicit selection.
         }
-        let visitedLocations = safeReadJSON('cyc_visited_locations', []);
+        let visitedLocations = passportVisitedPlaceIds(safeReadJSON('cyc_visited_locations', []));
         let favoriteLocations = safeReadJSON('cyc_favorites', []);
         let passportMode = localStorage.getItem('cyc_passport_mode') || 'lojano';
         let userCoords = null;
@@ -7752,8 +7752,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         document.addEventListener('keydown',event=>{if(document.getElementById('menuGalleryModal')?.classList.contains('hidden'))return;if(event.key==='ArrowLeft')moveImmersiveGallery(-1);else if(event.key==='ArrowRight')moveImmersiveGallery(1);});
 
         function initPassport() {
-            const storedVisits = localStorage.getItem('cyc_visited_locations');
-            if (storedVisits) visitedLocations = JSON.parse(storedVisits);
+            visitedLocations = passportVisitedPlaceIds(safeReadJSON('cyc_visited_locations', []));
             const storedMode = localStorage.getItem('cyc_passport_mode');
             if (storedMode) passportMode = storedMode;
             updatePassportUI();
@@ -7774,6 +7773,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             updatePassportUI();
         }
 
+        function passportVisitedPlaceIds(value) {
+            return [...new Set((Array.isArray(value)?value:[]).filter(id=>typeof id==='string'&&id.length>0))];
+        }
+
         function updatePassportUI() {
             renderVisitorExperience();
             const grid = document.getElementById('passportStampsGrid');
@@ -7782,8 +7785,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const totalToWin = 6;
             const ruleDesc = document.getElementById('passportRuleDesc');
             if(ruleDesc) ruleDesc.innerText = currentLang==='en'?(passportMode==='turista'?'Your goal: 1 hotel + 5 food stops':'Your goal: 6 food stops'):(passportMode==='turista'?'Tu meta: 1 hotel + 5 paradas gastronómicas':'Tu meta: 6 paradas gastronómicas');
+            const uniqueHint=document.getElementById('passportUniqueStopHint');
+            if(uniqueHint)uniqueHint.textContent=currentLang==='en'?'Each place adds only one passport stamp. Repeat visits may still count toward that business’s loyalty card.':'Cada parada aporta un solo sello al pasaporte. Las visitas repetidas pueden seguir sumando en la tarjeta de fidelidad del negocio.';
             const gastronomicCategories=new Set(['hueca','cafe','urbana','heladeria','panaderia','bar']);
-            const visited=visitedLocations.map(id=>locations.find(location=>location.id===id)).filter(Boolean);
+            const visited=passportVisitedPlaceIds(visitedLocations).map(id=>locations.find(location=>location.id===id)).filter(Boolean);
             const visitedHotels=visited.filter(location=>location.category==='hotel');
             const visitedFood=visited.filter(location=>gastronomicCategories.has(location.category));
             const validStops=passportMode==='turista'?[visitedHotels[0],...Array.from({length:5},(_,index)=>visitedFood[index])]:Array.from({length:6},(_,index)=>visitedFood[index]);
