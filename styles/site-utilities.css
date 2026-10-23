@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Font Awesome SVGs stay bounded even when its external runtime stylesheet fails. */
+.svg-inline--fa {display:inline-block;height:1em;width:1em;overflow:visible;vertical-align:-.125em;flex-shrink:0;}
+/* Native hidden state must work before JavaScript and remain authoritative. */
+[hidden] {display:none!important;}
