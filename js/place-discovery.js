@@ -6,7 +6,8 @@
  const ignored=new Set(['de','en','un','una','para','con','que','quiero','busco','lugar','abierto','abierta','abiertos','ahora','open','now','cerca','near','mi','me','ubicacion','location','pasaporte','passport','sello','stamp']);
  const canton=p=>normalize(p.cantonId||'loja');
  function knownHours(p){if(/\b24\s*(?:\/\s*7|horas?|hours?|h)\b/i.test([p.hours,p.hoursEn].join(' ')))return true;return ['openHour','closeHour'].every(k=>p[k]!==undefined&&p[k]!==null&&String(p[k]).trim()!==''&&Number.isFinite(Number(p[k]))&&Number(p[k])>=0&&Number(p[k])<=24);}
- function matches(p,{query='',category='all',cantonId='',openOnly=false}={},isOpen=()=>false){
+ function matches(p,{query='',category='all',cantonId='',openOnly=false,savedOnly=false,savedIds=[]}={},isOpen=()=>false){
+  if(savedOnly&&(!Array.isArray(savedIds)||!savedIds.map(String).includes(String(p.id))))return false;
   const categories=(Array.isArray(p.category)?p.category:[p.category]).map(normalize);
   if(category!=='all'&&!categories.includes(category)&&!(category==='food'&&categories.some(c=>['hueca','cafe','urbana','heladeria','panaderia','bar','restaurante'].includes(c))))return false;
   if(cantonId&&canton(p)!==cantonId)return false;

@@ -433,9 +433,9 @@
 <link rel="stylesheet" href="css/promo-dialog.css?v=1">
 <link rel="stylesheet" href="css/gallery-viewer.css?v=2">
 <link rel="stylesheet" href="css/video-gallery.css?v=2">
-<link rel="stylesheet" href="css/place-discovery.css?v=1">
+<link rel="stylesheet" href="css/place-discovery.css?v=2">
 <script src="js/chabaquito-place-config.js?v=1"></script>
-<script src="js/place-discovery.js?v=1"></script>
+<script src="js/place-discovery.js?v=2"></script>
 <link rel="stylesheet" href="/css/place-digital-menu.css?v=1">
 <script src="/js/place-digital-menu.js?v=1"></script>
 </head>
@@ -537,7 +537,7 @@
 <div class="vl28-primary-links vl29-primary-links" aria-label="Navegación principal">
 <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-group-0" onclick="vl29ToggleMenu(this)"><span>Descubrir</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-group-0" class="vl29-dropdown" hidden><a href="#categorias">Categorías turísticas</a><a href="cantones.html">Cantones de Loja</a><a href="#loja-en-video" data-video-gallery-link hidden>Loja en video</a><a href="#establecimientos" onclick="openCategoryList('turismo')">Atractivos turísticos</a></div></div>
 <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-group-1" onclick="vl29ToggleMenu(this)"><span>Explorar</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-group-1" class="vl29-dropdown" hidden><a href="#mapa">Mapa interactivo</a><a href="#establecimientos">Establecimientos</a><a href="#mapa" onclick="filterMapGroup('food')">Gastronomía</a><a href="#mapa" onclick="filterMapGroup('stay')">Hoteles y alojamientos</a></div></div>
-<div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-group-2" onclick="vl29ToggleMenu(this)"><span>Experiencias</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-group-2" class="vl29-dropdown" hidden><a href="#misiones">Misiones de Chabaquito</a><a href="#pasaporte">Pasaporte turístico</a><button type="button" onclick="vl29CloseMenus();openModal('itineraryModal')">Mis rutas</button></div></div>
+<div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-group-2" onclick="vl29ToggleMenu(this)"><span>Experiencias</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-group-2" class="vl29-dropdown" hidden><a href="#misiones">Misiones de Chabaquito</a><a href="#pasaporte">Pasaporte turístico</a><button type="button" onclick="vl29CloseMenus();openSavedPlaces()">Mis favoritos</button><button type="button" onclick="vl29CloseMenus();openModal('itineraryModal')">Mis rutas</button></div></div>
 <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-group-3" onclick="vl29ToggleMenu(this)"><span>Eventos</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-group-3" class="vl29-dropdown" hidden><a href="#agenda">Agenda turística</a><a href="#fiavl">Festival FIAVL</a></div></div>
 <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-group-4" onclick="vl29ToggleMenu(this)"><span>Más</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-group-4" class="vl29-dropdown" hidden><a href="#loja-tiempo">Loja en el Tiempo</a><a href="#postales">Postales</a><a href="#emprendedores">Emprendedores</a><a href="tienda.html">Tienda</a><a href="sumar-negocio.html">Sumar mi negocio</a><button type="button" onclick="vl29CloseMenus();openAccountModal()">Ingresar / Mi cuenta</button></div></div>
 </div>
@@ -550,7 +550,7 @@
 
         <!-- Single Responsive Mobile / Tablet Dropdown Menu -->
         <div id="mobileMenu" class="hidden 2xl:hidden pt-4 pb-4 border-t border-gray-800 mt-3 glass-nav px-4">
-            <div class="vl29-mobile-groups mb-3"><a href="#inicio" onclick="toggleMobileMenu()" class="vl29-mobile-home">Inicio</a><details class="vl29-mobile-section"><summary>Descubrir</summary><div class="vl29-mobile-items"><a href="#categorias" onclick="toggleMobileMenu()">Categorías turísticas</a><a href="cantones.html" onclick="toggleMobileMenu()">Cantones de Loja</a><a href="#loja-en-video" data-video-gallery-link hidden onclick="toggleMobileMenu()">Loja en video</a><a href="#establecimientos" onclick="openCategoryList('turismo');toggleMobileMenu()">Atractivos turísticos</a></div></details><details class="vl29-mobile-section"><summary>Explorar</summary><div class="vl29-mobile-items"><a href="#mapa" onclick="toggleMobileMenu()">Mapa interactivo</a><a href="#establecimientos" onclick="toggleMobileMenu()">Establecimientos</a><a href="#mapa" onclick="filterMapGroup('food');toggleMobileMenu()">Gastronomía</a><a href="#mapa" onclick="filterMapGroup('stay');toggleMobileMenu()">Hoteles y alojamientos</a></div></details><details class="vl29-mobile-section"><summary>Experiencias</summary><div class="vl29-mobile-items"><a href="#misiones" onclick="toggleMobileMenu()">Misiones de Chabaquito</a><a href="#pasaporte" onclick="toggleMobileMenu()">Pasaporte turístico</a><button type="button" onclick="openModal('itineraryModal');toggleMobileMenu()">Mis rutas</button></div></details><details class="vl29-mobile-section"><summary>Eventos</summary><div class="vl29-mobile-items"><a href="#agenda" onclick="toggleMobileMenu()">Agenda turística</a><a href="#fiavl" onclick="toggleMobileMenu()">Festival FIAVL</a></div></details><details class="vl29-mobile-section"><summary>Más</summary><div class="vl29-mobile-items"><a href="#loja-tiempo" onclick="toggleMobileMenu()">Loja en el Tiempo</a><a href="#postales" onclick="toggleMobileMenu()">Postales</a><a href="#emprendedores" onclick="toggleMobileMenu()">Emprendedores</a><a href="tienda.html" onclick="">Tienda</a><a href="sumar-negocio.html" onclick="">Sumar mi negocio</a><button type="button" onclick="openAccountModal();toggleMobileMenu()">Ingresar / Mi cuenta</button></div></details></div>
+            <div class="vl29-mobile-groups mb-3"><a href="#inicio" onclick="toggleMobileMenu()" class="vl29-mobile-home">Inicio</a><details class="vl29-mobile-section"><summary>Descubrir</summary><div class="vl29-mobile-items"><a href="#categorias" onclick="toggleMobileMenu()">Categorías turísticas</a><a href="cantones.html" onclick="toggleMobileMenu()">Cantones de Loja</a><a href="#loja-en-video" data-video-gallery-link hidden onclick="toggleMobileMenu()">Loja en video</a><a href="#establecimientos" onclick="openCategoryList('turismo');toggleMobileMenu()">Atractivos turísticos</a></div></details><details class="vl29-mobile-section"><summary>Explorar</summary><div class="vl29-mobile-items"><a href="#mapa" onclick="toggleMobileMenu()">Mapa interactivo</a><a href="#establecimientos" onclick="toggleMobileMenu()">Establecimientos</a><a href="#mapa" onclick="filterMapGroup('food');toggleMobileMenu()">Gastronomía</a><a href="#mapa" onclick="filterMapGroup('stay');toggleMobileMenu()">Hoteles y alojamientos</a></div></details><details class="vl29-mobile-section"><summary>Experiencias</summary><div class="vl29-mobile-items"><a href="#misiones" onclick="toggleMobileMenu()">Misiones de Chabaquito</a><a href="#pasaporte" onclick="toggleMobileMenu()">Pasaporte turístico</a><button type="button" onclick="toggleMobileMenu();openSavedPlaces()">Mis favoritos</button><button type="button" onclick="openModal('itineraryModal');toggleMobileMenu()">Mis rutas</button></div></details><details class="vl29-mobile-section"><summary>Eventos</summary><div class="vl29-mobile-items"><a href="#agenda" onclick="toggleMobileMenu()">Agenda turística</a><a href="#fiavl" onclick="toggleMobileMenu()">Festival FIAVL</a></div></details><details class="vl29-mobile-section"><summary>Más</summary><div class="vl29-mobile-items"><a href="#loja-tiempo" onclick="toggleMobileMenu()">Loja en el Tiempo</a><a href="#postales" onclick="toggleMobileMenu()">Postales</a><a href="#emprendedores" onclick="toggleMobileMenu()">Emprendedores</a><a href="tienda.html" onclick="">Tienda</a><a href="sumar-negocio.html" onclick="">Sumar mi negocio</a><button type="button" onclick="openAccountModal();toggleMobileMenu()">Ingresar / Mi cuenta</button></div></details></div>
             
             <div class="flex items-center justify-between py-2 border-t border-gray-800">
                 <span class="text-xs text-gray-400">Idioma / Language:</span>
@@ -1198,6 +1198,7 @@
                 </div>
             </div>
 
+            <div class="saved-places-access"><label class="saved-places-toggle"><input id="placeSavedFilter" type="checkbox" onchange="searchItems()"><span aria-hidden="true">♡</span><span data-i18n="savedFilter">Mis favoritos</span><strong id="savedPlacesCount">0</strong></label><button id="savedPlacesRoute" type="button" onclick="openModal('itineraryModal')" hidden><span data-i18n="savedRoute">Organizar mi ruta</span> →</button></div><p id="savedPlacesHint" class="saved-places-hint" hidden data-i18n="savedHint">Aquí aparecen tus lugares guardados. Usa Mi ruta para ordenar tu recorrido.</p>
             <div class="discovery-controls" role="group" aria-label="Filtrar paradas">
               <label for="placeCantonFilter"><span>Cantón</span><select id="placeCantonFilter" onchange="searchItems()"><option value="">Toda la provincia</option></select></label>
               <label class="discovery-open"><input id="placeOpenFilter" type="checkbox" onchange="searchItems()"><span>Abierto ahora<small>Solo lugares con horario completo registrado. Confirma la atención antes de ir.</small></span></label>
@@ -1223,7 +1224,7 @@
             
             <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
                 <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
-                <span data-i18n="noResults">No encontramos resultados para esa búsqueda.</span><p class="mt-2">Prueba con otro cantón, una categoría diferente o menos palabras.</p><button type="button" onclick="clearAllPlaceFilters()" class="hero-button mt-4">Ver todas las paradas</button>
+                <span id="placeEmptyTitle">No encontramos resultados para esa búsqueda.</span><p id="placeEmptyHelp" class="mt-2">Prueba con otro cantón, una categoría diferente o menos palabras.</p><button type="button" onclick="clearAllPlaceFilters()" class="hero-button mt-4">Ver todas las paradas</button>
             </div>
         </div>
     </section>
@@ -2668,6 +2669,7 @@
                 statIdentity: "Identidad Lojana",
                 trendingBadge: "Lo más cotizado por los viajeros",
                 trendingTitle: "En Tendencia esta Semana",
+                savedFilter:'Mis favoritos',savedRoute:'Organizar mi ruta',savedHint:'Aquí aparecen tus lugares guardados. Usa Mi ruta para ordenar tu recorrido.',
                 trendingDesc: "Los establecimientos favoritos que los turistas están guardando más en sus rutas.",
                 sugTitle: "Experiencias Sugeridas",
                 sugDesc: "Elige un recorrido especializado para tu viaje.",
@@ -2877,6 +2879,7 @@
                 statIdentity: "Loja Identity",
                 trendingBadge: "Most saved by travelers",
                 trendingTitle: "Trending This Week",
+                savedFilter:'My favorites',savedRoute:'Organize my route',savedHint:'Your saved places appear here. Use My route to organize your visit.',
                 trendingDesc: "Favorite establishments travelers are saving most in their itineraries.",
                 sugTitle: "Suggested Experiences",
                 sugDesc: "Choose a specialized tour for your trip.",
@@ -3337,7 +3340,7 @@
             if(agendaPreview){agendaPreview.innerHTML=combinedAgenda.length?combinedAgenda.slice(0,3).map(item=>{const event=item.event,title=(currentLang==='en'&&event.titleEn)?event.titleEn:event.title;const place=event.location||event.place||'Loja';const encodedId=encodeURIComponent(item.id);return `<button type="button" onclick="openExperienceAgendaItem('${item.kind}','${encodedId}')" class="w-full text-left bg-white border border-violet-100 rounded-xl p-2.5 flex items-center gap-3"><span class="w-8 h-8 rounded-full ${item.kind==='festival'?'bg-fuchsia-50 text-fuchsia-600':'bg-violet-50 text-violet-600'} grid place-items-center"><i class="fa-solid ${item.kind==='festival'?'fa-masks-theater':'fa-calendar-day'}"></i></span><span class="min-w-0 flex-1"><b class="block text-xs truncate">${escapeHTML(title||'Evento Visita Loja')}</b><small class="text-[10px] text-gray-500 truncate block">${escapeHTML(event.date||'Fecha por confirmar')} · ${escapeHTML(place)}</small></span><span class="text-[9px] font-black uppercase ${item.kind==='festival'?'text-fuchsia-600':'text-violet-600'}">${item.kind==='festival'?'Festival':'Cultural'}</span></button>`;}).join(''):'<p class="text-xs text-gray-500 bg-gray-50 rounded-xl p-3">Guarda eventos de la agenda cultural o del festival y los verás aquí.</p>';}
         }
         function openExperiencePassport(){closeModal('accountModal');openModal('pasaporteModal');}
-        function openExperienceFavorites(){closeModal('accountModal');openModal('itineraryModal');}
+        function openExperienceFavorites(){closeModal('accountModal');openSavedPlaces();}
         function openExperiencePlanner(){closeModal('accountModal');openSmartRoutePlanner();}
         function openExperienceAgenda(){closeModal('accountModal');agendaViewMode='saved';renderAgendaUI();document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
         function openExperienceAgendaItem(kind,encodedId){const id=decodeURIComponent(encodedId);closeModal('accountModal');if(kind==='festival'){const event=(festivalConfig?.events||[]).find(item=>String(item.id)===String(id));if(event?.date)selectFestivalDay(event.date);document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'});return;}agendaViewMode='saved';renderAgendaUI();document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
@@ -3402,6 +3405,7 @@
         function persistFavorites() {
             favoriteLocations = [...new Set(favoriteLocations.map(String))];
             localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
+            queueMicrotask(searchItems);
             if (favoritesSyncTimer) clearTimeout(favoritesSyncTimer);
             favoritesSyncTimer = setTimeout(saveFavoritesToAccount, 250);
         }
@@ -7919,7 +7923,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         let placeDiscoveryCategory = 'all';
         for(const canton of window.ChabaquitoPlaceConfig.CANTONS){const option=new Option(canton.name,canton.id);document.getElementById('placeCantonFilter').append(option);}
+        function openSavedPlaces(){clearAllPlaceFilters();document.getElementById('placeSavedFilter').checked=true;searchItems();document.getElementById('establecimientos').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
         function clearAllPlaceFilters() {
+            document.getElementById('placeSavedFilter').checked=false;
             document.getElementById('placeCantonFilter').value='';
             document.getElementById('placeOpenFilter').checked=false;
             document.getElementById('searchInput').value='';
@@ -7939,18 +7945,20 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function clearSmartSearch(){const input=document.getElementById('searchInput');if(input)input.value='';searchItems();}
         function searchPlacesNearMe(){if(!navigator.geolocation){showToast(currentLang==='en'?'Your browser does not support location.':'Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};runSmartSearch(currentLang==='en'?'near me':'cerca de mí');},()=>showToast(currentLang==='en'?'We could not get your location.':'No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
         function searchItems() {
-            const model=window.VisitaLojaDiscovery,input=document.getElementById('searchInput'),query=input?.value||'',cantonId=document.getElementById('placeCantonFilter')?.value||'',openOnly=document.getElementById('placeOpenFilter')?.checked===true;
+            const model=window.VisitaLojaDiscovery,input=document.getElementById('searchInput'),query=input?.value||'',cantonId=document.getElementById('placeCantonFilter')?.value||'',openOnly=document.getElementById('placeOpenFilter')?.checked===true,savedOnly=document.getElementById('placeSavedFilter')?.checked===true;
             if(!model)return;
             const near=/\b(cerca|near|proximo)\b/.test(model.normalize(query));let visible=0;
             document.querySelectorAll('.local-item').forEach(card=>{
                 const place=locations.find(p=>String(p.id)===card.dataset.locationId);
-                const match=!!place&&model.matches(place,{query,category:placeDiscoveryCategory,cantonId,openOnly},isLocOpenNow);
+                const match=!!place&&model.matches(place,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow);
                 card.classList.toggle('hidden-item',!match);card.style.opacity=match?'1':'0';card.style.order='';
                 if(match){visible++;if(near&&userCoords){const coords=publicPlaceCoordinates(place);if(coords){const distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,coords[0],coords[1]);if(Number.isFinite(distance))card.style.order=String(Math.round(distance*1000));}}}
             });
             document.getElementById('noResults')?.classList.toggle('hidden',visible>0);
             document.getElementById('smartSearchClearButton')?.classList.toggle('hidden',!query);
-            updateClearFiltersButton(Boolean(query||cantonId||openOnly||placeDiscoveryCategory!=='all'));
+            updateClearFiltersButton(Boolean(query||cantonId||openOnly||savedOnly||placeDiscoveryCategory!=='all'));
+            const savedCount=new Set(favoriteLocations.map(String)).size;document.getElementById('savedPlacesCount').textContent=String(savedCount);document.getElementById('savedPlacesRoute').hidden=savedCount===0;document.getElementById('savedPlacesHint').hidden=!savedOnly;
+            const en=currentLang==='en',emptySaved=savedOnly&&savedCount===0;document.getElementById('placeEmptyTitle').textContent=emptySaved?(en?'No saved places yet':'Todavía no tienes lugares guardados'):(savedOnly?(en?'No favorites match these filters':'No hay favoritos que coincidan con estos filtros'):(en?'No results found for that search.':'No encontramos resultados para esa búsqueda.'));document.getElementById('placeEmptyHelp').textContent=emptySaved?(en?'Tap the leaf on a place card to save it and find it here.':'Toca la hoja en la tarjeta de un lugar para guardarlo y encontrarlo aquí.'):(en?'Try another canton, category or fewer search words.':'Prueba con otro cantón, una categoría diferente o menos palabras.');
             const status=document.getElementById('smartSearchStatus');if(status)status.textContent=currentLang==='en'?`${visible} places match your filters.`:`${visible===1?'1 parada coincide':visible+' paradas coinciden'} con tu búsqueda y filtros.`;
         }
 
