@@ -436,6 +436,8 @@
 <link rel="stylesheet" href="css/place-discovery.css?v=1">
 <script src="js/chabaquito-place-config.js?v=1"></script>
 <script src="js/place-discovery.js?v=1"></script>
+<link rel="stylesheet" href="/css/place-digital-menu.css?v=1">
+<script src="/js/place-digital-menu.js?v=1"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1143,7 +1145,7 @@
 
                 <div class="vl-place-actions vl-actions-organized pt-3 border-t border-gray-100">
                     <div class="vl-place-actions-head"><span><i class="fa-solid fa-compass"></i> Explora este lugar</span><small>Todo lo que necesitas para tu visita</small></div>
-                    <div class="vl-action-panel vl-action-visit"><h3><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Planifica tu visita</h3><div class="vl-action-grid"><button id="previewRestaurantMenuBtn" type="button" onclick="openRestaurantMenu()" class="hidden w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white py-3 rounded-xl font-black text-xs hover:from-orange-500 hover:to-amber-400 transition shadow-lg items-center justify-center gap-2"><i class="fa-solid fa-book-open"></i><span id="previewRestaurantMenuLabel">Ver menú del restaurante</span></button><div id="previewCommerceActions" class="hidden grid grid-cols-2 gap-2"><button id="previewOrderBtn" type="button" onclick="openCommerceWhatsapp('order')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i><span id="previewOrderLabel">Pedir ahora</span></button><button id="previewReservationBtn" type="button" onclick="openCommerceWhatsapp('reservation')" class="hidden bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-solid fa-calendar-check"></i><span id="previewReservationLabel">Reservar mesa</span></button></div>
+                    <div class="vl-action-panel vl-action-visit"><h3><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Planifica tu visita</h3><div class="vl-action-grid"><button id="previewDigitalMenuBtn" type="button" class="place-digital-menu-button" hidden>Ver menú</button><button id="previewRestaurantMenuBtn" type="button" onclick="openRestaurantMenu()" class="hidden w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white py-3 rounded-xl font-black text-xs hover:from-orange-500 hover:to-amber-400 transition shadow-lg items-center justify-center gap-2"><i class="fa-solid fa-book-open"></i><span id="previewRestaurantMenuLabel">Ver menú del restaurante</span></button><div id="previewCommerceActions" class="hidden grid grid-cols-2 gap-2"><button id="previewOrderBtn" type="button" onclick="openCommerceWhatsapp('order')" class="hidden bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-base"></i><span id="previewOrderLabel">Pedir ahora</span></button><button id="previewReservationBtn" type="button" onclick="openCommerceWhatsapp('reservation')" class="hidden bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-3 py-3 text-xs font-black items-center justify-center gap-2"><i class="fa-solid fa-calendar-check"></i><span id="previewReservationLabel">Reservar mesa</span></button></div>
                         <a id="previewGps" href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="min-h-11 bg-gray-100 text-brandDark px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center hover:bg-gray-200 transition shadow" title="Cómo llegar">
                             <i class="fa-solid fa-diamond-turn-right text-brandGold mr-1.5"></i><span id="previewGpsLabel">Cómo llegar</span>
                         </a></div></div>
@@ -7502,6 +7504,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             videoButton.querySelector('span').textContent=currentLang==='en'?'Meet this place on video':'Conoce este lugar en vídeo';
             if (trackSelection) trackBusinessEvent(loc.id,'view');
             maybeShowPlacePromotion(loc);
+            window.VisitaLojaDigitalMenu.attach(document.getElementById('previewDigitalMenuBtn'),loc,db,currentLang);
             const restaurantMenu=restaurantMenuFor(loc),menuButton=document.getElementById('previewRestaurantMenuBtn');
             if(menuButton){menuButton.classList.toggle('hidden',!restaurantMenu);menuButton.classList.toggle('flex',!!restaurantMenu);const label=document.getElementById('previewRestaurantMenuLabel');if(label)label.textContent=currentLang==='en'?'View featured products':'Ver productos destacados';}renderCommerceActions(loc);
             if (trackSelection) completeChabaquitoMission('mapa');
