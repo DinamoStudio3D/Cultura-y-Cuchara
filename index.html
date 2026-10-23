@@ -438,6 +438,7 @@
 <script src="js/place-discovery.js?v=2"></script>
 <link rel="stylesheet" href="/css/place-digital-menu.css?v=1">
 <script src="/js/place-digital-menu.js?v=1"></script>
+<script src="/js/popup-schedule.js?v=2"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -4624,7 +4625,9 @@
         }
 
         function maybeTriggerPopup(settings) {
-            if (settings && settings.popupActive) {
+            if(!window.VisitaLojaPopupController){
+                window.VisitaLojaPopupController=window.VisitaLojaPopupSchedule.create({
+                    show(settings){if(document.hidden||!window.VisitaLojaPromoDialog||!document.getElementById('accountModal').classList.contains('hidden'))return false;
                 const titleEl = document.getElementById('popupTitleText');
                 const descEl = document.getElementById('popupDescText');
                 const imgEl = document.getElementById('popupImgEl');
@@ -4642,10 +4645,22 @@
                         waBtn.classList.add('hidden');
                     }
                 }
-                setTimeout(() => {
-                    openModal('promoPopupModal');
-                }, 1500);
+                        openModal('promoPopupModal');return true;
+                    },
+                    hide(){const popup=document.getElementById('promoPopupModal');if(popup&&!popup.classList.contains('hidden'))closeModal('promoPopupModal');}
+                });
+                document.addEventListener('visibilitychange',()=>window.VisitaLojaPopupController.check());window.addEventListener('focus',()=>window.VisitaLojaPopupController.check());window.addEventListener('pageshow',()=>window.VisitaLojaPopupController.check());
             }
+            const source=window.VisitaLojaPopupSource||(window.VisitaLojaPopupSource={legacy:settings,ready:false,queue:null});
+            source.legacy=settings;
+            if(!source.listening){source.listening=true;
+                firebase.app('viveLojaPublic').firestore().collection('settings').doc('announcements').onSnapshot({includeMetadataChanges:true},snapshot=>{
+                    if(snapshot.metadata.fromCache)return;
+                    source.ready=true;source.queue=snapshot.exists?snapshot.data():null;
+                    window.VisitaLojaPopupController.update(source.queue!==null?{popupQueue:source.queue}:source.legacy);
+                },()=>{source.ready=false;window.VisitaLojaPopupController.update({popupActive:false});});
+            }
+            if(source.ready)window.VisitaLojaPopupController.update(source.queue!==null?{popupQueue:source.queue}:source.legacy);
         }
 
         function applyConfirmedHomepageLogo(image,url) {
@@ -7207,14 +7222,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
             closeModal('adminModal');
             showToast('¡Configuración de Popup guardada!');
-            if (popupActive) {
-                setTimeout(() => {
-                    document.getElementById('popupTitleText').innerText = popupTitle;
-                    document.getElementById('popupDescText').innerText = popupDesc;
-                    document.getElementById('popupImgEl').src = popupImg;
-                    openModal('promoPopupModal');
-                }, 500);
-            }
+            maybeTriggerPopup(settings);
         }
 
         function handleSaveBrandingSettings(e) {
