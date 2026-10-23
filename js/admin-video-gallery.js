@@ -22,5 +22,6 @@
   window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});load();return{read};
  }
  window.VisitaLojaAdminVideos={mount};const host=document.getElementById('videoGalleryAdmin');if(!host)return;
- const ref=firebase.firestore().collection('settings').doc('videoGallery');mount(host,{load:async()=>{const doc=await ref.get();return doc.exists?doc.data():{};},save:async(value,loaded)=>{if(!firebase.auth().currentUser)throw{code:'permission-denied'};await firebase.firestore().runTransaction(async tx=>{const doc=await tx.get(ref);if(JSON.stringify(model.normalize(doc.exists?doc.data():{}))!==loaded)throw{code:'conflict'};tx.set(ref,{...value,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});});}});
+ const app=firebase.app('viveLojaAdmin'),database=app.firestore(),auth=app.auth();
+ const ref=database.collection('settings').doc('videoGallery');mount(host,{load:async()=>{const doc=await ref.get();return doc.exists?doc.data():{};},save:async(value,loaded)=>{if(!auth.currentUser)throw{code:'permission-denied'};await database.runTransaction(async tx=>{const doc=await tx.get(ref);if(JSON.stringify(model.normalize(doc.exists?doc.data():{}))!==loaded)throw{code:'conflict'};tx.set(ref,{...value,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});});}});
 })();
