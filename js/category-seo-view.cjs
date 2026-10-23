@@ -22,6 +22,7 @@ const editorial = {
 module.exports = function render(key, items, availableKeys, config) {
   const c = config[key], e = c.editorial || editorial[key], canonical = BASE + '/' + key;
   const navigationKeys = [...new Set([...availableKeys, 'que-hacer-en-loja', key])];
+  const advice = require('./category-planning.cjs')(key);
   const guide = c.guide ? require('./loja-city-guide.cjs')() : '';
   const cards = items.map((x, i) => {
     const name = plain(x.title_es || x.title || x.id), href = '/parada/' + encodeURIComponent(slug(x.slug || x.title || x.id));
@@ -47,6 +48,7 @@ module.exports = function render(key, items, availableKeys, config) {
 <div class="wrap"><nav class="category-nav" aria-label="Explorar categorías">${navigationKeys.filter(k=>config[k]?.editorial||editorial[k]).map(k=>`<a href="/${k}"${k===key?' aria-current="page"':''}>${esc((config[k].editorial||editorial[k]).short)} ${k===key?'<span aria-hidden="true">●</span>':arrow}</a>`).join('')}<a href="/cantones.html">Cantones ${arrow}</a></nav></div>
 ${guide}
 ${c.guide&&!items.length?'':`<section id="lugares" class="wrap places-section" aria-labelledby="places-title"><div class="section-heading"><div><p class="eyebrow">Hecho para explorar</p><h2 id="places-title">Tu próxima parada empieza aquí.</h2><p>${esc(e.note)}</p></div><span class="result-count">${esc(count)}</span></div><div class="places-grid${items.length===1?' single-place':''}">${cards || `<div class="empty-category"><h3>Pronto habrá nuevas paradas por descubrir.</h3><p>Estamos reuniendo lugares para esta categoría. Mientras tanto, explora las opciones disponibles o descubre los cantones de Loja.</p><a class="hero-button" href="/cantones.html">Descubrir los cantones ${arrow}</a></div>`}</div><aside class="travel-note"><span class="note-icon" aria-hidden="true">${pin}</span><div><h2>${esc(e.tip)}</h2><p>${esc(e.help)}</p></div><a href="/#mapa">Explorar el mapa ${arrow}</a></aside></section>`}
+${advice}
 <section class="discover-more"><div class="wrap discover-inner"><div><p class="eyebrow">El viaje sigue</p><h2>Loja tiene más historias para ti.</h2><p>Descubre sus cantones, encuentra nuevos lugares y vive la provincia a tu manera.</p></div><a href="/cantones.html" class="hero-button">Descubrir los cantones ${arrow}</a></div></section></main>
 <footer><div class="wrap footer-inner"><a href="/" class="footer-brand">VisitaLoja.com</a><p>Hecho en Loja, con mucho talento.</p><a href="/">Volver a la guía ${arrow}</a></div></footer></body></html>`;
 };
