@@ -14,3 +14,12 @@ test('public data is bounded, publication is explicit and invalid entries fail v
 test('admin save is isolated and public players are click-loaded with an inline mobile option',()=>{
  const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');const admin=read('js/admin-video-gallery.js'),publicJS=read('js/video-gallery.js');assert.match(admin,/doc\('videoGallery'\)/);assert.match(admin,/runTransaction/);assert.match(admin,/code:'conflict'/);assert.match(publicJS,/button.onclick=play/);assert.match(publicJS,/player.playsInline=true/);assert.match(publicJS,/player.allowFullscreen=true/);assert.match(publicJS,/media.pause\(\)/);assert.match(publicJS,/releaseFocus\?\.\(\)/);assert.match(read('firestore.rules'),/match \/settings\/\{documentId\}[\s\S]*?allow create, update, delete: if isViveLojaAdmin\(\)/);
 });
+
+test('homepage gallery reads published videos using the named public Firebase app',async()=>{
+ const vm=await import('node:vm'),model=require('../js/video-gallery-model.js');
+ class Element{constructor(){this.children=[];this.hidden=false;}append(...nodes){this.children.push(...nodes);}setAttribute(){}replaceChildren(...nodes){this.children=nodes;}querySelector(){return null;}}
+ const host=new Element(),calls=[],document={getElementById:id=>id==='loja-en-video'?host:null,createElement:()=>new Element(),addEventListener(){}};
+ const firestore={collection(name){calls.push(name);return{doc(id){calls.push(id);return{onSnapshot(next){next({exists:true,data:()=>({active:true,items:[{title:'Jipiro',url:'https://youtu.be/n0BJGAkU9cg',published:true}]})});}};}};}};
+ const context={window:{VisitaLojaVideos:model},document,firebase:{app(name){assert.equal(name,'viveLojaPublic');return{firestore:()=>firestore};},firestore(){throw Error('No default Firebase app');}}};
+ vm.runInNewContext(fs.readFileSync(new URL('../js/video-gallery.js',import.meta.url),'utf8'),context);assert.deepEqual(calls,['settings','videoGallery']);assert.equal(host.hidden,false);assert.equal(host.children[1].children.length,1);
+});
