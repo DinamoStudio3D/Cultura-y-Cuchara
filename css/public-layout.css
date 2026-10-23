@@ -951,8 +951,6 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 #latestVideoBanner{padding:14px;gap:10px;border-radius:16px}#latestVideoBanner>div:first-child{width:32px;height:32px;font-size:16px;border-radius:10px}
 #latestVideoTitleText{font-size:14px;line-height:1.45;display:block;-webkit-line-clamp:unset}
 #latestVideoBanner>button{width:44px;height:44px;padding:0;display:grid;place-items:center}#latestVideoBanner>button span{display:none}#latestVideoBanner>button i{margin:0}
-#mobileMenu #welcomeMusicToggle{position:static;width:100%;height:auto;min-height:44px;margin-top:14px;border-radius:12px;padding:12px;gap:10px;font-size:13px;box-shadow:none;backdrop-filter:none}
-#mobileMenu #welcomeMusicToggle:after{content:attr(aria-label)}
 }
 
 @media(prefers-reduced-motion:reduce){.vl-discovery-inner>a{transition:none}}
@@ -1719,5 +1717,13 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
  @media (max-width: 767px) and (max-height: 600px) {
   #mapa #lojaMap { height:480px !important; }
   #mapa.vl192-selected-stop #lojaMap { height:380px !important; }
+ }
+}
+
+/* Keep music available without opening the mobile menu. */
+@layer vl-layout {
+ @media(max-width:767px) {
+  body #welcomeMusicToggle {position:fixed!important;top:auto!important;right:max(12px,env(safe-area-inset-right,0px))!important;bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;width:48px!important;height:48px!important;min-height:48px!important;margin:0!important;border-radius:50%!important;z-index:68!important;box-shadow:0 4px 18px #071c2b40!important;}
+  body #welcomeMusicToggle:focus-visible {outline:3px solid #e3ab48;outline-offset:3px;}
  }
 }
