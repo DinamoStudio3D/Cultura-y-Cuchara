@@ -4,3 +4,5 @@
 [data-video-gallery-link][hidden]{display:none!important}
 .video-gallery{scroll-margin-top:90px}.video-gallery-play{isolation:isolate}.video-gallery .video-gallery-play-label{position:relative;z-index:2;color:#fff!important;background:#062641c9;border-radius:30px;padding:7px 14px;line-height:1.4}.video-gallery-play-icon{position:relative;z-index:2}.video-gallery-provider{position:absolute;z-index:2;left:12px;top:12px;background:#071c32cc;color:#fff!important;border:1px solid #ffffff60;border-radius:6px;padding:5px 8px;font-size:11px;font-weight:750}.video-gallery .video-gallery-stop{color:#fff!important}.video-gallery .video-gallery-more{color:#fff!important}
 @media(hover:hover){.video-gallery-play img{transition:transform .25s}.video-gallery-play:hover img{transform:scale(1.04)}}@media(prefers-reduced-motion:reduce){.video-gallery-play img{transition:none}}
+
+.video-gallery-stage,.video-gallery-more{--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff}.video-gallery-play-icon{--vl-text:#075bb2}
