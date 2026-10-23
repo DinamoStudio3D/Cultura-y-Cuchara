@@ -13,6 +13,7 @@
  document.addEventListener('play',event=>{const media=event.target;if(isWelcome(media)||!media?.addEventListener)return;bind(media);acquire(media);},true);
  root.VisitaLojaAudioFocus={
   hasForegroundAudio:()=>blocked,
+  hold(token){acquire(token);return()=>release(token);},
   trackSpeech(utterance){if(!utterance)return;voices.add(utterance);acquire(utterance);const finish=()=>{voices.delete(utterance);release(utterance);};utterance.addEventListener('end',finish,{once:true});utterance.addEventListener('error',finish,{once:true});},
   cancelSpeech(){for(const utterance of voices)release(utterance);voices.clear();}
  };
