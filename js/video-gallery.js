@@ -13,5 +13,5 @@
   more.onclick=()=>{const old=limit;limit+=6;render();grid.children[old]?.querySelector('button')?.focus();};document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});return{configure(value){data=model.normalize(value);limit=6;render();},stop};
  }
  window.VisitaLojaVideoGallery={mount};const host=document.getElementById('loja-en-video');if(!host)return;const gallery=mount(host);gallery.configure({});
- try{firebase.firestore().collection('settings').doc('videoGallery').onSnapshot(doc=>gallery.configure(doc.exists?doc.data():{}),()=>gallery.configure({}));}catch(_){host.hidden=true;}
+ try{firebase.app('viveLojaPublic').firestore().collection('settings').doc('videoGallery').onSnapshot(doc=>gallery.configure(doc.exists?doc.data():{}),()=>gallery.configure({}));}catch(_){host.hidden=true;}
 })();
