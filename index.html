@@ -432,6 +432,9 @@
 <link rel="stylesheet" href="css/promo-dialog.css?v=1">
 <link rel="stylesheet" href="css/gallery-viewer.css?v=2">
 <link rel="stylesheet" href="css/video-gallery.css?v=1">
+<link rel="stylesheet" href="css/place-discovery.css?v=1">
+<script src="js/chabaquito-place-config.js?v=1"></script>
+<script src="js/place-discovery.js?v=1"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -1188,10 +1191,14 @@
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-brandGold text-sm"></i>
                         <button id="smartSearchClearButton" type="button" onclick="clearSmartSearch()" class="hidden absolute right-3 top-2.5 w-7 h-7 rounded-full text-gray-400 hover:bg-gray-200" aria-label="Limpiar búsqueda"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                    <p id="smartSearchStatus" class="text-[10px] text-gray-500 mt-2 pl-3" data-i18n="smartSearchHelp">Busca por nombre, actividad, horario o cercanía.</p>
+                    <p id="smartSearchStatus" role="status" aria-live="polite" class="text-[10px] text-gray-500 mt-2 pl-3" data-i18n="smartSearchHelp">Busca por nombre, actividad, horario o cercanía.</p>
                 </div>
             </div>
 
+            <div class="discovery-controls" role="group" aria-label="Filtrar paradas">
+              <label for="placeCantonFilter"><span>Cantón</span><select id="placeCantonFilter" onchange="searchItems()"><option value="">Toda la provincia</option></select></label>
+              <label class="discovery-open"><input id="placeOpenFilter" type="checkbox" onchange="searchItems()"><span>Abierto ahora<small>Solo lugares con horario completo registrado. Confirma la atención antes de ir.</small></span></label>
+            </div>
             <div class="flex flex-col gap-3 mb-6 pb-4 border-b border-gray-100">
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full" id="categoryScroll"></div>
                 <div class="flex overflow-x-auto hide-scrollbar gap-2 w-full">
@@ -1213,7 +1220,7 @@
             
             <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
                 <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
-                <span data-i18n="noResults">No encontramos resultados para esa búsqueda.</span>
+                <span data-i18n="noResults">No encontramos resultados para esa búsqueda.</span><p class="mt-2">Prueba con otro cantón, una categoría diferente o menos palabras.</p><button type="button" onclick="clearAllPlaceFilters()" class="hero-button mt-4">Ver todas las paradas</button>
             </div>
         </div>
     </section>
@@ -5270,7 +5277,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
                 const gpsUrl=publicPlaceDirectionsUrl(loc,userCoords);
 
-                const openBadge = isOpen 
+                const openBadge = !window.VisitaLojaDiscovery.knownHours(loc) ? `<span class="text-[10px] text-gray-500">${currentLang==='en'?'Hours to confirm':'Horario por confirmar'}</span>` : isOpen
                     ? `<span class="bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> Abierto</span>`
                     : `<span class="bg-gray-100 text-gray-500 font-bold px-2.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle text-[6px] mr-1 text-gray-400"></i> Cerrado</span>`;
 
@@ -5310,6 +5317,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                             </div>
                             ${hasFeaturedVideo?`<button type="button" class="vl-video-highlight" onclick="event.stopPropagation();openBusinessVideo(decodeURIComponent('${actionId}'))" aria-label="${currentLang==='en'?'Watch video of ':'Ver vídeo de '}${locTitle}"><i class="fa-solid fa-circle-play" aria-hidden="true"></i>${currentLang==='en'?'Meet this place on video':'Conoce este lugar en vídeo'}</button>`:''}
                             <button type="button" class="vl-card-explore" onclick="event.stopPropagation();simulateMapClick(${realIndex})" aria-label="${currentLang==='en'?'Explore ':'Explorar '}${locTitle}"><span>${currentLang==='en'?'Explore this place':'Explorar este lugar'}</span><span class="vl-card-explore-icon"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span></button>
+                            <nav class="discovery-card-links" aria-label="${currentLang==='en'?'Plan your visit':'Planifica tu visita'}"><a href="${escapeHTML(buildLocationShareUrl(loc))}" onclick="event.stopPropagation()">${currentLang==='en'?'Full details':'Ver ficha completa'}</a><a href="${escapeHTML(gpsUrl)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${currentLang==='en'?'Directions':'Cómo llegar'}</a></nav>
                         </div></div>
                     </div>
                 `);
@@ -5322,6 +5330,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             renderAdminLocationsList();
             updatePassportUI();
             window.VisitaLojaHomepage?.apply();
+            filterItems(placeDiscoveryCategory,document.querySelector(`.filter-btn[data-place-category="${placeDiscoveryCategory}"]`));
         }
 
         function openQrClaimModal(e, localId) {
@@ -7515,6 +7524,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(loc.category==='aliado'){
                 statusEl.className="bg-violet-700 text-white font-bold px-2.5 py-0.5 rounded-md text-[10px]";
                 statusEl.innerHTML='<i class="fa-solid fa-handshake mr-1"></i> '+(currentLang==='en'?'Project partner':'Marca vinculada');
+            } else if(!window.VisitaLojaDiscovery.knownHours(loc)) {
+                statusEl.className="bg-gray-100 text-gray-600 font-bold px-2.5 py-0.5 rounded-md text-[10px]";
+                statusEl.textContent=currentLang==='en'?'Hours to confirm':'Horario por confirmar';
             } else if(isOpen) {
                 statusEl.className = "bg-green-100 text-green-800 font-bold px-2.5 py-0.5 rounded-md text-[10px]";
                 statusEl.innerHTML = '<i class="fa-solid fa-circle text-[6px] mr-1 text-green-600"></i> ' + (currentLang === 'en' ? 'Open now' : 'Abierto ahora');
@@ -7901,7 +7913,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if (label) label.textContent = currentLang === 'en' ? 'Clear filters' : 'Limpiar filtros';
         }
 
+        let placeDiscoveryCategory = 'all';
+        for(const canton of window.ChabaquitoPlaceConfig.CANTONS){const option=new Option(canton.name,canton.id);document.getElementById('placeCantonFilter').append(option);}
         function clearAllPlaceFilters() {
+            document.getElementById('placeCantonFilter').value='';
+            document.getElementById('placeOpenFilter').checked=false;
+            document.getElementById('searchInput').value='';
             const allButton = document.querySelector('.filter-btn[onclick*="\'all\'"]');
             filterItems('all', allButton);
             updateClearFiltersButton(false);
@@ -7918,57 +7935,29 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function clearSmartSearch(){const input=document.getElementById('searchInput');if(input)input.value='';searchItems();}
         function searchPlacesNearMe(){if(!navigator.geolocation){showToast(currentLang==='en'?'Your browser does not support location.':'Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};runSmartSearch(currentLang==='en'?'near me':'cerca de mí');},()=>showToast(currentLang==='en'?'We could not get your location.':'No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
         function searchItems() {
-            const input=document.getElementById('searchInput'),query=normalizeSmartSearch(input?.value),terms=smartSearchTerms(query),cards=[...document.querySelectorAll('.local-item')],status=document.getElementById('smartSearchStatus');
-            const wantsOpen=/abierto|ahora|open|now/.test(query),wantsNear=/cerca|proximo|mi ubicacion|near|location/.test(query),wantsPassport=/pasaporte|sello|passport|stamp/.test(query);
-            const ranked=cards.map((card,order)=>{const location=locations.find(loc=>String(loc.id)===String(card.dataset.locationId))||locations[order],haystack=normalizeSmartSearch([location?.title,location?.titleEn,location?.tag,location?.tagEn,location?.desc,location?.descEn,location?.dish,location?.dishEn,location?.category,location?.address,location?.services,location?.keywords].flat().join(' '));let score=terms.reduce((total,term)=>total+(haystack.includes(term)?12:0),0);if(wantsOpen&&location&&isLocOpenNow(location))score+=30;if(wantsOpen&&location&&!isLocOpenNow(location))score-=100;if(wantsPassport&&location&&!visitedLocations.includes(location.id)&&['hotel','hueca','cafe','urbana','heladeria','panaderia','bar'].includes(location.category))score+=25;let distance=null;if(wantsNear&&userCoords&&location){distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(location.lat),Number(location.lng));if(Number.isFinite(distance))score+=Math.max(0,30-distance*6);}if(!query)score=1;return{card,score,order,distance};});
-            ranked.sort((a,b)=>b.score-a.score||a.order-b.order);
-            let visible=0;ranked.forEach(item=>{const matches=!query||item.score>0;item.card.classList.toggle('hidden-item',!matches);item.card.style.opacity=matches?'1':'0';item.card.style.order=matches?String(-Math.round(item.score)):'999';if(matches)visible++;});
-            const noRes=document.getElementById('noResults');if(noRes)noRes.classList.toggle('hidden',visible>0);
-            const clearSearchButton=document.getElementById('smartSearchClearButton');
-            if(clearSearchButton)clearSearchButton.classList.toggle('hidden',!query);
-            updateClearFiltersButton(Boolean(query));
-            if(status){if(!query)status.textContent=currentLang==='en'?'Search by name, activity, opening hours or proximity.':'Busca por nombre, actividad, horario o cercanía.';else if(wantsNear&&!userCoords)status.textContent=currentLang==='en'?'Tap “Near me” to sort using your location.':'Pulsa “Cerca de mí” para ordenar usando tu ubicación.';else status.textContent=currentLang==='en'?(visible===1?'We found 1 place for you.':`We found ${visible} places sorted by relevance.`):(visible===1?'Encontramos 1 parada para ti.':`Encontramos ${visible} paradas ordenadas por relevancia.`);}
+            const model=window.VisitaLojaDiscovery,input=document.getElementById('searchInput'),query=input?.value||'',cantonId=document.getElementById('placeCantonFilter')?.value||'',openOnly=document.getElementById('placeOpenFilter')?.checked===true;
+            if(!model)return;
+            const near=/\b(cerca|near|proximo)\b/.test(model.normalize(query));let visible=0;
+            document.querySelectorAll('.local-item').forEach(card=>{
+                const place=locations.find(p=>String(p.id)===card.dataset.locationId);
+                const match=!!place&&model.matches(place,{query,category:placeDiscoveryCategory,cantonId,openOnly},isLocOpenNow);
+                card.classList.toggle('hidden-item',!match);card.style.opacity=match?'1':'0';card.style.order='';
+                if(match){visible++;if(near&&userCoords){const coords=publicPlaceCoordinates(place);if(coords){const distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,coords[0],coords[1]);if(Number.isFinite(distance))card.style.order=String(Math.round(distance*1000));}}}
+            });
+            document.getElementById('noResults')?.classList.toggle('hidden',visible>0);
+            document.getElementById('smartSearchClearButton')?.classList.toggle('hidden',!query);
+            updateClearFiltersButton(Boolean(query||cantonId||openOnly||placeDiscoveryCategory!=='all'));
+            const status=document.getElementById('smartSearchStatus');if(status)status.textContent=currentLang==='en'?`${visible} places match your filters.`:`${visible===1?'1 parada coincide':visible+' paradas coinciden'} con tu búsqueda y filtros.`;
         }
 
         function filterItems(category, btnElement) {
-            const searchInput = document.getElementById('searchInput');
-            if(searchInput) searchInput.value = ""; 
-            const noRes = document.getElementById('noResults');
-            if(noRes) noRes.classList.add('hidden');
-
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('bg-brandDark', 'text-brandGold', 'border-brandDark');
-                btn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
-                btn.setAttribute('aria-pressed', 'false');
+            placeDiscoveryCategory=category;
+            document.querySelectorAll('.filter-btn').forEach(btn=>{
+                const active=btn===btnElement||btn.dataset.placeCategory===category;
+                btn.classList.toggle('bg-brandDark',active);btn.classList.toggle('text-brandGold',active);btn.classList.toggle('border-brandDark',active);
+                btn.classList.toggle('bg-white',!active);btn.classList.toggle('text-gray-600',!active);btn.classList.toggle('border-gray-200',!active);btn.setAttribute('aria-pressed',String(active));
             });
-            if (btnElement) {
-                btnElement.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
-                btnElement.classList.add('bg-brandDark', 'text-brandGold', 'border-brandDark');
-                btnElement.setAttribute('aria-pressed', 'true');
-            }
-
-            let visibleCount = 0;
-            document.querySelectorAll('.local-item').forEach(item => {
-                if (category === 'all' || item.classList.contains(category) || (category === 'food' && ['hueca','cafe','urbana','heladeria','panaderia','bar'].some(type => item.classList.contains(type)))) {
-                    item.style.opacity = '1';
-                    item.classList.remove('hidden-item');
-                    visibleCount++;
-                } else { 
-                    item.style.opacity = '0';
-                    item.classList.add('hidden-item'); 
-                }
-            });
-            const clearSearchButton = document.getElementById('smartSearchClearButton');
-            if (clearSearchButton) clearSearchButton.classList.add('hidden');
-            const status = document.getElementById('smartSearchStatus');
-            if (status) {
-                status.textContent = category === 'all'
-                    ? (currentLang === 'en' ? 'Explore all available stops.' : 'Explora todas las paradas disponibles.')
-                    : (currentLang === 'en'
-                        ? (visibleCount === 1 ? '1 stop in this category.' : visibleCount + ' stops in this category.')
-                        : (visibleCount === 1 ? '1 parada en esta categoría.' : visibleCount + ' paradas en esta categoría.'));
-            }
-            updateClearFiltersButton(category !== 'all');
+            searchItems();
         }
 
         function syncFloatingAccountInviteVisibility() {
