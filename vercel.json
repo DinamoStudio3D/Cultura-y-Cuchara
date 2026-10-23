@@ -78,5 +78,6 @@
       "destination": "/api/categoria-seo?categoria=marcas-aliadas-en-loja"
     }
   ],
-  "buildCommand": "npm run build:css"
+  "buildCommand": "npm run build:css",
+  "outputDirectory": "."
 }
