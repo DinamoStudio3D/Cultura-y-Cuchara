@@ -47,3 +47,11 @@ El handler rechaza el proyecto Firebase de producción y los orígenes públicos
 7. Después, realizar las pruebas completas del visitante, encargado y administrador que el propietario dejó para más adelante.
 
 No afirmar que el sistema está listo para producción ni fusionar esta ampliación a main mientras estos puntos sigan abiertos. La demo `tests/reward-programs-review.html` sigue usando memoria y no valida el backend real.
+
+## Ampliación: asignación única e inspección de transición
+
+El servicio registra una asignación transaccional por visita en `rewardVisitAllocationsV2`, compartida por todas las tarjetas de fidelidad. Una visita no puede acreditarse a dos inscripciones. Además compara la tarjeta seleccionada para la fecha del sello con la inscripción solicitada para evitar acreditar la habitual durante una temporada distinta. Esto no impide que esa visita contribuya al pasaporte, que cuenta paradas diferentes.
+
+`lib/reward-programs-transition.cjs` prepara una inspección administrativa de solo lectura por cuenta/parada. Compara contadores con visitas confirmadas y su origen, ciclos y premios ya emitidos, calcula el remanente con la meta antigua y devuelve bloqueos y una huella de la evidencia. No mueve datos, no modifica los sellos y no crea premios. Una evidencia consistente no autoriza por sí sola la migración: sigue pendiente revisar las condiciones históricas, obtener una exportación verificada del origen y coordinar el cambio de motor.
+
+La operación `admin/inspect-transition` se expone únicamente en el handler aislado. Inspecciona los datos de ese entorno; no se conecta al proyecto activo. Falta usar una copia verificada para evaluar los datos actuales. No se realizaron pruebas funcionales de esta ampliación.
