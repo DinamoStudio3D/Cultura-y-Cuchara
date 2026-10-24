@@ -63,3 +63,11 @@ La solicitud de fidelidad exige el ciclo esperado por el visitante. Su identific
 `expireClaim` permite al propietario o al encargado autorizado liberar de forma transaccional un premio pendiente cuyo plazo ya venció. La actualización del estado y la devolución del cupo son atómicas; los premios entregados o ya vencidos no devuelven cupos por segunda vez. El premio conserva su registro y el ciclo consumido, por lo que la caducidad no crea otra recompensa gratuita. La cartera concilia hasta 20 vencimientos por consulta y comunica si algún cupo necesita revisión. La consulta de códigos del encargado también concilia un premio vencido.
 
 La cartera usa la hora del servidor para mostrar vencimientos. Sigue pendiente conciliar premios invalidados por anulación de sellos (no es el mismo caso que vencimiento), completar renovación de políticas, transición y entorno aislado. Esta ampliación no se ha sometido a pruebas funcionales ni se ha desplegado en producción.
+
+## Confirmación atómica de visitas en el entorno aislado
+
+Se añadieron `customer/visit-code` y `merchant/confirm-visit`, con sus controles en cartera y panel del encargado. El código V2 usa 12 caracteres hexadecimales, dura diez minutos y se conserva mientras esté pendiente. No se genera en la colección de códigos del motor legado. Solo la tarjeta actualmente seleccionada por la configuración puede generar un código.
+
+El encargado registra el consumo y confirma presencia/condiciones. El servidor valida asignación, propietario, tarjeta vigente, consumo, caducidad y cuota diaria. La visita original, la asignación única, el crédito y la confirmación del código se escriben en la misma transacción. Un reintento por el mismo encargado devuelve la confirmación anterior; no añade otro sello. Esta operación existe exclusivamente en el backend aislado preparado, no en el Worker activo.
+
+Pendiente conectar una anulación atómica equivalente, completar la transición y preparar la infraestructura. No se han probado estos recorridos. La afirmación anterior de que confirmación y créditos eran operaciones separadas queda sustituida para este nuevo endpoint; la conciliación de visitas preexistentes sigue siendo una operación separada.

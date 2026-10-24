@@ -6,7 +6,7 @@
   if(!projectId||projectId==='cultura-y-cuchara'||['visitaloja.com','www.visitaloja.com'].includes(host))throw Error('Usa una cuenta y una web de pruebas aisladas.');
   if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||['visitaloja.com','www.visitaloja.com'].includes(url.hostname))throw Error('El servicio requiere una dirección HTTPS de pruebas.');
   const base=url.href.replace(/\/$/,'')+'/reward-programs-v2/';
-  const allowed=new Set(['admin/load','admin/inspect-transition','admin/save-draft','admin/publish','customer/enroll','customer/claim','customer/expire-claim','merchant/expire-claim','customer/wallet','customer/catalog','merchant/lookup-claim','merchant/credit-visit','merchant/reconcile-reversal','merchant/deliver']);
+  const allowed=new Set(['admin/load','admin/inspect-transition','admin/save-draft','admin/publish','customer/enroll','customer/claim','customer/expire-claim','merchant/expire-claim','customer/wallet','customer/catalog','customer/visit-code','merchant/confirm-visit','merchant/lookup-claim','merchant/credit-visit','merchant/reconcile-reversal','merchant/deliver']);
   async function call(action,input={}){
    if(!allowed.has(action))throw Error('Operación desconocida.');
    const auth=app.auth(),user=auth.currentUser;
