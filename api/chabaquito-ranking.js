@@ -8,6 +8,11 @@ module.exports=async function handler(req,res){
   if(req.method!=="POST") return res.status(405).json({error:"Método no permitido."});
   try{
     const user=await authenticatedUser(req);
+    if(req.query?.action==='passport-claim'){
+      const {claimPassport}=require('../functions/passport-claim');
+      const result=await claimPassport({db:firestore(),user,input:req.body});
+      return res.status(200).json(result);
+    }
     let patch;
     try { patch=rankingPreferencePatch({participateInRanking:req.body?.participateInRanking,publicAlias:req.body?.publicAlias}); }
     catch(error){ return res.status(400).json({error:error?.message||"Preferencia de ranking inválida."}); }

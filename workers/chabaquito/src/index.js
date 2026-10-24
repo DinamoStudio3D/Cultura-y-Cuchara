@@ -425,6 +425,7 @@ async function reverseMerchantVisit(env, user, input) {
   const visitDocument = await firestoreGetDocumentInTransaction(accessToken, visitPath, transaction);
   if (!visitDocument) throw new Error("Visit was not found");
   const visit = decodeFirestoreDocument(visitDocument);
+  if(visit.passportClaimIds?.length)throw new Error("Esta visita respalda una recompensa del pasaporte registrada. Solicita revisión al administrador.");
   if (visit.status !== "confirmed") throw new Error("Visit is not confirmed");
   if (visit.confirmedBy !== user.uid) throw new Error("Only the confirming merchant can reverse this visit");
   if (!validDocumentId(visit.userId) || !validDocumentId(visit.placeId)) throw new Error("Visit data is invalid");

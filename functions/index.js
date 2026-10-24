@@ -134,6 +134,7 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
     const visitSnap = await tx.get(visitRef);
     if (!visitSnap.exists) throw new HttpsError("not-found", "La visita no existe.");
     const visit = visitSnap.data();
+    if(visit.passportClaimIds?.length)throw new HttpsError("failed-precondition", "Esta visita respalda una recompensa del pasaporte registrada. Solicita revisión al administrador.");
     const liveMerchant = await tx.get(db.collection("missionRewardMerchants").doc(request.auth.uid));
     if (!liveMerchant.exists || liveMerchant.data().active === false || !(liveMerchant.data().placeIds || []).includes(visit.placeId)) throw new HttpsError("permission-denied", "Acceso del negocio revocado.");
     if (visit.status !== "confirmed" || visit.confirmedBy !== merchant.uid) throw new HttpsError("permission-denied", "Solo puede anularla quien la confirmó.");

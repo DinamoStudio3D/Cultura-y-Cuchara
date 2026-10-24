@@ -3440,9 +3440,10 @@
         async function syncSecurePassportStamps(user) {
             if (!user || !db) return;
             try {
+                const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026';
                 const snapshot = await db.collection('securePassportStamps').where('userId', '==', user.uid).get();
-                if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
-                const secureIds = snapshot.docs.map(doc => doc.data().placeId).filter(Boolean);
+                if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid)||campaignId!==(passportCampaignConfig.campaignId||'pasaporte-2026'))return;
+                const secureIds = snapshot.docs.map(doc=>doc.data()).filter(stamp=>stamp.campaignId===campaignId).map(stamp=>stamp.placeId).filter(Boolean);
                 {
                     visitedLocations = passportVisitedPlaceIds(secureIds);
                     localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
@@ -7818,10 +7819,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function passportCampaignIsActive(){if(passportCampaignConfig.active===false)return false;const now=Date.now(),start=passportCampaignConfig.startAt?new Date(passportCampaignConfig.startAt).getTime():null,end=passportCampaignConfig.endAt?new Date(passportCampaignConfig.endAt).getTime():null;return!(start&&Number.isFinite(start)&&now<start)&&!(end&&Number.isFinite(end)&&now>end);}
 
-        function passportClaimCode(configured={}){const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026',key=`cyc_passport_claim_${campaignId}_${passportMode}`,stored=localStorage.getItem(key);if(stored)return stored;const prefix=String(configured.code||(passportMode==='turista'?'TURISTA':'LOJANO')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8)||'VIVELOJA',random=Math.random().toString(36).slice(2,7).toUpperCase(),code=`${prefix}-${random}`;localStorage.setItem(key,code);return code;}
 
         let passportRewardIntent=false;
-        function passportCompletionDocumentId(user,campaignId,mode){return `${user.uid}_${campaignId}_${mode}`.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,180);}
         function showPassportRewardMessage(text,isError=false){const notice=document.getElementById('passportRewardMessage');if(!notice)return;notice.textContent=text;notice.className=`text-xs rounded-xl p-3 mt-3 ${isError?'bg-red-500/15 text-red-200':'bg-emerald-500/15 text-emerald-100'}`;}
         let selectedPassportReward={};
         function passportRewardSelection(configured){const key=(passportCampaignConfig.campaignId||'pasaporte-2026')+'_'+passportMode,choices=configured.choices;return choices?{id:selectedPassportReward[key]||'',reward:choices[selectedPassportReward[key]]}:null;}
@@ -7833,28 +7832,24 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(!currentVisitorProfile?.profileComplete){passportRewardIntent=true;closeModal('pasaporteModal');openModal('accountModal');fillVisitorProfileForm(user,currentVisitorProfile||{});showVisitorAccountView('visitorProfileForm');return;}
             const mode=passportMode,configured=passportCampaignLoaded?(mode==='turista'?passportCampaignConfig.tourist:passportCampaignConfig.local):explorerBenefitConfig;
             const choice=passportRewardSelection(configured);
-            const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026',claimCode=passportClaimCode(configured),completionId=passportCompletionDocumentId(user,campaignId,mode),button=document.getElementById('passportRewardClaimButton');
+            const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026',button=document.getElementById('passportRewardClaimButton');
             if(button?.disabled)return;
-            if(button){button.disabled=true;button.textContent='Registrando premio…';}
+            if(button){button.disabled=true;button.textContent='Verificando tus sellos…';}
             try{
-                const ref=db.collection('passportCompletions').doc(completionId),codeRef=db.collection('passportRewardClaimCodes').doc(claimCode),choiceFields=choice?.reward?{optionId:choice.id,rewardSnapshot:choice.reward,merchantUid:choice.reward.merchantUid}:{};
-                const claimData={campaignId,mode,sessionId:businessAnalyticsSession,userId:user.uid,stampsCount:6,claimCode,status:'pending',completedAt:firebase.firestore.FieldValue.serverTimestamp(),...choiceFields};
-                let data=claimData,alreadyRegistered=false;
-                try{const existing=await ref.get();if(existing.exists){data=existing.data();alreadyRegistered=true;}}catch(error){if(error?.code!=='permission-denied')throw error;}
-                if(!alreadyRegistered){
-                if(choice&&(!choice.reward||choice.reward.active!==true)){showPassportRewardMessage('Selecciona una recompensa antes de generar tu código.',true);return;}
-                try{const batch=db.batch();batch.set(ref,claimData);batch.set(codeRef,{completionId,campaignId,mode,userId:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp(),...(choice?{optionId:choice.id,merchantUid:choice.reward.merchantUid}:{})});await batch.commit();}
-                catch(error){if(error?.code!=='permission-denied')throw error;const existing=await ref.get();if(!existing.exists)throw error;data=existing.data();alreadyRegistered=true;}
-                }
+                const token=await user.getIdToken();
+                const response=await fetch('/api/chabaquito-ranking?action=passport-claim',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({campaignId,mode,optionId:choice?.id||''})});
+                const data=await response.json();
+                if(!response.ok)throw new Error(data.error||'No pudimos verificar tu pasaporte.');
+                const alreadyRegistered=data.alreadyRegistered;
                 if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid)||passportMode!==mode||campaignId!==(passportCampaignConfig.campaignId||'pasaporte-2026'))return;
                 if(data.rewardSnapshot){document.getElementById('passportBenefitTitle').textContent=data.rewardSnapshot.title;document.getElementById('passportBenefitDescription').textContent=data.rewardSnapshot.description||'';}
                 document.getElementById('passportRewardChoices')?.replaceChildren();
-                document.getElementById('passportBenefitCode').textContent=data.claimCode||claimCode;
+                document.getElementById('passportBenefitCode').textContent=data.claimCode;
                 document.getElementById('passportBenefitCodeBox').classList.remove('hidden');
                 document.getElementById('passportRewardRegistration').classList.add('hidden');
                 localStorage.setItem(`cyc_passport_completed_${campaignId}_${mode}`,'1');
                 showPassportRewardMessage(data.status==='delivered'?'Esta recompensa ya fue entregada.':alreadyRegistered?'Tu elección ya estaba registrada. Conservas el mismo premio y código.':'¡Recompensa elegida y registrada a tu nombre!');
-            }catch(error){showPassportRewardMessage(error?.code==='permission-denied'?'No se pudo registrar la elección. Revisa las reglas publicadas o la disponibilidad del premio.':'No pudimos registrar el premio. Inténtalo nuevamente.',true);}
+            }catch(error){showPassportRewardMessage(error?.message||'No pudimos registrar el premio. Inténtalo nuevamente.',true);}
             finally{if(button){button.disabled=false;button.textContent='Registrar y generar mi código';}}
         }
 
@@ -8671,7 +8666,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             db.collection('siteContent').doc('chabaquito').onSnapshot(snapshot => {
                 if (snapshot.exists) applyChabaquitoConfig(snapshot.data());
             }, error => console.warn('No se pudo sincronizar Chabaquito:', error));
-            db.collection('siteContent').doc('passport').onSnapshot(snapshot=>{if(!snapshot.exists)return;const data=snapshot.data();passportCampaignLoaded=true;passportCampaignConfig={...passportCampaignConfig,...data,tourist:{...passportCampaignConfig.tourist,...(data.tourist||{})},local:{...passportCampaignConfig.local,...(data.local||{})}};const intro=document.getElementById('passportCampaignIntro');if(intro)intro.textContent=passportCampaignConfig.introText||'';updatePassportUI();},error=>console.warn('No se pudo sincronizar el Pasaporte:',error));
+            db.collection('siteContent').doc('passport').onSnapshot(snapshot=>{if(!snapshot.exists)return;const data=snapshot.data();passportCampaignLoaded=true;passportCampaignConfig={...passportCampaignConfig,...data,tourist:{...passportCampaignConfig.tourist,...(data.tourist||{})},local:{...passportCampaignConfig.local,...(data.local||{})}};const intro=document.getElementById('passportCampaignIntro');if(intro)intro.textContent=passportCampaignConfig.introText||'';updatePassportUI();if(visitorAuth?.currentUser)syncSecurePassportStamps(visitorAuth.currentUser);},error=>console.warn('No se pudo sincronizar el Pasaporte:',error));
         }
 
         let mascotMessageTimer;

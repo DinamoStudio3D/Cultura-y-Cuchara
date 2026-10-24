@@ -404,49 +404,13 @@ service cloud.firestore {
           && exists(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid))
           && get(/databases/$(database)/documents/missionRewardMerchants/$(request.auth.uid)).data.active == true;
     }
-    function validPassportChoice(data) {
-      let config = get(/databases/$(database)/documents/siteContent/passport).data;
-      let reward = data.mode == 'turista' ? config.tourist : config.local;
-      let choices = reward.get('choices', null);
-      return config.campaignId == data.campaignId && config.active != false && reward.active != false
-        && (choices == null
-          ? !data.keys().hasAny(['optionId', 'rewardSnapshot', 'merchantUid'])
-          : data.keys().hasAll(['optionId', 'rewardSnapshot', 'merchantUid'])
-            && data.optionId in choices && choices[data.optionId].active == true
-            && data.rewardSnapshot == choices[data.optionId]
-            && data.merchantUid == choices[data.optionId].merchantUid);
-    }
-
     match /passportCompletions/{completionId} {
       allow read: if isViveLojaAdmin()
         || (request.auth != null && resource.data.userId == request.auth.uid)
         || passportClaimMerchant(resource.data);
       allow delete: if isViveLojaAdmin();
-      allow create: if request.auth != null
-        && exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid))
-        && get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.profileComplete == true
-        && request.resource.data.keys().hasOnly([
-          'campaignId', 'mode', 'sessionId', 'userId', 'stampsCount',
-          'claimCode', 'status', 'completedAt', 'optionId', 'rewardSnapshot', 'merchantUid'
-        ])
-        && request.resource.data.userId == request.auth.uid
-        && completionId == request.auth.uid + '_' + request.resource.data.campaignId + '_' + request.resource.data.mode
-        && request.resource.data.campaignId is string
-        && request.resource.data.campaignId.size() > 0
-        && request.resource.data.campaignId.size() <= 60
-        && request.resource.data.mode in ['turista', 'lojano']
-        && request.resource.data.sessionId is string
-        && request.resource.data.sessionId.size() > 0
-        && request.resource.data.sessionId.size() <= 100
-        && request.resource.data.stampsCount == 6
-        && request.resource.data.claimCode is string
-        && request.resource.data.claimCode.size() >= 6
-        && request.resource.data.claimCode.size() <= 20
-        && validPassportChoice(request.resource.data)
-        && request.resource.data.status == 'pending'
-        && request.resource.data.completedAt == request.time
-        && existsAfter(/databases/$(database)/documents/passportRewardClaimCodes/$(request.resource.data.claimCode))
-        && getAfter(/databases/$(database)/documents/passportRewardClaimCodes/$(request.resource.data.claimCode)).data.completionId == completionId;
+      // Claims are created only by the authenticated API after validating recorded visits.
+      allow create: if false;
       allow update: if isViveLojaAdmin() || (
         passportClaimMerchant(resource.data)
         && resource.data.status == 'pending'
@@ -462,19 +426,7 @@ service cloud.firestore {
     match /passportRewardClaimCodes/{claimCode} {
       allow read: if isViveLojaAdmin()
         || passportClaimMerchant(resource.data);
-      allow create: if isViveLojaAdmin() || (
-        request.auth != null
-        && request.resource.data.keys().hasOnly([
-          'completionId', 'campaignId', 'mode', 'userId', 'createdAt', 'optionId', 'merchantUid'
-        ])
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.completionId == request.auth.uid + '_' + request.resource.data.campaignId + '_' + request.resource.data.mode
-        && request.resource.data.createdAt == request.time
-        && existsAfter(/databases/$(database)/documents/passportCompletions/$(request.resource.data.completionId))
-        && getAfter(/databases/$(database)/documents/passportCompletions/$(request.resource.data.completionId)).data.claimCode == claimCode
-        && request.resource.data.get('optionId', '') == getAfter(/databases/$(database)/documents/passportCompletions/$(request.resource.data.completionId)).data.get('optionId', '')
-        && request.resource.data.get('merchantUid', '') == getAfter(/databases/$(database)/documents/passportCompletions/$(request.resource.data.completionId)).data.get('merchantUid', '')
-      );
+      allow create: if isViveLojaAdmin();
       allow update, delete: if isViveLojaAdmin();
     }
 
@@ -732,6 +684,7 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.userId == request.resource.data.userId
         && get(/databases/$(database)/documents/visitCodes/$(requestId)).data.placeId == request.resource.data.placeId;
       allow update: if isAssignedVisitMerchant(resource.data.placeId)
+        && resource.data.get('passportClaimIds', []).size() == 0
         && resource.data.status == 'confirmed'
         && resource.data.confirmedBy == request.auth.uid
         && request.time <= resource.data.confirmedAt + duration.value(15, 'm')
@@ -757,6 +710,7 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if isViveLojaAdmin() || (
         isAssignedVisitMerchant(resource.data.placeId)
+        && get(/databases/$(database)/documents/loyaltyVisits/$(resource.data.requestId)).data.get('passportClaimIds', []).size() == 0
         && resource.data.confirmedBy == request.auth.uid
         && request.time <= resource.data.confirmedAt + duration.value(15, 'm')
       );
