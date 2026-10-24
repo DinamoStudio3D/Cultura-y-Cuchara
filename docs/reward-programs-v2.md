@@ -71,3 +71,11 @@ Se añadieron `customer/visit-code` y `merchant/confirm-visit`, con sus controle
 El encargado registra el consumo y confirma presencia/condiciones. El servidor valida asignación, propietario, tarjeta vigente, consumo, caducidad y cuota diaria. La visita original, la asignación única, el crédito y la confirmación del código se escriben en la misma transacción. Un reintento por el mismo encargado devuelve la confirmación anterior; no añade otro sello. Esta operación existe exclusivamente en el backend aislado preparado, no en el Worker activo.
 
 Pendiente conectar una anulación atómica equivalente, completar la transición y preparar la infraestructura. No se han probado estos recorridos. La afirmación anterior de que confirmación y créditos eran operaciones separadas queda sustituida para este nuevo endpoint; la conciliación de visitas preexistentes sigue siendo una operación separada.
+
+## Anulación atómica en el entorno aislado
+
+`merchant/reverse-visit` permite al encargado original anular únicamente la visita más reciente de la parada, durante quince minutos y con un motivo obligatorio. Verifica acceso vigente, origen V2, código, crédito y cuota diaria. Actualiza visita, crédito, código y cupo diario en una sola transacción. Repetir una anulación ya registrada no vuelve a restar el cupo.
+
+Antes de escribir, recalcula los premios del usuario excluyendo la visita. Si afecta un premio entregado, rechaza la operación para revisión administrativa. Los premios pendientes que pierden elegibilidad pasan a `needs-review` y quedan bloqueados para entrega; la cartera muestra el motivo. Los premios que siguen siendo elegibles se conservan. La interfaz del encargado ofrece anulación después de confirmar, sin borrar el historial.
+
+La anulación NO libera automáticamente el stock de premios bloqueados ni emite reemplazos. Sigue pendiente resolver o recuperar esos premios de forma administrativa, además de la renovación de políticas, migración y configuración del entorno. No se realizaron pruebas funcionales ni se modificó el Worker activo.
