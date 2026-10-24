@@ -1,6 +1,7 @@
 "use strict";
 
 const crypto = require("node:crypto");
+const LoyaltySeasons = require("./loyalty-season-policy");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { initializeApp } = require("firebase-admin/app");
@@ -78,9 +79,11 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
     ]);
     if (visitSnap.exists) throw new HttpsError("already-exists", "La visita ya fue registrada.");
 
-    const program = programSnap.exists ? programSnap.data() : null;
+    const baseProgram = programSnap.exists ? programSnap.data() : {};
+    const baseCounter = counterSnap.exists ? counterSnap.data() : {};
+    const card = LoyaltySeasons.select(baseProgram,baseCounter,Date.now()), program=programSnap.exists?card.program:null;
     const passport = passportSnap.exists ? passportSnap.data() : {};
-    const counter = counterSnap.exists ? counterSnap.data() : null;
+    const counter = card.counter;
     const campaignId = passport.campaignId || "pasaporte-general";
     const stampId = cleanId(`${campaignId}_${code.userId}_${code.placeId}`);
     const stampRef = db.collection("securePassportStamps").doc(stampId);
@@ -98,20 +101,21 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
     const earned = Boolean(program && program.active !== false && newCycle > oldCycles);
     const claimed = Number(program?.claimedCount || 0);
     const stockAvailable = program?.stock == null || claimed < Number(program.stock);
-    const rewardId = cleanId(`${code.userId}_${code.placeId}_${newCycle}`);
+    const rewardId = card.seasonal?'season-'+crypto.createHash('sha256').update(JSON.stringify([code.userId,code.placeId,card.id,newCycle])).digest('hex'):cleanId(`${code.userId}_${code.placeId}_${newCycle}`);
     const rewardRef = earned && stockAvailable ? db.collection("loyaltyRewardClaims").doc(rewardId) : null;
 
     const pointAward = await pointPlan("prepareAward",{tx,db,userId:code.userId,placeId:code.placeId,requestId,now});
     if(pointAward)pointAward.apply();
     tx.update(codeRef, { status: "confirmed", confirmedAt: now, confirmedBy: merchant.uid, confirmedByName: merchant.businessName || merchant.email, passportAdded: !stampSnap.exists, updatedAt: now });
-    tx.create(visitRef, { requestId, userId: code.userId, userName: code.userName || "", userEmail: code.userEmail || "", placeId: code.placeId, placeName: code.placeName || "", confirmedBy: merchant.uid, confirmedByName: merchant.businessName || "", confirmedAt: now, passportAdded: !stampSnap.exists, purchaseAmount, receiptRef, status: "confirmed", pointsEarned: pointAward?.amount || 0, previousVisitCount: Number(counter?.visitCount || 0), previousRewardCycles: oldCycles, previousTotalSpend: Number(counter?.totalSpend || 0), previousDailyVisitCount: previousDaily, previousLastVisitDay: counter?.lastVisitDay || "", previousLastVisitAt: counter?.lastVisitAt || null, previousLastVisitRequestId: counter?.lastVisitRequestId || "", passportStampId: !stampSnap.exists ? stampId : "", rewardClaimId: rewardRef ? rewardId : "" });
-    const counterData = { visitorType: code.visitorType || "", city: code.city || "", birthMonthDay: code.birthMonthDay || "", visitCount: newCount, rewardCycles: rewardRef ? newCycle : oldCycles, lastVisitDay: today, dailyVisitCount: previousDaily + 1, lastVisitRequestId: requestId, lastVisitAt: now, totalSpend: Number(counter?.totalSpend || 0) + purchaseAmount, updatedAt: now };
-    if (counter) tx.set(counterRef, counterData, { merge: true });
+    tx.create(visitRef, { requestId, userId: code.userId, userName: code.userName || "", userEmail: code.userEmail || "", placeId: code.placeId, placeName: code.placeName || "", confirmedBy: merchant.uid, confirmedByName: merchant.businessName || "", confirmedAt: now, passportAdded: !stampSnap.exists, purchaseAmount, receiptRef, status: "confirmed", ...(card.seasonal?{seasonId:card.id,seasonTarget:target,previousSeasonCard:baseCounter.seasonalCards?.[card.id]||null,previousSeasonClaimedCount:claimed}:{}), pointsEarned: pointAward?.amount || 0, previousVisitCount: Number(counter?.visitCount || 0), previousRewardCycles: oldCycles, previousTotalSpend: Number(counter?.totalSpend || 0), previousDailyVisitCount: previousDaily, previousLastVisitDay: counter?.lastVisitDay || "", previousLastVisitAt: counter?.lastVisitAt || null, previousLastVisitRequestId: counter?.lastVisitRequestId || "", passportStampId: !stampSnap.exists ? stampId : "", rewardClaimId: rewardRef ? rewardId : "" });
+    const counterData = { visitorType: code.visitorType || "", city: code.city || "", birthMonthDay: code.birthMonthDay || "", ...LoyaltySeasons.progressPatch(card,baseCounter,newCount,rewardRef?newCycle:oldCycles), lastVisitDay: today, dailyVisitCount: previousDaily + 1, lastVisitRequestId: requestId, lastVisitAt: now, totalSpend: Number(counter?.totalSpend || 0) + purchaseAmount, updatedAt: now };
+    if (counterSnap.exists) tx.update(counterRef, counterData);
     else tx.create(counterRef, { userId: code.userId, userName: code.userName || "", userEmail: code.userEmail || "", placeId: code.placeId, placeName: code.placeName || "", ...counterData, firstVisitAt: now });
     if (!stampSnap.exists) tx.create(stampRef, { requestId, campaignId, userId: code.userId, placeId: code.placeId, placeName: code.placeName || "", confirmedBy: merchant.uid, confirmedAt: now });
+    if(card.seasonal)tx.update(programRef,{seasonUsage:{...(baseProgram.seasonUsage||{}),[card.id]:true}});
     if (rewardRef) {
-      tx.create(rewardRef, { userId: code.userId, userName: code.userName || "", userEmail: code.userEmail || "", placeId: code.placeId, placeName: code.placeName || "", programId: code.placeId, cycle: newCycle, rewardTitle: program.rewardTitle || "Beneficio de fidelidad", rewardDescription: program.rewardDescription || "", claimCode: rewardCode(), status: "pending", createdAt: now, expiresAt: Timestamp.fromMillis(now.toMillis() + Number(program.rewardValidityDays || 30) * 86400000) });
-      tx.update(programRef, { claimedCount: FieldValue.increment(1), updatedAt: now });
+      tx.create(rewardRef, { userId: code.userId, userName: code.userName || "", userEmail: code.userEmail || "", placeId: code.placeId, placeName: code.placeName || "", programId: code.placeId, ...(card.seasonal?{seasonId:card.id,seasonTitle:program.title}:{}),cycle: newCycle, rewardTitle: program.rewardTitle || "Beneficio de fidelidad", rewardDescription: program.rewardDescription || "", claimCode: rewardCode(), status: "pending", createdAt: now, expiresAt: Timestamp.fromMillis(now.toMillis() + Number(program.rewardValidityDays || 30) * 86400000) });
+      tx.update(programRef, card.seasonal?{seasonClaimedCounts:{...(baseProgram.seasonClaimedCounts||{}),[card.id]:claimed+1},updatedAt:now}:{ claimedCount: FieldValue.increment(1), updatedAt: now });
     }
     tx.create(auditRef(), { action: "loyalty_stamp_added", actorUid: merchant.uid, actorEmail: merchant.email, actorName: merchant.businessName || "", userId: code.userId, placeId: code.placeId, requestId, purchaseAmount, receiptRef, createdAt: now });
     return { pointsEarned: pointAward?.amount || 0, visitCount: newCount, target, passportAdded: !stampSnap.exists, rewardCreated: Boolean(rewardRef), chabaquitoUserId: code.userId };
@@ -149,11 +153,11 @@ exports.reverseLastLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: fals
     const pointReversal = await pointPlan("prepareReversal",{tx,db,visit,requestId,now});
     if(pointReversal)pointReversal.apply();
     tx.update(visitRef, { status: "reversed", reversedAt: now, reversedBy: merchant.uid });
-    tx.set(counterRef, { visitCount: Math.max(0, Number(visit.previousVisitCount || 0)), rewardCycles: Math.max(0, Number(visit.previousRewardCycles || 0)), totalSpend: Math.max(0, Number(visit.previousTotalSpend || 0)), dailyVisitCount: Math.max(0, Number(visit.previousDailyVisitCount || 0)), lastVisitDay: visit.previousLastVisitDay || "", lastVisitAt: visit.previousLastVisitAt || visit.confirmedAt, lastVisitRequestId: visit.previousLastVisitRequestId || "", updatedAt: now }, { merge: true });
+    tx.update(counterRef, { ...LoyaltySeasons.restorePatch(visit,counterSnap.data()), totalSpend: Math.max(0, Number(visit.previousTotalSpend || 0)), dailyVisitCount: Math.max(0, Number(visit.previousDailyVisitCount || 0)), lastVisitDay: visit.previousLastVisitDay || "", lastVisitAt: visit.previousLastVisitAt || visit.confirmedAt, lastVisitRequestId: visit.previousLastVisitRequestId || "", updatedAt: now });
     if (stampRef) tx.delete(stampRef);
-    if (rewardRef && rewardSnap?.exists) { tx.delete(rewardRef); if (programSnap.exists) tx.update(programRef, { claimedCount: FieldValue.increment(-1), updatedAt: now }); }
+    if (rewardRef && rewardSnap?.exists) { tx.delete(rewardRef); if (programSnap.exists) tx.update(programRef, visit.seasonId?{seasonClaimedCounts:{...(programSnap.data().seasonClaimedCounts||{}),[visit.seasonId]:Math.max(0,Number(visit.previousSeasonClaimedCount||0))},updatedAt:now}:{ claimedCount: FieldValue.increment(-1), updatedAt: now }); }
     tx.create(auditRef(), { action: "loyalty_stamp_reversed", actorUid: merchant.uid, actorEmail: merchant.email, actorName: merchant.businessName || "", userId: visit.userId, placeId: visit.placeId, requestId, purchaseAmount: Number(visit.purchaseAmount || 0), receiptRef: visit.receiptRef || "", createdAt: now });
-    return { visitCount: Math.max(0, Number(visit.previousVisitCount || 0)), target: Math.max(10, Number(programSnap.data()?.targetVisits || 10)), chabaquitoUserId: visit.userId };
+    return { visitCount: Math.max(0, Number(visit.previousVisitCount || 0)), target: Math.max(10, Number(visit.seasonId?visit.seasonTarget:programSnap.data()?.targetVisits || 10)), chabaquitoUserId: visit.userId };
   });
   try { await processValidatedVisit({ db, authenticatedUid: result.chabaquitoUserId, method: "staff", visitId: requestId }); } catch (error) { console.warn("Chabaquito discovery sync skipped after reversed visit", { requestId, message: error?.message || String(error) }); }
   await safeSyncUserMissionsV2({ db, userId: result.chabaquitoUserId, now: Timestamp.now(), logger: console });

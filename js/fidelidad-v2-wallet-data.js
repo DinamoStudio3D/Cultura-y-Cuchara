@@ -53,23 +53,15 @@
   async function buildWalletCards(db,user){
     const programs=await loadPrograms(db);
     const [places,counters]=await Promise.all([loadPlaces(db,programs),loadCounters(db,user)]);
-    return programs.map(program=>{
-      const placeId=String(program.placeId||program.localId||program.businessId||program.id||'');
-      const place=places.get(placeId)||{};
-      const counter=counters.get(placeId)||{};
-      return {
-        placeId,
-        placeName:place.title||place.name||program.placeName||program.businessName||'Establecimiento',
-        logo:placeLogo(place),
-        total:Number(counter.visitCount||counter.totalVisits||0),
-        target:Math.max(1,Number(program.targetVisits||10)),
-        reward:rewardTitle(program),
-        rewardDescription:program.rewardDescription||'',
-        stampIcon:stampIcon(program),
-        program,
-        place,
-        counter
-      };
+    return programs.flatMap(baseProgram=>{
+      const placeId=String(baseProgram.placeId||baseProgram.localId||baseProgram.businessId||baseProgram.id||'');
+      const place=places.get(placeId)||{},baseCounter=counters.get(placeId)||{},policy=window.VisitaLojaLoyaltySeasonPolicy;
+      const selected=policy?policy.select(baseProgram,baseCounter):{seasonal:false,program:baseProgram,counter:baseCounter};
+      const card=(program,counter,label='')=>({placeId,placeName:(place.title||place.name||program.placeName||program.businessName||'Establecimiento')+label,logo:placeLogo(place),total:Number(counter.visitCount||counter.totalVisits||0),target:Math.max(10,Number(program.targetVisits||10)),reward:rewardTitle(program),rewardDescription:program.rewardDescription||'',stampIcon:stampIcon(program),program,place,counter});
+      const cards=[card({...baseProgram,active:selected.seasonal?false:baseProgram.active},baseCounter,selected.seasonal?' · habitual en pausa':'')];
+      if(selected.seasonal)cards.unshift(card(selected.program,selected.counter,' · '+selected.program.title));
+      for(const [id,progress]of Object.entries(baseCounter.seasonalCards||{}))if(id!==selected.id&&progress.policy)cards.push(card({...progress.policy,active:false},{...baseCounter,...progress},' · '+progress.policy.title+' (finalizada)'));
+      return cards;
     }).sort((a,b)=>{
       const av=a.total>0?1:0,bv=b.total>0?1:0;
       return bv-av || a.placeName.localeCompare(b.placeName,'es');

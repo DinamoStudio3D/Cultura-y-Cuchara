@@ -1,8 +1,11 @@
+import '../../../functions/loyalty-season-policy.js';
+const LoyaltySeasons = globalThis.VisitaLojaLoyaltySeasonPolicy;
 const PROJECT_ID = "cultura-y-cuchara";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const FIRESTORE_SCOPE = "https://www.googleapis.com/auth/datastore";
 const FIREBASE_JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
 const ALLOWED_ORIGINS = new Set([
+  "https://visitaloja-git-improve-existing-rewards-dinamostudio3d.vercel.app",
   "https://visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app",
   "https://www.visitaloja.com",
   "https://visitaloja.com"
@@ -315,8 +318,8 @@ async function confirmMerchantVisit(env, user, input) {
   ]);
   if (visitDocument) throw new Error("Visit was already registered");
 
-  const counter = counterDocument ? decodeFirestoreDocument(counterDocument) : null;
-  const program = programDocument ? decodeFirestoreDocument(programDocument) : null;
+  const baseCounter = counterDocument ? decodeFirestoreDocument(counterDocument) : {},baseProgram = programDocument ? decodeFirestoreDocument(programDocument) : {};
+  const card = LoyaltySeasons.select(baseProgram,baseCounter,Date.now()),counter=card.counter,program=card.program;
   const today = ecuadorDay();
   const maxDaily = Math.max(1, Math.min(3, Number(program?.maxVisitsPerDay || 1)));
   const previousDaily = counter?.lastVisitDay === today ? Number(counter.dailyVisitCount || 0) : 0;
@@ -347,6 +350,7 @@ async function confirmMerchantVisit(env, user, input) {
     purchaseAmount,
     receiptRef,
     status: "confirmed",
+    ...(card.seasonal?{seasonId:card.id,seasonTarget:target,previousSeasonCard:baseCounter.seasonalCards?.[card.id]||null}:{}),
     previousVisitCount: Number(counter?.visitCount || 0),
     previousTotalSpend: Number(counter?.totalSpend || 0),
     previousDailyVisitCount: previousDaily,
@@ -360,7 +364,7 @@ async function confirmMerchantVisit(env, user, input) {
     userEmail: code.userEmail || counter?.userEmail || "",
     placeId: code.placeId,
     placeName: code.placeName || counter?.placeName || "",
-    visitCount: newCount,
+    ...LoyaltySeasons.progressPatch(card,baseCounter,newCount),
     lastVisitDay: today,
     dailyVisitCount: previousDaily + 1,
     lastVisitRequestId: requestId,
@@ -368,7 +372,7 @@ async function confirmMerchantVisit(env, user, input) {
     totalSpend: Number(counter?.totalSpend || 0) + purchaseAmount,
     updatedAt: now
   };
-  if (!counter) counterFields.firstVisitAt = now;
+  if (!counterDocument) counterFields.firstVisitAt = now;
 
   const writes = [
     { update: { name: documentName(codePath), fields: firestoreFields(codeFields) }, updateMask: { fieldPaths: Object.keys(codeFields) } },
@@ -380,6 +384,20 @@ async function confirmMerchantVisit(env, user, input) {
     }
   ];
 
+  if(card.seasonal){
+    const seasonProgramPatch={seasonUsage:{...(baseProgram.seasonUsage||{}),[card.id]:true}};
+    const oldCycles=Number(counter.rewardCycles||0),cycle=Math.floor(newCount/target),claimed=Number(baseProgram.seasonClaimedCounts?.[card.id]||0);
+    if(cycle>oldCycles&&(program.stock==null||claimed<Number(program.stock))){
+      const rewardId='season-'+await sha256Hex(JSON.stringify([code.userId,code.placeId,card.id,cycle])),rewardPath=`loyaltyRewardClaims/${rewardId}`;
+      const rewardFields={userId:code.userId,userName:code.userName||'',userEmail:code.userEmail||'',placeId:code.placeId,placeName:code.placeName||'',programId:code.placeId,seasonId:card.id,seasonTitle:program.title,cycle,rewardTitle:program.rewardTitle,rewardDescription:program.rewardDescription||'',claimCode:'FID-'+Array.from(crypto.getRandomValues(new Uint8Array(8)),n=>n.toString(16).padStart(2,'0')).join('').toUpperCase(),status:'pending',createdAt:now,expiresAt:new Date(now.getTime()+Number(program.rewardValidityDays||30)*86400000)};
+      visitFields.rewardClaimId=rewardId;visitFields.previousSeasonClaimedCount=claimed;
+      counterFields.seasonalCards[card.id].rewardCycles=cycle;
+      writes[1].update.fields=firestoreFields(visitFields);writes[2].update.fields=firestoreFields(counterFields);
+      writes.push({update:{name:documentName(rewardPath),fields:firestoreFields(rewardFields)},currentDocument:{exists:false}});
+      seasonProgramPatch.seasonClaimedCounts={...(baseProgram.seasonClaimedCounts||{}),[card.id]:claimed+1};
+    }
+    writes.push({update:{name:documentName(programPath),fields:firestoreFields(seasonProgramPatch)},updateMask:{fieldPaths:Object.keys(seasonProgramPatch)},currentDocument:{updateTime:programDocument.updateTime}});
+  }
   await firestoreCommit(accessToken, transaction, writes);
   const missions = await syncUserMissionProgress(env, code.userId);
   return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId, missions };
@@ -436,7 +454,7 @@ async function reverseMerchantVisit(env, user, input) {
   const restoredLastVisitAt = Number.isFinite(visit.previousLastVisitAt)
     ? new Date(visit.previousLastVisitAt)
     : null;
-  const target = Math.max(10, Number(decodeFirestoreDocument(programDocument || {}).targetVisits || 10));
+  const target = Math.max(10, Number(visit.seasonId?visit.seasonTarget:decodeFirestoreDocument(programDocument || {}).targetVisits || 10));
 
   const visitFields = {
     status: "reversed",
@@ -446,7 +464,7 @@ async function reverseMerchantVisit(env, user, input) {
     updatedAt: now
   };
   const counterFields = {
-    visitCount: restoredCount,
+    ...LoyaltySeasons.restorePatch(visit,counter),
     totalSpend: restoredSpend,
     dailyVisitCount: restoredDaily,
     lastVisitDay: restoredDay,
@@ -466,6 +484,10 @@ async function reverseMerchantVisit(env, user, input) {
       currentDocument: { updateTime: counterDocument.updateTime }
     }
   ];
+  if(visit.seasonId&&visit.rewardClaimId){
+    const rewardPath=`loyaltyRewardClaims/${visit.rewardClaimId}`,rewardDoc=await firestoreGetDocumentInTransaction(accessToken,rewardPath,transaction);
+    if(rewardDoc){const reward=decodeFirestoreDocument(rewardDoc);if(reward.status!=='pending')throw new Error('Reward already delivered; reversal requires review');writes.push({delete:documentName(rewardPath),currentDocument:{updateTime:rewardDoc.updateTime}});const rawProgram=decodeFirestoreDocument(programDocument||{});writes.push({update:{name:documentName(programPath),fields:firestoreFields({seasonClaimedCounts:{...(rawProgram.seasonClaimedCounts||{}),[visit.seasonId]:Math.max(0,Number(visit.previousSeasonClaimedCount||0))}})},updateMask:{fieldPaths:['seasonClaimedCounts']},currentDocument:{updateTime:programDocument.updateTime}});}
+  }
   if (codeDocument) {
     const code = decodeFirestoreDocument(codeDocument);
     writes.push({
@@ -923,7 +945,7 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
     if (request.method === "GET" && url.pathname === "/health") {
-      return json({ ok: true, service: "chabaquito", project: env.FIREBASE_PROJECT_ID || PROJECT_ID });
+      return withCors(json({ ok: true, service: "chabaquito", loyaltySeasonPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
     }
 
     if (request.method === "POST" && url.pathname === "/proximity-visit") {
