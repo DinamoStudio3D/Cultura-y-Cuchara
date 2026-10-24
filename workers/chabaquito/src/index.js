@@ -455,7 +455,7 @@ async function reverseMerchantVisit(env, user, input) {
   const restoredLastVisitAt = Number.isFinite(visit.previousLastVisitAt)
     ? new Date(visit.previousLastVisitAt)
     : null;
-  const target = Math.max(10, Number(visit.seasonId?visit.seasonTarget:decodeFirestoreDocument(programDocument || {}).targetVisits || 10));
+  const target = Math.max(10, Number(visit.seasonId?visit.seasonTarget:(counter.permanentPolicy?.targetVisits||decodeFirestoreDocument(programDocument || {}).targetVisits||10)));
 
   const visitFields = {
     status: "reversed",
@@ -487,7 +487,7 @@ async function reverseMerchantVisit(env, user, input) {
   ];
   if(visit.seasonId&&visit.rewardClaimId){
     const rewardPath=`loyaltyRewardClaims/${visit.rewardClaimId}`,rewardDoc=await firestoreGetDocumentInTransaction(accessToken,rewardPath,transaction);
-    if(rewardDoc){const reward=decodeFirestoreDocument(rewardDoc);if(reward.status!=='pending')throw new Error('Reward already delivered; reversal requires review');writes.push({delete:documentName(rewardPath),currentDocument:{updateTime:rewardDoc.updateTime}});const rawProgram=decodeFirestoreDocument(programDocument||{});writes.push({update:{name:documentName(programPath),fields:firestoreFields({seasonClaimedCounts:{...(rawProgram.seasonClaimedCounts||{}),[visit.seasonId]:Math.max(0,Number(visit.previousSeasonClaimedCount||0))}})},updateMask:{fieldPaths:['seasonClaimedCounts']},currentDocument:{updateTime:programDocument.updateTime}});}
+    if(rewardDoc){const reward=decodeFirestoreDocument(rewardDoc);if(reward.status!=='pending')throw new Error('Reward already delivered; reversal requires review');writes.push({delete:documentName(rewardPath),currentDocument:{updateTime:rewardDoc.updateTime}});const rawProgram=decodeFirestoreDocument(programDocument||{});writes.push({update:{name:documentName(programPath),fields:firestoreFields({seasonClaimedCounts:LoyaltySeasons.reverseSeasonClaim(rawProgram,visit.seasonId)})},updateMask:{fieldPaths:['seasonClaimedCounts']},currentDocument:{updateTime:programDocument.updateTime}});}
   }
   if (codeDocument) {
     const code = decodeFirestoreDocument(codeDocument);

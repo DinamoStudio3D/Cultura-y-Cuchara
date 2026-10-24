@@ -32,11 +32,16 @@
   if(!selection.seasonal)return{permanentPolicy:clone(selection.policy),visitCount:count,...(cycles===undefined?{}:{rewardCycles:cycles})};
   return{seasonalCards:{...(base.seasonalCards||{}),[selection.id]:{...(base.seasonalCards?.[selection.id]||{}),visitCount:count,rewardCycles:cycles??Number(selection.counter.rewardCycles||0),policy:clone(selection.policy)}}};
  }
+ function reverseSeasonClaim(program,seasonId){
+  const counts=program.seasonClaimedCounts||{},current=Number(counts[seasonId]);
+  if(!Number.isSafeInteger(current)||current<1)throw Error('El registro de cupos de temporada requiere revisión antes de anular este premio.');
+  return {...counts,[seasonId]:current-1};
+ }
  function restorePatch(visit,counter){
   if(!visit.seasonId)return{...(Object.prototype.hasOwnProperty.call(visit,'previousPermanentPolicy')?{permanentPolicy:visit.previousPermanentPolicy}:{}),visitCount:Math.max(0,Number(visit.previousVisitCount||0)),...(visit.previousRewardCycles===undefined?{}:{rewardCycles:Math.max(0,Number(visit.previousRewardCycles||0))})};
   const seasons={...(counter.seasonalCards||{})};
   if(visit.previousSeasonCard)seasons[visit.seasonId]=clone(visit.previousSeasonCard);else delete seasons[visit.seasonId];
   return{seasonalCards:seasons};
  }
- const api={normalize,select,progressPatch,restorePatch};root.VisitaLojaLoyaltySeasonPolicy=api;if(typeof module==='object'&&module.exports)module.exports=api;
+ const api={normalize,select,progressPatch,restorePatch,reverseSeasonClaim};root.VisitaLojaLoyaltySeasonPolicy=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(typeof window==='object'?window:globalThis);

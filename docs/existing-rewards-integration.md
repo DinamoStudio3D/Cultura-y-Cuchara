@@ -63,3 +63,9 @@ Validación realizada: sintaxis JavaScript/HTML y revisión de diferencias. No s
 2. Preparar una versión aislada del mismo servicio con los cambios de temporadas y protección de canjes; verificar su origen y versión antes de conectar una preview. No promover ni reemplazar producción.
 3. Revisar las reglas y la API en un entorno de prueba autorizado; no publicar reglas sobre producción como parte de esta preparación. La API usa la credencial existente de cultura-y-cuchara y no representa por sí sola un entorno aislado de datos.
 4. Cuando el usuario autorice las pruebas funcionales: seis paradas distintas, duplicados, hotel en cada modo, campaña distinta, visita anulada, datos locales inventados, doble clic/concurrencia, elección inmutable, entrega por negocio correcto, segunda entrega rechazada, anulación tras canje, temporadas y retorno a habitual.
+
+
+### Revisión de anulación y cupos
+La anulación de un premio de temporada descuenta una unidad del total vigente dentro de la transacción. No restaura el total histórico de la visita, porque eso borraría del conteo los premios obtenidos después por otras personas. Un total ausente, fraccionario o inferior a uno requiere revisión en lugar de modificar cupos con datos inconsistentes. La respuesta de anulación de la tarjeta habitual usa los sellos de su política guardada.
+
+Se preparó `scripts/test-existing-loyalty-policy.cjs` para comprobar progreso de temporada separado, límite diario compartido, conservación de otras temporadas al anular, retorno a habitual con beneficio anterior, descuento sobre el total vigente y rechazo de cupos inconsistentes. Solo se verificó la sintaxis del archivo; no se ejecutaron estos casos por el aplazamiento de pruebas. Comando para la etapa de pruebas: `node scripts/test-existing-loyalty-policy.cjs`. No conecta con Firebase.
