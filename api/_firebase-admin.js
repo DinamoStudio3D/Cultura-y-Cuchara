@@ -13,7 +13,8 @@ function credentials(env=process.env){
   return serviceAccount;
 }
 function app(env=process.env){
-  if(getApps().length) return getApps()[0];
+  const existing=getApps().find(value=>value.name==='[DEFAULT]');
+  if(existing){if(existing.options.projectId!=="cultura-y-cuchara")throw new Error("La app Firebase predeterminada no corresponde al proyecto activo.");return existing;}
   return initializeApp({credential:cert(credentials(env)),projectId:"cultura-y-cuchara"});
 }
 async function authenticatedUser(req,env=process.env){

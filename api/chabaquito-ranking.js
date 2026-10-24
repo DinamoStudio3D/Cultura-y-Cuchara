@@ -4,6 +4,7 @@ const { authenticatedUser, firestore } = require("./_firebase-admin");
 const { publicRankingProjection, rankingDocumentId, rankingPreferencePatch } = require("../functions/chabaquito-public-ranking");
 
 module.exports=async function handler(req,res){
+  if(req.query?.rewardSandbox==='1') return require('../lib/reward-sandbox-vercel.cjs')(req,res);
   res.setHeader("Cache-Control","no-store");
   if(req.method!=="POST") return res.status(405).json({error:"Método no permitido."});
   try{
