@@ -17,3 +17,36 @@ body>header{background:#0e1c2ef2}.card{background:linear-gradient(145deg,#13243a
 #adminFidelityNav button:focus-visible,.field:focus-visible{outline:3px solid #a4d5ff;outline-offset:3px}
 @media(max-width:900px){#adminFidelityWorkspace{grid-template-columns:1fr;gap:15px}#adminFidelityNav{position:static;display:flex;overflow-x:auto;gap:7px;padding:8px;scrollbar-width:thin}#adminFidelityNav button{flex:0 0 165px;min-height:68px}.fidelity-pane-heading{padding:15px}#fidelityPaneTitle{font-size:1.3rem}main{padding-left:12px!important;padding-right:12px!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Administrative sample: bounded card, independent of the customer wallet. */
+#programCardPreviewPanel{min-width:0;padding:16px;border:1px solid #8dbaf230;border-radius:16px;background:#091625}
+#programCardPreviewPanel>summary{font-size:.9rem;color:#d8edff}
+#programCardPreviewPanel>p{font-size:.75rem;line-height:1.5;max-width:44ch}
+#loyaltyProgramCardPreview{width:100%;max-width:420px;margin-inline:auto}
+#loyaltyProgramCardPreview .loyalty-pass{padding:18px;border-radius:20px;box-shadow:0 12px 28px #0003}
+#loyaltyProgramCardPreview .loyalty-pass__head{gap:10px}
+#loyaltyProgramCardPreview .loyalty-pass__business{grid-template-columns:44px minmax(0,1fr);gap:10px}
+#loyaltyProgramCardPreview .loyalty-pass__logo{width:44px;height:44px;padding:6px;border-radius:12px}
+#loyaltyProgramCardPreview .loyalty-pass__name{font-size:18px;line-height:1.25}
+#loyaltyProgramCardPreview .loyalty-pass__eyebrow{font-size:9px;letter-spacing:.12em}
+#loyaltyProgramCardPreview .loyalty-pass__count{font-size:11px;padding:7px 9px}
+#loyaltyProgramCardPreview .loyalty-stamps{gap:8px;margin-top:18px}
+#loyaltyProgramCardPreview .loyalty-stamp{font-size:11px}
+#loyaltyProgramCardPreview .loyalty-pass__summary{margin-top:16px;padding-top:12px;gap:10px}
+#loyaltyProgramCardPreview .loyalty-pass__summary-copy b{font-size:19px}
+#loyaltyProgramCardPreview .loyalty-pass__remaining{font-size:11px}
+#adminFidelityContent [data-fidelity-pane="programs"]{min-width:0}
+#programForm{min-width:0}
+@media(min-width:1280px){
+ #adminFidelityContent [data-fidelity-pane="programs"]{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;align-items:start}
+ #adminFidelityContent [data-fidelity-pane="programs"]>div:first-child{grid-column:1/-1}
+ #programForm{grid-column:1;grid-row:2;margin-top:0}
+ #programCardPreviewPanel{grid-column:2;grid-row:2;margin-top:0;position:sticky;top:110px}
+}
+@media(max-width:420px){
+ #programCardPreviewPanel{padding:12px}
+ #loyaltyProgramCardPreview .loyalty-pass{padding:14px}
+ #loyaltyProgramCardPreview .loyalty-pass__name{font-size:16px}
+ #loyaltyProgramCardPreview .loyalty-pass__business{grid-template-columns:36px minmax(0,1fr);gap:8px}
+ #loyaltyProgramCardPreview .loyalty-pass__logo{width:36px;height:36px}
+}
