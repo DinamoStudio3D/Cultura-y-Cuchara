@@ -79,3 +79,14 @@ Pendiente conectar una anulación atómica equivalente, completar la transición
 Antes de escribir, recalcula los premios del usuario excluyendo la visita. Si afecta un premio entregado, rechaza la operación para revisión administrativa. Los premios pendientes que pierden elegibilidad pasan a `needs-review` y quedan bloqueados para entrega; la cartera muestra el motivo. Los premios que siguen siendo elegibles se conservan. La interfaz del encargado ofrece anulación después de confirmar, sin borrar el historial.
 
 La anulación NO libera automáticamente el stock de premios bloqueados ni emite reemplazos. Sigue pendiente resolver o recuperar esos premios de forma administrativa, además de la renovación de políticas, migración y configuración del entorno. No se realizaron pruebas funcionales ni se modificó el Worker activo.
+
+## Resolución administrativa de premios bloqueados
+
+Se añadieron `admin/review-queue` (hasta 50 pendientes) y `admin/resolve-review`, autorizados en el servidor con los mismos permisos administrativos. El apartado «Revisar premios» del sandbox permite registrar un motivo y elegir entre:
+
+- Recuperar el premio solo si vuelve a cumplir la meta con visitas vigentes y no ha vencido. Conserva su código, premio, plazo y reserva originales.
+- Cancelar el premio y devolver su cupo en la misma transacción. No borra el historial ni concede otro ciclo automáticamente. La interfaz exige confirmar ese efecto.
+
+La resolución comprueba el sello que originó la revisión, evita actuar sobre una revisión diferente y crea una auditoría identificada por premio, visita y decisión. Repetir una resolución ya registrada no devuelve un segundo cupo. Los visitantes y encargados no tienen acceso a estas operaciones administrativas. La cartera muestra los premios cancelados como tales.
+
+Esta ampliación resuelve el manejo explícito de los premios bloqueados del endpoint V2, pero NO sustituye la transición del sistema legado, renovación de condiciones ni la configuración del proyecto aislado. No se realizaron pruebas funcionales ni cambios de producción.

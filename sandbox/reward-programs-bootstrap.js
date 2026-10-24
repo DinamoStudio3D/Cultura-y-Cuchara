@@ -2,10 +2,10 @@
  'use strict';
  const el=id=>document.getElementById(id),account=el('accountStatus'),workspace=el('workspaceStatus');
  let app,client,active='customer',views=new Map(),editor,sessionGeneration=0;
- function clear(){for(const view of views.values())view.dispose();views.clear();if(editor){editor.reset();el('editor').hidden=true;}for(const pane of ['customer','merchant','publication'])el(pane).replaceChildren();}
+ function clear(){for(const view of views.values())view.dispose();views.clear();if(editor){editor.reset();el('editor').hidden=true;}for(const pane of ['customer','merchant','publication','review'])el(pane).replaceChildren();}
  function select(pane){
   if(!app.auth().currentUser)return;
-  active=pane;for(const key of ['customer','merchant','editor','publication'])el(key).hidden=key!==pane;
+  active=pane;for(const key of ['customer','merchant','editor','publication','review'])el(key).hidden=key!==pane;
   document.querySelectorAll('[data-pane]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.pane===pane)));
   workspace.textContent='';
   try{
@@ -28,12 +28,12 @@
    document.querySelectorAll('[data-pane]').forEach(button=>button.onclick=()=>select(button.dataset.pane));
    app.auth().onAuthStateChanged(async user=>{
     const generation=++sessionGeneration;clear();el('loginForm').hidden=!!user;el('logout').hidden=!user;el('navigation').hidden=!user;
-    document.querySelectorAll('[data-pane="editor"],[data-pane="publication"]').forEach(button=>button.hidden=true);
+    document.querySelectorAll('[data-pane="editor"],[data-pane="publication"],[data-pane="review"]').forEach(button=>button.hidden=true);
     account.textContent=user?'Sesión iniciada: '+(user.email||'Cuenta de pruebas'):'Ingresa con tu cuenta de este entorno.';
     if(!user){workspace.textContent='';el('password').value='';return;}
     select('customer');
     // Server-side authorization controls visibility; no client email whitelist.
-    try{await client.call('admin/load',{});if(generation!==sessionGeneration)return;document.querySelectorAll('[data-pane="editor"],[data-pane="publication"]').forEach(button=>button.hidden=false);}catch(_){}
+    try{await client.call('admin/load',{});if(generation!==sessionGeneration)return;document.querySelectorAll('[data-pane="editor"],[data-pane="publication"],[data-pane="review"]').forEach(button=>button.hidden=false);}catch(_){}
    });
   }catch(_){lock(true);account.textContent='Este entorno todavía no está configurado. No se ha conectado a los datos de la web pública.';}
  }

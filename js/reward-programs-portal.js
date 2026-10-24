@@ -40,7 +40,7 @@
    }
    if(!cards.childNodes.length)cards.append(node('p','Todavía no tienes tarjetas en este entorno.'));
    claims.append(node('h4','Premios obtenidos'));if(data.cleanup?.needsReview)claims.append(node('p','Algunos premios vencidos necesitan revisión del negocio.','reward-notice'));
-   for(const claim of data.claims||[]){const panel=node('article',undefined,'reward-portal-card');panel.append(node('h4',claim.rewardSnapshot?.title||'Premio'),node('p',claim.rewardSnapshot?.description||''),node('p','Entrega: '+claim.placeId));const expired=Number(claim.expiresAt)<=Number(data.serverNow);panel.append(node('p',claim.status==='delivered'?'Entregado':claim.status==='needs-review'?'Necesita revisión por un sello anulado':claim.status!=='pending'?'No disponible':expired?'Plazo vencido':'Disponible para presentar en el negocio'));if(claim.status==='pending'&&!expired){panel.append(node('p',claim.claimCode,'reward-claim-code'),node('p','Presenta este código al encargado. No lo publiques.'));}panel.append(node('p','Válido hasta: '+date(claim.expiresAt)));claims.append(panel);}
+   for(const claim of data.claims||[]){const panel=node('article',undefined,'reward-portal-card');panel.append(node('h4',claim.rewardSnapshot?.title||'Premio'),node('p',claim.rewardSnapshot?.description||''),node('p','Entrega: '+claim.placeId));const expired=Number(claim.expiresAt)<=Number(data.serverNow);panel.append(node('p',claim.status==='delivered'?'Entregado':claim.status==='cancelled'?'Cancelado tras revisión':claim.status==='needs-review'?'Necesita revisión por un sello anulado':claim.status!=='pending'?'No disponible':expired?'Plazo vencido':'Disponible para presentar en el negocio'));if(claim.status==='pending'&&!expired){panel.append(node('p',claim.claimCode,'reward-claim-code'),node('p','Presenta este código al encargado. No lo publiques.'));}panel.append(node('p','Válido hasta: '+date(claim.expiresAt)));claims.append(panel);}
    if(!(data.claims||[]).length)claims.append(node('p','Aún no tienes premios obtenidos.'));
    const reload=node('button','Actualizar mis tarjetas');reload.type='button';reload.onclick=load;
    const enrollment=node('form'),label=node('label'),select=node('select'),join=node('button','Abrir tarjeta o pasaporte');
@@ -64,10 +64,33 @@
   }
   view.listen(render);return{dispose:view.dispose};
  }
+ function review(host,{app,client}){
+  const view=screen(host,app,client,'Premios que necesitan revisión');
+  function render(data){
+   const reload=node('button','Actualizar revisiones');reload.type='button';reload.onclick=load;view.content.replaceChildren(reload);
+   if(!data.claims.length)view.content.append(node('p','No hay premios pendientes de revisión.'));
+   if(data.claims.length>=data.limit)view.content.append(node('p','Se muestran los primeros '+data.limit+' casos. Resuelve estos y actualiza para ver los siguientes.','reward-notice'));
+   for(const claim of data.claims){
+    const panel=node('section',undefined,'reward-portal-card'),reasonLabel=node('label'),reason=node('textarea'),confirmLabel=node('label'),confirm=node('input');
+    reason.maxLength=300;reasonLabel.append(node('span','Motivo de la resolución'),reason);confirm.type='checkbox';confirmLabel.append(confirm,node('span','Si cancelo, el premio se cerrará y su cupo se devolverá; no se creará otro premio automáticamente.'));
+    panel.append(node('h4',claim.title),node('p','Parada de entrega: '+claim.placeId),node('p','Cuenta: '+claim.userId),node('p','Válido hasta: '+date(claim.expiresAt)),node('p','Bloqueado porque se anuló un sello que sostenía este premio.'),reasonLabel,confirmLabel);
+    for(const [decision,title]of [['restore','Recuperar si vuelve a cumplir la meta'],['cancel','Cancelar premio y devolver cupo']]){
+     const button=node('button',title);button.type='button';button.onclick=()=>{
+      if(reason.value.trim().length<5){view.status.textContent='Escribe el motivo de la resolución (mínimo 5 caracteres).';return;}
+      if(decision==='cancel'&&!confirm.checked){view.status.textContent='Confirma el efecto de cancelar antes de continuar.';return;}
+      view.run(async task=>{await task.call('admin/resolve-review',{claimId:claim.id,decision,reason:reason.value,expectedReviewVisitId:claim.reviewVisitId});const updated=await task.call('admin/review-queue',{});if(!task.valid())return;render(updated);view.status.textContent=decision==='restore'?'Premio recuperado con su código y plazo originales.':'Premio cancelado y cupo devuelto.';});
+     };panel.append(button);
+    }
+    view.content.append(panel);
+   }
+  }
+  function load(){return view.run(async task=>{const data=await task.call('admin/review-queue',{});if(!task.valid())return;render(data);view.status.textContent='Revisiones actualizadas.';});}
+  view.listen(load);return{reload:load,dispose:view.dispose};
+ }
  function publication(host,{app,client}){
   const view=screen(host,app,client,'Publicar configuración de beneficios');
   function load(){return view.run(async task=>{const data=await task.call('admin/load',{});if(!task.valid())return;const draft=data.draft,summary=node('section'),reload=node('button','Recargar configuración');reload.type='button';reload.onclick=load;summary.append(reload);if(!draft){summary.append(node('p','Guarda primero un borrador desde el editor.'));view.content.replaceChildren(summary);view.status.textContent='No hay un borrador para publicar.';return;}const config=draft.configuration;summary.append(node('h4','Configuración pendiente'),node('p',Object.keys(config.programs||{}).length+' paradas configuradas'),node('p','Campaña: '+(config.passport?.title||'Sin nombre')),node('p','Los sellos y beneficios de las tarjetas ya abiertas conservan sus condiciones.'));const checkbox=node('input');checkbox.type='checkbox';const label=node('label');label.append(checkbox,node('span','He revisado las metas, los premios y los encargados de entrega.'));const button=node('button','Publicar esta versión');button.type='button';button.onclick=()=>{if(!checkbox.checked){view.status.textContent='Revisa la configuración y marca la confirmación antes de publicar.';return;}view.run(async publish=>{const result=await publish.call('admin/publish',{expectedDraftRevision:draft.revision,expectedPublishedRevision:data.published?.revision||''});if(!publish.valid())return;summary.replaceChildren(node('h4','Configuración publicada'),node('p','Versión: '+result.revision),reload);view.status.textContent='La versión está disponible en este entorno de pruebas.';});};summary.append(label,button);view.content.replaceChildren(summary);view.status.textContent='Revisa la configuración antes de publicar.';});}
   view.listen(load);return{reload:load,dispose:view.dispose};
  }
- root.VisitaLojaRewardProgramsPortal=Object.freeze({customer,merchant,publication});
+ root.VisitaLojaRewardProgramsPortal=Object.freeze({customer,merchant,publication,review});
 })(typeof window==='object'?window:globalThis);
