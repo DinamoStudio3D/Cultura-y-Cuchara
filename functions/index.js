@@ -84,7 +84,7 @@ exports.confirmLoyaltyVisit = onCall({ region: REGION, enforceAppCheck: false },
     const card = LoyaltySeasons.select(baseProgram,baseCounter,Date.now()), program=programSnap.exists?card.program:null;
     const passport = passportSnap.exists ? passportSnap.data() : {};
     const counter = card.counter;
-    const campaignId = passport.campaignId || "pasaporte-general";
+    const campaignId = passport.campaignId || "pasaporte-2026";
     const stampId = cleanId(`${campaignId}_${code.userId}_${code.placeId}`);
     const stampRef = db.collection("securePassportStamps").doc(stampId);
     const stampSnap = await tx.get(stampRef);

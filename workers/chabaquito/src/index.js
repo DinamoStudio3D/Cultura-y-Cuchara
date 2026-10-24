@@ -311,15 +311,20 @@ async function confirmMerchantVisit(env, user, input) {
   const counterPath = `loyaltyCounters/${counterId}`;
   const programPath = `loyaltyPrograms/${code.placeId}`;
 
-  const [visitDocument, counterDocument, programDocument] = await Promise.all([
+  const [visitDocument, counterDocument, programDocument, passportDocument] = await Promise.all([
     firestoreGetDocumentInTransaction(accessToken, visitPath, transaction),
     firestoreGetDocumentInTransaction(accessToken, counterPath, transaction),
-    firestoreGetDocumentInTransaction(accessToken, programPath, transaction)
+    firestoreGetDocumentInTransaction(accessToken, programPath, transaction),
+    firestoreGetDocumentInTransaction(accessToken, "siteContent/passport", transaction)
   ]);
   if (visitDocument) throw new Error("Visit was already registered");
 
   const baseCounter = counterDocument ? decodeFirestoreDocument(counterDocument) : {},baseProgram = programDocument ? decodeFirestoreDocument(programDocument) : {};
   const card = LoyaltySeasons.select(baseProgram,baseCounter,Date.now()),counter=card.counter,program=card.program;
+  const passport=decodeFirestoreDocument(passportDocument||{}),campaignId=passport.campaignId||'pasaporte-2026';
+  const stampId=cleanId(`${campaignId}_${code.userId}_${code.placeId}`),stampPath=`securePassportStamps/${stampId}`;
+  const stampDocument=await firestoreGetDocumentInTransaction(accessToken,stampPath,transaction);
+  if(stampDocument){const stamp=decodeFirestoreDocument(stampDocument);if(stamp.userId!==code.userId||stamp.placeId!==code.placeId||stamp.campaignId!==campaignId)throw new Error('Passport stamp requires review before confirmation');}
   const today = ecuadorDay();
   const maxDaily = Math.max(1, Math.min(3, Number(program?.maxVisitsPerDay || 1)));
   const previousDaily = counter?.lastVisitDay === today ? Number(counter.dailyVisitCount || 0) : 0;
@@ -352,6 +357,9 @@ async function confirmMerchantVisit(env, user, input) {
     status: "confirmed",
     ...(!card.seasonal?{previousPermanentPolicy:baseCounter.permanentPolicy||null}:{}), ...(card.seasonal?{seasonId:card.id,seasonTarget:target,previousSeasonCard:baseCounter.seasonalCards?.[card.id]||null}:{}),
     previousVisitCount: Number(counter?.visitCount || 0),
+    previousRewardCycles:Number(counter?.rewardCycles||0),
+    passportAdded:!stampDocument,
+    passportStampId:!stampDocument?stampId:"",
     previousTotalSpend: Number(counter?.totalSpend || 0),
     previousDailyVisitCount: previousDaily,
     previousLastVisitDay: counter?.lastVisitDay || "",
@@ -384,23 +392,26 @@ async function confirmMerchantVisit(env, user, input) {
     }
   ];
 
-  if(card.seasonal){
-    const seasonProgramPatch={seasonUsage:{...(baseProgram.seasonUsage||{}),[card.id]:true}};
-    const oldCycles=Number(counter.rewardCycles||0),cycle=Math.floor(newCount/target),claimed=Number(baseProgram.seasonClaimedCounts?.[card.id]||0);
-    if(cycle>oldCycles&&(program.stock==null||claimed<Number(program.stock))){
-      const rewardId='season-'+await sha256Hex(JSON.stringify([code.userId,code.placeId,card.id,cycle])),rewardPath=`loyaltyRewardClaims/${rewardId}`;
-      const rewardFields={userId:code.userId,userName:code.userName||'',userEmail:code.userEmail||'',placeId:code.placeId,placeName:code.placeName||'',programId:code.placeId,seasonId:card.id,seasonTitle:program.title,cycle,rewardTitle:program.rewardTitle,rewardDescription:program.rewardDescription||'',claimCode:'FID-'+Array.from(crypto.getRandomValues(new Uint8Array(8)),n=>n.toString(16).padStart(2,'0')).join('').toUpperCase(),status:'pending',createdAt:now,expiresAt:new Date(now.getTime()+Number(program.rewardValidityDays||30)*86400000)};
-      visitFields.rewardClaimId=rewardId;visitFields.previousSeasonClaimedCount=claimed;
-      counterFields.seasonalCards[card.id].rewardCycles=cycle;
-      writes[1].update.fields=firestoreFields(visitFields);writes[2].update.fields=firestoreFields(counterFields);
-      writes.push({update:{name:documentName(rewardPath),fields:firestoreFields(rewardFields)},currentDocument:{exists:false}});
-      seasonProgramPatch.seasonClaimedCounts={...(baseProgram.seasonClaimedCounts||{}),[card.id]:claimed+1};
-    }
-    writes.push({update:{name:documentName(programPath),fields:firestoreFields(seasonProgramPatch)},updateMask:{fieldPaths:Object.keys(seasonProgramPatch)},currentDocument:{updateTime:programDocument.updateTime}});
+  const programPatch=card.seasonal?{seasonUsage:{...(baseProgram.seasonUsage||{}),[card.id]:true}}:{};
+  const oldCycles=Number(counter.rewardCycles||0),cycle=Math.floor(newCount/target),claimed=Number(program.claimedCount||0);
+  let rewardCreated=false;
+  if(programDocument&&program.active!==false&&cycle>oldCycles&&(program.stock==null||claimed<Number(program.stock))){
+    const rewardId=card.seasonal?'season-'+await sha256Hex(JSON.stringify([code.userId,code.placeId,card.id,cycle])):cleanId(`${code.userId}_${code.placeId}_${cycle}`);
+    const rewardFields={userId:code.userId,userName:code.userName||'',userEmail:code.userEmail||'',placeId:code.placeId,placeName:code.placeName||'',programId:code.placeId,...(card.seasonal?{seasonId:card.id,seasonTitle:program.title}:{}),cycle,rewardTitle:program.rewardTitle||'Beneficio de fidelidad',rewardDescription:program.rewardDescription||'',claimCode:'FID-'+Array.from(crypto.getRandomValues(new Uint8Array(8)),n=>n.toString(16).padStart(2,'0')).join('').toUpperCase(),status:'pending',createdAt:now,expiresAt:new Date(now.getTime()+Number(program.rewardValidityDays||30)*86400000)};
+    visitFields.rewardClaimId=rewardId;
+    if(card.seasonal){counterFields.seasonalCards[card.id].rewardCycles=cycle;programPatch.seasonClaimedCounts={...(baseProgram.seasonClaimedCounts||{}),[card.id]:claimed+1};}
+    else{counterFields.rewardCycles=cycle;programPatch.claimedCount=claimed+1;}
+    writes.push({update:{name:documentName(`loyaltyRewardClaims/${rewardId}`),fields:firestoreFields(rewardFields)},currentDocument:{exists:false}});
+    rewardCreated=true;
   }
+  if(!stampDocument)writes.push({update:{name:documentName(stampPath),fields:firestoreFields({requestId,campaignId,userId:code.userId,placeId:code.placeId,placeName:code.placeName||'',confirmedBy:user.uid,confirmedAt:now})},currentDocument:{exists:false}});
+  if(Object.keys(programPatch).length)writes.push({update:{name:documentName(programPath),fields:firestoreFields({...programPatch,updatedAt:now})},updateMask:{fieldPaths:[...Object.keys(programPatch),'updatedAt']},currentDocument:{updateTime:programDocument.updateTime}});
+  writes[1].update.fields=firestoreFields(visitFields);
+  writes[2].update.fields=firestoreFields(counterFields);
+  writes[2].updateMask.fieldPaths=Object.keys(counterFields);
   await firestoreCommit(accessToken, transaction, writes);
   const missions = await syncUserMissionProgress(env, code.userId);
-  return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId, missions };
+  return { visitCount: newCount, target, passportAdded:!stampDocument,rewardCreated, visitorUid: code.userId, placeId: code.placeId, missions };
 }
 
 async function reverseMerchantVisit(env, user, input) {
@@ -485,9 +496,22 @@ async function reverseMerchantVisit(env, user, input) {
       currentDocument: { updateTime: counterDocument.updateTime }
     }
   ];
-  if(visit.seasonId&&visit.rewardClaimId){
+  if(visit.rewardClaimId){
     const rewardPath=`loyaltyRewardClaims/${visit.rewardClaimId}`,rewardDoc=await firestoreGetDocumentInTransaction(accessToken,rewardPath,transaction);
-    if(rewardDoc){const reward=decodeFirestoreDocument(rewardDoc);if(reward.status!=='pending')throw new Error('Reward already delivered; reversal requires review');writes.push({delete:documentName(rewardPath),currentDocument:{updateTime:rewardDoc.updateTime}});const rawProgram=decodeFirestoreDocument(programDocument||{});writes.push({update:{name:documentName(programPath),fields:firestoreFields({seasonClaimedCounts:LoyaltySeasons.reverseSeasonClaim(rawProgram,visit.seasonId)})},updateMask:{fieldPaths:['seasonClaimedCounts']},currentDocument:{updateTime:programDocument.updateTime}});}
+    if(rewardDoc){
+      const reward=decodeFirestoreDocument(rewardDoc);
+      if(reward.status!=='pending')throw new Error('Reward already delivered; reversal requires review');
+      if(!programDocument)throw new Error('Reward program requires review before reversal');
+      const rawProgram=decodeFirestoreDocument(programDocument),claimed=Number(rawProgram.claimedCount);
+      if(!visit.seasonId&&(!Number.isSafeInteger(claimed)||claimed<1))throw new Error('Reward stock requires review before reversal');
+      const patch=visit.seasonId?{seasonClaimedCounts:LoyaltySeasons.reverseSeasonClaim(rawProgram,visit.seasonId)}:{claimedCount:claimed-1};
+      writes.push({delete:documentName(rewardPath),currentDocument:{updateTime:rewardDoc.updateTime}});
+      writes.push({update:{name:documentName(programPath),fields:firestoreFields({...patch,updatedAt:now})},updateMask:{fieldPaths:[...Object.keys(patch),'updatedAt']},currentDocument:{updateTime:programDocument.updateTime}});
+    }
+  }
+  if(visit.passportStampId){
+    const stampPath=`securePassportStamps/${visit.passportStampId}`,stampDoc=await firestoreGetDocumentInTransaction(accessToken,stampPath,transaction);
+    if(stampDoc){const stamp=decodeFirestoreDocument(stampDoc);if(stamp.requestId!==requestId||stamp.userId!==visit.userId||stamp.placeId!==visit.placeId)throw new Error('Passport stamp requires review before reversal');writes.push({delete:documentName(stampPath),currentDocument:{updateTime:stampDoc.updateTime}});}
   }
   if (codeDocument) {
     const code = decodeFirestoreDocument(codeDocument);
@@ -946,7 +970,7 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
     if (request.method === "GET" && url.pathname === "/health") {
-      return withCors(json({ ok: true, service: "chabaquito", loyaltySeasonPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
+      return withCors(json({ ok: true, service: "chabaquito", loyaltySeasonPolicyVersion:1,passportStampPolicyVersion:1,loyaltyRewardPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
     }
 
     if (request.method === "POST" && url.pathname === "/proximity-visit") {
