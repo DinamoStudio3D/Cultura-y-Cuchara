@@ -69,3 +69,11 @@ Validación realizada: sintaxis JavaScript/HTML y revisión de diferencias. No s
 La anulación de un premio de temporada descuenta una unidad del total vigente dentro de la transacción. No restaura el total histórico de la visita, porque eso borraría del conteo los premios obtenidos después por otras personas. Un total ausente, fraccionario o inferior a uno requiere revisión en lugar de modificar cupos con datos inconsistentes. La respuesta de anulación de la tarjeta habitual usa los sellos de su política guardada.
 
 Se preparó `scripts/test-existing-loyalty-policy.cjs` para comprobar progreso de temporada separado, límite diario compartido, conservación de otras temporadas al anular, retorno a habitual con beneficio anterior, descuento sobre el total vigente y rechazo de cupos inconsistentes. Solo se verificó la sintaxis del archivo; no se ejecutaron estos casos por el aplazamiento de pruebas. Comando para la etapa de pruebas: `node scripts/test-existing-loyalty-policy.cjs`. No conecta con Firebase.
+
+
+### Sesiones y verificación de entregas
+Las consultas del verificador conservan la identidad, versión de permisos y número de consulta que las inició. Una respuesta anterior no puede reemplazar el resultado de otra consulta o cuenta. Al cambiar cuenta o permisos se limpia el código y resultado visible; las respuestas de inventario también se descartan si ya no corresponden. La consulta exige que el código guardado coincida exactamente con el presentado y rechaza códigos de fidelidad que correspondan a más de un registro.
+
+El negocio ve las condiciones guardadas en la elección del pasaporte y la fecha real de creación/completado. El formulario de canje del visitante descarta éxitos, errores y cambios de botón de una cuenta o modalidad anterior, e invalida consultas entre sesiones de la misma cuenta mediante la generación de acceso existente. Las reglas y transacciones siguen siendo la comprobación de autoridad.
+
+Casos adicionales preparados para la etapa de pruebas: cambiar de cuenta durante consulta y canje; cerrar y volver a entrar con la misma cuenta; retirar permisos mientras llega una respuesta; dos búsquedas consecutivas con respuestas en orden inverso; código cuyo índice apunta a otro código; registros duplicados de fidelidad; condiciones y fecha del premio elegido visibles para el negocio. No se ejecutaron pruebas funcionales.
