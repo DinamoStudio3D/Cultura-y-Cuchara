@@ -111,11 +111,12 @@ async function verifyRewardCode(){
             if(!merchantAccess?.campaignIds?.includes(pointer.campaignId))throw new Error('not-authorized');
             const claim=await merchantDb.collection('missionRewardClaims').doc(pointer.claimId).get();if(!claim.exists)throw new Error('not-found');currentRewardClaim={type,id:claim.id,...claim.data()};
         }else if(pointer&&type==='passport'){
-            if(!merchantAccess?.passportGrants?.includes(`${pointer.campaignId}:${pointer.mode}`))throw new Error('not-authorized');
-            const claim=await merchantDb.collection('passportCompletions').doc(pointer.completionId).get();if(!claim.exists)throw new Error('not-found');currentRewardClaim={type,id:claim.id,...claim.data(),rewardTitle:`Premio Pasaporte ${claim.data().mode==='turista'?'Turista':'Lojano'}`};
+            if(pointer.optionId?pointer.merchantUid!==merchantAuth.currentUser?.uid:!merchantAccess?.passportGrants?.includes(`${pointer.campaignId}:${pointer.mode}`))throw new Error('not-authorized');
+            const claim=await merchantDb.collection('passportCompletions').doc(pointer.completionId).get();if(!claim.exists)throw new Error('not-found');currentRewardClaim={type,id:claim.id,...claim.data(),rewardTitle:claim.data().rewardSnapshot?.title||`Premio Pasaporte ${claim.data().mode==='turista'?'Turista':'Lojano'}`};
         }else if(code.startsWith('FID-')){
             type='loyalty';const searches=await Promise.all((merchantAccess?.placeIds||[]).slice(0,10).map(placeId=>merchantDb.collection('loyaltyRewardClaims').where('claimCode','==',code).where('placeId','==',placeId).limit(2).get())),docs=searches.flatMap(x=>x.docs);if(!docs.length)throw new Error('not-found');const claim=docs[0];currentRewardClaim={type,id:claim.id,...claim.data(),campaignId:'Fidelidad de '+(claim.data().placeName||'la parada')};
         }else throw new Error('not-found');
+        if(currentRewardClaim.type==='passport'&&currentRewardClaim.optionId&&currentRewardClaim.merchantUid!==merchantAuth.currentUser?.uid)throw new Error('not-authorized');
         renderRewardResult();
     }catch(_){showNotice('verifyMessage','Código inexistente o no autorizado para este negocio.');}finally{button.disabled=false;}
 }
