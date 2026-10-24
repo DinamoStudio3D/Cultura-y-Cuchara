@@ -90,3 +90,13 @@ Se añadieron `admin/review-queue` (hasta 50 pendientes) y `admin/resolve-review
 La resolución comprueba el sello que originó la revisión, evita actuar sobre una revisión diferente y crea una auditoría identificada por premio, visita y decisión. Repetir una resolución ya registrada no devuelve un segundo cupo. Los visitantes y encargados no tienen acceso a estas operaciones administrativas. La cartera muestra los premios cancelados como tales.
 
 Esta ampliación resuelve el manejo explícito de los premios bloqueados del endpoint V2, pero NO sustituye la transición del sistema legado, renovación de condiciones ni la configuración del proyecto aislado. No se realizaron pruebas funcionales ni cambios de producción.
+
+## Renovación de condiciones y protección de progreso anterior
+
+`customer/renew-loyalty` permite pasar a una versión nueva de las condiciones de la misma tarjeta únicamente cuando el ciclo anterior terminó y todos los premios alcanzados fueron solicitados (o antes del primer sello). No renueva si quedan premios bloqueados para revisión. La operación conserva la inscripción anterior como historial, crea una nueva con su política inmutable y actualiza la referencia de tarjeta vigente en una transacción. Repetir la renovación devuelve la inscripción existente. Las tarjetas de temporadas diferentes mantienen referencias independientes.
+
+La cartera muestra las condiciones nuevas y deshabilita la renovación si queda progreso parcial. La tarjeta sustituida deja de emitir códigos; sus premios existentes siguen teniendo su snapshot y su plazo originales. Las tarjetas no repetibles dejan de aceptar sellos al completar la meta. El cupo diario ahora se comparte por usuario/parada/día para que cambiar de temporada o renovar no lo reinicie.
+
+Se añadió un bloqueo de convivencia: si la base aislada contiene un contador legado con progreso o visitas confirmadas del motor anterior, no se permite abrir/acreditar una tarjeta V2 ni arrancar un pasaporte paralelo. No hay un botón que evite este bloqueo. La inspección de transición sigue siendo de solo lectura.
+
+**Límite real de la transición:** no se ha importado progreso ni validado una exportación de los datos actuales. Falta disponer de esa copia verificable, revisar sus discrepancias y definir la correspondencia de los premios ya emitidos antes de escribir una migración aplicable. No se puede considerar ese traslado terminado solo por añadir código. El entorno aislado tampoco está configurado. Las pruebas siguen aplazadas y no se ha tocado main.
