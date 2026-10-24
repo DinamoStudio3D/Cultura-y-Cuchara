@@ -108,3 +108,11 @@ Se verificó en la consola la existencia de `vivelojapruebas`, app web `visitalo
 `sandbox/firebase-public-config.json` contiene exclusivamente la configuración pública observada de esa app. `api/reward-sandbox.js` adapta el servicio a Vercel y solo responde si `VERCEL_ENV=preview`, la rama es `feature/reward-configuration` y `REWARD_SANDBOX_PROJECT_ID=vivelojapruebas`. Usa una credencial independiente, `REWARD_SANDBOX_SERVICE_ACCOUNT_JSON`, valida su proyecto y nunca reutiliza la variable de producción. `REWARD_SANDBOX_ORIGIN` limita el origen exacto de la Preview. Las rutas aisladas se añadieron a `vercel.json`; no reemplazan las rutas públicas existentes.
 
 Pendiente autorización a la hora de habilitar proveedores y crear una credencial administrativa del proyecto aislado; su destino previsto es un secreto de Vercel limitado a Preview y a esta rama. No se ha creado ni transferido esa credencial. La página informa de configuración incompleta mientras falte el servidor. No hay pruebas funcionales realizadas.
+
+## Accesos y ajuste al plan gratuito
+
+Google y correo/contraseña se habilitaron en `vivelojapruebas`; el propietario autorizó expresamente usar su correo como asistencia de Google. No se crearon usuarios ni se copiaron datos.
+
+Vercel rechazó la Preview por exceder el límite de 12 funciones del plan Hobby. La entrada aislada se movió a `lib/reward-sandbox-vercel.cjs` y se despacha desde `api/chabaquito-ranking.js` únicamente con el parámetro de ruta aislada y los bloqueos de rama/proyecto ya existentes. El ranking conserva su ruta normal. El helper legado ahora selecciona explícitamente la app Firebase predeterminada para no reutilizar por accidente la app aislada del mismo proceso. Este ajuste no cambia main ni añade planes de pago.
+
+La clave del servidor todavía no se ha generado: la consola está en el diálogo previo a crearla. Su creación requiere confirmación al momento de conceder este acceso administrativo. El destino previsto es el secreto Vercel de esta rama de Preview, nunca GitHub ni el cliente.
