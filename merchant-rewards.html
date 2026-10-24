@@ -80,7 +80,7 @@
 const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};
 const merchantApp=firebase.initializeApp(firebaseConfig),merchantAuth=merchantApp.auth(),merchantDb=merchantApp.firestore();
 merchantAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-let merchantAccess=null,currentRewardClaim=null,accessUnsubscribe=null,rewardDeliveryBusy=false;
+let merchantAccess=null,currentRewardClaim=null,accessUnsubscribe=null,rewardDeliveryBusy=false,merchantAccessGeneration=0,rewardVerificationGeneration=0;
 const views=['loginView','pendingView','suspendedView','verifierView'];
 function showView(id){views.forEach(view=>document.getElementById(view).classList.toggle('hidden',view!==id));}
 function showNotice(id,text,success=false){const box=document.getElementById(id);box.textContent=text;box.className=`mt-4 rounded-xl p-3 text-sm ${success?'bg-emerald-500/15 text-emerald-200 border border-emerald-500/25':'bg-red-500/15 text-red-200 border border-red-500/25'}`;}
@@ -90,34 +90,44 @@ function togglePassword(){const field=document.getElementById('merchantPassword'
 document.getElementById('merchantLoginForm').addEventListener('submit',async event=>{event.preventDefault();const button=document.getElementById('merchantLoginButton');button.disabled=true;try{await merchantAuth.signInWithEmailAndPassword(document.getElementById('merchantEmail').value.trim(),document.getElementById('merchantPassword').value);}catch(error){showNotice('loginMessage',VisitaLojaAccountAccess.errorMessage(error));}finally{button.disabled=false;}});
 document.getElementById('merchantGoogleButton').addEventListener('click',async()=>{try{await VisitaLojaAccountAccess.google(merchantAuth,()=>new firebase.auth.GoogleAuthProvider());}catch(error){showNotice('loginMessage',VisitaLojaAccountAccess.errorMessage(error));}});
 async function resetMerchantPassword(){const email=document.getElementById('merchantEmail').value.trim();if(!email){showNotice('loginMessage','Escribe primero el correo de acceso.');return;}try{await merchantAuth.sendPasswordResetEmail(email);showNotice('loginMessage','Enviamos las instrucciones para cambiar la contraseña.',true);}catch(error){showNotice('loginMessage',VisitaLojaAccountAccess.errorMessage(error));}}
-async function ensureMerchantRequest(user){const ref=merchantDb.collection('missionRewardMerchantRequests').doc(user.uid),snapshot=await ref.get();if(!snapshot.exists)await ref.set({uid:user.uid,email:user.email||'',displayName:user.displayName||'',status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()});document.getElementById('pendingEmail').textContent=user.email||'';showView('pendingView');}
-function applyMerchantAccess(user,data){merchantAccess=data;if(data.active===false){showView('suspendedView');return;}document.getElementById('merchantBusinessName').textContent=data.businessName||data.displayName||'Negocio autorizado';document.getElementById('merchantSessionEmail').textContent=user.email||'';showView('verifierView');loadMerchantInventory(data.campaignIds||[],data.passportGrants||[]);}
+async function ensureMerchantRequest(user){const ref=merchantDb.collection('missionRewardMerchantRequests').doc(user.uid),snapshot=await ref.get();if(merchantAuth.currentUser?.uid!==user.uid)return;if(!snapshot.exists)await ref.set({uid:user.uid,email:user.email||'',displayName:user.displayName||'',status:'pending',requestedAt:firebase.firestore.FieldValue.serverTimestamp()});if(merchantAuth.currentUser?.uid!==user.uid)return;document.getElementById('pendingEmail').textContent=user.email||'';showView('pendingView');}
+function clearMerchantReward(){merchantAccessGeneration++;rewardVerificationGeneration++;currentRewardClaim=null;document.getElementById('rewardResult').classList.add('hidden');document.getElementById('rewardCode').value='';document.getElementById('verifyMessage').classList.add('hidden');document.getElementById('deliverButton').disabled=true;document.getElementById('verifyButton').disabled=rewardDeliveryBusy;}
+function applyMerchantAccess(user,data){if(merchantAuth.currentUser?.uid!==user.uid)return;clearMerchantReward();merchantAccess=data;if(data.active===false){showView('suspendedView');return;}document.getElementById('merchantBusinessName').textContent=data.businessName||data.displayName||'Negocio autorizado';document.getElementById('merchantSessionEmail').textContent=user.email||'';showView('verifierView');loadMerchantInventory(data.campaignIds||[],data.passportGrants||[]);}
 async function loadMerchantInventory(campaignIds,passportGrants){
+    const inventoryGeneration=merchantAccessGeneration,inventoryUid=merchantAuth.currentUser?.uid;
+    const inventoryCurrent=()=>merchantAccessGeneration===inventoryGeneration&&merchantAuth.currentUser?.uid===inventoryUid;
     const box=document.getElementById('merchantInventory');if(!campaignIds.length&&!passportGrants.length){box.innerHTML='<p class="text-sm text-amber-300">Esta cuenta todavía no tiene campañas asignadas.</p>';return;}
-    try{const snapshots=await Promise.all(campaignIds.slice(0,10).map(id=>merchantDb.collection('missionRewardCampaigns').doc(id).get()));if(merchantAccess?.campaignIds!==campaignIds)return;const missions=snapshots.map((snapshot,index)=>{const item=snapshot.exists?snapshot.data():{},stock=Math.max(0,Number(item.stock)||0),issued=Math.max(0,Number(item.issuedCount)||0),remaining=Math.max(0,stock-issued);return `<div class="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3"><p class="text-xs text-gray-400">${escapeMerchantHtml(item.rewardTitle||campaignIds[index])}</p><p class="font-black text-emerald-200 mt-1">${remaining} de ${stock} disponibles</p></div>`;});const passports=passportGrants.map(grant=>{const [campaign,mode]=grant.split(':');return `<div class="rounded-xl bg-cyan-500/10 border border-cyan-500/20 p-3"><p class="text-xs text-gray-400">${escapeMerchantHtml(campaign)}</p><p class="font-black text-cyan-200 mt-1">Pasaporte ${mode==='turista'?'Turista':'Lojano'}</p></div>`;});box.innerHTML=[...missions,...passports].join('');}catch(_){box.innerHTML='<p class="text-sm text-red-300">No fue posible cargar las campañas autorizadas.</p>';}
+    try{const snapshots=await Promise.all(campaignIds.slice(0,10).map(id=>merchantDb.collection('missionRewardCampaigns').doc(id).get()));if(!inventoryCurrent())return;const missions=snapshots.map((snapshot,index)=>{const item=snapshot.exists?snapshot.data():{},stock=Math.max(0,Number(item.stock)||0),issued=Math.max(0,Number(item.issuedCount)||0),remaining=Math.max(0,stock-issued);return `<div class="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3"><p class="text-xs text-gray-400">${escapeMerchantHtml(item.rewardTitle||campaignIds[index])}</p><p class="font-black text-emerald-200 mt-1">${remaining} de ${stock} disponibles</p></div>`;});const passports=passportGrants.map(grant=>{const [campaign,mode]=grant.split(':');return `<div class="rounded-xl bg-cyan-500/10 border border-cyan-500/20 p-3"><p class="text-xs text-gray-400">${escapeMerchantHtml(campaign)}</p><p class="font-black text-cyan-200 mt-1">Pasaporte ${mode==='turista'?'Turista':'Lojano'}</p></div>`;});box.innerHTML=[...missions,...passports].join('');}catch(_){if(inventoryCurrent())box.innerHTML='<p class="text-sm text-red-300">No fue posible cargar las campañas autorizadas.</p>';}
 }
-merchantAuth.onAuthStateChanged(async user=>{if(accessUnsubscribe){accessUnsubscribe();accessUnsubscribe=null;}merchantAccess=null;currentRewardClaim=null;document.getElementById('rewardResult').classList.add('hidden');if(!user){showView('loginView');return;}const accessRef=merchantDb.collection('missionRewardMerchants').doc(user.uid);accessUnsubscribe=accessRef.onSnapshot(snapshot=>{if(snapshot.exists)applyMerchantAccess(user,snapshot.data());else ensureMerchantRequest(user).catch(()=>{showView('pendingView');});},()=>showView('pendingView'));});
+merchantAuth.onAuthStateChanged(async user=>{if(accessUnsubscribe){accessUnsubscribe();accessUnsubscribe=null;}merchantAccess=null;clearMerchantReward();if(!user){showView('loginView');return;}const accessRef=merchantDb.collection('missionRewardMerchants').doc(user.uid);accessUnsubscribe=accessRef.onSnapshot(snapshot=>{if(merchantAuth.currentUser?.uid!==user.uid)return;if(snapshot.exists)applyMerchantAccess(user,snapshot.data());else{clearMerchantReward();merchantAccess=null;ensureMerchantRequest(user).catch(()=>{if(merchantAuth.currentUser?.uid===user.uid)showView('pendingView');});}},()=>{if(merchantAuth.currentUser?.uid===user.uid){clearMerchantReward();merchantAccess=null;showView('pendingView');}});});
 document.getElementById('verifyCodeForm').addEventListener('submit',event=>{event.preventDefault();verifyRewardCode();});
 function rewardDate(value){const date=value?.toDate?value.toDate():new Date(value||0);return Number.isNaN(date.getTime())?'':date.toLocaleString('es-EC');}
 async function verifyRewardCode(){
-    if(rewardDeliveryBusy)return;
+    if(rewardDeliveryBusy||!merchantAuth.currentUser||!merchantAccess||merchantAccess.active===false)return;
+    const actorUid=merchantAuth.currentUser.uid,accessGeneration=merchantAccessGeneration,verification=++rewardVerificationGeneration;
+    const current=()=>merchantAuth.currentUser?.uid===actorUid&&merchantAccessGeneration===accessGeneration&&rewardVerificationGeneration===verification;
+    let found=null;
     const code=document.getElementById('rewardCode').value.trim().toUpperCase().replace(/\s/g,''),button=document.getElementById('verifyButton');currentRewardClaim=null;document.getElementById('rewardResult').classList.add('hidden');
     if(!/^[A-Z0-9-]{6,20}$/.test(code)){showNotice('verifyMessage','Revisa el formato del código presentado.');return;}button.disabled=true;
     try{
         let pointer=null,type='mission';
         try{const index=await merchantDb.collection('missionRewardClaimCodes').doc(code).get();if(index.exists)pointer=index.data();}catch(_){}
         if(!pointer){type='passport';try{const index=await merchantDb.collection('passportRewardClaimCodes').doc(code).get();if(index.exists)pointer=index.data();}catch(_){}}
+        if(!current())return;
         if(pointer&&type==='mission'){
             if(!merchantAccess?.campaignIds?.includes(pointer.campaignId))throw new Error('not-authorized');
-            const claim=await merchantDb.collection('missionRewardClaims').doc(pointer.claimId).get();if(!claim.exists)throw new Error('not-found');currentRewardClaim={type,id:claim.id,...claim.data()};
+            const claim=await merchantDb.collection('missionRewardClaims').doc(pointer.claimId).get();if(!claim.exists)throw new Error('not-found');found={type,id:claim.id,...claim.data()};
         }else if(pointer&&type==='passport'){
-            if(!merchantAccess?.passportGrants?.includes(`${pointer.campaignId}:${pointer.mode}`))throw new Error('not-authorized');
-            const claim=await merchantDb.collection('passportCompletions').doc(pointer.completionId).get();if(!claim.exists)throw new Error('not-found');currentRewardClaim={type,id:claim.id,...claim.data(),rewardTitle:`Premio Pasaporte ${claim.data().mode==='turista'?'Turista':'Lojano'}`};
+            if(pointer.optionId?pointer.merchantUid!==merchantAuth.currentUser?.uid:!merchantAccess?.passportGrants?.includes(`${pointer.campaignId}:${pointer.mode}`))throw new Error('not-authorized');
+            const claim=await merchantDb.collection('passportCompletions').doc(pointer.completionId).get();if(!claim.exists)throw new Error('not-found');found={type,id:claim.id,...claim.data(),rewardDescription:claim.data().rewardSnapshot?.description||'',rewardTitle:claim.data().rewardSnapshot?.title||`Premio Pasaporte ${claim.data().mode==='turista'?'Turista':'Lojano'}`};
         }else if(code.startsWith('FID-')){
-            type='loyalty';const searches=await Promise.all((merchantAccess?.placeIds||[]).slice(0,10).map(placeId=>merchantDb.collection('loyaltyRewardClaims').where('claimCode','==',code).where('placeId','==',placeId).limit(2).get())),docs=searches.flatMap(x=>x.docs);if(!docs.length)throw new Error('not-found');const claim=docs[0];currentRewardClaim={type,id:claim.id,...claim.data(),campaignId:'Fidelidad de '+(claim.data().placeName||'la parada')};
+            type='loyalty';const searches=await Promise.all((merchantAccess?.placeIds||[]).slice(0,10).map(placeId=>merchantDb.collection('loyaltyRewardClaims').where('claimCode','==',code).where('placeId','==',placeId).limit(2).get())),docs=Array.from(new Map(searches.flatMap(x=>x.docs).map(doc=>[doc.id,doc])).values());if(docs.length!==1)throw new Error('not-found');const claim=docs[0];found={type,id:claim.id,...claim.data(),campaignId:'Fidelidad de '+(claim.data().placeName||'la parada')};
         }else throw new Error('not-found');
-        renderRewardResult();
-    }catch(_){showNotice('verifyMessage','Código inexistente o no autorizado para este negocio.');}finally{button.disabled=false;}
+        if(!current())return;
+        if(found.claimCode!==code)throw new Error('code-mismatch');
+        if(found.type==='passport'&&found.optionId&&found.merchantUid!==actorUid)throw new Error('not-authorized');
+        currentRewardClaim=found;renderRewardResult();
+    }catch(_){if(current())showNotice('verifyMessage','Código inexistente o no autorizado para este negocio.');}finally{if(current())button.disabled=false;}
 }
 function renderRewardResult(){
  const item=currentRewardClaim;if(!item)return;const state=window.VisitaLojaMerchantRewardState.state(item),bar=document.getElementById('rewardStatusBar');
@@ -128,18 +138,18 @@ function renderRewardResult(){
  document.getElementById('resultConditions').textContent=item.rewardDescription||'';
  const expiry=window.VisitaLojaMerchantRewardState.expiry(item.expiresAt);
  document.getElementById('resultExpiry').textContent=expiry!==null?'Vencimiento: '+new Date(expiry).toLocaleString('es-EC',{timeZone:'America/Guayaquil'}):item.type==='loyalty'?'No se pudo confirmar la vigencia. Revisa el premio antes de entregarlo.':'';
- document.getElementById('resultDate').textContent=`Generado: ${rewardDate(item.createdAt)}`;
+ document.getElementById('resultDate').textContent=`Generado: ${rewardDate(item.createdAt||item.completedAt)}`;
  const button=document.getElementById('deliverButton');button.disabled=rewardDeliveryBusy||!state.canDeliver;
  button.innerHTML=state.canDeliver?'<i class="fa-solid fa-check mr-2"></i>Confirmar entrega':'<i class="fa-solid fa-lock mr-2"></i>Este premio no está disponible para entrega';
  document.getElementById('verifyMessage').classList.add('hidden');document.getElementById('rewardResult').classList.remove('hidden');
 }
 async function deliverReward(){
  if(rewardDeliveryBusy||!currentRewardClaim||!merchantAuth.currentUser)return;
- const item=currentRewardClaim,actor={uid:merchantAuth.currentUser.uid,email:merchantAuth.currentUser.email};
+ const item=currentRewardClaim,accessGeneration=merchantAccessGeneration,actor={uid:merchantAuth.currentUser.uid,email:merchantAuth.currentUser.email};
  if(!window.VisitaLojaMerchantRewardState.state(item).canDeliver){renderRewardResult();return;}
  if(!confirm(`¿Confirmas la entrega de ${item.rewardTitle||'la recompensa'}? Esta acción no se puede repetir.`))return;
  rewardDeliveryBusy=true;const button=document.getElementById('deliverButton'),verify=document.getElementById('verifyButton');button.disabled=verify.disabled=true;
- const current=()=>merchantAuth.currentUser?.uid===actor.uid&&currentRewardClaim===item;
+ const current=()=>merchantAuth.currentUser?.uid===actor.uid&&merchantAccessGeneration===accessGeneration&&currentRewardClaim===item;
  try{
   const type=item.type,collection=type==='passport'?'passportCompletions':type==='loyalty'?'loyaltyRewardClaims':'missionRewardClaims',ref=merchantDb.collection(collection).doc(item.id);
   await merchantDb.runTransaction(async transaction=>{

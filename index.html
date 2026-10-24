@@ -2564,7 +2564,7 @@
             </div>
             <div class="p-6">
                 <p id="passportCampaignIntro" class="text-xs text-gray-600 mb-2 text-center">Visita las paradas participantes, consigue seis sellos y desbloquea una recompensa especial.</p>
-                <p class="text-xs text-gray-700 mb-4 text-center font-black" id="passportRuleDesc">Meta: 1 Hotel + 5 Gastronomía</p>
+                <p class="text-xs text-gray-700 mb-4 text-center font-black" id="passportRuleDesc">Meta: 1 Hotel + 5 Gastronomía</p><p id="passportUniqueStopHint" class="text-xs text-gray-700 mb-4 text-center">Cada parada aporta un solo sello al pasaporte. Las visitas repetidas pueden seguir sumando en la tarjeta de fidelidad del negocio.</p>
                 <div class="grid grid-cols-3 gap-3 mb-6 max-h-64 overflow-y-auto p-1" id="passportStampsGrid"></div>
                 <div class="bg-gray-100 rounded-xl p-4 text-center border border-gray-200">
                     <p class="text-sm font-bold text-brandDark mb-1"><i class="fa-solid fa-gift text-brandGold mr-1"></i> <span data-i18n="passRewardTitle">Progreso de Recompensa</span></p>
@@ -3319,7 +3319,7 @@
 
         function renderVisitorExperience() {
             if (!visitorAuth?.currentUser || !currentVisitorProfile?.profileComplete) return;
-            const stampCount=visitedLocations.length,favoriteCount=favoriteLocations.length,routeCount=currentSmartRoute.length,total=6,percentage=Math.min(100,Math.round((stampCount/total)*100));
+            const stampCount=passportVisitedPlaceIds(visitedLocations).length,favoriteCount=favoriteLocations.length,routeCount=currentSmartRoute.length,total=6,percentage=Math.min(100,Math.round((stampCount/total)*100));
             const setText=(id,value)=>{const element=document.getElementById(id);if(element)element.textContent=value;};
             const savedAgendaIds=(typeof getSavedAgendaEvents==='function'?getSavedAgendaEvents():[]);
             const savedFestivalIds=safeReadJSON('cyc_saved_festival_events',[]).map(String);
@@ -3440,11 +3440,12 @@
         async function syncSecurePassportStamps(user) {
             if (!user || !db) return;
             try {
+                const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026';
                 const snapshot = await db.collection('securePassportStamps').where('userId', '==', user.uid).get();
-                if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
-                const secureIds = snapshot.docs.map(doc => doc.data().placeId).filter(Boolean);
+                if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid)||campaignId!==(passportCampaignConfig.campaignId||'pasaporte-2026'))return;
+                const secureIds = snapshot.docs.map(doc=>doc.data()).filter(stamp=>stamp.campaignId===campaignId).map(stamp=>stamp.placeId).filter(Boolean);
                 {
-                    visitedLocations = [...new Set(secureIds)];
+                    visitedLocations = passportVisitedPlaceIds(secureIds);
                     localStorage.setItem('cyc_visited_locations', JSON.stringify(visitedLocations));
                     updatePassportUI();
                 }
@@ -3460,12 +3461,14 @@
             syncedFavoritesUserId=null;
             try{
                 VisitaLojaAccountAccess.scopeProgress(localStorage,user?.uid);
-                visitedLocations=safeReadJSON('cyc_visited_locations',[]);
+                visitedLocations=passportVisitedPlaceIds(safeReadJSON('cyc_visited_locations',[]));
                 favoriteLocations=safeReadJSON('cyc_favorites',[]);
                 passportMode=localStorage.getItem('cyc_passport_mode')||'lojano';
             }catch(error){visitedLocations=[];favoriteLocations=[];passportMode='lojano';console.warn('No se pudo cambiar el caché local de la cuenta.');}
             document.getElementById('visitorProfileForm')?.reset();
             document.getElementById('passportBenefitCodeBox')?.classList.add('hidden');
+            const claimButton=document.getElementById('passportRewardClaimButton');if(claimButton)claimButton.disabled=false;
+            document.getElementById('passportRewardMessage')?.classList.add('hidden');
             const previousCode=document.getElementById('passportBenefitCode');if(previousCode)previousCode.textContent='';
             updatePassportUI();refreshFavoritesUI();
             updateVisitorAccountLabels(user);
@@ -4294,7 +4297,7 @@
             }
             return null; // Require explicit selection.
         }
-        let visitedLocations = safeReadJSON('cyc_visited_locations', []);
+        let visitedLocations = passportVisitedPlaceIds(safeReadJSON('cyc_visited_locations', []));
         let favoriteLocations = safeReadJSON('cyc_favorites', []);
         let passportMode = localStorage.getItem('cyc_passport_mode') || 'lojano';
         let userCoords = null;
@@ -7752,8 +7755,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         document.addEventListener('keydown',event=>{if(document.getElementById('menuGalleryModal')?.classList.contains('hidden'))return;if(event.key==='ArrowLeft')moveImmersiveGallery(-1);else if(event.key==='ArrowRight')moveImmersiveGallery(1);});
 
         function initPassport() {
-            const storedVisits = localStorage.getItem('cyc_visited_locations');
-            if (storedVisits) visitedLocations = JSON.parse(storedVisits);
+            visitedLocations = passportVisitedPlaceIds(safeReadJSON('cyc_visited_locations', []));
             const storedMode = localStorage.getItem('cyc_passport_mode');
             if (storedMode) passportMode = storedMode;
             updatePassportUI();
@@ -7774,6 +7776,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             updatePassportUI();
         }
 
+        function passportVisitedPlaceIds(value) {
+            return [...new Set((Array.isArray(value)?value:[]).filter(id=>typeof id==='string'&&id.length>0))];
+        }
+
         function updatePassportUI() {
             renderVisitorExperience();
             const grid = document.getElementById('passportStampsGrid');
@@ -7782,8 +7788,10 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const totalToWin = 6;
             const ruleDesc = document.getElementById('passportRuleDesc');
             if(ruleDesc) ruleDesc.innerText = currentLang==='en'?(passportMode==='turista'?'Your goal: 1 hotel + 5 food stops':'Your goal: 6 food stops'):(passportMode==='turista'?'Tu meta: 1 hotel + 5 paradas gastronómicas':'Tu meta: 6 paradas gastronómicas');
+            const uniqueHint=document.getElementById('passportUniqueStopHint');
+            if(uniqueHint)uniqueHint.textContent=currentLang==='en'?'Each place adds only one passport stamp. Repeat visits may still count toward that business’s loyalty card.':'Cada parada aporta un solo sello al pasaporte. Las visitas repetidas pueden seguir sumando en la tarjeta de fidelidad del negocio.';
             const gastronomicCategories=new Set(['hueca','cafe','urbana','heladeria','panaderia','bar']);
-            const visited=visitedLocations.map(id=>locations.find(location=>location.id===id)).filter(Boolean);
+            const visited=passportVisitedPlaceIds(visitedLocations).map(id=>locations.find(location=>location.id===id)).filter(Boolean);
             const visitedHotels=visited.filter(location=>location.category==='hotel');
             const visitedFood=visited.filter(location=>gastronomicCategories.has(location.category));
             const validStops=passportMode==='turista'?[visitedHotels[0],...Array.from({length:5},(_,index)=>visitedFood[index])]:Array.from({length:6},(_,index)=>visitedFood[index]);
@@ -7813,33 +7821,42 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function passportCampaignIsActive(){if(passportCampaignConfig.active===false)return false;const now=Date.now(),start=passportCampaignConfig.startAt?new Date(passportCampaignConfig.startAt).getTime():null,end=passportCampaignConfig.endAt?new Date(passportCampaignConfig.endAt).getTime():null;return!(start&&Number.isFinite(start)&&now<start)&&!(end&&Number.isFinite(end)&&now>end);}
 
-        function passportClaimCode(configured={}){const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026',key=`cyc_passport_claim_${campaignId}_${passportMode}`,stored=localStorage.getItem(key);if(stored)return stored;const prefix=String(configured.code||(passportMode==='turista'?'TURISTA':'LOJANO')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8)||'VIVELOJA',random=Math.random().toString(36).slice(2,7).toUpperCase(),code=`${prefix}-${random}`;localStorage.setItem(key,code);return code;}
 
         let passportRewardIntent=false;
-        function passportCompletionDocumentId(user,campaignId,mode){return `${user.uid}_${campaignId}_${mode}`.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,180);}
         function showPassportRewardMessage(text,isError=false){const notice=document.getElementById('passportRewardMessage');if(!notice)return;notice.textContent=text;notice.className=`text-xs rounded-xl p-3 mt-3 ${isError?'bg-red-500/15 text-red-200':'bg-emerald-500/15 text-emerald-100'}`;}
+        let selectedPassportReward={};
+        function passportRewardSelection(configured){const key=(passportCampaignConfig.campaignId||'pasaporte-2026')+'_'+passportMode,choices=configured.choices;return choices?{id:selectedPassportReward[key]||'',reward:choices[selectedPassportReward[key]]}:null;}
+        function selectPassportReward(id){const configured=passportMode==='turista'?passportCampaignConfig.tourist:passportCampaignConfig.local;if(!configured.choices?.[id]?.active)return;selectedPassportReward[(passportCampaignConfig.campaignId||'pasaporte-2026')+'_'+passportMode]=id;renderPassportBenefit(true);}
+        function renderPassportRewardChoices(configured){let host=document.getElementById('passportRewardChoices');if(!host){host=document.createElement('div');host.id='passportRewardChoices';document.getElementById('passportRewardRegistration').before(host);}host.replaceChildren();if(!configured.choices)return;const heading=document.createElement('p');heading.className='text-sm font-bold mt-3';heading.textContent='Elige una recompensa · solo podrás canjear una';host.append(heading);const selected=passportRewardSelection(configured);for(const [id,reward]of Object.entries(configured.choices)){if(!reward.active)continue;const button=document.createElement('button');button.type='button';button.className='block w-full text-left rounded-xl border p-3 mt-2 '+(selected.id===id?'border-emerald-300 bg-emerald-900':'border-gray-500 bg-black/20');button.setAttribute('aria-pressed',String(selected.id===id));const title=document.createElement('strong'),description=document.createElement('span');title.textContent=reward.title;description.textContent=reward.description||'';description.className='block text-xs text-gray-200 mt-1';button.append(title,description);button.addEventListener('click',()=>selectPassportReward(id));host.append(button);}}
         async function beginPassportRewardClaim(){
             const user=visitorAuth?.currentUser;
             if(!user){passportRewardIntent=true;closeModal('pasaporteModal');openAccountModal();showToast('Inicia sesión para registrar y proteger tu premio.');return;}
             if(!currentVisitorProfile?.profileComplete){passportRewardIntent=true;closeModal('pasaporteModal');openModal('accountModal');fillVisitorProfileForm(user,currentVisitorProfile||{});showVisitorAccountView('visitorProfileForm');return;}
-            const configured=passportCampaignLoaded?(passportMode==='turista'?passportCampaignConfig.tourist:passportCampaignConfig.local):explorerBenefitConfig;
-            const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026',claimCode=passportClaimCode(configured),completionId=passportCompletionDocumentId(user,campaignId,passportMode),button=document.getElementById('passportRewardClaimButton');
-            if(button){button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Registrando premio…';}
+            const accountGeneration=visitorAccountGeneration,mode=passportMode,configured=passportCampaignLoaded?(mode==='turista'?passportCampaignConfig.tourist:passportCampaignConfig.local):explorerBenefitConfig;
+            const choice=passportRewardSelection(configured);
+            const campaignId=passportCampaignConfig.campaignId||'pasaporte-2026',button=document.getElementById('passportRewardClaimButton');
+            if(button?.disabled)return;
+            const current=()=>visitorAccountGeneration===accountGeneration&&VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid)&&passportMode===mode&&campaignId===(passportCampaignConfig.campaignId||'pasaporte-2026');
+            if(button){button.disabled=true;button.textContent='Verificando tus sellos…';}
             try{
-                const ref=db.collection('passportCompletions').doc(completionId),codeRef=db.collection('passportRewardClaimCodes').doc(claimCode),claimData={campaignId,mode:passportMode,sessionId:businessAnalyticsSession,userId:user.uid,stampsCount:6,claimCode,status:'pending',completedAt:firebase.firestore.FieldValue.serverTimestamp()};
-                const createClaim=includeCodeIndex=>{const batch=db.batch();batch.set(ref,claimData);if(includeCodeIndex)batch.set(codeRef,{completionId,campaignId,mode:passportMode,userId:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});return batch.commit();};
-                let data=claimData,alreadyRegistered=false;try{await createClaim(true);}catch(error){if(error?.code==='permission-denied'){try{await createClaim(false);}catch(_){const existing=await ref.get();if(!existing.exists)throw error;data=existing.data();alreadyRegistered=true;}}else throw error;}
-                if(!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
-                document.getElementById('passportBenefitCode').textContent=data.claimCode||claimCode;
+                const token=await user.getIdToken();if(!current())return;
+                const response=await fetch('/api/chabaquito-ranking?action=passport-claim',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({campaignId,mode,optionId:choice?.id||''})});
+                const data=await response.json();
+                if(!response.ok)throw new Error(data.error||'No pudimos verificar tu pasaporte.');
+                const alreadyRegistered=data.alreadyRegistered;
+                if(!current())return;
+                if(data.rewardSnapshot){document.getElementById('passportBenefitTitle').textContent=data.rewardSnapshot.title;document.getElementById('passportBenefitDescription').textContent=data.rewardSnapshot.description||'';}
+                document.getElementById('passportRewardChoices')?.replaceChildren();
+                document.getElementById('passportBenefitCode').textContent=data.claimCode;
                 document.getElementById('passportBenefitCodeBox').classList.remove('hidden');
                 document.getElementById('passportRewardRegistration').classList.add('hidden');
-                localStorage.setItem(`cyc_passport_completed_${campaignId}_${passportMode}`,'1');
-                showPassportRewardMessage(alreadyRegistered?'Este premio ya estaba registrado en tu cuenta.':'¡Premio registrado correctamente a tu nombre!');
-            }catch(error){showPassportRewardMessage(error?.code==='permission-denied'?'Falta publicar la regla actualizada del pasaporte en Firebase.':'No pudimos registrar el premio. Inténtalo nuevamente.',true);}
-            finally{if(button){button.disabled=false;button.innerHTML='<i class="fa-brands fa-google mr-2"></i>Registrarme y reclamar';}}
+                localStorage.setItem(`cyc_passport_completed_${campaignId}_${mode}`,'1');
+                showPassportRewardMessage(data.status==='delivered'?'Esta recompensa ya fue entregada.':alreadyRegistered?'Tu elección ya estaba registrada. Conservas el mismo premio y código.':'¡Recompensa elegida y registrada a tu nombre!');
+            }catch(error){if(current())showPassportRewardMessage(error?.message||'No pudimos registrar el premio. Inténtalo nuevamente.',true);}
+            finally{if(button&&current()){button.disabled=false;button.textContent='Registrar y generar mi código';}}
         }
 
-        function renderPassportBenefit(passportComplete){const box=document.getElementById('passportBenefitReward'),scheduled=passportCampaignIsActive(),configured=passportCampaignLoaded?(passportMode==='turista'?passportCampaignConfig.tourist:passportCampaignConfig.local):explorerBenefitConfig,active=passportComplete&&scheduled&&configured.active!==false;if(!box)return;box.classList.toggle('hidden',!active);if(!active)return;document.getElementById('passportBenefitTitle').textContent=configured.title||'Recompensa del Pasaporte';document.getElementById('passportBenefitDescription').textContent=configured.description||'';const image=document.getElementById('passportBenefitImage');image.classList.toggle('hidden',!configured.imageUrl);if(configured.imageUrl)image.src=configured.imageUrl;document.getElementById('passportBenefitCodeBox').classList.add('hidden');document.getElementById('passportRewardRegistration').classList.remove('hidden');const button=document.getElementById('passportRewardClaimButton');if(button)button.innerHTML=visitorAuth?.currentUser&&currentVisitorProfile?.profileComplete?'<i class="fa-solid fa-ticket mr-2"></i>Registrar y generar mi código':'<i class="fa-brands fa-google mr-2"></i>Registrarme y reclamar';const validity=[];if(passportCampaignConfig.startAt)validity.push(`Desde ${new Date(passportCampaignConfig.startAt).toLocaleString('es-EC')}`);if(passportCampaignConfig.endAt)validity.push(`hasta ${new Date(passportCampaignConfig.endAt).toLocaleString('es-EC')}`);document.getElementById('passportBenefitValidity').textContent=validity.join(' ');const link=document.getElementById('passportBenefitLink');link.classList.add('hidden');link.href=configured.url||'#';const label=link.querySelector('span');if(label)label.textContent=configured.buttonText||'Solicitar mi premio';}
+        function renderPassportBenefit(passportComplete){const box=document.getElementById('passportBenefitReward'),scheduled=passportCampaignIsActive(),configured=passportCampaignLoaded?(passportMode==='turista'?passportCampaignConfig.tourist:passportCampaignConfig.local):explorerBenefitConfig,active=passportComplete&&scheduled&&configured.active!==false;if(!box)return;box.classList.toggle('hidden',!active);if(!active)return;const claimButton=document.getElementById('passportRewardClaimButton');if(claimButton)claimButton.disabled=false;renderPassportRewardChoices(configured);document.getElementById('passportBenefitTitle').textContent=configured.title||'Recompensa del Pasaporte';document.getElementById('passportBenefitDescription').textContent=configured.description||'';const image=document.getElementById('passportBenefitImage');image.classList.toggle('hidden',!configured.imageUrl);if(configured.imageUrl)image.src=configured.imageUrl;document.getElementById('passportBenefitCodeBox').classList.add('hidden');document.getElementById('passportRewardRegistration').classList.remove('hidden');const button=document.getElementById('passportRewardClaimButton');if(button)button.innerHTML=visitorAuth?.currentUser&&currentVisitorProfile?.profileComplete?'<i class="fa-solid fa-ticket mr-2"></i>Registrar y generar mi código':'<i class="fa-brands fa-google mr-2"></i>Registrarme y reclamar';const validity=[];if(passportCampaignConfig.startAt)validity.push(`Desde ${new Date(passportCampaignConfig.startAt).toLocaleString('es-EC')}`);if(passportCampaignConfig.endAt)validity.push(`hasta ${new Date(passportCampaignConfig.endAt).toLocaleString('es-EC')}`);document.getElementById('passportBenefitValidity').textContent=validity.join(' ');const link=document.getElementById('passportBenefitLink');link.classList.add('hidden');link.href=configured.url||'#';const label=link.querySelector('span');if(label)label.textContent=configured.buttonText||'Solicitar mi premio';}
 
         function renderPassportNextStops(visitedHotels=[],visitedFood=[]){const container=document.getElementById('passportNextStops');if(!container)return;const gastronomicCategories=new Set(['hueca','cafe','urbana','heladeria','panaderia','bar']);let candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&(passportMode==='turista'?(visitedHotels.length<1?item.location.category==='hotel':gastronomicCategories.has(item.location.category)):gastronomicCategories.has(item.location.category)));if(!candidates.length&&passportMode==='turista')candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&gastronomicCategories.has(item.location.category));if(userCoords)candidates.sort((a,b)=>calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(a.location.lat),Number(a.location.lng))-calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(b.location.lat),Number(b.location.lng)));const next=candidates.slice(0,2);container.innerHTML=next.length?next.map(({location,index})=>`<button type="button" onclick="openPassportNextStop(${index})" class="w-full bg-white border border-brandGold/30 rounded-xl p-3 text-left flex items-center gap-3 hover:border-brandGold"><span class="w-9 h-9 rounded-full bg-brandGold/15 text-brandGold grid place-items-center"><i class="fa-solid ${escapeHTML(location.iconClass||'fa-location-dot')}"></i></span><span class="min-w-0 flex-grow"><b class="block text-xs truncate">${escapeHTML(location.title||'Parada Visita Loja')}</b><span class="text-[10px] text-gray-500">${location.category==='hotel'?'Parada de hospedaje':'Parada gastronómica'} · Ver ubicación</span></span><i class="fa-solid fa-chevron-right text-brandGold"></i></button>`).join(''):'<p class="text-xs text-gray-500 bg-gray-100 rounded-xl p-3">Ya visitaste todas las paradas disponibles para este modo.</p>';}
 
@@ -8652,7 +8669,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             db.collection('siteContent').doc('chabaquito').onSnapshot(snapshot => {
                 if (snapshot.exists) applyChabaquitoConfig(snapshot.data());
             }, error => console.warn('No se pudo sincronizar Chabaquito:', error));
-            db.collection('siteContent').doc('passport').onSnapshot(snapshot=>{if(!snapshot.exists)return;const data=snapshot.data();passportCampaignLoaded=true;passportCampaignConfig={...passportCampaignConfig,...data,tourist:{...passportCampaignConfig.tourist,...(data.tourist||{})},local:{...passportCampaignConfig.local,...(data.local||{})}};const intro=document.getElementById('passportCampaignIntro');if(intro)intro.textContent=passportCampaignConfig.introText||'';updatePassportUI();},error=>console.warn('No se pudo sincronizar el Pasaporte:',error));
+            db.collection('siteContent').doc('passport').onSnapshot(snapshot=>{if(!snapshot.exists)return;const data=snapshot.data();passportCampaignLoaded=true;passportCampaignConfig={...passportCampaignConfig,...data,tourist:{...passportCampaignConfig.tourist,...(data.tourist||{})},local:{...passportCampaignConfig.local,...(data.local||{})}};const intro=document.getElementById('passportCampaignIntro');if(intro)intro.textContent=passportCampaignConfig.introText||'';updatePassportUI();if(visitorAuth?.currentUser)syncSecurePassportStamps(visitorAuth.currentUser);},error=>console.warn('No se pudo sincronizar el Pasaporte:',error));
         }
 
         let mascotMessageTimer;

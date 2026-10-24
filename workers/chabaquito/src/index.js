@@ -1,8 +1,14 @@
+import '../../../functions/loyalty-season-policy.js';
+import '../../../functions/loyalty-consumption.js';
+const Consumption=globalThis.VisitaLojaConsumption;
+const LoyaltySeasons = globalThis.VisitaLojaLoyaltySeasonPolicy;
 const PROJECT_ID = "cultura-y-cuchara";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const FIRESTORE_SCOPE = "https://www.googleapis.com/auth/datastore";
 const FIREBASE_JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
 const ALLOWED_ORIGINS = new Set([
+  "https://visitaloja-cfnfu6lib-dinamostudio3d.vercel.app",
+  "https://visitaloja-git-improve-existing-rewards-dinamostudio3d.vercel.app",
   "https://visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app",
   "https://www.visitaloja.com",
   "https://visitaloja.com"
@@ -275,11 +281,6 @@ async function confirmMerchantVisit(env, user, input) {
   const requestId = String(input?.requestId || "").trim();
   if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
 
-  const amountRaw = Number(input?.purchaseAmount || 0);
-  const purchaseAmount = Number.isFinite(amountRaw)
-    ? Math.max(0, Math.min(100000, Math.round(amountRaw * 100) / 100))
-    : 0;
-  const receiptRef = String(input?.receiptRef || "").trim().slice(0, 80);
   const accessToken = await getGoogleAccessToken(env);
   const transaction = await firestoreBeginTransaction(accessToken);
 
@@ -308,15 +309,24 @@ async function confirmMerchantVisit(env, user, input) {
   const counterPath = `loyaltyCounters/${counterId}`;
   const programPath = `loyaltyPrograms/${code.placeId}`;
 
-  const [visitDocument, counterDocument, programDocument] = await Promise.all([
+  const [visitDocument, counterDocument, programDocument, passportDocument, placeDocument] = await Promise.all([
     firestoreGetDocumentInTransaction(accessToken, visitPath, transaction),
     firestoreGetDocumentInTransaction(accessToken, counterPath, transaction),
-    firestoreGetDocumentInTransaction(accessToken, programPath, transaction)
+    firestoreGetDocumentInTransaction(accessToken, programPath, transaction),
+    firestoreGetDocumentInTransaction(accessToken, "siteContent/passport", transaction),
+    firestoreGetDocumentInTransaction(accessToken, `locales/${code.placeId}`, transaction)
   ]);
   if (visitDocument) throw new Error("Visit was already registered");
 
-  const counter = counterDocument ? decodeFirestoreDocument(counterDocument) : null;
-  const program = programDocument ? decodeFirestoreDocument(programDocument) : null;
+  const baseCounter = counterDocument ? decodeFirestoreDocument(counterDocument) : {},baseProgram = programDocument ? decodeFirestoreDocument(programDocument) : {};
+  const card = LoyaltySeasons.select(baseProgram,baseCounter,Date.now()),counter=card.counter,program=card.program;
+  if(!placeDocument)throw new Error('La parada no existe.');
+  const consumption=Consumption.validate(input,decodeFirestoreDocument(placeDocument),program);
+  const {purchaseAmount,receiptRef}=consumption;
+  const passport=decodeFirestoreDocument(passportDocument||{}),campaignId=passport.campaignId||'pasaporte-2026';
+  const stampId=cleanId(`${campaignId}_${code.userId}_${code.placeId}`),stampPath=`securePassportStamps/${stampId}`;
+  const stampDocument=await firestoreGetDocumentInTransaction(accessToken,stampPath,transaction);
+  if(stampDocument){const stamp=decodeFirestoreDocument(stampDocument);if(stamp.userId!==code.userId||stamp.placeId!==code.placeId||stamp.campaignId!==campaignId)throw new Error('Passport stamp requires review before confirmation');}
   const today = ecuadorDay();
   const maxDaily = Math.max(1, Math.min(3, Number(program?.maxVisitsPerDay || 1)));
   const previousDaily = counter?.lastVisitDay === today ? Number(counter.dailyVisitCount || 0) : 0;
@@ -344,10 +354,13 @@ async function confirmMerchantVisit(env, user, input) {
     confirmedBy: user.uid,
     confirmedByName: merchantName,
     confirmedAt: now,
-    purchaseAmount,
-    receiptRef,
+    ...consumption,
     status: "confirmed",
+    ...(!card.seasonal?{previousPermanentPolicy:baseCounter.permanentPolicy||null}:{}), ...(card.seasonal?{seasonId:card.id,seasonTarget:target,previousSeasonCard:baseCounter.seasonalCards?.[card.id]||null}:{}),
     previousVisitCount: Number(counter?.visitCount || 0),
+    previousRewardCycles:Number(counter?.rewardCycles||0),
+    passportAdded:!stampDocument,
+    passportStampId:!stampDocument?stampId:"",
     previousTotalSpend: Number(counter?.totalSpend || 0),
     previousDailyVisitCount: previousDaily,
     previousLastVisitDay: counter?.lastVisitDay || "",
@@ -360,7 +373,7 @@ async function confirmMerchantVisit(env, user, input) {
     userEmail: code.userEmail || counter?.userEmail || "",
     placeId: code.placeId,
     placeName: code.placeName || counter?.placeName || "",
-    visitCount: newCount,
+    ...LoyaltySeasons.progressPatch(card,baseCounter,newCount),
     lastVisitDay: today,
     dailyVisitCount: previousDaily + 1,
     lastVisitRequestId: requestId,
@@ -368,7 +381,7 @@ async function confirmMerchantVisit(env, user, input) {
     totalSpend: Number(counter?.totalSpend || 0) + purchaseAmount,
     updatedAt: now
   };
-  if (!counter) counterFields.firstVisitAt = now;
+  if (!counterDocument) counterFields.firstVisitAt = now;
 
   const writes = [
     { update: { name: documentName(codePath), fields: firestoreFields(codeFields) }, updateMask: { fieldPaths: Object.keys(codeFields) } },
@@ -380,15 +393,34 @@ async function confirmMerchantVisit(env, user, input) {
     }
   ];
 
+  const programPatch=card.seasonal?{seasonUsage:{...(baseProgram.seasonUsage||{}),[card.id]:true}}:{};
+  const oldCycles=Number(counter.rewardCycles||0),cycle=Math.floor(newCount/target),claimed=Number(program.claimedCount||0);
+  let rewardCreated=false;
+  if(programDocument&&program.active!==false&&cycle>oldCycles&&(program.stock==null||claimed<Number(program.stock))){
+    const rewardId=card.seasonal?'season-'+await sha256Hex(JSON.stringify([code.userId,code.placeId,card.id,cycle])):cleanId(`${code.userId}_${code.placeId}_${cycle}`);
+    const rewardFields={userId:code.userId,userName:code.userName||'',userEmail:code.userEmail||'',placeId:code.placeId,placeName:code.placeName||'',programId:code.placeId,...(card.seasonal?{seasonId:card.id,seasonTitle:program.title}:{}),cycle,rewardTitle:program.rewardTitle||'Beneficio de fidelidad',rewardDescription:program.rewardDescription||'',claimCode:'FID-'+Array.from(crypto.getRandomValues(new Uint8Array(8)),n=>n.toString(16).padStart(2,'0')).join('').toUpperCase(),status:'pending',createdAt:now,expiresAt:new Date(now.getTime()+Number(program.rewardValidityDays||30)*86400000)};
+    visitFields.rewardClaimId=rewardId;
+    if(card.seasonal){counterFields.seasonalCards[card.id].rewardCycles=cycle;programPatch.seasonClaimedCounts={...(baseProgram.seasonClaimedCounts||{}),[card.id]:claimed+1};}
+    else{counterFields.rewardCycles=cycle;programPatch.claimedCount=claimed+1;}
+    writes.push({update:{name:documentName(`loyaltyRewardClaims/${rewardId}`),fields:firestoreFields(rewardFields)},currentDocument:{exists:false}});
+    rewardCreated=true;
+  }
+  if(!stampDocument)writes.push({update:{name:documentName(stampPath),fields:firestoreFields({requestId,campaignId,userId:code.userId,placeId:code.placeId,placeName:code.placeName||'',confirmedBy:user.uid,confirmedAt:now})},currentDocument:{exists:false}});
+  if(Object.keys(programPatch).length)writes.push({update:{name:documentName(programPath),fields:firestoreFields({...programPatch,updatedAt:now})},updateMask:{fieldPaths:[...Object.keys(programPatch),'updatedAt']},currentDocument:{updateTime:programDocument.updateTime}});
+  writes[1].update.fields=firestoreFields(visitFields);
+  writes[2].update.fields=firestoreFields(counterFields);
+  writes[2].updateMask.fieldPaths=Object.keys(counterFields);
+  writes.push({update:{name:documentName(`systemAudit/${requestId}_added`),fields:firestoreFields({action:'loyalty_stamp_added',actorUid:user.uid,actorName:merchantName,userId:code.userId,placeId:code.placeId,requestId,...consumption,createdAt:now})},currentDocument:{exists:false}});
   await firestoreCommit(accessToken, transaction, writes);
   const missions = await syncUserMissionProgress(env, code.userId);
-  return { visitCount: newCount, target, visitorUid: code.userId, placeId: code.placeId, missions };
+  return { visitCount: newCount, target, passportAdded:!stampDocument,rewardCreated, visitorUid: code.userId, placeId: code.placeId, missions };
 }
 
 async function reverseMerchantVisit(env, user, input) {
   const requestId = String(input?.requestId || "").trim();
   if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
 
+  const reversalReason=Consumption.reason(input?.reversalReason,'Motivo de la anulación');
   const accessToken = await getGoogleAccessToken(env);
   const transaction = await firestoreBeginTransaction(accessToken);
   const merchantDocument = await firestoreGetDocumentInTransaction(
@@ -407,6 +439,7 @@ async function reverseMerchantVisit(env, user, input) {
   const visitDocument = await firestoreGetDocumentInTransaction(accessToken, visitPath, transaction);
   if (!visitDocument) throw new Error("Visit was not found");
   const visit = decodeFirestoreDocument(visitDocument);
+  if(visit.passportClaimIds?.length)throw new Error("Esta visita respalda una recompensa del pasaporte registrada. Solicita revisión al administrador.");
   if (visit.status !== "confirmed") throw new Error("Visit is not confirmed");
   if (visit.confirmedBy !== user.uid) throw new Error("Only the confirming merchant can reverse this visit");
   if (!validDocumentId(visit.userId) || !validDocumentId(visit.placeId)) throw new Error("Visit data is invalid");
@@ -436,17 +469,18 @@ async function reverseMerchantVisit(env, user, input) {
   const restoredLastVisitAt = Number.isFinite(visit.previousLastVisitAt)
     ? new Date(visit.previousLastVisitAt)
     : null;
-  const target = Math.max(10, Number(decodeFirestoreDocument(programDocument || {}).targetVisits || 10));
+  const target = Math.max(10, Number(visit.seasonId?visit.seasonTarget:(counter.permanentPolicy?.targetVisits||decodeFirestoreDocument(programDocument || {}).targetVisits||10)));
 
   const visitFields = {
     status: "reversed",
     reversedAt: now,
     reversedBy: user.uid,
     reversedByName: merchant.businessName || user.email || "",
+    reversalReason,
     updatedAt: now
   };
   const counterFields = {
-    visitCount: restoredCount,
+    ...LoyaltySeasons.restorePatch(visit,counter),
     totalSpend: restoredSpend,
     dailyVisitCount: restoredDaily,
     lastVisitDay: restoredDay,
@@ -466,6 +500,23 @@ async function reverseMerchantVisit(env, user, input) {
       currentDocument: { updateTime: counterDocument.updateTime }
     }
   ];
+  if(visit.rewardClaimId){
+    const rewardPath=`loyaltyRewardClaims/${visit.rewardClaimId}`,rewardDoc=await firestoreGetDocumentInTransaction(accessToken,rewardPath,transaction);
+    if(rewardDoc){
+      const reward=decodeFirestoreDocument(rewardDoc);
+      if(reward.status!=='pending')throw new Error('Reward already delivered; reversal requires review');
+      if(!programDocument)throw new Error('Reward program requires review before reversal');
+      const rawProgram=decodeFirestoreDocument(programDocument),claimed=Number(rawProgram.claimedCount);
+      if(!visit.seasonId&&(!Number.isSafeInteger(claimed)||claimed<1))throw new Error('Reward stock requires review before reversal');
+      const patch=visit.seasonId?{seasonClaimedCounts:LoyaltySeasons.reverseSeasonClaim(rawProgram,visit.seasonId)}:{claimedCount:claimed-1};
+      writes.push({delete:documentName(rewardPath),currentDocument:{updateTime:rewardDoc.updateTime}});
+      writes.push({update:{name:documentName(programPath),fields:firestoreFields({...patch,updatedAt:now})},updateMask:{fieldPaths:[...Object.keys(patch),'updatedAt']},currentDocument:{updateTime:programDocument.updateTime}});
+    }
+  }
+  if(visit.passportStampId){
+    const stampPath=`securePassportStamps/${visit.passportStampId}`,stampDoc=await firestoreGetDocumentInTransaction(accessToken,stampPath,transaction);
+    if(stampDoc){const stamp=decodeFirestoreDocument(stampDoc);if(stamp.requestId!==requestId||stamp.userId!==visit.userId||stamp.placeId!==visit.placeId)throw new Error('Passport stamp requires review before reversal');writes.push({delete:documentName(stampPath),currentDocument:{updateTime:stampDoc.updateTime}});}
+  }
   if (codeDocument) {
     const code = decodeFirestoreDocument(codeDocument);
     writes.push({
@@ -483,6 +534,7 @@ async function reverseMerchantVisit(env, user, input) {
     });
   }
 
+  writes.push({update:{name:documentName(`systemAudit/${requestId}_reversed`),fields:firestoreFields({action:'loyalty_stamp_reversed',actorUid:user.uid,actorName:merchant.businessName||'',userId:visit.userId,placeId:visit.placeId,requestId,purchaseAmount:Number(visit.purchaseAmount||0),recordKind:visit.recordKind||'legacy',reversalReason,createdAt:now})},currentDocument:{exists:false}});
   await firestoreCommit(accessToken, transaction, writes);
   const missions = await syncUserMissionProgress(env, visit.userId);
   return { visitCount: restoredCount, target, visitorUid: visit.userId, placeId: visit.placeId, missions };
@@ -923,7 +975,7 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
     if (request.method === "GET" && url.pathname === "/health") {
-      return json({ ok: true, service: "chabaquito", project: env.FIREBASE_PROJECT_ID || PROJECT_ID });
+      return withCors(json({ ok: true, service: "chabaquito", consumptionPolicyVersion:1,loyaltySeasonPolicyVersion:1,passportStampPolicyVersion:1,loyaltyRewardPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
     }
 
     if (request.method === "POST" && url.pathname === "/proximity-visit") {
