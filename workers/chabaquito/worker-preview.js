@@ -47,12 +47,40 @@
  const api={normalize,select,progressPatch,restorePatch,reverseSeasonClaim};root.VisitaLojaLoyaltySeasonPolicy=api;if(typeof module==='object'&&module.exports)module.exports=api;
 })(typeof window==='object'?window:globalThis);
 
+/* Pure validation shared by the browser, Cloudflare Worker and Firebase callable. */
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.VisitaLojaConsumption=api;})(typeof window==='object'?window:globalThis,function(){
+'use strict';
+function fail(message){const e=new Error(message);e.code='invalid-argument';throw e;}
+function reason(value,label='Motivo'){const text=typeof value==='string'?value.trim():'';if(text.length<5||text.length>240)fail(label+' obligatorio: escribe entre 5 y 240 caracteres.');return text;}
+function validate(input={},place={},program={}){
+ const tourist=place.category==='turismo',recordKind=input.recordKind||(tourist?'tourism':'purchase');
+ if(!['purchase','courtesy','tourism'].includes(recordKind))fail('Tipo de registro inválido.');
+ if(recordKind==='tourism'&&!tourist)fail('Esta parada requiere registrar una compra o una cortesía.');
+ if(tourist&&recordKind!=='tourism')fail('Esta parada turística se registra como visita sin consumo.');
+ const raw=input.purchaseAmount,missing=raw==null||!['string','number'].includes(typeof raw)||(typeof raw==='string'&&!raw.trim()),amount=Number(raw);
+ let purchaseAmount=0,consumptionReason='';
+ if(recordKind==='purchase'){
+  if(missing||!Number.isFinite(amount)||amount<=0||amount>100000||Math.abs(amount*100-Math.round(amount*100))>0.000001)fail('Indica un consumo mayor a cero, con máximo dos decimales y hasta $100.000.');
+  purchaseAmount=Math.round(amount*100)/100;
+  const minimum=Number(program.minimumSpend||0);if(Number.isFinite(minimum)&&purchaseAmount<minimum)fail('El consumo mínimo para obtener un sello es $'+minimum.toFixed(2)+'.');
+ }else{
+  if(!missing&&(!Number.isFinite(amount)||amount!==0))fail('Las cortesías y visitas turísticas deben tener consumo cero.');
+  if(recordKind==='courtesy')consumptionReason=reason(input.consumptionReason,'Motivo de la cortesía');
+ }
+ const receiptRef=String(input.receiptRef||'').trim();if(receiptRef.length>80)fail('El comprobante no puede superar 80 caracteres.');
+ return{recordKind,purchaseAmount,consumptionReason,receiptRef,consumptionPolicyVersion:1};
+}
+return Object.freeze({validate,reason});
+});
+
+const Consumption=globalThis.VisitaLojaConsumption;
 const LoyaltySeasons = globalThis.VisitaLojaLoyaltySeasonPolicy;
 const PROJECT_ID = "cultura-y-cuchara";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const FIRESTORE_SCOPE = "https://www.googleapis.com/auth/datastore";
 const FIREBASE_JWKS_URL = "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com";
 const ALLOWED_ORIGINS = new Set([
+  "https://visitaloja-cfnfu6lib-dinamostudio3d.vercel.app",
   "https://visitaloja-git-improve-existing-rewards-dinamostudio3d.vercel.app",
   "https://visitaloja-git-integration-chabaquito-mis-433c03-dinamostudio3d.vercel.app",
   "https://www.visitaloja.com",
@@ -326,11 +354,6 @@ async function confirmMerchantVisit(env, user, input) {
   const requestId = String(input?.requestId || "").trim();
   if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
 
-  const amountRaw = Number(input?.purchaseAmount || 0);
-  const purchaseAmount = Number.isFinite(amountRaw)
-    ? Math.max(0, Math.min(100000, Math.round(amountRaw * 100) / 100))
-    : 0;
-  const receiptRef = String(input?.receiptRef || "").trim().slice(0, 80);
   const accessToken = await getGoogleAccessToken(env);
   const transaction = await firestoreBeginTransaction(accessToken);
 
@@ -359,16 +382,20 @@ async function confirmMerchantVisit(env, user, input) {
   const counterPath = `loyaltyCounters/${counterId}`;
   const programPath = `loyaltyPrograms/${code.placeId}`;
 
-  const [visitDocument, counterDocument, programDocument, passportDocument] = await Promise.all([
+  const [visitDocument, counterDocument, programDocument, passportDocument, placeDocument] = await Promise.all([
     firestoreGetDocumentInTransaction(accessToken, visitPath, transaction),
     firestoreGetDocumentInTransaction(accessToken, counterPath, transaction),
     firestoreGetDocumentInTransaction(accessToken, programPath, transaction),
-    firestoreGetDocumentInTransaction(accessToken, "siteContent/passport", transaction)
+    firestoreGetDocumentInTransaction(accessToken, "siteContent/passport", transaction),
+    firestoreGetDocumentInTransaction(accessToken, `locales/${code.placeId}`, transaction)
   ]);
   if (visitDocument) throw new Error("Visit was already registered");
 
   const baseCounter = counterDocument ? decodeFirestoreDocument(counterDocument) : {},baseProgram = programDocument ? decodeFirestoreDocument(programDocument) : {};
   const card = LoyaltySeasons.select(baseProgram,baseCounter,Date.now()),counter=card.counter,program=card.program;
+  if(!placeDocument)throw new Error('La parada no existe.');
+  const consumption=Consumption.validate(input,decodeFirestoreDocument(placeDocument),program);
+  const {purchaseAmount,receiptRef}=consumption;
   const passport=decodeFirestoreDocument(passportDocument||{}),campaignId=passport.campaignId||'pasaporte-2026';
   const stampId=cleanId(`${campaignId}_${code.userId}_${code.placeId}`),stampPath=`securePassportStamps/${stampId}`;
   const stampDocument=await firestoreGetDocumentInTransaction(accessToken,stampPath,transaction);
@@ -400,8 +427,7 @@ async function confirmMerchantVisit(env, user, input) {
     confirmedBy: user.uid,
     confirmedByName: merchantName,
     confirmedAt: now,
-    purchaseAmount,
-    receiptRef,
+    ...consumption,
     status: "confirmed",
     ...(!card.seasonal?{previousPermanentPolicy:baseCounter.permanentPolicy||null}:{}), ...(card.seasonal?{seasonId:card.id,seasonTarget:target,previousSeasonCard:baseCounter.seasonalCards?.[card.id]||null}:{}),
     previousVisitCount: Number(counter?.visitCount || 0),
@@ -457,6 +483,7 @@ async function confirmMerchantVisit(env, user, input) {
   writes[1].update.fields=firestoreFields(visitFields);
   writes[2].update.fields=firestoreFields(counterFields);
   writes[2].updateMask.fieldPaths=Object.keys(counterFields);
+  writes.push({update:{name:documentName(`systemAudit/${requestId}_added`),fields:firestoreFields({action:'loyalty_stamp_added',actorUid:user.uid,actorName:merchantName,userId:code.userId,placeId:code.placeId,requestId,...consumption,createdAt:now})},currentDocument:{exists:false}});
   await firestoreCommit(accessToken, transaction, writes);
   const missions = await syncUserMissionProgress(env, code.userId);
   return { visitCount: newCount, target, passportAdded:!stampDocument,rewardCreated, visitorUid: code.userId, placeId: code.placeId, missions };
@@ -466,6 +493,7 @@ async function reverseMerchantVisit(env, user, input) {
   const requestId = String(input?.requestId || "").trim();
   if (!validDocumentId(requestId)) throw new Error("Visit request id is invalid");
 
+  const reversalReason=Consumption.reason(input?.reversalReason,'Motivo de la anulación');
   const accessToken = await getGoogleAccessToken(env);
   const transaction = await firestoreBeginTransaction(accessToken);
   const merchantDocument = await firestoreGetDocumentInTransaction(
@@ -521,6 +549,7 @@ async function reverseMerchantVisit(env, user, input) {
     reversedAt: now,
     reversedBy: user.uid,
     reversedByName: merchant.businessName || user.email || "",
+    reversalReason,
     updatedAt: now
   };
   const counterFields = {
@@ -578,6 +607,7 @@ async function reverseMerchantVisit(env, user, input) {
     });
   }
 
+  writes.push({update:{name:documentName(`systemAudit/${requestId}_reversed`),fields:firestoreFields({action:'loyalty_stamp_reversed',actorUid:user.uid,actorName:merchant.businessName||'',userId:visit.userId,placeId:visit.placeId,requestId,purchaseAmount:Number(visit.purchaseAmount||0),recordKind:visit.recordKind||'legacy',reversalReason,createdAt:now})},currentDocument:{exists:false}});
   await firestoreCommit(accessToken, transaction, writes);
   const missions = await syncUserMissionProgress(env, visit.userId);
   return { visitCount: restoredCount, target, visitorUid: visit.userId, placeId: visit.placeId, missions };
@@ -1018,7 +1048,7 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
     if (request.method === "GET" && url.pathname === "/health") {
-      return withCors(json({ ok: true, service: "chabaquito", loyaltySeasonPolicyVersion:1,passportStampPolicyVersion:1,loyaltyRewardPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
+      return withCors(json({ ok: true, service: "chabaquito", consumptionPolicyVersion:1,loyaltySeasonPolicyVersion:1,passportStampPolicyVersion:1,loyaltyRewardPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
     }
 
     if (request.method === "POST" && url.pathname === "/proximity-visit") {
