@@ -888,6 +888,26 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    // Private configuration drafts only. Publishing and reward mutations remain server-only.
+    match /rewardProgramDraftsV2/{adminUid} {
+      allow get: if isViveLojaAdmin() && request.auth.uid == adminUid;
+      allow list: if false;
+      allow create, update: if isViveLojaAdmin()
+        && request.auth.uid == adminUid
+        && request.resource.data.keys().hasAll(['configuration', 'revision', 'status', 'updatedBy', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['configuration', 'revision', 'status', 'updatedBy', 'updatedAt'])
+        && request.resource.data.configuration is map
+        && request.resource.data.configuration.schemaVersion == 2
+        && request.resource.data.configuration.programs is map
+        && request.resource.data.configuration.passport is map
+        && request.resource.data.revision is string
+        && request.resource.data.revision.matches('r-[a-f0-9]{32}')
+        && request.resource.data.status == 'draft'
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isViveLojaAdmin() && request.auth.uid == adminUid;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

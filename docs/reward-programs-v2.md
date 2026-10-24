@@ -1,29 +1,49 @@
-# Recompensas V2: alcance real de la Preview
+# Recompensas V2 — estado de implementación
 
-## Disponible para revisar
+## Estado real
 
-- Editor común para tarjetas por parada y pasaportes Lojano/Turista.
-- Acceso desde la edición de una parada y el módulo Pasaporte.
-- Sellos 1–30, límite diario 1–3, consumo mínimo, condiciones, repetición, fechas y participación en los dos pasaportes.
-- Premios con texto, imagen HTTPS, cupos y días para canjear; catálogo por modalidad con aliado y parada de entrega.
-- Metas gastronómicas y de alojamiento, selección de participantes, identificación de campaña y vista previa de tarjeta.
-- Importación de la configuración vigente en memoria, sin escribir ni migrar datos reales.
-- Propuestas locales separadas por cuenta; comparación de versión entre pestañas y copia de la propuesta anterior.
+Código en la rama `feature/reward-configuration`. No se ha desplegado el backend, no se han publicado reglas V2 y no se han habilitado las tarjetas nuevas para clientes. Las pruebas funcionales de esta ampliación están aplazadas por indicación del propietario. Solo se ha revisado sintaxis y formato del diff.
 
-**Guardar propuesta no publica.** No se modificaron las reglas de Firestore, el Worker activo, los contadores, los premios emitidos ni la web del visitante. Las propuestas locales no se sincronizan entre dispositivos y pueden perderse si se borra el almacenamiento del navegador. La demo de tests usa memoria, sin Firebase.
+## Implementado en código
 
-## Límite que impide activar esto como configuración vigente
+- Editor de tarjetas por parada, tarjetas de temporada y pasaportes Lojano/Turista.
+- Metas, límite diario, consumo mínimo, condiciones, vigencias, repetición y premios con stock/plazo de entrega.
+- Temporadas identificadas por separado, sin solapamiento entre temporadas activas; selección de temporada vigente y regreso a la habitual al terminar. Inscripciones separadas conservan su política inicial.
+- Borradores privados por administrador, guardado transaccional y comparación de revisiones. La propuesta local previa se importa si no existe borrador remoto. Sin reglas desplegadas, el editor informa del fallo y no simula un guardado correcto.
+- Publicación versionada con historial inmutable y comprobación de paradas y encargados de entrega.
+- Créditos V2 a partir de visitas confirmadas; validación de encargado, usuario, parada, fechas, consumo y límite diario.
+- Consulta de visitas originales antes de emitir/entregar premios, para excluir visitas anuladas. Conciliación explícita del crédito diario tras anulación.
+- Catálogo y cartera del visitante, inscripción, progreso y solicitud de premios.
+- Consulta del encargado por código y entrega con validación transaccional.
+- Componentes de publicación administrativa, cartera y entrega; no se cargan en la web pública.
+- Transporte autenticado, límite de cuerpo, control de origen, comparación de sesión y protección frente a respuestas tardías.
 
-El sistema legado exige 10–30 visitas en el guardado y mínimo 10 en los servicios de confirmación. El pasaporte público y sus reglas de canje exigen exactamente seis sellos. Activar solo la interfaz produciría metas distintas a las que se validan y pondría en riesgo el progreso existente.
+## Entorno integrado preparado
 
-El servicio de referencia `lib/reward-programs-service.cjs` NO está expuesto como endpoint. Sus pruebas usan una base en memoria, no Firebase ni Cloudflare. Muestra transacciones, reserva de stock, un premio por pasaporte, permisos de entrega y snapshot de condiciones. No es una migración ni un servicio desplegado.
+`sandbox/reward-programs.html` reúne acceso, cartera, entrega, editor y publicación. `sandbox/reward-programs-bootstrap.js` inicializa exclusivamente una app Firebase aislada y monta las pantallas. Los controles administrativos se muestran tras autorización del servidor.
 
-## Antes de publicar para clientes
+`scripts/serve-reward-programs-sandbox.cjs` sirve únicamente esa página, sus recursos permitidos y las operaciones de `lib/reward-programs-http.cjs`. No arranca durante el build ni modifica endpoints existentes. Reutiliza las dependencias del paquete `functions`.
 
-1. Aislar un backend de pruebas y sus datos; no apuntar una Preview experimental al Worker activo.
-2. Resolver la migración del progreso legado (incluido el origen verificado de sellos) y la renovación de ciclos con nueva versión, sin duplicar premios entre motores.
-3. Conectar el editor a publicación versionada del servidor; validar permisos, usuarios y negocios de entrega. Mantener los borradores privados.
-4. Conectar wallet/pasaporte a inscripciones y snapshots; reemplazar el canje legado solo tras activar de forma coordinada frontend, servicio y reglas.
-5. Probar con cuentas de visitante y negocio: cambios de meta, canje simultáneo, agotamiento, vencimiento, reversión y renovación. Recién después habilitar el nuevo motor.
+Para alojarlo se necesitan estas variables del host:
 
-No activar una bandera manual ni copiar propuestas a producción para saltar estos pasos.
+- `REWARD_SANDBOX_PROJECT_ID`: proyecto diferente de `cultura-y-cuchara`.
+- `REWARD_SANDBOX_FIREBASE_CONFIG`: JSON de configuración pública de la app de ese proyecto.
+- `REWARD_SANDBOX_ORIGIN`: origen HTTPS exacto de Preview, diferente del dominio público.
+- Credenciales administrativas del proyecto aislado mediante Application Default Credentials.
+- Opcional: `REWARD_SANDBOX_PORT` (8788) y `REWARD_SANDBOX_BIND` (127.0.0.1).
+
+Inicio previsto: `node scripts/serve-reward-programs-sandbox.cjs`, detrás de un proxy HTTPS del origen configurado. No se ha iniciado. El host debe tener acceso a Firebase Auth y Firestore del proyecto aislado. No imprimir ni guardar credenciales en el repositorio. Autorizar el dominio de Preview en Firebase Auth y preparar cuentas administrativas/de negocio de prueba.
+
+El handler rechaza el proyecto Firebase de producción y los orígenes públicos. El verificador comprueba tokens revocados y audiencia/emisor del proyecto aislado. No hay acceso de emergencia por correo en este backend nuevo. Los roles se resuelven mediante claims o perfiles administrativos activos.
+
+## Pendientes antes de activar
+
+1. Crear/configurar y alojar el proyecto aislado y su Preview. El código por sí solo no crea la infraestructura.
+2. Conectar confirmación y anulación de visitas al nuevo motor de forma coordinada; actualmente son operaciones separadas. Evitar que una visita se acredite a varias inscripciones.
+3. Definir y ejecutar una migración del progreso verificado, conservando sellos y premios. Bloquear doble emisión entre legado y V2. No importar contadores sin origen comprobable.
+4. Completar renovación de ciclos con nuevas versiones, recuperación de solicitudes interrumpidas y reglas de final de temporada para premios aún no solicitados.
+5. Resolver cancelación/liberación de stock para premios que pierden elegibilidad por anulación. Actualmente la entrega queda bloqueada y requiere revisión; no se libera stock automáticamente.
+6. Ajustar las consultas a índices/paginación para un volumen grande y preparar las reglas finales del cliente.
+7. Después, realizar las pruebas completas del visitante, encargado y administrador que el propietario dejó para más adelante.
+
+No afirmar que el sistema está listo para producción ni fusionar esta ampliación a main mientras estos puntos sigan abiertos. La demo `tests/reward-programs-review.html` sigue usando memoria y no valida el backend real.
