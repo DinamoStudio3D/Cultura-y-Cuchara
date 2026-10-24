@@ -58,7 +58,8 @@
       const place=places.get(placeId)||{},baseCounter=counters.get(placeId)||{},policy=window.VisitaLojaLoyaltySeasonPolicy;
       const selected=policy?policy.select(baseProgram,baseCounter):{seasonal:false,program:baseProgram,counter:baseCounter};
       const card=(program,counter,label='')=>({placeId,placeName:(place.title||place.name||program.placeName||program.businessName||'Establecimiento')+label,logo:placeLogo(place),total:Number(counter.visitCount||counter.totalVisits||0),target:Math.max(10,Number(program.targetVisits||10)),reward:rewardTitle(program),rewardDescription:program.rewardDescription||'',stampIcon:stampIcon(program),program,place,counter});
-      const cards=[card({...baseProgram,active:selected.seasonal?false:baseProgram.active},baseCounter,selected.seasonal?' · habitual en pausa':'')];
+      const permanentProgram={...baseProgram,...(baseCounter.permanentPolicy||{})};
+      const cards=[card({...permanentProgram,active:selected.seasonal?false:baseProgram.active},baseCounter,selected.seasonal?' · habitual en pausa':'')];
       if(selected.seasonal)cards.unshift(card(selected.program,selected.counter,' · '+selected.program.title));
       for(const [id,progress]of Object.entries(baseCounter.seasonalCards||{}))if(id!==selected.id&&progress.policy)cards.push(card({...progress.policy,active:false},{...baseCounter,...progress},' · '+progress.policy.title+' (finalizada)'));
       return cards;

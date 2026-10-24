@@ -33,3 +33,9 @@ Confirmación y anulación se adaptaron en el código de los servicios existente
 El editor se conecta al formulario existente, pero solo permite configurar temporadas cuando el servicio de sellado anuncia `loyaltySeasonPolicyVersion: 1`. Si el servicio activo todavía no ofrece esta capacidad, muestra «pendiente de habilitar» y mantiene deshabilitados esos controles. No publica una configuración que el servidor desconoce.
 
 **No se ha desplegado el Worker ni la función.** Antes de aplicarlos hay que contrastar la versión activa con las fuentes del repositorio para conservar cualquier ajuste operativo que no esté sincronizado. No se ejecutaron pruebas funcionales; esta sección describe implementación pendiente de verificación, no una función activa en producción. La nueva Preview continúa usando el servicio actual sin habilitar temporadas prematuramente.
+
+
+### Condiciones de la tarjeta habitual
+El servicio conserva en `loyaltyCounters.permanentPolicy` los sellos, límite diario y beneficio de la tarjeta habitual al confirmar un sello. Las siguientes visitas y la cartera usan esas condiciones; la activación y los cupos siguen dependiendo de la configuración vigente. La anulación restaura la política anterior. No cambia los contadores ni beneficios de temporada.
+
+Las tarjetas anteriores que todavía no tengan esta copia conservarán la configuración disponible en su próxima confirmación; no es posible reconstruir condiciones históricas que nunca se guardaron. No se realiza una migración de datos. Esta protección sigue pendiente de revisión del servicio desplegado, activación y pruebas funcionales.

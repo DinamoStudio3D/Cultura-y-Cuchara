@@ -350,7 +350,7 @@ async function confirmMerchantVisit(env, user, input) {
     purchaseAmount,
     receiptRef,
     status: "confirmed",
-    ...(card.seasonal?{seasonId:card.id,seasonTarget:target,previousSeasonCard:baseCounter.seasonalCards?.[card.id]||null}:{}),
+    ...(!card.seasonal?{previousPermanentPolicy:baseCounter.permanentPolicy||null}:{}), ...(card.seasonal?{seasonId:card.id,seasonTarget:target,previousSeasonCard:baseCounter.seasonalCards?.[card.id]||null}:{}),
     previousVisitCount: Number(counter?.visitCount || 0),
     previousTotalSpend: Number(counter?.totalSpend || 0),
     previousDailyVisitCount: previousDaily,

@@ -18,18 +18,22 @@
   for(let i=1;i<enabled.length;i++)if(Date.parse(enabled[i].startAt)<Date.parse(enabled[i-1].endAt))throw Error('Las temporadas activas de una parada no pueden coincidir.');
   return seasons;
  }
+ function permanentPolicy(program){
+  const fields=['targetVisits','maxVisitsPerDay','rewardTitle','rewardDescription','rewardType','rewardValidityDays'];
+  return Object.fromEntries(fields.filter(key=>program[key]!==undefined).map(key=>[key,clone(program[key])]));
+ }
  function select(program={},counter={},now=Date.now()){
   const season=program.active===false?null:normalize(program.seasons||[]).find(s=>s.active&&Date.parse(s.startAt)<=now&&now<Date.parse(s.endAt));
-  if(!season)return{id:'permanent',seasonal:false,program,counter};
+  if(!season){const policy=counter.permanentPolicy||permanentPolicy(program);return{id:'permanent',seasonal:false,policy:clone(policy),program:{...program,...clone(policy)},counter};}
   const progress=counter.seasonalCards?.[season.id]||{},policy=progress.policy||season;
   return{id:season.id,seasonal:true,policy:clone(policy),program:{...program,...clone(policy),stock:season.stock,claimedCount:Number(program.seasonClaimedCounts?.[season.id]||0)},counter:{...counter,...progress,visitCount:Number(progress.visitCount||0),rewardCycles:Number(progress.rewardCycles||0),lastVisitDay:counter.lastVisitDay,dailyVisitCount:counter.dailyVisitCount}};
  }
  function progressPatch(selection,base,count,cycles){
-  if(!selection.seasonal)return{visitCount:count,...(cycles===undefined?{}:{rewardCycles:cycles})};
+  if(!selection.seasonal)return{permanentPolicy:clone(selection.policy),visitCount:count,...(cycles===undefined?{}:{rewardCycles:cycles})};
   return{seasonalCards:{...(base.seasonalCards||{}),[selection.id]:{...(base.seasonalCards?.[selection.id]||{}),visitCount:count,rewardCycles:cycles??Number(selection.counter.rewardCycles||0),policy:clone(selection.policy)}}};
  }
  function restorePatch(visit,counter){
-  if(!visit.seasonId)return{visitCount:Math.max(0,Number(visit.previousVisitCount||0)),...(visit.previousRewardCycles===undefined?{}:{rewardCycles:Math.max(0,Number(visit.previousRewardCycles||0))})};
+  if(!visit.seasonId)return{...(Object.prototype.hasOwnProperty.call(visit,'previousPermanentPolicy')?{permanentPolicy:visit.previousPermanentPolicy}:{}),visitCount:Math.max(0,Number(visit.previousVisitCount||0)),...(visit.previousRewardCycles===undefined?{}:{rewardCycles:Math.max(0,Number(visit.previousRewardCycles||0))})};
   const seasons={...(counter.seasonalCards||{})};
   if(visit.previousSeasonCard)seasons[visit.seasonId]=clone(visit.previousSeasonCard);else delete seasons[visit.seasonId];
   return{seasonalCards:seasons};
