@@ -8,6 +8,14 @@
   ],
   "rewrites": [
     {
+      "source": "/sandbox/config.json",
+      "destination": "/api/reward-sandbox?config=1"
+    },
+    {
+      "source": "/reward-programs-v2/:role/:operation",
+      "destination": "/api/reward-sandbox?role=:role&operation=:operation"
+    },
+    {
       "source": "/",
       "has": [
         {

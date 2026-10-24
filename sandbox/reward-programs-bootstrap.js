@@ -18,7 +18,7 @@
  async function start(){
   try{
    const response=await fetch('/sandbox/config.json',{cache:'no-store',credentials:'omit'});if(!response.ok)throw Error();
-   const config=await response.json();if(!config.firebase?.projectId||config.firebase.projectId==='cultura-y-cuchara')throw Error();
+   const config=await response.json();if(config.backendConfigured===false)throw Error();if(!config.firebase?.projectId||config.firebase.projectId==='cultura-y-cuchara')throw Error();
    app=firebase.initializeApp(config.firebase,'rewardProgramsSandbox');
    await app.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
    client=VisitaLojaRewardProgramsClient.create({app,endpoint:location.origin});

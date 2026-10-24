@@ -100,3 +100,11 @@ La cartera muestra las condiciones nuevas y deshabilita la renovación si queda 
 Se añadió un bloqueo de convivencia: si la base aislada contiene un contador legado con progreso o visitas confirmadas del motor anterior, no se permite abrir/acreditar una tarjeta V2 ni arrancar un pasaporte paralelo. No hay un botón que evite este bloqueo. La inspección de transición sigue siendo de solo lectura.
 
 **Límite real de la transición:** no se ha importado progreso ni validado una exportación de los datos actuales. Falta disponer de esa copia verificable, revisar sus discrepancias y definir la correspondencia de los premios ya emitidos antes de escribir una migración aplicable. No se puede considerar ese traslado terminado solo por añadir código. El entorno aislado tampoco está configurado. Las pruebas siguen aplazadas y no se ha tocado main.
+
+## Proyecto aislado identificado y host de Preview
+
+Se verificó en la consola la existencia de `vivelojapruebas`, app web `visitalojapruebas`, base Firestore vacía y plan Spark. Se inicializó Authentication; los proveedores continúan deshabilitados. No se copiaron datos personales ni se modificó el proyecto activo.
+
+`sandbox/firebase-public-config.json` contiene exclusivamente la configuración pública observada de esa app. `api/reward-sandbox.js` adapta el servicio a Vercel y solo responde si `VERCEL_ENV=preview`, la rama es `feature/reward-configuration` y `REWARD_SANDBOX_PROJECT_ID=vivelojapruebas`. Usa una credencial independiente, `REWARD_SANDBOX_SERVICE_ACCOUNT_JSON`, valida su proyecto y nunca reutiliza la variable de producción. `REWARD_SANDBOX_ORIGIN` limita el origen exacto de la Preview. Las rutas aisladas se añadieron a `vercel.json`; no reemplazan las rutas públicas existentes.
+
+Pendiente autorización a la hora de habilitar proveedores y crear una credencial administrativa del proyecto aislado; su destino previsto es un secreto de Vercel limitado a Preview y a esta rama. No se ha creado ni transferido esa credencial. La página informa de configuración incompleta mientras falte el servidor. No hay pruebas funcionales realizadas.
