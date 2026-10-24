@@ -55,3 +55,11 @@ El servicio registra una asignación transaccional por visita en `rewardVisitAll
 `lib/reward-programs-transition.cjs` prepara una inspección administrativa de solo lectura por cuenta/parada. Compara contadores con visitas confirmadas y su origen, ciclos y premios ya emitidos, calcula el remanente con la meta antigua y devuelve bloqueos y una huella de la evidencia. No mueve datos, no modifica los sellos y no crea premios. Una evidencia consistente no autoriza por sí sola la migración: sigue pendiente revisar las condiciones históricas, obtener una exportación verificada del origen y coordinar el cambio de motor.
 
 La operación `admin/inspect-transition` se expone únicamente en el handler aislado. Inspecciona los datos de ese entorno; no se conecta al proyecto activo. Falta usar una copia verificada para evaluar los datos actuales. No se realizaron pruebas funcionales de esta ampliación.
+
+## Reintentos de solicitud y cupos vencidos
+
+La solicitud de fidelidad exige el ciclo esperado por el visitante. Su identificador se calcula antes de evaluar un ciclo nuevo: repetir la misma solicitud devuelve el premio existente y no consume otro ciclo. Un pasaporte devuelve su elección anterior y la cartera deshabilita nuevas elecciones después de solicitar el premio.
+
+`expireClaim` permite al propietario o al encargado autorizado liberar de forma transaccional un premio pendiente cuyo plazo ya venció. La actualización del estado y la devolución del cupo son atómicas; los premios entregados o ya vencidos no devuelven cupos por segunda vez. El premio conserva su registro y el ciclo consumido, por lo que la caducidad no crea otra recompensa gratuita. La cartera concilia hasta 20 vencimientos por consulta y comunica si algún cupo necesita revisión. La consulta de códigos del encargado también concilia un premio vencido.
+
+La cartera usa la hora del servidor para mostrar vencimientos. Sigue pendiente conciliar premios invalidados por anulación de sellos (no es el mismo caso que vencimiento), completar renovación de políticas, transición y entorno aislado. Esta ampliación no se ha sometido a pruebas funcionales ni se ha desplegado en producción.
