@@ -28,6 +28,16 @@ jobs:
         run: |
           node scripts/validate-site.mjs
           node scripts/test-menu-image-signing.cjs
+      - name: Comprobar navegación de administración, negocios y carga del mapa
+        run: >-
+          node --test
+          scripts/test-admin-business-journey.cjs
+          scripts/test-admin-business-workflow-v222.mjs
+          scripts/test-merchant-quick-actions.cjs
+          scripts/test-merchant-dashboard-v86.mjs
+          scripts/test-merchant-workspace-v218.mjs
+          scripts/test-recover-saved-visit.cjs
+          scripts/test-map-tile-loading.cjs
 
   firestore:
     name: Compilar reglas Firestore con emulador
