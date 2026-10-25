@@ -1,0 +1,9 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../js/map-tile-loading.js'),'utf8');
+function fixture({observer=true,broken=false}={}){const calls=[],events={},container={dataset:{}},window={};let intersect;
+ if(observer)window.IntersectionObserver=class{constructor(callback,options){if(broken)throw Error('unsupported');intersect=callback;calls.push(['margin',options.rootMargin]);}observe(){calls.push(['observe']);}disconnect(){calls.push(['disconnect']);}};
+ const map={once:(name,fn)=>events[name]=fn,off:name=>delete events[name]},layer={addTo:value=>{assert.equal(value,map);calls.push(['load']);}};
+ vm.runInNewContext(source,{window});return{window,map,layer,container,calls,events,start:()=>window.VisitaLojaMapTileLoading.mount(layer,map,container),intersect:visible=>intersect([{isIntersecting:visible}])};}
+test('offscreen map creates no tile requests until it approaches the viewport',()=>{const f=fixture();f.start();assert.equal(f.container.dataset.mapTiles,'waiting');f.intersect(false);assert.equal(f.calls.filter(x=>x[0]==='load').length,0);f.intersect(true);assert.equal(f.container.dataset.mapTiles,'loaded');assert.equal(f.calls.filter(x=>x[0]==='load').length,1);assert.equal(f.calls.filter(x=>x[0]==='disconnect').length,1);});
+test('a map navigation loads immediately and subsequent triggers never add duplicate layers',()=>{const f=fixture(),load=f.start();f.events.movestart();f.intersect(true);load();assert.equal(f.calls.filter(x=>x[0]==='load').length,1);assert.equal(f.events.movestart,undefined);});
+test('missing or unsupported observers preserve the existing immediate map fallback',()=>{for(const options of [{observer:false},{broken:true}]){const f=fixture(options);f.start();assert.equal(f.container.dataset.mapTiles,'loaded');assert.equal(f.calls.filter(x=>x[0]==='load').length,1);}});

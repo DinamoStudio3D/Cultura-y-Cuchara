@@ -27,7 +27,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <link rel="preconnect" href="https://firestore.googleapis.com">
     <link rel="preload" as="image" href="assets/brand/visitaloja-splash.webp" fetchpriority="high">
-    <link rel="preload" as="image" href="assets/photos/atardecer-loja.webp" fetchpriority="high">
     <script src="js/welcome-brand-bootstrap.js"></script>
     <style>
         /* Evita que la portada aparezca mientras un QR antiguo abre la ficha ligera. */
@@ -1683,7 +1682,7 @@
                                 <p id="podcastSampleDuration" class="text-[11px] text-gray-400 mt-0.5">Duración: 3:09</p>
                             </div>
                         </div>
-                        <audio id="podcastSampleAudio" class="w-full h-11 accent-orange-600" controls preload="metadata" aria-label="Reproducir canción de muestra de El Podcast de Loja">
+                        <audio id="podcastSampleAudio" class="w-full h-11 accent-orange-600" controls preload="none" aria-label="Reproducir canción de muestra de El Podcast de Loja">
                             <source src="cancion-muestra-vive-loja.mp3" type="audio/mpeg">
                             Tu navegador no puede reproducir este audio.
                         </audio>
@@ -2594,6 +2593,7 @@
 
     <!-- Bibliotecas funcionales: se ejecutan al terminar de construir la interfaz -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="js/map-tile-loading.js?v=1"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -4416,10 +4416,12 @@
             }).setView([-3.9931, -79.2042], 14);
 
             L.control.zoom({ position: 'bottomright' }).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-                maxZoom: 18, 
-                attribution: '© OpenStreetMap contributors' 
-            }).addTo(map);
+            const baseMapTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '© OpenStreetMap contributors'
+            });
+            if(window.VisitaLojaMapTileLoading)window.VisitaLojaMapTileLoading.mount(baseMapTiles,map,document.getElementById('lojaMap'));
+            else baseMapTiles.addTo(map);
             markersLayer = L.layerGroup().addTo(map);
             festivalEventLayer = L.layerGroup().addTo(map);
             generalEventLayer = L.layerGroup().addTo(map);
