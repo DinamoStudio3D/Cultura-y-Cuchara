@@ -16,4 +16,9 @@
   host.hidden=!host.childNodes.length;
  }
  root.VisitaLojaSearchSuggestions={render};
+ document.addEventListener?.('DOMContentLoaded',()=>{
+  const input=document.getElementById('searchInput'),clear=document.getElementById('smartSearchClearButton');
+  input?.addEventListener('keydown',event=>{if(event.key==='Escape'&&input.value){event.preventDefault();root.clearSmartSearch();}});
+  clear?.addEventListener('click',()=>input?.focus());
+ });
 })(window);
