@@ -1,5 +1,9 @@
-/* Runtime endpoint for Chabaquito services.
-   Stable Chabaquito Worker endpoint shared by the production-ready frontend. */
-window.VisitaLojaChabaquitoConfig=Object.freeze({
-  workerUrl:'https://visitaloja-chabaquito.sukogames1996.workers.dev'
-});
+/* Only this branch preview uses the preview Worker. Public domains keep production. */
+(function(){
+ 'use strict';
+ const previewHost='visitaloja-git-improve-existing-rewards-dinamostudio3d.vercel.app';
+ const isRewardPreview=window.location.hostname===previewHost;
+ window.VisitaLojaChabaquitoConfig=Object.freeze({
+  workerUrl:isRewardPreview?'https://visitaloja-chabaquito-preview.sukogames1996.workers.dev':'https://visitaloja-chabaquito.sukogames1996.workers.dev'
+ });
+})();

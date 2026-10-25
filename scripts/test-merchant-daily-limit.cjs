@@ -1,0 +1,8 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const html=fs.readFileSync(require('node:path').join(__dirname,'../confirmar-visitas.html'),'utf8');
+const source=html.slice(html.indexOf('function showDailyLimit('),html.indexOf('async function recoverSavedVisit('));
+function fixture(){const node=()=>({textContent:'',className:'',classList:{hidden:false,add(){this.hidden=true}}});const c={status:node(),expiry:node(),loyaltyRemaining:node(),confirmButton:node(),presenceWarning:node(),ecuadorDay:()=> '2026-10-25'};vm.createContext(c);vm.runInContext(source,c);return c;}
+test('daily quota hides confirmation and explains when to return',()=>{const c=fixture();assert.equal(c.showDailyLimit({lastVisitDay:'2026-10-25',dailyVisitCount:1},{maxVisitsPerDay:1}),true);assert.equal(c.confirmButton.classList.hidden,true);assert.equal(c.presenceWarning.classList.hidden,true);assert.match(c.expiry.textContent,/Regresa mañana/);});
+test('yesterday and zero stamps today do not block confirmation',()=>{for(const [counter,program] of [[{lastVisitDay:'2026-10-24',dailyVisitCount:1},{maxVisitsPerDay:1}],[{lastVisitDay:'2026-10-25',dailyVisitCount:0},{maxVisitsPerDay:2}],[{},{}]]){const c=fixture();assert.equal(c.showDailyLimit(counter,program),false);assert.equal(c.confirmButton.classList.hidden,false);}});
+
+test('one daily stamp is enforced even if a program requests two',()=>{const c=fixture();assert.equal(c.showDailyLimit({lastVisitDay:'2026-10-25',dailyVisitCount:1},{maxVisitsPerDay:2}),true);});

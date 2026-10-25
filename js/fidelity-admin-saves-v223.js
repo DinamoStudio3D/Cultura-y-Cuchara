@@ -26,7 +26,7 @@
     return {uid,placeIds:ids};
    },data=>deps.saveAssignment(data));},
    program(){return run('programMsg',()=>{
-    const data=deps.programData();
+    const data=deps.programData();if(data.seasons!==undefined)data.seasons=window.VisitaLojaLoyaltySeasonPolicy.normalize(data.seasons);
     if(!deps.validForm())throw Error('Revisa los campos del programa antes de guardar.');
     const place=deps.places().find(item=>item.id===data.placeId);
     if(!place)throw Error('Selecciona una parada disponible.');
@@ -47,8 +47,8 @@
   say:(id,text)=>get(id).textContent=text,error:error=>root.VisitaLojaServiceErrors.message(error),refresh:()=>loadAll(),
   merchants:()=>merchants,places:()=>places,assignment:uid=>[...document.querySelector('[data-merchant="'+CSS.escape(uid)+'"]').selectedOptions].map(option=>option.value),
   validForm:()=>get('programForm').reportValidity(),
-  programData:()=>({placeId:get('programPlace').value,active:get('programActive').checked,targetVisits:Number(get('programTarget').value),maxVisitsPerDay:Number(get('programDaily').value),rewardTitle:get('programReward').value.trim(),rewardDescription:get('programDescription').value.trim(),rewardType:get('programType').value,rewardValidityDays:Number(get('programValidity').value),stock:get('programStock').value===''?null:Number(get('programStock').value)}),
+  programData:()=>({placeId:get('programPlace').value,active:get('programActive').checked,targetVisits:Number(get('programTarget').value),maxVisitsPerDay:Number(get('programDaily').value),rewardTitle:get('programReward').value.trim(),rewardDescription:get('programDescription').value.trim(),rewardType:get('programType').value,rewardValidityDays:Number(get('programValidity').value),stock:get('programStock').value===''?null:Number(get('programStock').value),...(root.VisitaLojaSeasonEditor?.read()===undefined?{}:{seasons:root.VisitaLojaSeasonEditor.read()})}),
   saveAssignment:({uid,placeIds})=>db.collection('missionRewardMerchants').doc(uid).update({placeIds,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}),
-  saveProgram:(data,session)=>db.collection('loyaltyPrograms').doc(data.placeId).set({...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:session.email},{merge:true})
+  saveProgram:(data,session)=>db.runTransaction(async tx=>{const ref=db.collection('loyaltyPrograms').doc(data.placeId),saved=await tx.get(ref);if(data.seasons!==undefined){const current=saved.exists?saved.data():{},before=root.VisitaLojaLoyaltySeasonPolicy.normalize(current.seasons||[]);for(const season of before){const used=current.seasonUsage?.[season.id]===true,next=data.seasons.find(item=>item.id===season.id),withoutStock=value=>{if(!value)return null;const {stock,...rest}=value;return rest;};if(used&&JSON.stringify(withoutStock(season))!==JSON.stringify(withoutStock(next)))throw Error('Esta temporada ya tiene sellos. Conserva sus condiciones y crea otra para nuevas fechas.');if(next?.stock!==null&&next?.stock!==undefined&&next.stock<Number(current.seasonClaimedCounts?.[season.id]||0))throw Error('Los cupos no pueden ser menores que los premios ya emitidos.');}}if(adminSessionUid!==session.uid||auth.currentUser?.uid!==session.uid||adminAccessGeneration!==session.generation)throw Error('La sesión cambió.');tx.set(ref,{...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:session.email},{merge:true});})
  });
 })(window);
