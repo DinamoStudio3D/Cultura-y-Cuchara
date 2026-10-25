@@ -369,7 +369,8 @@ assert(merchantRewards.includes('function deliverReward'), 'El portal permite co
 assert(merchantRewards.includes('function loadMerchantInventory'), 'El negocio ve las existencias exactas de sus campañas');
 assert(admin.includes('id="passportTouristMerchant"') && admin.includes('id="passportLocalMerchant"'), 'El pasaporte asigna un negocio por modalidad');
 assert(admin.includes('function prepareExistingPassportRewardCodes'), 'Los códigos anteriores del pasaporte pueden prepararse');
-assert(index.includes("db.collection('passportRewardClaimCodes').doc(claimCode)"), 'Cada premio del pasaporte crea un índice seguro');
+const passportClaimServer = read('functions/passport-claim.js');
+assert(passportClaimServer.includes("db.collection('passportRewardClaimCodes').doc(claimCode)") && passportClaimServer.includes('tx.create(ref,claim);tx.create(codeRef,') && !index.includes("db.collection('passportRewardClaimCodes').doc(claimCode)"), 'Cada premio del pasaporte crea un índice seguro en la transacción del servidor');
 assert(merchantRewards.includes("type='passport'"), 'El portal verifica también códigos del pasaporte');
 assert(firestoreRules.includes('function hasPassportMerchantGrant'), 'Firestore limita cada negocio a la modalidad autorizada');
 assert(firestoreRules.includes('match /passportRewardClaimCodes/{claimCode}'), 'Firestore protege los códigos del pasaporte');
@@ -431,8 +432,8 @@ assert(chabaquitoWorker.includes('24 * 60 * 60 * 1000'), 'Worker conserva cooldo
 assert(chabaquitoWorker.includes('const evidenceKey = `self_visit:${evidenceId}`'), 'Worker conserva la clave canónica de evidencia QR');
 assert((chabaquitoWorker.match(/currentDocument: \{ exists: false \}/g)||[]).length >= 4, 'Worker protege creaciones únicas de evidencia, XP y auditoría');
 assert(chabaquitoWorker.includes('currentDocument: { updateTime: profileDocument.updateTime }'), 'Worker evita actualizar XP sobre un perfil concurrentemente modificado');
-assert(chabaquitoWorker.includes('async function firestoreRunQuery(accessToken, structuredQuery, transaction = null)'), 'Worker permite consultas Firestore dentro de una transacción');
-assert(chabaquitoWorker.includes('}, transaction);'), 'La evidencia QR se consulta dentro de la transacción');
+assert(chabaquitoWorker.includes('async function firestoreRunQuery(accessToken, structuredQuery, transaction = null, parentPath = "")'), 'Worker permite consultas Firestore dentro de una transacción');
+assert(chabaquitoWorker.includes('}, transaction, `chabaquitoExplorerProfiles/${user.uid}`);'), 'La evidencia QR se consulta dentro de la transacción del perfil autenticado');
 assert(chabaquitoWorker.includes('firestoreGetDocumentInTransaction(accessToken, evidencePath, transaction)'), 'La evidencia QR se comprueba dentro de la transacción');
 assert(chabaquitoWorker.includes('firestoreGetDocumentInTransaction(accessToken, profilePath, transaction)'), 'El perfil Chabaquito se lee dentro de la transacción QR');
 assert(chabaquitoWorker.includes('await firestoreCommit(accessToken, transaction, writes)'), 'La evidencia y XP QR se confirman en una sola transacción');
@@ -459,7 +460,7 @@ assert(chabaquitoWorker.includes('targetId: cantonId, xp: 50, placeId: null, can
 
 assert(selfCheckin.includes("discoveryMethod==='proximity'||discoveryMethod==='both'||place.validationMode==='self_checkin'"), 'La página de visita acepta los modos canónicos proximity/both');
 assert(selfCheckin.includes("!place.discovery?.enabled||!proximityEnabled"), 'La página de visita exige discovery habilitado');
-assert(chabaquitoRuntimeConfig.includes("workerUrl:'https://visitaloja-chabaquito.sukogames1996.workers.dev'"), 'La configuración central usa el Worker estable de Chabaquito');
+assert(chabaquitoRuntimeConfig.includes("window.location.hostname===previewHost") && chabaquitoRuntimeConfig.includes("workerUrl:isRewardPreview?'https://visitaloja-chabaquito-preview.sukogames1996.workers.dev':'https://visitaloja-chabaquito.sukogames1996.workers.dev'"), 'La configuración central usa el Worker estable de Chabaquito');
 assert(selfCheckin.includes('js/chabaquito-runtime-config.js') && selfCheckin.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'La autovisita obtiene el Worker desde la configuración central');
 assert(loyaltyMerchant.includes('js/chabaquito-runtime-config.js') && loyaltyMerchant.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'La confirmación con encargado obtiene el Worker desde la configuración central');
 assert(chabaquitoPublicV2.includes('VisitaLojaChabaquitoConfig?.workerUrl'), 'El ranking Chabaquito obtiene el Worker desde la configuración central');
@@ -496,7 +497,7 @@ assert(chabaquitoWorker.includes('missions.filter(item => item.newlyCompleted).m
 assert(chabaquitoWorker.includes('chabaquitoDigitalRewards'), 'Worker sincroniza recompensas digitales de misiones');
 assert(chabaquitoWorker.includes('"total_visits", "unique_places", "place_visits", "category_visits", "canton_visits"'), 'Worker admite los cinco tipos de misión V2');
 assert(chabaquitoWorker.includes('mission.type === "unique_places"') && chabaquitoWorker.includes('missionText(visit.placeId)'), 'Misiones de lugares diferentes usan placeId y deduplican paradas');
-assert(chabaquitoWorker.includes('collectionId: "evidence", allDescendants: true'), 'Worker incorpora evidencia confiable de Chabaquito a las misiones');
+assert(chabaquitoWorker.includes('}, null, `chabaquitoExplorerProfiles/${visitorUid}`)') && !chabaquitoWorker.includes('collectionId: "evidence", allDescendants: true'), 'Worker incorpora evidencia confiable del perfil del visitante a las misiones');
 assert(chabaquitoWorker.includes('source: "chabaquito_evidence"'), 'Worker prioriza evidencia turística de Chabaquito');
 assert(chabaquitoWorker.includes('item.status === "validated" || item.status === "reversed"'), 'Worker contempla evidencia validada y revertida');
 assert(chabaquitoWorker.includes('new Set(missionList(mission.placeIds))'), 'Misiones por lugares respetan la lista explícita de paradas');
