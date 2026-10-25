@@ -125,3 +125,9 @@ Cuatro regresiones locales de `test-worker-mission-failure.cjs` pasan sobre el W
 
 ### Recuperación de confirmación tras error posterior al guardado
 El verificador permite consultar otra vez un código confirmado o anulado, incluso cuando ya venció el código temporal. Lee la visita, contador y programa actuales sin volver a sellar. Solo ofrece anulación al mismo encargado que confirmó, si es la última visita, no respalda un canje, su premio no está entregado y sigue dentro de los 15 minutos. Fuera del plazo muestra revisión administrativa; el servidor conserva todas las restricciones. Se corrigió también la carga de categoría de la parada para la política de compra/cortesía/turismo. Cuatro pruebas locales de recuperación pasan; no se modificó la visita real.
+
+## Prueba manual del límite diario y aviso previo
+
+El 25/10/2026 se confirmó una visita de prueba de juan pablo en Expreso al Sur: pasó de 2/10 a 3/10. El segundo intento devolvió `Daily visit limit reached`; el usuario confirmó que permaneció en 3/10. Configuración observada: un sello diario. La visita inicial solo sumó fidelidad, según el historial.
+
+La pantalla del encargado ahora oculta Dar sello al consultar un visitante que agotó su cuota. La pantalla del visitante muestra Regresa mañana y comprueba el contador antes de generar otro código. El error del servidor también se traduce. La recuperación de una visita confirmada mantiene las restricciones de encargado, último sello, premio y plazo de 15 minutos; la anulación real y la entrega del premio siguen pendientes. No se ha modificado producción ni publicado reglas.
