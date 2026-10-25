@@ -103,3 +103,13 @@ Se ejecutaron las comprobaciones puras de `test-existing-loyalty-policy.cjs` y 3
 Se detectó y corrigió un fallo real de presentación: la cartera aceptaba únicamente códigos FID de seis caracteres y ocultaba los códigos de 16 caracteres generados por el Worker. Ahora admite ambos formatos con el límite de longitud del verificador. Se añadieron casos para ambos formatos y rechazo de longitud excesiva.
 
 `test-passport-server-claim.cjs` usa exclusivamente una base simulada y dependencias Firebase simuladas. Comprueba pruebas de visita insuficientes, duplicadas, anuladas, de otra cuenta o campaña; diferencias Lojano/Turista; contador inventado del navegador; disponibilidad; elección inmutable y reintento que recupera el mismo código; vínculo de las seis visitas al canje. No prueba concurrencia real de Firestore, autenticación real, ejecución de reglas ni conexiones de la web al Worker. No se leyeron/escribieron registros reales ni se publicaron reglas. Esas pruebas de integración siguen pendientes.
+
+
+### Reglas compiladas y comprobadas en emulador local
+Se ejecutó el emulador oficial Firestore v1.19.8 con Firebase CLI 14.21.0 y proyecto ficticio `demo-visitaloja-rules`, únicamente en 127.0.0.1:8089. Las reglas completas compilan. Los 18 casos de `tests/firestore-rules/rewards.test.cjs` pasan. El archivo exige el host local exacto y no admite una conexión a una base real. No se inició sesión ni se emplearon credenciales reales.
+
+Se confirmó que solo el negocio elegido puede leer/entregar el premio nuevo, aunque otro negocio tenga permiso de la misma campaña; el cliente no puede cambiar su elección ni entregarse su premio; cuentas suspendidas pierden acceso; una entrega no se repite; los permisos de canjes antiguos se mantienen; los sellos usados en un canje no se pueden anular por cliente; y el administrador conserva revisión/corrección.
+
+Las pruebas adicionales detectaron que la regla de entrega de fidelidad permitía una escritura directa de entrega aun con premio vencido o sin fecha comprobable. Se corrigió exigiendo `expiresAt` de tipo timestamp y posterior a `request.time` para la entrega por negocio; ambos casos ahora se deniegan, mientras un premio vigente se entrega una sola vez. La corrección se aplicó solo al archivo de reglas de la rama, sin publicación.
+
+Esta etapa cierra la validación local de los permisos modificados. Continúa pendiente el recorrido completo en la preview con cuentas y registros de prueba autorizados, y la publicación coordinada de reglas/frontend para no interrumpir el cliente antiguo de producción.

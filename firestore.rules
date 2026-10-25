@@ -729,6 +729,8 @@ service cloud.firestore {
       allow update: if isViveLojaAdmin() || (
         isAssignedVisitMerchant(resource.data.placeId)
         && resource.data.status == 'pending'
+        && resource.data.expiresAt is timestamp
+        && request.time < resource.data.expiresAt
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'deliveredAt', 'deliveredBy', 'updatedAt'])
         && request.resource.data.status == 'delivered'
         && request.resource.data.deliveredBy == request.auth.uid
