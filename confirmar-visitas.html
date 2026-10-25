@@ -21,7 +21,7 @@ async function stopScanner(){if(!qrScanner)return;try{await qrScanner.stop()}cat
 scanButton.onclick=async()=>{message.textContent='';if(!navigator.mediaDevices?.getUserMedia){message.textContent='Este navegador no permite usar la cámara. Ingresa el código manualmente.';return}scannerBox.classList.remove('hidden');scanButton.disabled=true;try{qrScanner=new Html5Qrcode('reader');await qrScanner.start({facingMode:'environment'},{fps:10,qrbox:{width:240,height:240}},async decoded=>{const match=String(decoded).match(/(?:(?:VISITALOJA|VIVELOJA):)?([0-9]{6})$/);if(!match)return;code.value=match[1];await stopScanner();scanButton.disabled=false;form.requestSubmit()},()=>{})}catch(_){message.textContent='No se pudo abrir la cámara. Revisa el permiso o usa el código manual.';await stopScanner();scanButton.disabled=false}}
 stopScan.onclick=async()=>{await stopScanner();scanButton.disabled=false};
 function showDailyLimit(counter,program){
- const limit=Math.max(1,Math.min(3,Number(program.maxVisitsPerDay||1))),used=counter.lastVisitDay===ecuadorDay()?Number(counter.dailyVisitCount||0):0;
+ const limit=1,used=counter.lastVisitDay===ecuadorDay()?Number(counter.dailyVisitCount||0):0;
  if(used<limit)return false;
  status.textContent='LÍMITE DIARIO ALCANZADO';status.className='text-xs font-black text-amber-300';
  expiry.textContent='Regresa mañana para volver a sellar tu tarjeta de fidelidad.';
