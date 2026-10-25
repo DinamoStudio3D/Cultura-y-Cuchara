@@ -39,6 +39,9 @@ jobs:
           scripts/test-recover-saved-visit.cjs
           scripts/test-map-tile-loading.cjs
           scripts/test-responsive-photos.cjs
+          scripts/test-place-discovery.mjs
+          scripts/test-place-search.cjs
+          scripts/test-saved-places.mjs
 
   firestore:
     name: Compilar reglas Firestore con emulador
