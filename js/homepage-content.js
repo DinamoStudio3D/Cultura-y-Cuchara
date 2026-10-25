@@ -1190,13 +1190,15 @@
       if (block.image) {
         const image = document.querySelector(block.image);
         if (image) {
-          if (image.getAttribute("src") !== saved.imageUrl)
-            image.src = saved.imageUrl;
+          if(window.VisitaLojaResponsivePhotos)window.VisitaLojaResponsivePhotos.set(image,saved.imageUrl,'(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw');
+          else if (image.getAttribute("src") !== saved.imageUrl) {
+            image.removeAttribute('srcset');image.removeAttribute('sizes');image.src=saved.imageUrl;
+          }
           image.alt = saved.imageAlt;
           image.dataset.homeManaged = "true";
           image.onerror = () => {
             image.onerror = null;
-            image.src = placeholder;
+            image.removeAttribute('srcset');image.removeAttribute('sizes');image.src = placeholder;
           };
         }
         let credit = element.querySelector(".vl-home-image-credit");
