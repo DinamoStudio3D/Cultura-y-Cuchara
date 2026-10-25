@@ -38,6 +38,7 @@ jobs:
           scripts/test-merchant-workspace-v218.mjs
           scripts/test-recover-saved-visit.cjs
           scripts/test-map-tile-loading.cjs
+          scripts/test-responsive-photos.cjs
 
   firestore:
     name: Compilar reglas Firestore con emulador
