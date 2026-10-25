@@ -131,3 +131,9 @@ El verificador permite consultar otra vez un código confirmado o anulado, inclu
 El 25/10/2026 se confirmó una visita de prueba de juan pablo en Expreso al Sur: pasó de 2/10 a 3/10. El segundo intento devolvió `Daily visit limit reached`; el usuario confirmó que permaneció en 3/10. Configuración observada: un sello diario. La visita inicial solo sumó fidelidad, según el historial.
 
 La pantalla del encargado ahora oculta Dar sello al consultar un visitante que agotó su cuota. La pantalla del visitante muestra Regresa mañana y comprueba el contador antes de generar otro código. El error del servidor también se traduce. La recuperación de una visita confirmada mantiene las restricciones de encargado, último sello, premio y plazo de 15 minutos; la anulación real y la entrega del premio siguen pendientes. No se ha modificado producción ni publicado reglas.
+
+## Cobertura adicional del ciclo de premio y anulación
+
+Se amplió `scripts/test-worker-mission-failure.cjs` ejecutando el Worker generado con Firestore simulado y sin red. Comprobado: décimo sello genera premio pendiente FID con vigencia, ciclo, cupo y vínculo en visita; anulación inmediata restaura nueve sellos, cupo y cuota diaria, elimina su premio y solo el sello de pasaporte creado por esa visita; un sello anterior de pasaporte se conserva. Premio entregado, recompensa de pasaporte vinculada, plazo vencido y visita posterior bloquean la anulación sin escrituras. Stock agotado no genera premio.
+
+Estas comprobaciones no sustituyen las pruebas reales de anulación y entrega; no usan ni modifican cuentas, programas ni visitas de Firebase.
