@@ -95,3 +95,11 @@ El propietario facilitó también el código completo de la preview (1011 línea
 
 ### Publicación manual de preview confirmada por captura
 La captura del propietario muestra la versión `50056353` activa en visitaloja-chabaquito-preview, con respuesta `/health` ok y consumo/temporada/sello/premio en versión 1. Esto confirma la carga de código, no credenciales de Firestore ni funcionamiento de visitas y canjes. El hostname estable de la rama improve/existing-rewards se conecta exclusivamente a ese Worker mediante runtime config. Los dominios públicos y previews no incluidas conservan el endpoint anterior. No se publicaron reglas ni se ejecutaron pruebas funcionales.
+
+
+### Validación local ejecutada al retomar
+Se ejecutaron las comprobaciones puras de `test-existing-loyalty-policy.cjs` y 33 casos de Node test entre pasaporte, aviso diario, condiciones, presentación de premios, entrega y creación de canje en servidor. Todos pasan. Se actualizó la fixture de entrega para incluir la generación de permisos nueva y se añadió el caso de revocación/actualización durante una entrega.
+
+Se detectó y corrigió un fallo real de presentación: la cartera aceptaba únicamente códigos FID de seis caracteres y ocultaba los códigos de 16 caracteres generados por el Worker. Ahora admite ambos formatos con el límite de longitud del verificador. Se añadieron casos para ambos formatos y rechazo de longitud excesiva.
+
+`test-passport-server-claim.cjs` usa exclusivamente una base simulada y dependencias Firebase simuladas. Comprueba pruebas de visita insuficientes, duplicadas, anuladas, de otra cuenta o campaña; diferencias Lojano/Turista; contador inventado del navegador; disponibilidad; elección inmutable y reintento que recupera el mismo código; vínculo de las seis visitas al canje. No prueba concurrencia real de Firestore, autenticación real, ejecución de reglas ni conexiones de la web al Worker. No se leyeron/escribieron registros reales ni se publicaron reglas. Esas pruebas de integración siguen pendientes.
