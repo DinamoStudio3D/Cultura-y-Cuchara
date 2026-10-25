@@ -814,7 +814,7 @@
 
                 <section id="linksModule" class="hidden panel rounded-2xl p-5 sm:p-7">
                     <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4 mb-6">
-                        <div><p class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Accesos oficiales</p><h2 class="text-2xl font-black mt-1">Enlaces del sistema</h2><p class="text-sm text-gray-400 mt-1">Copia la dirección correcta y revisa quién debe utilizarla antes de compartirla.</p></div>
+                        <div><p class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Accesos oficiales</p><h2 class="text-2xl font-black mt-1">Enlaces del sistema</h2><p class="text-sm text-gray-400 mt-1">Copia la dirección correcta y revisa quién debe utilizarla antes de compartirla. En Preview los enlaces apuntan a esta misma Preview; en producción apuntan al sitio oficial.</p></div>
                         <a href="https://www.visitaloja.com/" target="_blank" rel="noopener noreferrer" class="border border-cyan-400/40 text-cyan-200 hover:bg-cyan-500/10 rounded-xl px-4 py-2.5 text-sm font-bold whitespace-nowrap"><i class="fa-solid fa-arrow-up-right-from-square mr-2"></i>Abrir web</a>
                     </div>
                     <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 mb-6 text-sm text-amber-100">
@@ -1323,7 +1323,6 @@ const SYSTEM_LINKS=[
     {title:'Sitio principal',path:'/',audience:'Público',tone:'bg-emerald-500/15 text-emerald-200',description:'Inicio de Visita Loja para visitantes, turistas y lojanos.'},
     {title:'Panel de administración',path:'/admin.html',audience:'Solo administradores',tone:'bg-rose-500/15 text-rose-200',description:'Gestión general de contenidos, paradas, Pasaporte, configuración y reportes.'},
     {title:'Portal del propietario',path:'/merchant-dashboard.html',audience:'Propietario / administrador de parada',tone:'bg-amber-500/15 text-amber-200',description:'Acceso principal del responsable de cada negocio. Inicia sesión con la cuenta autorizada para gestionar sus paradas, consultar clientes y estadísticas. No concede acceso a otros negocios.'},
-    {title:'Tarjetas del cliente',path:'/fidelidad.html',audience:'Cliente registrado',tone:'bg-cyan-500/15 text-cyan-200',description:'Cada cliente inicia sesión con su propia cuenta para consultar sellos, historial, tarjetas y premios. Para solicitar un código de visita debe entrar desde el enlace específico de la parada.'},
     {title:'Gestión de fidelidad',path:'/gestion-fidelidad.html',audience:'Solo administradores',tone:'bg-rose-500/15 text-rose-200',description:'Configura reglas, beneficios y revisa la actividad del programa de fidelidad.'},
     {title:'Validar recompensas',path:'/merchant-rewards.html',audience:'Negocio autorizado',tone:'bg-amber-500/15 text-amber-200',description:'El negocio valida el código que presenta un visitante para entregar una recompensa.'},
     {title:'Confirmar visitas',path:'/confirmar-visitas.html',audience:'Negocio autorizado',tone:'bg-amber-500/15 text-amber-200',description:'El personal del negocio confirma visitas seguras para el programa de fidelidad.'},
@@ -1332,7 +1331,7 @@ const SYSTEM_LINKS=[
     {title:'Postular un negocio',path:'/sumar-negocio.html',audience:'Público / negocios',tone:'bg-emerald-500/15 text-emerald-200',description:'Formulario para solicitar que un establecimiento sea parte de la plataforma.'},
     {title:'Estado de solicitud',path:'/estado-solicitud.html',audience:'Solicitante',tone:'bg-violet-500/15 text-violet-200',description:'Consulta pública del avance de una postulación mediante su código de seguimiento.'}
 ];
-function systemLinkUrl(path){return new URL(path,'https://www.visitaloja.com').href;}
+function systemLinkUrl(path){return new URL(path,window.location.origin).href;}
 function renderSystemLinks(){
     const list=document.getElementById('systemLinksList');if(!list)return;
     list.innerHTML=SYSTEM_LINKS.map((item,index)=>{
