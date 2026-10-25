@@ -435,7 +435,9 @@
 <link rel="stylesheet" href="css/video-gallery.css?v=2">
 <link rel="stylesheet" href="css/place-discovery.css?v=2">
 <script src="js/chabaquito-place-config.js?v=1"></script>
-<script src="js/place-discovery.js?v=2"></script>
+<script src="js/place-discovery.js?v=3"></script>
+<link rel="stylesheet" href="css/place-search-suggestions.css?v=1">
+<script src="js/place-search-suggestions.js?v=1"></script>
 <link rel="stylesheet" href="/css/place-digital-menu.css?v=1">
 <script src="/js/place-digital-menu.js?v=1"></script>
 <script src="/js/popup-schedule.js?v=2"></script>
@@ -1225,7 +1227,7 @@
             
             <div id="noResults" class="hidden text-center py-10 text-gray-500 text-sm">
                 <i class="fa-solid fa-face-frown mb-2 text-2xl text-gray-300"></i><br>
-                <span id="placeEmptyTitle">No encontramos resultados para esa búsqueda.</span><p id="placeEmptyHelp" class="mt-2">Prueba con otro cantón, una categoría diferente o menos palabras.</p><button type="button" onclick="clearAllPlaceFilters()" class="hero-button mt-4">Ver todas las paradas</button>
+                <span id="placeEmptyTitle">No encontramos resultados para esa búsqueda.</span><p id="placeEmptyHelp" class="mt-2">Prueba con otro cantón, una categoría diferente o menos palabras.</p><div id="placeSearchSuggestions" class="place-search-suggestions" hidden></div><button type="button" onclick="clearAllPlaceFilters()" class="hero-button mt-4">Ver todas las paradas</button>
             </div>
         </div>
     </section>
@@ -7975,11 +7977,11 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function searchItems() {
             const model=window.VisitaLojaDiscovery,input=document.getElementById('searchInput'),query=input?.value||'',cantonId=document.getElementById('placeCantonFilter')?.value||'',openOnly=document.getElementById('placeOpenFilter')?.checked===true,savedOnly=document.getElementById('placeSavedFilter')?.checked===true;
             if(!model)return;
-            const near=/\b(cerca|near|proximo)\b/.test(model.normalize(query));let visible=0;
+            const near=/\b(cerca|near|proximo)\b/.test(model.normalize(query)),placeById=new Map(locations.map(place=>[String(place.id),place]));let visible=0;
             document.querySelectorAll('.local-item').forEach(card=>{
-                const place=locations.find(p=>String(p.id)===card.dataset.locationId);
+                const place=placeById.get(card.dataset.locationId);
                 const match=!!place&&model.matches(place,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow);
-                card.classList.toggle('hidden-item',!match);card.style.opacity=match?'1':'0';card.style.order='';
+                card.classList.toggle('hidden-item',!match);card.style.opacity=match?'1':'0';card.style.order=match&&!near&&query.trim()?String(-model.score(place,query)):'';
                 if(match){visible++;if(near&&userCoords){const coords=publicPlaceCoordinates(place);if(coords){const distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,coords[0],coords[1]);if(Number.isFinite(distance))card.style.order=String(Math.round(distance*1000));}}}
             });
             document.getElementById('noResults')?.classList.toggle('hidden',visible>0);
@@ -7987,6 +7989,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             updateClearFiltersButton(Boolean(query||cantonId||openOnly||savedOnly||placeDiscoveryCategory!=='all'));
             const savedCount=new Set(favoriteLocations.map(String)).size;document.getElementById('savedPlacesCount').textContent=String(savedCount);document.getElementById('savedPlacesRoute').hidden=savedCount===0;document.getElementById('savedPlacesHint').hidden=!savedOnly;
             const en=currentLang==='en',emptySaved=savedOnly&&savedCount===0;document.getElementById('placeEmptyTitle').textContent=emptySaved?(en?'No saved places yet':'Todavía no tienes lugares guardados'):(savedOnly?(en?'No favorites match these filters':'No hay favoritos que coincidan con estos filtros'):(en?'No results found for that search.':'No encontramos resultados para esa búsqueda.'));document.getElementById('placeEmptyHelp').textContent=emptySaved?(en?'Tap the leaf on a place card to save it and find it here.':'Toca la hoja en la tarjeta de un lugar para guardarlo y encontrarlo aquí.'):(en?'Try another canton, category or fewer search words.':'Prueba con otro cantón, una categoría diferente o menos palabras.');
+            window.VisitaLojaSearchSuggestions?.render(locations,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow,visible,en);
             const status=document.getElementById('smartSearchStatus');if(status)status.textContent=currentLang==='en'?`${visible} places match your filters.`:`${visible===1?'1 parada coincide':visible+' paradas coinciden'} con tu búsqueda y filtros.`;
         }
 
