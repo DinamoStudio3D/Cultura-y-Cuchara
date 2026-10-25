@@ -113,3 +113,11 @@ Se confirmó que solo el negocio elegido puede leer/entregar el premio nuevo, au
 Las pruebas adicionales detectaron que la regla de entrega de fidelidad permitía una escritura directa de entrega aun con premio vencido o sin fecha comprobable. Se corrigió exigiendo `expiresAt` de tipo timestamp y posterior a `request.time` para la entrega por negocio; ambos casos ahora se deniegan, mientras un premio vigente se entrega una sola vez. La corrección se aplicó solo al archivo de reglas de la rama, sin publicación.
 
 Esta etapa cierra la validación local de los permisos modificados. Continúa pendiente el recorrido completo en la preview con cuentas y registros de prueba autorizados, y la publicación coordinada de reglas/frontend para no interrumpir el cliente antiguo de producción.
+
+
+### Error 400 durante la primera confirmación manual
+El propietario informó `Firestore query failed (400)` al confirmar una cortesía de prueba. Las únicas consultas runQuery del recorrido se ejecutan en la actualización de Misiones posterior al commit del sello; por ello el mensaje no demuestra que la visita haya fallado. Se pidió comprobar el contador del visitante antes de repetir o crear otra solicitud. No se comprobó el registro real desde este entorno.
+
+Se corrigió el manejo posterior al commit de confirmación y anulación: un fallo de Misiones devuelve la visita/anulación guardada con `missionsPending: true`, y la pantalla informa que no debe repetirse el sello. Las consultas de evidencia se limitan a la subcolección del propio perfil, equivalente al alcance del servicio Node existente, sin consulta de grupo global. El Worker conserva detalles del rechazo de Firestore en sus logs para diagnosticar el 400 si persiste; no se afirma un índice específico sin respuesta del servicio. Health anuncia `missionSyncPolicyVersion:1` para identificar esta corrección.
+
+Cuatro regresiones locales de `test-worker-mission-failure.cjs` pasan sobre el Worker generado: confirmación guardada con fallo posterior de Misiones; anulación guardada con fallo posterior; rechazo real antes del commit sin escrituras; consulta de evidencias limitada al perfil. Son dependencias de red simuladas, no pruebas contra producción. Requiere reemplazar únicamente el Worker preview con el archivo generado actualizado; no se ha publicado automáticamente.

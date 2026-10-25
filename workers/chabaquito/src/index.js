@@ -412,8 +412,8 @@ async function confirmMerchantVisit(env, user, input) {
   writes[2].updateMask.fieldPaths=Object.keys(counterFields);
   writes.push({update:{name:documentName(`systemAudit/${requestId}_added`),fields:firestoreFields({action:'loyalty_stamp_added',actorUid:user.uid,actorName:merchantName,userId:code.userId,placeId:code.placeId,requestId,...consumption,createdAt:now})},currentDocument:{exists:false}});
   await firestoreCommit(accessToken, transaction, writes);
-  const missions = await syncUserMissionProgress(env, code.userId);
-  return { visitCount: newCount, target, passportAdded:!stampDocument,rewardCreated, visitorUid: code.userId, placeId: code.placeId, missions };
+  const missionResult = await postVisitMissionSync(env, code.userId);
+  return { visitCount: newCount, target, passportAdded:!stampDocument,rewardCreated, visitorUid: code.userId, placeId: code.placeId, ...missionResult };
 }
 
 async function reverseMerchantVisit(env, user, input) {
@@ -536,20 +536,26 @@ async function reverseMerchantVisit(env, user, input) {
 
   writes.push({update:{name:documentName(`systemAudit/${requestId}_reversed`),fields:firestoreFields({action:'loyalty_stamp_reversed',actorUid:user.uid,actorName:merchant.businessName||'',userId:visit.userId,placeId:visit.placeId,requestId,purchaseAmount:Number(visit.purchaseAmount||0),recordKind:visit.recordKind||'legacy',reversalReason,createdAt:now})},currentDocument:{exists:false}});
   await firestoreCommit(accessToken, transaction, writes);
-  const missions = await syncUserMissionProgress(env, visit.userId);
-  return { visitCount: restoredCount, target, visitorUid: visit.userId, placeId: visit.placeId, missions };
+  const missionResult = await postVisitMissionSync(env, visit.userId);
+  return { visitCount: restoredCount, target, visitorUid: visit.userId, placeId: visit.placeId, ...missionResult };
 }
 
-async function firestoreRunQuery(accessToken, structuredQuery, transaction = null) {
+// The visit transaction is already committed. Mission refresh must not report it as failed.
+async function postVisitMissionSync(env,userId){
+  try{return {missions:await syncUserMissionProgress(env,userId),missionsPending:false};}
+  catch(error){console.warn('Mission refresh pending after saved visit',{code:error.firestoreCode||'unavailable',collection:error.queryCollection||'',status:error.httpStatus||0});return {missions:[],missionsPending:true};}
+}
+
+async function firestoreRunQuery(accessToken, structuredQuery, transaction = null, parentPath = "") {
   const response = await fetch(
-    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery`,
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents${parentPath ? "/" + parentPath : ""}:runQuery`,
     {
       method: "POST",
       headers: { Authorization: `Bearer ${accessToken}`, "content-type": "application/json" },
       body: JSON.stringify(transaction ? { structuredQuery, transaction } : { structuredQuery })
     }
   );
-  if (!response.ok) throw new Error(`Firestore query failed (${response.status})`);
+  if (!response.ok){const body=await response.json().catch(()=>({}));const error=new Error(`Firestore query failed (${response.status})`);error.httpStatus=response.status;error.firestoreCode=body.error?.status||'unknown';error.queryCollection=structuredQuery.from?.[0]?.collectionId||'';console.warn('Firestore query rejected',{status:response.status,code:error.firestoreCode,collection:error.queryCollection,details:body.error?.message||''});throw error;}
   const rows = await response.json();
   return rows.map(row => row.document).filter(Boolean);
 }
@@ -561,9 +567,9 @@ async function loadMissionVisits(accessToken, visitorUid) {
       where: { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: visitorUid } } }
     }),
     firestoreRunQuery(accessToken, {
-      from: [{ collectionId: "evidence", allDescendants: true }],
+      from: [{ collectionId: "evidence" }],
       where: { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: visitorUid } } }
-    })
+    }, null, `chabaquitoExplorerProfiles/${visitorUid}`)
   ]);
   const evidence = evidenceDocuments.map(document => {
     const item = decodeFirestoreDocument(document);
@@ -787,9 +793,9 @@ async function validateProximityVisit(env, user, input) {
 
   const transaction = await firestoreBeginTransaction(accessToken);
   const evidenceDocuments = await firestoreRunQuery(accessToken, {
-    from: [{ collectionId: "evidence", allDescendants: true }],
+    from: [{ collectionId: "evidence" }],
     where: { fieldFilter: { field: { fieldPath: "userId" }, op: "EQUAL", value: { stringValue: user.uid } } }
-  }, transaction);
+  }, transaction, `chabaquitoExplorerProfiles/${user.uid}`);
   const recent = evidenceDocuments.map(decodeFirestoreDocument).find(item =>
     item.scope === "tourism_discovery" && item.type === "self_visit" && item.status === "validated" &&
     item.placeId === qr.placeId && Number.isFinite(item.verifiedAt) && nowMs >= item.verifiedAt &&
@@ -975,7 +981,7 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
     if (request.method === "GET" && url.pathname === "/health") {
-      return withCors(json({ ok: true, service: "chabaquito", consumptionPolicyVersion:1,loyaltySeasonPolicyVersion:1,passportStampPolicyVersion:1,loyaltyRewardPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
+      return withCors(json({ ok: true, service: "chabaquito", missionSyncPolicyVersion:1,consumptionPolicyVersion:1,loyaltySeasonPolicyVersion:1,passportStampPolicyVersion:1,loyaltyRewardPolicyVersion:1, project: env.FIREBASE_PROJECT_ID || PROJECT_ID }),request);
     }
 
     if (request.method === "POST" && url.pathname === "/proximity-visit") {
