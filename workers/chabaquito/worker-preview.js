@@ -401,7 +401,7 @@ async function confirmMerchantVisit(env, user, input) {
   const stampDocument=await firestoreGetDocumentInTransaction(accessToken,stampPath,transaction);
   if(stampDocument){const stamp=decodeFirestoreDocument(stampDocument);if(stamp.userId!==code.userId||stamp.placeId!==code.placeId||stamp.campaignId!==campaignId)throw new Error('Passport stamp requires review before confirmation');}
   const today = ecuadorDay();
-  const maxDaily = Math.max(1, Math.min(3, Number(program?.maxVisitsPerDay || 1)));
+  const maxDaily = 1;
   const previousDaily = counter?.lastVisitDay === today ? Number(counter.dailyVisitCount || 0) : 0;
   if (previousDaily >= maxDaily) throw new Error("Daily visit limit reached");
 
