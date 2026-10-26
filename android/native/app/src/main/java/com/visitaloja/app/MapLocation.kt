@@ -84,7 +84,7 @@ class MapLocation(private val context: Context) {
                 if (provider == LocationManager.GPS_PROVIDER && !precise()) return@forEach
                 try {
                     if (manager.allProviders.contains(provider) && manager.isProviderEnabled(provider)) {
-                        manager.requestLocationUpdates(provider, 3000L, 2f, listener, Looper.getMainLooper())
+                        manager.requestLocationUpdates(provider, 3000L, 0f, listener, Looper.getMainLooper())
                         registered = true
                         manager.getLastKnownLocation(provider)?.let(::receive)
                     }
