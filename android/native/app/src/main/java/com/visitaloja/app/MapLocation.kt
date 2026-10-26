@@ -47,7 +47,6 @@ class MapLocation(private val context: Context) {
         val epoch = generation
         fun publish(value: MapLocationState) { if (generation == epoch) { current = value; result(value) } }
         if (!hasPermission()) { publish(MapLocationState(problem = MapLocationProblem.PERMISSION)); return }
-        if (!LocationManagerCompat.isLocationEnabled(manager)) { publish(MapLocationState(problem = MapLocationProblem.DISABLED)); return }
         publish(MapLocationState(active = true, precise = precise()))
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -60,6 +59,8 @@ class MapLocation(private val context: Context) {
         ContextCompat.registerReceiver(context, receiver, IntentFilter().apply {
             addAction(LocationManager.MODE_CHANGED_ACTION); addAction(LocationManager.PROVIDERS_CHANGED_ACTION)
         }, ContextCompat.RECEIVER_NOT_EXPORTED)
+        // Keep observing the setting while disabled, so enabling GPS can restart this session.
+        if (!LocationManagerCompat.isLocationEnabled(manager)) { publish(current.copy(problem = MapLocationProblem.DISABLED)); return }
         fun receive(location: Location) {
             if (generation != epoch) return
             if (!hasPermission()) { cancel(); result(MapLocationState(problem = MapLocationProblem.PERMISSION)); return }
