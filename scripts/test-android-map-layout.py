@@ -88,11 +88,13 @@ def geometry(name, gps=False):
     assert control is not None, "GPS control missing"
     x1, y1, x2, y2 = rect(control)
     assert left <= x1 < x2 <= right and top <= y1 < y2 <= bottom, ("GPS control clipped", rect(control), rect(canvas))
+    assert x2 - x1 >= 96 and y2 - y1 >= 96, ("GPS touch target clipped", rect(control))
     if gps:
         status = find(tree, tag="map-location-status")
         assert status is not None, "GPS indicator missing"
         assert rect(status)[3] - rect(status)[1] <= 112, ("GPS panel too tall", rect(status))
     checks.append({"screen": name, "size": [width, height], "map_ratio": round(ratio, 3), "gps_control": rect(control)})
+    (OUTPUT / "progress.json").write_text(json.dumps({"checks": checks}, indent=2))
     return tree
 
 
@@ -135,6 +137,16 @@ try:
     tap(find(tree, tag="map-location-control"))
     wait_for(lambda tree: (node if (node := find(tree, tag="map-location-status")) is not None and "Siguiendo" in text_inside(node) else None))
     adb("shell", "cmd", "location", "set-location-enabled", "false")
+    # Google Play Services may put a system warning above the app when GPS is disabled.
+    # Dismiss its observed Close button so the activity can resume and show its own state.
+    for _ in range(4):
+        tree = hierarchy()
+        if find(tree, text="No location access") is not None:
+            close = find(tree, tag="button2")
+            if close is not None:
+                tap(close)
+                break
+        time.sleep(1)
     wait_for(lambda tree: (node if (node := find(tree, tag="map-location-status")) is not None and "Activar GPS" in text_inside(node) else None))
     geometry("portrait-gps-disabled", gps=True)
     adb("shell", "cmd", "location", "set-location-enabled", "true")
