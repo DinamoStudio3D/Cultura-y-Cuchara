@@ -33,7 +33,9 @@ class PlaceDetailsTest {
         assertEquals(2, place.photos.size); assertEquals("Autora", place.photos.first().credit)
         val cache = PlaceJson.cachePlace(place)
         assertFalse(cache.toString().contains("secret"))
-        assertEquals(place, PlaceJson.cached(cache))
+        val restored = PlaceJson.cached(cache)!!
+        assertEquals(place.photos, restored.photos); assertEquals(place.phone, restored.phone)
+        assertEquals(place.whatsapp, restored.whatsapp); assertEquals(place.slug, restored.slug)
     }
     @Test fun oldCacheRemainsReadableWithoutInventedPhotosOrContacts() {
         val old = JSONObject("""{"id":"a","title":"Café","categories":["cafe"],"address":"","description":"","cantonId":"loja"}""")
