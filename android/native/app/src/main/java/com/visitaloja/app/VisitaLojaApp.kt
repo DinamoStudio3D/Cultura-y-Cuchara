@@ -55,6 +55,8 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel()) {
+    val cantons: CantonsViewModel = viewModel()
+    val cantonsState by cantons.state.collectAsStateWithLifecycle()
     val agenda: AgendaViewModel = viewModel()
     val agendaState by agenda.state.collectAsStateWithLifecycle()
     val wallet: WalletViewModel = viewModel()
@@ -66,6 +68,8 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     val state = guestState.copy(favourites = if (accountState.uid == null) guestState.favourites else accountState.favourites)
     val favourite: (String) -> Unit = { id -> if (accountState.uid == null) model.toggleFavourite(id) else account.toggleFavourite(id) }
     var tab by rememberSaveable { mutableStateOf("home") }
+    var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
+    LaunchedEffect(tab) { cantons.bind(tab == "cantons" || tab == "canton") }
     LaunchedEffect(accountState.uid, tab) { wallet.bind(if (tab == "passport") accountState.uid else null) }
     var category by rememberSaveable { mutableStateOf("all") }
     var query by rememberSaveable { mutableStateOf("") }
@@ -75,12 +79,12 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     val selectedEvent = AgendaPolicy.upcoming(agendaState.events, agendaState.now).find { it.id == selectedEventId }
     LaunchedEffect(selectedEventId, selectedEvent, agendaState.loading) { if (!agendaState.loading && selectedEventId != null && selectedEvent == null) selectedEventId = null }
     val navigate: (String, String) -> Unit = { target, filter -> tab = target; category = filter; query = "" }
-    BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null) { tab = "home"; query = ""; category = "all" }
+    BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null) { tab = if (tab == "canton") "cantons" else "home"; query = ""; category = "all" }
     MaterialTheme(colorScheme = AppColors) {
         Scaffold(
             snackbarHost = { SnackbarHost(snack) },
-            topBar = { AppTopBar(state.loading, model::refresh, tab != "home") { navigate("home", "all") } },
-            bottomBar = { AppNavigation(if (tab == "agenda") "home" else tab) { navigate(it, "all") } },
+            topBar = { AppTopBar(state.loading, model::refresh, tab != "home") { navigate(if (tab == "canton") "cantons" else "home", "all") } },
+            bottomBar = { AppNavigation(if (tab in setOf("agenda", "cantons", "canton")) "home" else tab) { navigate(it, "all") } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
             BrandBackdrop(Modifier.padding(padding).fillMaxSize()) {
@@ -89,8 +93,14 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                 when (tab) {
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }) { wallet.bind(accountState.uid); model.refresh() }
-                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it })
+                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") })
                     "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
+                    "cantons", "canton" -> {
+                        val canton = CantonPolicy.catalogue.find { it.id == selectedCantonId }
+                        val retryCantons: () -> Unit = { cantons.bind(false); cantons.bind(true); model.refresh() }
+                        if (tab == "canton" && canton != null) CantonDetailScreen(canton, cantonsState, guestState, { navigate("cantons", "all") }, { selectedId = it.id }, retryCantons)
+                        else CantonsScreen(cantonsState, guestState, { selectedCantonId = it; navigate("canton", "all") }, retryCantons)
+                    }
                     else -> {
                         if (tab == "saved" && accountState.uid != null) {
                             Text(if (accountState.busy) "Guardando cambios…" else accountState.favouritesError ?: if (!accountState.favouritesReady) "Consultando tu cuenta…" else if (accountState.fromCache) "Conéctate para sincronizar tus favoritos." else accountState.message ?: "Favoritos de tu cuenta, compartidos con la web.", fontSize = 12.sp, color = Blue, modifier = Modifier.padding(horizontal = 22.dp, vertical = 8.dp))
@@ -152,7 +162,7 @@ private fun OfflineBanner(time: Long, loading: Boolean, retry: () -> Unit) {
 }
 
 @Composable
-private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit) {
+private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit) {
     LazyColumn(contentPadding = PaddingValues(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
         item {
             Column(Modifier.padding(horizontal = 22.dp).padding(top = 12.dp)) {
@@ -165,6 +175,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         }
         item { Hero(explore) }
         item { HomeAgenda(agenda, openAgenda, event) }
+        item { CantonsShortcut(openCantons) }
         item {
             Column(Modifier.padding(horizontal = 22.dp)) {
                 SectionHeading("A tu manera", "Ver todo") { explore("all") }
