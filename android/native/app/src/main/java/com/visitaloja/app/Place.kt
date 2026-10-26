@@ -7,12 +7,14 @@ import java.text.Normalizer
 
 data class PlacePhoto(val url: String, val caption: String = "", val credit: String = "")
 
+data class MapBrand(val logoUrl: String? = null, val iconClass: String = "", val style: String = "", val paidLogo: Boolean = false, val start: Long? = null, val end: Long? = null)
+
 data class Place(
     val id: String, val title: String, val categories: List<String>, val address: String,
     val description: String, val imageUrl: String?, val cantonId: String = "loja",
     val active: Boolean = true, val publicationStatus: String = "published", val status: String = "",
     val latitude: Double? = null, val longitude: Double? = null,
-    val photos: List<PlacePhoto> = emptyList(), val phone: String? = null, val whatsapp: String? = null, val slug: String = ""
+    val photos: List<PlacePhoto> = emptyList(), val phone: String? = null, val whatsapp: String? = null, val slug: String = "", val mapBrand: MapBrand = MapBrand()
 ) {
     val categoryLabel: String get() = when (categories.firstOrNull()) {
         "cafe" -> "Cafetería"
@@ -73,6 +75,11 @@ object PlaceJson {
     private fun JSONObject.coordinate(key: String): Double? = optJSONObject(key)?.let { value ->
         when { value.has("doubleValue") -> value.optDouble("doubleValue"); value.has("integerValue") -> value.optString("integerValue").toDoubleOrNull(); else -> null }
     }
+    private fun JSONObject.date(key: String, end: Boolean = false): Long? {
+        val raw = optJSONObject(key)?.let { it.optString("timestampValue").ifBlank { it.optString("stringValue") } }.orEmpty()
+        return runCatching { java.time.Instant.parse(raw).toEpochMilli() }.getOrNull()
+            ?: runCatching { java.time.LocalDate.parse(raw).atStartOfDay(java.time.ZoneId.of("America/Guayaquil")).let { if (end) it.plusDays(1).minusNanos(1) else it }.toInstant().toEpochMilli() }.getOrNull()
+    }
     fun document(document: JSONObject): Place? {
         val fields = document.optJSONObject("fields") ?: return null
         val id = document.optString("name").substringAfterLast('/')
@@ -94,6 +101,8 @@ object PlaceJson {
             PlacePhoto(url, data?.text("caption").orEmpty().take(300), data?.let { it.text("credit").ifBlank { it.text("author") } }.orEmpty().take(200))
         }.distinctBy { it.url }.take(30)
         val profile = fields.optJSONObject("businessProfile")?.optJSONObject("mapValue")?.optJSONObject("fields")
+        val subscription = fields.optJSONObject("subscription")?.optJSONObject("mapValue")?.optJSONObject("fields") ?: JSONObject()
+        val benefits = subscription.optJSONObject("benefits")?.optJSONObject("mapValue")?.optJSONObject("fields")
         val result = Place(
             id = id, title = fields.text("title"), categories = categories, address = fields.text("address"),
             description = fields.text("description").ifBlank { fields.text("desc") }.replace(Regex("<[^>]*>"), "").trim(),
@@ -101,7 +110,10 @@ object PlaceJson {
             active = fields.optJSONObject("active")?.optBoolean("booleanValue", true) ?: true,
             publicationStatus = fields.text("publicationStatus"), status = fields.text("status"),
             latitude = PlacePolicy.safeCoordinate(fields.coordinate("lat"), true), longitude = PlacePolicy.safeCoordinate(fields.coordinate("lng"), false),
-            photos = photos, phone = PlacePolicy.safePhone(profile?.text("phone")), whatsapp = PlacePolicy.whatsapp(profile?.text("whatsapp")), slug = fields.text("slug")
+            photos = photos, phone = PlacePolicy.safePhone(profile?.text("phone")), whatsapp = PlacePolicy.whatsapp(profile?.text("whatsapp")), slug = fields.text("slug"),
+            mapBrand = MapBrand(PlacePolicy.safeImage(fields.text("customLogoUrl")), fields.text("iconClass").take(60), fields.text("mapMarkerStyle").take(20),
+                subscription.text("plan").isNotBlank() && subscription.text("plan") != "free" && subscription.text("status") !in setOf("paused", "pending", "expired", "suspended") && benefits?.optJSONObject("logoPin")?.optBoolean("booleanValue") == true,
+                subscription.date("startAt") ?: subscription.date("startDate"), subscription.date("endAt", true) ?: subscription.date("endDate", true))
         )
         return result.takeIf { id.isNotBlank() && PlacePolicy.published(it) }
     }
@@ -110,6 +122,7 @@ object PlaceJson {
         .put("imageUrl", place.imageUrl ?: JSONObject.NULL).put("cantonId", place.cantonId)
         .put("photos", JSONArray(place.photos.map { JSONObject().put("url", it.url).put("caption", it.caption).put("credit", it.credit) }))
         .put("phone", place.phone ?: JSONObject.NULL).put("whatsapp", place.whatsapp ?: JSONObject.NULL).put("slug", place.slug)
+        .put("mapBrand", JSONObject().put("logoUrl", place.mapBrand.logoUrl ?: JSONObject.NULL).put("iconClass", place.mapBrand.iconClass).put("style", place.mapBrand.style).put("paidLogo", place.mapBrand.paidLogo).put("start", place.mapBrand.start ?: JSONObject.NULL).put("end", place.mapBrand.end ?: JSONObject.NULL))
         .put("latitude", place.latitude ?: JSONObject.NULL).put("longitude", place.longitude ?: JSONObject.NULL)
     fun cached(value: JSONObject): Place? {
         val categories = value.optJSONArray("categories") ?: JSONArray()
@@ -121,7 +134,10 @@ object PlaceJson {
                 val photo = a.optJSONObject(i) ?: return@mapNotNull null
                 PlacePolicy.safeImage(photo.optString("url"))?.let { PlacePhoto(it, photo.optString("caption").take(300), photo.optString("credit").take(200)) }
             }.distinctBy { it.url }.take(30) } ?: emptyList(),
-            phone = PlacePolicy.safePhone(value.optString("phone")), whatsapp = PlacePolicy.whatsapp(value.optString("whatsapp")), slug = value.optString("slug")
+            phone = PlacePolicy.safePhone(value.optString("phone")), whatsapp = PlacePolicy.whatsapp(value.optString("whatsapp")), slug = value.optString("slug"), mapBrand = value.optJSONObject("mapBrand")?.let { brand ->
+                MapBrand(PlacePolicy.safeImage(brand.optString("logoUrl")), brand.optString("iconClass").take(60), brand.optString("style").take(20), brand.optBoolean("paidLogo"),
+                    brand.optLong("start").takeIf { brand.has("start") && !brand.isNull("start") }, brand.optLong("end").takeIf { brand.has("end") && !brand.isNull("end") })
+            } ?: MapBrand()
         ).takeIf { it.id.isNotBlank() && PlacePolicy.published(it) }
     }
 }

@@ -88,16 +88,16 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
         controller.update(points, selected?.id)
     }
     val extentKey = points.map { Triple(it.id, it.latitude, it.longitude) }
-    LaunchedEffect(ready, extentKey) {
-        if (ready) { delay(100); controller.focus(points) }
+    // Opening the map stays at street scale in Loja; only a search fits its matches.
+    LaunchedEffect(ready, extentKey, query) {
+        if (ready && query.isNotBlank() && points.isNotEmpty()) { delay(200); controller.focus(points) }
     }
     LaunchedEffect(attempt) { delay(25000); if (!ready) mapError = true }
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(horizontal = 16.dp).padding(top = 6.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("LOJA, A TU ALCANCE", fontSize = 9.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                    Text("Tu mapa de Loja", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
+                    Text("Explora Loja", fontSize = 21.sp, fontWeight = FontWeight.ExtraBold)
                 }
                 TextButton(onClick = list) { Icon(Icons.Default.ViewList, null, Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("Lista") }
             }
@@ -107,8 +107,11 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 trailingIcon = { if (query.isNotBlank()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } },
                 shape = RoundedCornerShape(16.dp), colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White))
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                listOf("all" to "Todo", "cafe" to "Cafés", "food" to "Sabores", "hotel" to "Hospedaje", "turismo" to "Turismo").forEach { (id, label) ->
-                    FilterChip(selected = category == id, onClick = { onCategory(id) }, label = { Text(label) })
+                listOf("all" to "Todo", "cafe" to "Cafés", "food" to "Sabores", "hotel" to "Hospedaje", "turismo" to "Turismo", "aliado" to "Aliados").forEach { (id, label) ->
+                    FilterChip(selected = category == id, onClick = { onCategory(id) }, label = { Text(label) }, leadingIcon = {
+                        Icon(when (id) { "cafe" -> Icons.Default.LocalCafe; "food" -> Icons.Default.Restaurant; "hotel" -> Icons.Default.Hotel; "turismo" -> Icons.Default.Park; "aliado" -> Icons.Default.Handshake; else -> Icons.Default.Map }, null, Modifier.size(17.dp),
+                            tint = Color(android.graphics.Color.parseColor(MapPolicy.color(when (id) { "aliado" -> "partner"; else -> id }))))
+                    })
                 }
                 FilterChip(selected = savedOnly, onClick = { savedOnly = !savedOnly }, label = { Text("Mis favoritos") }, leadingIcon = { Icon(Icons.Default.Favorite, null, Modifier.size(15.dp)) })
             }
@@ -122,7 +125,14 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 MapControl("Acercar", Icons.Default.Add, ready) { controller.zoom(1.0) }
                 MapControl("Alejar", Icons.Default.Remove, ready) { controller.zoom(-1.0) }
                 MapControl("Mostrar todas las paradas filtradas", Icons.Default.CenterFocusStrong, ready) { controller.focus(points) }
+                MapControl("Volver al centro de Loja", Icons.Default.LocationCity, ready) { controller.city() }
                 MapControl("Mi ubicación aproximada", Icons.Default.MyLocation, ready && !locating) { permission.launch(Manifest.permission.ACCESS_COARSE_LOCATION) }
+            }
+            Surface(onClick = {
+                try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.openstreetmap.org/copyright"))) }
+                catch (_: ActivityNotFoundException) { }
+            }, modifier = Modifier.align(Alignment.BottomStart).padding(start = 32.dp, bottom = 5.dp), color = Color.White.copy(alpha = .95f), shape = RoundedCornerShape(4.dp)) {
+                Text("© OpenStreetMap contributors", fontSize = 9.sp, color = Color(0xFF17324D), modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp))
             }
             if (!ready && !mapError) Surface(Modifier.align(Alignment.Center), shape = RoundedCornerShape(16.dp)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp); Spacer(Modifier.width(12.dp)); Text("Abriendo tu mapa…", fontSize = 13.sp) }
@@ -179,7 +189,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 Text(when {
                     state.error != null && points.isEmpty() -> state.error
                     points.isEmpty() && !state.loading -> "No hay paradas con ubicación para estos filtros. Prueba otra búsqueda o abre Lista."
-                    else -> "Toca un marcador para descubrir la parada. Los números agrupan lugares cercanos."
+                    else -> "Toca un icono o un logo para ver la parada. Acerca el mapa para separarlos."
                 }, fontSize = 11.sp, modifier = Modifier.weight(1f))
                 if (state.error != null) TextButton(onClick = retry) { Text("Actualizar") }
             }

@@ -66,3 +66,14 @@ Los marcadores usan exclusivamente paradas publicadas y coordenadas válidas de 
 Mi ubicación solicita únicamente permiso de ubicación aproximada al pulsar el control, realiza una consulta puntual de ubicación de red y se cancela al abandonar el primer plano o cerrar el mapa. No almacena coordenadas del usuario, no las escribe en Firebase, no solicita ubicación en segundo plano y no condiciona el uso del mapa al permiso. El punto de ubicación se representa en una fuente local separada de las paradas. Incluye límite de espera, mensajes de falta de permiso/proveedor/señal y cancelación de respuestas antiguas.
 
 El MapView reenvía inicio/reanudación/pausa/parada/destrucción y baja memoria. Incluye recarga con error/espera y acceso a la lista cuando no carga la cartografía. Pruebas de política cubren coordenadas, orden GeoJSON, publicación, filtros, favoritos, deduplicación y separación de ubicación del usuario. Pendiente comprobación real de gestos, marcadores, agrupación, rotación y ubicación aproximada en dispositivo. La APK entregada debe firmarse con el mismo respaldo privado de pruebas de 0.2–0.7; nunca distribuir la firma temporal de CI como actualización.
+
+
+## Versión 0.8.1: identidad y legibilidad del mapa
+
+La cartografía base cambia a OpenStreetMap Carto, igual que la web. Se conserva la atribución textual visible y enlace de licencia. El cliente HTTP se identifica como VisitaLoja, respeta caché/validadores HTTP y desactiva prefetch; no ofrece paquetes offline. Se conserva MapLibre como renderizador nativo.
+
+Los marcadores recuperan el lenguaje visual web: círculos oscuros con borde de color por grupo, iconos Font Awesome Free locales y logos publicados cuando la configuración lo permite. La fuente se incluye con su licencia. La imagen de portada no se usa como logo. La proyección pública incluye exclusivamente configuración visual necesaria (logo, icono, modo y vigencia del beneficio), compatible con cachés antiguas. El logo puede reemplazar el modo icono solo con beneficio vigente, igual que la web.
+
+La escala de bitmap se fija explícitamente a 3x para conservar una cara de 48 dp en pantallas de alta densidad. Se añaden nombres con halo blanco y se limita la agrupación a zooms lejanos. Al abrir permanece en Loja a escala de calles; consultar todas las paradas deja de alejar automáticamente la cámara a toda la provincia. Búsqueda encuadra coincidencias; los controles permiten ver todas o volver a Loja. Logos visibles se cargan con cuatro descargas concurrentes y fallback a icono, sin bloquear el mapa; se cancelan al destruir la vista. Cambio de URL produce otra clave de sprite para evitar logos antiguos.
+
+Verificar en dispositivo la legibilidad, logos de Expreso al Sur/Codeproim según configuración, nombres, agrupaciones lejanas y solapamientos. Las pruebas automáticas no sustituyen esa revisión visual.

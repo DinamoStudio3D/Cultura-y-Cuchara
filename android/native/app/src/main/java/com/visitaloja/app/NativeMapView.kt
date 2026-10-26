@@ -4,10 +4,14 @@ import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
 import android.graphics.RectF
+import androidx.core.graphics.drawable.toBitmap
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,7 +41,14 @@ private const val GROUPS = "vl-groups"
 private const val SELECTED = "vl-selected"
 private const val POSITION = "vl-position"
 
-class NativeMapController(context: Context) {
+class NativeMapController(private val context: Context) {
+    private val renderer = MapMarkerRenderer(context)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val downloads = Semaphore(4)
+    private val requestedLogos = mutableSetOf<String>()
+    private val logoImages = mutableMapOf<String, Bitmap>()
+    private val installedIcons = mutableSetOf<String>()
+    private var places = emptyList<Place>()
     val view: MapView
     var map: MapLibreMap? = null
         private set
@@ -54,6 +65,7 @@ class NativeMapController(context: Context) {
     private var resumed = false
     init {
         MapLibre.getInstance(context.applicationContext)
+        MapHttp.configure(context.applicationContext)
         view = MapView(context)
         view.onCreate(null)
         view.addOnDidFailLoadingMapListener { if (alive) onError() }
@@ -64,9 +76,10 @@ class NativeMapController(context: Context) {
                 readyMap.uiSettings.isLogoEnabled = false
                 // Keep the SDK attribution visible and usable.
                 readyMap.uiSettings.isAttributionEnabled = true
+                readyMap.setPrefetchZoomDelta(0)
                 readyMap.setMinZoomPreference(3.0)
                 readyMap.setMaxZoomPreference(19.0)
-                readyMap.cameraPosition = CameraPosition.Builder().target(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG)).zoom(13.5).build()
+                readyMap.cameraPosition = CameraPosition.Builder().target(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG)).zoom(MapPolicy.DEFAULT_ZOOM).build()
                 readyMap.addOnMapClickListener { point ->
                     val current = style
                     if (!alive || current == null) false else {
@@ -90,6 +103,7 @@ class NativeMapController(context: Context) {
                         }
                     }
                 }
+                readyMap.addOnCameraIdleListener { if (alive) loadVisibleLogos() }
                 reload()
             }
         }
@@ -97,43 +111,82 @@ class NativeMapController(context: Context) {
     fun reload() {
         if (!alive) return
         style = null
-        map?.setStyle(Style.Builder().fromUri(MapPolicy.STYLE)) { loaded ->
+        requestedLogos.clear()
+        map?.setStyle(Style.Builder().fromJson(MapPolicy.styleJson())) { loaded ->
             if (alive) {
-                listOf("cafe", "hotel", "food", "turismo", "other").forEach { loaded.addImage(it, pin(it)) }
-                loaded.addSource(GeoJsonSource(PLACES, data, GeoJsonOptions().withCluster(true).withClusterMaxZoom(15).withClusterRadius(48)))
+                installedIcons.clear()
+                installMarkers(loaded)
+                loaded.addSource(GeoJsonSource(PLACES, data, GeoJsonOptions().withCluster(true).withClusterMaxZoom(12).withClusterRadius(32)))
                 loaded.addLayer(CircleLayer(GROUPS, PLACES).withFilter(has("point_count")).withProperties(
-                    circleColor("#075BB2"), circleRadius(21f), circleStrokeWidth(3f), circleStrokeColor("#FFFFFF")))
+                    circleColor("#0f233a"), circleRadius(24f), circleStrokeWidth(3f), circleStrokeColor("#FFFFFF")))
                 loaded.addLayer(SymbolLayer("vl-counts", PLACES).withFilter(has("point_count")).withProperties(
                     textField("{point_count_abbreviated}"), textSize(13f), textColor("#FFFFFF"),
                     textFont(arrayOf("Noto Sans Regular")), textAllowOverlap(true)))
                 loaded.addLayer(CircleLayer(SELECTED, PLACES).withFilter(eq(get("id"), literal(selected.orEmpty()))).withProperties(
-                    circleRadius(22f), circleColor("#FFD46B"), circleOpacity(0.6f), circleStrokeColor("#FFFFFF"), circleStrokeWidth(2f)))
+                    circleRadius(33f), circleColor("#FFD46B"), circleOpacity(0.75f), circleStrokeColor("#FFFFFF"), circleStrokeWidth(2f)))
                 loaded.addLayer(SymbolLayer(PINS, PLACES).withFilter(not(has("point_count"))).withProperties(
-                    iconImage(get("pin")), iconSize(0.65f), iconAnchor("bottom"), iconAllowOverlap(true), iconIgnorePlacement(true)))
+                    iconImage(get("pin")), iconSize(1f), iconAnchor("center"), iconAllowOverlap(true), iconIgnorePlacement(true)))
+                loaded.addLayer(SymbolLayer("vl-names", PLACES).withFilter(not(has("point_count"))).apply { minZoom = 14.0f }.withProperties(
+                    textField(get("title")), textSize(12f), textColor("#0f233a"), textHaloColor("#FFFFFF"), textHaloWidth(2.5f),
+                    textFont(arrayOf("Noto Sans Regular")), textAnchor("top"), textOffset(arrayOf(0f, 2.6f)), textMaxWidth(12f), textAllowOverlap(false)))
                 loaded.addSource(GeoJsonSource(POSITION, location?.let { MapPolicy.locationJson(it.first, it.second) } ?: MapPolicy.geoJson(emptyList())))
                 loaded.addLayer(CircleLayer("vl-position-halo", POSITION).withProperties(circleRadius(20f), circleColor("#168BE8"), circleOpacity(0.15f)))
                 loaded.addLayer(CircleLayer("vl-position-dot", POSITION).withProperties(circleRadius(7f), circleColor("#168BE8"), circleStrokeWidth(3f), circleStrokeColor("#FFFFFF")))
                 style = loaded
                 onReady()
+                loadVisibleLogos()
             }
         }
     }
     fun update(places: List<Place>, id: String?) {
-        data = MapPolicy.geoJson(places)
+        this.places = places
+        val next = MapPolicy.geoJson(places)
         selected = id
-        style?.getSourceAs<GeoJsonSource>(PLACES)?.setGeoJson(data)
+        style?.let { installMarkers(it) }
+        if (next != data) { data = next; style?.getSourceAs<GeoJsonSource>(PLACES)?.setGeoJson(data) }
         (style?.getLayer(SELECTED) as? CircleLayer)?.setFilter(eq(get("id"), literal(id.orEmpty())))
+        loadVisibleLogos()
+    }
+    private fun installMarkers(target: Style) {
+        places.filter(MapPolicy::located).distinctBy(MapPolicy::markerKey).forEach { place ->
+            val key = MapPolicy.markerKey(place)
+            if (installedIcons.add(key)) target.addImage(key, renderer.render(place, logoImages[key]))
+        }
+    }
+    private fun loadVisibleLogos() {
+        val current = map ?: return
+        if (!alive || style == null) return
+        val bounds = current.projection.visibleRegion.latLngBounds
+        places.filter { MapPolicy.located(it) && bounds.contains(LatLng(it.latitude!!, it.longitude!!)) }.forEach { place ->
+            val url = MapPolicy.logoUrl(place) ?: return@forEach
+            val key = MapPolicy.markerKey(place)
+            if (logoImages.containsKey(key)) return@forEach
+            if (!requestedLogos.add(key + url)) return@forEach
+            scope.launch {
+                val image = downloads.withPermit {
+                    runCatching {
+                        val result = context.imageLoader.execute(ImageRequest.Builder(context).data(url).size(160).allowHardware(false).build())
+                        (result as? SuccessResult)?.drawable?.toBitmap()
+                    }.getOrNull()
+                }
+                if (image != null && alive && places.any { it.id == place.id && MapPolicy.logoUrl(it) == url }) {
+                    logoImages[key] = image
+                    style?.addImage(key, renderer.render(place, image))
+                }
+            }
+        }
     }
     fun focus(places: List<Place>) {
         if (!alive) return
         val points = places.filter(MapPolicy::located).map { LatLng(it.latitude!!, it.longitude!!) }
         val current = map ?: return
-        if (points.isEmpty()) current.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG), 13.5))
+        if (points.isEmpty()) current.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG), MapPolicy.DEFAULT_ZOOM))
         else if (points.size == 1 || points.distinct().size == 1) current.animateCamera(CameraUpdateFactory.newLatLngZoom(points.first(), 15.5))
         else if (view.width > 0 && view.height > 0) {
             current.animateCamera(CameraUpdateFactory.newLatLngBounds(LatLngBounds.Builder().includes(points).build(), (48 * density).toInt()))
         }
     }
+    fun city() { if (alive) map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG), MapPolicy.DEFAULT_ZOOM)) }
     fun position(latitude: Double, longitude: Double) {
         if (!alive) return
         location = latitude to longitude
@@ -148,18 +201,8 @@ class NativeMapController(context: Context) {
     fun resume() { start(); if (alive && !resumed) { view.onResume(); resumed = true } }
     fun pause() { if (alive && resumed) { view.onPause(); resumed = false } }
     fun stop() { pause(); if (alive && started) { view.onStop(); started = false } }
-    fun destroy() { if (alive) { stop(); alive = false; onSelect = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
-    private fun pin(kind: String): Bitmap {
-        val image = Bitmap.createBitmap(80, 100, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(image)
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        val outline = Path().apply { moveTo(40f, 96f); cubicTo(31f, 80f, 7f, 59f, 7f, 37f); cubicTo(7f, -5f, 73f, -5f, 73f, 37f); cubicTo(73f, 59f, 49f, 80f, 40f, 96f); close() }
-        paint.color = android.graphics.Color.WHITE; paint.style = Paint.Style.STROKE; paint.strokeWidth = 7f; canvas.drawPath(outline, paint)
-        paint.color = android.graphics.Color.parseColor(MapPolicy.color(kind)); paint.style = Paint.Style.FILL; canvas.drawPath(outline, paint)
-        paint.color = android.graphics.Color.WHITE; paint.textSize = 32f; paint.typeface = android.graphics.Typeface.DEFAULT_BOLD; paint.textAlign = Paint.Align.CENTER
-        canvas.drawText(when (kind) { "cafe" -> "C"; "hotel" -> "H"; "food" -> "G"; "turismo" -> "T"; else -> "V" }, 40f, 48f, paint)
-        return image
-    }
+    fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); onSelect = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
+
 }
 
 @Composable

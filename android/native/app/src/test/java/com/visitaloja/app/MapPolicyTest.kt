@@ -30,7 +30,7 @@ class MapPolicyTest {
         assertEquals(-79.2, coordinates.getDouble(0), 0.000001)
         assertEquals(-3.99, coordinates.getDouble(1), 0.000001)
         assertEquals(setOf("id", "title", "pin"), feature.getJSONObject("properties").keys().asSequence().toSet())
-        assertEquals("cafe", feature.getJSONObject("properties").getString("pin"))
+        assertEquals(MapPolicy.markerKey(place()), feature.getJSONObject("properties").getString("pin"))
     }
     @Test fun hiddenPlacesNeverEnterGeoJson() {
         val json = JSONObject(MapPolicy.geoJson(listOf(place().copy(active = false), place("draft").copy(publicationStatus = "draft"))))
