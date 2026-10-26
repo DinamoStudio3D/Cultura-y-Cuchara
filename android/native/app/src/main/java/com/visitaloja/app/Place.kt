@@ -5,11 +5,14 @@ import org.json.JSONObject
 import java.net.URI
 import java.text.Normalizer
 
+data class PlacePhoto(val url: String, val caption: String = "", val credit: String = "")
+
 data class Place(
     val id: String, val title: String, val categories: List<String>, val address: String,
     val description: String, val imageUrl: String?, val cantonId: String = "loja",
     val active: Boolean = true, val publicationStatus: String = "published", val status: String = "",
-    val latitude: Double? = null, val longitude: Double? = null
+    val latitude: Double? = null, val longitude: Double? = null,
+    val photos: List<PlacePhoto> = emptyList(), val phone: String? = null, val whatsapp: String? = null, val slug: String = ""
 ) {
     val categoryLabel: String get() = when (categories.firstOrNull()) {
         "cafe" -> "Cafetería"
@@ -48,6 +51,21 @@ object PlacePolicy {
     fun safeImage(value: String?): String? = try {
         value?.takeIf { it.length <= 4096 }?.let(::URI)?.takeIf { it.scheme == "https" && !it.host.isNullOrBlank() && it.userInfo == null }?.toASCIIString()
     } catch (_: Exception) { null }
+    fun safePhone(value: String?): String? {
+        val raw = value?.trim() ?: return null
+        if (!raw.matches(Regex("[+0-9 () .-]{7,30}")) || raw.count { it == '+' } > 1 || '+' in raw.drop(1)) return null
+        val digits = raw.filter(Char::isDigit)
+        return digits.takeIf { it.length in 7..15 }?.let { if (raw.startsWith("+")) "+$it" else it }
+    }
+    fun whatsapp(value: String?): String? {
+        val digits = safePhone(value)?.filter(Char::isDigit) ?: return null
+        val international = when { digits.length == 10 && digits.startsWith("09") -> "593" + digits.drop(1); digits.length == 9 && digits.startsWith("9") -> "593$digits"; else -> digits }
+        return international.takeIf { it.length in 10..15 && !it.startsWith("0") }
+    }
+    fun publicUrl(place: Place): String {
+        val slug = normalize(place.slug.ifBlank { place.title.ifBlank { place.id } }).replace(' ', '-')
+        return if (slug.isBlank()) "https://www.visitaloja.com/" else "https://www.visitaloja.com/parada/$slug"
+    }
     fun safeCoordinate(value: Double?, latitude: Boolean): Double? = value?.takeIf { it.isFinite() && it in (if (latitude) -90.0..90.0 else -180.0..180.0) }
 }
 object PlaceJson {
@@ -69,26 +87,41 @@ object PlaceJson {
         val candidates = listOf(hero) + (0 until gallery.length()).map { index ->
             gallery.optJSONObject(index)?.optJSONObject("mapValue")?.optJSONObject("fields")?.text("img") ?: ""
         }
+        val photos = (0 until gallery.length()).mapNotNull { index ->
+            val item = gallery.optJSONObject(index) ?: return@mapNotNull null
+            val data = item.optJSONObject("mapValue")?.optJSONObject("fields")
+            val url = PlacePolicy.safeImage(item.optString("stringValue").ifBlank { data?.let { it.text("img").ifBlank { it.text("url") } } ?: "" }) ?: return@mapNotNull null
+            PlacePhoto(url, data?.text("caption").orEmpty().take(300), data?.let { it.text("credit").ifBlank { it.text("author") } }.orEmpty().take(200))
+        }.distinctBy { it.url }.take(30)
+        val profile = fields.optJSONObject("businessProfile")?.optJSONObject("mapValue")?.optJSONObject("fields")
         val result = Place(
             id = id, title = fields.text("title"), categories = categories, address = fields.text("address"),
             description = fields.text("description").ifBlank { fields.text("desc") }.replace(Regex("<[^>]*>"), "").trim(),
-            imageUrl = candidates.firstNotNullOfOrNull(PlacePolicy::safeImage), cantonId = fields.text("cantonId").ifBlank { "loja" },
+            imageUrl = candidates.firstNotNullOfOrNull(PlacePolicy::safeImage) ?: photos.firstOrNull()?.url, cantonId = fields.text("cantonId").ifBlank { "loja" },
             active = fields.optJSONObject("active")?.optBoolean("booleanValue", true) ?: true,
             publicationStatus = fields.text("publicationStatus"), status = fields.text("status"),
-            latitude = PlacePolicy.safeCoordinate(fields.coordinate("lat"), true), longitude = PlacePolicy.safeCoordinate(fields.coordinate("lng"), false)
+            latitude = PlacePolicy.safeCoordinate(fields.coordinate("lat"), true), longitude = PlacePolicy.safeCoordinate(fields.coordinate("lng"), false),
+            photos = photos, phone = PlacePolicy.safePhone(profile?.text("phone")), whatsapp = PlacePolicy.whatsapp(profile?.text("whatsapp")), slug = fields.text("slug")
         )
         return result.takeIf { id.isNotBlank() && PlacePolicy.published(it) }
     }
     fun cachePlace(place: Place): JSONObject = JSONObject().put("id", place.id).put("title", place.title)
         .put("categories", JSONArray(place.categories)).put("address", place.address).put("description", place.description)
         .put("imageUrl", place.imageUrl ?: JSONObject.NULL).put("cantonId", place.cantonId)
+        .put("photos", JSONArray(place.photos.map { JSONObject().put("url", it.url).put("caption", it.caption).put("credit", it.credit) }))
+        .put("phone", place.phone ?: JSONObject.NULL).put("whatsapp", place.whatsapp ?: JSONObject.NULL).put("slug", place.slug)
         .put("latitude", place.latitude ?: JSONObject.NULL).put("longitude", place.longitude ?: JSONObject.NULL)
     fun cached(value: JSONObject): Place? {
         val categories = value.optJSONArray("categories") ?: JSONArray()
         return Place(value.optString("id"), value.optString("title"), (0 until categories.length()).map { categories.optString(it) },
             value.optString("address"), value.optString("description"), PlacePolicy.safeImage(value.optString("imageUrl")),
             value.optString("cantonId", "loja"), latitude = value.optDouble("latitude").takeIf { !value.isNull("latitude") }?.let { PlacePolicy.safeCoordinate(it, true) },
-            longitude = value.optDouble("longitude").takeIf { !value.isNull("longitude") }?.let { PlacePolicy.safeCoordinate(it, false) }
+            longitude = value.optDouble("longitude").takeIf { !value.isNull("longitude") }?.let { PlacePolicy.safeCoordinate(it, false) },
+            photos = value.optJSONArray("photos")?.let { a -> (0 until a.length()).mapNotNull { i ->
+                val photo = a.optJSONObject(i) ?: return@mapNotNull null
+                PlacePolicy.safeImage(photo.optString("url"))?.let { PlacePhoto(it, photo.optString("caption").take(300), photo.optString("credit").take(200)) }
+            }.distinctBy { it.url }.take(30) } ?: emptyList(),
+            phone = PlacePolicy.safePhone(value.optString("phone")), whatsapp = PlacePolicy.whatsapp(value.optString("whatsapp")), slug = value.optString("slug")
         ).takeIf { it.id.isNotBlank() && PlacePolicy.published(it) }
     }
 }

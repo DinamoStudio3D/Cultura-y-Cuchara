@@ -35,3 +35,5 @@ La generación de códigos de visita y la solicitud de nuevas recompensas perman
 ## Versión 0.4.0: fondo de marca
 
 Todas las pantallas comparten un fondo azul claro con una transición cálida suave y el logo oficial como marca de agua decorativa al 6,5 % de opacidad. No captura gestos ni añade texto a accesibilidad. La cabecera y la navegación toman el mismo azul claro; buscadores y tarjetas conservan superficies claras para proteger la lectura. Se reutiliza el recurso oficial ya incluido, sin descargas o permisos nuevos. No cambia la autenticación, los datos ni las reglas de pasaporte/fidelidad.
+
+La misma versión 0.4.0 amplía las fichas: galería publicada con visor completo y navegación por deslizamiento/flechas, contacto por WhatsApp y marcador telefónico cuando el negocio publica esos números, y compartir la URL canónica de su parada. No inicia llamadas ni envía mensajes automáticamente. Los contactos provienen exclusivamente de businessProfile público; URLs HTTPS y números se validan antes de mostrarlos. La caché mantiene solo esta proyección pública. Las fotos verticales se muestran completas dentro del visor.
