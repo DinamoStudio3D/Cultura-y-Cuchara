@@ -61,7 +61,7 @@ try:
     root = tree()
     photo = next((n for n in root.iter('node') if n.get('resource-id', '').startswith('photo-') and n.get('clickable') == 'true'), None)
     if photo is not None:
-        tap(photo); wait(tag='photo-viewer'); capture('discovery-photo-viewer')
+        tap(photo); wait(desc='Cerrar fotografías'); capture('discovery-photo-viewer')
         tap(wait(desc='Cerrar fotografías'))
     tap(wait(desc='Volver a Inicio'))
     def open_strip_card(tag):
