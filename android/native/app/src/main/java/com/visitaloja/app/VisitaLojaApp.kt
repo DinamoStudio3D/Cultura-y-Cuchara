@@ -54,8 +54,13 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VisitaLojaApp(model: PlacesViewModel = viewModel()) {
-    val state by model.state.collectAsStateWithLifecycle()
+fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel()) {
+    val guestState by model.state.collectAsStateWithLifecycle()
+    val accountState by account.state.collectAsStateWithLifecycle()
+    val snack = remember { SnackbarHostState() }
+    LaunchedEffect(accountState.message) { accountState.message?.let { snack.showSnackbar(it) } }
+    val state = guestState.copy(favourites = if (accountState.uid == null) guestState.favourites else accountState.favourites)
+    val favourite: (String) -> Unit = { id -> if (accountState.uid == null) model.toggleFavourite(id) else account.toggleFavourite(id) }
     var tab by rememberSaveable { mutableStateOf("home") }
     var category by rememberSaveable { mutableStateOf("all") }
     var query by rememberSaveable { mutableStateOf("") }
@@ -65,19 +70,28 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel()) {
     BackHandler(enabled = tab != "home" && selected == null) { tab = "home"; query = ""; category = "all" }
     MaterialTheme(colorScheme = AppColors) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snack) },
             topBar = { AppTopBar(state.loading, model::refresh, tab != "home") { navigate("home", "all") } },
             bottomBar = { AppNavigation(tab) { navigate(it, "all") } },
             containerColor = Color.White
         ) { padding ->
             Column(Modifier.padding(padding).fillMaxSize()) {
                 if (state.offline) OfflineBanner(state.fetchedAt, state.loading, model::refresh)
-                if (tab == "home") HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, model::toggleFavourite)
-                else ExploreScreen(state, tab == "saved", query, category, { query = it }, { category = it }, { selectedId = it.id }, model::toggleFavourite) { model.refresh() }
+                when (tab) {
+                    "account" -> AccountScreen(accountState, guestState.favourites, account)
+                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite)
+                    else -> {
+                        if (tab == "saved" && accountState.uid != null) {
+                            Text(if (accountState.busy) "Guardando cambios…" else accountState.favouritesError ?: if (!accountState.favouritesReady) "Consultando tu cuenta…" else if (accountState.fromCache) "Conéctate para sincronizar tus favoritos." else accountState.message ?: "Favoritos de tu cuenta, compartidos con la web.", fontSize = 12.sp, color = Blue, modifier = Modifier.padding(horizontal = 22.dp, vertical = 8.dp))
+                        }
+                        ExploreScreen(state, tab == "saved", query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, accountState.uid != null) { model.refresh() }
+                    }
+                }
             }
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
-                PlaceDetail(selected, selected.id in state.favourites, { model.toggleFavourite(selected.id) }) { selectedId = null }
+                PlaceDetail(selected, selected.id in state.favourites, { favourite(selected.id) }) { selectedId = null }
             }
         }
     }
@@ -103,7 +117,7 @@ private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, 
 private fun AppNavigation(tab: String, navigate: (String) -> Unit) {
     NavigationBar(containerColor = Color.White, tonalElevation = 0.dp) {
         listOf(Triple("home", "Inicio", Icons.Default.Home), Triple("explore", "Explorar", Icons.Default.Explore), Triple("passport", "Pasaporte", Icons.Default.MenuBook), Triple("saved", "Favoritos", Icons.Default.FavoriteBorder), Triple("account", "Mi cuenta", Icons.Default.PersonOutline)).forEach { (id, label, icon) ->
-            NavigationBarItem(selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "explore", "saved"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
+            NavigationBarItem(selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "explore", "saved", "account"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
         }
     }
 }
@@ -187,7 +201,7 @@ private fun Hero(explore: (String) -> Unit) {
 }
 
 @Composable
-private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String, category: String, onQuery: (String) -> Unit, onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, retry: () -> Unit) {
+private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String, category: String, onQuery: (String) -> Unit, onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, signedIn: Boolean, retry: () -> Unit) {
     val places = remember(state.places, state.favourites, query, category, onlySaved) { state.places.filter { PlacePolicy.matches(it, query, if (onlySaved) "all" else category) && (!onlySaved || it.id in state.favourites) } }
     LazyColumn(contentPadding = PaddingValues(horizontal = 22.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
@@ -195,7 +209,7 @@ private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String,
                 Eyebrow(if (onlySaved) "TUS LUGARES, A MANO" else "ENCUENTRA TU PRÓXIMA PARADA")
                 Text(if (onlySaved) "Tus favoritos" else "Explora Loja", fontSize = 29.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.padding(top = 5.dp, bottom = 17.dp))
                 OutlinedTextField(value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
-                if (onlySaved) Text("Guardados en este teléfono. La sincronización con tu cuenta llegará en otra etapa.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 12.dp))
+                if (onlySaved) Text(if (signedIn) "Usas los mismos favoritos que en VisitaLoja.com." else "Guardados en este teléfono. Ingresa en Mi cuenta para consultar tus favoritos de la web.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 12.dp))
             }
         }
         if (!onlySaved) item {
