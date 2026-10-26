@@ -1,5 +1,5 @@
 'use strict';
-function createHandler({authenticate=req=>require('./_firebase-admin').authenticatedUser(req),db=()=>require('./_firebase-admin').firestore(),send=message=>require('firebase-admin/messaging').getMessaging(require('./_firebase-admin').app()).send(message),env=process.env,now=Date.now}={}){
+function createHandler({authenticate=req=>require('../api/_firebase-admin').authenticatedUser(req),db=()=>require('../api/_firebase-admin').firestore(),send=message=>require('firebase-admin/messaging').getMessaging(require('../api/_firebase-admin').app()).send(message),env=process.env,now=Date.now}={}){
  return async(req,res)=>{
   res.setHeader('Cache-Control','no-store');
   if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Método no permitido.'});}

@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {createHandler}=require('../api/push-test');
+const {createHandler}=require('../functions/push-test');
 function fixture({admin=true,key='B'.repeat(87),time=180000,sendError=false}={}){let stored={},sent=[];const ref={};const db={collection:()=>({doc:()=>({...ref,get:async()=>({exists:false})})}),runTransaction:async fn=>fn({get:async()=>({exists:!!stored.day,data:()=>stored}),set:(_,value)=>{stored=value;}})};const handler=createHandler({authenticate:async()=>({uid:'admin',admin}),db:()=>db,env:{FCM_WEB_VAPID_PUBLIC_KEY:key},now:()=>time,send:async message=>{if(sendError)throw {code:'messaging/registration-token-not-registered'};sent.push(message);}});return{sent,async call(body,method='POST'){let code=200,data;const res={setHeader(){},status(n){code=n;return this;},json(d){data=d;return this;}};await handler({method,headers:{},body},res);return{code,data};}};}
 test('only POST and authorized administrators can use test service',async()=>{assert.equal((await fixture().call({},'GET')).code,405);assert.equal((await fixture({admin:false}).call({action:'config'})).code,403);});
 test('missing VAPID gives an actionable configuration error',async()=>{assert.equal((await fixture({key:''}).call({action:'config'})).code,503);});

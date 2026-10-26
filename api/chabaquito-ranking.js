@@ -4,6 +4,7 @@ const { authenticatedUser, firestore } = require("./_firebase-admin");
 const { publicRankingProjection, rankingDocumentId, rankingPreferencePatch } = require("../functions/chabaquito-public-ranking");
 
 module.exports=async function handler(req,res){
+  if(req.query?.action==='push-test')return require('../functions/push-test')(req,res);
   res.setHeader("Cache-Control","no-store");
   if(req.method!=="POST") return res.status(405).json({error:"Método no permitido."});
   try{
