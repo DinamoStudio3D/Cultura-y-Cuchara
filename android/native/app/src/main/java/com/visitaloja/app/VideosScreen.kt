@@ -162,6 +162,7 @@ private fun YouTubeDialogContent(video: LojaVideo, close: () -> Unit, onFullscre
             AndroidView(factory = { FrameLayout(it).apply { (full.parent as? ViewGroup)?.removeView(full); addView(full, FrameLayout.LayoutParams(-1, -1)) } }, modifier = Modifier.fillMaxSize())
         } else BoxWithConstraints(Modifier.fillMaxSize()) {
             val compact = maxHeight < 440.dp
+            val stageHeight = (maxWidth * (9f / 16f)).coerceAtLeast(200.dp)
             val tooSmall = maxWidth < 200.dp || maxHeight < 260.dp
             LaunchedEffect(tooSmall, controller) { if (tooSmall) controller.pause() }
             Column(Modifier.fillMaxSize()) {
@@ -170,7 +171,7 @@ private fun YouTubeDialogContent(video: LojaVideo, close: () -> Unit, onFullscre
                     Text("Amplía la ventana o gira el dispositivo para ver el video.", Modifier.padding(20.dp))
                 } else {
                     AndroidView(factory = { (controller.container.parent as? ViewGroup)?.removeView(controller.container); controller.container },
-                        modifier = if (compact) Modifier.fillMaxWidth().weight(1f).heightIn(min = 200.dp) else Modifier.fillMaxWidth().height((maxWidth * (9f / 16f)).coerceAtLeast(200.dp)))
+                        modifier = if (compact) Modifier.fillMaxWidth().weight(1f).heightIn(min = 200.dp) else Modifier.fillMaxWidth().height(stageHeight))
                     if (!compact) Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         if (!compact) {
                             Text(video.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
