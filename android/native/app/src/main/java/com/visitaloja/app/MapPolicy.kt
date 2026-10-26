@@ -64,4 +64,8 @@ object MapPolicy {
             .put("geometry", JSONObject().put("type", "Point").put("coordinates", JSONArray(listOf(longitude, latitude))))
             .put("properties", JSONObject()))).toString()
     }
+    fun accuracyJson(fix: MapFix): String = JSONObject().put("type", "FeatureCollection").put("features", JSONArray().put(
+        JSONObject().put("type", "Feature").put("properties", JSONObject()).put("geometry", JSONObject().put("type", "Polygon")
+            .put("coordinates", JSONArray().put(JSONArray(MapLocationPolicy.accuracyRing(fix).map { JSONArray(it) })))))).toString()
+
 }

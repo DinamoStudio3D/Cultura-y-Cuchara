@@ -29,6 +29,8 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression.*
+import android.os.SystemClock
+import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.CircleLayer
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.layers.PropertyFactory.*
@@ -40,12 +42,15 @@ private const val PINS = "vl-pins"
 private const val GROUPS = "vl-groups"
 private const val SELECTED = "vl-selected"
 private const val POSITION = "vl-position"
+private const val ACCURACY = "vl-accuracy"
 
-class NativeMapController(private val context: Context) {
+class NativeMapController(private val context: Context, private val initialCamera: MapCamera = MapCamera()) {
     private val renderer = MapMarkerRenderer(context)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val downloads = Semaphore(4)
     private val requestedLogos = mutableSetOf<String>()
+    private val logoAttempts = mutableMapOf<String, Int>()
+    private val logoRetryAt = mutableMapOf<String, Long>()
     private val logoImages = mutableMapOf<String, Bitmap>()
     private val installedIcons = mutableSetOf<String>()
     private var places = emptyList<Place>()
@@ -56,7 +61,9 @@ class NativeMapController(private val context: Context) {
     private var alive = true
     private var data = MapPolicy.geoJson(emptyList())
     private var selected: String? = null
-    private var location: Pair<Double, Double>? = null
+    private var location: MapFix? = null
+    var onGesture: () -> Unit = {}
+    var onCamera: (MapCamera) -> Unit = {}
     var onReady: () -> Unit = {}
     var onError: () -> Unit = {}
     var onSelect: (List<String>) -> Unit = {}
@@ -79,7 +86,8 @@ class NativeMapController(private val context: Context) {
                 readyMap.setPrefetchZoomDelta(0)
                 readyMap.setMinZoomPreference(3.0)
                 readyMap.setMaxZoomPreference(19.0)
-                readyMap.cameraPosition = CameraPosition.Builder().target(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG)).zoom(MapPolicy.DEFAULT_ZOOM).build()
+                readyMap.cameraPosition = CameraPosition.Builder().target(LatLng(initialCamera.latitude, initialCamera.longitude)).zoom(initialCamera.zoom).bearing(initialCamera.bearing).tilt(initialCamera.tilt).build()
+                readyMap.addOnCameraMoveStartedListener { reason -> if (alive && reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) onGesture() }
                 readyMap.addOnMapClickListener { point ->
                     val current = style
                     if (!alive || current == null) false else {
@@ -88,8 +96,12 @@ class NativeMapController(private val context: Context) {
                         val box = RectF(screen.x - radius, screen.y - radius, screen.x + radius, screen.y + radius)
                         val hits = readyMap.queryRenderedFeatures(box, PINS)
                         val ids = hits.mapNotNull { feature ->
-                            JSONObject(feature.toJson()).optJSONObject("properties")?.optString("id")?.takeIf { it.isNotBlank() }
-                        }.distinct()
+                            val item = JSONObject(feature.toJson())
+                            val id = item.optJSONObject("properties")?.optString("id")?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                            val coords = item.getJSONObject("geometry").getJSONArray("coordinates")
+                            val position = readyMap.projection.toScreenLocation(LatLng(coords.getDouble(1), coords.getDouble(0)))
+                            id to kotlin.math.hypot((position.x - screen.x).toDouble(), (position.y - screen.y).toDouble())
+                        }.sortedBy { it.second }.map { it.first }.distinct()
                         if (ids.isNotEmpty()) { onSelect(ids); true }
                         else {
                             val cluster = readyMap.queryRenderedFeatures(box, GROUPS).firstOrNull()
@@ -103,7 +115,10 @@ class NativeMapController(private val context: Context) {
                         }
                     }
                 }
-                readyMap.addOnCameraIdleListener { if (alive) loadVisibleLogos() }
+                readyMap.addOnCameraIdleListener { if (alive) {
+                    loadVisibleLogos()
+                    readyMap.cameraPosition.let { camera -> camera.target?.let { onCamera(MapCamera(it.latitude, it.longitude, camera.zoom, camera.bearing, camera.tilt)) } }
+                } }
                 reload()
             }
         }
@@ -111,7 +126,7 @@ class NativeMapController(private val context: Context) {
     fun reload() {
         if (!alive) return
         style = null
-        requestedLogos.clear()
+        requestedLogos.clear(); logoAttempts.clear(); logoRetryAt.clear()
         map?.setStyle(Style.Builder().fromJson(MapPolicy.styleJson())) { loaded ->
             if (alive) {
                 installedIcons.clear()
@@ -129,8 +144,10 @@ class NativeMapController(private val context: Context) {
                 loaded.addLayer(SymbolLayer("vl-names", PLACES).withFilter(not(has("point_count"))).apply { minZoom = 14.0f }.withProperties(
                     textField(get("title")), textSize(12f), textColor("#0f233a"), textHaloColor("#FFFFFF"), textHaloWidth(2.5f),
                     textFont(arrayOf("Noto Sans Regular")), textAnchor("top"), textOffset(arrayOf(0f, 2.6f)), textMaxWidth(12f), textAllowOverlap(false)))
-                loaded.addSource(GeoJsonSource(POSITION, location?.let { MapPolicy.locationJson(it.first, it.second) } ?: MapPolicy.geoJson(emptyList())))
-                loaded.addLayer(CircleLayer("vl-position-halo", POSITION).withProperties(circleRadius(20f), circleColor("#168BE8"), circleOpacity(0.15f)))
+                val fix = location?.takeIf { MapLocationPolicy.valid(it, SystemClock.elapsedRealtime()) }
+                loaded.addSource(GeoJsonSource(POSITION, fix?.let { MapPolicy.locationJson(it.latitude, it.longitude) } ?: MapPolicy.geoJson(emptyList())))
+                loaded.addSource(GeoJsonSource(ACCURACY, fix?.let(MapPolicy::accuracyJson) ?: MapPolicy.geoJson(emptyList())))
+                loaded.addLayerBelow(FillLayer("vl-position-accuracy", ACCURACY).withProperties(fillColor("#168BE8"), fillOpacity(0.16f), fillOutlineColor("#168BE8")), GROUPS)
                 loaded.addLayer(CircleLayer("vl-position-dot", POSITION).withProperties(circleRadius(7f), circleColor("#168BE8"), circleStrokeWidth(3f), circleStrokeColor("#FFFFFF")))
                 style = loaded
                 onReady()
@@ -161,7 +178,10 @@ class NativeMapController(private val context: Context) {
             val url = MapPolicy.logoUrl(place) ?: return@forEach
             val key = MapPolicy.markerKey(place)
             if (logoImages.containsKey(key)) return@forEach
-            if (!requestedLogos.add(key + url)) return@forEach
+            val requestId = key + url
+            if ((logoAttempts[requestId] ?: 0) >= 3 || SystemClock.elapsedRealtime() < (logoRetryAt[requestId] ?: 0)) return@forEach
+            if (!requestedLogos.add(requestId)) return@forEach
+            logoAttempts[requestId] = (logoAttempts[requestId] ?: 0) + 1
             scope.launch {
                 val image = downloads.withPermit {
                     runCatching {
@@ -172,6 +192,10 @@ class NativeMapController(private val context: Context) {
                 if (image != null && alive && places.any { it.id == place.id && MapPolicy.logoUrl(it) == url }) {
                     logoImages[key] = image
                     style?.addImage(key, renderer.render(place, image))
+                } else if (alive) {
+                    requestedLogos.remove(requestId)
+                    logoRetryAt[requestId] = SystemClock.elapsedRealtime() + 15000
+                    if ((logoAttempts[requestId] ?: 0) < 3) { delay(15000); if (alive && resumed) loadVisibleLogos() }
                 }
             }
         }
@@ -183,15 +207,29 @@ class NativeMapController(private val context: Context) {
         if (points.isEmpty()) current.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG), MapPolicy.DEFAULT_ZOOM))
         else if (points.size == 1 || points.distinct().size == 1) current.animateCamera(CameraUpdateFactory.newLatLngZoom(points.first(), 15.5))
         else if (view.width > 0 && view.height > 0) {
-            current.animateCamera(CameraUpdateFactory.newLatLngBounds(LatLngBounds.Builder().includes(points).build(), (48 * density).toInt()))
+            current.animateCamera(CameraUpdateFactory.newLatLngBounds(LatLngBounds.Builder().includes(points).build(), MapLocationPolicy.fitPadding(view.width, view.height, density)))
         }
     }
+    fun focusPlace(place: Place) {
+        if (alive && MapPolicy.located(place)) map?.animateCamera(CameraUpdateFactory.newLatLng(LatLng(place.latitude!!, place.longitude!!)))
+    }
     fun city() { if (alive) map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG), MapPolicy.DEFAULT_ZOOM)) }
-    fun position(latitude: Double, longitude: Double) {
-        if (!alive) return
-        location = latitude to longitude
-        style?.getSourceAs<GeoJsonSource>(POSITION)?.setGeoJson(MapPolicy.locationJson(latitude, longitude))
-        map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 14.5))
+    fun position(fix: MapFix, follow: Boolean, recenter: Boolean = false) {
+        if (!alive || !MapLocationPolicy.valid(fix, SystemClock.elapsedRealtime())) return
+        location = fix
+        style?.getSourceAs<GeoJsonSource>(POSITION)?.setGeoJson(MapPolicy.locationJson(fix.latitude, fix.longitude))
+        style?.getSourceAs<GeoJsonSource>(ACCURACY)?.setGeoJson(MapPolicy.accuracyJson(fix))
+        if (follow) map?.let { current ->
+            val zoom = if (recenter) MapLocationPolicy.zoom(fix.accuracy) else current.cameraPosition.zoom
+            current.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(fix.latitude, fix.longitude), zoom), 700)
+        }
+    }
+    fun clearPosition() {
+        location = null
+        if (alive) {
+            style?.getSourceAs<GeoJsonSource>(POSITION)?.setGeoJson(MapPolicy.geoJson(emptyList()))
+            style?.getSourceAs<GeoJsonSource>(ACCURACY)?.setGeoJson(MapPolicy.geoJson(emptyList()))
+        }
     }
     fun zoom(amount: Double) {
         if (alive) map?.let { it.animateCamera(CameraUpdateFactory.zoomTo((it.cameraPosition.zoom + amount).coerceIn(3.0, 19.0))) }
@@ -201,15 +239,15 @@ class NativeMapController(private val context: Context) {
     fun resume() { start(); if (alive && !resumed) { view.onResume(); resumed = true } }
     fun pause() { if (alive && resumed) { view.onPause(); resumed = false } }
     fun stop() { pause(); if (alive && started) { view.onStop(); started = false } }
-    fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); onSelect = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
+    fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); logoAttempts.clear(); logoRetryAt.clear(); onSelect = {}; onGesture = {}; onCamera = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
 
 }
 
 @Composable
-fun rememberNativeMapController(): NativeMapController {
+fun rememberNativeMapController(initialCamera: MapCamera = MapCamera()): NativeMapController {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
-    val controller = remember(context) { NativeMapController(context) }
+    val controller = remember(context) { NativeMapController(context, initialCamera) }
     DisposableEffect(controller, owner) {
         val observer = LifecycleEventObserver { _, event -> when (event) {
             Lifecycle.Event.ON_START -> controller.start()

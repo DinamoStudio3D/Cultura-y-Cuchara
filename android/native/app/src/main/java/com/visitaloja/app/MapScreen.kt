@@ -1,5 +1,9 @@
 package com.visitaloja.app
 
+import android.os.SystemClock
+import android.provider.Settings
+import kotlin.math.ceil
+import androidx.lifecycle.viewmodel.compose.viewModel
 import android.Manifest
 import android.content.Intent
 import android.content.ActivityNotFoundException
@@ -48,34 +52,72 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
     }
     val selected = points.find { it.id == selection }
     val livePoints by rememberUpdatedState(points)
-    val controller = rememberNativeMapController()
+    val viewport: MapViewportViewModel = viewModel()
+    val controller = rememberNativeMapController(viewport.camera)
     var ready by remember { mutableStateOf(false) }
     var mapError by remember { mutableStateOf(false) }
     var attempt by remember { mutableIntStateOf(0) }
-    var message by remember { mutableStateOf<String?>(null) }
-    var locating by remember { mutableStateOf(false) }
-    val locator = remember(context) { MapLocation(context) }
     val owner = LocalLifecycleOwner.current
+    val locator = remember(context) { MapLocation(context) }
+    var tracking by rememberSaveable { mutableStateOf(false) }
+    var following by remember { mutableStateOf(tracking) }
+    var showLocation by remember { mutableStateOf(tracking) }
+    var location by remember { mutableStateOf(MapLocationState()) }
+    var foreground by remember { mutableStateOf(owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) }
+    var restartLocation by remember { mutableIntStateOf(0) }
+    var recenterPending by remember { mutableStateOf(false) }
+    var refineAccuracy by remember { mutableStateOf<Float?>(null) }
+    var now by remember { mutableLongStateOf(SystemClock.elapsedRealtime()) }
+    val fix = location.fix?.takeIf { tracking && foreground && MapLocationPolicy.valid(it, now) }
     DisposableEffect(locator, owner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) { locator.cancel(); if (locating) message = null; locating = false }
+            if (event == Lifecycle.Event.ON_RESUME) foreground = true
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                foreground = false
+                locator.cancel()
+                location = MapLocationState()
+                controller.clearPosition()
+            }
         }
         owner.lifecycle.addObserver(observer)
-        onDispose { locator.cancel(); owner.lifecycle.removeObserver(observer) }
+        onDispose { locator.cancel(); owner.lifecycle.removeObserver(observer); controller.clearPosition() }
     }
-    val locate = {
-        locating = true
-        message = "Buscando tu ubicación aproximada…"
-        locator.locate { lat, lng, error ->
-            locating = false
-            message = error ?: "Ubicación aproximada del dispositivo. No se guarda en tu cuenta."
-            if (lat != null && lng != null) controller.position(lat, lng)
-        }
+    LaunchedEffect(tracking, foreground, restartLocation) {
+        locator.cancel()
+        if (tracking && foreground) locator.start { now = SystemClock.elapsedRealtime(); location = it }
+        else { location = location.copy(active = false, fix = null); controller.clearPosition() }
     }
-    val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { allowed ->
-        if (allowed) locate() else message = "Puedes explorar sin ubicación. Para centrarte, permite Ubicación desde los ajustes de la app."
+    LaunchedEffect(tracking, foreground) {
+        now = SystemClock.elapsedRealtime()
+        while (tracking && foreground) { delay(1000); now = SystemClock.elapsedRealtime() }
+    }
+    val enableTracking: () -> Unit = {
+        val fresh = location.fix?.takeIf { MapLocationPolicy.valid(it, SystemClock.elapsedRealtime()) }
+        val running = tracking && location.active
+        showLocation = true; tracking = true; following = true; recenterPending = true
+        if (running && fresh != null) { controller.position(fresh, true, true); recenterPending = false }
+        else restartLocation++
+    }
+    val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        if (locator.hasPermission()) enableTracking()
+        else { tracking = false; following = false; showLocation = true; location = MapLocationState(problem = MapLocationProblem.PERMISSION) }
+    }
+    val settings = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { if (tracking) restartLocation++ }
+    val requestPosition: () -> Unit = {
+        if (locator.hasPermission()) enableTracking()
+        else permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+    }
+    LaunchedEffect(ready, fix, following) {
+        if (fix != null && ready) {
+            val improved = following && refineAccuracy?.let { it > 100 && fix.accuracy < it / 2 } == true
+            controller.position(fix, following, recenterPending || improved)
+            if (recenterPending || improved) refineAccuracy = fix.accuracy
+            recenterPending = false
+        } else controller.clearPosition()
     }
     SideEffect {
+        controller.onGesture = { following = false; refineAccuracy = null }
+        controller.onCamera = viewport::update
         controller.onReady = { ready = true; mapError = false }
         controller.onError = { mapError = true }
         controller.onSelect = { ids ->
@@ -87,10 +129,12 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
         if (selection != null && selected == null) { selection = null; nearbyIds = emptyList() }
         controller.update(points, selected?.id)
     }
-    val extentKey = points.map { Triple(it.id, it.latitude, it.longitude) }
-    // Opening the map stays at street scale in Loja; only a search fits its matches.
-    LaunchedEffect(ready, extentKey, query) {
-        if (ready && query.isNotBlank() && points.isNotEmpty()) { delay(200); controller.focus(points) }
+    LaunchedEffect(selected?.id) {
+        if (selected != null) { following = false; delay(200); controller.focusPlace(selected) }
+    }
+    // Favorite/server updates must not pull the camera away while exploring or following.
+    LaunchedEffect(ready, query, category, savedOnly, state.loading) {
+        if (ready && !state.loading && query.isNotBlank() && points.isNotEmpty() && !following) { delay(300); controller.focus(points) }
     }
     LaunchedEffect(attempt) { delay(25000); if (!ready) mapError = true }
     Column(Modifier.fillMaxSize()) {
@@ -101,19 +145,19 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 }
                 TextButton(onClick = list) { Icon(Icons.Default.ViewList, null, Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("Lista") }
             }
-            OutlinedTextField(value = query, onValueChange = onQuery, singleLine = true, modifier = Modifier.fillMaxWidth(),
+            OutlinedTextField(value = query, onValueChange = { following = false; onQuery(it) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Buscar una parada o un cantón", fontSize = 13.sp) },
                 leadingIcon = { Icon(Icons.Default.Search, null) },
-                trailingIcon = { if (query.isNotBlank()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } },
+                trailingIcon = { if (query.isNotBlank()) IconButton(onClick = { following = false; onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } },
                 shape = RoundedCornerShape(16.dp), colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White))
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
                 listOf("all" to "Todo", "cafe" to "Cafés", "food" to "Sabores", "hotel" to "Hospedaje", "turismo" to "Turismo", "aliado" to "Aliados").forEach { (id, label) ->
-                    FilterChip(selected = category == id, onClick = { onCategory(id) }, label = { Text(label) }, leadingIcon = {
+                    FilterChip(selected = category == id, onClick = { following = false; onCategory(id) }, label = { Text(label) }, leadingIcon = {
                         Icon(when (id) { "cafe" -> Icons.Default.LocalCafe; "food" -> Icons.Default.Restaurant; "hotel" -> Icons.Default.Hotel; "turismo" -> Icons.Default.Park; "aliado" -> Icons.Default.Handshake; else -> Icons.Default.Map }, null, Modifier.size(17.dp),
                             tint = Color(android.graphics.Color.parseColor(MapPolicy.color(when (id) { "aliado" -> "partner"; else -> id }))))
                     })
                 }
-                FilterChip(selected = savedOnly, onClick = { savedOnly = !savedOnly }, label = { Text("Mis favoritos") }, leadingIcon = { Icon(Icons.Default.Favorite, null, Modifier.size(15.dp)) })
+                FilterChip(selected = savedOnly, onClick = { following = false; savedOnly = !savedOnly }, label = { Text("Mis favoritos") }, leadingIcon = { Icon(Icons.Default.Favorite, null, Modifier.size(15.dp)) })
             }
         }
         Box(Modifier.weight(1f).fillMaxWidth().heightIn(min = 100.dp)) {
@@ -122,11 +166,11 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 Text(if (state.loading && state.places.isEmpty()) "Cargando paradas…" else "${points.size} paradas en el mapa", fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
             }
             Column(Modifier.align(Alignment.TopEnd).padding(10.dp).padding(bottom = 30.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                MapControl("Acercar", Icons.Default.Add, ready) { controller.zoom(1.0) }
-                MapControl("Alejar", Icons.Default.Remove, ready) { controller.zoom(-1.0) }
-                MapControl("Mostrar todas las paradas filtradas", Icons.Default.CenterFocusStrong, ready) { controller.focus(points) }
-                MapControl("Volver al centro de Loja", Icons.Default.LocationCity, ready) { controller.city() }
-                MapControl("Mi ubicación aproximada", Icons.Default.MyLocation, ready && !locating) { permission.launch(Manifest.permission.ACCESS_COARSE_LOCATION) }
+                MapControl("Acercar", Icons.Default.Add, ready) { refineAccuracy = null; controller.zoom(1.0) }
+                MapControl("Alejar", Icons.Default.Remove, ready) { refineAccuracy = null; controller.zoom(-1.0) }
+                MapControl("Mostrar todas las paradas filtradas", Icons.Default.CenterFocusStrong, ready) { following = false; controller.focus(points) }
+                MapControl("Volver al centro de Loja", Icons.Default.LocationCity, ready) { following = false; controller.city() }
+                MapControl(if (following) "Siguiendo mi ubicación" else "Volver a mi ubicación", Icons.Default.MyLocation, ready, selected = following && fix != null, click = requestPosition)
             }
             Surface(onClick = {
                 try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.openstreetmap.org/copyright"))) }
@@ -134,10 +178,16 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
             }, modifier = Modifier.align(Alignment.BottomStart).padding(start = 32.dp, bottom = 5.dp), color = Color.White.copy(alpha = .95f), shape = RoundedCornerShape(4.dp)) {
                 Text("© OpenStreetMap contributors", fontSize = 9.sp, color = Color(0xFF17324D), modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp))
             }
+            if (mapError && ready) Surface(Modifier.align(Alignment.BottomCenter).padding(bottom = 25.dp, start = 8.dp, end = 8.dp), color = Color.White, shape = RoundedCornerShape(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Algunas calles no cargaron.", fontSize = 11.sp, modifier = Modifier.padding(start = 10.dp))
+                    TextButton(onClick = { mapError = false; controller.reload() }) { Text("Reintentar", fontSize = 11.sp) }
+                }
+            }
             if (!ready && !mapError) Surface(Modifier.align(Alignment.Center), shape = RoundedCornerShape(16.dp)) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp); Spacer(Modifier.width(12.dp)); Text("Abriendo tu mapa…", fontSize = 13.sp) }
             }
-            if (mapError) Surface(Modifier.align(Alignment.Center).padding(20.dp), shape = RoundedCornerShape(18.dp), shadowElevation = 4.dp) {
+            if (mapError && !ready) Surface(Modifier.align(Alignment.Center).padding(20.dp), shape = RoundedCornerShape(18.dp), shadowElevation = 4.dp) {
                 Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("El mapa no terminó de cargar.", fontWeight = FontWeight.Bold)
                     Text("Comprueba la conexión. Las fichas siguen disponibles en Lista.", fontSize = 12.sp)
@@ -148,12 +198,16 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 }
             }
         }
-        message?.let {
-            Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(it, fontSize = 11.sp, modifier = Modifier.weight(1f))
-                IconButton(onClick = { message = null }) { Icon(Icons.Default.Close, "Cerrar aviso") }
-            }
-        }
+        if (showLocation) LocationStatus(location, fix, following, now,
+            retry = { requestPosition() },
+            improve = { permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) },
+            settings = {
+                tracking = true; following = true; recenterPending = true
+                val intent = if (location.problem == MapLocationProblem.DISABLED) Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    else Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + context.packageName))
+                try { settings.launch(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "Abre los permisos de ubicación desde Ajustes del teléfono.", Toast.LENGTH_LONG).show() }
+            },
+            stop = { tracking = false; following = false; showLocation = false; locator.cancel(); location = MapLocationState(); controller.clearPosition() })
         if (selected != null) {
             val overlap = points.filter { it.id in nearbyIds }
             if (overlap.size > 1) Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -198,8 +252,8 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
 }
 
 @Composable
-private fun MapControl(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, enabled: Boolean, click: () -> Unit) {
-    Surface(shape = RoundedCornerShape(12.dp), color = Color.White, shadowElevation = 3.dp) {
+private fun MapControl(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, enabled: Boolean, selected: Boolean = false, click: () -> Unit) {
+    Surface(shape = RoundedCornerShape(12.dp), color = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.White, shadowElevation = 3.dp) {
         IconButton(onClick = click, enabled = enabled) { Icon(icon, label, tint = if (enabled) MaterialTheme.colorScheme.primary else Color.Gray) }
     }
 }
@@ -216,6 +270,43 @@ fun MapShortcut(open: () -> Unit) {
                 Text("Encuentra cada parada y elige tu próxima visita.", color = Color.White, fontSize = 12.sp)
             }
             Icon(Icons.Default.ArrowOutward, "Abrir mapa interactivo", tint = Color.White)
+        }
+    }
+}
+
+@Composable
+private fun LocationStatus(state: MapLocationState, fix: MapFix?, following: Boolean, now: Long,
+    retry: () -> Unit, improve: () -> Unit, settings: () -> Unit, stop: () -> Unit) {
+    val accuracy = fix?.accuracy?.let { if (it < 1000) "${ceil(it.toDouble()).toInt()} m" else String.format(java.util.Locale.getDefault(), "%.1f km", it / 1000f) }
+    val text = when {
+        state.problem == MapLocationProblem.PERMISSION -> "Falta permiso de ubicación. Puedes seguir usando el mapa."
+        state.problem == MapLocationProblem.DISABLED -> "La ubicación del teléfono está desactivada."
+        fix != null -> (if (state.precise && fix.accuracy <= 100) "Ubicación actual" else "Ubicación aproximada") + " · margen estimado ±" + accuracy
+        state.problem == MapLocationProblem.NO_SIGNAL -> "Aún no hay señal suficiente. Prueba cerca de una ventana o al aire libre."
+        else -> "Buscando una ubicación actual…"
+    }
+    Surface(color = MaterialTheme.colorScheme.primaryContainer) {
+        Column(Modifier.padding(horizontal = 14.dp, vertical = 8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(if (fix != null) Icons.Default.MyLocation else Icons.Default.LocationSearching, null, Modifier.size(20.dp))
+                Text(text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f).padding(start = 8.dp))
+                IconButton(onClick = stop, modifier = Modifier.size(40.dp)) { Icon(Icons.Default.Close, "Detener ubicación") }
+            }
+            if (fix != null) Text(when {
+                now - fix.elapsedMillis > 10000 -> "Última señal hace ${(now - fix.elapsedMillis) / 1000} s; esperando una actualización."
+                !state.precise -> "Android solo permite ubicación aproximada. Puedes activar la precisa."
+                fix.accuracy > 100 -> "El GPS está afinando la posición. El círculo muestra el margen de error."
+                following -> "La posición se actualiza mientras tienes abierto el mapa."
+                else -> "Puedes explorar libremente. Pulsa Mi ubicación para volver a seguirte."
+            }, fontSize = 11.sp)
+            Row(Modifier.horizontalScroll(rememberScrollState())) {
+                if (state.problem == MapLocationProblem.DISABLED || state.problem == MapLocationProblem.PERMISSION) TextButton(onClick = settings) { Text("Abrir ajustes") }
+                else if (!state.precise) {
+                    TextButton(onClick = improve) { Text("Mejorar precisión") }
+                    TextButton(onClick = settings) { Text("Ajustes") }
+                }
+                TextButton(onClick = retry) { Text(if (fix != null) "Centrar en mí" else "Reintentar") }
+            }
         }
     }
 }
