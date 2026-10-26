@@ -38,6 +38,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -52,9 +57,20 @@ private val AppColors = lightColorScheme(primary = Blue, onPrimary = Color.White
 private data class Category(val id: String, val name: String, val icon: ImageVector)
 private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.LocalCafe), Category("hotel", "Hospedaje", Icons.Default.Hotel), Category("food", "Gastronomía", Icons.Default.Restaurant), Category("turismo", "Turismo", Icons.Default.Explore))
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel()) {
+    val discovery: DiscoveryViewModel = viewModel()
+    val discoveryState by discovery.state.collectAsStateWithLifecycle()
+    val audioPlayer: DiscoveryAudioViewModel = viewModel()
+    val audioState by audioPlayer.state.collectAsStateWithLifecycle()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle, audioPlayer) {
+        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_STOP) audioPlayer.pause() }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
+    LaunchedEffect(discoveryState) { audioPlayer.reconcile(discoveryState) }
     val visits: VisitViewModel = viewModel()
     val visitState by visits.state.collectAsStateWithLifecycle()
     val claims: PassportClaimViewModel = viewModel()
@@ -84,11 +100,16 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     LaunchedEffect(selectedEventId, selectedEvent, agendaState.loading) { if (!agendaState.loading && selectedEventId != null && selectedEvent == null) selectedEventId = null }
     val navigate: (String, String) -> Unit = { target, filter -> tab = target; category = filter; query = "" }
     BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null) { tab = if (tab == "canton") "cantons" else "home"; query = ""; category = "all" }
+    LaunchedEffect(tab) { if (tab == "map") audioPlayer.pause() }
     MaterialTheme(colorScheme = AppColors) {
         Scaffold(
+            modifier = Modifier.semantics { testTagsAsResourceId = true },
             snackbarHost = { SnackbarHost(snack) },
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home") { navigate(if (tab == "canton") "cantons" else "home", "all") } },
-            bottomBar = { AppNavigation(if (tab in setOf("agenda", "cantons", "canton")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") } },
+            bottomBar = { Column {
+                if (audioState.key != null && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
+                AppNavigation(if (tab in setOf("agenda", "cantons", "canton", "photos", "time", "podcast")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+            } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
             BrandBackdrop(Modifier.padding(padding).fillMaxSize()) {
@@ -98,7 +119,10 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                     "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh)
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
-                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") })
+                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, { navigate(it, "all") })
+                    "photos" -> PhotosScreen(discoveryState.photos, discovery::refresh)
+                    "time" -> TimeScreen(discoveryState.history, audioState, audioPlayer, discovery::refresh)
+                    "podcast" -> PodcastScreen(discoveryState.podcast, audioState, audioPlayer, discovery::refresh)
                     "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
                     "cantons", "canton" -> {
                         val canton = CantonPolicy.catalogue.find { it.id == selectedCantonId }
@@ -170,7 +194,7 @@ private fun OfflineBanner(time: Long, loading: Boolean, retry: () -> Unit) {
 }
 
 @Composable
-private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit, openMap: () -> Unit) {
+private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit, openMap: () -> Unit, discovery: DiscoveryState, openDiscovery: (String) -> Unit) {
     LazyColumn(contentPadding = PaddingValues(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
         item {
             Column(Modifier.padding(horizontal = 22.dp).padding(top = 12.dp)) {
@@ -183,6 +207,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         }
         item { Hero(explore) }
         item { MapShortcut(openMap) }
+        item { DiscoveryHome(discovery, openDiscovery) }
         item { HomeAgenda(agenda, openAgenda, event) }
         item { CantonsShortcut(openCantons) }
         item {
