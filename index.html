@@ -441,6 +441,7 @@
 <link rel="stylesheet" href="/css/place-digital-menu.css?v=1">
 <script src="/js/place-digital-menu.js?v=1"></script>
 <script src="/js/popup-schedule.js?v=2"></script>
+<link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -3569,6 +3570,7 @@
                 currentVisitorProfile = { ...(existing.exists ? existing.data() : {}), ...data, consentAt: existing.data()?.consentAt || true };
                 renderVisitorReady(user, currentVisitorProfile);
                 showToast('¡Tu cuenta Visita Loja está lista!');
+                if(!existing.exists||existing.data().profileComplete!==true)window.VisitaLojaRegistrationPushInvite?.offer({auth:visitorAuth,userId:user.uid}).catch(()=>{});
             } catch (error) {
                 setVisitorMessage('visitorProfileMessage', 'No se pudo guardar tu perfil. Revisa la configuración de usuarios en Firebase e inténtalo nuevamente.', true);
             } finally {
@@ -9005,6 +9007,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMen
 <script src="js/promo-dialog.js?v=1"></script>
 <script src="js/video-gallery-model.js?v=1"></script>
 <script src="js/video-gallery.js?v=3"></script>
+<script src="/js/push-registration-invite.js?v=1" defer></script>
 <script src="/js/push-receiver.js?v=1" defer></script>
 </body>
 </html>

@@ -34,3 +34,9 @@ Los intentos reclamados se registran antes de contactar FCM. Los intentos ambigu
 Pruebas automatizadas: consentimiento y propiedad, autorización, aislamiento entre orígenes, URL permitida, público inmutable, idempotencia, confirmación y prueba previa, límites, bajas, nueva aceptación, concurrencia, tokens inválidos, errores ambiguos, paginación y fallos de persistencia. Fixtures visuales generadas con `node scripts/build-notification-review.cjs` usan datos ficticios y bloquean toda comunicación real.
 
 Pendiente en dispositivo real: nueva suscripción general, prueba con contenido personalizado, un envío al grupo de prueba y baja. La recepción de la antigua prueba fija ya fue confirmada por el usuario; no sustituye estas comprobaciones. No fusionar a main sin autorización. Antes de una futura publicación deberán configurarse explícitamente las variables en producción; las de esta rama no pasan a producción al fusionar.
+
+## Invitación al terminar el registro
+
+Después de guardar por primera vez un perfil completo, la cuenta muestra una tarjeta opcional «Mantente al día con Loja». Solo el clic en «Activar notificaciones» pide permiso al sistema; si se concede, registra explícitamente el consentimiento de novedades, eventos y promociones en el servicio existente. La elección o la presentación se recuerda por cuenta y navegador, y no vuelve a ofrecerse al editar perfiles ni en accesos posteriores. «Ahora no» no cambia el registro ni impide continuar. El enlace permanente de gestión se mantiene.
+
+No aparece si el dispositivo ya tiene una suscripción activa conocida, el permiso está bloqueado o falta soporte, ni en Safari de iPhone/iPad sin instalación. En esos casos, la gestión manual sigue disponible. Los fallos del servicio de avisos nunca impiden guardar el perfil. La vista de demostración `tests/push-registration-invite-review.html` no crea registros ni envía avisos reales.
