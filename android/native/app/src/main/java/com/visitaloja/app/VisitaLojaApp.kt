@@ -55,6 +55,8 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel()) {
+    val agenda: AgendaViewModel = viewModel()
+    val agendaState by agenda.state.collectAsStateWithLifecycle()
     val wallet: WalletViewModel = viewModel()
     val walletState by wallet.state.collectAsStateWithLifecycle()
     val guestState by model.state.collectAsStateWithLifecycle()
@@ -69,13 +71,16 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     var query by rememberSaveable { mutableStateOf("") }
     var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
     val selected = state.places.find { it.id == selectedId }
+    var selectedEventId by rememberSaveable { mutableStateOf<String?>(null) }
+    val selectedEvent = AgendaPolicy.upcoming(agendaState.events, agendaState.now).find { it.id == selectedEventId }
+    LaunchedEffect(selectedEventId, selectedEvent, agendaState.loading) { if (!agendaState.loading && selectedEventId != null && selectedEvent == null) selectedEventId = null }
     val navigate: (String, String) -> Unit = { target, filter -> tab = target; category = filter; query = "" }
-    BackHandler(enabled = tab != "home" && selected == null) { tab = "home"; query = ""; category = "all" }
+    BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null) { tab = "home"; query = ""; category = "all" }
     MaterialTheme(colorScheme = AppColors) {
         Scaffold(
             snackbarHost = { SnackbarHost(snack) },
             topBar = { AppTopBar(state.loading, model::refresh, tab != "home") { navigate("home", "all") } },
-            bottomBar = { AppNavigation(tab) { navigate(it, "all") } },
+            bottomBar = { AppNavigation(if (tab == "agenda") "home" else tab) { navigate(it, "all") } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
             BrandBackdrop(Modifier.padding(padding).fillMaxSize()) {
@@ -84,7 +89,8 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                 when (tab) {
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }) { wallet.bind(accountState.uid); model.refresh() }
-                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite)
+                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it })
+                    "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
                     else -> {
                         if (tab == "saved" && accountState.uid != null) {
                             Text(if (accountState.busy) "Guardando cambios…" else accountState.favouritesError ?: if (!accountState.favouritesReady) "Consultando tu cuenta…" else if (accountState.fromCache) "Conéctate para sincronizar tus favoritos." else accountState.message ?: "Favoritos de tu cuenta, compartidos con la web.", fontSize = 12.sp, color = Blue, modifier = Modifier.padding(horizontal = 22.dp, vertical = 8.dp))
@@ -94,6 +100,9 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                 }
             }
             }
+        }
+        if (selectedEvent != null) {
+            ModalBottomSheet(onDismissRequest = { selectedEventId = null }, containerColor = Color(0xFFF0F7FF)) { EventDetail(selectedEvent) }
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
@@ -143,7 +152,7 @@ private fun OfflineBanner(time: Long, loading: Boolean, retry: () -> Unit) {
 }
 
 @Composable
-private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit) {
+private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit) {
     LazyColumn(contentPadding = PaddingValues(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
         item {
             Column(Modifier.padding(horizontal = 22.dp).padding(top = 12.dp)) {
@@ -155,6 +164,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
             }
         }
         item { Hero(explore) }
+        item { HomeAgenda(agenda, openAgenda, event) }
         item {
             Column(Modifier.padding(horizontal = 22.dp)) {
                 SectionHeading("A tu manera", "Ver todo") { explore("all") }
