@@ -21,6 +21,7 @@ class MapLocationPolicyTest {
         assertFalse(MapLocationPolicy.accept(fix(2000f), gps, now))
         assertTrue(MapLocationPolicy.accept(fix(12f), gps, now))
         assertTrue(MapLocationPolicy.accept(fix(5f), gps, now))
+        assertTrue(MapLocationPolicy.accept(fix(45f), fix(5f, now - 3000), now))
     }
     @Test fun stalePositionCanRecoverAndOutOfOrderCallbacksAreRejected() {
         assertTrue(MapLocationPolicy.accept(fix(500f), fix(time = now - 16000), now))

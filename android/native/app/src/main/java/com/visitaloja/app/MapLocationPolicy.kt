@@ -15,7 +15,7 @@ object MapLocationPolicy {
         if (!valid(next, now)) return false
         if (previous == null || !valid(previous, now)) return true
         if (next.elapsedMillis <= previous.elapsedMillis) return false
-        return now - previous.elapsedMillis > 15000 || next.accuracy <= previous.accuracy * 1.5f + 10f
+        return now - previous.elapsedMillis > 15000 || next.accuracy <= maxOf(100f, previous.accuracy * 1.5f + 10f)
     }
     fun zoom(accuracy: Float): Double = when { accuracy <= 50 -> 17.0; accuracy <= 250 -> 16.0; accuracy <= 2000 -> 14.0; else -> 11.5 }
     /** A geodesic accuracy area in meters, independent of zoom and device density. */

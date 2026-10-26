@@ -13,7 +13,7 @@ object MapHttp {
         // Honor Cache-Control, Expires and conditional requests; no tile prefetch/offline packs.
         val client = OkHttpClient.Builder().cache(Cache(File(context.cacheDir, "map-http-v1"), 100L * 1024 * 1024))
             .addInterceptor { chain -> chain.proceed(chain.request().newBuilder()
-                .header("User-Agent", "VisitaLojaAndroid/0.8.1 (+https://www.visitaloja.com/)").build()) }.build()
+                .header("User-Agent", "VisitaLojaAndroid (+https://www.visitaloja.com/)").build()) }.build()
         HttpRequestUtil.setOkHttpClient(client)
         configured = true
     }

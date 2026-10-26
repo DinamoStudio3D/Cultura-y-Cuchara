@@ -236,7 +236,7 @@ class NativeMapController(private val context: Context, private val initialCamer
     }
     fun lowMemory() { if (alive) view.onLowMemory() }
     fun start() { if (alive && !started) { view.onStart(); started = true } }
-    fun resume() { start(); if (alive && !resumed) { view.onResume(); resumed = true } }
+    fun resume() { start(); if (alive && !resumed) { view.onResume(); resumed = true; loadVisibleLogos() } }
     fun pause() { if (alive && resumed) { view.onPause(); resumed = false } }
     fun stop() { pause(); if (alive && started) { view.onStop(); started = false } }
     fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); logoAttempts.clear(); logoRetryAt.clear(); onSelect = {}; onGesture = {}; onCamera = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
