@@ -47,7 +47,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
     }
     private var profileListener: ListenerRegistration? = null
     private var progressListener: ListenerRegistration? = null
-    private var generation = 0
+    @Volatile private var generation = 0
     private val authListener = FirebaseAuth.AuthStateListener { changed ->
         val user = changed.currentUser
         if (user?.uid != mutable.value.uid || generation == 0) {

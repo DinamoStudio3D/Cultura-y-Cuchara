@@ -179,7 +179,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
             Surface(Modifier.padding(horizontal = 22.dp), shape = RoundedCornerShape(18.dp), color = Pale) {
                 Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.MenuBook, null, tint = Blue, modifier = Modifier.size(34.dp))
-                    Column(Modifier.padding(start = 14.dp)) { Eyebrow("TU RECORRIDO TIENE RECOMPENSA"); Text("Mucho más que visitar.", fontWeight = FontWeight.Bold, fontSize = 17.sp); Text("Pasaporte y cuenta se incorporarán en la siguiente etapa de esta prueba.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 5.dp)) }
+                    Column(Modifier.padding(start = 14.dp)) { Eyebrow("TU RECORRIDO TIENE RECOMPENSA"); Text("Mucho más que visitar.", fontWeight = FontWeight.Bold, fontSize = 17.sp); Text("Ingresa en Mi cuenta para guardar tus favoritos. El pasaporte llegará en el siguiente bloque.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 5.dp)) }
                 }
             }
         }
