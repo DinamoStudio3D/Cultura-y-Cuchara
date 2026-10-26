@@ -135,6 +135,16 @@ try:
                 assert 'Reproduciendo en la app' not in texts,'Video resumed without a tap'
                 capture('discovery-youtube-paused')
         video_check['last_status']=texts
+        # A 320 dp wide phone must still get the official minimum 200 dp height.
+        adb('shell','wm','size','640x1600');time.sleep(5)
+        wait(desc='Cerrar video')
+        narrow=tree()
+        frame=next((n for n in narrow.iter('node') if n.get('class')=='android.webkit.WebView'),None)
+        assert frame is not None
+        x1,y1,x2,y2=map(int,re.findall(r'\d+',frame.get('bounds')))
+        assert y2-y1>=400,('Small-phone player too short',frame.get('bounds'))
+        capture('discovery-youtube-small-phone')
+        adb('shell','wm','size','720x1600');time.sleep(5)
         tap(wait(desc='Cerrar video'))
     (OUT/'video-summary.json').write_text(json.dumps(video_check,indent=2,ensure_ascii=False))
     tap(wait(desc='Volver a Inicio'))

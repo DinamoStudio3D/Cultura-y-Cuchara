@@ -170,7 +170,7 @@ private fun YouTubeDialogContent(video: LojaVideo, close: () -> Unit, onFullscre
                     Text("Amplía la ventana o gira el dispositivo para ver el video.", Modifier.padding(20.dp))
                 } else {
                     AndroidView(factory = { (controller.container.parent as? ViewGroup)?.removeView(controller.container); controller.container },
-                        modifier = if (compact) Modifier.fillMaxWidth().weight(1f).heightIn(min = 200.dp) else Modifier.fillMaxWidth().heightIn(min = 200.dp).aspectRatio(16f / 9))
+                        modifier = if (compact) Modifier.fillMaxWidth().weight(1f).heightIn(min = 200.dp) else Modifier.fillMaxWidth().height((maxWidth * (9f / 16f)).coerceAtLeast(200.dp)))
                     if (!compact) Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         if (!compact) {
                             Text(video.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
