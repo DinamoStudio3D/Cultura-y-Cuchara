@@ -14,18 +14,22 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.time.Instant
 import java.time.ZoneId
 import kotlinx.coroutines.delay
 
 @Composable
-fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesState, login: () -> Unit, retry: () -> Unit) {
+fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesState, login: () -> Unit, retry: () -> Unit, visit: (Place) -> Unit, claim: PassportClaimViewModel) {
     var section by rememberSaveable(account.uid) { mutableStateOf("passport") }
     var chosenMode by rememberSaveable(account.uid) { mutableStateOf<String?>(null) }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    LaunchedEffect(Unit) { while (true) { delay(30000); now = System.currentTimeMillis() } }
+    LaunchedEffect(Unit) { while (true) { delay(1000); now = System.currentTimeMillis() } }
     val mode = chosenMode ?: state.mode
     val links = LocalUriHandler.current
+    val claimState by claim.state.collectAsStateWithLifecycle()
+    var selectedOption by rememberSaveable(account.uid, mode, state.config.text("campaignId")) { mutableStateOf("") }
+    var confirmingClaim by remember(account.uid, mode, state.config.text("campaignId")) { mutableStateOf(false) }
     LazyColumn(contentPadding = PaddingValues(22.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Text("CADA VISITA, UNA HISTORIA", color = MaterialTheme.colorScheme.primary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
@@ -72,7 +76,26 @@ fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesSta
                 if ("completions" in state.ready) items(state.completions.filter { it.text("campaignId") == passport.campaignId && it.text("mode") == mode }, key = { "passportReward${it.text("id")}" }) { reward ->
                     RewardPanel(reward, now, passport = true, allowCode = state.cached.isEmpty())
                 }
-                if (passport.count == 6) item { Text("Completaste los seis espacios. La disponibilidad y el canje se validan al solicitar la recompensa.", fontSize = 13.sp, fontWeight = FontWeight.Bold) }
+                if (passport.count == 6 && passport.active) item {
+                    val benefit = state.config.map(if (mode == "turista") "tourist" else "local")
+                    val existing = state.completions.any { it.text("campaignId") == passport.campaignId && it.text("mode") == mode }
+                    val choices = benefit.map("choices").entries.mapNotNull { (id, raw) ->
+                        val reward = raw as? Map<*, *> ?: return@mapNotNull null
+                        if (reward["active"] != true) null else id to (reward["title"] as? String ?: "Recompensa")
+                    }
+                    if (!existing && benefit["active"] != false) {
+                        WalletPanel("Elige tu recompensa", "El sistema verificará tus visitas y registrará una sola recompensa para esta campaña y modalidad.") {
+                            if (benefit["choices"] is Map<*, *>) {
+                                choices.forEach { (id, title) -> FilterChip(selected = selectedOption == id, onClick = { selectedOption = id }, enabled = !claimState.busy, label = { Text(title) }) }
+                                if (choices.isEmpty()) Text("No hay opciones de recompensa activas en este momento.")
+                            }
+                            if (!account.profileComplete) Button(onClick = login) { Text("Completar mi perfil") }
+                            else Button(onClick = { confirmingClaim = true }, enabled = account.profileReady && !claimState.busy && claimState.uid == account.uid && state.ready.contains("completions") && state.cached.isEmpty() && (benefit["choices"] !is Map<*, *> || choices.any { it.first == selectedOption })) { Text("Solicitar mi recompensa") }
+                        }
+                    }
+                    if (claimState.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+                    if (claimState.uid == account.uid) claimState.message?.let { Text(it, fontSize = 13.sp, fontWeight = FontWeight.Bold) }
+                }
             }
         } else {
             if (!state.ready.containsAll(setOf("programs", "counters")) || directory.loading && directory.places.isEmpty()) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
@@ -87,16 +110,22 @@ fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesSta
                     Text(card.reward, fontWeight = FontWeight.Bold)
                     if (card.description.isNotBlank()) Text(card.description, fontSize = 13.sp)
                     Text("${card.visits} visitas registradas en esta tarjeta", fontSize = 12.sp)
+                    val place = directory.places.find { it.id == card.placeId }
+                    if (place != null && card.state in setOf("Activa", "Temporada activa")) Button(onClick = { visit(place) }, enabled = !card.dailyBlocked, modifier = Modifier.fillMaxWidth()) { Text("Generar código de visita") }
                     if (card.dailyBlocked && card.state in setOf("Activa", "Temporada activa")) Text("Regresa mañana para volver a sellar tu tarjeta de fidelidad.", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
                 } }
             }
             if ("rewards" in state.ready) items(state.rewards, key = { "loyaltyReward${it.text("id")}" }) { reward -> RewardPanel(reward, now, allowCode = "rewards" !in state.cached) }
         }
-        item { WalletPanel("Tus visitas se actualizan aquí", "Los sellos se registran cuando el negocio confirma tu visita. Para generar un nuevo código de visita o solicitar una recompensa, utiliza por ahora la web.") {
-            OutlinedButton(onClick = { links.openUri(if (section == "cards") "https://www.visitaloja.com/fidelidad.html" else "https://www.visitaloja.com/#pasaporte") }) { Text("Continuar en la web") }
+        item { WalletPanel("Tu recorrido, en la app", "Abre una tarjeta o la ficha de una parada para generar tu código de visita. El negocio confirma los sellos. Al completar un ciclo de fidelidad, la recompensa registrada aparecerá aquí con su código de canje.") {
             TextButton(onClick = retry) { Text("Actualizar mi recorrido") }
         } }
     }
+    if (confirmingClaim) AlertDialog(onDismissRequest = { confirmingClaim = false }, title = { Text("¿Registrar esta recompensa?") },
+        text = { val benefit = state.config.map(if (mode == "turista") "tourist" else "local"); val title = benefit.map("choices").map(selectedOption).text("title").ifBlank { benefit.text("title") }; Text("Elegiste: $title. Tu elección quedará asociada a esta campaña y modalidad. Si ya registraste un premio, se conservará el existente. El encargado validará el código para entregártelo.") },
+        confirmButton = { TextButton(onClick = { confirmingClaim = false; claim.claim(state.config.text("campaignId").ifBlank { "pasaporte-2026" }, mode, selectedOption) }) { Text("Confirmar solicitud") } },
+        dismissButton = { TextButton(onClick = { confirmingClaim = false }) { Text("Cancelar") } })
+
 }
 
 @Composable
@@ -116,10 +145,14 @@ private fun RewardPanel(reward: Map<String, Any?>, now: Long, passport: Boolean 
     val status = reward.text("status")
     val label = when { status == "delivered" -> "Entregada"; status != "pending" -> "No disponible"; expired -> "Vencida"; else -> "Pendiente de canje" }
     val title = reward.text("rewardTitle").ifBlank { reward.map("rewardSnapshot").text("title").ifBlank { "Tu recompensa" } }
+    var showQr by remember(reward.text("id")) { mutableStateOf(false) }
+    val usable = status == "pending" && !expired && allowCode && reward.text("claimCode").isNotBlank()
     WalletPanel(title, (reward.text("placeName").takeIf { it.isNotBlank() }?.plus(" · ") ?: "") + label) {
-        if (status == "pending" && !expired && allowCode && reward.text("claimCode").isNotBlank()) {
+        if (usable) {
             Text(reward.text("claimCode"), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            Button(onClick = { showQr = true }) { Text("Mostrar QR para canjear") }
             Text("Código ya registrado. Presentarlo no confirma su entrega; el encargado debe validarlo.", fontSize = 12.sp)
         }
     }
+    if (showQr && usable) RewardQrDialog(reward.text("claimCode")) { showQr = false }
 }

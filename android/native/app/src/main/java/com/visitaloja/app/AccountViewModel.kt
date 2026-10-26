@@ -34,7 +34,7 @@ data class AccountState(
     val uid: String? = null, val name: String = "", val email: String = "", val city: String = "", val visitorType: String = "",
     val busy: Boolean = false, val message: String? = null, val profileError: String? = null,
     val favourites: Set<String> = emptySet(), val favouritesReady: Boolean = false, val favouritesError: String? = null,
-    val fromCache: Boolean = false
+    val fromCache: Boolean = false, val profile: ProfileDraft? = null, val profileComplete: Boolean = false, val profileReady: Boolean = false, val profileRevision: Int = 0
 )
 
 class AccountViewModel(application: Application) : AndroidViewModel(application) {
@@ -66,6 +66,8 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
             mutable.update { it.copy(
                 name = doc?.getString("fullName")?.takeIf(String::isNotBlank) ?: auth.currentUser?.displayName.orEmpty(),
                 city = doc?.getString("city").orEmpty(), visitorType = doc?.getString("visitorType").orEmpty(),
+                profile = if (error == null) ProfilePolicy.draft(doc?.data, auth.currentUser?.displayName.orEmpty()) else null,
+                profileComplete = error == null && doc?.getBoolean("profileComplete") == true, profileReady = error == null && doc != null && !doc.metadata.isFromCache,
                 profileError = if (error != null) "No pudimos consultar tu perfil. Vuelve a intentar." else null
             ) }
         }
@@ -83,6 +85,29 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         generation++; profileListener?.remove(); progressListener?.remove()
         mutable.update { it.copy(favouritesReady = false, favouritesError = null, profileError = null) }
         observe(uid, generation)
+    }
+
+    fun saveProfile(draft: ProfileDraft) = operation {
+        val user = auth.currentUser ?: return@operation
+        val uid = user.uid; val epoch = generation
+        val today = java.time.Instant.now().atZone(AgendaPolicy.zone).toLocalDate()
+        val fields = ProfilePolicy.fields(draft, uid, user.email.orEmpty(), user.photoUrl?.toString().orEmpty(), today)
+        val ref = db.collection("userProfiles").document(uid)
+        db.runTransaction { tx ->
+            check(same(uid, epoch)) { "La sesión cambió. Vuelve a ingresar." }
+            val old = tx.get(ref)
+            val payload = fields.toMutableMap()
+            if (old.exists()) {
+                check(old.get("createdAt") != null && old.get("consentAt") != null) { "Tu perfil necesita revisión de administración antes de actualizarse." }
+                payload["photoURL"] = old.getString("photoURL") ?: fields.getValue("photoURL")
+                payload["updatedAt"] = FieldValue.serverTimestamp()
+                tx.update(ref, payload)
+            } else {
+                payload["createdAt"] = FieldValue.serverTimestamp(); payload["consentAt"] = FieldValue.serverTimestamp(); payload["updatedAt"] = FieldValue.serverTimestamp()
+                tx.set(ref, payload)
+            }
+        }.await()
+        if (same(uid, epoch)) mutable.update { it.copy(message = "Tu perfil quedó guardado en tu cuenta.", profileRevision = it.profileRevision + 1) }
     }
 
     fun emailLogin(email: String, password: String) = operation {
@@ -155,7 +180,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
 }
 
 private fun authError(error: Exception): String {
-    if (error is FirebaseFirestoreException) return "No pudimos guardar tus favoritos. Comprueba la conexión y reintenta. Tus datos anteriores se conservan."
+    if (error is FirebaseFirestoreException) return "No pudimos guardar los cambios. Comprueba la conexión y reintenta. Tus datos anteriores se conservan."
     if (error is FirebaseNetworkException) return "No pudimos conectar. Comprueba tu conexión e inténtalo de nuevo."
     if (error is IllegalArgumentException || error is IllegalStateException) return error.message ?: "No pudimos completar la solicitud."
     return when ((error as? FirebaseAuthException)?.errorCode) {

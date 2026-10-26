@@ -33,12 +33,20 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
     // Passwords are deliberately excluded from saved instance state.
     var password by remember { mutableStateOf("") }
     var visible by remember { mutableStateOf(false) }
+    var editingProfile by remember(state.uid) { mutableStateOf(false) }
+    LaunchedEffect(state.profileRevision) { if (state.profileRevision > 0) editingProfile = false }
     var confirmImport by remember { mutableStateOf(false) }
     var confirmSignOut by remember { mutableStateOf(false) }
     LaunchedEffect(state.uid) { password = ""; confirmImport = false; confirmSignOut = false }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text("TU HISTORIA EN LOJA", fontSize = 11.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
         Text("Mi cuenta", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold)
+        if (state.uid != null && editingProfile) {
+            ProfileEditor(state.profile ?: ProfileDraft(name = state.name), state.busy, model::saveProfile, { editingProfile = false })
+            if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+            state.message?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+            return@Column
+        }
         if (state.uid == null) {
             Surface(color = Color(0xFFF2F7FD), shape = RoundedCornerShape(22.dp)) {
                 Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -70,6 +78,8 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
                     if (state.visitorType in setOf("lojano", "turista")) Text(if (state.visitorType == "lojano") "Modo lojano" else "Modo turista", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             }
+            Text(if (state.profileComplete) "Perfil completo para tus beneficios" else "Completa tu perfil para solicitar recompensas", fontWeight = FontWeight.Bold)
+            Button(onClick = { editingProfile = true }, enabled = state.profileReady && !state.busy, modifier = Modifier.fillMaxWidth()) { Text(if (state.profileComplete) "Editar mis datos" else "Completar mi perfil") }
             Text("Tus favoritos, contigo", fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(if (!state.favouritesReady) "Consultando tus favoritos…" else "${state.favourites.size} lugares guardados en tu cuenta. Los cambios se comparten con la web.", fontSize = 14.sp)
             if (state.fromCache) Text("Sin confirmación del servidor. Conéctate para consultar y cambiar tus favoritos.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)

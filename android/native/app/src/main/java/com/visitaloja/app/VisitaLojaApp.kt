@@ -55,6 +55,9 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel()) {
+    val visits: VisitViewModel = viewModel()
+    val visitState by visits.state.collectAsStateWithLifecycle()
+    val claims: PassportClaimViewModel = viewModel()
     val cantons: CantonsViewModel = viewModel()
     val cantonsState by cantons.state.collectAsStateWithLifecycle()
     val agenda: AgendaViewModel = viewModel()
@@ -63,6 +66,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     val walletState by wallet.state.collectAsStateWithLifecycle()
     val guestState by model.state.collectAsStateWithLifecycle()
     val accountState by account.state.collectAsStateWithLifecycle()
+    LaunchedEffect(accountState.uid) { visits.bind(accountState.uid); claims.bind(accountState.uid) }
     val snack = remember { SnackbarHostState() }
     LaunchedEffect(accountState.message) { accountState.message?.let { snack.showSnackbar(it) } }
     val state = guestState.copy(favourites = if (accountState.uid == null) guestState.favourites else accountState.favourites)
@@ -92,7 +96,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                 if (state.offline) OfflineBanner(state.fetchedAt, state.loading, model::refresh)
                 when (tab) {
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
-                    "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }) { wallet.bind(accountState.uid); model.refresh() }
+                    "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") })
                     "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
                     "cantons", "canton" -> {
@@ -111,12 +115,15 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
             }
             }
         }
+        if (accountState.uid != null && visitState.uid == accountState.uid && visitState.place != null) {
+            VisitDialog(visitState, visits::generate, visits::retry, visits::close) { visits.close(); selectedId = null; navigate("passport", "all") }
+        }
         if (selectedEvent != null) {
             ModalBottomSheet(onDismissRequest = { selectedEventId = null }, containerColor = Color(0xFFF0F7FF)) { EventDetail(selectedEvent) }
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
-                PlaceDetail(selected, selected.id in state.favourites, { favourite(selected.id) }) { selectedId = null }
+                PlaceDetail(selected, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }) { selectedId = null }
             }
         }
     }
@@ -229,65 +236,7 @@ private fun Hero(explore: (String) -> Unit) {
 
 @Composable
 private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String, category: String, onQuery: (String) -> Unit, onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, signedIn: Boolean, retry: () -> Unit) {
-    val places = remember(state.places, state.favourites, query, category, onlySaved) { state.places.filter { PlacePolicy.matches(it, query, if (onlySaved) "all" else category) && (!onlySaved || it.id in state.favourites) } }
-    LazyColumn(contentPadding = PaddingValues(horizontal = 22.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        item {
-            Column {
-                Eyebrow(if (onlySaved) "TUS LUGARES, A MANO" else "ENCUENTRA TU PRÓXIMA PARADA")
-                Text(if (onlySaved) "Tus favoritos" else "Explora Loja", fontSize = 29.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.padding(top = 5.dp, bottom = 17.dp))
-                OutlinedTextField(colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White.copy(alpha = .8f), focusedContainerColor = Color.White), value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
-                if (onlySaved) Text(if (signedIn) "Usas los mismos favoritos que en VisitaLoja.com." else "Guardados en este teléfono. Ingresa en Mi cuenta para consultar tus favoritos de la web.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 12.dp))
-            }
-        }
-        if (!onlySaved) item {
-            Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                (listOf(Category("all", "Todo", Icons.Default.Explore)) + categories).forEach { choice -> FilterChip(selected = category == choice.id, onClick = { onCategory(choice.id) }, label = { Text(choice.name) }) }
-            }
-        }
-        if (state.loading && state.places.isEmpty()) item { LoadingPlaces() }
-        else if (state.error != null) item { ErrorPlaces(state.error, retry) }
-        else if (places.isEmpty()) item {
-            Column(Modifier.fillMaxWidth().padding(vertical = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(if (onlySaved) Icons.Default.FavoriteBorder else Icons.Default.Search, null, Modifier.size(40.dp), tint = Blue)
-                Text(if (onlySaved) "Tu próxima visita empieza guardando un lugar" else "Probemos otra búsqueda", fontSize = 18.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 14.dp))
-                Text(if (onlySaved) "Toca el corazón de una parada para encontrarla aquí." else "No hay lugares publicados con esos filtros.", textAlign = TextAlign.Center, color = Muted, modifier = Modifier.padding(top = 9.dp))
-                if (!onlySaved) TextButton(onClick = { onQuery(""); onCategory("all") }) { Text("Ver todos los lugares") }
-            }
-        } else {
-            item { Text(if (places.size == 1) "1 lugar para descubrir" else "${places.size} lugares para descubrir", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Muted) }
-            items(places, key = Place::id) { place -> PlaceCard(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }, Modifier.fillMaxWidth()) }
-        }
-    }
-}
-
-@Composable
-private fun PlaceImage(place: Place, modifier: Modifier = Modifier) {
-    when (place.imageUrl) {
-        "https://i.imgur.com/CpCnMpw.png" -> Image(painterResource(R.drawable.codeproim_logo), place.title, modifier.background(Pale), contentScale = ContentScale.Fit)
-        null -> Image(painterResource(R.drawable.visitaloja_logo), place.title, modifier.background(Pale).padding(28.dp), contentScale = ContentScale.Fit)
-        else -> AsyncImage(model = place.imageUrl, contentDescription = place.title, modifier = modifier.background(Pale), contentScale = ContentScale.Crop, error = painterResource(R.drawable.visitaloja_logo), placeholder = painterResource(R.drawable.visitaloja_logo))
-    }
-}
-
-@Composable
-private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false) {
-    OutlinedCard(modifier = modifier, shape = RoundedCornerShape(20.dp), colors = CardDefaults.outlinedCardColors(containerColor = Color.White)) {
-        Box {
-            Column(Modifier.clickable(onClick = open)) {
-                Box(Modifier.fillMaxWidth().height(if (compact) 140.dp else 183.dp)) {
-                    PlaceImage(place, Modifier.fillMaxSize())
-                    Surface(Modifier.align(Alignment.BottomStart).padding(12.dp), color = Color.White.copy(alpha = .96f), shape = RoundedCornerShape(8.dp)) { Text(place.categoryLabel, fontSize = 10.sp, color = Blue, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)) }
-                }
-                Column(Modifier.padding(16.dp)) { Text(place.title, fontWeight = FontWeight.Bold, fontSize = if (compact) 16.sp else 18.sp, maxLines = 2, overflow = TextOverflow.Ellipsis); Text(place.address.ifBlank { "Loja, Ecuador" }, color = Muted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 5.dp)) }
-            }
-            Surface(Modifier.align(Alignment.TopEnd).padding(8.dp), shape = CircleShape, color = Color.White.copy(alpha = .96f)) { IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) } }
-        }
-    }
-}
-
-@Composable
-private fun PlaceDetail(place: Place, saved: Boolean, favourite: () -> Unit, dismiss: () -> Unit) {
-    val context = LocalContext.current
+    val places = remember(state.places, stat…1493 tokens truncated…xt.current
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth().height(220.dp)) { PlaceImage(place, Modifier.fillMaxSize()); FilledIconButton(onClick = dismiss, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Ink)) { Icon(Icons.Default.Close, "Cerrar ficha") } }
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -296,6 +245,7 @@ private fun PlaceDetail(place: Place, saved: Boolean, favourite: () -> Unit, dis
             if (place.address.isNotBlank()) Text(place.address, color = Blue, fontSize = 13.sp)
             PlaceGallery(place)
             if (place.description.isNotBlank()) Text(place.description, color = Muted, fontSize = 14.sp, lineHeight = 23.sp)
+            Button(onClick = visit, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.QrCode, null); Spacer(Modifier.width(9.dp)); Text("Generar código de visita") }
             Button(onClick = favourite, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, null); Spacer(Modifier.width(9.dp)); Text(if (saved) "Guardado en favoritos" else "Guardar en favoritos") }
             if (place.address.isNotBlank() || place.latitude != null && place.longitude != null) OutlinedButton(onClick = {
                 val destination = if (place.latitude != null && place.longitude != null) "${place.latitude},${place.longitude}" else place.address + ", Loja, Ecuador"
