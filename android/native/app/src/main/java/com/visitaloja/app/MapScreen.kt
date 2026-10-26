@@ -58,7 +58,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
     val owner = LocalLifecycleOwner.current
     DisposableEffect(locator, owner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) { locator.cancel(); locating = false }
+            if (event == Lifecycle.Event.ON_STOP) { locator.cancel(); if (locating) message = null; locating = false }
         }
         owner.lifecycle.addObserver(observer)
         onDispose { locator.cancel(); owner.lifecycle.removeObserver(observer) }
