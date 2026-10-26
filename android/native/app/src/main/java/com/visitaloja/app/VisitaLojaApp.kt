@@ -46,7 +46,7 @@ import java.util.Date
 
 private val Blue = Color(0xFF075BB2)
 private val Ink = Color(0xFF172D45)
-private val Muted = Color(0xFF5C7289)
+private val Muted = Color(0xFF4B617A)
 private val Pale = Color(0xFFF2F7FD)
 private val AppColors = lightColorScheme(primary = Blue, onPrimary = Color.White, primaryContainer = Color(0xFFE5F1FF), onPrimaryContainer = Blue, background = Color(0xFFF0F7FF), onBackground = Ink, surface = Color.White, onSurface = Ink, surfaceVariant = Pale, onSurfaceVariant = Muted, outlineVariant = Color(0xFFDCE7F2))
 private data class Category(val id: String, val name: String, val icon: ImageVector)
