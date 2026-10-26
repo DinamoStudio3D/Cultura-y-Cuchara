@@ -31,7 +31,7 @@ val syncBrandAssets by tasks.registering(Copy::class) {
 }
 tasks.named("preBuild") { dependsOn(syncBrandAssets) }
 dependencies {
-    implementation("org.maplibre.gl:android-sdk-opengl:13.6.1")
+    implementation("org.maplibre.gl:android-sdk:12.0.1")
     implementation("com.google.zxing:core:3.5.3")
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-auth")

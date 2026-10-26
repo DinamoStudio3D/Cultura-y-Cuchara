@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -117,7 +118,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
             Surface(Modifier.align(Alignment.TopStart).padding(10.dp), shape = RoundedCornerShape(20.dp), color = Color.White.copy(alpha = .96f)) {
                 Text(if (state.loading && state.places.isEmpty()) "Cargando paradas…" else "${points.size} paradas en el mapa", fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
             }
-            Column(Modifier.align(Alignment.TopEnd).padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(Modifier.align(Alignment.TopEnd).padding(10.dp).padding(bottom = 30.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 MapControl("Acercar", Icons.Default.Add, ready) { controller.zoom(1.0) }
                 MapControl("Alejar", Icons.Default.Remove, ready) { controller.zoom(-1.0) }
                 MapControl("Mostrar todas las paradas filtradas", Icons.Default.CenterFocusStrong, ready) { controller.focus(points) }

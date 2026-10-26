@@ -143,6 +143,7 @@ class NativeMapController(context: Context) {
     fun zoom(amount: Double) {
         if (alive) map?.let { it.animateCamera(CameraUpdateFactory.zoomTo((it.cameraPosition.zoom + amount).coerceIn(3.0, 19.0))) }
     }
+    fun lowMemory() { if (alive) view.onLowMemory() }
     fun start() { if (alive && !started) { view.onStart(); started = true } }
     fun resume() { start(); if (alive && !resumed) { view.onResume(); resumed = true } }
     fun pause() { if (alive && resumed) { view.onPause(); resumed = false } }
@@ -180,7 +181,7 @@ fun rememberNativeMapController(): NativeMapController {
         if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) controller.resume()
         val memory = object : ComponentCallbacks {
             override fun onConfigurationChanged(newConfig: Configuration) = Unit
-            override fun onLowMemory() { controller.view.onLowMemory() }
+            override fun onLowMemory() { controller.lowMemory() }
         }
         context.applicationContext.registerComponentCallbacks(memory)
         onDispose {

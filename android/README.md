@@ -59,7 +59,7 @@ Pruebas: políticas y codificación/lectura QR JVM; el emulador Firestore recibe
 
 ## Versión 0.8.0: mapa interactivo nativo
 
-Mapa es una pestaña principal, con acceso destacado desde Inicio y alternancia Lista/Mapa en Explorar. Usa MapLibre Native OpenGL ES 13.6.1 y el estilo Liberty de OpenFreeMap, sin API key ni nuevo proyecto Firebase. La atribución del proveedor permanece visible. La cartografía requiere conexión; no se ofrecen descargas offline ni navegación giro a giro.
+Mapa es una pestaña principal, con acceso destacado desde Inicio y alternancia Lista/Mapa en Explorar. Usa MapLibre Native OpenGL ES 12.0.1 y el estilo Liberty de OpenFreeMap, sin API key ni nuevo proyecto Firebase. La atribución del proveedor permanece visible. La cartografía requiere conexión; no se ofrecen descargas offline ni navegación giro a giro.
 
 Los marcadores usan exclusivamente paradas publicadas y coordenadas válidas de la misma proyección pública del directorio; no se geocodifican direcciones ni se inventan coordenadas. Búsqueda, categoría y favoritos filtran antes de generar GeoJSON; los borradores y registros sin ubicación no entran al mapa. Se agrupan marcadores próximos y se amplían al tocar el grupo; marcadores coincidentes ofrecen selección entre las fichas. Cada parada abre la ficha nativa, permite favoritos y entrega Cómo llegar a una app de mapas del dispositivo. Los filtros se conservan al alternar con Lista.
 
