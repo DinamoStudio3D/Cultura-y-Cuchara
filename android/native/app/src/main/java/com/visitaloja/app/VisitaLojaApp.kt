@@ -87,13 +87,13 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     MaterialTheme(colorScheme = AppColors) {
         Scaffold(
             snackbarHost = { SnackbarHost(snack) },
-            topBar = { AppTopBar(state.loading, model::refresh, tab != "home") { navigate(if (tab == "canton") "cantons" else "home", "all") } },
+            topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home") { navigate(if (tab == "canton") "cantons" else "home", "all") } },
             bottomBar = { AppNavigation(if (tab in setOf("agenda", "cantons", "canton")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
             BrandBackdrop(Modifier.padding(padding).fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
-                if (state.offline) OfflineBanner(state.fetchedAt, state.loading, model::refresh)
+                if (state.offline && tab != "map") OfflineBanner(state.fetchedAt, state.loading, model::refresh)
                 when (tab) {
                     "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh)
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }

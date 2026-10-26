@@ -11,6 +11,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +45,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (String) -> Unit,
     onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit,
@@ -52,6 +59,8 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
     }
     val selected = points.find { it.id == selection }
     val livePoints by rememberUpdatedState(points)
+    var filtersOpen by rememberSaveable { mutableStateOf(false) }
+    var locationDetailsOpen by remember { mutableStateOf(false) }
     val viewport: MapViewportViewModel = viewModel()
     val controller = rememberNativeMapController(viewport.camera)
     var ready by remember { mutableStateOf(false) }
@@ -117,6 +126,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
     }
     SideEffect {
         controller.onGesture = { following = false; refineAccuracy = null }
+        controller.onManualCamera = { refineAccuracy = null }
         controller.onCamera = viewport::update
         controller.onReady = { ready = true; mapError = false }
         controller.onError = { mapError = true }
@@ -137,124 +147,148 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
         if (ready && !state.loading && query.isNotBlank() && points.isNotEmpty() && !following) { delay(300); controller.focus(points) }
     }
     LaunchedEffect(attempt) { delay(25000); if (!ready) mapError = true }
-    Column(Modifier.fillMaxSize()) {
-        Column(Modifier.padding(horizontal = 16.dp).padding(top = 6.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text("Explora Loja", fontSize = 21.sp, fontWeight = FontWeight.ExtraBold)
-                }
-                TextButton(onClick = list) { Icon(Icons.Default.ViewList, null, Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("Lista") }
-            }
-            OutlinedTextField(value = query, onValueChange = { following = false; onQuery(it) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Buscar una parada o un cantón", fontSize = 13.sp) },
-                leadingIcon = { Icon(Icons.Default.Search, null) },
-                trailingIcon = { if (query.isNotBlank()) IconButton(onClick = { following = false; onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } },
-                shape = RoundedCornerShape(16.dp), colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White))
-            Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                listOf("all" to "Todo", "cafe" to "Cafés", "food" to "Sabores", "hotel" to "Hospedaje", "turismo" to "Turismo", "aliado" to "Aliados").forEach { (id, label) ->
-                    FilterChip(selected = category == id, onClick = { following = false; onCategory(id) }, label = { Text(label) }, leadingIcon = {
-                        Icon(when (id) { "cafe" -> Icons.Default.LocalCafe; "food" -> Icons.Default.Restaurant; "hotel" -> Icons.Default.Hotel; "turismo" -> Icons.Default.Park; "aliado" -> Icons.Default.Handshake; else -> Icons.Default.Map }, null, Modifier.size(17.dp),
-                            tint = Color(android.graphics.Color.parseColor(MapPolicy.color(when (id) { "aliado" -> "partner"; else -> id }))))
-                    })
-                }
-                FilterChip(selected = savedOnly, onClick = { following = false; savedOnly = !savedOnly }, label = { Text("Mis favoritos") }, leadingIcon = { Icon(Icons.Default.Favorite, null, Modifier.size(15.dp)) })
-            }
+    val stopLocation: () -> Unit = {
+        tracking = false; following = false; showLocation = false; locationDetailsOpen = false
+        locator.cancel(); location = MapLocationState(); controller.clearPosition()
+    }
+    val openSettings: () -> Unit = {
+        tracking = true; following = true; recenterPending = true
+        val intent = if (location.problem == MapLocationProblem.DISABLED) Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            else Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + context.packageName))
+        try { settings.launch(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "Abre los permisos de ubicación desde Ajustes del teléfono.", Toast.LENGTH_LONG).show() }
+    }
+    BoxWithConstraints(Modifier.fillMaxSize().semantics { testTagsAsResourceId = true }.testTag("map-root")) {
+        val compact = maxHeight < 380.dp
+        val previewSpace = if (selected != null) { if (compact) 96.dp else 180.dp } else 0.dp
+        Box(Modifier.fillMaxSize().testTag("map-canvas")) { NativeMapView(controller, Modifier.fillMaxSize()) }
+        Surface(Modifier.align(Alignment.TopCenter).padding(horizontal = 12.dp, vertical = 10.dp).fillMaxWidth().testTag("map-search-bar"),
+            shape = RoundedCornerShape(20.dp), color = Color.White, shadowElevation = 6.dp) {
+            TextField(value = query, onValueChange = { following = false; onQuery(it) }, singleLine = true,
+                modifier = Modifier.fillMaxWidth(), placeholder = { Text("Busca en VisitaLoja", fontSize = 13.sp) },
+                leadingIcon = { Image(painterResource(R.drawable.visitaloja_logo), "VisitaLoja", Modifier.size(36.dp)) },
+                trailingIcon = { Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (query.isNotBlank()) IconButton(onClick = { following = false; onQuery("") }, modifier = Modifier.size(38.dp)) { Icon(Icons.Default.Close, "Borrar búsqueda", Modifier.size(20.dp)) }
+                    IconButton(onClick = { filtersOpen = true }, modifier = Modifier.size(42.dp)) {
+                        BadgedBox(badge = { if (category != "all" || savedOnly) Badge() }) { Icon(Icons.Default.Tune, "Filtrar mapa", tint = MaterialTheme.colorScheme.primary) }
+                    }
+                    IconButton(onClick = list, modifier = Modifier.size(42.dp)) { Icon(Icons.Default.ViewList, "Ver lista", tint = MaterialTheme.colorScheme.primary) }
+                } },
+                colors = TextFieldDefaults.colors(focusedContainerColor = Color.White, unfocusedContainerColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent), shape = RoundedCornerShape(20.dp))
         }
-        Box(Modifier.weight(1f).fillMaxWidth().heightIn(min = 100.dp)) {
-            NativeMapView(controller, Modifier.fillMaxSize())
-            Surface(Modifier.align(Alignment.TopStart).padding(10.dp), shape = RoundedCornerShape(20.dp), color = Color.White.copy(alpha = .96f)) {
-                Text(if (state.loading && state.places.isEmpty()) "Cargando paradas…" else "${points.size} paradas en el mapa", fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
-            }
-            Column(Modifier.align(Alignment.TopEnd).padding(10.dp).padding(bottom = 30.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                MapControl("Acercar", Icons.Default.Add, ready) { refineAccuracy = null; controller.zoom(1.0) }
-                MapControl("Alejar", Icons.Default.Remove, ready) { refineAccuracy = null; controller.zoom(-1.0) }
-                MapControl("Mostrar todas las paradas filtradas", Icons.Default.CenterFocusStrong, ready) { following = false; controller.focus(points) }
-                MapControl("Volver al centro de Loja", Icons.Default.LocationCity, ready) { following = false; controller.city() }
-                MapControl(if (following) "Siguiendo mi ubicación" else "Volver a mi ubicación", Icons.Default.MyLocation, ready, selected = following && fix != null, click = requestPosition)
-            }
-            Surface(onClick = {
-                try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.openstreetmap.org/copyright"))) }
-                catch (_: ActivityNotFoundException) { }
-            }, modifier = Modifier.align(Alignment.BottomStart).padding(start = 32.dp, bottom = 5.dp), color = Color.White.copy(alpha = .95f), shape = RoundedCornerShape(4.dp)) {
-                Text("© OpenStreetMap contributors", fontSize = 9.sp, color = Color(0xFF17324D), modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp))
-            }
-            if (mapError && ready) Surface(Modifier.align(Alignment.BottomCenter).padding(bottom = 25.dp, start = 8.dp, end = 8.dp), color = Color.White, shape = RoundedCornerShape(10.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Algunas calles no cargaron.", fontSize = 11.sp, modifier = Modifier.padding(start = 10.dp))
-                    TextButton(onClick = { mapError = false; controller.reload() }) { Text("Reintentar", fontSize = 11.sp) }
-                }
-            }
-            if (!ready && !mapError) Surface(Modifier.align(Alignment.Center), shape = RoundedCornerShape(16.dp)) {
-                Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp); Spacer(Modifier.width(12.dp)); Text("Abriendo tu mapa…", fontSize = 13.sp) }
-            }
-            if (mapError && !ready) Surface(Modifier.align(Alignment.Center).padding(20.dp), shape = RoundedCornerShape(18.dp), shadowElevation = 4.dp) {
-                Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("El mapa no terminó de cargar.", fontWeight = FontWeight.Bold)
-                    Text("Comprueba la conexión. Las fichas siguen disponibles en Lista.", fontSize = 12.sp)
-                    Row {
-                        TextButton(onClick = { ready = false; mapError = false; attempt++; controller.reload() }) { Text("Reintentar") }
-                        TextButton(onClick = list) { Text("Ver lista") }
-                    }
-                }
-            }
-        }
-        if (showLocation) LocationStatus(location, fix, following, now,
-            retry = { requestPosition() },
-            improve = { permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) },
-            settings = {
-                tracking = true; following = true; recenterPending = true
-                val intent = if (location.problem == MapLocationProblem.DISABLED) Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                    else Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + context.packageName))
-                try { settings.launch(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "Abre los permisos de ubicación desde Ajustes del teléfono.", Toast.LENGTH_LONG).show() }
-            },
-            stop = { tracking = false; following = false; showLocation = false; locator.cancel(); location = MapLocationState(); controller.clearPosition() })
-        if (selected != null) {
-            val overlap = points.filter { it.id in nearbyIds }
-            if (overlap.size > 1) Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                overlap.forEach { place -> FilterChip(selected = selected.id == place.id, onClick = { selection = place.id }, label = { Text(place.title, maxLines = 1) }) }
-            }
-            Surface(color = Color.White, shadowElevation = 5.dp) {
-                Column(Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        AsyncImage(model = selected.imageUrl, contentDescription = null, placeholder = painterResource(R.drawable.visitaloja_logo),
-                            error = painterResource(R.drawable.visitaloja_logo), contentScale = ContentScale.Crop,
-                            modifier = Modifier.size(60.dp).clip(RoundedCornerShape(12.dp)))
-                        Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                            Text(selected.categoryLabel, fontSize = 10.sp, color = MaterialTheme.colorScheme.primary)
-                            Text(selected.title, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            Text(selected.address, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        }
-                        IconButton(onClick = { favourite(selected.id) }) {
-                            Icon(if (selected.id in state.favourites) Icons.Default.Favorite else Icons.Default.FavoriteBorder, "Guardar o quitar de favoritos")
-                        }
-                    }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = { detail(selected) }, modifier = Modifier.weight(1f), contentPadding = PaddingValues(8.dp)) { Text("Ver parada") }
-                        OutlinedButton(onClick = {
-                            val destination = "${selected.latitude},${selected.longitude}"
-                            try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + Uri.encode(destination + "(" + selected.title + ")")))) }
-                            catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay una aplicación de mapas disponible.", Toast.LENGTH_LONG).show() }
-                        }, modifier = Modifier.weight(1f), contentPadding = PaddingValues(8.dp)) { Icon(Icons.Default.Directions, null, Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("Cómo llegar") }
-                    }
-                }
-            }
-        } else {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (!compact || (!showLocation && selected == null)) Surface(onClick = {
+            following = false
+            if (mapError) { mapError = false; controller.reload() } else controller.focus(points)
+        }, modifier = Modifier.align(Alignment.TopStart).padding(start = 14.dp, top = 78.dp).widthIn(max = 220.dp), shape = RoundedCornerShape(18.dp), color = Color.White.copy(alpha = .96f), shadowElevation = 2.dp) {
+            Row(Modifier.padding(horizontal = 10.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(if (mapError) Icons.Default.Refresh else Icons.Default.CenterFocusStrong, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
                 Text(when {
-                    state.error != null && points.isEmpty() -> state.error
-                    points.isEmpty() && !state.loading -> "No hay paradas con ubicación para estos filtros. Prueba otra búsqueda o abre Lista."
-                    else -> "Toca un icono o un logo para ver la parada. Acerca el mapa para separarlos."
-                }, fontSize = 11.sp, modifier = Modifier.weight(1f))
-                if (state.error != null) TextButton(onClick = retry) { Text("Actualizar") }
+                    mapError -> "Reintentar cartografía"
+                    state.loading && state.places.isEmpty() -> "Cargando paradas…"
+                    points.isEmpty() -> "Sin coincidencias · Ver todas"
+                    state.offline -> "${points.size} paradas guardadas"
+                    else -> "${points.size} paradas · Ver todas"
+                }, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
+            }
+        }
+        if (!compact) Surface(Modifier.align(Alignment.TopEnd).padding(end = 14.dp, top = 78.dp), shape = RoundedCornerShape(16.dp), color = Color.White, shadowElevation = 5.dp) {
+            Column {
+                IconButton(onClick = { refineAccuracy = null; controller.zoom(1.0) }, enabled = ready) { Icon(Icons.Default.Add, "Acercar", tint = MaterialTheme.colorScheme.primary) }
+                HorizontalDivider(Modifier.width(48.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                IconButton(onClick = { refineAccuracy = null; controller.zoom(-1.0) }, enabled = ready) { Icon(Icons.Default.Remove, "Alejar", tint = MaterialTheme.colorScheme.primary) }
+            }
+        }
+        val locationModifier = if (compact) Modifier.align(Alignment.TopEnd).padding(end = 14.dp, top = 82.dp)
+            else Modifier.align(Alignment.BottomEnd).padding(end = 14.dp, bottom = 36.dp + previewSpace)
+        FilledIconButton(onClick = requestPosition, enabled = ready, modifier = locationModifier.size(52.dp).shadow(5.dp, CircleShape).testTag("map-location-control"),
+            colors = IconButtonDefaults.filledIconButtonColors(containerColor = if (following && fix != null) MaterialTheme.colorScheme.primary else Color.White,
+                contentColor = if (following && fix != null) Color.White else MaterialTheme.colorScheme.primary)) {
+            Icon(if (following && fix != null) Icons.Default.MyLocation else Icons.Default.LocationSearching, "Mi ubicación")
+        }
+        if (showLocation) {
+            val accuracy = fix?.accuracy?.let { if (it < 1000) "±${ceil(it.toDouble()).toInt()} m" else String.format(java.util.Locale.getDefault(), "±%.1f km", it / 1000f) }
+            Surface(onClick = { locationDetailsOpen = true }, modifier = Modifier.align(Alignment.BottomStart).padding(start = 14.dp, bottom = 38.dp + previewSpace)
+                .widthIn(max = 225.dp).testTag("map-location-status"), color = Color.White.copy(alpha = .97f), shape = RoundedCornerShape(20.dp), shadowElevation = 3.dp) {
+                Row(Modifier.padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(if (fix != null) Icons.Default.MyLocation else Icons.Default.LocationSearching, null, Modifier.size(15.dp), tint = MaterialTheme.colorScheme.primary)
+                    Text(when {
+                        location.problem == MapLocationProblem.PERMISSION -> "Permitir ubicación"
+                        location.problem == MapLocationProblem.DISABLED -> "Activar GPS"
+                        fix != null -> (if (following) "Siguiendo · " else "Mi ubicación · ") + accuracy
+                        location.problem == MapLocationProblem.NO_SIGNAL -> "GPS sin señal · Ver opciones"
+                        else -> "Buscando GPS…"
+                    }, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(horizontal = 6.dp))
+                    Icon(Icons.Default.ChevronRight, "Ver detalles de ubicación", Modifier.size(14.dp))
+                }
+            }
+        }
+        Surface(onClick = {
+            try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.openstreetmap.org/copyright"))) } catch (_: ActivityNotFoundException) { }
+        }, modifier = Modifier.align(Alignment.BottomStart).padding(start = 32.dp, bottom = 4.dp), color = Color.White.copy(alpha = .95f), shape = RoundedCornerShape(4.dp)) {
+            Text("© OpenStreetMap contributors", fontSize = 9.sp, color = Color(0xFF17324D), modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp))
+        }
+        if (!ready && !mapError) Surface(Modifier.align(Alignment.Center), shape = RoundedCornerShape(16.dp)) {
+            Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp); Spacer(Modifier.width(12.dp)); Text("Abriendo tu mapa…", fontSize = 13.sp) }
+        }
+        if (mapError && !ready) Surface(Modifier.align(Alignment.Center).padding(20.dp), shape = RoundedCornerShape(18.dp), shadowElevation = 4.dp) {
+            Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("No pudimos abrir el mapa.", fontWeight = FontWeight.Bold)
+                Row {
+                    TextButton(onClick = { ready = false; mapError = false; attempt++; controller.reload() }) { Text("Reintentar") }
+                    TextButton(onClick = list) { Text("Ver lista") }
+                }
+            }
+        }
+        if (selected != null) Surface(Modifier.align(Alignment.BottomCenter).padding(start = 12.dp, end = 12.dp, bottom = 28.dp).fillMaxWidth().testTag("map-place-preview"),
+            shape = RoundedCornerShape(18.dp), color = Color.White, shadowElevation = 7.dp) {
+            Column(Modifier.padding(12.dp)) {
+                val overlap = points.filter { it.id in nearbyIds }
+                if (!compact && overlap.size > 1) Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    overlap.forEach { place -> FilterChip(selected = selected.id == place.id, onClick = { selection = place.id }, label = { Text(place.title, maxLines = 1) }) }
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    AsyncImage(model = selected.imageUrl, contentDescription = null, placeholder = painterResource(R.drawable.visitaloja_logo),
+                        error = painterResource(R.drawable.visitaloja_logo), contentScale = ContentScale.Crop, modifier = Modifier.size(if (compact) 40.dp else 48.dp).clip(RoundedCornerShape(10.dp)))
+                    Column(Modifier.weight(1f).padding(start = 10.dp)) {
+                        Text(selected.title, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(selected.categoryLabel, fontSize = 11.sp, color = MaterialTheme.colorScheme.primary)
+                    }
+                    if (compact) IconButton(onClick = { detail(selected) }) { Icon(Icons.Default.OpenInNew, "Ver parada") }
+                    else IconButton(onClick = { favourite(selected.id) }) { Icon(if (selected.id in state.favourites) Icons.Default.Favorite else Icons.Default.FavoriteBorder, "Guardar o quitar de favoritos") }
+                    IconButton(onClick = { selection = null; nearbyIds = emptyList() }) { Icon(Icons.Default.Close, "Cerrar parada") }
+                }
+                if (!compact) Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = { detail(selected) }, modifier = Modifier.weight(1f), contentPadding = PaddingValues(8.dp)) { Text("Ver parada") }
+                    OutlinedButton(onClick = {
+                        val destination = "${selected.latitude},${selected.longitude}"
+                        try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + Uri.encode(destination + "(" + selected.title + ")")))) }
+                        catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay una aplicación de mapas disponible.", Toast.LENGTH_LONG).show() }
+                    }, modifier = Modifier.weight(1f), contentPadding = PaddingValues(8.dp)) { Icon(Icons.Default.Directions, null, Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("Cómo llegar") }
+                }
             }
         }
     }
-}
-
-@Composable
-private fun MapControl(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, enabled: Boolean, selected: Boolean = false, click: () -> Unit) {
-    Surface(shape = RoundedCornerShape(12.dp), color = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.White, shadowElevation = 3.dp) {
-        IconButton(onClick = click, enabled = enabled) { Icon(icon, label, tint = if (enabled) MaterialTheme.colorScheme.primary else Color.Gray) }
+    if (filtersOpen) ModalBottomSheet(onDismissRequest = { filtersOpen = false }) {
+        Column(Modifier.fillMaxWidth().heightIn(max = 460.dp).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).padding(bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Explora a tu manera", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            listOf("all" to "Todo", "cafe" to "Cafés", "food" to "Sabores", "hotel" to "Hospedaje", "turismo" to "Turismo", "aliado" to "Aliados").chunked(3).forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { row.forEach { (id, label) ->
+                    FilterChip(selected = category == id, onClick = { following = false; onCategory(id); filtersOpen = false }, label = { Text(label, fontSize = 12.sp) })
+                } }
+            }
+            FilterChip(selected = savedOnly, onClick = { following = false; savedOnly = !savedOnly; filtersOpen = false }, label = { Text("Mis favoritos") }, leadingIcon = { Icon(Icons.Default.Favorite, null, Modifier.size(16.dp)) })
+            HorizontalDivider()
+            TextButton(onClick = { following = false; controller.focus(points); filtersOpen = false }) { Icon(Icons.Default.CenterFocusStrong, null); Spacer(Modifier.width(10.dp)); Text("Ver todas las paradas filtradas") }
+            TextButton(onClick = { following = false; controller.city(); filtersOpen = false }) { Icon(Icons.Default.LocationCity, null); Spacer(Modifier.width(10.dp)); Text("Volver al centro de Loja") }
+            TextButton(onClick = { retry(); controller.reload(); filtersOpen = false }) { Icon(Icons.Default.Refresh, null); Spacer(Modifier.width(10.dp)); Text("Actualizar mapa y paradas") }
+            if (category != "all" || savedOnly || query.isNotBlank()) TextButton(onClick = { onCategory("all"); onQuery(""); savedOnly = false; filtersOpen = false }) { Text("Quitar filtros") }
+        }
+    }
+    if (locationDetailsOpen) ModalBottomSheet(onDismissRequest = { locationDetailsOpen = false }) {
+        LocationDetails(location, fix, following, now,
+            center = { requestPosition(); locationDetailsOpen = false },
+            improve = { permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) },
+            settings = openSettings, stop = stopLocation, dismiss = { locationDetailsOpen = false })
     }
 }
 
@@ -275,38 +309,34 @@ fun MapShortcut(open: () -> Unit) {
 }
 
 @Composable
-private fun LocationStatus(state: MapLocationState, fix: MapFix?, following: Boolean, now: Long,
-    retry: () -> Unit, improve: () -> Unit, settings: () -> Unit, stop: () -> Unit) {
+private fun LocationDetails(state: MapLocationState, fix: MapFix?, following: Boolean, now: Long,
+    center: () -> Unit, improve: () -> Unit, settings: () -> Unit, stop: () -> Unit, dismiss: () -> Unit) {
     val accuracy = fix?.accuracy?.let { if (it < 1000) "${ceil(it.toDouble()).toInt()} m" else String.format(java.util.Locale.getDefault(), "%.1f km", it / 1000f) }
-    val text = when {
-        state.problem == MapLocationProblem.PERMISSION -> "Falta permiso de ubicación. Puedes seguir usando el mapa."
-        state.problem == MapLocationProblem.DISABLED -> "La ubicación del teléfono está desactivada."
-        fix != null -> (if (state.precise && fix.accuracy <= 100) "Ubicación actual" else "Ubicación aproximada") + " · margen estimado ±" + accuracy
-        state.problem == MapLocationProblem.NO_SIGNAL -> "Aún no hay señal suficiente. Prueba cerca de una ventana o al aire libre."
-        else -> "Buscando una ubicación actual…"
-    }
-    Surface(color = MaterialTheme.colorScheme.primaryContainer) {
-        Column(Modifier.padding(horizontal = 14.dp, vertical = 8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(if (fix != null) Icons.Default.MyLocation else Icons.Default.LocationSearching, null, Modifier.size(20.dp))
-                Text(text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f).padding(start = 8.dp))
-                IconButton(onClick = stop, modifier = Modifier.size(40.dp)) { Icon(Icons.Default.Close, "Detener ubicación") }
-            }
-            if (fix != null) Text(when {
-                now - fix.elapsedMillis > 10000 -> "Última señal hace ${(now - fix.elapsedMillis) / 1000} s; esperando una actualización."
-                !state.precise -> "Android solo permite ubicación aproximada. Puedes activar la precisa."
-                fix.accuracy > 100 -> "El GPS está afinando la posición. El círculo muestra el margen de error."
-                following -> "La posición se actualiza mientras tienes abierto el mapa."
-                else -> "Puedes explorar libremente. Pulsa Mi ubicación para volver a seguirte."
-            }, fontSize = 11.sp)
-            Row(Modifier.horizontalScroll(rememberScrollState())) {
-                if (state.problem == MapLocationProblem.DISABLED || state.problem == MapLocationProblem.PERMISSION) TextButton(onClick = settings) { Text("Abrir ajustes") }
-                else if (!state.precise) {
-                    TextButton(onClick = improve) { Text("Mejorar precisión") }
-                    TextButton(onClick = settings) { Text("Ajustes") }
-                }
-                TextButton(onClick = retry) { Text(if (fix != null) "Centrar en mí" else "Reintentar") }
-            }
+    Column(Modifier.fillMaxWidth().heightIn(max = 420.dp).verticalScroll(rememberScrollState()).padding(horizontal = 22.dp).padding(bottom = 22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Tu ubicación", fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+            IconButton(onClick = dismiss) { Icon(Icons.Default.Close, "Cerrar detalles") }
         }
+        Text(when {
+            state.problem == MapLocationProblem.PERMISSION -> "Permite la ubicación desde los ajustes del teléfono para encontrarte en el mapa."
+            state.problem == MapLocationProblem.DISABLED -> "La ubicación del teléfono está desactivada."
+            fix != null -> "Margen estimado: ±" + accuracy
+            state.problem == MapLocationProblem.NO_SIGNAL -> "Aún no hay señal suficiente. Cerca de una ventana o al aire libre suele mejorar."
+            else -> "Buscando una señal actual…"
+        }, fontWeight = FontWeight.SemiBold)
+        if (fix != null) Text(when {
+            now - fix.elapsedMillis > 10000 -> "Última señal hace ${(now - fix.elapsedMillis) / 1000} s. Esperando una actualización."
+            !state.precise -> "Android solo permite ubicación aproximada. Puedes activar la precisa."
+            following -> "El mapa sigue tu posición. Puedes cambiar el zoom sin perder el seguimiento; arrastrar el mapa lo pausa."
+            else -> "Has movido el mapa. Pulsa Centrar en mí para volver a seguir tu posición."
+        }, fontSize = 13.sp)
+        Button(onClick = center, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.MyLocation, null); Spacer(Modifier.width(8.dp)); Text("Centrar en mí") }
+        if (state.problem == MapLocationProblem.DISABLED || state.problem == MapLocationProblem.PERMISSION) OutlinedButton(onClick = settings, modifier = Modifier.fillMaxWidth()) { Text("Abrir ajustes") }
+        else if (!state.precise) {
+            OutlinedButton(onClick = improve, modifier = Modifier.fillMaxWidth()) { Text("Permitir ubicación precisa") }
+            TextButton(onClick = settings) { Text("Abrir ajustes del teléfono") }
+        }
+        TextButton(onClick = stop) { Icon(Icons.Default.LocationOff, null); Spacer(Modifier.width(8.dp)); Text("Detener ubicación") }
+        Text("Se actualiza solo mientras usas este mapa. No se guarda en tu cuenta.", fontSize = 11.sp)
     }
 }

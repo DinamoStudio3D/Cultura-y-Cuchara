@@ -20,6 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.json.JSONObject
+import org.maplibre.android.gestures.MoveGestureDetector
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -63,6 +64,7 @@ class NativeMapController(private val context: Context, private val initialCamer
     private var selected: String? = null
     private var location: MapFix? = null
     var onGesture: () -> Unit = {}
+    var onManualCamera: () -> Unit = {}
     var onCamera: (MapCamera) -> Unit = {}
     var onReady: () -> Unit = {}
     var onError: () -> Unit = {}
@@ -87,7 +89,12 @@ class NativeMapController(private val context: Context, private val initialCamer
                 readyMap.setMinZoomPreference(3.0)
                 readyMap.setMaxZoomPreference(19.0)
                 readyMap.cameraPosition = CameraPosition.Builder().target(LatLng(initialCamera.latitude, initialCamera.longitude)).zoom(initialCamera.zoom).bearing(initialCamera.bearing).tilt(initialCamera.tilt).build()
-                readyMap.addOnCameraMoveStartedListener { reason -> if (alive && reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) onGesture() }
+                readyMap.addOnCameraMoveStartedListener { reason -> if (alive && reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) onManualCamera() }
+                readyMap.addOnMoveListener(object : MapLibreMap.OnMoveListener {
+                    override fun onMoveBegin(detector: MoveGestureDetector) { if (alive && detector.pointersCount == 1) onGesture() }
+                    override fun onMove(detector: MoveGestureDetector) = Unit
+                    override fun onMoveEnd(detector: MoveGestureDetector) = Unit
+                })
                 readyMap.addOnMapClickListener { point ->
                     val current = style
                     if (!alive || current == null) false else {
@@ -239,7 +246,7 @@ class NativeMapController(private val context: Context, private val initialCamer
     fun resume() { start(); if (alive && !resumed) { view.onResume(); resumed = true; loadVisibleLogos() } }
     fun pause() { if (alive && resumed) { view.onPause(); resumed = false } }
     fun stop() { pause(); if (alive && started) { view.onStop(); started = false } }
-    fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); logoAttempts.clear(); logoRetryAt.clear(); onSelect = {}; onGesture = {}; onCamera = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
+    fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); logoAttempts.clear(); logoRetryAt.clear(); onSelect = {}; onGesture = {}; onManualCamera = {}; onCamera = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
 
 }
 
