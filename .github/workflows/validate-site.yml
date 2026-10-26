@@ -40,7 +40,7 @@ jobs:
           scripts/test-map-tile-loading.cjs
           scripts/test-responsive-photos.cjs
           scripts/test-place-discovery.mjs
-          scripts/test-place-search.cjs scripts/test-push-test.cjs
+          scripts/test-place-search.cjs scripts/test-push-test.cjs scripts/test-push-campaigns.cjs
           scripts/test-saved-places.mjs
 
   firestore:
