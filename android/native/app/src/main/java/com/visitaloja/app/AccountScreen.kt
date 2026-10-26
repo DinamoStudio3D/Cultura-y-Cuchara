@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: AccountViewModel) {
+fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: AccountViewModel, wallet: () -> Unit) {
     val context = LocalContext.current
     val links = LocalUriHandler.current
     var email by rememberSaveable { mutableStateOf("") }
@@ -74,7 +74,8 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
             Text(if (!state.favouritesReady) "Consultando tus favoritos…" else "${state.favourites.size} lugares guardados en tu cuenta. Los cambios se comparten con la web.", fontSize = 14.sp)
             if (state.fromCache) Text("Sin confirmación del servidor. Conéctate para consultar y cambiar tus favoritos.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (guestFavourites.isNotEmpty()) OutlinedButton(onClick = { confirmImport = true }, enabled = !state.busy && state.favouritesReady && !state.fromCache, modifier = Modifier.fillMaxWidth()) { Text("Añadir favoritos de este teléfono (${guestFavourites.size})") }
-            Text("Pasaporte, tarjetas y sellos se incorporarán en el siguiente bloque. Iniciar sesión no crea visitas ni modifica recompensas.", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            OutlinedButton(onClick = wallet, modifier = Modifier.fillMaxWidth()) { Text("Ver mi pasaporte y mis tarjetas") }
+            Text("Consulta tus sellos y recompensas en Pasaporte. Iniciar sesión no crea visitas ni modifica recompensas.", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (state.profileError != null) Text(state.profileError, color = MaterialTheme.colorScheme.error)
             if (state.favouritesError != null) Text(state.favouritesError, color = MaterialTheme.colorScheme.error)
             TextButton(onClick = model::retry, enabled = !state.busy) { Text("Actualizar mi información") }

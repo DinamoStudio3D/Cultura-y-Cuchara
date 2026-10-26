@@ -41,9 +41,9 @@ jobs:
       - name: Preparar APK de pruebas
         run: |
           mkdir -p android/native/dist
-          cp android/native/app/build/outputs/apk/debug/app-debug.apk android/native/dist/VisitaLoja-0.2.0-prueba.apk
+          cp android/native/app/build/outputs/apk/debug/app-debug.apk android/native/dist/VisitaLoja-0.3.0-prueba.apk
           cd android/native/dist
-          sha256sum VisitaLoja-0.2.0-prueba.apk > SHA256SUMS.txt
+          sha256sum VisitaLoja-0.3.0-prueba.apk > SHA256SUMS.txt
       - name: Guardar APK
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

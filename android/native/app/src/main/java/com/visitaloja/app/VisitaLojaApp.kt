@@ -55,6 +55,8 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel()) {
+    val wallet: WalletViewModel = viewModel()
+    val walletState by wallet.state.collectAsStateWithLifecycle()
     val guestState by model.state.collectAsStateWithLifecycle()
     val accountState by account.state.collectAsStateWithLifecycle()
     val snack = remember { SnackbarHostState() }
@@ -62,6 +64,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     val state = guestState.copy(favourites = if (accountState.uid == null) guestState.favourites else accountState.favourites)
     val favourite: (String) -> Unit = { id -> if (accountState.uid == null) model.toggleFavourite(id) else account.toggleFavourite(id) }
     var tab by rememberSaveable { mutableStateOf("home") }
+    LaunchedEffect(accountState.uid, tab) { wallet.bind(if (tab == "passport") accountState.uid else null) }
     var category by rememberSaveable { mutableStateOf("all") }
     var query by rememberSaveable { mutableStateOf("") }
     var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -78,7 +81,8 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
             Column(Modifier.padding(padding).fillMaxSize()) {
                 if (state.offline) OfflineBanner(state.fetchedAt, state.loading, model::refresh)
                 when (tab) {
-                    "account" -> AccountScreen(accountState, guestState.favourites, account)
+                    "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
+                    "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }) { wallet.bind(accountState.uid); model.refresh() }
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite)
                     else -> {
                         if (tab == "saved" && accountState.uid != null) {
@@ -117,7 +121,7 @@ private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, 
 private fun AppNavigation(tab: String, navigate: (String) -> Unit) {
     NavigationBar(containerColor = Color.White, tonalElevation = 0.dp) {
         listOf(Triple("home", "Inicio", Icons.Default.Home), Triple("explore", "Explorar", Icons.Default.Explore), Triple("passport", "Pasaporte", Icons.Default.MenuBook), Triple("saved", "Favoritos", Icons.Default.FavoriteBorder), Triple("account", "Mi cuenta", Icons.Default.PersonOutline)).forEach { (id, label, icon) ->
-            NavigationBarItem(selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "explore", "saved", "account"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
+            NavigationBarItem(selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "explore", "saved", "account", "passport"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
         }
     }
 }
@@ -179,7 +183,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
             Surface(Modifier.padding(horizontal = 22.dp), shape = RoundedCornerShape(18.dp), color = Pale) {
                 Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.MenuBook, null, tint = Blue, modifier = Modifier.size(34.dp))
-                    Column(Modifier.padding(start = 14.dp)) { Eyebrow("TU RECORRIDO TIENE RECOMPENSA"); Text("Mucho más que visitar.", fontWeight = FontWeight.Bold, fontSize = 17.sp); Text("Ingresa en Mi cuenta para guardar tus favoritos. El pasaporte llegará en el siguiente bloque.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 5.dp)) }
+                    Column(Modifier.padding(start = 14.dp)) { Eyebrow("TU RECORRIDO TIENE RECOMPENSA"); Text("Mucho más que visitar.", fontWeight = FontWeight.Bold, fontSize = 17.sp); Text("Ingresa en Mi cuenta y consulta tus sellos y tarjetas desde Pasaporte.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 5.dp)) }
                 }
             }
         }
