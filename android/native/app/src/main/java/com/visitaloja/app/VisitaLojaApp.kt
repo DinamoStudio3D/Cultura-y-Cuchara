@@ -88,16 +88,17 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
         Scaffold(
             snackbarHost = { SnackbarHost(snack) },
             topBar = { AppTopBar(state.loading, model::refresh, tab != "home") { navigate(if (tab == "canton") "cantons" else "home", "all") } },
-            bottomBar = { AppNavigation(if (tab in setOf("agenda", "cantons", "canton")) "home" else tab) { navigate(it, "all") } },
+            bottomBar = { AppNavigation(if (tab in setOf("agenda", "cantons", "canton")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
             BrandBackdrop(Modifier.padding(padding).fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
                 if (state.offline) OfflineBanner(state.fetchedAt, state.loading, model::refresh)
                 when (tab) {
+                    "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh)
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
-                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") })
+                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") })
                     "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
                     "cantons", "canton" -> {
                         val canton = CantonPolicy.catalogue.find { it.id == selectedCantonId }
@@ -109,7 +110,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                         if (tab == "saved" && accountState.uid != null) {
                             Text(if (accountState.busy) "Guardando cambios…" else accountState.favouritesError ?: if (!accountState.favouritesReady) "Consultando tu cuenta…" else if (accountState.fromCache) "Conéctate para sincronizar tus favoritos." else accountState.message ?: "Favoritos de tu cuenta, compartidos con la web.", fontSize = 12.sp, color = Blue, modifier = Modifier.padding(horizontal = 22.dp, vertical = 8.dp))
                         }
-                        ExploreScreen(state, tab == "saved", query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, accountState.uid != null) { model.refresh() }
+                        ExploreScreen(state, tab == "saved", query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, accountState.uid != null, { tab = "map" }) { model.refresh() }
                     }
                 }
             }
@@ -148,8 +149,8 @@ private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, 
 @Composable
 private fun AppNavigation(tab: String, navigate: (String) -> Unit) {
     NavigationBar(containerColor = Color(0xFFF0F7FF), tonalElevation = 0.dp) {
-        listOf(Triple("home", "Inicio", Icons.Default.Home), Triple("explore", "Explorar", Icons.Default.Explore), Triple("passport", "Pasaporte", Icons.Default.MenuBook), Triple("saved", "Favoritos", Icons.Default.FavoriteBorder), Triple("account", "Mi cuenta", Icons.Default.PersonOutline)).forEach { (id, label, icon) ->
-            NavigationBarItem(selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "explore", "saved", "account", "passport"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
+        listOf(Triple("home", "Inicio", Icons.Default.Home), Triple("map", "Mapa", Icons.Default.Map), Triple("passport", "Pasaporte", Icons.Default.MenuBook), Triple("saved", "Favoritos", Icons.Default.FavoriteBorder), Triple("account", "Mi cuenta", Icons.Default.PersonOutline)).forEach { (id, label, icon) ->
+            NavigationBarItem(selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "map", "saved", "account", "passport"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
         }
     }
 }
@@ -169,7 +170,7 @@ private fun OfflineBanner(time: Long, loading: Boolean, retry: () -> Unit) {
 }
 
 @Composable
-private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit) {
+private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit, openMap: () -> Unit) {
     LazyColumn(contentPadding = PaddingValues(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
         item {
             Column(Modifier.padding(horizontal = 22.dp).padding(top = 12.dp)) {
@@ -181,6 +182,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
             }
         }
         item { Hero(explore) }
+        item { MapShortcut(openMap) }
         item { HomeAgenda(agenda, openAgenda, event) }
         item { CantonsShortcut(openCantons) }
         item {
@@ -235,7 +237,7 @@ private fun Hero(explore: (String) -> Unit) {
 }
 
 @Composable
-private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String, category: String, onQuery: (String) -> Unit, onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, signedIn: Boolean, retry: () -> Unit) {
+private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String, category: String, onQuery: (String) -> Unit, onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, signedIn: Boolean, openMap: () -> Unit, retry: () -> Unit) {
     val places = remember(state.places, state.favourites, query, category, onlySaved) { state.places.filter { PlacePolicy.matches(it, query, if (onlySaved) "all" else category) && (!onlySaved || it.id in state.favourites) } }
     LazyColumn(contentPadding = PaddingValues(horizontal = 22.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
@@ -245,6 +247,9 @@ private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String,
                 OutlinedTextField(colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White.copy(alpha = .8f), focusedContainerColor = Color.White), value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
                 if (onlySaved) Text(if (signedIn) "Usas los mismos favoritos que en VisitaLoja.com." else "Guardados en este teléfono. Ingresa en Mi cuenta para consultar tus favoritos de la web.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 12.dp))
             }
+        }
+        if (!onlySaved) item {
+            OutlinedButton(onClick = openMap, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Map, null); Spacer(Modifier.width(8.dp)); Text("Ver estos lugares en el mapa") }
         }
         if (!onlySaved) item {
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

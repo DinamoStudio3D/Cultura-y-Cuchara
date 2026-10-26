@@ -10,8 +10,8 @@ android {
         applicationId = "com.visitaloja.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "0.7.0"
+        versionCode = 8
+        versionName = "0.8.0"
     }
     buildTypes {
         debug { applicationIdSuffix = ".preview"; versionNameSuffix = "-preview"; resValue("string", "app_name", "VisitaLoja Prueba") }
@@ -31,6 +31,7 @@ val syncBrandAssets by tasks.registering(Copy::class) {
 }
 tasks.named("preBuild") { dependsOn(syncBrandAssets) }
 dependencies {
+    implementation("org.maplibre.gl:android-sdk-opengl:13.6.1")
     implementation("com.google.zxing:core:3.5.3")
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-auth")
