@@ -48,7 +48,7 @@ private val Blue = Color(0xFF075BB2)
 private val Ink = Color(0xFF172D45)
 private val Muted = Color(0xFF5C7289)
 private val Pale = Color(0xFFF2F7FD)
-private val AppColors = lightColorScheme(primary = Blue, onPrimary = Color.White, primaryContainer = Color(0xFFE5F1FF), onPrimaryContainer = Blue, background = Color.White, onBackground = Ink, surface = Color.White, onSurface = Ink, surfaceVariant = Pale, onSurfaceVariant = Muted, outlineVariant = Color(0xFFDCE7F2))
+private val AppColors = lightColorScheme(primary = Blue, onPrimary = Color.White, primaryContainer = Color(0xFFE5F1FF), onPrimaryContainer = Blue, background = Color(0xFFF0F7FF), onBackground = Ink, surface = Color.White, onSurface = Ink, surfaceVariant = Pale, onSurfaceVariant = Muted, outlineVariant = Color(0xFFDCE7F2))
 private data class Category(val id: String, val name: String, val icon: ImageVector)
 private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.LocalCafe), Category("hotel", "Hospedaje", Icons.Default.Hotel), Category("food", "Gastronomía", Icons.Default.Restaurant), Category("turismo", "Turismo", Icons.Default.Explore))
 
@@ -76,9 +76,10 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
             snackbarHost = { SnackbarHost(snack) },
             topBar = { AppTopBar(state.loading, model::refresh, tab != "home") { navigate("home", "all") } },
             bottomBar = { AppNavigation(tab) { navigate(it, "all") } },
-            containerColor = Color.White
+            containerColor = Color(0xFFF0F7FF)
         ) { padding ->
-            Column(Modifier.padding(padding).fillMaxSize()) {
+            BrandBackdrop(Modifier.padding(padding).fillMaxSize()) {
+            Column(Modifier.fillMaxSize()) {
                 if (state.offline) OfflineBanner(state.fetchedAt, state.loading, model::refresh)
                 when (tab) {
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
@@ -92,6 +93,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                     }
                 }
             }
+            }
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
@@ -103,7 +105,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
 
 @Composable
 private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, back: () -> Unit) {
-    Surface(color = Color.White) {
+    Surface(color = Color(0xFFF0F7FF)) {
         Row(Modifier.statusBarsPadding().fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             if (showBack) IconButton(onClick = back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver a Inicio") }
             Image(painterResource(R.drawable.visitaloja_logo), "VisitaLoja.com", Modifier.size(54.dp))
@@ -119,7 +121,7 @@ private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, 
 
 @Composable
 private fun AppNavigation(tab: String, navigate: (String) -> Unit) {
-    NavigationBar(containerColor = Color.White, tonalElevation = 0.dp) {
+    NavigationBar(containerColor = Color(0xFFF0F7FF), tonalElevation = 0.dp) {
         listOf(Triple("home", "Inicio", Icons.Default.Home), Triple("explore", "Explorar", Icons.Default.Explore), Triple("passport", "Pasaporte", Icons.Default.MenuBook), Triple("saved", "Favoritos", Icons.Default.FavoriteBorder), Triple("account", "Mi cuenta", Icons.Default.PersonOutline)).forEach { (id, label, icon) ->
             NavigationBarItem(selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "explore", "saved", "account", "passport"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
         }
@@ -212,7 +214,7 @@ private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String,
             Column {
                 Eyebrow(if (onlySaved) "TUS LUGARES, A MANO" else "ENCUENTRA TU PRÓXIMA PARADA")
                 Text(if (onlySaved) "Tus favoritos" else "Explora Loja", fontSize = 29.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.padding(top = 5.dp, bottom = 17.dp))
-                OutlinedTextField(value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
+                OutlinedTextField(colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White.copy(alpha = .8f), focusedContainerColor = Color.White), value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
                 if (onlySaved) Text(if (signedIn) "Usas los mismos favoritos que en VisitaLoja.com." else "Guardados en este teléfono. Ingresa en Mi cuenta para consultar tus favoritos de la web.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 12.dp))
             }
         }
