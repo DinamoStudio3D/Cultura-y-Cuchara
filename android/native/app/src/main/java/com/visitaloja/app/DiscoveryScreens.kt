@@ -50,7 +50,7 @@ fun DiscoveryHome(state: DiscoveryState, open: (String) -> Unit) {
         Text("OTRAS FORMAS DE VIVIR LOJA", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = DiscoveryBlue)
         Text("Mira, recuerda y escucha", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            item { DiscoveryShortcut("Loja en imágenes", "Paisajes con nombre y autor", state.photos.value.firstOrNull { it.section == "Loja en imágenes" }?.url ?: "https://www.visitaloja.com/assets/photos/jipiro-laguna.webp", Icons.Default.PhotoLibrary, "open-photos") { open("photos") } }
+            item { DiscoveryShortcut("Loja en imágenes", "Paisajes con nombre y autor", state.photos.value.firstOrNull { it.section == "Loja en imágenes" }?.url, Icons.Default.PhotoLibrary, "open-photos") { open("photos") } }
             item { DiscoveryShortcut("Loja en el Tiempo", "Desliza entre el ayer y el hoy", state.history.value.firstOrNull()?.present, Icons.Default.Compare, "open-time") { open("time") } }
             item { DiscoveryShortcut("El podcast", "Historias para escuchar", state.podcast.value?.cover, Icons.Default.Headphones, "open-podcast") { open("podcast") } }
         }
@@ -236,7 +236,7 @@ fun PodcastScreen(content: PublicContent<LojaPodcast?>, audio: DiscoveryAudioSta
                 }
             } }
             item { Text("El audio se reproduce con conexión a internet y se pausa cuando sales de la app.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            item { TextButton(onClick = { discoveryShare(context, podcast.title, "https://www.visitaloja.com/#podcast-section") }) { Icon(Icons.Default.Share, null); Spacer(Modifier.width(8.dp)); Text("Compartir podcast") } }
+            item { TextButton(onClick = { discoveryShare(context, podcast.title, "https://www.visitaloja.com/#podcast") }) { Icon(Icons.Default.Share, null); Spacer(Modifier.width(8.dp)); Text("Compartir podcast") } }
         }
     }
 }

@@ -50,6 +50,7 @@ def home_card(tag):
     raise AssertionError('Home discovery card missing: ' + tag)
 
 try:
+    adb('shell', 'settings', 'put', 'system', 'font_scale', '1.0')
     adb('shell', 'am', 'force-stop', PKG)
     adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
     time.sleep(4)
@@ -100,5 +101,12 @@ try:
         wait(desc='Reproducir audio')
         capture('discovery-player-paused')
     (OUT/'discovery-summary.json').write_text(json.dumps({'passed':True,'screens':checks},indent=2))
+except BaseException:
+    try:
+        capture('discovery-failure')
+        (OUT/'discovery-logcat.txt').write_text(adb('logcat','-d','-t','400'))
+    except Exception:
+        pass
+    raise
 finally:
     adb('shell','am','force-stop',PKG)
