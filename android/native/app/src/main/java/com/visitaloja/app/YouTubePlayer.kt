@@ -57,9 +57,11 @@ class YouTubePlayer(
         view.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url.toString()
-                if (!request.isForMainFrame) return !VideoPolicy.youtubeFrame(url)
+                // Let the provider load its own HTTPS subframes (including its normal ads).
+                // The enclosing document has a fixed CSP; no frame receives a native bridge.
+                if (!request.isForMainFrame) return url != "about:blank" && DiscoveryPolicy.media(url) == null
                 if (url == "$origin/" || url == "about:blank") return false
-                if (request.hasGesture() && VideoPolicy.youtubeFrame(url)) external(url)
+                if (request.hasGesture() && DiscoveryPolicy.media(url) != null) external(url)
                 return true
             }
             override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
