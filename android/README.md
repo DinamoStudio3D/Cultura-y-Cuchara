@@ -124,3 +124,7 @@ Mi aventura lee únicamente el perfil XP, progreso e insignias del UID activo. L
 Ranking consulta exclusivamente el Top 10 público. Participar es opcional y requiere una acción explícita con alias válido; el cambio se envía autenticado al endpoint existente `https://www.visitaloja.com/api/chabaquito-ranking`, que ejecuta la actualización atómica en servidor. No se escribe Firestore directamente, no se encolan preferencias offline y no se publican datos privados desde la app. No se cambia Worker, reglas, proyectos Firebase ni el panel administrativo. Los beneficios físicos enlazan las condiciones existentes sin generar códigos ni premios nuevos.
 
 La regresión pública de emulador recorre Retos, Mi aventura de invitado, detalle si hay misiones publicadas y Ranking sin cuentas/escrituras. Las pruebas unitarias cubren fechas, metas, UID, revocaciones, niveles, privacidad de ranking, criterios y compatibilidad de caché. Pendiente validar con cuenta real la sincronización tras una visita y la participación/retirada del ranking; no dar esas operaciones por probadas con el recorrido de invitado.
+
+### 0.12.0 — Mi ruta
+
+Inicio → Mi ruta reúne los favoritos publicados, permite ordenar las paradas, iniciar/pausar/avanzar, abrir indicaciones externas y compartir el recorrido. Los favoritos usan la cuenta existente; orden y parada actual permanecen en este móvil, separados por UID e invitado. Avanzar no registra visitas ni entrega sellos. No modifica reglas, backend ni producción.

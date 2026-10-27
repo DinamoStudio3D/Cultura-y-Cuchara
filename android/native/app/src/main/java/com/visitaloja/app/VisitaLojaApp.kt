@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -113,7 +114,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home") { navigate(if (tab == "canton") "cantons" else "home", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -125,6 +126,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") })
+                    "itinerary" -> ItineraryScreen(state, accountState.uid, accountState.uid == null || (accountState.favouritesReady && accountState.favouritesError == null), { selectedId = it.id }, { navigate("explore", "all") })
                     "missions" -> MissionsScreen(missionsState, accountState.uid, guestState, missions, { navigate("account", "all") }, { navigate("explore", "all") }, { selectedId = it.id })
                     "videos" -> VideosScreen(videoState, videos::refresh, audioPlayer::pause)
                     "photos" -> PhotosScreen(discoveryState.photos, discovery::refresh)
@@ -215,6 +217,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         item { Hero(explore) }
         item { MapShortcut(openMap) }
         item { MissionsShortcut { openDiscovery("missions") } }
+        item { OutlinedButton(onClick = { openDiscovery("itinerary") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("open-itinerary")) { Icon(Icons.Default.Route, contentDescription = null); Spacer(Modifier.width(8.dp)); Text("Mi ruta · Organiza tus favoritos") } }
         item { DiscoveryHome(discovery, videos, openDiscovery) }
         item { HomeAgenda(agenda, openAgenda, event) }
         item { CantonsShortcut(openCantons) }
