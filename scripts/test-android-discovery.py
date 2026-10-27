@@ -54,6 +54,18 @@ try:
     adb('shell', 'am', 'force-stop', PKG)
     adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
     time.sleep(4)
+    home_card('open-notices')
+    wait(tag='push-screen');capture('discovery-notices')
+    assert find(tree(),tag='push-enable') is None,'Guest can subscribe without an account'
+    home_card('push-local-test');time.sleep(2)
+    allow=find(tree(),tag='permission_allow_button')
+    if allow is not None:tap(allow)
+    time.sleep(3)
+    adb('shell','cmd','statusbar','expand-notifications');time.sleep(2);capture('discovery-local-notification')
+    local_notice=next((n for n in tree().iter('node') if n.get('text')=='VisitaLoja · Prueba local'),None)
+    assert local_notice is not None,'Android did not show the local notification'
+    tap(local_notice);wait(tag='push-screen');capture('discovery-notification-open')
+    tap(wait(desc='Volver a Inicio'))
     home_card('open-itinerary')
     wait(tag='itinerary-screen');capture('discovery-itinerary')
     assert 'Tu próxima aventura empieza aquí' in ' '.join(n.get('text','') for n in tree().iter('node'))

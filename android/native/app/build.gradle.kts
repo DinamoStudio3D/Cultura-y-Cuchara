@@ -10,8 +10,8 @@ android {
         applicationId = "com.visitaloja.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 16
-        versionName = "0.13.0"
+        versionCode = 17
+        versionName = "0.14.0"
     }
     buildTypes {
         debug { applicationIdSuffix = ".preview"; versionNameSuffix = "-preview"; resValue("string", "app_name", "VisitaLoja Prueba") }
@@ -32,6 +32,8 @@ val syncBrandAssets by tasks.registering(Copy::class) {
 }
 tasks.named("preBuild") { dependsOn(syncBrandAssets) }
 dependencies {
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
     implementation("androidx.media3:media3-exoplayer:1.6.1")
     implementation("androidx.media3:media3-ui:1.6.1")
     implementation("com.google.android.gms:play-services-location:21.3.0")

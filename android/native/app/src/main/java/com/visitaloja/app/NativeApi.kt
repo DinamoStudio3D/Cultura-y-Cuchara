@@ -9,7 +9,7 @@ import java.net.URL
 class NativeHttpError(val status: Int, message: String) : IOException(message)
 object NativeApi {
     fun post(url: String, token: String, body: JSONObject): JSONObject {
-        require(url == "https://www.visitaloja.com/api/chabaquito-ranking" || url == "https://www.visitaloja.com/api/chabaquito-ranking?action=passport-claim" || url == "https://firestore.googleapis.com/v1/projects/cultura-y-cuchara/databases/(default)/documents:commit")
+        require(url == "https://www.visitaloja.com/api/chabaquito-ranking?action=notifications" || url == "https://www.visitaloja.com/api/chabaquito-ranking" || url == "https://www.visitaloja.com/api/chabaquito-ranking?action=passport-claim" || url == "https://firestore.googleapis.com/v1/projects/cultura-y-cuchara/databases/(default)/documents:commit")
         val connection = URL(url).openConnection() as HttpURLConnection
         try {
             connection.requestMethod = "POST"; connection.instanceFollowRedirects = false

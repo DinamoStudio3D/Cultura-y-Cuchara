@@ -132,3 +132,9 @@ Inicio → Mi ruta reúne los favoritos publicados, permite ordenar las paradas,
 ### 0.13.0 — Menús digitales nativos
 
 La ficha de una parada con menuQrId válido consulta el mismo QR publicado que la web y ofrece Ver menú. Visor nativo con imagen completa, zoom/pan y controles, estados de carga/error, compartir enlace vivo y extras del plan vigente en fecha de Ecuador. El listener se retira al cerrar la ficha y retira el menú ante eliminación/desactivación/error. No se suben imágenes, no se añade WebView ni se cambian reglas, administración o backend.
+
+### 0.14.0 — Avisos nativos opcionales
+
+Inicio o Mi cuenta → Avisos y notificaciones. El visitante inicia sesión, acepta novedades/eventos/promociones y concede el permiso de Android. Firebase Messaging usa el proyecto Android ya configurado; auto-init desactivado inicialmente. La suscripción reutiliza el endpoint existente de avisos y su ámbito canónico, sin cambios de servidor. La renovación de token se sincroniza con WorkManager únicamente para el UID y revisión de consentimiento activos; se cancela al desactivar/cambiar de cuenta. No se registran tokens ni avisos en logs.
+
+El servicio procesa los mensajes de datos que envía el panel, valida texto y destinos públicos y conserva hasta 20 avisos en este móvil. Se abre la sección de avisos al tocar una notificación; las secciones ya implementadas se abren nativamente y las demás en la web canónica. Cerrar sesión revoca la recepción local, cancela avisos/trabajos y elimina el token; una fila remota antigua puede persistir hasta que el servidor descarte el token inválido. Desactivar intenta además confirmar la baja remota. La prueba local no registra el dispositivo ni envía campañas: solo comprueba permiso, canal y presentación. La recepción real desde el panel requiere prueba manual con cuenta y dispositivo; los mensajes del servidor tienen prioridad normal y Android puede retrasarlos en ahorro de batería.

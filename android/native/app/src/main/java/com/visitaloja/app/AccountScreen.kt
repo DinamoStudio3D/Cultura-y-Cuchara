@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: AccountViewModel, wallet: () -> Unit) {
+fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: AccountViewModel, wallet: () -> Unit, notices: () -> Unit = {}) {
     val context = LocalContext.current
     val links = LocalUriHandler.current
     var email by rememberSaveable { mutableStateOf("") }
@@ -93,6 +93,7 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
         }
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         if (state.message != null) Surface(color = Color(0xFFF2F7FD), shape = RoundedCornerShape(12.dp)) { Text(state.message, modifier = Modifier.padding(16.dp), fontSize = 13.sp) }
+        OutlinedButton(onClick = notices, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Notifications, null); Spacer(Modifier.width(8.dp)); Text("Avisos y notificaciones") }
         TextButton(onClick = { links.openUri("https://www.visitaloja.com/privacidad.html") }) { Text("Privacidad y uso de tus datos") }
         Spacer(Modifier.height(12.dp))
     }

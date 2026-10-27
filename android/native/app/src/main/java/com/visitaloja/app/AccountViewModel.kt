@@ -134,6 +134,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
     fun signOut(context: Context) {
         // Remove private UI immediately; stale callbacks are rejected by their generation.
         generation++; profileListener?.remove(); progressListener?.remove()
+        NativePush.stop(context, clearHistory = true)
         auth.signOut(); mutable.value = AccountState()
         viewModelScope.launch { try { CredentialManager.create(context).clearCredentialState(ClearCredentialStateRequest()) } catch (_: Exception) { /* Firebase session is already closed. */ } }
     }
