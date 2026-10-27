@@ -39,6 +39,18 @@ class PushPolicyTest {
         assertEquals("agenda",PushPolicy.route("/#agenda"));assertEquals("passport",PushPolicy.route("/fidelidad.html?place=somewhere"))
         assertEquals("missions",PushPolicy.route("/#misiones"));assertEquals("cantons",PushPolicy.route("/cantones.html"));assertNull(PushPolicy.route("/mesa-turistica.html"))
     }
+    @Test fun delayedCampaignsRespectTheSameOneHourLifetimeAsWebPush() {
+        val now=10_000_000L
+        assertTrue(PushPolicy.fresh(now-3_600_000,now,"aviso-abc"))
+        assertFalse(PushPolicy.fresh(now-3_600_001,now,"aviso-abc"))
+        assertFalse(PushPolicy.fresh(0,now,"aviso-abc"))
+        assertFalse(PushPolicy.fresh(now+300_001,now,"aviso-abc"))
+    }
+    @Test fun serverTestsExpireAfterFiveMinutes() {
+        val now=10_000_000L
+        assertTrue(PushPolicy.fresh(now-300_000,now,"prueba-abc"))
+        assertFalse(PushPolicy.fresh(now-300_001,now,"prueba-abc"))
+    }
     @Test fun malformedEscapesAndEncodedProtectedPathsAreRejected() {
         assertNull(PushPolicy.link("/%zz"));assertNull(PushPolicy.link("/admin%2ehtml"));assertNull(PushPolicy.link("/../admin.html"))
     }

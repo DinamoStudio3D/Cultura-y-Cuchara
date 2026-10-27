@@ -18,6 +18,10 @@ object PushPolicy {
         return ReceivedNotice(id.take(200), title, body, url, now)
     }
     fun eligible(owner: String?, currentUid: String?, consent: Boolean, active: Boolean): Boolean = !owner.isNullOrBlank() && owner == currentUid && consent && active
+    fun fresh(sentAt: Long, now: Long, tag: String): Boolean {
+        val ttl = if (tag.startsWith("prueba-")) 300_000L else 3_600_000L
+        return sentAt > 0 && sentAt <= now + 300_000L && now - sentAt <= ttl
+    }
     fun deviceId(value: String?): Boolean = value != null && Regex("[a-f0-9]{64}").matches(value)
     fun history(old: List<ReceivedNotice>, next: ReceivedNotice): List<ReceivedNotice> = (listOf(next) + old.filter { it.id != next.id }).take(20)
     fun route(url: String): String? {

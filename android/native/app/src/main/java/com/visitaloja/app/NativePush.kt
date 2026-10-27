@@ -166,7 +166,9 @@ class VisitaLojaMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         if (!PushStore.active(this, uid) || !NativePush.allowed(this)) return
-        val notice = PushPolicy.notice(message.data, message.messageId ?: message.data["tag"] ?: return, System.currentTimeMillis()) ?: return
+        val now = System.currentTimeMillis()
+        if (!PushPolicy.fresh(message.sentTime, now, message.data["tag"].orEmpty())) return
+        val notice = PushPolicy.notice(message.data, message.messageId ?: message.data["tag"] ?: return, now) ?: return
         PushStore.deliver(this, uid, notice)
     }
 }
