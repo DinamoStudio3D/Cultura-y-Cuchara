@@ -10,8 +10,8 @@ android {
         applicationId = "com.visitaloja.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "0.10.0"
+        versionCode = 14
+        versionName = "0.11.0"
     }
     buildTypes {
         debug { applicationIdSuffix = ".preview"; versionNameSuffix = "-preview"; resValue("string", "app_name", "VisitaLoja Prueba") }
@@ -25,6 +25,7 @@ android {
 }
 val syncBrandAssets by tasks.registering(Copy::class) {
     into(layout.buildDirectory.dir("generated/res/brand/drawable"))
+    from(rootProject.file("../../mascota-vive-loja.png")) { rename { "chabaquito.png" } }
     from(rootProject.file("../../assets/brand/visitaloja-splash.webp")) { rename { "visitaloja_logo.webp" } }
     from(rootProject.file("../../assets/brand/codeproim.png")) { rename { "codeproim_logo.png" } }
     from(rootProject.file("../../assets/photos/responsive/jipiro-pagoda-laguna-640.webp")) { rename { "jipiro_cover.webp" } }

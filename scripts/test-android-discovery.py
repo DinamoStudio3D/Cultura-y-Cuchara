@@ -54,6 +54,25 @@ try:
     adb('shell', 'am', 'force-stop', PKG)
     adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
     time.sleep(4)
+    home_card('open-missions')
+    wait(tag='missions-screen');time.sleep(3);capture('discovery-missions')
+    texts=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Guarda tu aventura' in texts or 'Ingresar a mi cuenta' in texts,texts
+    # Public guest flow: no account, preferences, points or reward writes.
+    card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith('mission-') and not n.get('resource-id','').startswith('missions-') and n.get('resource-id')!='mission-search' and n.get('clickable')=='true'),None)
+    for _ in range(3):
+        if card is not None:break
+        adb('shell','input','swipe','360','1180','360','650','350');time.sleep(1)
+        card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith('mission-') and n.get('clickable')=='true' and n.get('resource-id')!='mission-search'),None)
+    if card is not None:
+        tap(card);time.sleep(2);capture('discovery-mission-detail')
+        adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    tap(wait(tag='missions-tab-1'));time.sleep(1);capture('discovery-mission-adventure')
+    assert find(tree(),desc='Guardar preferencia') is None
+    tap(wait(tag='missions-tab-2'));time.sleep(2);capture('discovery-mission-ranking')
+    root=tree()
+    assert find(root,tag='mission-ranking-preference') is None,'Guest can edit ranking'
+    tap(wait(desc='Volver a Inicio'))
     home_card('open-photos')
     wait(tag='photos-screen')
     time.sleep(3)

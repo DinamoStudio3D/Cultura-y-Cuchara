@@ -60,6 +60,8 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel()) {
+    val missions: MissionViewModel = viewModel()
+    val missionsState by missions.state.collectAsStateWithLifecycle()
     val videos: VideoViewModel = viewModel()
     val videoState by videos.state.collectAsStateWithLifecycle()
     val discovery: DiscoveryViewModel = viewModel()
@@ -92,6 +94,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     var tab by rememberSaveable { mutableStateOf("home") }
     var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(tab) { cantons.bind(tab == "cantons" || tab == "canton") }
+    LaunchedEffect(accountState.uid, tab) { missions.bind(if (tab == "missions") accountState.uid else null) }
     LaunchedEffect(accountState.uid, tab) { wallet.bind(if (tab == "passport") accountState.uid else null) }
     var category by rememberSaveable { mutableStateOf("all") }
     var query by rememberSaveable { mutableStateOf("") }
@@ -110,7 +113,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home") { navigate(if (tab == "canton") "cantons" else "home", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("agenda", "cantons", "canton", "photos", "time", "podcast", "videos")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -122,6 +125,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                     "account" -> AccountScreen(accountState, guestState.favourites, account) { navigate("passport", "all") }
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") })
+                    "missions" -> MissionsScreen(missionsState, accountState.uid, guestState, missions, { navigate("account", "all") }, { navigate("explore", "all") }, { selectedId = it.id })
                     "videos" -> VideosScreen(videoState, videos::refresh, audioPlayer::pause)
                     "photos" -> PhotosScreen(discoveryState.photos, discovery::refresh)
                     "time" -> TimeScreen(discoveryState.history, audioState, audioPlayer, discovery::refresh)
@@ -210,6 +214,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         }
         item { Hero(explore) }
         item { MapShortcut(openMap) }
+        item { MissionsShortcut { openDiscovery("missions") } }
         item { DiscoveryHome(discovery, videos, openDiscovery) }
         item { HomeAgenda(agenda, openAgenda, event) }
         item { CantonsShortcut(openCantons) }
