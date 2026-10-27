@@ -54,6 +54,11 @@ try:
     adb('shell', 'am', 'force-stop', PKG)
     adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
     time.sleep(4)
+    home_card('open-shop')
+    wait(tag='shop-screen');time.sleep(3);capture('discovery-shop')
+    tap(wait(tag='shop-cart'));capture('discovery-shop-cart')
+    assert 'Tu pedido está vacío.' in ' '.join(n.get('text','') for n in tree().iter('node'))
+    tap(wait(desc='Volver a Inicio'))
     home_card('open-notices')
     wait(tag='push-screen');capture('discovery-notices')
     assert find(tree(),tag='push-enable') is None,'Guest can subscribe without an account'
