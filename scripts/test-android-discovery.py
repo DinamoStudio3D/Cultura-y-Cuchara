@@ -75,8 +75,13 @@ try:
             tap(menu_button);wait(desc='Cerrar menú');time.sleep(4);capture('discovery-digital-menu')
             tap(wait(desc='Ampliar menú'));capture('discovery-digital-menu-zoom')
             tap(wait(desc='Cerrar menú'));menu_verified=True
-        # The sheet close button scrolls with the header; Android Back closes it at any scroll offset.
-        adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+        # Back may collapse an expanded Material sheet first; then close its visible header.
+        for _ in range(3):
+            close_sheet=find(tree(),desc='Cerrar ficha')
+            if close_sheet is not None:
+                tap(close_sheet);time.sleep(1);break
+            adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+
     (OUT/'menu-summary.json').write_text(json.dumps({'viewer_verified':menu_verified,'note':'Published Sport menu opened' if menu_verified else 'No available published menu in the current Sport search'},indent=2))
     tap(wait(desc='Volver a Inicio'))
     home_card('open-missions')
