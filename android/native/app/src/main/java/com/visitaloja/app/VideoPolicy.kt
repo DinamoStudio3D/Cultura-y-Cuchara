@@ -57,7 +57,7 @@ object VideoPolicy {
     }
     fun playerMessage(code: Int): String = when (code) {
         100 -> "El video ya no está disponible o es privado."
-        101, 150 -> "El autor no permite reproducir este video fuera de YouTube."
+        101, 150 -> "YouTube no permite reproducir este video aquí. Puede requerir iniciar sesión o tener restricciones de su autor."
         153 -> "YouTube no pudo verificar el reproductor de esta app."
         2 -> "El enlace del video no es válido."
         else -> "No se pudo cargar el video. Comprueba tu conexión e inténtalo de nuevo."
