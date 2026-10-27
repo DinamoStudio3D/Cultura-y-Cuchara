@@ -65,15 +65,18 @@ try:
     menu_verified = False
     if card is not None:
         tap(card);wait(desc='Cerrar ficha');time.sleep(5)
-        for _ in range(3):
-            menu_button=find(tree(),tag='open-digital-menu')
+        capture('discovery-menu-place')
+        for _ in range(7):
+            root=tree()
+            menu_button=find(root,tag='open-digital-menu') or next((n for n in root.iter('node') if n.get('text')=='Ver menú'),None)
             if menu_button is not None:break
-            adb('shell','input','swipe','360','1190','360','700','350');time.sleep(1)
+            adb('shell','input','swipe','360','1150','360','950','350');time.sleep(1)
         if menu_button is not None:
-            tap(menu_button);wait(tag='digital-menu-viewer');time.sleep(4);capture('discovery-digital-menu')
+            tap(menu_button);wait(desc='Cerrar menú');time.sleep(4);capture('discovery-digital-menu')
             tap(wait(desc='Ampliar menú'));capture('discovery-digital-menu-zoom')
             tap(wait(desc='Cerrar menú'));menu_verified=True
-        tap(wait(desc='Cerrar ficha'))
+        # The sheet close button scrolls with the header; Android Back closes it at any scroll offset.
+        adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
     (OUT/'menu-summary.json').write_text(json.dumps({'viewer_verified':menu_verified,'note':'Published Sport menu opened' if menu_verified else 'No available published menu in the current Sport search'},indent=2))
     tap(wait(desc='Volver a Inicio'))
     home_card('open-missions')
