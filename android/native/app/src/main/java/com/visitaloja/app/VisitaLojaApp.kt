@@ -280,7 +280,7 @@ private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String,
             Column {
                 Eyebrow(if (onlySaved) "TUS LUGARES, A MANO" else "ENCUENTRA TU PRÓXIMA PARADA")
                 Text(if (onlySaved) "Tus favoritos" else "Explora Loja", fontSize = 29.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.padding(top = 5.dp, bottom = 17.dp))
-                OutlinedTextField(colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White.copy(alpha = .8f), focusedContainerColor = Color.White), value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth(), placeholder = { Text("Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
+                OutlinedTextField(colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White.copy(alpha = .8f), focusedContainerColor = Color.White), value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth().testTag("explore-search"), placeholder = { Text("Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
                 if (onlySaved) Text(if (signedIn) "Usas los mismos favoritos que en VisitaLoja.com." else "Guardados en este teléfono. Ingresa en Mi cuenta para consultar tus favoritos de la web.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 12.dp))
             }
         }
@@ -321,7 +321,7 @@ private fun PlaceImage(place: Place, modifier: Modifier = Modifier) {
 private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false) {
     OutlinedCard(modifier = modifier, shape = RoundedCornerShape(20.dp), colors = CardDefaults.outlinedCardColors(containerColor = Color.White)) {
         Box {
-            Column(Modifier.clickable(onClick = open)) {
+            Column(Modifier.testTag("place-card-${place.id}").clickable(onClick = open)) {
                 Box(Modifier.fillMaxWidth().height(if (compact) 140.dp else 183.dp)) {
                     PlaceImage(place, Modifier.fillMaxSize())
                     Surface(Modifier.align(Alignment.BottomStart).padding(12.dp), color = Color.White.copy(alpha = .96f), shape = RoundedCornerShape(8.dp)) { Text(place.categoryLabel, fontSize = 10.sp, color = Blue, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)) }
@@ -342,6 +342,7 @@ private fun PlaceDetail(place: Place, saved: Boolean, favourite: () -> Unit, vis
             Text(place.categoryLabel, color = Blue, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             Text(place.title, fontSize = 28.sp, fontWeight = FontWeight.Bold, lineHeight = 33.sp)
             if (place.address.isNotBlank()) Text(place.address, color = Blue, fontSize = 13.sp)
+            DigitalMenuEntry(place)
             PlaceGallery(place)
             if (place.description.isNotBlank()) Text(place.description, color = Muted, fontSize = 14.sp, lineHeight = 23.sp)
             Button(onClick = visit, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.QrCode, null); Spacer(Modifier.width(9.dp)); Text("Generar código de visita") }

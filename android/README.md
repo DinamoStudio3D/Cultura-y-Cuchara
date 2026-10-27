@@ -128,3 +128,7 @@ La regresión pública de emulador recorre Retos, Mi aventura de invitado, detal
 ### 0.12.0 — Mi ruta
 
 Inicio → Mi ruta reúne los favoritos publicados, permite ordenar las paradas, iniciar/pausar/avanzar, abrir indicaciones externas y compartir el recorrido. Los favoritos usan la cuenta existente; orden y parada actual permanecen en este móvil, separados por UID e invitado. Avanzar no registra visitas ni entrega sellos. No modifica reglas, backend ni producción.
+
+### 0.13.0 — Menús digitales nativos
+
+La ficha de una parada con menuQrId válido consulta el mismo QR publicado que la web y ofrece Ver menú. Visor nativo con imagen completa, zoom/pan y controles, estados de carga/error, compartir enlace vivo y extras del plan vigente en fecha de Ecuador. El listener se retira al cerrar la ficha y retira el menú ante eliminación/desactivación/error. No se suben imágenes, no se añade WebView ni se cambian reglas, administración o backend.
