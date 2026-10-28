@@ -142,3 +142,9 @@ El servicio procesa los mensajes de datos que envía el panel, valida texto y de
 ### 0.15.0 — Tienda nativa
 
 Inicio → Tienda consulta storeProducts activos y siteContent/store del panel existente. Catálogo, búsqueda/categorías, variantes, pedido local, cantidades agregadas por producto y revisión de precios/existencias en servidor antes de preparar WhatsApp. Se muestra el texto para revisión y solo se abre WhatsApp mediante acción explícita; no se envía automáticamente ni se crea un pedido o reserva en Firestore. El comprador confirma disponibilidad, precio final y entrega con la tienda. Nombre y observaciones se mantienen en memoria, el carrito local solo guarda IDs/variantes/cantidades. Ningún cambio de servidor, reglas o main.
+
+### 0.16.0 — Postales nativas
+
+Inicio → Postales permite elegir una foto publicada de Loja o una imagen mediante el selector de Android. Se conservan los créditos del catálogo y se consultan settings/postcards y settings/postcard_frames para mensaje, marca, estilos habilitados y marcos PNG personalizados. Editor con formatos, texto, encuadre, zoom, giro, espejo y filtros. La misma imagen renderizada se usa en vista previa y exportación PNG; el marco personalizado conserva su diseño sin añadir textos personales encima. No modifica la foto original ni sube fotos a la web.
+
+Guardar usa CreateDocument; compartir usa un FileProvider privado limitado a cache/postcards con permisos temporales de lectura. No necesita permisos de galería o escritura generales. El PNG para guardar se prepara en caché y su ruta se conserva ante recreación de Activity. La prueba de emulador abre el menú del sistema, verifica los bytes PNG y sus dimensiones sin seleccionar destinatario ni enviar la imagen. Sin cambios de servidor, reglas o main; no se conceden puntos por crear una postal.

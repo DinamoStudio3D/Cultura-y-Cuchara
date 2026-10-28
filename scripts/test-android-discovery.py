@@ -54,6 +54,29 @@ try:
     adb('shell', 'am', 'force-stop', PKG)
     adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
     time.sleep(4)
+    home_card('open-postcards')
+    wait(tag='postcards-screen');tap(wait(tag='postcard-preview-tab'))
+    wait(tag='postcard-image',seconds=50);time.sleep(2);capture('discovery-postcard-preview')
+    for _ in range(12):
+        share=find(tree(),tag='postcard-share')
+        if share is not None and share.get('enabled')=='true':
+            tap(share);break
+        if share is None:adb('shell','input','swipe','360','1180','360','700','350')
+        time.sleep(1)
+    else:raise AssertionError('Postcard share never became available')
+    time.sleep(3)
+    # The chooser is opened only; never select a recipient or send the image.
+    filenames=adb('shell','run-as',PKG,'ls','cache/postcards').splitlines()
+    filename=next(name for name in filenames if name.startswith('postal-') and name.endswith('.png'))
+    png=adb('exec-out','run-as',PKG,'cat','cache/postcards/'+filename,binary=True)
+    assert png[:8]==b'\x89PNG\r\n\x1a\n','Export is not a PNG'
+    import struct
+    width,height=struct.unpack('>II',png[16:24])
+    assert (width,height)==(1080,1920),(width,height)
+    (OUT/'postcard-export.png').write_bytes(png)
+    (OUT/'postcard-summary.json').write_text(json.dumps({'png_export_verified':True,'width':width,'height':height,'recipient_selected':False},indent=2))
+    adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    tap(wait(desc='Volver a Inicio'))
     home_card('open-shop')
     wait(tag='shop-screen');time.sleep(3);capture('discovery-shop')
     tap(wait(tag='shop-cart'));capture('discovery-shop-cart')
