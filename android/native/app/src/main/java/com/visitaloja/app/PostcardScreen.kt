@@ -118,7 +118,7 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
                 Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){config.settings.frames.forEach { f->FilterChip(selected=frame.id==f.id,onClick={frameId=f.id},label={Text(f.name)})}}
                 if(frame.overlay==null) {
                     Text("Formato",fontWeight=FontWeight.Bold)
-                    Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("story"to"Historia 9:16","portrait"to"Publicación 4:5","square"to"Cuadrado").forEach {(id,label)->FilterChip(selected=draft.format==id,onClick={draft=draft.copy(format=id)},label={Text(label)})}}
+                    Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("story" to "Historia 9:16","portrait" to "Publicación 4:5","square" to "Cuadrado").forEach {(id,label)->FilterChip(selected=draft.format==id,onClick={draft=draft.copy(format=id)},label={Text(label)})}}
                     OutlinedTextField(draft.name,{draft=draft.copy(name=it.take(25))},label={Text("Tu nombre o apodo")},modifier=Modifier.fillMaxWidth(),singleLine=true)
                     OutlinedTextField(draft.place,{draft=draft.copy(place=it.take(30))},label={Text("Lugar o parada")},modifier=Modifier.fillMaxWidth(),singleLine=true)
                     OutlinedTextField(draft.message,{draft=draft.copy(message=it.take(50))},label={Text("Frase o saludo")},placeholder={Text(config.settings.message)},modifier=Modifier.fillMaxWidth(),singleLine=true)
@@ -131,7 +131,7 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
                 Text("Horizontal");Slider(draft.x,{draft=draft.copy(x=it)},valueRange=-1f..1f)
                 Text("Vertical");Slider(draft.y,{draft=draft.copy(y=it)},valueRange=-1f..1f)
                 Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){OutlinedButton(onClick={draft=draft.copy(rotation=(draft.rotation+90)%360,zoom=1f,x=0f,y=0f)}){Text("Girar 90°")};FilterChip(selected=draft.mirror,onClick={draft=draft.copy(mirror=!draft.mirror)},label={Text("Espejo")})}
-                Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("natural"to"Natural","sepia"to"Sepia","mono"to"Blanco y negro").forEach {(id,label)->FilterChip(selected=draft.filter==id,onClick={draft=draft.copy(filter=id)},label={Text(label)})}}
+                Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("natural" to "Natural","sepia" to "Sepia","mono" to "Blanco y negro").forEach {(id,label)->FilterChip(selected=draft.filter==id,onClick={draft=draft.copy(filter=id)},label={Text(label)})}}
                 TextButton(onClick={draft=PostcardDraft();status=null}){Text("Restablecer ajustes sin borrar la foto")}
                 Button(onClick={preview=true},modifier=Modifier.fillMaxWidth()){Text("Ver mi postal")}
             }
