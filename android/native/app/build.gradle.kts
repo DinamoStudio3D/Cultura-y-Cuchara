@@ -10,7 +10,7 @@ android {
         applicationId = "com.visitaloja.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 19
+        versionCode = 20
         versionName = "0.16.0"
     }
     buildTypes {

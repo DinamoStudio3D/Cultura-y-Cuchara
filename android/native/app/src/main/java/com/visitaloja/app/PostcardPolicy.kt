@@ -23,7 +23,9 @@ object PostcardPolicy {
             val image=DiscoveryPolicy.media((r["img"] as? String).orEmpty())?:return@mapNotNull null
             PostcardFrame(id,(r["name"] as? String).orEmpty().take(60).ifBlank { "Marco personalizado" },"#075BB2",image)
         }?.distinctBy { it.id }?.filter { f -> (defaults+brands).none { it.id==f.id } }?.take(40)?:emptyList()
-        return PostcardSettings((raw?.get("watermark") as? String).orEmpty().trim().take(80).ifBlank { "VisitaLoja.com" },DiscoveryPolicy.media((raw?.get("sampleImg") as? String).orEmpty())?.takeUnless { it.endsWith(".svg",true) },(raw?.get("defaultMsg") as? String).orEmpty().trim().take(50).ifBlank { "Saludos desde Loja" },defaults+enabled+extra)
+        val watermark=(raw?.get("watermark") as? String).orEmpty().trim().take(80).ifBlank { "VisitaLoja.com" }
+        val currentMark=if(watermark=="VIVE LOJA • FIAVL 2026") "VISITA LOJA • FIAVL 2026" else watermark
+        return PostcardSettings(currentMark,DiscoveryPolicy.media((raw?.get("sampleImg") as? String).orEmpty())?.takeUnless { it.endsWith(".svg",true) },(raw?.get("defaultMsg") as? String).orEmpty().trim().take(240).ifBlank { "Saludos desde Loja" },defaults+enabled+extra)
     }
     fun dimensions(format: String, frameWidth: Int=0, frameHeight: Int=0): Pair<Int,Int> {
         if(frameWidth>0&&frameHeight>0)return if(frameWidth>=frameHeight)1920 to max(640,(1920.0*frameHeight/frameWidth).roundToInt()) else max(640,(1920.0*frameWidth/frameHeight).roundToInt()) to 1920

@@ -35,8 +35,13 @@ class PostcardPolicyTest {
         val settings=PostcardPolicy.settings(null,mapOf("frames" to listOf(mapOf("id" to "custom","name" to "Festival","img" to "https://i.imgur.com/frame.png"),mapOf("id" to "bad","img" to "javascript:alert(1)"),mapOf("id" to "fiavl","img" to "https://i.imgur.com/frame.png"))))
         assertEquals(1,settings.frames.count {it.id=="custom"});assertFalse(settings.frames.any {it.id=="bad"});assertEquals(1,settings.frames.count {it.id=="fiavl"})
     }
+    @Test fun legacyDefaultMarkIsUpdatedWithoutChangingCustomBranding(){
+        assertEquals("VISITA LOJA • FIAVL 2026",PostcardPolicy.settings(mapOf("watermark" to "VIVE LOJA • FIAVL 2026"),null).watermark)
+        assertEquals("Mi recuerdo de Loja",PostcardPolicy.settings(mapOf("watermark" to "Mi recuerdo de Loja"),null).watermark)
+    }
     @Test fun adminSampleAndGreetingUseSafeBoundedValues(){
         val s=PostcardPolicy.settings(mapOf("sampleImg" to "file:///private/photo.png","defaultMsg" to "x".repeat(80)),null)
-        assertNull(s.sample);assertEquals(50,s.message.length)
+        assertNull(s.sample);assertEquals(80,s.message.length)
+        assertEquals(240,PostcardPolicy.settings(mapOf("defaultMsg" to "x".repeat(500)),null).message.length)
     }
 }
