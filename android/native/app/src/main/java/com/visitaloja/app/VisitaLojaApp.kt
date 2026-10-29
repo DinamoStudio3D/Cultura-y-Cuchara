@@ -62,6 +62,8 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel(), noticeRequest: Int = 0) {
+    val culture: CultureViewModel = viewModel()
+    val cultureState by culture.state.collectAsStateWithLifecycle()
     val postcards: PostcardViewModel = viewModel()
     val postcardState by postcards.state.collectAsStateWithLifecycle()
     val shop: ShopViewModel = viewModel()
@@ -106,6 +108,8 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     var fromSections by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { fromSections = false; tab = "notices" } }
     var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
+    LaunchedEffect(tab, audioState.key) { culture.bind(tab == "stories" || audioState.key?.startsWith("story:") == true, tab == "enterprises") }
+    LaunchedEffect(cultureState.stories, cultureState.now) { audioPlayer.reconcileStories(cultureState.stories, cultureState.now) }
     LaunchedEffect(tab) { postcards.bind(tab == "postcards") }
     LaunchedEffect(tab) { shop.bind(tab == "shop") }
     LaunchedEffect(tab) { cantons.bind(tab == "cantons" || tab == "canton") }
@@ -136,7 +140,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") "Volver a Secciones" else if (tab == "canton") "Volver a Cantones" else "Volver a Inicio", back) { navigate("sections", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -149,6 +153,8 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                     "account" -> AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") })
+                    "stories" -> StoriesScreen(cultureState.stories, cultureState.now, state.places, audioState, audioPlayer, { culture.bind(true, false, true) }) { selectedId = it.id }
+                    "enterprises" -> EnterprisesScreen(cultureState.enterprises) { culture.bind(audioState.key?.startsWith("story:") == true, true, true) }
                     "postcards" -> PostcardScreen(postcardState, discoveryState.photos) { postcards.bind(true, true) }
                     "shop" -> ShopScreen(shopState, shop)
                     "notices" -> PushScreen(if (pushState.uid == accountState.uid) pushState else PushState(uid = accountState.uid), push, { navigate("account", "all") }) { link ->

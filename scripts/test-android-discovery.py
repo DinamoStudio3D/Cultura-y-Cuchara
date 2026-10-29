@@ -65,6 +65,20 @@ try:
     tap(wait(tag='sections-search'));adb('shell','input','text','zzzzzz')
     adb('shell','input','keyevent','KEYCODE_BACK');wait(tag='sections-reset');capture('discovery-sections-empty')
     tap(wait(tag='sections-reset'));wait(tag='section-map')
+    culture_check={}
+    for route,query,screen,prefix,close_label in [('stories','historias','stories-screen','story-card-','Cerrar historia'),('enterprises','emprendedores','enterprises-screen','enterprise-card-','Cerrar emprendimiento')]:
+        tap(wait(tag='sections-search'));adb('shell','input','text',query)
+        adb('shell','input','keyevent','KEYCODE_BACK');tap(wait(tag='section-'+route))
+        wait(tag=screen);time.sleep(4);capture('discovery-'+route)
+        card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith(prefix)),None)
+        culture_check[route]={'screen_verified':True,'published_item_found':card is not None,'detail_verified':False}
+        if card is not None:
+            tap(card);wait(desc=close_label);capture('discovery-'+route+'-detail')
+            culture_check[route]['detail_verified']=True;tap(wait(desc=close_label))
+        tap(wait(desc='Volver a Secciones'));wait(tag='sections-screen')
+        tap(wait(desc='Borrar búsqueda de secciones'))
+    (OUT/'culture-summary.json').write_text(json.dumps(culture_check,indent=2))
+
     tap(wait(desc='Volver a Inicio'))
     home_card('open-postcards')
     wait(tag='postcards-screen');tap(wait(tag='postcard-preview-tab'))

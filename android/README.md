@@ -168,3 +168,10 @@ Las narraciones audioUrl/audioUrlEn publicadas ofrecen controles explícitos de 
 
 
 La revisión de Expreso al Sur detectó hours="Mar - Dom 8am a 10pm" junto a openHour=8/closeHour=20. La ficha ahora da prioridad al texto publicado, sin duplicarlo con un rango numérico o estado actual que podría contradecirlo. Las horas numéricas se usan solo si no hay texto; 24 horas sigue siendo explícito. No se modifican los datos del negocio. Android versionCode 24.
+
+
+### 0.20.0 — Historias y emprendimientos
+
+Todas las secciones incorpora Historias de Loja y Emprendedores, conectadas a siteContent/stories y siteContent/entrepreneurs del panel existente. Historias respeta activación, publicación y programación, ofrece búsqueda/categorías, lectura en español/inglés, fuente, fotos completas, narraciones publicadas, video oficial y paradas relacionadas publicadas. Compartir usa la sección canónica de la web, igual que la web actual.
+
+Emprendedores ofrece catálogo, filtros, descripción completa, imagen y contacto explícito por WhatsApp con texto preparado: nunca lo envía automáticamente. No crea ejemplos, teléfonos ficticios ni publicaciones cuando los documentos están ausentes o vacíos. Los listeners se acotan a la sección y, para historias, a una narración activa para poder detenerla si se retira. No escribe XP, sellos o datos ni cambia reglas, administración o main. La descarga de la APK debe verificarse también después de guardarla.

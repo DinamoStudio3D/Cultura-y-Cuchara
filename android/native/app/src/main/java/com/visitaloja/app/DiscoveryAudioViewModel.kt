@@ -81,5 +81,9 @@ class DiscoveryAudioViewModel(app: Application) : AndroidViewModel(app) {
         val key = active.key ?: return
         if (key.startsWith("place:") && !content.loading && !content.offline && content.error == null && PlaceMediaPolicy.activeAudio(content.places, key) != active.url) close()
     }
+    internal fun reconcileStories(content: PublicContent<StoryCatalogue>, now: Long) {
+        val active = mutable.value;val key = active.key ?: return
+        if (key.startsWith("story:") && !content.loading && !content.cached && !content.error && CulturePolicy.audio(content.value, now, key) != active.url) close()
+    }
     override fun onCleared() { player.release(); super.onCleared() }
 }

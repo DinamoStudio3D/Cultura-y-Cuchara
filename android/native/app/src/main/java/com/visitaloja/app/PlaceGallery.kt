@@ -28,7 +28,7 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 
 @Composable
-fun PlaceGallery(place: Place) {
+fun PlaceGallery(place: Place, heading: String? = null) {
     val photos = remember(place) {
         val all = place.photos.toMutableList()
         if (place.imageUrl != null && all.none { it.url == place.imageUrl }) all.add(0, PlacePhoto(place.imageUrl))
@@ -37,7 +37,7 @@ fun PlaceGallery(place: Place) {
     if (photos.isEmpty()) return
     var selected by remember(place.id) { mutableStateOf<Int?>(null) }
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Conoce el lugar · ${photos.size} ${if (photos.size == 1) "foto" else "fotos"}", style = MaterialTheme.typography.titleMedium)
+        Text(heading ?: "Conoce el lugar · ${photos.size} ${if (photos.size == 1) "foto" else "fotos"}", style = MaterialTheme.typography.titleMedium)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             itemsIndexed(photos, key = { _, photo -> photo.url }) { index, photo ->
                 AsyncImage(model = if (photo.url == "https://i.imgur.com/CpCnMpw.png") R.drawable.codeproim_logo else photo.url, contentDescription = "Abrir fotografía ${index + 1} de ${place.title}",
