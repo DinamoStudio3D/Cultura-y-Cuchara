@@ -158,3 +158,10 @@ Inicio y la cabecera incluyen acceso a un directorio nativo de las 16 secciones,
 ### 0.18.0 — Información de las paradas
 
 La ficha nativa muestra el horario publicado, rango general y coincidencia con la hora de Ecuador, incluyendo horarios nocturnos y atención 24 horas. Sin datos no supone que el negocio esté abierto; en caché no muestra estado actual. El cálculo se actualiza en primer plano y al reanudar. No interpreta cierres semanales/feriados del texto libre: indica que se confirme la atención. Añade servicios, formas de pago, rango de precios y enlaces HTTPS de web/Instagram/Facebook/TikTok del businessProfile público. Solo aparecen valores configurados; no publica datos ni cambia planes. Permite copiar la dirección. La proyección en caché conserva solo esos campos públicos y sigue leyendo copias anteriores.
+
+
+### 0.19.0 — Multimedia de cada parada
+
+La ficha reproduce youtubeUrl con el visor oficial existente solo si la publicación y la suscripción permiten el beneficio video, dentro de su vigencia en Ecuador. Fechas malformadas o invertidas no habilitan el beneficio; la copia offline no habilita videos de pago. La revisión temporal solo funciona en primer plano y retira un visor abierto al vencer/cambiar su URL. No reproduce videos automáticamente al consultar la ficha.
+
+Las narraciones audioUrl/audioUrlEn publicadas ofrecen controles explícitos de español e inglés. Comparten el reproductor Media3 del podcast/historia: nunca hay dos audios simultáneos y abrir video pausa el audio. Se conserva el minirreproductor al cerrar la ficha, pausa al salir de la app/entrar al mapa y detiene una grabación retirada o reemplazada tras una consulta confirmada. Sin voz sintetizada ni grabaciones inventadas. No se alteran planes, datos, reglas o main.

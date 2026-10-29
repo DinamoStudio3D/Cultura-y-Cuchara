@@ -144,6 +144,28 @@ try:
             adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
 
     (OUT/'menu-summary.json').write_text(json.dumps({'viewer_verified':menu_verified,'note':'Published Sport menu opened' if menu_verified else 'No available published menu in the current Sport search'},indent=2))
+    # Only inspect public media controls; never change a business publication or entitlement.
+    field=wait(tag='explore-search');tap(field)
+    adb('shell','input','keyevent','KEYCODE_MOVE_END')
+    for _ in range(8):adb('shell','input','keyevent','KEYCODE_DEL')
+    adb('shell','input','text','Expreso');adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(4)
+    public_card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith('place-card-')),None)
+    media_check={'published_place_found':public_card is not None,'spanish_control':False,'english_control':False,'video_control':False,'playback_verified':False}
+    if public_card is not None:
+        tap(public_card);wait(desc='Cerrar ficha');time.sleep(2)
+        for _ in range(10):
+            root=tree();text=' '.join(n.get('text','') for n in root.iter('node'))
+            media_check['spanish_control'] |= 'Escuchar en español' in text
+            media_check['english_control'] |= 'Escuchar en inglés' in text
+            media_check['video_control'] |= 'Conoce este lugar por video' in text
+            if media_check['spanish_control'] and media_check['english_control']:
+                capture('discovery-place-media');break
+            adb('shell','input','swipe','360','1180','360','850','350');time.sleep(1)
+        for _ in range(3):
+            close_sheet=find(tree(),desc='Cerrar ficha')
+            if close_sheet is not None:tap(close_sheet);time.sleep(1);break
+            adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    (OUT/'place-media-summary.json').write_text(json.dumps(media_check,indent=2))
     tap(wait(desc='Volver a Inicio'))
     home_card('open-missions')
     wait(tag='missions-screen');time.sleep(3);capture('discovery-missions')

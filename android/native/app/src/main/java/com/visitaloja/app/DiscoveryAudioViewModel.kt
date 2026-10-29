@@ -76,5 +76,10 @@ class DiscoveryAudioViewModel(app: Application) : AndroidViewModel(app) {
             if (!source.loading && !source.cached && !source.error && source.value.find { "time:${it.id}" == key }?.audio != active.url) close()
         }
     }
+    fun reconcilePlaces(content: PlacesState) {
+        val active = mutable.value
+        val key = active.key ?: return
+        if (key.startsWith("place:") && !content.loading && !content.offline && content.error == null && PlaceMediaPolicy.activeAudio(content.places, key) != active.url) close()
+    }
     override fun onCleared() { player.release(); super.onCleared() }
 }

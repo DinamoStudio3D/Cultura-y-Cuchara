@@ -114,7 +114,7 @@ fun VideosScreen(content: PublicContent<VideoGallery>, retry: () -> Unit, pauseA
 }
 
 @Composable
-private fun VideoDialog(video: LojaVideo, close: () -> Unit) {
+internal fun VideoDialog(video: LojaVideo, close: () -> Unit) {
     var exitFullscreen by remember { mutableStateOf<(() -> Unit)?>(null) }
     Dialog(onDismissRequest = { exitFullscreen?.invoke() ?: close() }, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
         val view = LocalView.current

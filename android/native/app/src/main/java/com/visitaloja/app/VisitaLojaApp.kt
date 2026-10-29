@@ -94,6 +94,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     val wallet: WalletViewModel = viewModel()
     val walletState by wallet.state.collectAsStateWithLifecycle()
     val guestState by model.state.collectAsStateWithLifecycle()
+    LaunchedEffect(guestState.places, guestState.loading, guestState.offline, guestState.error) { audioPlayer.reconcilePlaces(guestState) }
     val accountState by account.state.collectAsStateWithLifecycle()
     LaunchedEffect(accountState.uid) { visits.bind(accountState.uid); claims.bind(accountState.uid) }
     val snack = remember { SnackbarHostState() }
@@ -189,7 +190,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
-                PlaceDetail(selected, !state.offline && state.error == null, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }) { selectedId = null }
+                PlaceDetail(selected, !state.offline && state.error == null, audioState, audioPlayer, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }) { selectedId = null }
             }
         }
     }
@@ -370,7 +371,7 @@ private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite:
 }
 
 @Composable
-private fun PlaceDetail(place: Place, fresh: Boolean, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, dismiss: () -> Unit) {
+private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, dismiss: () -> Unit) {
     val context = LocalContext.current
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth().height(220.dp)) { PlaceImage(place, Modifier.fillMaxSize()); FilledIconButton(onClick = dismiss, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Ink)) { Icon(Icons.Default.Close, "Cerrar ficha") } }
@@ -381,6 +382,7 @@ private fun PlaceDetail(place: Place, fresh: Boolean, saved: Boolean, favourite:
             if (place.address.isNotBlank()) CopyPlaceAddress(place)
             PlaceHours(place.info, fresh)
             DigitalMenuEntry(place)
+            PlaceMediaEntry(place, fresh, audio, player)
             PlaceGallery(place)
             if (place.description.isNotBlank()) Text(place.description, color = Muted, fontSize = 14.sp, lineHeight = 23.sp)
             PlaceServices(place.info)
