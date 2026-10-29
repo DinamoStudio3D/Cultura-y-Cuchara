@@ -9,15 +9,18 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 
+@OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 internal fun NativeLinkEntry(open: (String) -> Unit) {
     var dialog by rememberSaveable { mutableStateOf(false) }
     var text by rememberSaveable { mutableStateOf("") }
     var error by rememberSaveable { mutableStateOf(false) }
     OutlinedButton(onClick = { dialog = true }, modifier = Modifier.fillMaxWidth().testTag("open-link"), shape = RoundedCornerShape(16.dp)) { Icon(Icons.Default.Link, null); Spacer(Modifier.width(8.dp)); Text("Abrir enlace de VisitaLoja") }
-    if (dialog) AlertDialog(onDismissRequest = { dialog = false }, title = { Text("Abre lo que te compartieron") }, text = {
+    if (dialog) AlertDialog(modifier = Modifier.semantics { testTagsAsResourceId = true }, onDismissRequest = { dialog = false }, title = { Text("Abre lo que te compartieron") }, text = {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text("Pega un enlace de una parada o sección de visitaloja.com. También puedes compartirlo con VisitaLoja desde otra aplicación.")
             OutlinedTextField(text, { text = it.take(4096); error = false }, modifier = Modifier.fillMaxWidth().testTag("native-link-input"), label = { Text("Enlace de VisitaLoja") }, maxLines = 4, isError = error)
