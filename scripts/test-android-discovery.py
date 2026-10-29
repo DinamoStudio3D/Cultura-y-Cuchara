@@ -138,7 +138,9 @@ try:
             tap(wait(desc='Cerrar menú'));menu_verified=True
         # Back may collapse an expanded Material sheet first; then close its visible header.
         for _ in range(3):
-            close_sheet=find(tree(),desc='Cerrar ficha')
+            current=tree()
+            if find(current,tag='explore-search') is not None or find(current,tag='home-sections') is not None:break
+            close_sheet=find(current,desc='Cerrar ficha')
             if close_sheet is not None:
                 tap(close_sheet);time.sleep(1);break
             adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
@@ -162,11 +164,15 @@ try:
                 capture('discovery-place-media');break
             adb('shell','input','swipe','360','1180','360','850','350');time.sleep(1)
         for _ in range(3):
-            close_sheet=find(tree(),desc='Cerrar ficha')
+            current=tree()
+            if find(current,tag='explore-search') is not None or find(current,tag='home-sections') is not None:break
+            close_sheet=find(current,desc='Cerrar ficha')
             if close_sheet is not None:tap(close_sheet);time.sleep(1);break
             adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
     (OUT/'place-media-summary.json').write_text(json.dumps(media_check,indent=2))
-    tap(wait(desc='Volver a Inicio'))
+    back_home=find(tree(),desc='Volver a Inicio')
+    if back_home is not None:tap(back_home)
+    else:assert find(tree(),tag='home-sections') is not None,'Neither Explore nor Home after closing the place sheet'
     home_card('open-missions')
     wait(tag='missions-screen');time.sleep(3);capture('discovery-missions')
     texts=' '.join(n.get('text','') for n in tree().iter('node'))

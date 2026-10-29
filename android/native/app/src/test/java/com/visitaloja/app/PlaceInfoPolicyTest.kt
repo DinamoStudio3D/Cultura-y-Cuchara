@@ -49,6 +49,13 @@ class PlaceInfoPolicyTest {
         val cache = PlaceInfoPolicy.cache(info);assertFalse(cache.toString().contains("secret"))
         assertEquals(info, PlaceInfoPolicy.cached(cache))
     }
+    @Test fun writtenScheduleTakesPriorityOverConflictingLegacyNumericHours() {
+        val info = PlaceInfo(hours = "Mar - Dom 8am a 10pm", openHour = 8.0, closeHour = 20.0)
+        assertNull(PlaceInfoPolicy.range(info))
+        assertNull(PlaceInfoPolicy.open(info, at("2026-10-29T02:00:00Z")))
+        assertEquals("Mar - Dom 8am a 10pm", PlaceInfoPolicy.publishedHours(info))
+        assertEquals("Tue-Sun 8am to 10pm", PlaceInfoPolicy.publishedHours(info.copy(hours = "", hoursEn = "Tue-Sun 8am to 10pm")))
+    }
     @Test fun oldPlaceCacheKeepsUnknownHoursAndNoInventedServices() {
         val place = PlaceJson.cached(JSONObject("""{"id":"p","title":"Café","categories":["cafe"]}"""))!!
         assertEquals(PlaceInfo(), place.info)

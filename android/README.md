@@ -165,3 +165,6 @@ La ficha nativa muestra el horario publicado, rango general y coincidencia con l
 La ficha reproduce youtubeUrl con el visor oficial existente solo si la publicación y la suscripción permiten el beneficio video, dentro de su vigencia en Ecuador. Fechas malformadas o invertidas no habilitan el beneficio; la copia offline no habilita videos de pago. La revisión temporal solo funciona en primer plano y retira un visor abierto al vencer/cambiar su URL. No reproduce videos automáticamente al consultar la ficha.
 
 Las narraciones audioUrl/audioUrlEn publicadas ofrecen controles explícitos de español e inglés. Comparten el reproductor Media3 del podcast/historia: nunca hay dos audios simultáneos y abrir video pausa el audio. Se conserva el minirreproductor al cerrar la ficha, pausa al salir de la app/entrar al mapa y detiene una grabación retirada o reemplazada tras una consulta confirmada. Sin voz sintetizada ni grabaciones inventadas. No se alteran planes, datos, reglas o main.
+
+
+La revisión de Expreso al Sur detectó hours="Mar - Dom 8am a 10pm" junto a openHour=8/closeHour=20. La ficha ahora da prioridad al texto publicado, sin duplicarlo con un rango numérico o estado actual que podría contradecirlo. Las horas numéricas se usan solo si no hay texto; 24 horas sigue siendo explícito. No se modifican los datos del negocio. Android versionCode 24.

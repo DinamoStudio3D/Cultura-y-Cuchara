@@ -39,10 +39,11 @@ internal fun PlaceHours(info: PlaceInfo, fresh: Boolean) {
                 Icon(Icons.Default.Schedule, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                 Text("Horario de atención", fontWeight = FontWeight.Bold)
             }
-            if (info.hours.isNotBlank()) Text(info.hours, fontSize = 14.sp)
+            val published = PlaceInfoPolicy.publishedHours(info)
+            if (published.isNotBlank()) Text(published, fontSize = 14.sp)
             val range = PlaceInfoPolicy.range(info)
-            if (range != null && range != info.hours) Text(range, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-            Text(when (open) { true -> "Dentro del horario general"; false -> "Fuera del horario general"; null -> if (!fresh) "Horario guardado · Actualiza al conectarte" else if (info.hours.isBlank()) "Horario por confirmar" else "Consulta el horario publicado" }, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            if (range != null && range != published) Text(range, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+            Text(when (open) { true -> "Dentro del horario general"; false -> "Fuera del horario general"; null -> if (!fresh) "Horario guardado · Actualiza al conectarte" else if (published.isBlank()) "Horario por confirmar" else "Consulta el horario publicado" }, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             Text("Hora de Ecuador. Confirma días y atención con el negocio.", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }

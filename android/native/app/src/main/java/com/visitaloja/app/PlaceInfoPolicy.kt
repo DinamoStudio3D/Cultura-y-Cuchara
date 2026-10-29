@@ -41,9 +41,11 @@ internal object PlaceInfoPolicy {
             links.keys.mapNotNull { key -> url(key, profile.text(key))?.let { key to it } }.toMap())
     }
     fun alwaysOpen(info: PlaceInfo) = Regex("\\b24\\s*(?:/\\s*7|horas?|hours?|h)\\b", RegexOption.IGNORE_CASE).containsMatchIn("${info.hours} ${info.hoursEn}")
+    fun publishedHours(info: PlaceInfo): String = info.hours.ifBlank { info.hoursEn }
     fun open(info: PlaceInfo, now: Long, fresh: Boolean = true): Boolean? {
         if (!fresh) return null
         if (alwaysOpen(info)) return true
+        if (publishedHours(info).isNotBlank()) return null
         val start = hour(info.openHour) ?: return null
         val end = hour(info.closeHour) ?: return null
         val local = Instant.ofEpochMilli(now).atZone(zone)
@@ -54,7 +56,7 @@ internal object PlaceInfoPolicy {
         val minute = kotlin.math.round(value * 60).toInt()
         return String.format(Locale.ROOT, "%02d:%02d", minute / 60, minute % 60)
     }
-    fun range(info: PlaceInfo): String? = if (alwaysOpen(info)) "Atención 24 horas" else hour(info.openHour)?.let { start -> hour(info.closeHour)?.let { end -> "${clock(start)} – ${clock(end)}" } }
+    fun range(info: PlaceInfo): String? = if (alwaysOpen(info)) "Atención 24 horas" else if (publishedHours(info).isNotBlank()) null else hour(info.openHour)?.let { start -> hour(info.closeHour)?.let { end -> "${clock(start)} – ${clock(end)}" } }
     fun cache(info: PlaceInfo): JSONObject = JSONObject().put("hours", info.hours).put("hoursEn", info.hoursEn).put("openHour", info.openHour ?: JSONObject.NULL).put("closeHour", info.closeHour ?: JSONObject.NULL)
         .put("amenities", JSONArray(info.amenities)).put("payments", JSONArray(info.payments)).put("priceRange", info.priceRange).put("links", JSONObject(info.links))
     fun cached(raw: JSONObject?): PlaceInfo {
