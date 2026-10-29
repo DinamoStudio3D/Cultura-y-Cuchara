@@ -118,6 +118,15 @@ try:
     if card is not None:
         tap(card);wait(desc='Cerrar ficha');time.sleep(5)
         capture('discovery-menu-place')
+        info_verified = False
+        for _ in range(6):
+            root = tree()
+            text = ' '.join(n.get('text','') for n in root.iter('node'))
+            if 'Horario de atención' in text and any(label in text for label in ['Dentro del horario general','Fuera del horario general','Horario por confirmar','Consulta el horario publicado','Horario guardado']):
+                capture('discovery-place-information');info_verified = True;break
+            adb('shell','input','swipe','360','1150','360','950','350');time.sleep(1)
+        assert info_verified,'Place opening-hours information did not render'
+
         for _ in range(7):
             root=tree()
             menu_button=find(root,tag='open-digital-menu') or next((n for n in root.iter('node') if n.get('text')=='Ver menú'),None)

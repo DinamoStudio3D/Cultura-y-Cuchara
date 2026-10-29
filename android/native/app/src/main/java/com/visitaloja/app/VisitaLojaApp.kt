@@ -189,7 +189,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
-                PlaceDetail(selected, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }) { selectedId = null }
+                PlaceDetail(selected, !state.offline && state.error == null, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }) { selectedId = null }
             }
         }
     }
@@ -370,7 +370,7 @@ private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite:
 }
 
 @Composable
-private fun PlaceDetail(place: Place, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, dismiss: () -> Unit) {
+private fun PlaceDetail(place: Place, fresh: Boolean, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, dismiss: () -> Unit) {
     val context = LocalContext.current
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth().height(220.dp)) { PlaceImage(place, Modifier.fillMaxSize()); FilledIconButton(onClick = dismiss, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Ink)) { Icon(Icons.Default.Close, "Cerrar ficha") } }
@@ -378,9 +378,12 @@ private fun PlaceDetail(place: Place, saved: Boolean, favourite: () -> Unit, vis
             Text(place.categoryLabel, color = Blue, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             Text(place.title, fontSize = 28.sp, fontWeight = FontWeight.Bold, lineHeight = 33.sp)
             if (place.address.isNotBlank()) Text(place.address, color = Blue, fontSize = 13.sp)
+            if (place.address.isNotBlank()) CopyPlaceAddress(place)
+            PlaceHours(place.info, fresh)
             DigitalMenuEntry(place)
             PlaceGallery(place)
             if (place.description.isNotBlank()) Text(place.description, color = Muted, fontSize = 14.sp, lineHeight = 23.sp)
+            PlaceServices(place.info)
             Button(onClick = visit, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.QrCode, null); Spacer(Modifier.width(9.dp)); Text("Generar código de visita") }
             Button(onClick = favourite, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, null); Spacer(Modifier.width(9.dp)); Text(if (saved) "Guardado en favoritos" else "Guardar en favoritos") }
             if (place.address.isNotBlank() || place.latitude != null && place.longitude != null) OutlinedButton(onClick = {

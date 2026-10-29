@@ -153,3 +153,8 @@ Guardar usa CreateDocument; compartir usa un FileProvider privado limitado a cac
 ### 0.17.0 — Todas las secciones
 
 Inicio y la cabecera incluyen acceso a un directorio nativo de las 16 secciones, agrupadas por descubrimiento, aventura y recuerdos/novedades. Búsqueda por varias palabras sin distinguir tildes ni mayúsculas, filtros y estado vacío. Una columna en móvil/texto grande y dos en tablet. Los accesos abren las pantallas nativas existentes; al volver se conserva la búsqueda del directorio y se regresa a Secciones, también después de explorar un cantón. Navegar desde la barra inferior inicia una sección independiente. No modifica datos, permisos, servidor ni main.
+
+
+### 0.18.0 — Información de las paradas
+
+La ficha nativa muestra el horario publicado, rango general y coincidencia con la hora de Ecuador, incluyendo horarios nocturnos y atención 24 horas. Sin datos no supone que el negocio esté abierto; en caché no muestra estado actual. El cálculo se actualiza en primer plano y al reanudar. No interpreta cierres semanales/feriados del texto libre: indica que se confirme la atención. Añade servicios, formas de pago, rango de precios y enlaces HTTPS de web/Instagram/Facebook/TikTok del businessProfile público. Solo aparecen valores configurados; no publica datos ni cambia planes. Permite copiar la dirección. La proyección en caché conserva solo esos campos públicos y sigue leyendo copias anteriores.
