@@ -61,7 +61,7 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
-fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel(), noticeRequest: Int = 0) {
+internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel(), noticeRequest: Int = 0, linkRequest: NativeLinkRequest? = null) {
     val culture: CultureViewModel = viewModel()
     val cultureState by culture.state.collectAsStateWithLifecycle()
     val postcards: PostcardViewModel = viewModel()
@@ -106,7 +106,6 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     val sectionState = rememberSaveableStateHolder()
     var tab by rememberSaveable { mutableStateOf("home") }
     var fromSections by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { fromSections = false; tab = "notices" } }
     var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(tab, audioState.key) { culture.bind(tab == "stories" || audioState.key?.startsWith("story:") == true, tab == "enterprises") }
     LaunchedEffect(cultureState.stories, cultureState.now) { audioPlayer.reconcileStories(cultureState.stories, cultureState.now) }
@@ -122,6 +121,33 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     var selectedEventId by rememberSaveable { mutableStateOf<String?>(null) }
     val selectedEvent = AgendaPolicy.upcoming(agendaState.events, agendaState.now).find { it.id == selectedEventId }
     LaunchedEffect(selectedEventId, selectedEvent, agendaState.loading) { if (!agendaState.loading && selectedEventId != null && selectedEvent == null) selectedEventId = null }
+    var handledLink by rememberSaveable { mutableStateOf<String?>(null) }
+    var pendingLink by rememberSaveable { mutableStateOf<String?>(null) }
+    var linkRequiredAfter by rememberSaveable { mutableStateOf(0L) }
+    var linkMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    val queueLink: (String) -> Unit = { text ->
+        pendingLink = text; linkRequiredAfter = System.currentTimeMillis()
+        if (NativeLinkPolicy.shared(text)?.place != null) model.refresh()
+    }
+    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { pendingLink = null; fromSections = false; tab = "notices" } }
+    LaunchedEffect(linkMessage) { linkMessage?.let { snack.showSnackbar(it); linkMessage = null } }
+    LaunchedEffect(linkRequest?.id) {
+        if (linkRequest != null && linkRequest.id != handledLink) {
+            handledLink = linkRequest.id; queueLink(linkRequest.text)
+        }
+    }
+    LaunchedEffect(pendingLink, state.places, state.loading, state.offline, state.error, state.fetchedAt, linkRequiredAfter) {
+        val text = pendingLink ?: return@LaunchedEffect
+        val target = NativeLinkPolicy.shared(text)
+        if (target == null) { pendingLink = null; linkMessage = "Este enlace no corresponde a una parada o sección compatible de VisitaLoja."; return@LaunchedEffect }
+        if (target.place != null && (state.loading || state.offline || state.error != null || state.fetchedAt < linkRequiredAfter)) return@LaunchedEffect
+        val place = target.place?.let { NativeLinkPolicy.place(state.places, it) }
+        pendingLink = null
+        if (target.place != null && place == null) { linkMessage = "No encontramos esta parada publicada. Puede haber cambiado o ya no estar disponible."; return@LaunchedEffect }
+        visits.close(); selectedId = null; selectedEventId = null; audioPlayer.pause()
+        fromSections = false; tab = target.route; category = target.category; query = ""
+        if (place != null) selectedId = place.id
+    }
     val navigate: (String, String) -> Unit = { target, filter ->
         fromSections = tab == "sections" || (fromSections && tab == "cantons" && target == "canton")
         tab = target; category = filter; query = ""
@@ -132,6 +158,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
         query = ""; category = "all"
     }
     BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null, onBack = back)
+    BackHandler(enabled = pendingLink != null) { pendingLink = null }
     LaunchedEffect(tab) { if (tab == "map") audioPlayer.pause() }
     MaterialTheme(colorScheme = AppColors) {
         Scaffold(
@@ -147,8 +174,16 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
             BrandBackdrop(Modifier.padding(padding).fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
                 if (state.offline && tab != "map") OfflineBanner(state.fetchedAt, state.loading, model::refresh)
+                if (pendingLink != null && NativeLinkPolicy.shared(pendingLink.orEmpty())?.place != null) {
+                    Surface(color = MaterialTheme.colorScheme.primaryContainer) {
+                        Column(Modifier.fillMaxWidth().padding(14.dp).testTag("native-link-pending")) {
+                            Text(if (state.loading) "Buscando la parada compartida…" else "Conéctate para abrir esta parada y comprobar que sigue publicada.")
+                            Row { if (!state.loading) TextButton(onClick = model::refresh) { Text("Reintentar enlace") }; TextButton(onClick = { pendingLink = null }) { Text("Cancelar enlace") } }
+                        }
+                    }
+                }
                 when (tab) {
-                    "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen { navigate(it, "all") } }
+                    "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen({ navigate(it, "all") }, queueLink) }
                     "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh)
                     "account" -> AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)

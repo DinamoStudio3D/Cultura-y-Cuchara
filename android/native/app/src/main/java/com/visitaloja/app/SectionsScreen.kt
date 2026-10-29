@@ -62,7 +62,7 @@ internal object SectionsPolicy {
 }
 
 @Composable
-internal fun SectionsScreen(open: (String) -> Unit) {
+internal fun SectionsScreen(open: (String) -> Unit, openLink: (String) -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var group by rememberSaveable { mutableStateOf("Todas") }
     val result = remember(query, group) { SectionsPolicy.filter(query, group) }
@@ -81,6 +81,7 @@ internal fun SectionsScreen(open: (String) -> Unit) {
                 }
             }
         }
+        item { NativeLinkEntry(openLink) }
         item {
             OutlinedTextField(value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth().testTag("sections-search"), singleLine = true,
                 label = { Text("Buscar una sección") }, placeholder = { Text("Videos, postales, sellos…") },
