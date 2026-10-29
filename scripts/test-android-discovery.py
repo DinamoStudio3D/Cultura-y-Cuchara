@@ -65,6 +65,23 @@ try:
     tap(wait(tag='sections-search'));adb('shell','input','text','zzzzzz')
     adb('shell','input','keyevent','KEYCODE_BACK');wait(tag='sections-reset');capture('discovery-sections-empty')
     tap(wait(tag='sections-reset'));wait(tag='section-map')
+    tap(wait(tag='sections-search'));adb('shell','input','text','promociones')
+    adb('shell','input','keyevent','KEYCODE_BACK');tap(wait(tag='section-promotions'))
+    wait(tag='promotions-screen');time.sleep(5);capture('discovery-promotions')
+    words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Conéctate para consultar' not in words,'Promotion directory failed to refresh'
+    promotion_card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith('promotion-')),None)
+    promotion_check={'screen_verified':True,'published_offer_found':promotion_card is not None,'detail_verified':False,'external_action_opened':False}
+    if promotion_card is not None:
+        tap(promotion_card);time.sleep(2);capture('discovery-promotion-detail')
+        for _ in range(5):
+            if find(tree(),tag='place-promotion') is not None:break
+            adb('shell','input','swipe','360','1180','360','600','300');time.sleep(1)
+        assert find(tree(),tag='place-promotion') is not None,'Active promotion missing from place'
+        promotion_check['detail_verified']=True
+        adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    (OUT/'promotion-summary.json').write_text(json.dumps(promotion_check,indent=2))
+    tap(wait(desc='Volver a Secciones'));wait(tag='sections-screen');tap(wait(desc='Borrar búsqueda de secciones'))
     culture_check={}
     for route,query,screen,prefix,close_label in [('stories','historias','stories-screen','story-card-','Cerrar historia'),('enterprises','emprendedores','enterprises-screen','enterprise-card-','Cerrar emprendimiento')]:
         tap(wait(tag='sections-search'));adb('shell','input','text',query)

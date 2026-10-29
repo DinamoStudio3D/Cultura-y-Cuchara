@@ -34,6 +34,7 @@ object PushPolicy {
             "/fidelidad.html" -> "passport"
             "/" -> when (uri.fragment) {
                 "mapa" -> "map"; "agenda", "fiavl" -> "agenda"; "misiones" -> "missions"; "pasaporte" -> "passport"
+                "promociones" -> "promotions"
                 "historias" -> "stories"; "emprendedores" -> "enterprises"; "loja-en-video" -> "videos"; "loja-tiempo" -> "time"; "loja-en-imagenes" -> "photos"; null, "", "inicio" -> "home"; else -> null
             }
             else -> null

@@ -32,6 +32,7 @@ internal object SectionsPolicy {
     val sections = listOf(
         AppSection("map", "Mapa interactivo", "Encuentra paradas y ubícate en Loja", groups[0], Icons.Default.Map),
         AppSection("explore", "Paradas", "Cafeterías, sabores, hospedaje y turismo", groups[0], Icons.Default.Explore),
+        AppSection("promotions", "Promociones", "Ofertas vigentes y beneficios de los negocios", groups[0], Icons.Default.Redeem),
         AppSection("agenda", "Agenda", "Eventos y actividades por descubrir", groups[0], Icons.Default.Event),
         AppSection("cantons", "Cantones", "Recorre los 16 cantones de la provincia", groups[0], Icons.Default.Landscape),
         AppSection("stories", "Historias de Loja", "Relatos, sabores y tradición de nuestra tierra", groups[0], Icons.Default.AutoStories),

@@ -175,3 +175,10 @@ La revisión de Expreso al Sur detectó hours="Mar - Dom 8am a 10pm" junto a ope
 Todas las secciones incorpora Historias de Loja y Emprendedores, conectadas a siteContent/stories y siteContent/entrepreneurs del panel existente. Historias respeta activación, publicación y programación, ofrece búsqueda/categorías, lectura en español/inglés, fuente, fotos completas, narraciones publicadas, video oficial y paradas relacionadas publicadas. Compartir usa la sección canónica de la web, igual que la web actual.
 
 Emprendedores ofrece catálogo, filtros, descripción completa, imagen y contacto explícito por WhatsApp con texto preparado: nunca lo envía automáticamente. No crea ejemplos, teléfonos ficticios ni publicaciones cuando los documentos están ausentes o vacíos. Los listeners se acotan a la sección y, para historias, a una narración activa para poder detenerla si se retira. No escribe XP, sellos o datos ni cambia reglas, administración o main. La descarga de la APK debe verificarse también después de guardarla.
+
+
+### 0.21.0 — Promociones vigentes
+
+Todas las secciones → Promociones consulta las promociones configuradas en subscription.promotion de las mismas paradas públicas. Exige active booleano, beneficio promo y plan vigente; intersecta fechas del plan y de la oferta en America/Guayaquil, y excluye fechas malformadas o ventanas incompatibles. Muestra búsqueda por negocio/oferta, imagen, condiciones publicadas, fecha de fin efectiva y acceso a la ficha con su promoción y enlace HTTPS opcional por acción explícita. Sin fecha indica consultar vigencia. No concede sellos, recompensas ni registra compras.
+
+Actualiza la hora cada segundo en primer plano y vuelve a consultar el directorio al entrar/reanudar y cada minuto mientras se ve esta sección. Las ofertas no se persisten en la caché de paradas y no se anuncian como vigentes sin conexión o durante carga/error. No es una reserva ni una confirmación de stock: las condiciones se confirman con el negocio. No modifica panel, datos, servidor, reglas o main. La prueba de emulador verifica sección y ficha solo si existe una oferta activa; nunca abre contactos o acciones externas.

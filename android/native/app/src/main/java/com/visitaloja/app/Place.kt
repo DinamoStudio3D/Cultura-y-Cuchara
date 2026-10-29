@@ -14,7 +14,7 @@ data class Place(
     val description: String, val imageUrl: String?, val cantonId: String = "loja",
     val active: Boolean = true, val publicationStatus: String = "published", val status: String = "",
     val latitude: Double? = null, val longitude: Double? = null,
-    val photos: List<PlacePhoto> = emptyList(), val phone: String? = null, val whatsapp: String? = null, val slug: String = "", val mapBrand: MapBrand = MapBrand(), val missionCategory: String? = null, val missionCanton: String? = null, val menuQrId: String? = null, val info: PlaceInfo = PlaceInfo(), val media: PlaceMedia = PlaceMedia()
+    val photos: List<PlacePhoto> = emptyList(), val phone: String? = null, val whatsapp: String? = null, val slug: String = "", val mapBrand: MapBrand = MapBrand(), val missionCategory: String? = null, val missionCanton: String? = null, val menuQrId: String? = null, val info: PlaceInfo = PlaceInfo(), val media: PlaceMedia = PlaceMedia(), val promotion: PlacePromotion = PlacePromotion()
 ) {
     val categoryLabel: String get() = when (categories.firstOrNull()) {
         "cafe" -> "Cafetería"
@@ -117,7 +117,7 @@ object PlaceJson {
             publicationStatus = fields.text("publicationStatus"), status = fields.text("status"),
             latitude = PlacePolicy.safeCoordinate(fields.coordinate("lat"), true), longitude = PlacePolicy.safeCoordinate(fields.coordinate("lng"), false),
             photos = photos, phone = PlacePolicy.safePhone(profile?.text("phone")), whatsapp = PlacePolicy.whatsapp(profile?.text("whatsapp")), slug = fields.text("slug"),
-            media = PlaceMediaPolicy.read(fields), info = PlaceInfoPolicy.read(fields), menuQrId = fields.text("menuQrId").takeIf(MenuPolicy::validId), missionCategory = missionCategory, missionCanton = fields.text("cantonId").trim().takeIf(String::isNotBlank),
+            promotion = PromotionPolicy.read(fields), media = PlaceMediaPolicy.read(fields), info = PlaceInfoPolicy.read(fields), menuQrId = fields.text("menuQrId").takeIf(MenuPolicy::validId), missionCategory = missionCategory, missionCanton = fields.text("cantonId").trim().takeIf(String::isNotBlank),
             mapBrand = MapBrand(PlacePolicy.safeImage(fields.text("customLogoUrl")), fields.text("iconClass").take(60), fields.text("mapMarkerStyle").take(20),
                 subscription.text("plan").isNotBlank() && subscription.text("plan") != "free" && subscription.text("status") !in setOf("paused", "pending", "expired", "suspended") && benefits?.optJSONObject("logoPin")?.optBoolean("booleanValue") == true,
                 subscription.date("startAt") ?: subscription.date("startDate"), subscription.date("endAt", true) ?: subscription.date("endDate", true))
