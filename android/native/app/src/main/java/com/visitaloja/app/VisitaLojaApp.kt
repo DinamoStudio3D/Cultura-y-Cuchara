@@ -127,9 +127,11 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     var linkMessage by rememberSaveable { mutableStateOf<String?>(null) }
     val queueLink: (String) -> Unit = { text ->
         pendingLink = text; linkRequiredAfter = System.currentTimeMillis()
-        if (NativeLinkPolicy.shared(text)?.place != null) model.refresh()
+        val target = NativeLinkPolicy.shared(text)
+        if (target != null) { selectedId = null; selectedEventId = null; visits.close(); audioPlayer.pause() }
+        if (target?.place != null) model.refresh()
     }
-    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { pendingLink = null; fromSections = false; tab = "notices" } }
+    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { pendingLink = null; selectedId = null; selectedEventId = null; visits.close(); fromSections = false; tab = "notices" } }
     LaunchedEffect(linkMessage) { linkMessage?.let { snack.showSnackbar(it); linkMessage = null } }
     LaunchedEffect(linkRequest?.id) {
         if (linkRequest != null && linkRequest.id != handledLink) {
@@ -149,6 +151,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         if (place != null) selectedId = place.id
     }
     val navigate: (String, String) -> Unit = { target, filter ->
+        pendingLink = null
         fromSections = tab == "sections" || (fromSections && tab == "cantons" && target == "canton")
         tab = target; category = filter; query = ""
     }
