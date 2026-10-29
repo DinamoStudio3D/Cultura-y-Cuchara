@@ -16,8 +16,16 @@ def adb(*args, binary=False):
     return p.stdout if binary else p.stdout.decode(errors='replace').strip()
 
 def tree():
-    adb('shell', 'uiautomator', 'dump', '/sdcard/discovery-ui.xml')
-    return ET.fromstring(adb('exec-out', 'cat', '/sdcard/discovery-ui.xml'))
+    # A cold launch can replace the accessibility window while uiautomator dumps it.
+    # Retry only the dump/parse, bounded; missing controls still fail in wait().
+    for attempt in range(5):
+        try:
+            adb('shell', 'rm', '-f', '/sdcard/discovery-ui.xml')
+            adb('shell', 'uiautomator', 'dump', '/sdcard/discovery-ui.xml')
+            return ET.fromstring(adb('exec-out', 'cat', '/sdcard/discovery-ui.xml'))
+        except (ET.ParseError, subprocess.CalledProcessError):
+            if attempt == 4: raise
+            time.sleep(1)
 
 def find(root, tag=None, desc=None):
     return next((n for n in root.iter('node') if (tag and n.get('resource-id', '').split(':id/')[-1] == tag) or (desc and n.get('content-desc') == desc)), None)
