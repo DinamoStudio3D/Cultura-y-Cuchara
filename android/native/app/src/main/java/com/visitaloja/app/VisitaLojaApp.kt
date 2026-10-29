@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -99,8 +100,10 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     LaunchedEffect(accountState.message) { accountState.message?.let { snack.showSnackbar(it) } }
     val state = guestState.copy(favourites = if (accountState.uid == null) guestState.favourites else accountState.favourites)
     val favourite: (String) -> Unit = { id -> if (accountState.uid == null) model.toggleFavourite(id) else account.toggleFavourite(id) }
+    val sectionState = rememberSaveableStateHolder()
     var tab by rememberSaveable { mutableStateOf("home") }
-    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) tab = "notices" }
+    var fromSections by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { fromSections = false; tab = "notices" } }
     var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(tab) { postcards.bind(tab == "postcards") }
     LaunchedEffect(tab) { shop.bind(tab == "shop") }
@@ -114,17 +117,25 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
     var selectedEventId by rememberSaveable { mutableStateOf<String?>(null) }
     val selectedEvent = AgendaPolicy.upcoming(agendaState.events, agendaState.now).find { it.id == selectedEventId }
     LaunchedEffect(selectedEventId, selectedEvent, agendaState.loading) { if (!agendaState.loading && selectedEventId != null && selectedEvent == null) selectedEventId = null }
-    val navigate: (String, String) -> Unit = { target, filter -> tab = target; category = filter; query = "" }
-    BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null) { tab = if (tab == "canton") "cantons" else "home"; query = ""; category = "all" }
+    val navigate: (String, String) -> Unit = { target, filter ->
+        fromSections = tab == "sections" || (fromSections && tab == "cantons" && target == "canton")
+        tab = target; category = filter; query = ""
+    }
+    val back: () -> Unit = {
+        tab = SectionsPolicy.parent(tab, fromSections)
+        if (tab == "home" || tab == "sections") fromSections = false
+        query = ""; category = "all"
+    }
+    BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null, onBack = back)
     LaunchedEffect(tab) { if (tab == "map") audioPlayer.pause() }
     MaterialTheme(colorScheme = AppColors) {
         Scaffold(
             modifier = Modifier.semantics { testTagsAsResourceId = true },
             snackbarHost = { SnackbarHost(snack) },
-            topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home") { navigate(if (tab == "canton") "cantons" else "home", "all") } },
+            topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") "Volver a Secciones" else if (tab == "canton") "Volver a Cantones" else "Volver a Inicio", back) { navigate("sections", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -132,6 +143,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
             Column(Modifier.fillMaxSize()) {
                 if (state.offline && tab != "map") OfflineBanner(state.fetchedAt, state.loading, model::refresh)
                 when (tab) {
+                    "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen { navigate(it, "all") } }
                     "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh)
                     "account" -> AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
@@ -156,7 +168,7 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
                     "cantons", "canton" -> {
                         val canton = CantonPolicy.catalogue.find { it.id == selectedCantonId }
                         val retryCantons: () -> Unit = { cantons.bind(false); cantons.bind(true); model.refresh() }
-                        if (tab == "canton" && canton != null) CantonDetailScreen(canton, cantonsState, guestState, { navigate("cantons", "all") }, { selectedId = it.id }, retryCantons)
+                        if (tab == "canton" && canton != null) CantonDetailScreen(canton, cantonsState, guestState, back, { selectedId = it.id }, retryCantons)
                         else CantonsScreen(cantonsState, guestState, { selectedCantonId = it; navigate("canton", "all") }, retryCantons)
                     }
                     else -> {
@@ -184,16 +196,16 @@ fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewMode
 }
 
 @Composable
-private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, back: () -> Unit) {
+private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, backLabel: String, back: () -> Unit, sections: () -> Unit) {
     Surface(color = Color(0xFFF0F7FF)) {
         Row(Modifier.statusBarsPadding().fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (showBack) IconButton(onClick = back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver a Inicio") }
+            if (showBack) IconButton(onClick = back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, backLabel) }
             Image(painterResource(R.drawable.visitaloja_logo), "VisitaLoja.com", Modifier.size(54.dp))
             Column(Modifier.weight(1f).padding(start = 10.dp)) {
                 Text("VisitaLoja", fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
                 Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Default.LocationOn, null, Modifier.size(13.dp), tint = Muted); Text("Loja, Ecuador", fontSize = 12.sp, color = Muted) }
             }
-            Surface(color = Pale, shape = RoundedCornerShape(20.dp)) { Text("PRUEBA", color = Blue, fontSize = 9.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)) }
+            IconButton(onClick = sections, modifier = Modifier.testTag("open-sections")) { Icon(Icons.Default.Apps, "Todas las secciones", tint = Blue) }
             IconButton(onClick = refresh, enabled = !loading) { Icon(Icons.Default.Refresh, "Actualizar lugares", tint = Blue) }
         }
     }
@@ -234,6 +246,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
                 }
             }
         }
+        item { FilledTonalButton(onClick = { openDiscovery("sections") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp).testTag("home-sections"), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(16.dp)) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(10.dp)); Text("Descubre todo VisitaLoja", modifier = Modifier.weight(1f)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null, Modifier.size(18.dp)) } }
         item { Hero(explore) }
         item { MapShortcut(openMap) }
         item { MissionsShortcut { openDiscovery("missions") } }

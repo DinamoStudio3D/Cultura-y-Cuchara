@@ -148,3 +148,8 @@ Inicio → Tienda consulta storeProducts activos y siteContent/store del panel e
 Inicio → Postales permite elegir una foto publicada de Loja o una imagen mediante el selector de Android. Se conservan los créditos del catálogo y se consultan settings/postcards y settings/postcard_frames para mensaje, marca, estilos habilitados y marcos PNG personalizados. Editor con formatos, texto, encuadre, zoom, giro, espejo y filtros. La misma imagen renderizada se usa en vista previa y exportación PNG; el marco personalizado conserva su diseño sin añadir textos personales encima. No modifica la foto original ni sube fotos a la web.
 
 Guardar usa CreateDocument; compartir usa un FileProvider privado limitado a cache/postcards con permisos temporales de lectura. No necesita permisos de galería o escritura generales. El PNG para guardar se prepara en caché y su ruta se conserva ante recreación de Activity. La prueba de emulador abre el menú del sistema, verifica los bytes PNG y sus dimensiones sin seleccionar destinatario ni enviar la imagen. Sin cambios de servidor, reglas o main; no se conceden puntos por crear una postal.
+
+
+### 0.17.0 — Todas las secciones
+
+Inicio y la cabecera incluyen acceso a un directorio nativo de las 16 secciones, agrupadas por descubrimiento, aventura y recuerdos/novedades. Búsqueda por varias palabras sin distinguir tildes ni mayúsculas, filtros y estado vacío. Una columna en móvil/texto grande y dos en tablet. Los accesos abren las pantallas nativas existentes; al volver se conserva la búsqueda del directorio y se regresa a Secciones, también después de explorar un cantón. Navegar desde la barra inferior inicia una sección independiente. No modifica datos, permisos, servidor ni main.
