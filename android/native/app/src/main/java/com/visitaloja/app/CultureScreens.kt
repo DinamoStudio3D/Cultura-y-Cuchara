@@ -126,7 +126,8 @@ private fun CultureDialog(title: String, closeLabel: String, close: () -> Unit, 
 }
 @Composable
 private fun StoryReader(story: LojaStory, places: List<Place>, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel, close: () -> Unit, openPlace: (Place) -> Unit) {
-    var english by rememberSaveable(story.id) { mutableStateOf(false) };var videoOpen by rememberSaveable(story.id) { mutableStateOf(false) }
+    var english by rememberSaveable(story.id) { mutableStateOf(false) };var selectedVideoUrl by rememberSaveable(story.id) { mutableStateOf<String?>(null) }
+    LaunchedEffect(story.video?.url) { if (selectedVideoUrl != story.video?.url) selectedVideoUrl = null }
     val title = if (english) story.titleEn.ifBlank { story.title } else story.title
     val intro = if (english) story.introEn.ifBlank { story.intro } else story.intro.ifBlank { story.introEn }
     val body = if (english) story.bodyEn.ifBlank { story.body } else story.body.ifBlank { story.bodyEn }
@@ -144,7 +145,7 @@ private fun StoryReader(story: LojaStory, places: List<Place>, audio: DiscoveryA
             OutlinedButton(onClick = { if (playing) player.pause() else player.play(key, "$title · $language", url) }, modifier = Modifier.fillMaxWidth()) { Text(if (playing) "Pausar narración en $language" else "Escuchar en $language") }
             if (active && audio.error != null) Text(audio.error, color = MaterialTheme.colorScheme.error)
         } }
-        if (story.video != null) Button(onClick = { player.pause();videoOpen = true }, modifier = Modifier.fillMaxWidth()) { Text("Ver video de la historia") }
+        if (story.video != null) Button(onClick = { player.pause();selectedVideoUrl = story.video?.url }, modifier = Modifier.fillMaxWidth()) { Text("Ver video de la historia") }
         Text(body, lineHeight = 25.sp)
         if (story.source.isNotBlank()) Text("Fuente: ${story.source}", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         val related = places.filter { it.id in story.related && PlacePolicy.published(it) }
@@ -154,7 +155,7 @@ private fun StoryReader(story: LojaStory, places: List<Place>, audio: DiscoveryA
         }
         OutlinedButton(onClick = { cultureShare(context, title, "https://www.visitaloja.com/#historias") }, modifier = Modifier.fillMaxWidth()) { Text("Compartir historia") }
     }
-    if (videoOpen && story.video != null) VideoDialog(LojaVideo("story:${story.id}", title, intro.take(350), story.source, story.video, story.video.thumbnail)) { videoOpen = false }
+    if (story.video != null && selectedVideoUrl == story.video.url) VideoDialog(LojaVideo("story:${story.id}", title, intro.take(350), story.source, story.video, story.video.thumbnail)) { selectedVideoUrl = null }
 }
 private fun cultureOpen(context: android.content.Context, url: String) { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }.onFailure { Toast.makeText(context, "No hay una aplicación disponible.", Toast.LENGTH_SHORT).show() } }
 private fun cultureShare(context: android.content.Context, title: String, url: String) { runCatching { context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "text/plain";putExtra(Intent.EXTRA_TEXT, "$title\n$url") }, "Compartir desde VisitaLoja")) } }
