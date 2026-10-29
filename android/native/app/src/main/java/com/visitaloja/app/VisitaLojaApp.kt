@@ -123,13 +123,13 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     LaunchedEffect(selectedEventId, selectedEvent, agendaState.loading) { if (!agendaState.loading && selectedEventId != null && selectedEvent == null) selectedEventId = null }
     var handledLink by rememberSaveable { mutableStateOf<String?>(null) }
     var pendingLink by rememberSaveable { mutableStateOf<String?>(null) }
-    var linkRequiredAfter by rememberSaveable { mutableStateOf(0L) }
+    var linkRequiredVersion by remember { mutableStateOf(0L) }
     var linkMessage by rememberSaveable { mutableStateOf<String?>(null) }
     val queueLink: (String) -> Unit = { text ->
-        pendingLink = text; linkRequiredAfter = System.currentTimeMillis()
+        pendingLink = text; linkRequiredVersion = 0L
         val target = NativeLinkPolicy.shared(text)
         if (target != null) { selectedId = null; selectedEventId = null; visits.close(); audioPlayer.pause() }
-        if (target?.place != null) model.refresh()
+        if (target?.place != null) linkRequiredVersion = model.refreshForLink()
     }
     LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { pendingLink = null; selectedId = null; selectedEventId = null; visits.close(); fromSections = false; tab = "notices" } }
     LaunchedEffect(linkMessage) { linkMessage?.let { snack.showSnackbar(it); linkMessage = null } }
@@ -138,11 +138,11 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
             handledLink = linkRequest.id; queueLink(linkRequest.text)
         }
     }
-    LaunchedEffect(pendingLink, state.places, state.loading, state.offline, state.error, state.fetchedAt, linkRequiredAfter) {
+    LaunchedEffect(pendingLink, state.places, state.loading, state.offline, state.error, state.fetchedAt, state.fetchedVersion, linkRequiredVersion) {
         val text = pendingLink ?: return@LaunchedEffect
         val target = NativeLinkPolicy.shared(text)
         if (target == null) { pendingLink = null; linkMessage = "Este enlace no corresponde a una parada o sección compatible de VisitaLoja."; return@LaunchedEffect }
-        if (target.place != null && (state.loading || state.offline || state.error != null || state.fetchedAt < linkRequiredAfter)) return@LaunchedEffect
+        if (target.place != null && !NativeLinkPolicy.ready(state, linkRequiredVersion)) return@LaunchedEffect
         val place = target.place?.let { NativeLinkPolicy.place(state.places, it) }
         pendingLink = null
         if (target.place != null && place == null) { linkMessage = "No encontramos esta parada publicada. Puede haber cambiado o ya no estar disponible."; return@LaunchedEffect }

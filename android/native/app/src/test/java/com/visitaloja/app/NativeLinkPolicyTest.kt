@@ -28,9 +28,20 @@ class NativeLinkPolicyTest {
         assertNull(NativeLinkPolicy.parse("https://visitaloja.com/?checkin=%zz"))
     }
     @Test fun existingSectionsAndCategoryGuidesOpenTheirNativeScreens() {
-        for ((fragment,route) in mapOf("promociones" to "promotions", "podcast" to "podcast", "tienda" to "shop", "postales" to "postcards", "pasaporte" to "passport", "loja-en-imagenes" to "photos")) assertEquals(route,NativeLinkPolicy.parse("https://visitaloja.com/#$fragment")?.route)
+        for ((fragment,route) in mapOf("promociones" to "promotions", "podcast" to "podcast", "tienda" to "shop", "especias" to "shop", "establecimientos" to "explore", "postales" to "postcards", "pasaporte" to "passport", "loja-en-imagenes" to "photos")) assertEquals(route,NativeLinkPolicy.parse("https://visitaloja.com/#$fragment")?.route)
         assertEquals(NativeLinkTarget("explore",category="cafe"),NativeLinkPolicy.parse("https://visitaloja.com/cafeterias-en-loja"))
         assertEquals("agenda",NativeLinkPolicy.parse("https://visitaloja.com/agenda.html")?.route)
+    }
+    @Test fun linkWaitsForTheRequestedFetchWithoutComparingWallClockTimestamps() {
+        val loaded=PlacesState(fetchedAt=1L,requestVersion=2,fetchedVersion=2)
+        assertTrue(NativeLinkPolicy.ready(loaded,2))
+        assertFalse(NativeLinkPolicy.ready(loaded,3))
+        assertFalse(NativeLinkPolicy.ready(loaded.copy(loading=true),2))
+        assertFalse(NativeLinkPolicy.ready(loaded.copy(offline=true),2))
+        assertFalse(NativeLinkPolicy.ready(loaded.copy(error="Sin conexión"),2))
+        assertFalse(NativeLinkPolicy.ready(PlacesState(),0))
+        // Restoring the pending reference in a new process uses the new process's fresh request.
+        assertTrue(NativeLinkPolicy.ready(loaded.copy(requestVersion=1,fetchedVersion=1),0))
     }
     @Test fun placeResolutionUsesPublishedIdsOrUniqueSlugsAndRejectsWithdrawnOrAmbiguous() {
         val a=Place("loc_1","Café central",emptyList(),"","",null)
