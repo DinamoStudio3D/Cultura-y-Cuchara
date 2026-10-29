@@ -65,12 +65,13 @@ private fun SupporterCard(item: Supporter, config: SupportConfig, modifier: Modi
         Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
             if (item.logo != null && !failed) AsyncImage(item.logo,null,Modifier.fillMaxWidth().height(92.dp),contentScale=ContentScale.Fit,onError={failed=true})
             if (item.logo == null || failed || config.showNames) Text(item.name,fontWeight=FontWeight.Bold,fontSize=14.sp,textAlign=androidx.compose.ui.text.style.TextAlign.Center)
-            if (config.clickable) Text(if (item.institution) "Conocer institución ↗" else "Conocer negocio →",fontSize=11.sp,color=MaterialTheme.colorScheme.primary)
+            if (config.clickable) Text(if (item.institution) "Conocer institución ↗" else "Conocer negocio →",fontSize=11.sp,color=if(item.institution)Color(0xFFC3E3FF) else MaterialTheme.colorScheme.primary)
         }
     }
+    val cardColors=CardDefaults.cardColors(containerColor=if(item.institution)Color(0xFF0C3768) else Color.White,contentColor=if(item.institution)Color.White else MaterialTheme.colorScheme.onSurface)
     val cardModifier = modifier.testTag("supporter-${item.id}").semantics { contentDescription = if(config.clickable) "Conoce ${item.name}" else item.name }
-    if(config.clickable) Card(onClick={open(item)},modifier=cardModifier,shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=Color.White),content={body()})
-    else Card(modifier=cardModifier,shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=Color.White),content={body()})
+    if(config.clickable) Card(onClick={open(item)},modifier=cardModifier,shape=RoundedCornerShape(18.dp),colors=cardColors,content={body()})
+    else Card(modifier=cardModifier,shape=RoundedCornerShape(18.dp),colors=cardColors,content={body()})
 }
 
 @Composable

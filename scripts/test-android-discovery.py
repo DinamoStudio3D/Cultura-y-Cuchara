@@ -90,6 +90,10 @@ try:
             if find(tree(),tag='home-supporters') is not None:break
             adb('shell','input','swipe','360','1180','360','650','350');time.sleep(1)
         else:raise AssertionError('Published supporters strip missing from Home')
+        # Bring the actual logos and controls into view, not just the section heading.
+        for _ in range(4):
+            if find(tree(),tag='open-supporters') is not None:break
+            adb('shell','input','swipe','360','1180','360','750','300');time.sleep(1)
         motion=find(tree(),tag='supporters-motion')
         if motion is not None:tap(motion)
         capture('discovery-home-supporters');support_check['home_strip_verified']=True
