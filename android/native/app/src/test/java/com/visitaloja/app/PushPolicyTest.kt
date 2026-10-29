@@ -36,7 +36,7 @@ class PushPolicyTest {
         assertEquals(20,rows.size);assertEquals("Updated",rows.first().title);assertEquals(1,rows.count { it.id=="2" })
     }
     @Test fun linksUseNativeSectionsWhenAvailable() {
-        assertEquals("agenda",PushPolicy.route("/#agenda"));assertEquals("passport",PushPolicy.route("/fidelidad.html?place=somewhere"))
+        assertEquals("supporters",PushPolicy.route("/#registeredBrands"));assertEquals("agenda",PushPolicy.route("/#agenda"));assertEquals("passport",PushPolicy.route("/fidelidad.html?place=somewhere"))
         assertEquals("missions",PushPolicy.route("/#misiones"));assertEquals("cantons",PushPolicy.route("/cantones.html"));assertNull(PushPolicy.route("/mesa-turistica.html"))
     }
     @Test fun delayedCampaignsRespectTheSameOneHourLifetimeAsWebPush() {

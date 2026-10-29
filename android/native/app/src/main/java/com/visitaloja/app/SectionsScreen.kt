@@ -36,6 +36,7 @@ internal object SectionsPolicy {
         AppSection("agenda", "Agenda", "Eventos y actividades por descubrir", groups[0], Icons.Default.Event),
         AppSection("cantons", "Cantones", "Recorre los 16 cantones de la provincia", groups[0], Icons.Default.Landscape),
         AppSection("stories", "Historias de Loja", "Relatos, sabores y tradición de nuestra tierra", groups[0], Icons.Default.AutoStories),
+        AppSection("supporters", "Ellos hacen posible VisitaLoja", "Conoce los negocios y la institución que apoyan el proyecto", groups[2], Icons.Default.Handshake),
         AppSection("enterprises", "Emprendedores", "Conoce y apoya al talento local", groups[2], Icons.Default.Storefront),
         AppSection("photos", "Fotografías", "Miradas de Loja y sus autores", groups[0], Icons.Default.PhotoLibrary),
         AppSection("time", "Loja en el Tiempo", "Historia y fotografías de ayer y hoy", groups[0], Icons.Default.History),

@@ -28,7 +28,7 @@ class NativeLinkPolicyTest {
         assertNull(NativeLinkPolicy.parse("https://visitaloja.com/?checkin=%zz"))
     }
     @Test fun existingSectionsAndCategoryGuidesOpenTheirNativeScreens() {
-        for ((fragment,route) in mapOf("promociones" to "promotions", "podcast" to "podcast", "tienda" to "shop", "especias" to "shop", "establecimientos" to "explore", "postales" to "postcards", "pasaporte" to "passport", "loja-en-imagenes" to "photos")) assertEquals(route,NativeLinkPolicy.parse("https://visitaloja.com/#$fragment")?.route)
+        for ((fragment,route) in mapOf("promociones" to "promotions", "podcast" to "podcast", "tienda" to "shop", "especias" to "shop", "establecimientos" to "explore", "registeredBrands" to "supporters", "postales" to "postcards", "pasaporte" to "passport", "loja-en-imagenes" to "photos")) assertEquals(route,NativeLinkPolicy.parse("https://visitaloja.com/#$fragment")?.route)
         assertEquals(NativeLinkTarget("explore",category="cafe"),NativeLinkPolicy.parse("https://visitaloja.com/cafeterias-en-loja"))
         assertEquals("agenda",NativeLinkPolicy.parse("https://visitaloja.com/agenda.html")?.route)
     }

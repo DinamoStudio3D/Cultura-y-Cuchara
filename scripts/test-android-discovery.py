@@ -74,6 +74,26 @@ try:
     wait(tag='videos-screen');capture('discovery-link-share-warm')
     adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://visitaloja.com/','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(tag='home-sections');time.sleep(1)
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/#registeredBrands','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='supporters-screen');time.sleep(5);capture('discovery-supporters')
+    words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Conéctate para consultar las marcas' not in words,'Supporters configuration failed to load'
+    brand_cards=[n for n in tree().iter('node') if n.get('resource-id','').startswith('supporter-')]
+    business=next((n for n in brand_cards if 'institution-mesa-turistica' not in n.get('resource-id','') and n.get('clickable')=='true'),None)
+    support_check={'screen_verified':True,'visible_cards':len(brand_cards),'business_detail_verified':False,'institution_browser_opened':False,'home_strip_verified':False}
+    if business is not None:
+        tap(business);wait(desc='Cerrar ficha');capture('discovery-supporter-place')
+        support_check['business_detail_verified']=True;tap(wait(desc='Cerrar ficha'));time.sleep(1)
+    tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
+    if brand_cards:
+        for _ in range(7):
+            if find(tree(),tag='home-supporters') is not None:break
+            adb('shell','input','swipe','360','1180','360','650','350');time.sleep(1)
+        else:raise AssertionError('Published supporters strip missing from Home')
+        motion=find(tree(),tag='supporters-motion')
+        if motion is not None:tap(motion)
+        capture('discovery-home-supporters');support_check['home_strip_verified']=True
+    (OUT/'supporters-summary.json').write_text(json.dumps(support_check,indent=2))
     tap(wait(tag='open-sections'))
     wait(tag='sections-screen');capture('discovery-sections')
     tap(wait(tag='open-link'));tap(wait(tag='native-link-input'))
