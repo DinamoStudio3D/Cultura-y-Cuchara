@@ -63,6 +63,7 @@ internal class ReviewsViewModel : ViewModel() {
     fun refreshOwn() {
         val place = mutable.value.place ?: return
         val uid = auth.currentUser?.uid ?: return
+        if (mutable.value.uid != uid) return
         val generation = epoch;val ownerGeneration = ++ownEpoch
         mutable.value = mutable.value.copy(ownLoading = true, ownReady = false)
         viewModelScope.launch {
@@ -82,7 +83,7 @@ internal class ReviewsViewModel : ViewModel() {
         val previous = mutable.value
         val place = previous.place ?: return
         val uid = auth.currentUser?.uid ?: return
-        if (previous.busy || !previous.ownReady || (!previous.eligible && !previous.ownExists)) return
+        if (previous.uid != uid || previous.busy || !previous.ownReady || (!previous.eligible && !previous.ownExists)) return
         ReviewsPolicy.error(name, rating, comment)?.let { mutable.value = previous.copy(message = it);return }
         val generation = epoch;val ownerGeneration = ownEpoch;val sessionGeneration = session
         mutable.value = previous.copy(busy = true, message = null)
