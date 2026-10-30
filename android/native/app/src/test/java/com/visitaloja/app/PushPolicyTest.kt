@@ -37,7 +37,7 @@ class PushPolicyTest {
     }
     @Test fun linksUseNativeSectionsWhenAvailable() {
         assertEquals("supporters",PushPolicy.route("/#registeredBrands"));assertEquals("agenda",PushPolicy.route("/#agenda"));assertEquals("passport",PushPolicy.route("/fidelidad.html?place=somewhere"))
-        assertEquals("missions",PushPolicy.route("/#misiones"));assertEquals("cantons",PushPolicy.route("/cantones.html"));assertNull(PushPolicy.route("/mesa-turistica.html"))
+        assertEquals("missions",PushPolicy.route("/#misiones"));assertEquals("cantons",PushPolicy.route("/cantones.html"));assertEquals("mesa",PushPolicy.route("/mesa-turistica.html"))
     }
     @Test fun delayedCampaignsRespectTheSameOneHourLifetimeAsWebPush() {
         val now=10_000_000L
