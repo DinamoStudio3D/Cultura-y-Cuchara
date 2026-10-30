@@ -133,7 +133,7 @@ try:
     adb("emu", "geo", "fix", "-79.20422", "-3.99313")
     threading.Thread(target=gps_updates, daemon=True).start()
     adb("shell", "am", "start", "-n", PACKAGE + "/com.visitaloja.app.MainActivity")
-    tap(wait_for(lambda tree: find(tree, text="Mapa")))
+    tap(wait_for(lambda tree: find(tree, tag="nav-map")))
     wait_for(lambda tree: find(tree, tag="map-canvas"))
     time.sleep(4)
     initial = geometry("portrait-map")

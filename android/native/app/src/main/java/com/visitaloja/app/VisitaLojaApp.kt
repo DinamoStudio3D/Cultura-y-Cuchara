@@ -286,7 +286,7 @@ private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, 
 private fun AppNavigation(tab: String, navigate: (String) -> Unit) {
     NavigationBar(containerColor = Color(0xFFF0F7FF), tonalElevation = 0.dp) {
         listOf(Triple("home", "Inicio", Icons.Default.Home), Triple("map", "Mapa", Icons.Default.Map), Triple("passport", "Pasaporte", Icons.Default.MenuBook), Triple("saved", "Favoritos", Icons.Default.FavoriteBorder), Triple("account", "Mi cuenta", Icons.Default.PersonOutline)).forEach { (id, label, icon) ->
-            NavigationBarItem(selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "map", "saved", "account", "passport"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
+            NavigationBarItem(modifier = Modifier.testTag("nav-$id"), selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "map", "saved", "account", "passport"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
         }
     }
 }
