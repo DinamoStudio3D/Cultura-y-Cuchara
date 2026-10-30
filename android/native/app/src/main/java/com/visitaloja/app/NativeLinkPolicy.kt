@@ -26,7 +26,8 @@ internal object NativeLinkPolicy {
                     path == "/fidelidad.html" && keys.size == 1 && keys[0].first == "place" -> id(keys[0].second)?.let { NativeLinkTarget("explore", it) }
                     keys.isNotEmpty() -> null
                     path == "/" -> sections[u.fragment.orEmpty()]?.let { NativeLinkTarget(it) }
-                    path == "/cantones.html" -> NativeLinkTarget("cantons")
+                    path == "/mesa-turistica.html" -> NativeLinkTarget("mesa")
+                    "/cantones.html" -> NativeLinkTarget("cantons")
                     path == "/agenda.html" -> NativeLinkTarget("agenda")
                     path == "/loja-en-el-tiempo.html" -> NativeLinkTarget("time")
                     path == "/fidelidad.html" -> NativeLinkTarget("passport")

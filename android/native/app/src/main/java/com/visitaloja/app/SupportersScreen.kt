@@ -1,11 +1,8 @@
 package com.visitaloja.app
 
 import android.animation.ValueAnimator
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.view.accessibility.AccessibilityManager
-import android.widget.Toast
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -25,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
@@ -48,12 +46,11 @@ private fun supporterNow(): Long {
 private fun supportFresh(content: PublicContent<SupportConfig>, places: PlacesState) = !content.loading && !content.error && !content.cached && !places.offline && places.error == null && places.fetchedAt > 0
 
 @Composable
-private fun supporterOpen(places: PlacesState, content: PublicContent<SupportConfig>, open: (Place) -> Unit): (Supporter) -> Unit {
-    val context = LocalContext.current
+private fun supporterOpen(places: PlacesState, content: PublicContent<SupportConfig>, open: (Place) -> Unit, institution: () -> Unit): (Supporter) -> Unit {
     return { entry ->
         val current = SupportersPolicy.entries(places.places, content.value, System.currentTimeMillis(), supportFresh(content, places))
         if (content.value.clickable && current.any { it.id == entry.id }) {
-            if (entry.institution) try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.visitaloja.com/mesa-turistica.html"))) } catch (_: ActivityNotFoundException) { Toast.makeText(context,"No hay un navegador disponible.",Toast.LENGTH_LONG).show() }
+            if (entry.institution) institution()
             else places.places.find { it.id == entry.id }?.let(open)
         }
     }
@@ -65,7 +62,7 @@ private fun SupporterCard(item: Supporter, config: SupportConfig, modifier: Modi
         Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
             if (item.logo != null && !failed) AsyncImage(item.logo,null,Modifier.fillMaxWidth().height(92.dp),contentScale=ContentScale.Fit,onError={failed=true})
             if (item.logo == null || failed || config.showNames) Text(item.name,fontWeight=FontWeight.Bold,fontSize=14.sp,textAlign=androidx.compose.ui.text.style.TextAlign.Center)
-            if (config.clickable) Text(if (item.institution) "Conocer institución ↗" else "Conocer negocio →",fontSize=11.sp,color=if(item.institution)Color(0xFFC3E3FF) else MaterialTheme.colorScheme.primary)
+            if (config.clickable) Text(if (item.institution) "Conocer institución →" else "Conocer negocio →",fontSize=11.sp,color=if(item.institution)Color(0xFFC3E3FF) else MaterialTheme.colorScheme.primary)
         }
     }
     val cardColors=CardDefaults.cardColors(containerColor=if(item.institution)Color(0xFF0C3768) else Color.White,contentColor=if(item.institution)Color.White else MaterialTheme.colorScheme.onSurface)
@@ -75,7 +72,7 @@ private fun SupporterCard(item: Supporter, config: SupportConfig, modifier: Modi
 }
 
 @Composable
-internal fun HomeSupporters(content: PublicContent<SupportConfig>, places: PlacesState, open: (Place) -> Unit, all: () -> Unit) {
+internal fun HomeSupporters(content: PublicContent<SupportConfig>, places: PlacesState, open: (Place) -> Unit, all: () -> Unit, institution: () -> Unit) {
     val now = supporterNow();val config = content.value
     val rows = remember(places.places,config,now,supportFresh(content,places)) { SupportersPolicy.entries(places.places,config,now,supportFresh(content,places)) }
     if(rows.isEmpty()) return
@@ -83,13 +80,31 @@ internal fun HomeSupporters(content: PublicContent<SupportConfig>, places: Place
     val dragged by row.interactionSource.collectIsDraggedAsState()
     val hover = remember { MutableInteractionSource() };val hovered by hover.collectIsHoveredAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle;val context = LocalContext.current
-    LaunchedEffect(rows.map{it.id},config.motion,config.duration,config.right,config.pauseOnHover,paused,dragged,hovered,lifecycle) {
-        if(config.motion && rows.size>1 && !paused && !dragged && !(hovered && config.pauseOnHover)) lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+    val width=when(config.size){"small"->144.dp;"large"->210.dp;else->180.dp}
+    val density=LocalDensity.current
+    val stride=with(density){(width+12.dp).toPx()}
+    val accessibility=context.getSystemService(AccessibilityManager::class.java)
+    var touchExploration by remember { mutableStateOf(accessibility?.isTouchExplorationEnabled == true) }
+    DisposableEffect(accessibility) {
+        val observer=AccessibilityManager.TouchExplorationStateChangeListener { touchExploration=it }
+        accessibility?.addTouchExplorationStateChangeListener(observer)
+        onDispose { accessibility?.removeTouchExplorationStateChangeListener(observer) }
+    }
+    val looping=config.motion && rows.size>1 && !touchExploration
+    LaunchedEffect(rows.map{it.id},looping) { if(looping)row.scrollToItem(rows.size) }
+    LaunchedEffect(rows.map{it.id},looping,config.duration,config.right,config.pauseOnHover,paused,dragged,hovered,lifecycle,stride) {
+        if(looping && !paused && !dragged && !(hovered && config.pauseOnHover)) lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            // Advance every display frame. The configured duration is one complete circuit,
+            // rather than a long delay between jumps. Recenter identical copies off-screen.
+            var previous=0L
             while(isActive) {
-                delay((config.duration*1000L/rows.size).coerceAtLeast(2500))
-                if(ValueAnimator.areAnimatorsEnabled() && context.getSystemService(AccessibilityManager::class.java)?.isTouchExplorationEnabled != true && !row.isScrollInProgress) {
-                    val next=(row.firstVisibleItemIndex+(if(config.right)-1 else 1)+rows.size)%rows.size
-                    row.animateScrollToItem(next)
+                val frame=withFrameNanos { it }
+                val seconds=if(previous==0L)0f else ((frame-previous)/1_000_000_000f).coerceIn(0f,0.05f)
+                previous=frame
+                if(ValueAnimator.areAnimatorsEnabled() && !touchExploration && !row.isScrollInProgress) {
+                    val anchor=row.firstVisibleItemIndex
+                    if(anchor<rows.size || anchor>=rows.size*2)row.scrollToItem(rows.size+anchor%rows.size,row.firstVisibleItemScrollOffset)
+                    row.scrollBy(stride*rows.size/config.duration*seconds*(if(config.right)-1 else 1))
                 }
             }
         }
@@ -98,9 +113,10 @@ internal fun HomeSupporters(content: PublicContent<SupportConfig>, places: Place
         Row(verticalAlignment=androidx.compose.ui.Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(9.dp)) { Icon(Icons.Default.Handshake,null,tint=MaterialTheme.colorScheme.primary);Text("JUNTOS POR LOJA",fontSize=11.sp,color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold) }
         Text(config.title,fontWeight=FontWeight.ExtraBold,fontSize=23.sp,lineHeight=28.sp)
         if(config.subtitle.isNotBlank())Text(config.subtitle,fontSize=13.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
-        val width=when(config.size){"small"->144.dp;"large"->210.dp;else->180.dp}
-        val action=supporterOpen(places,content,open)
-        LazyRow(state=row,horizontalArrangement=Arrangement.spacedBy(12.dp)) { items(rows,key={it.id}) { SupporterCard(it,config,Modifier.width(width),action) } }
+        val action=supporterOpen(places,content,open,institution)
+        LazyRow(state=row,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+            items(if(looping)rows.size*3 else rows.size,key={index -> "${index/rows.size}:${rows[index%rows.size].id}"}) { index -> SupporterCard(rows[index%rows.size],config,Modifier.width(width),action) }
+        }
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
             TextButton(onClick=all,modifier=Modifier.testTag("open-supporters")){Text("Conocer a todos")}
             if(config.motion && rows.size>1) TextButton(onClick={paused=!paused},modifier=Modifier.testTag("supporters-motion")){Icon(if(paused)Icons.Default.PlayArrow else Icons.Default.Pause,null,Modifier.size(18.dp));Text(if(paused)"Reanudar" else "Pausar")}
@@ -109,9 +125,9 @@ internal fun HomeSupporters(content: PublicContent<SupportConfig>, places: Place
 }
 
 @Composable
-internal fun SupportersScreen(content: PublicContent<SupportConfig>, places: PlacesState, retry: () -> Unit, open: (Place) -> Unit) {
+internal fun SupportersScreen(content: PublicContent<SupportConfig>, places: PlacesState, retry: () -> Unit, open: (Place) -> Unit, institution: () -> Unit) {
     val now=supporterNow();val config=content.value
-    val rows=SupportersPolicy.entries(places.places,config,now,supportFresh(content,places));val action=supporterOpen(places,content,open)
+    val rows=SupportersPolicy.entries(places.places,config,now,supportFresh(content,places));val action=supporterOpen(places,content,open,institution)
     val display=LocalConfiguration.current;val columns=if(display.fontScale>1.3f||display.screenWidthDp<360)1 else if(display.screenWidthDp>=600)3 else 2
     LazyColumn(Modifier.fillMaxSize().testTag("supporters-screen"),contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         item { Surface(color=Color(0xFF0C3768),shape=RoundedCornerShape(24.dp)) { Column(Modifier.fillMaxWidth().padding(22.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {

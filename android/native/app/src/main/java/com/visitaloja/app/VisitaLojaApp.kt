@@ -64,6 +64,8 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel(), noticeRequest: Int = 0, linkRequest: NativeLinkRequest? = null) {
+    val mesa: MesaViewModel = viewModel()
+    val mesaState by mesa.state.collectAsStateWithLifecycle()
     val supporters: SupportersViewModel = viewModel()
     val supporterState by supporters.state.collectAsStateWithLifecycle()
     val culture: CultureViewModel = viewModel()
@@ -111,6 +113,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     var tab by rememberSaveable { mutableStateOf("home") }
     var fromSections by rememberSaveable { mutableStateOf(false) }
     var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
+    LaunchedEffect(tab) { mesa.bind(tab == "mesa") }
     LaunchedEffect(tab) { supporters.bind(tab == "home" || tab == "supporters") }
     LaunchedEffect(tab, lifecycle) {
         if (tab == "home" || tab == "supporters") lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -180,7 +183,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") "Volver a Secciones" else if (tab == "canton") "Volver a Cantones" else "Volver a Inicio", back) { navigate("sections", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("supporters", "promotions", "stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -201,7 +204,8 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "account" -> AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState)
-                    "supporters" -> SupportersScreen(supporterState, state, { supporters.bind(true, true); model.refresh() }) { selectedId = it.id }
+                    "mesa" -> sectionState.SaveableStateProvider("mesa") { MesaScreen(mesaState) { mesa.bind(true, true) } }
+                    "supporters" -> SupportersScreen(supporterState, state, { supporters.bind(true, true); model.refresh() }, { selectedId = it.id }, { navigate("mesa", "all") })
                     "promotions" -> sectionState.SaveableStateProvider("promotions") { PromotionsScreen(state, model::refresh) { selectedId = it.id } }
                     "stories" -> StoriesScreen(cultureState.stories, cultureState.now, state.places, audioState, audioPlayer, { culture.bind(true, false, true) }) { selectedId = it.id }
                     "enterprises" -> EnterprisesScreen(cultureState.enterprises) { culture.bind(audioState.key?.startsWith("story:") == true, true, true) }
@@ -305,7 +309,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         }
         item { FilledTonalButton(onClick = { openDiscovery("sections") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp).testTag("home-sections"), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(16.dp)) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(10.dp)); Text("Descubre todo VisitaLoja", modifier = Modifier.weight(1f)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null, Modifier.size(18.dp)) } }
         item { Hero(explore) }
-        item { HomeSupporters(supporters, state, detail) { openDiscovery("supporters") } }
+        item { HomeSupporters(supporters, state, detail, { openDiscovery("supporters") }, { openDiscovery("mesa") }) }
         item { MapShortcut(openMap) }
         item { MissionsShortcut { openDiscovery("missions") } }
         item { OutlinedButton(onClick = { openDiscovery("itinerary") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("open-itinerary")) { Icon(Icons.Default.Route, contentDescription = null); Spacer(Modifier.width(8.dp)); Text("Mi ruta · Organiza tus favoritos") } }

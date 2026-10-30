@@ -28,6 +28,7 @@ object PushPolicy {
         val safe = link(url) ?: return null
         val uri = URI(safe)
         return when (uri.path) {
+            "/mesa-turistica.html" -> "mesa"
             "/cantones.html" -> "cantons"
             "/agenda.html" -> "agenda"
             "/loja-en-el-tiempo.html" -> "time"

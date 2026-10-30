@@ -84,6 +84,30 @@ try:
     if business is not None:
         tap(business);wait(desc='Cerrar ficha');capture('discovery-supporter-place')
         support_check['business_detail_verified']=True;tap(wait(desc='Cerrar ficha'));time.sleep(1)
+    institution=find(tree(),tag='supporter-institution-mesa-turistica')
+    if institution is not None and institution.get('clickable')=='true':
+        tap(institution);wait(tag='mesa-screen');time.sleep(3);capture('discovery-mesa-institution')
+        assert PKG in adb('shell','dumpsys','activity','activities').split('mResumedActivity:')[-1], 'Institution unexpectedly left the app'
+        support_check['institution_native_verified']=True
+        tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
+    else:
+        tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/mesa-turistica.html','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='mesa-screen');time.sleep(4);capture('discovery-mesa-about')
+    mesa_words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'No pudimos consultar' not in mesa_words,'Mesa public document failed to load'
+    for key in ('board','agenda','documents','gallery','contact'):
+        for attempt in range(8):
+            node=find(tree(),tag='mesa-tab-'+key)
+            if node is not None:break
+            tabs=[n for n in tree().iter('node') if n.get('resource-id','').startswith('mesa-tab-')]
+            assert tabs,'Mesa tab strip not visible'
+            x1,y1,x2,y2=map(int,re.findall(r'\d+',tabs[0].get('bounds')))
+            y=str((y1+y2)//2)
+            adb('shell','input','swipe','640',y,'120',y,'300');time.sleep(0.4)
+        else:raise AssertionError('Mesa tab missing: '+key)
+        tap(node);time.sleep(1);capture('discovery-mesa-'+key)
+    (OUT/'mesa-summary.json').write_text(json.dumps({'native_screen_verified':True,'tabs_verified':['board','agenda','documents','gallery','contact'],'external_contacts_opened':False},indent=2))
     tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
     if brand_cards:
         for _ in range(7):
@@ -95,8 +119,24 @@ try:
             if find(tree(),tag='open-supporters') is not None:break
             adb('shell','input','swipe','360','1180','360','750','300');time.sleep(1)
         motion=find(tree(),tag='supporters-motion')
-        if motion is not None:tap(motion)
+        if motion is not None:
+            tap(motion) # freeze for the still image
         capture('discovery-home-supporters');support_check['home_strip_verified']=True
+        if motion is not None:
+            adb('shell','settings','put','global','animator_duration_scale','1')
+            tap(wait(tag='supporters-motion')) # resume with animations enabled
+            time.sleep(1)
+            def logo_bounds():
+                return [(n.get('resource-id'),n.get('bounds')) for n in tree().iter('node') if n.get('resource-id','').startswith('supporter-')]
+            before=logo_bounds();time.sleep(2);after=logo_bounds()
+            assert before!=after,'Supporter logos did not move while autoplay was enabled'
+            support_check['continuous_motion_verified']=True
+            tap(wait(tag='supporters-motion'));time.sleep(0.5)
+            stopped=logo_bounds();time.sleep(1)
+            assert stopped==logo_bounds(),'Supporter carousel did not pause'
+            support_check['pause_verified']=True
+            capture('discovery-supporters-motion-paused')
+            adb('shell','settings','put','global','animator_duration_scale','0')
     (OUT/'supporters-summary.json').write_text(json.dumps(support_check,indent=2))
     tap(wait(tag='open-sections'))
     wait(tag='sections-screen');capture('discovery-sections')

@@ -15,7 +15,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" /><category android:name="android.intent.category.DEFAULT" /><category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" /><data android:host="www.visitaloja.com" /><data android:host="visitaloja.com" />
-                <data android:path="/" /><data android:pathPrefix="/parada/" /><data android:path="/cantones.html" /><data android:path="/agenda.html" /><data android:path="/loja-en-el-tiempo.html" /><data android:path="/fidelidad.html" />
+                <data android:path="/" /><data android:pathPrefix="/parada/" /><data android:path="/cantones.html" /><data android:path="/agenda.html" /><data android:path="/loja-en-el-tiempo.html" /><data android:path="/fidelidad.html" /><data android:path="/mesa-turistica.html" />
             </intent-filter>
         </activity>
     </application>

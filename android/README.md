@@ -1,3 +1,13 @@
+## 0.24.0 — Mesa Turística nativa y carrusel continuo
+
+El carrusel de marcas del inicio avanza suavemente en cada fotograma en lugar de esperar varios segundos entre saltos. Conserva duración y dirección del panel, pausa manual, arrastre, pausa al pasar el puntero y preferencias de accesibilidad. Se detiene cuando la aplicación está en segundo plano.
+
+La tarjeta de la institución abre ahora una pantalla propia en Android, también disponible en Todas las secciones y al compartir el enlace público mesa-turistica.html. Lee el mismo documento público siteContent/mesaTuristica del panel existente: presentación, objetivos, directiva, instituciones, agenda, proyectos, convocatorias, documentos, noticias, galería y contactos. No añade otro panel ni realiza escrituras.
+
+La próxima actividad respeta la fecha de Ecuador y omite actividades finalizadas, canceladas o sin fecha válida. La información guardada se identifica sin conexión y no se presenta como próxima actividad vigente. Los enlaces y contactos se abren solo al tocarlos; ningún mensaje se envía automáticamente. Las fotos reutilizan el visor nativo. No se inventan miembros, actividades ni teléfonos cuando no hay contenido publicado.
+
+Validación: políticas de publicación, fechas, límites, contactos y enlaces; compilación, lint y recorrido en emulador. Los contactos externos no se abren en pruebas automáticas.
+
 # VisitaLoja para Android
 
 La app nativa Kotlin/Jetpack Compose está en `native/`; la propuesta visual anterior, en `design/`. La propuesta del navegador no reproduce automáticamente las nuevas funciones nativas. La rama de trabajo es `design/android-app-v1` y no debe fusionarse sin autorización.
