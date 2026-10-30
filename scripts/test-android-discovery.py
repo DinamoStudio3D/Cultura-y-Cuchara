@@ -119,7 +119,11 @@ try:
     (OUT/'business-commerce-summary.json').write_text(json.dumps(commerce_check,indent=2))
     for attempt in range(8):
         reviews=find(tree(),tag='open-verified-reviews')
-        if reviews is not None:break
+        if reviews is not None:
+            x1,y1,x2,y2=map(int,re.findall(r'\d+',reviews.get('bounds')))
+            # A clipped accessibility node can extend into Android's gesture bar.
+            # Reveal the whole button before tapping its center.
+            if y2<=1500 and y2-y1>=64:break
         adb('shell','input','swipe','360','1180','360','820','300');time.sleep(0.5)
     assert reviews is not None,'Verified opinions entry is missing from the business'
     tap(reviews);wait(tag='verified-reviews-screen');wait(tag='reviews-public-ready',seconds=50)
