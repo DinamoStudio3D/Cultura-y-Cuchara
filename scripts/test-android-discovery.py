@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Read-only public discovery smoke test on the same disposable Android emulator."""
 import json
+import hashlib
+import struct
 import re
 import subprocess
 import time
@@ -123,17 +125,28 @@ try:
             tap(motion) # freeze for the still image
         capture('discovery-home-supporters');support_check['home_strip_verified']=True
         if motion is not None:
+            # UIAutomator needs an idle tree; sample raw pixels during continuous motion.
+            # Crop to the logos so a status-bar clock change cannot satisfy this assertion.
+            visible=[n for n in tree().iter('node') if n.get('resource-id','').startswith('supporter-')]
+            assert visible,'Carousel has no visible cards'
+            bounds=[list(map(int,re.findall(r'\d+',n.get('bounds')))) for n in visible]
+            top=min(b[1] for b in bounds);bottom=max(b[3] for b in bounds)
+            pause_node=wait(tag='supporters-motion')
+            def logo_pixels():
+                raw=adb('exec-out','screencap',binary=True)
+                width,height,fmt=struct.unpack_from('<III',raw)
+                assert fmt==1,'Unexpected screencap pixel format'
+                offset=len(raw)-width*height*4
+                return hashlib.sha256(raw[offset+max(0,top)*width*4:offset+min(height,bottom)*width*4]).hexdigest()
             adb('shell','settings','put','global','animator_duration_scale','1')
-            tap(wait(tag='supporters-motion')) # resume with animations enabled
+            tap(pause_node) # resume with animations enabled
             time.sleep(1)
-            def logo_bounds():
-                return [(n.get('resource-id'),n.get('bounds')) for n in tree().iter('node') if n.get('resource-id','').startswith('supporter-')]
-            before=logo_bounds();time.sleep(2);after=logo_bounds()
+            before=logo_pixels();time.sleep(2);after=logo_pixels()
             assert before!=after,'Supporter logos did not move while autoplay was enabled'
             support_check['continuous_motion_verified']=True
-            tap(wait(tag='supporters-motion'));time.sleep(0.5)
-            stopped=logo_bounds();time.sleep(1)
-            assert stopped==logo_bounds(),'Supporter carousel did not pause'
+            tap(pause_node);time.sleep(0.5)
+            stopped=logo_pixels();time.sleep(1)
+            assert stopped==logo_pixels(),'Supporter carousel did not pause'
             support_check['pause_verified']=True
             capture('discovery-supporters-motion-paused')
             adb('shell','settings','put','global','animator_duration_scale','0')
