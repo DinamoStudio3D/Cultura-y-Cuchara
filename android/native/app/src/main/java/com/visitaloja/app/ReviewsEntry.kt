@@ -85,7 +85,7 @@ private fun ReviewsDialog(place: Place, close: () -> Unit, login: () -> Unit, vi
                                 OutlinedTextField(comment, { comment = it.take(600);reviewed = false }, label = { Text("Tu experiencia") }, supportingText = { Text("${comment.length}/600 · Opinión pública") }, modifier = Modifier.fillMaxWidth().testTag("review-comment"), minLines = 3, maxLines = 8, enabled = !state.busy)
                                 Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(consent, { consent = it;reviewed = false }, enabled = !state.busy);Text("Entiendo que mi nombre y comentario serán públicos.", fontSize = 13.sp, modifier = Modifier.weight(1f)) }
                                 validation?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                                if (!reviewed) Button(onClick = { validation = ReviewsPolicy.error(name, rating, comment);if (validation == null && consent) reviewed = true }, enabled = consent && !state.busy, modifier = Modifier.fillMaxWidth()) { Text("Revisar opinión") }
+                                if (!reviewed) Button(onClick = { validation = ReviewsPolicy.error(name, rating, comment);if (validation == null && consent) reviewed = true }, enabled = consent && !state.busy, modifier = Modifier.fillMaxWidth()) { Text(if (state.busy) "Guardando…" else "Revisar opinión") }
                                 else {
                                     Card(colors = CardDefaults.cardColors(containerColor = Color.White)) { Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { Text(name.trim(), fontWeight = FontWeight.Bold);Text("★".repeat(rating), color = Color(0xFFAC5900));Text(comment.trim()) } }
                                     Button(onClick = { model.save(place.title, name, rating, comment);reviewed = false }, enabled = consent && !state.busy && state.ownReady, modifier = Modifier.fillMaxWidth().testTag("review-publish")) { Text(if (state.busy) "Guardando…" else if (state.ownExists) "Confirmar cambios" else "Publicar mi opinión") }
@@ -96,6 +96,7 @@ private fun ReviewsDialog(place: Place, close: () -> Unit, login: () -> Unit, vi
                         state.message?.let { Text(it, modifier = Modifier.padding(top = 10.dp), color = MaterialTheme.colorScheme.primary) }
                     }
                     item {
+                        Text("Opiniones publicadas", fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag(if (state.publicLoaded && !state.loading && !state.failed) "reviews-public-ready" else "reviews-public-loading"))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             FilterChip(!high, { high = false }, { Text("Más recientes") })
                             FilterChip(high, { high = true }, { Text("Mejor valoradas") })

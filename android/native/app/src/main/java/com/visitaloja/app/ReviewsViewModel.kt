@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-internal data class ReviewsState(val place: String? = null, val uid: String? = null, val items: List<VerifiedReview> = emptyList(), val loading: Boolean = false, val failed: Boolean = false, val more: Boolean = false, val ownLoading: Boolean = false, val ownReady: Boolean = false, val eligible: Boolean = false, val ownExists: Boolean = false, val own: VerifiedReview? = null, val defaultName: String = "", val busy: Boolean = false, val message: String? = null, val saved: Int = 0)
+internal data class ReviewsState(val place: String? = null, val uid: String? = null, val items: List<VerifiedReview> = emptyList(), val loading: Boolean = false, val publicLoaded: Boolean = false, val failed: Boolean = false, val more: Boolean = false, val ownLoading: Boolean = false, val ownReady: Boolean = false, val eligible: Boolean = false, val ownExists: Boolean = false, val own: VerifiedReview? = null, val defaultName: String = "", val busy: Boolean = false, val message: String? = null, val saved: Int = 0)
 internal class ReviewsViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
@@ -43,7 +43,7 @@ internal class ReviewsViewModel : ViewModel() {
     fun load(reset: Boolean = false) {
         val place = mutable.value.place ?: return
         if (mutable.value.loading) return
-        if (reset) { cursor = null;mutable.value = mutable.value.copy(items = emptyList()) }
+        if (reset) { cursor = null;mutable.value = mutable.value.copy(items = emptyList(), publicLoaded = false) }
         val generation = epoch
         mutable.value = mutable.value.copy(loading = true, failed = false)
         viewModelScope.launch {
@@ -54,7 +54,7 @@ internal class ReviewsViewModel : ViewModel() {
                 if (!current(generation, place)) return@launch
                 val items = snapshot.documents.mapNotNull { ReviewsPolicy.read(it.id, it.data.orEmpty(), place) }
                 cursor = snapshot.documents.lastOrNull()
-                mutable.value = mutable.value.copy(items = (mutable.value.items + items).distinctBy { it.id }, more = snapshot.size() == 30)
+                mutable.value = mutable.value.copy(items = (mutable.value.items + items).distinctBy { it.id }, publicLoaded = true, more = snapshot.size() == 30)
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { if (current(generation, place)) mutable.value = mutable.value.copy(failed = true) }
             finally { if (current(generation, place)) mutable.value = mutable.value.copy(loading = false) }

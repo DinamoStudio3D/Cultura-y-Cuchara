@@ -122,7 +122,7 @@ try:
         if reviews is not None:break
         adb('shell','input','swipe','360','1180','360','820','300');time.sleep(0.5)
     assert reviews is not None,'Verified opinions entry is missing from the business'
-    tap(reviews);wait(tag='verified-reviews-screen');time.sleep(4)
+    tap(reviews);wait(tag='verified-reviews-screen');wait(tag='reviews-public-ready',seconds=50)
     capture('discovery-verified-reviews')
     assert find(tree(),tag='reviews-sign-in') is not None,'Guest opinions do not offer account access'
     assert find(tree(),tag='review-publish') is None,'Guest must not have a publish action'
