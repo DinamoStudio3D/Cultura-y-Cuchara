@@ -85,7 +85,16 @@ internal fun MesaScreen(content: PublicContent<MesaContent>, retry: () -> Unit) 
                             else -> {
                                 val rows = data.groups[group].orEmpty()
                                 if (rows.isEmpty()) item { Text("Próximamente publicaremos información en este apartado.", modifier = Modifier.testTag("mesa-empty")) }
-                                itemsIndexed(rows) { index, entry -> Column(Modifier.testTag("mesa-entry-$group-$index")) { MesaItem(entry, group == "institutions");entry.url?.let { url -> TextButton(onClick = { open(url) }) { Text(if (group == "documents") "Abrir documento ↗" else "Más información ↗") } } }
+                                itemsIndexed(rows) { index, entry ->
+                                    Column(Modifier.testTag("mesa-entry-$group-$index")) {
+                                        MesaItem(entry, group == "institutions")
+                                        entry.url?.let { url ->
+                                            TextButton(onClick = { open(url) }) {
+                                                Text(if (group == "documents") "Abrir documento ↗" else "Más información ↗")
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
