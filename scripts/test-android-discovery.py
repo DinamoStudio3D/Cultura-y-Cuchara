@@ -44,6 +44,13 @@ def tap(node):
     x1, y1, x2, y2 = map(int, re.findall(r'\d+', node.get('bounds')))
     adb('shell', 'input', 'tap', str((x1+x2)//2), str((y1+y2)//2))
 
+def reveal_form(tag):
+    for _ in range(7):
+        node=find(tree(),tag=tag)
+        if node is not None:return node
+        adb('shell','input','swipe','360','1180','360','750','300');time.sleep(0.5)
+    raise AssertionError('Form control not reachable: '+tag)
+
 def capture(name):
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / (name + '.png')).write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
@@ -80,8 +87,8 @@ try:
     if node is not None:
         tap(node);wait(tag='business-request-screen')
         tap(wait(tag='business-request-notes'));adb('shell','input','text','Dos%scafes%spara%sretirar')
-        adb('shell','input','keyevent','KEYCODE_BACK');tap(wait(tag='business-request-preview'))
-        wait(tag='business-message-preview');capture('discovery-business-order-preview')
+        adb('shell','input','keyevent','KEYCODE_BACK');tap(reveal_form('business-request-preview'))
+        wait(tag='business-message-preview');reveal_form('business-open-whatsapp');capture('discovery-business-order-preview')
         assert find(tree(),tag='business-open-whatsapp') is not None,'Order review has no explicit next action'
         commerce_check['order_preview_verified']=True
         tap(wait(desc='Cerrar Preparar pedido'));time.sleep(1)
@@ -91,11 +98,12 @@ try:
         adb('shell','input','swipe','360','1180','360','870','300');time.sleep(1)
     if reserve is not None:
         tap(reserve);wait(tag='business-request-screen')
-        tap(wait(tag='business-request-preview'));wait(tag='business-request-error')
+        tap(reveal_form('business-request-preview'));wait(tag='business-request-error')
+        adb('shell','input','swipe','360','500','360','1180','300');time.sleep(0.5)
         tap(wait(tag='business-reservation-date'));wait(tag='button1');capture('discovery-business-date-picker');tap(wait(tag='button1'))
         tap(wait(tag='business-reservation-time'));wait(tag='button1');tap(wait(tag='button1'))
-        tap(wait(tag='business-request-preview'));wait(tag='business-message-preview')
-        capture('discovery-business-reservation-preview')
+        tap(reveal_form('business-request-preview'));wait(tag='business-message-preview')
+        reveal_form('business-open-whatsapp');capture('discovery-business-reservation-preview')
         words=' '.join(n.get('text','') for n in tree().iter('node'))
         assert 'Hora (Ecuador)' in words,'Reservation preview has no explicit timezone'
         commerce_check['reservation_preview_verified']=True
