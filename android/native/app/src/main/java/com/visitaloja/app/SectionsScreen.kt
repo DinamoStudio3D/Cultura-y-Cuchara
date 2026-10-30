@@ -50,6 +50,7 @@ internal object SectionsPolicy {
         AppSection("postcards", "Postales", "Crea y comparte un recuerdo de Loja", groups[2], Icons.Default.PhotoCamera),
         AppSection("shop", "Tienda", "Recuerdos de Loja y tu pedido", groups[2], Icons.Default.ShoppingBag),
         AppSection("notices", "Avisos", "Novedades y notificaciones opcionales", groups[2], Icons.Default.NotificationsActive),
+        AppSection("contact", "Contacto y redes", "Ayuda, alianzas, privacidad y términos de VisitaLoja", groups[2], Icons.Default.SupportAgent),
         AppSection("account", "Mi cuenta", "Tu perfil y acceso a VisitaLoja", groups[2], Icons.Default.PersonOutline)
     )
     private fun key(value: String) = Normalizer.normalize(value, Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").lowercase(Locale.ROOT)

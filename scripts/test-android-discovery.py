@@ -91,6 +91,23 @@ try:
     adb('shell', 'am', 'force-stop', PKG)
     adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
     time.sleep(4)
+    # Published platform contacts and legal readers, without opening any external channel.
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/#contacto','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='platform-contact-screen');wait(tag='platform-contact-ready',seconds=50);capture('discovery-platform-contact')
+    tap(reveal_form('platform-privacy'));wait(tag='platform-legal-screen');wait(tag='platform-legal-ready',seconds=45)
+    capture('discovery-platform-privacy')
+    legal_words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Tu privacidad' in legal_words and 'VERSIÓN' in legal_words,'Published privacy text missing'
+    for _ in range(12):
+        other=find(tree(),tag='platform-other-legal')
+        if other is not None:break
+        adb('shell','input','swipe','360','1220','360','550','300');time.sleep(0.5)
+    assert other is not None,'Terms link not reachable in the legal reader'
+    tap(other);wait(tag='platform-legal-ready',seconds=45);capture('discovery-platform-terms')
+    legal_words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Términos de uso' in legal_words and 'Uso responsable' in legal_words,'Published terms text missing'
+    tap(wait(desc='Cerrar documento'));wait(tag='platform-contact-screen')
+    (OUT/'platform-information-summary.json').write_text(json.dumps({'contact_verified':True,'privacy_verified':True,'terms_verified':True,'close_returns_to_contact':True,'external_channel_opened':False,'message_sent':False},indent=2))
     # Receive public links without opening a browser, authenticating, or writing user data.
     resolvers=adb('shell','cmd','package','query-activities','--brief','-a','android.intent.action.SEND','-t','text/plain')
     assert PKG in resolvers,'App is not registered to receive shared text'

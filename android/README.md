@@ -1,3 +1,11 @@
+## 0.28.0 — Contacto, redes y documentos de la plataforma
+
+Se añade Contacto y redes a Secciones y Mi cuenta, usando settings/main.homepageContent del mismo editor de portada web. Lee correo, WhatsApp, YouTube, TikTok, Instagram, Facebook, presentación ES/EN y texto del pie. Los enlaces vacíos o inseguros se ocultan; no se incorporan números ni perfiles de muestra. Solo se habilitan canales confirmados por servidor y cada enlace requiere una pulsación; la app no envía mensajes.
+
+Privacidad y términos se leen en pantallas nativas, conservando el texto y la versión del artículo público de la web. La consulta HTTPS se limita a los dos documentos canónicos, sin redirecciones, credenciales ni ejecución de HTML. Si no se puede consultar la versión publicada, se muestra claramente el texto incluido en la APK, copiado de los mismos archivos web durante la compilación. No se redactan condiciones nuevas. Los documentos permiten seleccionar texto, actualizar y consultar la fuente en navegador. Desde Mi cuenta y Contacto se abren en un visor que regresa al mismo lugar al cerrar. También se reciben los enlaces públicos de ambos documentos y #contacto.
+
+Pruebas: proyección de contactos, idiomas, enlaces y correo seguros, extracción de documentos, límites, destinos nativos y recorrido público sin contactar a nadie ni modificar datos.
+
 ## 0.27.0 — Anuncios de entrada sincronizados con la web
 
 El inicio nativo consume settings/announcements del mismo panel web. Conserva la activación, el orden, las fechas con zona horaria y el final exclusivo de popup-schedule.js; muestra solo el primer anuncio vigente, tras 1,5 segundos y una vez por contenido durante la sesión. Los cambios de contenido permiten mostrar una nueva versión. Cierra al vencer, retirarse, salir de Inicio o entrar en segundo plano.

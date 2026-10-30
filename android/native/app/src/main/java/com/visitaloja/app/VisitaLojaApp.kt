@@ -110,6 +110,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val state = guestState.copy(favourites = if (accountState.uid == null) guestState.favourites else accountState.favourites)
     val favourite: (String) -> Unit = { id -> if (accountState.uid == null) model.toggleFavourite(id) else account.toggleFavourite(id) }
     val sectionState = rememberSaveableStateHolder()
+    var legalDocument by rememberSaveable { mutableStateOf<String?>(null) }
     var tab by rememberSaveable { mutableStateOf("home") }
     var fromSections by rememberSaveable { mutableStateOf(false) }
     var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -141,10 +142,10 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val queueLink: (String) -> Unit = { text ->
         pendingLink = text; linkRequiredVersion = 0L
         val target = NativeLinkPolicy.shared(text)
-        if (target != null) { selectedId = null; selectedEventId = null; visits.close(); audioPlayer.pause() }
+        if (target != null) { legalDocument = null; selectedId = null; selectedEventId = null; visits.close(); audioPlayer.pause() }
         if (target?.place != null) linkRequiredVersion = model.refreshForLink()
     }
-    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { pendingLink = null; selectedId = null; selectedEventId = null; visits.close(); fromSections = false; tab = "notices" } }
+    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { legalDocument = null; pendingLink = null; selectedId = null; selectedEventId = null; visits.close(); fromSections = false; tab = "notices" } }
     LaunchedEffect(linkMessage) { linkMessage?.let { snack.showSnackbar(it); linkMessage = null } }
     LaunchedEffect(linkRequest?.id) {
         if (linkRequest != null && linkRequest.id != handledLink) {
@@ -164,7 +165,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         if (place != null) selectedId = place.id
     }
     val navigate: (String, String) -> Unit = { target, filter ->
-        pendingLink = null
+        legalDocument = null; pendingLink = null
         fromSections = tab == "sections" || (fromSections && tab == "cantons" && target == "canton")
         tab = target; category = filter; query = ""
     }
@@ -177,14 +178,15 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     BackHandler(enabled = pendingLink != null) { pendingLink = null }
     LaunchedEffect(tab) { if (tab == "map") audioPlayer.pause() }
     MaterialTheme(colorScheme = AppColors) {
-        AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null)
+        AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null)
+        legalDocument?.let { LegalDialog(it, { legalDocument = null }, { key -> legalDocument = key }) }
         Scaffold(
             modifier = Modifier.semantics { testTagsAsResourceId = true },
             snackbarHost = { SnackbarHost(snack) },
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") "Volver a Secciones" else if (tab == "canton") "Volver a Cantones" else "Volver a Inicio", back) { navigate("sections", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -202,9 +204,11 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                 when (tab) {
                     "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen({ navigate(it, "all") }, queueLink) }
                     "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh)
-                    "account" -> AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") })
+                    "account" -> AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") }, { legalDocument = "privacy" }, { navigate("contact", "all") })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState)
+                    "contact" -> PlatformContactScreen({ legalDocument = it })
+                    "privacy", "terms" -> LegalScreen(tab, { navigate(it, "all") })
                     "mesa" -> sectionState.SaveableStateProvider("mesa") { MesaScreen(mesaState) { mesa.bind(true, true) } }
                     "supporters" -> SupportersScreen(supporterState, state, { supporters.bind(true, true); model.refresh() }, { selectedId = it.id }, { navigate("mesa", "all") })
                     "promotions" -> sectionState.SaveableStateProvider("promotions") { PromotionsScreen(state, model::refresh) { selectedId = it.id } }

@@ -10,8 +10,8 @@ android {
         applicationId = "com.visitaloja.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 34
-        versionName = "0.27.0"
+        versionCode = 35
+        versionName = "0.28.0"
     }
     buildTypes {
         debug { applicationIdSuffix = ".preview"; versionNameSuffix = "-preview"; resValue("string", "app_name", "VisitaLoja Prueba") }
@@ -20,6 +20,7 @@ android {
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true }
+    sourceSets["main"].assets.srcDir(layout.buildDirectory.dir("generated/platform-assets"))
     sourceSets["main"].res.srcDir(layout.buildDirectory.dir("generated/res/brand"))
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
 }
@@ -30,7 +31,12 @@ val syncBrandAssets by tasks.registering(Copy::class) {
     from(rootProject.file("../../assets/brand/codeproim.png")) { rename { "codeproim_logo.png" } }
     from(rootProject.file("../../assets/photos/responsive/jipiro-pagoda-laguna-640.webp")) { rename { "jipiro_cover.webp" } }
 }
-tasks.named("preBuild") { dependsOn(syncBrandAssets) }
+val syncLegalDocuments by tasks.registering(Copy::class) {
+    into(layout.buildDirectory.dir("generated/platform-assets/legal"))
+    from(rootProject.file("../../privacidad.html"))
+    from(rootProject.file("../../terminos.html"))
+}
+tasks.named("preBuild") { dependsOn(syncBrandAssets, syncLegalDocuments) }
 dependencies {
     implementation("com.google.firebase:firebase-messaging")
     implementation("androidx.work:work-runtime-ktx:2.10.0")

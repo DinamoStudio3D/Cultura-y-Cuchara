@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -26,9 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: AccountViewModel, wallet: () -> Unit, notices: () -> Unit = {}) {
+fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: AccountViewModel, wallet: () -> Unit, notices: () -> Unit = {}, privacy: () -> Unit = {}, contact: () -> Unit = {}) {
     val context = LocalContext.current
-    val links = LocalUriHandler.current
     var email by rememberSaveable { mutableStateOf("") }
     // Passwords are deliberately excluded from saved instance state.
     var password by remember { mutableStateOf("") }
@@ -94,7 +92,8 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         if (state.message != null) Surface(color = Color(0xFFF2F7FD), shape = RoundedCornerShape(12.dp)) { Text(state.message, modifier = Modifier.padding(16.dp), fontSize = 13.sp) }
         OutlinedButton(onClick = notices, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Notifications, null); Spacer(Modifier.width(8.dp)); Text("Avisos y notificaciones") }
-        TextButton(onClick = { links.openUri("https://www.visitaloja.com/privacidad.html") }) { Text("Privacidad y uso de tus datos") }
+        TextButton(onClick = privacy) { Text("Privacidad y uso de tus datos") }
+        TextButton(onClick = contact) { Text("Contacto y redes de VisitaLoja") }
         Spacer(Modifier.height(12.dp))
     }
     if (confirmImport) AlertDialog(onDismissRequest = { confirmImport = false }, title = { Text("¿Añadir estos favoritos?") },
