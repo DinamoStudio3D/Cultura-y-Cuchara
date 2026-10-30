@@ -90,6 +90,7 @@ internal fun HomeSupporters(content: PublicContent<SupportConfig>, places: Place
         accessibility?.addTouchExplorationStateChangeListener(observer)
         onDispose { accessibility?.removeTouchExplorationStateChangeListener(observer) }
     }
+    val copies=maxOf(3,kotlin.math.ceil(LocalConfiguration.current.screenWidthDp/(width.value+12f)/rows.size).toInt()+2)
     val looping=config.motion && rows.size>1 && !touchExploration
     LaunchedEffect(rows.map{it.id},looping) { if(looping)row.scrollToItem(rows.size) }
     LaunchedEffect(rows.map{it.id},looping,config.duration,config.right,config.pauseOnHover,paused,dragged,hovered,lifecycle,stride) {
@@ -115,7 +116,7 @@ internal fun HomeSupporters(content: PublicContent<SupportConfig>, places: Place
         if(config.subtitle.isNotBlank())Text(config.subtitle,fontSize=13.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
         val action=supporterOpen(places,content,open,institution)
         LazyRow(state=row,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-            items(if(looping)rows.size*3 else rows.size,key={index -> "${index/rows.size}:${rows[index%rows.size].id}"}) { index -> SupporterCard(rows[index%rows.size],config,Modifier.width(width),action) }
+            items(if(looping)rows.size*copies else rows.size,key={index -> "${index/rows.size}:${rows[index%rows.size].id}"}) { index -> SupporterCard(rows[index%rows.size],config,Modifier.width(width),action) }
         }
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
             TextButton(onClick=all,modifier=Modifier.testTag("open-supporters")){Text("Conocer a todos")}
