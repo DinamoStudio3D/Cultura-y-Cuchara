@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +20,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -31,6 +33,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.withContext
 
 private val PostcardSaver=listSaver<PostcardDraft,Any>(save={listOf(it.name,it.place,it.message,it.format,it.contain,it.zoom,it.x,it.y,it.rotation,it.mirror,it.filter)},restore={PostcardDraft(it[0]as String,it[1]as String,it[2]as String,it[3]as String,it[4]as Boolean,it[5]as Float,it[6]as Float,it[7]as Float,it[8]as Int,it[9]as Boolean,it[10]as String)})
@@ -50,6 +54,8 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
     var status by remember {mutableStateOf<String?>(null)}
     var renderError by remember {mutableStateOf<String?>(null)}
     var rendered by remember {mutableStateOf<RenderedPostcard?>(null)}
+    var liveRendered by remember {mutableStateOf<RenderedPostcard?>(null)}
+    var liveError by remember {mutableStateOf<String?>(null)}
     var pendingSavePath by rememberSaveable {mutableStateOf<String?>(null)}
     val gallery=photos.value.find { sourceKey=="gallery:${it.id}" }
     val source=when {sourceKey?.startsWith("phone:")==true->sourceKey?.removePrefix("phone:");sourceKey=="sample"->config.settings.sample;else->gallery?.url}
@@ -60,9 +66,22 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
     LaunchedEffect(photos.value,photos.loading,config.settings.sample) {
         if(sourceKey==null) { if(photos.value.isNotEmpty())sourceKey="gallery:${photos.value.first().id}" else if(!photos.loading&&config.settings.sample!=null)sourceKey="sample" }
     }
-    LaunchedEffect(key) {
+    val latestKey by rememberUpdatedState(key)
+    LaunchedEffect(Unit) {
+        snapshotFlow { latestKey to preview }.conflate().collect { (request, reviewing) ->
+            if (reviewing || request.source == null) return@collect
+            liveError=null
+            try {
+                val image=PostcardRenderer.render(context,if(request.source.startsWith("content:"))Uri.parse(request.source) else request.source,request.credit,request.frame,request.settings,request.draft,maxEdge=720)
+                if (latestKey.source==request.source) { liveRendered=RenderedPostcard(request,image);liveError=null }
+            } catch(cancelled: CancellationException) { throw cancelled }
+            catch(_:OutOfMemoryError) { if(latestKey==request)liveError="Elige una foto de menor tamaño." }
+            catch(_:Exception) { if(latestKey==request)liveError="No pudimos actualizar la vista previa. Comprueba la foto y la conexión." }
+        }
+    }
+    LaunchedEffect(key,preview) {
         rendered=null;renderError=null
-        if(key.source==null)return@LaunchedEffect
+        if(key.source==null||!preview)return@LaunchedEffect
         delay(180)
         try {rendered=RenderedPostcard(key,PostcardRenderer.render(context,if(key.source.startsWith("content:"))Uri.parse(key.source) else key.source,credit,frame,config.settings,draft))}
         catch(cancelled: CancellationException){throw cancelled}
@@ -95,7 +114,23 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
         catch(_:Exception){status="No pudimos abrir las opciones para compartir. Puedes guardar la imagen e intentarlo desde tu galería."}
         finally{exporting=false}
     }}
-    LazyColumn(Modifier.fillMaxSize().testTag("postcards-screen"),contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+    BoxWithConstraints(Modifier.fillMaxSize().imePadding()) {
+    val previewHeight=(maxHeight*.34f).coerceIn(72.dp,220.dp)
+    Column(Modifier.fillMaxSize()) {
+    if(!preview) Surface(color=MaterialTheme.colorScheme.primaryContainer,modifier=Modifier.fillMaxWidth().height(previewHeight).testTag("postcard-live-preview").clickable { preview=true }) {
+        Column(Modifier.padding(8.dp),horizontalAlignment=Alignment.CenterHorizontally) {
+            Text("Vista previa en vivo · Toca para ampliar",style=MaterialTheme.typography.labelSmall)
+            Box(Modifier.weight(1f).fillMaxWidth(),contentAlignment=Alignment.Center) {
+                val live=liveRendered?.takeIf { it.key.source==source }
+                if(source==null) Text("Elige una foto para comenzar")
+                else if(live!=null) Image(live.bitmap.asImageBitmap(),"Así está quedando tu postal",Modifier.fillMaxSize().testTag("postcard-live-image"),contentScale=ContentScale.Fit)
+                else if(liveError==null) CircularProgressIndicator()
+                if(liveError!=null) Text(liveError.orEmpty(),color=MaterialTheme.colorScheme.error)
+            }
+            if(source!=null&&liveError==null) Text(if(liveRendered?.key==key) "Vista actualizada" else "Actualizando vista previa…",style=MaterialTheme.typography.labelSmall,modifier=if(liveRendered?.key==key)Modifier.testTag("postcard-live-current") else Modifier)
+        }
+    }
+    LazyColumn(Modifier.weight(1f).fillMaxWidth().testTag("postcards-screen"),contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
         item {
             Text("UN SALUDO DESDE LOJA",style=MaterialTheme.typography.labelLarge,color=MaterialTheme.colorScheme.primary)
             Text("Crea tu postal",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
@@ -119,7 +154,7 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
                 if(frame.overlay==null) {
                     Text("Formato",fontWeight=FontWeight.Bold)
                     Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("story" to "Historia 9:16","portrait" to "Publicación 4:5","square" to "Cuadrado").forEach {(id,label)->FilterChip(selected=draft.format==id,onClick={draft=draft.copy(format=id)},label={Text(label)})}}
-                    OutlinedTextField(draft.name,{draft=draft.copy(name=it.take(25))},label={Text("Tu nombre o apodo")},modifier=Modifier.fillMaxWidth(),singleLine=true)
+                    OutlinedTextField(draft.name,{draft=draft.copy(name=it.take(25))},label={Text("Tu nombre o apodo")},modifier=Modifier.fillMaxWidth().testTag("postcard-name"),singleLine=true)
                     OutlinedTextField(draft.place,{draft=draft.copy(place=it.take(30))},label={Text("Lugar o parada")},modifier=Modifier.fillMaxWidth(),singleLine=true)
                     OutlinedTextField(draft.message,{draft=draft.copy(message=it.take(50))},label={Text("Frase o saludo")},placeholder={Text(config.settings.message)},modifier=Modifier.fillMaxWidth(),singleLine=true)
                 }else Text("Este marco conserva el diseño del panel y su proporción original. Los textos personales están disponibles en los estilos de VisitaLoja.",style=MaterialTheme.typography.bodySmall)
@@ -127,7 +162,7 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
             item {
                 Text("Encuadre",fontWeight=FontWeight.Bold)
                 Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(selected=!draft.contain,onClick={draft=draft.copy(contain=false)},label={Text("Llenar")});FilterChip(selected=draft.contain,onClick={draft=draft.copy(contain=true)},label={Text("Foto completa")})}
-                Text("Zoom ${(draft.zoom*100).toInt()}%");Slider(draft.zoom,{draft=draft.copy(zoom=it)},valueRange=1f..3f)
+                Text("Zoom ${(draft.zoom*100).toInt()}%");Slider(draft.zoom,{draft=draft.copy(zoom=it)},valueRange=1f..3f,modifier=Modifier.testTag("postcard-zoom"))
                 Text("Horizontal");Slider(draft.x,{draft=draft.copy(x=it)},valueRange=-1f..1f)
                 Text("Vertical");Slider(draft.y,{draft=draft.copy(y=it)},valueRange=-1f..1f)
                 Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){OutlinedButton(onClick={draft=draft.copy(rotation=(draft.rotation+90)%360,zoom=1f,x=0f,y=0f)}){Text("Girar 90°")};FilterChip(selected=draft.mirror,onClick={draft=draft.copy(mirror=!draft.mirror)},label={Text("Espejo")})}
@@ -158,6 +193,8 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
         }
         status?.let{message->item{Text(message,color=MaterialTheme.colorScheme.primary)}}
         if(exporting)item{LinearProgressIndicator(Modifier.fillMaxWidth())}
+    }
+    }
     }
     if(choosePhoto)ModalBottomSheet(onDismissRequest={choosePhoto=false}){LazyColumn(Modifier.fillMaxWidth().heightIn(max=500.dp).navigationBarsPadding(),contentPadding=PaddingValues(20.dp)){
         item{Text("Fotografías publicadas de Loja",style=MaterialTheme.typography.titleLarge)}

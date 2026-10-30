@@ -176,6 +176,18 @@ try:
     wait(tag='videos-screen');capture('discovery-link-share-warm')
     adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://visitaloja.com/','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(tag='home-sections');time.sleep(1)
+    for _ in range(7):
+        next_photo=find(tree(),tag='home-hero-next')
+        if next_photo is not None:break
+        adb('shell','input','swipe','360','1200','360','650','300');time.sleep(0.5)
+    assert next_photo is not None,'Homepage configured photos not reached'
+    count=find(tree(),tag='home-hero-counter').get('text','')
+    tap(next_photo);time.sleep(1)
+    assert find(tree(),tag='home-hero-counter').get('text','')!=count,'Homepage photo next control did not move'
+    capture('discovery-home-configured-hero')
+    tap(wait(tag='home-hero-photo'));wait(tag='photo-viewer');capture('discovery-home-hero-full-photo')
+    tap(wait(desc='Cerrar fotografías'))
+    (OUT/'home-hero-summary.json').write_text(json.dumps({'configured_photos_visible':True,'manual_next_verified':True,'full_photo_verified':True},indent=2))
     adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/#registeredBrands','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(tag='supporters-screen');time.sleep(5);capture('discovery-supporters')
     words=' '.join(n.get('text','') for n in tree().iter('node'))
@@ -301,7 +313,28 @@ try:
 
     tap(wait(desc='Volver a Inicio'))
     home_card('open-postcards')
-    wait(tag='postcards-screen');tap(wait(tag='postcard-preview-tab'))
+    wait(tag='postcards-screen');wait(tag='postcard-live-current',seconds=50)
+    capture('discovery-postcard-live-editor')
+    for _ in range(12):
+        zoom=find(tree(),tag='postcard-zoom')
+        if zoom is not None and int(re.findall(r'\d+',zoom.get('bounds'))[3])-int(re.findall(r'\d+',zoom.get('bounds'))[1])>=60:break
+        adb('shell','input','swipe','360','1200','360','730','300');time.sleep(0.5)
+    assert zoom is not None,'Zoom is not reachable in the live editor'
+    wait(tag='postcard-live-current')
+    live=find(tree(),tag='postcard-live-image');assert live is not None,'Live preview vanished while scrolling the editor'
+    lx,ly,rx,ry=map(int,re.findall(r'\d+',live.get('bounds')))
+    def postcard_pixels():
+        raw=adb('exec-out','screencap',binary=True);w,h,fmt=struct.unpack_from('<III',raw);assert fmt==1
+        offset=len(raw)-w*h*4
+        return hashlib.sha256(b''.join(raw[offset+(y*w+lx)*4:offset+(y*w+rx)*4] for y in range(ly,min(h,ry)))).hexdigest()
+    before=postcard_pixels();zx,zy,zr,zb=map(int,re.findall(r'\d+',zoom.get('bounds')))
+    adb('shell','input','tap',str(zx+(zr-zx)*3//4),str((zy+zb)//2))
+    time.sleep(1);wait(tag='postcard-live-current',seconds=30)
+    assert before!=postcard_pixels(),'Changing zoom did not update the actual live postcard pixels'
+    capture('discovery-postcard-live-zoom')
+    (OUT/'postcard-live-summary.json').write_text(json.dumps({'visible_while_editing':True,'remains_visible_after_scroll':True,'zoom_changes_image_pixels':True,'recipient_selected':False},indent=2))
+    tap(wait(tag='postcard-live-preview'))
+
     wait(tag='postcard-image',seconds=50);time.sleep(2);capture('discovery-postcard-preview')
     for _ in range(12):
         share=find(tree(),tag='postcard-share')

@@ -4,6 +4,15 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class PostcardPolicyTest {
+    @Test fun livePreviewPreservesAspectRatioAndNeverUpscales() {
+        assertEquals(405 to 720,PostcardPolicy.previewDimensions(1080,1920))
+        assertEquals(576 to 720,PostcardPolicy.previewDimensions(1080,1350))
+        assertEquals(720 to 720,PostcardPolicy.previewDimensions(1080,1080))
+        assertEquals(720 to 360,PostcardPolicy.previewDimensions(1920,960))
+        assertEquals(100 to 200,PostcardPolicy.previewDimensions(100,200))
+        assertEquals(1080 to 1920,PostcardPolicy.dimensions("story"))
+    }
+
     @Test fun formatsExportAtKnownPixelSizes(){
         assertEquals(1080 to 1920,PostcardPolicy.dimensions("story"));assertEquals(1080 to 1350,PostcardPolicy.dimensions("portrait"));assertEquals(1080 to 1080,PostcardPolicy.dimensions("square"))
     }

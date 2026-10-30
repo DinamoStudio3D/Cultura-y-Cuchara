@@ -15,18 +15,19 @@ import java.io.File
 import java.util.UUID
 
 object PostcardRenderer {
-    private suspend fun load(context: Context,source: Any): Bitmap {
-        val result=context.imageLoader.execute(ImageRequest.Builder(context).data(source).size(1920).allowHardware(false).build())
+    private suspend fun load(context: Context,source: Any,size: Int = 1920): Bitmap {
+        val result=context.imageLoader.execute(ImageRequest.Builder(context).data(source).size(size).allowHardware(false).build())
         return ((result as? SuccessResult)?.drawable as? BitmapDrawable)?.bitmap?:error("No pudimos abrir esta imagen. Prueba otra foto o marco.")
     }
-    suspend fun render(context: Context,source: Any,credit: String,frame: PostcardFrame,settings: PostcardSettings,input: PostcardDraft): Bitmap {
-        val photo=load(context,source);val overlay=frame.overlay?.let { load(context,it) };val logo=load(context,R.drawable.visitaloja_logo)
+    suspend fun render(context: Context,source: Any,credit: String,frame: PostcardFrame,settings: PostcardSettings,input: PostcardDraft,maxEdge: Int? = null): Bitmap {
+        val photo=load(context,source,maxEdge?:1920);val overlay=frame.overlay?.let { load(context,it) };val logo=load(context,R.drawable.visitaloja_logo)
         return withContext(Dispatchers.Default) {
             val draft=PostcardPolicy.draft(input)
             val transformed=if(draft.rotation!=0||draft.mirror)Bitmap.createBitmap(photo,0,0,photo.width,photo.height,Matrix().apply { postRotate(draft.rotation.toFloat());if(draft.mirror)postScale(-1f,1f) },true) else photo
             val size=PostcardPolicy.dimensions(draft.format,overlay?.width?:0,overlay?.height?:0)
-            val output=Bitmap.createBitmap(size.first,size.second,Bitmap.Config.ARGB_8888)
-            val canvas=Canvas(output);val w=output.width.toFloat();val h=output.height.toFloat()
+            val pixels=maxEdge?.let { PostcardPolicy.previewDimensions(size.first,size.second,it) } ?: size
+            val output=Bitmap.createBitmap(pixels.first,pixels.second,Bitmap.Config.ARGB_8888)
+            val canvas=Canvas(output).apply { scale(pixels.first.toFloat()/size.first,pixels.second.toFloat()/size.second) };val w=size.first.toFloat();val h=size.second.toFloat()
             canvas.drawColor(Color.rgb(239,247,255))
             val area=if(overlay!=null)RectF(0f,0f,w,h) else RectF(32f,155f,w-32f,h-300f)
             val placement=PostcardPolicy.placement(transformed.width,transformed.height,area.width(),area.height(),draft)

@@ -10,6 +10,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -206,7 +211,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh)
                     "account" -> AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") }, { legalDocument = "privacy" }, { navigate("contact", "all") })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
-                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState)
+                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState, { input -> navigate("explore", "all"); query = input })
                     "contact" -> PlatformContactScreen({ legalDocument = it })
                     "privacy", "terms" -> LegalScreen(tab, { navigate(it, "all") })
                     "mesa" -> sectionState.SaveableStateProvider("mesa") { MesaScreen(mesaState) { mesa.bind(true, true) } }
@@ -301,19 +306,26 @@ private fun OfflineBanner(time: Long, loading: Boolean, retry: () -> Unit) {
 }
 
 @Composable
-private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit, openMap: () -> Unit, discovery: DiscoveryState, videos: VideoGallery, openDiscovery: (String) -> Unit, supporters: PublicContent<SupportConfig>) {
-    LazyColumn(contentPadding = PaddingValues(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
+private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit, openMap: () -> Unit, discovery: DiscoveryState, videos: VideoGallery, openDiscovery: (String) -> Unit, supporters: PublicContent<SupportConfig>, search: (String) -> Unit) {
+    var english by rememberSaveable { mutableStateOf(false) }
+    var input by rememberSaveable { mutableStateOf("") }
+    val copy=if(english)discovery.home.value.english else discovery.home.value.spanish
+    val keyboard=LocalSoftwareKeyboardController.current
+    val scroll=rememberLazyListState()
+    val heroVisible by remember { derivedStateOf { scroll.layoutInfo.visibleItemsInfo.any { it.key=="home-hero" } } }
+    val submit = { keyboard?.hide(); search(input.trim()) }
+    LazyColumn(state=scroll,contentPadding = PaddingValues(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
         item {
             Column(Modifier.padding(horizontal = 22.dp).padding(top = 12.dp)) {
-                Eyebrow("UN NUEVO LUGAR, UNA NUEVA HISTORIA")
-                Text("¿Qué descubrimos hoy?", fontSize = 27.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 33.sp, modifier = Modifier.padding(top = 5.dp, bottom = 16.dp))
-                Surface(onClick = { explore("all") }, color = Pale, shape = RoundedCornerShape(16.dp)) {
-                    Row(Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(14.dp), verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Default.Search, null, tint = Blue); Text("Café, sabores y lugares por conocer…", fontSize = 13.sp, color = Muted, modifier = Modifier.padding(start = 10.dp)) }
-                }
+                Eyebrow(copy.badge)
+                Text(copy.searchTitle,fontSize=25.sp,fontWeight=FontWeight.ExtraBold,lineHeight=31.sp,modifier=Modifier.padding(vertical=12.dp))
+                OutlinedTextField(input,{input=it.take(120)},modifier=Modifier.fillMaxWidth().testTag("home-search-input"),placeholder={Text(copy.placeholder)},singleLine=true,leadingIcon={Icon(Icons.Default.Search,null)},keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search),keyboardActions=KeyboardActions(onSearch={submit()}))
+                Button(onClick=submit,modifier=Modifier.fillMaxWidth().testTag("home-search-submit")){Text(copy.searchButton)}
+                Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(!english,{english=false},label={Text("Español")});FilterChip(english,{english=true},label={Text("English")})}
             }
         }
         item { FilledTonalButton(onClick = { openDiscovery("sections") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp).testTag("home-sections"), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(16.dp)) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(10.dp)); Text("Descubre todo VisitaLoja", modifier = Modifier.weight(1f)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null, Modifier.size(18.dp)) } }
-        item { Hero(explore) }
+        item(key="home-hero") { HomeHero(discovery.home,english,heroVisible,openMap,{openDiscovery("itinerary")}) }
         item { HomeSupporters(supporters, state, detail, { openDiscovery("supporters") }, { openDiscovery("mesa") }) }
         item { MapShortcut(openMap) }
         item { MissionsShortcut { openDiscovery("missions") } }
@@ -358,20 +370,6 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun Hero(explore: (String) -> Unit) {
-    Box(Modifier.padding(horizontal = 22.dp).fillMaxWidth().height(244.dp).clip(RoundedCornerShape(24.dp))) {
-        Image(painterResource(R.drawable.jipiro_cover), "Parque Jipiro, Loja", Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-        Box(Modifier.fillMaxSize().background(Brush.horizontalGradient(listOf(Color(0xEF092F5F), Color(0x40103E6C)))))
-        Column(Modifier.padding(22.dp).align(Alignment.CenterStart)) {
-            Text("LOJA SE VIVE", fontSize = 10.sp, color = Color(0xFFA7D8FF), fontWeight = FontWeight.Bold)
-            Text("Tu próxima historia\nempieza aquí.", fontSize = 28.sp, lineHeight = 32.sp, color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 9.dp, bottom = 17.dp))
-            Button(onClick = { explore("all") }, colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Blue), shape = RoundedCornerShape(12.dp)) { Text("Descubrir lugares", fontSize = 12.sp, fontWeight = FontWeight.Bold); Spacer(Modifier.width(10.dp)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null, Modifier.size(17.dp)) }
-        }
-        Text("Fotografía: Geovanny Muñoz", color = Color.White, fontSize = 9.sp, modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp))
     }
 }
 

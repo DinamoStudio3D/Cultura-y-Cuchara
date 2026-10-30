@@ -12,6 +12,7 @@ import org.json.JSONArray
 
 data class PublicContent<T>(val value: T, val loading: Boolean = true, val error: Boolean = false, val cached: Boolean = false)
 data class DiscoveryState(
+    val home: PublicContent<HomeContent> = PublicContent(HomeContent()),
     val photos: PublicContent<List<LojaPhoto>> = PublicContent(emptyList()),
     val history: PublicContent<List<TimePlace>> = PublicContent(emptyList()),
     val podcast: PublicContent<LojaPodcast?> = PublicContent(null))
@@ -30,12 +31,13 @@ class DiscoveryViewModel(app: Application) : AndroidViewModel(app) {
     fun refresh() {
         val generation = ++epoch
         listeners.forEach { it.remove() }; listeners.clear()
-        mutable.update { it.copy(photos = it.photos.copy(loading = true, error = false), history = it.history.copy(loading = true, error = false), podcast = it.podcast.copy(loading = true, error = false)) }
+        mutable.update { it.copy(home = it.home.copy(loading = true, error = false), photos = it.photos.copy(loading = true, error = false), history = it.history.copy(loading = true, error = false), podcast = it.podcast.copy(loading = true, error = false)) }
         val db = FirebaseFirestore.getInstance()
         listeners += db.collection("settings").document("main").addSnapshotListener(MetadataChanges.INCLUDE) { doc, error ->
             if (generation != epoch) return@addSnapshotListener
-            mutable.update { state -> state.copy(photos = if (error != null || doc == null) state.photos.copy(loading = false, error = true)
-                else PublicContent(DiscoveryPolicy.photos(doc.data ?: emptyMap(), defaults), false, false, doc.metadata.isFromCache)) }
+            mutable.update { state -> state.copy(
+                home = if (error != null || doc == null) PublicContent(HomeContent(), false, true) else PublicContent(HomePolicy.read(doc.data.orEmpty(), defaults), false, false, doc.metadata.isFromCache),
+                photos = if (error != null || doc == null) state.photos.copy(loading = false, error = true) else PublicContent(DiscoveryPolicy.photos(doc.data ?: emptyMap(), defaults), false, false, doc.metadata.isFromCache)) }
         }
         listeners += db.collection("loja_tiempo").addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, error ->
             if (generation != epoch) return@addSnapshotListener

@@ -22,6 +22,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
@@ -116,6 +119,7 @@ fun PhotosScreen(content: PublicContent<List<LojaPhoto>>, retry: () -> Unit) {
     if (selected != null) DiscoveryPhotoDialog(content.value.filter { it.section == selected.section }, selected.id, { selectedId = it }, { selectedId = null })
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DiscoveryPhotoDialog(photos: List<LojaPhoto>, id: String, select: (String) -> Unit, close: () -> Unit) {
     val index = photos.indexOfFirst { it.id == id }.takeIf { it >= 0 } ?: return
@@ -124,12 +128,12 @@ fun DiscoveryPhotoDialog(photos: List<LojaPhoto>, id: String, select: (String) -
     var scale by remember(id) { mutableFloatStateOf(1f) }
     var pan by remember(id) { mutableStateOf(Offset.Zero) }
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
-        Surface(Modifier.fillMaxSize().testTag("photo-viewer"), color = Color(0xFF10243A), contentColor = Color.White) {
+        Surface(Modifier.fillMaxSize().semantics { testTagsAsResourceId=true }.testTag("photo-viewer"), color = Color(0xFF10243A), contentColor = Color.White) {
             Column(Modifier.fillMaxSize().systemBarsPadding().padding(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${index + 1} / ${photos.size}", Modifier.weight(1f).padding(8.dp))
                     IconButton(onClick = { scale = 1f; pan = Offset.Zero }) { Icon(Icons.Default.ZoomOutMap, "Restablecer ampliación") }
-                    IconButton(onClick = { discoveryShare(context, "${photo.title} · VisitaLoja", if (photo.section.isBlank()) "https://www.visitaloja.com/#loja-tiempo" else "https://www.visitaloja.com/?foto=${Uri.encode(photo.id)}#loja-en-imagenes") }) { Icon(Icons.Default.Share, "Compartir fotografía") }
+                    IconButton(onClick = { discoveryShare(context, "${photo.title} · VisitaLoja", if (photo.section.isBlank()) "https://www.visitaloja.com/#loja-tiempo" else HomePolicy.share(photo)) }) { Icon(Icons.Default.Share, "Compartir fotografía") }
                     IconButton(onClick = close) { Icon(Icons.Default.Close, "Cerrar fotografías") }
                 }
                 BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().clip(RoundedCornerShape(8.dp))) {

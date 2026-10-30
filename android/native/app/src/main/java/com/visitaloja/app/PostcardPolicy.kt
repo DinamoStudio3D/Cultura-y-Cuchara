@@ -31,6 +31,11 @@ object PostcardPolicy {
         if(frameWidth>0&&frameHeight>0)return if(frameWidth>=frameHeight)1920 to max(640,(1920.0*frameHeight/frameWidth).roundToInt()) else max(640,(1920.0*frameWidth/frameHeight).roundToInt()) to 1920
         return 1080 to when(format){"square"->1080;"portrait"->1350;else->1920}
     }
+    fun previewDimensions(width: Int, height: Int, maxEdge: Int = 720): Pair<Int, Int> {
+        require(width > 0 && height > 0 && maxEdge > 0)
+        val scale = minOf(1.0, maxEdge.toDouble() / maxOf(width, height))
+        return max(1, (width * scale).roundToInt()) to max(1, (height * scale).roundToInt())
+    }
     fun placement(photoWidth: Int,photoHeight: Int,width: Float,height: Float,draft: PostcardDraft): PostcardPlacement {
         require(photoWidth>0&&photoHeight>0&&width>0&&height>0)
         val scale=(if(draft.contain)min(width/photoWidth,height/photoHeight) else max(width/photoWidth,height/photoHeight))*draft.zoom.coerceIn(1f,3f)
