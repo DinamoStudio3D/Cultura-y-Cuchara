@@ -84,6 +84,7 @@ try:
         node=find(tree(),tag='business-order')
         if node is not None:break
         adb('shell','input','swipe','360','1180','360','820','300');time.sleep(1)
+    assert node is not None,'Configured order action was not reached in Expreso al Sur'
     if node is not None:
         tap(node);wait(tag='business-request-screen')
         tap(wait(tag='business-request-notes'));adb('shell','input','text','Dos%scafes%spara%sretirar')
@@ -96,6 +97,7 @@ try:
         reserve=find(tree(),tag='business-reserve')
         if reserve is not None:break
         adb('shell','input','swipe','360','1180','360','870','300');time.sleep(1)
+    assert reserve is not None,'Configured reservation action was not reached in Expreso al Sur'
     if reserve is not None:
         tap(reserve);wait(tag='business-request-screen')
         tap(reveal_form('business-request-preview'));wait(tag='business-request-error')

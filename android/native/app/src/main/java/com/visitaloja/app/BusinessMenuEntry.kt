@@ -44,6 +44,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun BusinessMenuEntry(place: Place) {
     val model: BusinessMenuViewModel = viewModel(key = "business-menu")
@@ -74,7 +75,7 @@ internal fun BusinessMenuEntry(place: Place) {
     val catalogue = model.current(now) ?: return
     val enabled = catalogue.dishes.isNotEmpty() || catalogue.orders || catalogue.reservations
     if (!enabled) return
-    Column(Modifier.fillMaxWidth().testTag("business-commerce"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(Modifier.fillMaxWidth().semantics { testTagsAsResourceId = true }.testTag("business-commerce"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (catalogue.dishes.isNotEmpty()) OutlinedButton(onClick = { menuOpen = true }, modifier = Modifier.fillMaxWidth().testTag("open-business-menu")) {
             Icon(Icons.Default.RestaurantMenu, null);Spacer(Modifier.width(8.dp));Text("Ver productos destacados · ${catalogue.dishes.size}")
         }
