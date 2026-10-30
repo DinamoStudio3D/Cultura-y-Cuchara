@@ -102,7 +102,7 @@ internal class ReviewsViewModel : ViewModel() {
                 val response = withContext(Dispatchers.IO) { NativeApi.post("https://firestore.googleapis.com/v1/projects/cultura-y-cuchara/databases/(default)/documents:commit", token, payload) }
                 check(response.optJSONArray("writeResults")?.length() == 1 && response.optString("commitTime").isNotBlank()) { "No pudimos confirmar la publicación. Actualiza antes de volver a publicar." }
                 if (!current(generation, place) || auth.currentUser?.uid != uid || ownEpoch != ownerGeneration) return@launch
-                mutable.value = mutable.value.copy(saved = mutable.value.saved + 1, message = "Opinión guardada. Tu nombre y comentario son públicos.")
+                mutable.value = mutable.value.copy(saved = mutable.value.saved + 1, message = if (own == null || own.getString("status") == "published") "Opinión guardada. Tu nombre y comentario son públicos." else "Opinión guardada. Conserva su estado de moderación.")
                 load(true);refreshOwn()
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (error: Exception) {
