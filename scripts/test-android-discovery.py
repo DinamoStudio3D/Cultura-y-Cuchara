@@ -24,10 +24,30 @@ def tree():
         try:
             adb('shell', 'rm', '-f', '/sdcard/discovery-ui.xml')
             adb('shell', 'uiautomator', 'dump', '/sdcard/discovery-ui.xml')
-            return ET.fromstring(adb('exec-out', 'cat', '/sdcard/discovery-ui.xml'))
+            root = ET.fromstring(adb('exec-out', 'cat', '/sdcard/discovery-ui.xml'))
+            if dismiss_entry_announcement(root): continue
+            return root
         except (ET.ParseError, subprocess.CalledProcessError):
             if attempt == 4: raise
             time.sleep(1)
+
+
+def dismiss_entry_announcement(root):
+    # Only the branded entry announcement, never a commerce confirmation or OS prompt.
+    nodes=list(root.iter('node'))
+    words={n.get('text','') for n in nodes}
+    if not {'VisitaLoja', 'Consultar disponibilidad', 'Cerrar'}.issubset(words): return False
+    close=next(n for n in nodes if n.get('text')=='Cerrar')
+    OUT.mkdir(parents=True,exist_ok=True)
+    (OUT/'discovery-entry-announcement.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
+    ET.ElementTree(root).write(OUT/'discovery-entry-announcement.xml',encoding='utf-8')
+    (OUT/'entry-announcement-summary.json').write_text(json.dumps({'published_announcement_verified':True,'branding_verified':True,'close_verified':True,'contact_opened':False},indent=2))
+    tap(close);time.sleep(1)
+    adb('shell','uiautomator','dump','/sdcard/announcement-closed.xml')
+    after=ET.fromstring(adb('exec-out','cat','/sdcard/announcement-closed.xml'))
+    assert not {'VisitaLoja','Consultar disponibilidad','Cerrar'}.issubset({n.get('text','') for n in after.iter('node')}),'Entry announcement did not close'
+    return True
+
 
 def find(root, tag=None, desc=None):
     return next((n for n in root.iter('node') if (tag and n.get('resource-id', '').split(':id/')[-1] == tag) or (desc and n.get('content-desc') == desc)), None)

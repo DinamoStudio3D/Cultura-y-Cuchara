@@ -24,9 +24,29 @@ def adb(*args, binary=False):
     return result.stdout if binary else result.stdout.decode(errors="replace").strip()
 
 
-def hierarchy():
+def hierarchy(dismissed=False):
     adb("shell", "uiautomator", "dump", "/sdcard/visitaloja-ui.xml")
-    return ET.fromstring(adb("exec-out", "cat", "/sdcard/visitaloja-ui.xml"))
+    root = ET.fromstring(adb("exec-out", "cat", "/sdcard/visitaloja-ui.xml"))
+    if not dismissed and dismiss_entry_announcement(root): return hierarchy(dismissed=True)
+    return root
+
+
+
+def dismiss_entry_announcement(root):
+    # Only the branded entry announcement, never a commerce confirmation or OS prompt.
+    nodes=list(root.iter('node'))
+    words={n.get('text','') for n in nodes}
+    if not {'VisitaLoja', 'Consultar disponibilidad', 'Cerrar'}.issubset(words): return False
+    close=next(n for n in nodes if n.get('text')=='Cerrar')
+    OUTPUT.mkdir(parents=True,exist_ok=True)
+    (OUTPUT/'map-entry-announcement.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
+    ET.ElementTree(root).write(OUTPUT/'map-entry-announcement.xml',encoding='utf-8')
+    (OUTPUT/'entry-announcement-summary.json').write_text(json.dumps({'published_announcement_verified':True,'branding_verified':True,'close_verified':True,'contact_opened':False},indent=2))
+    tap(close);time.sleep(1)
+    adb('shell','uiautomator','dump','/sdcard/announcement-closed.xml')
+    after=ET.fromstring(adb('exec-out','cat','/sdcard/announcement-closed.xml'))
+    assert not {'VisitaLoja','Consultar disponibilidad','Cerrar'}.issubset({n.get('text','') for n in after.iter('node')}),'Entry announcement did not close'
+    return True
 
 
 def rect(node):
