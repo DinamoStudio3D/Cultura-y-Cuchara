@@ -1,3 +1,13 @@
+## 0.25.0 — Productos, pedidos y reservas de cada negocio
+
+La ficha pública incorpora la carta de productos destacados y las opciones de pedidos y reservas del mismo panel de Paradas. Lee locales/{id} y settings/subscriptions únicamente mientras la ficha está abierta. Usa los límites configurados, moderniza los planes heredados igual que plan-offer.js y exige beneficio de menú, suscripción vigente y carta activa. El QR con carta en imagen conserva su acceso independiente. No guarda productos, precios, contactos comerciales ni borradores de mensajes en el disco.
+
+La carta ofrece búsqueda, categorías, disponibilidad, etiquetas, fotos, precios publicados y textos en español/inglés con respaldo en español. Los pedidos permiten preparar un producto con cantidad o una consulta general. Las reservas tienen selectores nativos de fecha y hora, número de personas e indicaciones. Se muestra el mensaje completo antes de abrir WhatsApp por acción explícita; no se envían mensajes, se registran pedidos ni se confirman reservas desde la app. El negocio confirma precio final, disponibilidad y condiciones.
+
+Antes de abrir el chat, la app vuelve a consultar el negocio desde el servidor y, cuando hay un producto seleccionado, los límites de planes. Los cambios de publicación, contacto, precio, disponibilidad, beneficio o vigencia obligan a revisar el contenido. Sin conexión no se habilita este paso. Las fechas se validan en America/Guayaquil, incluso si el teléfono usa otra zona horaria.
+
+Pruebas: reglas de publicación, configuración y actualización de límites, vigencia, búsqueda, disponibilidad, fechas, cantidades, contenido del mensaje e invalidación de una revisión. El recorrido del emulador prepara pedidos y reservas en Expreso al Sur sin abrir WhatsApp. La carta poblada requiere productos publicados por administración; no se añaden productos de muestra a producción.
+
 ## 0.24.0 — Mesa Turística nativa y carrusel continuo
 
 El carrusel de marcas del inicio avanza suavemente en cada fotograma en lugar de esperar varios segundos entre saltos. Conserva duración y dirección del panel, pausa manual, arrastre, pausa al pasar el puntero y preferencias de accesibilidad. Se detiene cuando la aplicación está en segundo plano.

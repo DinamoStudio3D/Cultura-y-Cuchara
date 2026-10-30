@@ -443,6 +443,7 @@ private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState
             if (place.address.isNotBlank()) CopyPlaceAddress(place)
             PlaceHours(place.info, fresh)
             DigitalMenuEntry(place)
+            BusinessMenuEntry(place)
             PlacePromotionEntry(place, fresh)
             PlaceMediaEntry(place, fresh, audio, player)
             PlaceGallery(place)

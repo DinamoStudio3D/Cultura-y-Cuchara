@@ -71,6 +71,41 @@ try:
     adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/?checkin=loc_1788797820110','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(desc='Cerrar ficha',seconds=50);capture('discovery-link-place-cold')
     assert 'expreso' in ' '.join(n.get('text','') for n in tree().iter('node')).lower()
+    # Inspect configured commerce and message previews only; never open WhatsApp or send.
+    commerce_check={'order_preview_verified':False,'reservation_preview_verified':False,'external_chat_opened':False,'message_sent':False,'product_catalogue_published':False}
+    for attempt in range(8):
+        node=find(tree(),tag='business-order')
+        if node is not None:break
+        adb('shell','input','swipe','360','1180','360','820','300');time.sleep(1)
+    if node is not None:
+        tap(node);wait(tag='business-request-screen')
+        tap(wait(tag='business-request-notes'));adb('shell','input','text','Dos%scafes%spara%sretirar')
+        adb('shell','input','keyevent','KEYCODE_BACK');tap(wait(tag='business-request-preview'))
+        wait(tag='business-message-preview');capture('discovery-business-order-preview')
+        assert find(tree(),tag='business-open-whatsapp') is not None,'Order review has no explicit next action'
+        commerce_check['order_preview_verified']=True
+        tap(wait(desc='Cerrar Preparar pedido'));time.sleep(1)
+    for attempt in range(5):
+        reserve=find(tree(),tag='business-reserve')
+        if reserve is not None:break
+        adb('shell','input','swipe','360','1180','360','870','300');time.sleep(1)
+    if reserve is not None:
+        tap(reserve);wait(tag='business-request-screen')
+        tap(wait(tag='business-request-preview'));wait(tag='business-request-error')
+        tap(wait(tag='business-reservation-date'));wait(tag='button1');capture('discovery-business-date-picker');tap(wait(tag='button1'))
+        tap(wait(tag='business-reservation-time'));wait(tag='button1');tap(wait(tag='button1'))
+        tap(wait(tag='business-request-preview'));wait(tag='business-message-preview')
+        capture('discovery-business-reservation-preview')
+        words=' '.join(n.get('text','') for n in tree().iter('node'))
+        assert 'Hora (Ecuador)' in words,'Reservation preview has no explicit timezone'
+        commerce_check['reservation_preview_verified']=True
+        tap(wait(desc='Cerrar Solicitar reserva'));time.sleep(1)
+    product_button=find(tree(),tag='open-business-menu')
+    if product_button is not None:
+        tap(product_button);wait(tag='business-menu-screen');capture('discovery-business-product-menu')
+        commerce_check['product_catalogue_published']=True
+        adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    (OUT/'business-commerce-summary.json').write_text(json.dumps(commerce_check,indent=2))
     adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
     adb('shell','am','start','-a','android.intent.action.SEND','-t','text/plain','--es','android.intent.extra.TEXT','https://visitaloja.com/#loja-en-video','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(tag='videos-screen');capture('discovery-link-share-warm')
