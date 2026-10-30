@@ -1,3 +1,11 @@
+## 0.27.0 — Anuncios de entrada sincronizados con la web
+
+El inicio nativo consume settings/announcements del mismo panel web. Conserva la activación, el orden, las fechas con zona horaria y el final exclusivo de popup-schedule.js; muestra solo el primer anuncio vigente, tras 1,5 segundos y una vez por contenido durante la sesión. Los cambios de contenido permiten mostrar una nueva versión. Cierra al vencer, retirarse, salir de Inicio o entrar en segundo plano.
+
+Solo si el servidor confirma que no existe el documento de anuncios se consulta settings/main como respaldo heredado. Una lista vacía, desactivada, un error o datos de caché no reactivan anuncios anteriores. No publica ni modifica anuncios y no utiliza notificaciones push. El enlace de consulta requiere HTTPS y una pulsación del usuario; no envía mensajes automáticamente.
+
+Se añaden pruebas de límites horarios de Ecuador, rotación, solapamiento, desactivación, respaldo heredado, fechas inválidas y enlaces seguros. La apariencia y el anuncio publicado real requieren verificación visual antes de distribuir la APK.
+
 ## 0.26.0 — Opiniones verificadas por negocio
 
 La ficha abre un lector nativo de opiniones publicadas en verifiedReviews, con estrellas, nombre público, comentario, fecha y orden por fecha o valoración. Consulta 30 registros por página sin exigir índices nuevos; el orden y la media se identifican como correspondientes a las opiniones cargadas, con opción de cargar más. No inventa una puntuación cuando no hay opiniones.

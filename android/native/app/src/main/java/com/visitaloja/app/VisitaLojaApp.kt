@@ -177,6 +177,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     BackHandler(enabled = pendingLink != null) { pendingLink = null }
     LaunchedEffect(tab) { if (tab == "map") audioPlayer.pause() }
     MaterialTheme(colorScheme = AppColors) {
+        AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null)
         Scaffold(
             modifier = Modifier.semantics { testTagsAsResourceId = true },
             snackbarHost = { SnackbarHost(snack) },
