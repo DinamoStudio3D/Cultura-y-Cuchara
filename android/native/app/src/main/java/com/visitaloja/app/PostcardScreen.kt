@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -49,6 +50,9 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
     var sourceKey by rememberSaveable {mutableStateOf<String?>(null)}
     var frameId by rememberSaveable {mutableStateOf("brand-memory")}
     var preview by rememberSaveable {mutableStateOf(false)}
+    val editorScroll=rememberLazyListState()
+    val reviewScroll=rememberLazyListState()
+    LaunchedEffect(preview){if(preview)reviewScroll.scrollToItem(0)}
     var choosePhoto by remember {mutableStateOf(false)}
     var exporting by remember {mutableStateOf(false)}
     var status by remember {mutableStateOf<String?>(null)}
@@ -130,7 +134,7 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
             if(source!=null&&liveError==null) Text(if(liveRendered?.key==key) "Vista actualizada" else "Actualizando vista previa…",style=MaterialTheme.typography.labelSmall,modifier=if(liveRendered?.key==key)Modifier.testTag("postcard-live-current") else Modifier)
         }
     }
-    LazyColumn(Modifier.weight(1f).fillMaxWidth().testTag("postcards-screen"),contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+    LazyColumn(Modifier.weight(1f).fillMaxWidth().testTag("postcards-screen"),state=if(preview)reviewScroll else editorScroll,contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
         item {
             Text("UN SALUDO DESDE LOJA",style=MaterialTheme.typography.labelLarge,color=MaterialTheme.colorScheme.primary)
             Text("Crea tu postal",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
