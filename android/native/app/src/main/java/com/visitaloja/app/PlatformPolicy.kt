@@ -23,7 +23,7 @@ internal object PlatformPolicy {
         }
         val email = (homepage["contactEmail"] as? String)?.takeIf { it.length <= 150 && Regex("^[^\\s@<>]+@[^\\s@<>]+\\.[^\\s@<>]+$").matches(it) && it.none(Char::isISOControl) && it.none { c -> c in "?,;:&#%\\\"'" } }
         val names = listOf("whatsappUrl" to "WhatsApp", "youtubeUrl" to "YouTube", "tiktokUrl" to "TikTok", "instagramUrl" to "Instagram", "facebookUrl" to "Facebook")
-        return PlatformContact(text(contact, "footerContactTitle", "Hablemos de Loja"), text(contact, "footerContactHelp", "Consultas, alianzas y asistencia sobre la plataforma."), email, names.mapNotNull { (key, name) -> safeLink(contact[key])?.let { name to it } }, text(identity, "title", ""))
+        return PlatformContact(text(contact, "footerContactTitle", "Hablemos de Loja"), text(contact, "footerContactHelp", "Consultas, alianzas y asistencia sobre la plataforma."), email, names.mapNotNull { (key, name) -> safeLink(contact[key])?.takeUnless { name == "WhatsApp" && runCatching { val uri = URI(it); uri.host.equals("wa.me", true) && uri.path.trim('/') == "593999999999" }.getOrDefault(false) }?.let { name to it } }, text(identity, "title", ""))
     }
     fun legal(html: String): List<LegalBlock> {
         require(html.length <= 256000)

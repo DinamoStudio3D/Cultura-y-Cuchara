@@ -12,6 +12,10 @@ class PlatformPolicyTest {
         assertTrue(PlatformPolicy.contact(emptyMap()).links.isEmpty())
         assertNull(PlatformPolicy.contact(emptyMap()).email)
     }
+    @Test fun knownLegacyWhatsappSampleIsNotPresentedAsSupportContact() {
+        assertTrue(PlatformPolicy.contact(raw(mapOf("whatsappUrl" to "https://wa.me/593999999999?text=Hola"))).links.isEmpty())
+        assertEquals("WhatsApp", PlatformPolicy.contact(raw(mapOf("whatsappUrl" to "https://wa.me/593962904125"))).links.single().first)
+    }
     @Test fun contactMatchesHomepageSpanishAndEnglishFallbackAndFooter() {
         val source = raw(mapOf("footerContactTitle" to "Escríbenos", "footerContactTitleEn" to "Contact us", "footerContactHelp" to "Ayuda", "footerContactHelpEn" to ""), identity = mapOf("title" to "Proyecto de Loja", "titleEn" to "Loja project"))
         assertEquals("Escríbenos", PlatformPolicy.contact(source).title)
