@@ -69,4 +69,13 @@ class BusinessMenuPolicyTest {
         for (change in listOf(raw + mapOf("commerce" to mapOf("whatsapp" to "0981234567", "orderActive" to true)), raw + mapOf("menu" to mapOf("active" to true, "dishes" to listOf(dish + mapOf("price" to "$3.00")))), raw + mapOf("menu" to mapOf("active" to false)))) assertNotEquals(before, menu(change))
         assertEquals(before, menu())
     }
+    @Test fun reservationRemovesOnlyLegacyEmptyDateTimePartyBoilerplate() {
+        val draft = BusinessRequest(reservation = true, date = "2026-11-01", time = "19:00", guests = 3)
+        val base = menu().copy(reservationEs = "Hola, reservo en {negocio}. Fecha: ___ Hora: ___ Personas: ___", reservationEn = "Hello {negocio}. Date: ___ Time: ___ Guests: ___")
+        for (english in listOf(false, true)) {
+            val message = BusinessMenuPolicy.message(base, draft.copy(english = english))
+            assertFalse(message.contains("___"));assertTrue(message.contains("2026-11-01"));assertTrue(message.contains("19:00"))
+        }
+        assertTrue(BusinessMenuPolicy.message(base.copy(reservationEs = "Zona: ___ Necesito asistencia."), draft).contains("Zona: ___ Necesito asistencia."))
+    }
 }

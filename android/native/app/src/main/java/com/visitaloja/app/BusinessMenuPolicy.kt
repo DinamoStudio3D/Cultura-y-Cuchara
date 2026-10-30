@@ -85,7 +85,8 @@ internal object BusinessMenuPolicy {
     fun message(menu: BusinessCatalogue, request: BusinessRequest): String {
         val title = if (request.english) menu.titleEn.ifBlank { menu.title } else menu.title
         val template = if (request.reservation) { if (request.english) menu.reservationEn else menu.reservationEs } else { if (request.english) menu.orderEn else menu.orderEs }
-        val header = template.replace(Regex("\\{negocio\\}", RegexOption.IGNORE_CASE)) { title }
+        val original = template.replace(Regex("\\{negocio\\}", RegexOption.IGNORE_CASE)) { title }
+        val header = if (request.reservation) original.replace(Regex("(?:Fecha:\\s*_+\\s+Hora:\\s*_+\\s+Personas:\\s*_+|Date:\\s*_+\\s+Time:\\s*_+\\s+Guests:\\s*_+)", RegexOption.IGNORE_CASE), "").trim() else original
         val details = if (request.reservation) "${if (request.english) "Date" else "Fecha"}: ${request.date}\n${if (request.english) "Time (Ecuador)" else "Hora (Ecuador)"}: ${request.time}\n${if (request.english) "Guests" else "Personas"}: ${request.guests}" else menu.dishes.find { it.key == request.dish }?.let { dish -> "${request.quantity} × ${if (request.english) dish.nameEn.ifBlank { dish.name } else dish.name}\n${if (request.english) "Published price" else "Precio publicado"}: ${dish.price}" }.orEmpty()
         return listOf(header, details, request.notes.trim(), "${if (request.english) "Please confirm availability and conditions." else "Por favor, confirma disponibilidad y condiciones."}\nVisitaLoja.com").filter(String::isNotBlank).joinToString("\n\n")
     }

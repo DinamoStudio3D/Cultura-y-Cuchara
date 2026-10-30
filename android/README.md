@@ -1,3 +1,15 @@
+## 0.26.0 — Opiniones verificadas por negocio
+
+La ficha abre un lector nativo de opiniones publicadas en verifiedReviews, con estrellas, nombre público, comentario, fecha y orden por fecha o valoración. Consulta 30 registros por página sin exigir índices nuevos; el orden y la media se identifican como correspondientes a las opiniones cargadas, con opción de cargar más. No inventa una puntuación cuando no hay opiniones.
+
+Los visitantes sin cuenta pueden leer. La consulta de elegibilidad usa únicamente documentos del usuario actual y la visita registrada en loyaltyCounters con su identificador canónico. Las personas elegibles pueden preparar una opinión por negocio y editar la existente. El formulario exige revisar el contenido y aceptar que nombre y comentario serán públicos. La edición solo cambia nombre, estrellas, comentario y fecha; conserva la moderación, propiedad y fecha de creación.
+
+La publicación usa el commit HTTPS autenticado existente con tiempos de servidor y precondición de existencia, sin cola de escrituras sin conexión. Antes de escribir comprueba otra vez la parada, la visita y cambios en la opinión propia. Ante una respuesta incierta exige actualizar antes de volver a publicar. Los borradores son efímeros y los cambios de sesión descartan datos y resultados de la cuenta anterior. No se publican opiniones reales durante las pruebas automáticas.
+
+También elimina el bloque heredado «Fecha: ___ Hora: ___ Personas: ___» (y su equivalente inglés) de las reservas, conservando la plantilla personalizada y los valores elegidos. Los enlaces opiniones.html?place=... abren la ficha nativa correspondiente.
+
+Validación: políticas de lectura, elegibilidad, creación y edición, límites, moderación, IDs, orden y media; recorrido público como invitado y reserva sin campos vacíos duplicados. La publicación autenticada debe comprobarse después con una cuenta y visita de prueba autorizadas.
+
 ## 0.25.0 — Productos, pedidos y reservas de cada negocio
 
 La ficha pública incorpora la carta de productos destacados y las opciones de pedidos y reservas del mismo panel de Paradas. Lee locales/{id} y settings/subscriptions únicamente mientras la ficha está abierta. Usa los límites configurados, moderniza los planes heredados igual que plan-offer.js y exige beneficio de menú, suscripción vigente y carta activa. El QR con carta en imagen conserva su acceso independiente. No guarda productos, precios, contactos comerciales ni borradores de mensajes en el disco.

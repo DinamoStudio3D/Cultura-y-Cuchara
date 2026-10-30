@@ -108,6 +108,7 @@ try:
         reveal_form('business-open-whatsapp');capture('discovery-business-reservation-preview')
         words=' '.join(n.get('text','') for n in tree().iter('node'))
         assert 'Hora (Ecuador)' in words,'Reservation preview has no explicit timezone'
+        assert '___' not in words,'Reservation still contains the legacy empty date/time/party fields'
         commerce_check['reservation_preview_verified']=True
         tap(wait(desc='Cerrar Solicitar reserva'));time.sleep(1)
     product_button=find(tree(),tag='open-business-menu')
@@ -116,6 +117,19 @@ try:
         commerce_check['product_catalogue_published']=True
         adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
     (OUT/'business-commerce-summary.json').write_text(json.dumps(commerce_check,indent=2))
+    for attempt in range(8):
+        reviews=find(tree(),tag='open-verified-reviews')
+        if reviews is not None:break
+        adb('shell','input','swipe','360','1180','360','820','300');time.sleep(0.5)
+    assert reviews is not None,'Verified opinions entry is missing from the business'
+    tap(reviews);wait(tag='verified-reviews-screen');time.sleep(4)
+    capture('discovery-verified-reviews')
+    assert find(tree(),tag='reviews-sign-in') is not None,'Guest opinions do not offer account access'
+    assert find(tree(),tag='review-publish') is None,'Guest must not have a publish action'
+    words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'No pudimos consultar las opiniones' not in words,'Public reviews query failed'
+    (OUT/'verified-reviews-summary.json').write_text(json.dumps({'guest_screen_verified':True,'public_query_verified':True,'publication_attempted':False,'account_used':False},indent=2))
+    tap(wait(desc='Cerrar opiniones'));time.sleep(1)
     adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
     adb('shell','am','start','-a','android.intent.action.SEND','-t','text/plain','--es','android.intent.extra.TEXT','https://visitaloja.com/#loja-en-video','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(tag='videos-screen');capture('discovery-link-share-warm')

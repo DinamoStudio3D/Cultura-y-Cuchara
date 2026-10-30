@@ -250,7 +250,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
-                PlaceDetail(selected, !state.offline && state.error == null, audioState, audioPlayer, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }) { selectedId = null }
+                PlaceDetail(selected, !state.offline && state.error == null, audioState, audioPlayer, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }, { selectedId = null; navigate("account", "all") }) { selectedId = null }
             }
         }
     }
@@ -432,7 +432,7 @@ private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite:
 }
 
 @Composable
-private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, dismiss: () -> Unit) {
+private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, login: () -> Unit, dismiss: () -> Unit) {
     val context = LocalContext.current
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth().height(220.dp)) { PlaceImage(place, Modifier.fillMaxSize()); FilledIconButton(onClick = dismiss, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Ink)) { Icon(Icons.Default.Close, "Cerrar ficha") } }
@@ -444,6 +444,7 @@ private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState
             PlaceHours(place.info, fresh)
             DigitalMenuEntry(place)
             BusinessMenuEntry(place)
+            ReviewsEntry(place, login, visit)
             PlacePromotionEntry(place, fresh)
             PlaceMediaEntry(place, fresh, audio, player)
             PlaceGallery(place)

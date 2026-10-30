@@ -23,7 +23,7 @@ internal object NativeLinkPolicy {
                     keys.any { it.first == "qr" } || keys.size > 1 -> null
                     Regex("/parada/[A-Za-z0-9_-]+/?").matches(path) && keys.isEmpty() -> id(path.trimEnd('/').substringAfterLast('/'))?.let { NativeLinkTarget("explore", it) }
                     path == "/" && keys.size == 1 && keys[0].first in setOf("checkin", "lugar") -> id(keys[0].second)?.let { NativeLinkTarget("explore", it) }
-                    path == "/fidelidad.html" && keys.size == 1 && keys[0].first == "place" -> id(keys[0].second)?.let { NativeLinkTarget("explore", it) }
+                    path in setOf("/fidelidad.html", "/opiniones.html") && keys.size == 1 && keys[0].first == "place" -> id(keys[0].second)?.let { NativeLinkTarget("explore", it) }
                     keys.isNotEmpty() -> null
                     path == "/" -> sections[u.fragment.orEmpty()]?.let { NativeLinkTarget(it) }
                     path == "/mesa-turistica.html" -> NativeLinkTarget("mesa")
