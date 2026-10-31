@@ -1,0 +1,119 @@
+name: Compilar APK Android nativa
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'android/native/**'
+      - 'privacidad.html'
+      - 'terminos.html'
+      - 'scripts/test-android-map-layout.py'
+      - 'scripts/test-android-discovery.py'
+      - '.github/workflows/android-native.yml'
+      - 'mascota-vive-loja.png'
+      - 'assets/brand/visitaloja-splash.webp'
+      - 'assets/brand/codeproim.png'
+      - 'assets/photos/responsive/jipiro-pagoda-laguna-640.webp'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  apk:
+    name: Pruebas, revisión y APK de Android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Preparar Java 17
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Preparar Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+        with:
+          gradle-version: '8.11.1'
+          cache-read-only: false
+      - name: Comprobar SDK disponible
+        run: test -d "$ANDROID_HOME/platforms/android-35"
+      - name: Compilar, probar y revisar Android
+        run: ./android/native/gradlew --no-daemon -p android/native :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+      - name: Preparar APK de pruebas
+        run: |
+          mkdir -p android/native/dist
+          cp android/native/app/build/outputs/apk/debug/app-debug.apk android/native/dist/VisitaLoja-0.32.0-prueba.apk
+          cd android/native/dist
+          sha256sum VisitaLoja-0.32.0-prueba.apk > SHA256SUMS.txt
+      - name: Guardar APK
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: VisitaLoja-Android-prueba
+          path: android/native/dist/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Guardar informes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: android-test-reports
+          path: |
+            android/native/app/build/reports/tests/
+            android/native/app/build/reports/lint-results-debug.html
+          if-no-files-found: ignore
+          retention-days: 14
+
+  map-ui:
+    name: Revisar mapa en emulador móvil
+    needs: apk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Preparar Java 17
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Descargar APK compilada
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: VisitaLoja-Android-prueba
+          path: map-ui-apk
+      - name: Habilitar virtualización del emulador
+        run: sudo chmod 666 /dev/kvm
+      - name: Probar mapa y ubicación simulada en Android 15
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          ram-size: 2048M
+          heap-size: 512M
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: |
+            adb shell wm size 720x1600
+            adb shell wm density 320
+            adb shell settings put system font_scale 1.0
+            adb install -r map-ui-apk/VisitaLoja-0.32.0-prueba.apk
+            adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
+            adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
+            python3 scripts/test-android-map-layout.py
+            python3 scripts/test-android-discovery.py
+      - name: Guardar capturas y resultados de pantalla
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: android-map-ui
+          path: android/native/map-ui-results/
+          if-no-files-found: ignore
+          retention-days: 7

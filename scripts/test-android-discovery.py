@@ -1,0 +1,611 @@
+#!/usr/bin/env python3
+"""Read-only public discovery smoke test on the same disposable Android emulator."""
+import json
+import hashlib
+import struct
+import re
+import subprocess
+import time
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+OUT = Path('android/native/map-ui-results')
+PKG = 'com.visitaloja.app.preview'
+checks = []
+
+def adb(*args, binary=False):
+    p = subprocess.run(['adb', *args], check=True, capture_output=True, timeout=35)
+    return p.stdout if binary else p.stdout.decode(errors='replace').strip()
+
+def tree():
+    # A cold launch can replace the accessibility window while uiautomator dumps it.
+    # Retry only the dump/parse, bounded; missing controls still fail in wait().
+    for attempt in range(5):
+        try:
+            adb('shell', 'rm', '-f', '/sdcard/discovery-ui.xml')
+            adb('shell', 'uiautomator', 'dump', '/sdcard/discovery-ui.xml')
+            root = ET.fromstring(adb('exec-out', 'cat', '/sdcard/discovery-ui.xml'))
+            if dismiss_entry_announcement(root): continue
+            return root
+        except (ET.ParseError, subprocess.CalledProcessError):
+            if attempt == 4: raise
+            time.sleep(1)
+
+
+def dismiss_entry_announcement(root):
+    # Only the branded entry announcement, never a commerce confirmation or OS prompt.
+    nodes=list(root.iter('node'))
+    words={n.get('text','') for n in nodes}
+    if not {'VisitaLoja', 'Consultar disponibilidad', 'Cerrar'}.issubset(words): return False
+    close=next(n for n in nodes if n.get('text')=='Cerrar')
+    OUT.mkdir(parents=True,exist_ok=True)
+    (OUT/'discovery-entry-announcement.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
+    ET.ElementTree(root).write(OUT/'discovery-entry-announcement.xml',encoding='utf-8')
+    (OUT/'entry-announcement-summary.json').write_text(json.dumps({'published_announcement_verified':True,'branding_verified':True,'close_verified':True,'contact_opened':False},indent=2))
+    tap(close);time.sleep(1)
+    adb('shell','uiautomator','dump','/sdcard/announcement-closed.xml')
+    after=ET.fromstring(adb('exec-out','cat','/sdcard/announcement-closed.xml'))
+    assert not {'VisitaLoja','Consultar disponibilidad','Cerrar'}.issubset({n.get('text','') for n in after.iter('node')}),'Entry announcement did not close'
+    return True
+
+
+def find(root, tag=None, desc=None):
+    return next((n for n in root.iter('node') if (tag and n.get('resource-id', '').split(':id/')[-1] == tag) or (desc and n.get('content-desc') == desc)), None)
+
+def wait(tag=None, desc=None, seconds=35):
+    end = time.monotonic() + seconds
+    while time.monotonic() < end:
+        node = find(tree(), tag, desc)
+        if node is not None: return node
+        time.sleep(1)
+    raise AssertionError('Missing ' + str(tag or desc))
+
+def tap(node):
+    x1, y1, x2, y2 = map(int, re.findall(r'\d+', node.get('bounds')))
+    adb('shell', 'input', 'tap', str((x1+x2)//2), str((y1+y2)//2))
+
+def reveal_form(tag):
+    for _ in range(7):
+        node=find(tree(),tag=tag)
+        if node is not None:return node
+        adb('shell','input','swipe','360','1180','360','750','300');time.sleep(0.5)
+    raise AssertionError('Form control not reachable: '+tag)
+
+def capture(name):
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / (name + '.png')).write_bytes(adb('exec-out', 'screencap', '-p', binary=True))
+    ET.ElementTree(tree()).write(OUT / (name + '.xml'), encoding='utf-8')
+    checks.append(name)
+
+def home_card(tag):
+    for _ in range(7):
+        node = find(tree(), tag=tag)
+        if node is not None:
+            tap(node); return
+        adb('shell', 'input', 'swipe', '360', '1180', '360', '550', '350')
+        time.sleep(1)
+    raise AssertionError('Home discovery card missing: ' + tag)
+
+try:
+    adb('shell', 'settings', 'put', 'system', 'font_scale', '1.0')
+    adb('shell', 'am', 'force-stop', PKG)
+    adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
+    time.sleep(4)
+    # The same public welcome recording must decode and enter playing state.
+    wait(tag='welcome-music-toggle',seconds=50)
+    wait(desc='Pausar música de bienvenida',seconds=60);capture('discovery-welcome-music-playing')
+    tap(wait(tag='welcome-music-toggle'));wait(desc='Reanudar música de bienvenida');capture('discovery-welcome-music-paused')
+    tap(wait(tag='welcome-music-toggle'));wait(desc='Pausar música de bienvenida',seconds=45)
+    adb('shell','input','keyevent','KEYCODE_HOME');time.sleep(2)
+    adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(desc='Reanudar música de bienvenida');capture('discovery-welcome-music-foreground-paused')
+    tap(wait(tag='welcome-music-toggle'));wait(desc='Pausar música de bienvenida',seconds=45)
+    tap(wait(tag='nav-map'));wait(tag='map-canvas')
+    assert find(tree(),tag='welcome-music-toggle') is None,'Welcome music control overlaps the map'
+    tap(wait(tag='nav-home'));wait(desc='Reanudar música de bienvenida')
+    (OUT/'welcome-music-summary.json').write_text(json.dumps({'actual_playing_state_verified':True,'floating_pause_resume_verified':True,'background_pause_verified':True,'no_automatic_foreground_restart':True,'map_suppression_verified':True},indent=2))
+    # Published platform contacts and legal readers, without opening any external channel.
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/#contacto','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='platform-contact-screen');wait(tag='platform-contact-ready',seconds=50);capture('discovery-platform-contact')
+    tap(reveal_form('platform-privacy'));wait(tag='platform-legal-screen');wait(tag='platform-legal-ready',seconds=45)
+    capture('discovery-platform-privacy')
+    legal_words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Tu privacidad' in legal_words and 'VERSIÓN' in legal_words,'Published privacy text missing'
+    for _ in range(12):
+        other=find(tree(),tag='platform-other-legal')
+        if other is not None:break
+        adb('shell','input','swipe','360','1220','360','550','300');time.sleep(0.5)
+    assert other is not None,'Terms link not reachable in the legal reader'
+    tap(other);wait(tag='platform-legal-ready',seconds=45);capture('discovery-platform-terms')
+    legal_words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Términos de uso' in legal_words and 'Uso responsable' in legal_words,'Published terms text missing'
+    tap(wait(desc='Cerrar documento'));wait(tag='platform-contact-screen')
+    (OUT/'platform-information-summary.json').write_text(json.dumps({'contact_verified':True,'privacy_verified':True,'terms_verified':True,'close_returns_to_contact':True,'external_channel_opened':False,'message_sent':False},indent=2))
+    # Receive public links without opening a browser, authenticating, or writing user data.
+    resolvers=adb('shell','cmd','package','query-activities','--brief','-a','android.intent.action.SEND','-t','text/plain')
+    assert PKG in resolvers,'App is not registered to receive shared text'
+    adb('shell','am','force-stop',PKG)
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/?checkin=loc_1788797820110','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(desc='Cerrar ficha',seconds=50);capture('discovery-link-place-cold')
+    assert 'expreso' in ' '.join(n.get('text','') for n in tree().iter('node')).lower()
+    # Inspect configured commerce and message previews only; never open WhatsApp or send.
+    commerce_check={'order_preview_verified':False,'reservation_preview_verified':False,'external_chat_opened':False,'message_sent':False,'product_catalogue_published':False}
+    for attempt in range(8):
+        node=find(tree(),tag='business-order')
+        if node is not None:break
+        adb('shell','input','swipe','360','1180','360','820','300');time.sleep(1)
+    assert node is not None,'Configured order action was not reached in Expreso al Sur'
+    if node is not None:
+        tap(node);wait(tag='business-request-screen')
+        tap(wait(tag='business-request-notes'));adb('shell','input','text','Dos%scafes%spara%sretirar')
+        adb('shell','input','keyevent','KEYCODE_BACK');tap(reveal_form('business-request-preview'))
+        wait(tag='business-message-preview');reveal_form('business-open-whatsapp');capture('discovery-business-order-preview')
+        assert find(tree(),tag='business-open-whatsapp') is not None,'Order review has no explicit next action'
+        commerce_check['order_preview_verified']=True
+        tap(wait(desc='Cerrar Preparar pedido'));time.sleep(1)
+    for attempt in range(5):
+        reserve=find(tree(),tag='business-reserve')
+        if reserve is not None:break
+        adb('shell','input','swipe','360','1180','360','870','300');time.sleep(1)
+    assert reserve is not None,'Configured reservation action was not reached in Expreso al Sur'
+    if reserve is not None:
+        tap(reserve);wait(tag='business-request-screen')
+        tap(reveal_form('business-request-preview'));wait(tag='business-request-error')
+        adb('shell','input','swipe','360','500','360','1180','300');time.sleep(0.5)
+        tap(wait(tag='business-reservation-date'));wait(tag='button1');capture('discovery-business-date-picker');tap(wait(tag='button1'))
+        tap(wait(tag='business-reservation-time'));wait(tag='button1');tap(wait(tag='button1'))
+        tap(reveal_form('business-request-preview'));wait(tag='business-message-preview')
+        reveal_form('business-open-whatsapp');capture('discovery-business-reservation-preview')
+        words=' '.join(n.get('text','') for n in tree().iter('node'))
+        assert 'Hora (Ecuador)' in words,'Reservation preview has no explicit timezone'
+        assert '___' not in words,'Reservation still contains the legacy empty date/time/party fields'
+        commerce_check['reservation_preview_verified']=True
+        tap(wait(desc='Cerrar Solicitar reserva'));time.sleep(1)
+    product_button=find(tree(),tag='open-business-menu')
+    if product_button is not None:
+        tap(product_button);wait(tag='business-menu-screen');capture('discovery-business-product-menu')
+        commerce_check['product_catalogue_published']=True
+        adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    (OUT/'business-commerce-summary.json').write_text(json.dumps(commerce_check,indent=2))
+    for attempt in range(8):
+        reviews=find(tree(),tag='open-verified-reviews')
+        if reviews is not None:
+            x1,y1,x2,y2=map(int,re.findall(r'\d+',reviews.get('bounds')))
+            # A clipped accessibility node can extend into Android's gesture bar.
+            # Reveal the whole button before tapping its center.
+            if y2<=1500 and y2-y1>=64:break
+        adb('shell','input','swipe','360','1180','360','820','300');time.sleep(0.5)
+    assert reviews is not None,'Verified opinions entry is missing from the business'
+    tap(reviews);wait(tag='verified-reviews-screen');wait(tag='reviews-public-ready',seconds=50)
+    capture('discovery-verified-reviews')
+    assert find(tree(),tag='reviews-sign-in') is not None,'Guest opinions do not offer account access'
+    assert find(tree(),tag='review-publish') is None,'Guest must not have a publish action'
+    words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'No pudimos consultar las opiniones' not in words,'Public reviews query failed'
+    (OUT/'verified-reviews-summary.json').write_text(json.dumps({'guest_screen_verified':True,'public_query_verified':True,'publication_attempted':False,'account_used':False},indent=2))
+    tap(wait(desc='Cerrar opiniones'));time.sleep(1)
+    adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    adb('shell','am','start','-a','android.intent.action.SEND','-t','text/plain','--es','android.intent.extra.TEXT','https://visitaloja.com/#loja-en-video','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='videos-screen');capture('discovery-link-share-warm')
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://visitaloja.com/','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='home-sections');time.sleep(1)
+    wait(tag='home-hero-next')
+    for category in ['food','cafe','hotel','turismo']:
+        assert find(tree(),tag='home-category-'+category) is not None,'Category is not visible on the first Home screen: '+category
+    assert find(tree(),tag='home-search-input') is not None,'Compact Home search is not visible'
+    capture('discovery-home-redesign-first-screen')
+    for _ in range(7):
+        next_photo=find(tree(),tag='home-hero-next')
+        if next_photo is not None:break
+        adb('shell','input','swipe','360','1200','360','650','300');time.sleep(0.5)
+    assert next_photo is not None,'Homepage configured photos not reached'
+    count=find(tree(),tag='home-hero-counter').get('text','')
+    tap(next_photo);time.sleep(1)
+    assert find(tree(),tag='home-hero-counter').get('text','')!=count,'Homepage photo next control did not move'
+    capture('discovery-home-configured-hero')
+    tap(wait(tag='home-hero-photo'));wait(tag='photo-viewer');capture('discovery-home-hero-full-photo')
+    tap(wait(desc='Cerrar fotografías'))
+    tap(wait(tag='home-category-food'));wait(tag='explore-search');capture('discovery-home-category-food')
+    tap(wait(desc='Volver a Inicio'));wait(tag='home-search-input')
+    tap(wait(tag='home-search-input'));adb('shell','input','text','Sport')
+    tap(wait(tag='home-search-submit'));wait(tag='explore-search')
+    assert find(tree(),tag='explore-search').get('text')=='Sport','Home search did not pass the typed query'
+    capture('discovery-home-search-results')
+    tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
+    (OUT/'home-redesign-summary.json').write_text(json.dumps({'categories_visible_on_first_screen':True,'compact_search_visible':True,'category_navigation_verified':True,'search_query_passed':True},indent=2))
+    (OUT/'home-hero-summary.json').write_text(json.dumps({'configured_photos_visible':True,'manual_next_verified':True,'full_photo_verified':True},indent=2))
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/#registeredBrands','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='supporters-screen');time.sleep(5);capture('discovery-supporters')
+    words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Conéctate para consultar las marcas' not in words,'Supporters configuration failed to load'
+    brand_cards=[n for n in tree().iter('node') if n.get('resource-id','').startswith('supporter-')]
+    business=next((n for n in brand_cards if 'institution-mesa-turistica' not in n.get('resource-id','') and n.get('clickable')=='true'),None)
+    support_check={'screen_verified':True,'visible_cards':len(brand_cards),'business_detail_verified':False,'institution_browser_opened':False,'home_strip_verified':False}
+    if business is not None:
+        tap(business);wait(desc='Cerrar ficha');capture('discovery-supporter-place')
+        support_check['business_detail_verified']=True;tap(wait(desc='Cerrar ficha'));time.sleep(1)
+    institution=find(tree(),tag='supporter-institution-mesa-turistica')
+    if institution is not None and institution.get('clickable')=='true':
+        tap(institution);wait(tag='mesa-screen');time.sleep(3);capture('discovery-mesa-institution')
+        assert PKG in adb('shell','dumpsys','activity','activities').split('mResumedActivity:')[-1], 'Institution unexpectedly left the app'
+        support_check['institution_native_verified']=True
+        tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
+    else:
+        tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/mesa-turistica.html','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='mesa-screen');time.sleep(4);capture('discovery-mesa-about')
+    mesa_words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'No pudimos consultar' not in mesa_words,'Mesa public document failed to load'
+    for key in ('board','agenda','documents','gallery','contact'):
+        for attempt in range(8):
+            node=find(tree(),tag='mesa-tab-'+key)
+            if node is not None:break
+            tabs=[n for n in tree().iter('node') if n.get('resource-id','').startswith('mesa-tab-')]
+            assert tabs,'Mesa tab strip not visible'
+            x1,y1,x2,y2=map(int,re.findall(r'\d+',tabs[0].get('bounds')))
+            y=str((y1+y2)//2)
+            adb('shell','input','swipe','640',y,'120',y,'300');time.sleep(0.4)
+        else:raise AssertionError('Mesa tab missing: '+key)
+        tap(node);time.sleep(1);capture('discovery-mesa-'+key)
+    (OUT/'mesa-summary.json').write_text(json.dumps({'native_screen_verified':True,'tabs_verified':['board','agenda','documents','gallery','contact'],'external_contacts_opened':False},indent=2))
+    tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
+    if brand_cards:
+        for _ in range(7):
+            if find(tree(),tag='home-supporters') is not None:break
+            adb('shell','input','swipe','360','1180','360','650','350');time.sleep(1)
+        else:raise AssertionError('Published supporters strip missing from Home')
+        # Bring the actual logos and controls into view, not just the section heading.
+        for _ in range(4):
+            if find(tree(),tag='open-supporters') is not None:break
+            adb('shell','input','swipe','360','1180','360','750','300');time.sleep(1)
+        motion=find(tree(),tag='supporters-motion')
+        if motion is not None:
+            tap(motion) # freeze for the still image
+        capture('discovery-home-supporters');support_check['home_strip_verified']=True
+        if motion is not None:
+            # UIAutomator needs an idle tree; sample raw pixels during continuous motion.
+            # Crop to the logos so a status-bar clock change cannot satisfy this assertion.
+            visible=[n for n in tree().iter('node') if n.get('resource-id','').startswith('supporter-')]
+            assert visible,'Carousel has no visible cards'
+            bounds=[list(map(int,re.findall(r'\d+',n.get('bounds')))) for n in visible]
+            top=min(b[1] for b in bounds);bottom=max(b[3] for b in bounds)
+            pause_node=wait(tag='supporters-motion')
+            def logo_pixels():
+                raw=adb('exec-out','screencap',binary=True)
+                width,height,fmt=struct.unpack_from('<III',raw)
+                assert fmt==1,'Unexpected screencap pixel format'
+                offset=len(raw)-width*height*4
+                return hashlib.sha256(raw[offset+max(0,top)*width*4:offset+min(height,bottom)*width*4]).hexdigest()
+            adb('shell','settings','put','global','animator_duration_scale','1')
+            tap(pause_node) # resume with animations enabled
+            time.sleep(1)
+            before=logo_pixels();time.sleep(2);after=logo_pixels()
+            assert before!=after,'Supporter logos did not move while autoplay was enabled'
+            support_check['continuous_motion_verified']=True
+            tap(pause_node);time.sleep(0.5)
+            stopped=logo_pixels();time.sleep(1)
+            assert stopped==logo_pixels(),'Supporter carousel did not pause'
+            support_check['pause_verified']=True
+            capture('discovery-supporters-motion-paused')
+            adb('shell','settings','put','global','animator_duration_scale','0')
+    (OUT/'supporters-summary.json').write_text(json.dumps(support_check,indent=2))
+    tap(wait(tag='open-sections'))
+    wait(tag='sections-screen');capture('discovery-sections')
+    tap(wait(tag='open-link'));tap(wait(tag='native-link-input'))
+    adb('shell','input','text','https://evil.example/')
+    adb('shell','input','keyevent','KEYCODE_BACK');tap(wait(tag='native-link-confirm'))
+    wait(tag='native-link-invalid');capture('discovery-link-invalid')
+    adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+
+    tap(wait(tag='sections-search'));adb('shell','input','text','postales')
+    adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    tap(wait(tag='section-postcards'));wait(tag='postcards-screen')
+    tap(wait(desc='Volver a Secciones'));wait(tag='sections-screen')
+    assert find(tree(),tag='section-postcards') is not None,'Section search was lost on return'
+    tap(wait(desc='Borrar búsqueda de secciones'))
+    tap(wait(tag='sections-search'));adb('shell','input','text','zzzzzz')
+    adb('shell','input','keyevent','KEYCODE_BACK');wait(tag='sections-reset');capture('discovery-sections-empty')
+    tap(wait(tag='sections-reset'));wait(tag='sections-screen')
+    tap(wait(tag='sections-search'));adb('shell','input','text','promociones')
+    adb('shell','input','keyevent','KEYCODE_BACK');tap(wait(tag='section-promotions'))
+    wait(tag='promotions-screen');time.sleep(5);capture('discovery-promotions')
+    words=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Conéctate para consultar' not in words,'Promotion directory failed to refresh'
+    promotion_card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith('promotion-')),None)
+    promotion_check={'screen_verified':True,'published_offer_found':promotion_card is not None,'detail_verified':False,'external_action_opened':False}
+    if promotion_card is not None:
+        tap(promotion_card);time.sleep(2);capture('discovery-promotion-detail')
+        for _ in range(5):
+            if find(tree(),tag='place-promotion') is not None:break
+            adb('shell','input','swipe','360','1180','360','600','300');time.sleep(1)
+        assert find(tree(),tag='place-promotion') is not None,'Active promotion missing from place'
+        promotion_check['detail_verified']=True
+        adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    (OUT/'promotion-summary.json').write_text(json.dumps(promotion_check,indent=2))
+    tap(wait(desc='Volver a Secciones'));wait(tag='sections-screen');tap(wait(desc='Borrar búsqueda de secciones'))
+    culture_check={}
+    for route,query,screen,prefix,close_label in [('stories','historias','stories-screen','story-card-','Cerrar historia'),('enterprises','emprendedores','enterprises-screen','enterprise-card-','Cerrar emprendimiento')]:
+        tap(wait(tag='sections-search'));adb('shell','input','text',query)
+        adb('shell','input','keyevent','KEYCODE_BACK');tap(wait(tag='section-'+route))
+        wait(tag=screen);time.sleep(4);capture('discovery-'+route)
+        card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith(prefix)),None)
+        culture_check[route]={'screen_verified':True,'published_item_found':card is not None,'detail_verified':False}
+        if card is not None:
+            tap(card);wait(desc=close_label);capture('discovery-'+route+'-detail')
+            culture_check[route]['detail_verified']=True;tap(wait(desc=close_label))
+        tap(wait(desc='Volver a Secciones'));wait(tag='sections-screen')
+        tap(wait(desc='Borrar búsqueda de secciones'))
+    (OUT/'culture-summary.json').write_text(json.dumps(culture_check,indent=2))
+
+    tap(wait(desc='Volver a Inicio'))
+    home_card('open-postcards')
+    wait(tag='postcards-screen');wait(tag='postcard-live-current',seconds=50)
+    assert find(tree(),tag='welcome-music-toggle') is None,'Music control overlaps the postcard editor'
+    capture('discovery-postcard-live-editor')
+    for _ in range(12):
+        zoom=find(tree(),tag='postcard-zoom')
+        if zoom is not None and int(re.findall(r'\d+',zoom.get('bounds'))[3])-int(re.findall(r'\d+',zoom.get('bounds'))[1])>=60:break
+        adb('shell','input','swipe','360','1200','360','730','300');time.sleep(0.5)
+    assert zoom is not None,'Zoom is not reachable in the live editor'
+    wait(tag='postcard-live-current')
+    live=find(tree(),tag='postcard-live-image');assert live is not None,'Live preview vanished while scrolling the editor'
+    lx,ly,rx,ry=map(int,re.findall(r'\d+',live.get('bounds')))
+    def postcard_pixels():
+        raw=adb('exec-out','screencap',binary=True);w,h,fmt=struct.unpack_from('<III',raw);assert fmt==1
+        offset=len(raw)-w*h*4
+        return hashlib.sha256(b''.join(raw[offset+(y*w+lx)*4:offset+(y*w+rx)*4] for y in range(ly,min(h,ry)))).hexdigest()
+    before=postcard_pixels();zx,zy,zr,zb=map(int,re.findall(r'\d+',zoom.get('bounds')))
+    adb('shell','input','tap',str(zx+(zr-zx)*3//4),str((zy+zb)//2))
+    time.sleep(1);wait(tag='postcard-live-current',seconds=30)
+    assert before!=postcard_pixels(),'Changing zoom did not update the actual live postcard pixels'
+    capture('discovery-postcard-live-zoom')
+    (OUT/'postcard-live-summary.json').write_text(json.dumps({'visible_while_editing':True,'remains_visible_after_scroll':True,'zoom_changes_image_pixels':True,'recipient_selected':False},indent=2))
+    tap(wait(tag='postcard-live-preview'))
+
+    wait(tag='postcard-image',seconds=50);time.sleep(2);capture('discovery-postcard-preview')
+    for _ in range(12):
+        share=find(tree(),tag='postcard-share')
+        if share is not None and share.get('enabled')=='true':
+            tap(share);break
+        if share is None:adb('shell','input','swipe','360','1180','360','700','350')
+        time.sleep(1)
+    else:raise AssertionError('Postcard share never became available')
+    time.sleep(3)
+    # The chooser is opened only; never select a recipient or send the image.
+    filenames=adb('shell','run-as',PKG,'ls','cache/postcards').splitlines()
+    filename=next(name for name in filenames if name.startswith('postal-') and name.endswith('.png'))
+    png=adb('exec-out','run-as',PKG,'cat','cache/postcards/'+filename,binary=True)
+    assert png[:8]==b'\x89PNG\r\n\x1a\n','Export is not a PNG'
+    import struct
+    width,height=struct.unpack('>II',png[16:24])
+    assert (width,height)==(1080,1920),(width,height)
+    (OUT/'postcard-export.png').write_bytes(png)
+    (OUT/'postcard-summary.json').write_text(json.dumps({'png_export_verified':True,'width':width,'height':height,'recipient_selected':False},indent=2))
+    adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    tap(wait(desc='Volver a Inicio'))
+    home_card('open-shop')
+    wait(tag='shop-screen');time.sleep(3);capture('discovery-shop')
+    tap(wait(tag='shop-cart'));capture('discovery-shop-cart')
+    assert 'Tu pedido está vacío.' in ' '.join(n.get('text','') for n in tree().iter('node'))
+    tap(wait(desc='Volver a Inicio'))
+    home_card('open-notices')
+    wait(tag='push-screen');capture('discovery-notices')
+    assert find(tree(),tag='push-enable') is None,'Guest can subscribe without an account'
+    home_card('push-local-test');time.sleep(2)
+    allow=find(tree(),tag='permission_allow_button')
+    if allow is not None:tap(allow)
+    time.sleep(3)
+    adb('shell','cmd','statusbar','expand-notifications');time.sleep(2);capture('discovery-local-notification')
+    local_notice=next((n for n in tree().iter('node') if n.get('text')=='VisitaLoja · Prueba local'),None)
+    assert local_notice is not None,'Android did not show the local notification'
+    tap(local_notice);wait(tag='push-screen');capture('discovery-notification-open')
+    tap(wait(desc='Volver a Inicio'))
+    home_card('open-itinerary')
+    wait(tag='itinerary-screen');capture('discovery-itinerary')
+    assert 'Tu próxima aventura empieza aquí' in ' '.join(n.get('text','') for n in tree().iter('node'))
+    # Public menu smoke: no account or document writes; catalogue availability is reported explicitly.
+    explore = next(n for n in tree().iter('node') if n.get('text') == 'Explorar paradas')
+    tap(explore); tap(wait(tag='explore-search'))
+    adb('shell','input','text','Sport');adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(4)
+    card = next((n for n in tree().iter('node') if n.get('resource-id','').startswith('place-card-')),None)
+    menu_verified = False
+    if card is not None:
+        tap(card);wait(desc='Cerrar ficha');time.sleep(5)
+        capture('discovery-menu-place')
+        info_verified = False
+        for _ in range(6):
+            root = tree()
+            text = ' '.join(n.get('text','') for n in root.iter('node'))
+            if 'Horario de atención' in text and any(label in text for label in ['Dentro del horario general','Fuera del horario general','Horario por confirmar','Consulta el horario publicado','Horario guardado']):
+                capture('discovery-place-information');info_verified = True;break
+            adb('shell','input','swipe','360','1150','360','950','350');time.sleep(1)
+        assert info_verified,'Place opening-hours information did not render'
+
+        for _ in range(7):
+            root=tree()
+            menu_button=find(root,tag='open-digital-menu') or next((n for n in root.iter('node') if n.get('text')=='Ver menú'),None)
+            if menu_button is not None:break
+            adb('shell','input','swipe','360','1150','360','950','350');time.sleep(1)
+        if menu_button is not None:
+            tap(menu_button);wait(desc='Cerrar menú');time.sleep(4);capture('discovery-digital-menu')
+            tap(wait(desc='Ampliar menú'));capture('discovery-digital-menu-zoom')
+            tap(wait(desc='Cerrar menú'));menu_verified=True
+        # Back may collapse an expanded Material sheet first; then close its visible header.
+        for _ in range(3):
+            current=tree()
+            if find(current,tag='explore-search') is not None or find(current,tag='home-sections') is not None:break
+            close_sheet=find(current,desc='Cerrar ficha')
+            if close_sheet is not None:
+                tap(close_sheet);time.sleep(1);break
+            adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+
+    (OUT/'menu-summary.json').write_text(json.dumps({'viewer_verified':menu_verified,'note':'Published Sport menu opened' if menu_verified else 'No available published menu in the current Sport search'},indent=2))
+    # Only inspect public media controls; never change a business publication or entitlement.
+    field=wait(tag='explore-search');tap(field)
+    adb('shell','input','keyevent','KEYCODE_MOVE_END')
+    for _ in range(8):adb('shell','input','keyevent','KEYCODE_DEL')
+    adb('shell','input','text','Expreso');adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(4)
+    public_card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith('place-card-')),None)
+    media_check={'published_place_found':public_card is not None,'spanish_control':False,'english_control':False,'video_control':False,'playback_verified':False}
+    if public_card is not None:
+        tap(public_card);wait(desc='Cerrar ficha');time.sleep(2)
+        for _ in range(10):
+            root=tree();text=' '.join(n.get('text','') for n in root.iter('node'))
+            media_check['spanish_control'] |= 'Escuchar en español' in text
+            media_check['english_control'] |= 'Escuchar en inglés' in text
+            media_check['video_control'] |= 'Conoce este lugar por video' in text
+            if media_check['spanish_control'] and media_check['english_control']:
+                capture('discovery-place-media');break
+            adb('shell','input','swipe','360','1180','360','850','350');time.sleep(1)
+        for _ in range(3):
+            current=tree()
+            if find(current,tag='explore-search') is not None or find(current,tag='home-sections') is not None:break
+            close_sheet=find(current,desc='Cerrar ficha')
+            if close_sheet is not None:tap(close_sheet);time.sleep(1);break
+            adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    (OUT/'place-media-summary.json').write_text(json.dumps(media_check,indent=2))
+    back_home=find(tree(),desc='Volver a Inicio')
+    if back_home is not None:tap(back_home)
+    else:assert find(tree(),tag='home-sections') is not None,'Neither Explore nor Home after closing the place sheet'
+    home_card('open-missions')
+    wait(tag='missions-screen');time.sleep(3);capture('discovery-missions')
+    texts=' '.join(n.get('text','') for n in tree().iter('node'))
+    assert 'Guarda tu aventura' in texts or 'Ingresar a mi cuenta' in texts,texts
+    # Public guest flow: no account, preferences, points or reward writes.
+    card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith('mission-') and not n.get('resource-id','').startswith('missions-') and n.get('resource-id')!='mission-search' and n.get('clickable')=='true'),None)
+    for _ in range(3):
+        if card is not None:break
+        adb('shell','input','swipe','360','1180','360','650','350');time.sleep(1)
+        card=next((n for n in tree().iter('node') if n.get('resource-id','').startswith('mission-') and n.get('clickable')=='true' and n.get('resource-id')!='mission-search'),None)
+    if card is not None:
+        tap(card);time.sleep(2);capture('discovery-mission-detail')
+        adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
+    tap(wait(tag='missions-tab-1'));time.sleep(1);capture('discovery-mission-adventure')
+    assert find(tree(),desc='Guardar preferencia') is None
+    tap(wait(tag='missions-tab-2'));time.sleep(2);capture('discovery-mission-ranking')
+    root=tree()
+    assert find(root,tag='mission-ranking-preference') is None,'Guest can edit ranking'
+    tap(wait(desc='Volver a Inicio'))
+    home_card('open-photos')
+    wait(tag='photos-screen')
+    time.sleep(3)
+    capture('discovery-photos')
+    root = tree()
+    photo = next((n for n in root.iter('node') if n.get('resource-id', '').startswith('photo-') and n.get('clickable') == 'true'), None)
+    if photo is not None:
+        tap(photo); wait(desc='Cerrar fotografías'); capture('discovery-photo-viewer')
+        tap(wait(desc='Cerrar fotografías'))
+    tap(wait(desc='Volver a Inicio'))
+    def open_strip_card(tag):
+        # A partially visible strip can sit directly under the floating music
+        # control. Reveal its photo area first; never start a swipe on the FAB.
+        for _ in range(10):
+            root=tree()
+            visible=next((find(root,tag=t) for t in ['open-photos','open-time','open-videos','open-podcast'] if find(root,tag=t) is not None),None)
+            if visible is not None:
+                x1,y1,x2,y2=map(int,re.findall(r'\d+',visible.get('bounds')))
+                if y2-y1>=250 and y2<=1200:break
+            adb('shell','input','swipe','300','1180','300','650','350');time.sleep(0.5)
+        else:raise AssertionError('Discovery strip not fully revealed')
+        for _ in range(6):
+            root=tree();node=find(root,tag=tag)
+            if node is not None:
+                x1,y1,x2,y2=map(int,re.findall(r'\d+',node.get('bounds')))
+                if x2-x1>150 and y2-y1>=250 and y2<=1200:
+                    tap(node);return
+            visible=next(find(root,tag=t) for t in ['open-photos','open-time','open-videos','open-podcast'] if find(root,tag=t) is not None)
+            x1,y1,x2,y2=map(int,re.findall(r'\d+',visible.get('bounds')))
+            y=(y1+y2)//2
+            fab=find(root,tag='welcome-music-toggle')
+            if fab is not None:
+                fx1,fy1,fx2,fy2=map(int,re.findall(r'\d+',fab.get('bounds')))
+                assert not (fx1<=630<=fx2 and fy1<=y<=fy2),'Swipe starts on the music control'
+            adb('shell','input','swipe','630',str(y),'120',str(y),'350');time.sleep(0.5)
+        raise AssertionError('Unable to open '+tag)
+    open_strip_card('open-time')
+    wait(tag='time-screen'); time.sleep(3); capture('discovery-time')
+    tap(wait(desc='Volver a Inicio'))
+    open_strip_card('open-videos')
+    wait(tag='videos-screen'); time.sleep(3); capture('discovery-videos')
+    youtube = None
+    for _ in range(5):
+        root = tree()
+        youtube = next((n for n in root.iter('node') if n.get('resource-id','').startswith('youtube-open-')), None)
+        if youtube is not None: break
+        if any('Pronto, más miradas' in n.get('text','') for n in root.iter('node')): break
+        adb('shell','input','swipe','360','1180','360','650','350')
+        time.sleep(1)
+    video_check = {'published_youtube_found':youtube is not None,'playing_verified':False}
+    if youtube is not None:
+        tap(youtube); wait(desc='Cerrar video')
+        end = time.monotonic()+45
+        while time.monotonic()<end:
+            root=tree()
+            texts=' '.join(n.get('text','') for n in root.iter('node'))
+            if 'Pulsa ▶' in texts or 'no permite' in texts or 'no está disponible' in texts or 'no pudo' in texts or 'Reintentar' in texts: break
+            time.sleep(1)
+        capture('discovery-youtube')
+        assert any(message in texts for message in ['Pulsa ▶','Reproduciendo en la app','no permite','no está disponible','no pudo','No se pudo']),texts
+        assert 'YouTube no pudo verificar' not in texts, texts
+        assert 'YouTube está tardando' not in texts, texts
+        if 'Pulsa ▶' in texts:
+            frame=next((n for n in root.iter('node') if n.get('class')=='android.webkit.WebView'),None)
+            assert frame is not None,'YouTube WebView missing'
+            x1,y1,x2,y2=map(int,re.findall(r'\d+',frame.get('bounds')))
+            assert x2-x1>=400 and y2-y1>=400,'YouTube viewport below minimum'
+            tap(frame)
+            end=time.monotonic()+30
+            while time.monotonic()<end:
+                texts=' '.join(n.get('text','') for n in tree().iter('node'))
+                if 'Reproduciendo en la app' in texts:
+                    video_check['playing_verified']=True;break
+                if 'no permite' in texts or 'no está disponible' in texts:break
+                time.sleep(1)
+            capture('discovery-youtube-play')
+            if video_check['playing_verified']:
+                adb('shell','input','keyevent','KEYCODE_HOME');time.sleep(2)
+                adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity')
+                end=time.monotonic()+20
+                while time.monotonic()<end:
+                    texts=' '.join(n.get('text','') for n in tree().iter('node'))
+                    if 'Pulsa ▶' in texts:break
+                    time.sleep(1)
+                assert 'Reproduciendo en la app' not in texts,'Video resumed without a tap'
+                capture('discovery-youtube-paused')
+        video_check['last_status']=texts
+        # A 320 dp wide phone must still get the official minimum 200 dp height.
+        adb('shell','wm','size','640x1600');time.sleep(5)
+        wait(desc='Cerrar video')
+        narrow=tree()
+        frame=next((n for n in narrow.iter('node') if n.get('class')=='android.webkit.WebView'),None)
+        assert frame is not None
+        x1,y1,x2,y2=map(int,re.findall(r'\d+',frame.get('bounds')))
+        assert y2-y1>=400,('Small-phone player too short',frame.get('bounds'))
+        capture('discovery-youtube-small-phone')
+        adb('shell','wm','size','720x1600');time.sleep(5)
+        tap(wait(desc='Cerrar video'))
+    (OUT/'video-summary.json').write_text(json.dumps(video_check,indent=2,ensure_ascii=False))
+    tap(wait(desc='Volver a Inicio'))
+    open_strip_card('open-podcast')
+    wait(tag='podcast-screen'); time.sleep(3); capture('discovery-podcast')
+    # Only public, admin-published audio. No accounts, writes, or invented recordings.
+    play = find(tree(), tag='podcast-play')
+    if play is not None and play.get('enabled') == 'true':
+        tap(play); wait(tag='audio-player'); time.sleep(8); capture('discovery-player')
+        text=' '.join(n.get('text','') for n in tree().iter('node'))
+        assert 'Audio no disponible' not in text, text
+        # Pause on background, including buffering; returning must not autoplay.
+        adb('shell','input','keyevent','KEYCODE_HOME'); time.sleep(2)
+        adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity')
+        wait(desc='Reproducir audio')
+        capture('discovery-player-paused')
+    (OUT/'discovery-summary.json').write_text(json.dumps({'passed':True,'screens':checks},indent=2))
+except BaseException:
+    try:
+        capture('discovery-failure')
+        (OUT/'discovery-logcat.txt').write_text(adb('logcat','-d','-t','400'))
+    except Exception:
+        pass
+    raise
+finally:
+    adb('shell','am','force-stop',PKG)
