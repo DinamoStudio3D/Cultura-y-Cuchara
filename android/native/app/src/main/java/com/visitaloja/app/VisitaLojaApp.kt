@@ -268,12 +268,12 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
 
 @Composable
 private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, backLabel: String, back: () -> Unit, sections: () -> Unit) {
-    Surface(color = Color(0xFFF0F7FF)) {
+    Surface(color = if (showBack) Color(0xFFF0F7FF) else Color.White) {
         Row(Modifier.statusBarsPadding().fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             if (showBack) IconButton(onClick = back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, backLabel) }
-            Image(painterResource(R.drawable.visitaloja_logo), "VisitaLoja.com", Modifier.size(54.dp))
+            Image(painterResource(R.drawable.visitaloja_logo), "VisitaLoja.com", if (showBack) Modifier.size(48.dp) else Modifier.width(86.dp).height(48.dp), contentScale = ContentScale.Fit)
             Column(Modifier.weight(1f).padding(start = 10.dp)) {
-                Text("VisitaLoja", fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
+                if (showBack) Text("VisitaLoja", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Default.LocationOn, null, Modifier.size(13.dp), tint = Muted); Text("Loja, Ecuador", fontSize = 12.sp, color = Muted) }
             }
             IconButton(onClick = sections, modifier = Modifier.testTag("open-sections")) { Icon(Icons.Default.Apps, "Todas las secciones", tint = Blue) }
@@ -309,66 +309,89 @@ private fun OfflineBanner(time: Long, loading: Boolean, retry: () -> Unit) {
 private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit, openMap: () -> Unit, discovery: DiscoveryState, videos: VideoGallery, openDiscovery: (String) -> Unit, supporters: PublicContent<SupportConfig>, search: (String) -> Unit) {
     var english by rememberSaveable { mutableStateOf(false) }
     var input by rememberSaveable { mutableStateOf("") }
-    val copy=if(english)discovery.home.value.english else discovery.home.value.spanish
-    val keyboard=LocalSoftwareKeyboardController.current
-    val scroll=rememberLazyListState()
-    val heroVisible by remember { derivedStateOf { scroll.layoutInfo.visibleItemsInfo.any { it.key=="home-hero" } } }
+    val copy = if (english) discovery.home.value.english else discovery.home.value.spanish
+    val keyboard = LocalSoftwareKeyboardController.current
+    val scroll = rememberLazyListState()
+    val heroVisible by remember { derivedStateOf { scroll.layoutInfo.visibleItemsInfo.any { it.key == "home-hero" } } }
     val submit = { keyboard?.hide(); search(input.trim()) }
-    LazyColumn(state=scroll,contentPadding = PaddingValues(bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
-        item {
-            Column(Modifier.padding(horizontal = 22.dp).padding(top = 12.dp)) {
-                Eyebrow(copy.badge)
-                Text(copy.searchTitle,fontSize=25.sp,fontWeight=FontWeight.ExtraBold,lineHeight=31.sp,modifier=Modifier.padding(vertical=12.dp))
-                OutlinedTextField(input,{input=it.take(120)},modifier=Modifier.fillMaxWidth().testTag("home-search-input"),placeholder={Text(copy.placeholder)},singleLine=true,leadingIcon={Icon(Icons.Default.Search,null)},keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search),keyboardActions=KeyboardActions(onSearch={submit()}))
-                Button(onClick=submit,modifier=Modifier.fillMaxWidth().testTag("home-search-submit")){Text(copy.searchButton)}
-                Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(!english,{english=false},label={Text("Español")});FilterChip(english,{english=true},label={Text("English")})}
+    LazyColumn(state = scroll, modifier = Modifier.testTag("home-sections"), contentPadding = PaddingValues(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        item(key = "home-hero") { HomeHero(discovery.home, english, heroVisible, openMap) }
+        item(key = "search") {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                OutlinedTextField(input, { input = it.take(120) }, modifier = Modifier.weight(1f).testTag("home-search-input"), placeholder = { Text(copy.placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis) }, singleLine = true, shape = RoundedCornerShape(14.dp), leadingIcon = { Icon(Icons.Default.Search, null) }, trailingIcon = { IconButton(onClick = submit, modifier = Modifier.testTag("home-search-submit")) { Icon(Icons.AutoMirrored.Filled.ArrowForward, copy.searchButton, tint = Blue) } }, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), keyboardActions = KeyboardActions(onSearch = { submit() }))
+                TextButton(onClick = { english = !english }, modifier = Modifier.testTag("home-language")) { Text(if (english) "ES" else "EN") }
             }
         }
-        item { FilledTonalButton(onClick = { openDiscovery("sections") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp).testTag("home-sections"), shape = RoundedCornerShape(16.dp), contentPadding = PaddingValues(16.dp)) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(10.dp)); Text("Descubre todo VisitaLoja", modifier = Modifier.weight(1f)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null, Modifier.size(18.dp)) } }
-        item(key="home-hero") { HomeHero(discovery.home,english,heroVisible,openMap,{openDiscovery("itinerary")}) }
-        item { HomeSupporters(supporters, state, detail, { openDiscovery("supporters") }, { openDiscovery("mesa") }) }
-        item { MapShortcut(openMap) }
-        item { MissionsShortcut { openDiscovery("missions") } }
-        item { OutlinedButton(onClick = { openDiscovery("itinerary") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("open-itinerary")) { Icon(Icons.Default.Route, contentDescription = null); Spacer(Modifier.width(8.dp)); Text("Mi ruta · Organiza tus favoritos") } }
-        item { OutlinedButton(onClick = { openDiscovery("notices") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("open-notices")) { Icon(Icons.Default.NotificationsActive, null); Spacer(Modifier.width(8.dp)); Text("Avisos y novedades de VisitaLoja") } }
-        item { OutlinedButton(onClick = { openDiscovery("shop") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("open-shop")) { Icon(Icons.Default.ShoppingBag, null); Spacer(Modifier.width(8.dp)); Text("Tienda · Recuerdos de Loja") } }
-        item { OutlinedButton(onClick = { openDiscovery("postcards") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("open-postcards")) { Icon(Icons.Default.PhotoCamera, null); Spacer(Modifier.width(8.dp)); Text("Postales · Comparte un recuerdo de Loja") } }
-        item { DiscoveryHome(discovery, videos, openDiscovery) }
-        item { HomeAgenda(agenda, openAgenda, event) }
-        item { CantonsShortcut(openCantons) }
-        item {
-            Column(Modifier.padding(horizontal = 22.dp)) {
-                SectionHeading("A tu manera", "Ver todo") { explore("all") }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    categories.forEach { category ->
-                        Column(Modifier.weight(1f).clip(RoundedCornerShape(14.dp)).clickable { explore(category.id) }.padding(vertical = 6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Surface(shape = RoundedCornerShape(18.dp), color = Pale) { Box(Modifier.size(58.dp), contentAlignment = Alignment.Center) { Icon(category.icon, null, tint = Blue, modifier = Modifier.size(26.dp)) } }
-                            Text(category.name, fontSize = 11.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 8.dp), maxLines = 2)
+        item(key = "categories") {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                categories.sortedBy { listOf("food", "cafe", "hotel", "turismo").indexOf(it.id) }.forEach { category ->
+                    val label = if (english) when (category.id) { "food" -> "Food"; "cafe" -> "Coffee"; "hotel" -> "Stay"; else -> "Tourism" } else category.name
+                    Column(Modifier.weight(1f).clip(RoundedCornerShape(14.dp)).clickable { explore(category.id) }.testTag("home-category-${category.id}").padding(vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                        Icon(category.icon, null, tint = Blue, modifier = Modifier.size(27.dp))
+                        Text(label, fontSize = 11.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Medium, maxLines = 2)
+                    }
+                }
+            }
+        }
+        item(key = "agenda") { HomeAgenda(agenda, openAgenda, event) }
+        item(key = "places") {
+            Column {
+                Column(Modifier.padding(horizontal = 18.dp)) { SectionHeading(if (english) "Places to discover" else "Paradas para descubrir", if (english) "See all" else "Ver todas") { explore("all") } }
+                when {
+                    state.loading && state.places.isEmpty() -> LoadingPlaces()
+                    state.error != null && state.places.isEmpty() -> Text(state.error, color = Muted, modifier = Modifier.padding(horizontal = 18.dp))
+                    state.places.isEmpty() -> Text(if (english) "No places have been published yet." else "Todavía no hay lugares publicados.", color = Muted, modifier = Modifier.padding(horizontal = 18.dp))
+                    else -> LazyRow(contentPadding = PaddingValues(horizontal = 18.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(state.places.take(6), key = Place::id) { place -> HomePlaceTile(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }) }
+                    }
+                }
+            }
+        }
+        item(key = "experiences") {
+            Column(Modifier.padding(horizontal = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(if (english) "Make it your own" else "Vive Loja a tu manera", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                val actions = listOf(
+                    Triple("passport", if (english) "My passport" else "Mi pasaporte", Icons.Default.MenuBook),
+                    Triple("itinerary", if (english) "My route" else "Mi recorrido", Icons.Default.Route),
+                    Triple("postcards", if (english) "Create a postcard" else "Crea una postal", Icons.Default.PhotoCamera),
+                    Triple("missions", if (english) "Missions" else "Misiones", Icons.Default.Flag),
+                    Triple("shop", if (english) "Loja souvenirs" else "Recuerdos de Loja", Icons.Default.ShoppingBag),
+                    Triple("notices", if (english) "News and notices" else "Avisos y novedades", Icons.Default.NotificationsActive)
+                )
+                actions.chunked(2).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        row.forEach { (id, title, icon) ->
+                            Surface(onClick = { openDiscovery(id) }, modifier = Modifier.weight(1f).testTag("open-$id"), shape = RoundedCornerShape(14.dp), color = if (id == "passport") Color(0xFF0C3768) else Color.White, contentColor = if (id == "passport") Color.White else Ink) {
+                                Column(Modifier.padding(14.dp).heightIn(min = 58.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    Icon(icon, null, Modifier.size(23.dp), tint = if (id == "passport") Color.White else Blue)
+                                    Text(title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-        item {
-            Column {
-                Column(Modifier.padding(horizontal = 22.dp)) { Eyebrow("CADA PARADA TIENE ALGO ESPECIAL"); SectionHeading("Empieza por aquí", "Ver todas") { explore("all") } }
-                when {
-                    state.loading && state.places.isEmpty() -> LoadingPlaces()
-                    state.error != null && state.places.isEmpty() -> Text(state.error, color = Muted, modifier = Modifier.padding(horizontal = 22.dp))
-                    state.places.isEmpty() -> Text("Todavía no hay lugares publicados.", color = Muted, modifier = Modifier.padding(horizontal = 22.dp))
-                    else -> LazyRow(contentPadding = PaddingValues(horizontal = 22.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                        items(state.places.take(6), key = Place::id) { place -> PlaceCard(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }, Modifier.width(244.dp), compact = true) }
-                    }
-                }
-            }
+        item(key = "discovery") { DiscoveryHome(discovery, videos, openDiscovery) }
+        item(key = "supporters") { HomeSupporters(supporters, state, detail, { openDiscovery("supporters") }, { openDiscovery("mesa") }) }
+        item(key = "cantons") { CantonsShortcut(openCantons) }
+        item(key = "all-sections") {
+            TextButton(onClick = { openDiscovery("sections") }, modifier = Modifier.padding(horizontal = 18.dp).fillMaxWidth()) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(8.dp)); Text(if (english) "Discover all of VisitaLoja" else "Descubre todo VisitaLoja"); Spacer(Modifier.width(8.dp)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
         }
-        item {
-            Surface(Modifier.padding(horizontal = 22.dp), shape = RoundedCornerShape(18.dp), color = Pale) {
-                Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.MenuBook, null, tint = Blue, modifier = Modifier.size(34.dp))
-                    Column(Modifier.padding(start = 14.dp)) { Eyebrow("TU RECORRIDO TIENE RECOMPENSA"); Text("Mucho más que visitar.", fontWeight = FontWeight.Bold, fontSize = 17.sp); Text("Ingresa en Mi cuenta y consulta tus sellos y tarjetas desde Pasaporte.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 5.dp)) }
-                }
-            }
+    }
+}
+
+@Composable
+private fun HomePlaceTile(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit) {
+    Column(Modifier.width(218.dp)) {
+        Box(Modifier.fillMaxWidth().height(145.dp).clip(RoundedCornerShape(15.dp))) {
+            Box(Modifier.fillMaxSize().clickable(onClick = open).testTag("place-card-${place.id}")) { PlaceImage(place, Modifier.fillMaxSize()) }
+            Surface(Modifier.align(Alignment.TopEnd).padding(7.dp), shape = CircleShape, color = Color.White.copy(alpha = .96f)) { IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) } }
+        }
+        Column(Modifier.fillMaxWidth().clickable(onClick = open).padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(place.categoryLabel, fontSize = 10.sp, color = Blue, fontWeight = FontWeight.SemiBold)
+            Text(place.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(place.address.ifBlank { "Loja, Ecuador" }, color = Muted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
     }
 }

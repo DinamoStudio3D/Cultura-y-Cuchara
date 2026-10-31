@@ -176,6 +176,11 @@ try:
     wait(tag='videos-screen');capture('discovery-link-share-warm')
     adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://visitaloja.com/','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(tag='home-sections');time.sleep(1)
+    wait(tag='home-hero-next')
+    for category in ['food','cafe','hotel','turismo']:
+        assert find(tree(),tag='home-category-'+category) is not None,'Category is not visible on the first Home screen: '+category
+    assert find(tree(),tag='home-search-input') is not None,'Compact Home search is not visible'
+    capture('discovery-home-redesign-first-screen')
     for _ in range(7):
         next_photo=find(tree(),tag='home-hero-next')
         if next_photo is not None:break
@@ -187,6 +192,14 @@ try:
     capture('discovery-home-configured-hero')
     tap(wait(tag='home-hero-photo'));wait(tag='photo-viewer');capture('discovery-home-hero-full-photo')
     tap(wait(desc='Cerrar fotografías'))
+    tap(wait(tag='home-category-food'));wait(tag='explore-search');capture('discovery-home-category-food')
+    tap(wait(desc='Volver a Inicio'));wait(tag='home-search-input')
+    tap(wait(tag='home-search-input'));adb('shell','input','text','Sport')
+    tap(wait(tag='home-search-submit'));wait(tag='explore-search')
+    assert find(tree(),tag='explore-search').get('text')=='Sport','Home search did not pass the typed query'
+    capture('discovery-home-search-results')
+    tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
+    (OUT/'home-redesign-summary.json').write_text(json.dumps({'categories_visible_on_first_screen':True,'compact_search_visible':True,'category_navigation_verified':True,'search_query_passed':True},indent=2))
     (OUT/'home-hero-summary.json').write_text(json.dumps({'configured_photos_visible':True,'manual_next_verified':True,'full_photo_verified':True},indent=2))
     adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/#registeredBrands','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(tag='supporters-screen');time.sleep(5);capture('discovery-supporters')

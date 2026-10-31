@@ -4,6 +4,8 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +21,8 @@ import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
@@ -38,7 +42,7 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
 @Composable
-internal fun HomeHero(content: PublicContent<HomeContent>, english: Boolean, visible: Boolean, openMap: () -> Unit, openRoute: () -> Unit) {
+internal fun HomeHero(content: PublicContent<HomeContent>, english: Boolean, visible: Boolean, openMap: () -> Unit) {
     val data=content.value
     val copy=if(english)data.english else data.spanish
     val context=LocalContext.current
@@ -47,6 +51,7 @@ internal fun HomeHero(content: PublicContent<HomeContent>, english: Boolean, vis
     var current by rememberSaveable { mutableStateOf<String?>(null) }
     var paused by rememberSaveable { mutableStateOf(false) }
     var enlarged by rememberSaveable { mutableStateOf(false) }
+    var about by rememberSaveable { mutableStateOf(false) }
     var foreground by remember { mutableStateOf(false) }
     val id=HomePolicy.select(data.photos,current)
     val photo=data.photos.firstOrNull {it.photo.id==id}
@@ -59,33 +64,34 @@ internal fun HomeHero(content: PublicContent<HomeContent>, english: Boolean, vis
             if(ValueAnimator.areAnimatorsEnabled()&&!accessibility.isTouchExplorationEnabled){current=HomePolicy.step(data.photos,id,1);break}
         }
     }
-    Surface(shape=RoundedCornerShape(data.radius.dp),color=Color(0xFF0C3768),contentColor=Color.White,modifier=Modifier.padding(horizontal=22.dp).fillMaxWidth().testTag("home-hero")) {
+    Surface(shape=RoundedCornerShape(bottomStart=data.radius.dp,bottomEnd=data.radius.dp),color=Color(0xFF0C3768),contentColor=Color.White,modifier=Modifier.fillMaxWidth().testTag("home-hero")) {
         Column {
-            if(photo!=null) {
-                Box(Modifier.fillMaxWidth().height((data.height*.44f).dp).clickable {enlarged=true}.testTag("home-hero-photo")) {
-                    AsyncImage(photo.photo.url,photo.photo.alt,Modifier.fillMaxSize(),contentScale=ContentScale.Crop,alignment=BiasAlignment(photo.x*2-1,photo.y*2-1),colorFilter=ColorFilter.colorMatrix(ColorMatrix().apply{setToScale(data.brightness,data.brightness,data.brightness,1f)}))
-                    Text(if(english)"Tap to view full photo" else "Toca para ver la foto completa",color=Color.White,style=MaterialTheme.typography.labelSmall,modifier=Modifier.align(Alignment.TopStart).background(Color(0xC010243A)).padding(8.dp))
-                    Text("${data.photos.indexOf(photo)+1} / ${data.photos.size}",color=Color.White,modifier=Modifier.align(Alignment.TopEnd).background(Color(0xC010243A)).padding(8.dp).testTag("home-hero-counter"))
-                }
-                Row(Modifier.fillMaxWidth().padding(horizontal=8.dp),verticalAlignment=Alignment.CenterVertically){
-                    IconButton(onClick={paused=true;current=HomePolicy.step(data.photos,id,-1)},enabled=data.photos.size>1,modifier=Modifier.testTag("home-hero-previous")){Icon(Icons.AutoMirrored.Filled.ArrowBack,if(english)"Previous photo" else "Foto anterior",tint=Color.White)}
-                    Text("${photo.photo.title}\n${if(english)"Photo" else "Foto"}: ${photo.photo.credit}",fontSize=11.sp,lineHeight=16.sp,modifier=Modifier.weight(1f).testTag("home-hero-credit"))
-                    IconButton(onClick={paused=!paused},enabled=data.photos.size>1,modifier=Modifier.testTag("home-hero-pause")){Icon(if(paused)Icons.Default.PlayArrow else Icons.Default.Pause,if(paused)"Reanudar fotos" else "Pausar fotos",tint=Color.White)}
-                    IconButton(onClick={paused=true;current=HomePolicy.step(data.photos,id,1)},enabled=data.photos.size>1,modifier=Modifier.testTag("home-hero-next")){Icon(Icons.AutoMirrored.Filled.ArrowForward,if(english)"Next photo" else "Foto siguiente",tint=Color.White)}
+            Box(Modifier.fillMaxWidth().heightIn(min=190.dp)) {
+                if(photo!=null) AsyncImage(photo.photo.url,photo.photo.alt,Modifier.matchParentSize().clickable {enlarged=true}.testTag("home-hero-photo"),contentScale=ContentScale.Crop,alignment=BiasAlignment(photo.x*2-1,photo.y*2-1),colorFilter=ColorFilter.colorMatrix(ColorMatrix().apply{setToScale(data.brightness,data.brightness,data.brightness,1f)}))
+                Box(Modifier.matchParentSize().background(Brush.horizontalGradient(listOf(Color(0xED082B52),Color(0x55082B52)))))
+                Column(Modifier.fillMaxWidth().padding(horizontal=20.dp,vertical=18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                    Text(copy.badge,fontSize=10.sp,lineHeight=14.sp,color=Color(0xFFE0EDFF),maxLines=2,overflow=TextOverflow.Ellipsis)
+                    Text(copy.title,fontSize=27.sp,lineHeight=31.sp,fontWeight=FontWeight.ExtraBold,maxLines=3,overflow=TextOverflow.Ellipsis)
+                    Button(onClick=openMap,modifier=Modifier.testTag("home-hero-map"),shape=RoundedCornerShape(10.dp),colors=ButtonDefaults.buttonColors(containerColor=Color.White,contentColor=Color(0xFF0C3768))) { Icon(Icons.Default.Map,null,Modifier.size(18.dp));Spacer(Modifier.width(8.dp));Text(copy.mapButton,fontSize=13.sp) }
                 }
             }
-            Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
-                Text(copy.title,fontSize=23.sp,lineHeight=28.sp,fontWeight=FontWeight.ExtraBold)
-                Text(copy.description,fontSize=14.sp,lineHeight=20.sp,color=Color(0xFFE0EDFF))
-                if(content.cached||content.error)Text("Portada sin confirmar: conéctate para actualizar.",style=MaterialTheme.typography.labelSmall)
-                if(!content.loading&&!content.cached&&!content.error)Text("VisitaLoja.com",style=MaterialTheme.typography.labelSmall,modifier=Modifier.testTag("home-hero-ready"))
-                FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp),verticalArrangement=Arrangement.spacedBy(4.dp)) {
-                    Button(onClick=openMap,modifier=Modifier.testTag("home-hero-map"),colors=ButtonDefaults.buttonColors(containerColor=Color.White,contentColor=Color(0xFF0C3768))){Icon(Icons.Default.Map,null);Spacer(Modifier.width(8.dp));Text(copy.mapButton)}
-                    OutlinedButton(onClick=openRoute,modifier=Modifier.testTag("home-hero-route"),colors=ButtonDefaults.outlinedButtonColors(contentColor=Color.White)){Icon(Icons.Default.Route,null);Spacer(Modifier.width(8.dp));Text(copy.routeButton)}
+            Row(Modifier.fillMaxWidth().padding(horizontal=5.dp),verticalAlignment=Alignment.CenterVertically) {
+                IconButton(onClick={paused=true;current=HomePolicy.step(data.photos,id,-1)},enabled=data.photos.size>1,modifier=Modifier.testTag("home-hero-previous")){Icon(Icons.AutoMirrored.Filled.ArrowBack,if(english)"Previous photo" else "Foto anterior",tint=Color.White)}
+                Column(Modifier.weight(1f).padding(vertical=7.dp)) {
+                    if(photo!=null) {
+                        Text("${photo.photo.title} · ${photo.photo.credit}",fontSize=11.sp,lineHeight=15.sp,maxLines=2,overflow=TextOverflow.Ellipsis,modifier=Modifier.testTag("home-hero-credit"))
+                        Text("${data.photos.indexOf(photo)+1} / ${data.photos.size}",fontSize=10.sp,color=Color(0xFFDAE9FC),modifier=Modifier.testTag("home-hero-counter"))
+                    } else Text(if(english)"VisitaLoja.com" else "Descubre VisitaLoja.com",fontSize=12.sp)
+                    if(content.cached||content.error)Text(if(english)"Connect to confirm updates" else "Conéctate para confirmar cambios",fontSize=10.sp,color=Color(0xFFDAE9FC))
+                    if(!content.loading&&!content.cached&&!content.error)Spacer(Modifier.size(1.dp).testTag("home-hero-ready"))
                 }
+                IconButton(onClick={paused=!paused},enabled=data.photos.size>1,modifier=Modifier.testTag("home-hero-pause")){Icon(if(paused)Icons.Default.PlayArrow else Icons.Default.Pause,if(paused)"Reanudar fotos" else "Pausar fotos",tint=Color.White)}
+                IconButton(onClick={paused=true;current=HomePolicy.step(data.photos,id,1)},enabled=data.photos.size>1,modifier=Modifier.testTag("home-hero-next")){Icon(Icons.AutoMirrored.Filled.ArrowForward,if(english)"Next photo" else "Foto siguiente",tint=Color.White)}
+                IconButton(onClick={about=true},modifier=Modifier.testTag("home-hero-about")){Icon(Icons.Default.Info,if(english)"About VisitaLoja" else "Conoce VisitaLoja",tint=Color.White)}
             }
         }
     }
+    if(about) AlertDialog(onDismissRequest={about=false},title={Text(copy.title)},text={Column(Modifier.heightIn(max=330.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(12.dp)){Text(copy.description);photo?.let{Text("${it.photo.title} · ${it.photo.credit}",style=MaterialTheme.typography.labelMedium)}}},confirmButton={TextButton(onClick={about=false}){Text(if(english)"Close" else "Cerrar")}})
     if(enlarged&&photo!=null) androidx.compose.runtime.key(id) {
         // An independent dialog window needs its own resource-ID semantics.
         Box(Modifier.semantics{testTagsAsResourceId=true}){DiscoveryPhotoDialog(data.photos.map{it.photo},id.orEmpty(),{current=it},{enlarged=false})}

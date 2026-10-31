@@ -15,6 +15,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -33,21 +35,27 @@ private fun eventDate(event: LojaEvent) = Instant.ofEpochMilli(event.start).atZo
 
 @Composable
 fun HomeAgenda(state: AgendaState, open: () -> Unit, detail: (String) -> Unit) {
-    val next = AgendaPolicy.upcoming(state.events, state.now).take(3)
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) { Text("HAZLE ESPACIO A LOJA", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary); Text("Qué está pasando", fontSize = 22.sp, fontWeight = FontWeight.Bold) }
-            TextButton(onClick = open) { Text("Ver agenda") }
+    val next = AgendaPolicy.upcoming(state.events, state.now).firstOrNull()
+    Column(Modifier.padding(horizontal=18.dp).testTag("home-agenda"),verticalArrangement=Arrangement.spacedBy(10.dp)) {
+        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
+            Text("Qué pasa en Loja",fontSize=20.sp,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
+            TextButton(onClick=open){Text("Ver agenda",fontSize=12.sp)}
         }
-        if (next.isEmpty()) OutlinedCard(onClick = open, modifier = Modifier.padding(horizontal = 22.dp).fillMaxWidth(), shape = RoundedCornerShape(20.dp)) {
-            Row(Modifier.padding(18.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Icon(Icons.Default.Event, null, tint = MaterialTheme.colorScheme.primary)
-                Column { Text("Agenda de Loja", fontWeight = FontWeight.Bold); Text(if (state.loading) "Consultando la programación…" else if (state.error) "Reintenta para consultar los eventos publicados." else "Aquí aparecerán los próximos eventos publicados.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        OutlinedCard(onClick={if(next==null)open() else detail(next.id)},modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(16.dp),colors=CardDefaults.outlinedCardColors(containerColor=Color.White)) {
+            if(next==null) Row(Modifier.padding(16.dp),horizontalArrangement=Arrangement.spacedBy(12.dp),verticalAlignment=Alignment.CenterVertically) {
+                Icon(Icons.Default.Event,null,tint=MaterialTheme.colorScheme.primary)
+                Column(Modifier.weight(1f)) { Text("Agenda de Loja",fontWeight=FontWeight.Bold);Text(if(state.loading)"Consultando la programación…" else if(state.error)"Reintenta para consultar los eventos publicados." else "Aquí aparecerá el próximo evento publicado.",fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant) }
+            } else Row(Modifier.padding(12.dp),horizontalArrangement=Arrangement.spacedBy(13.dp),verticalAlignment=Alignment.CenterVertically) {
+                if(next.image!=null)AsyncImage(next.image,"Afiche de ${next.title}",Modifier.width(94.dp).height(132.dp),contentScale=ContentScale.Fit,placeholder=painterResource(R.drawable.visitaloja_logo),error=painterResource(R.drawable.visitaloja_logo))
+                Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(7.dp)) {
+                    Text(eventDate(next),fontSize=11.sp,color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold)
+                    Text(next.title,fontSize=17.sp,fontWeight=FontWeight.Bold,maxLines=3,overflow=TextOverflow.Ellipsis)
+                    Text(next.location.ifBlank{next.category},fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant,maxLines=2,overflow=TextOverflow.Ellipsis)
+                    Text("Ver detalles →",fontSize=12.sp,color=MaterialTheme.colorScheme.primary)
+                }
             }
-        } else LazyRow(contentPadding = PaddingValues(horizontal = 22.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            items(next, key = LojaEvent::id) { event -> EventCard(event, { detail(event.id) }, Modifier.width(270.dp)) }
         }
-        if (state.cached && next.isNotEmpty()) Text("Programación guardada; actualiza para confirmar cambios.", fontSize = 11.sp, modifier = Modifier.padding(horizontal = 22.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if(state.cached&&next!=null)Text("Programación guardada; actualiza para confirmar cambios.",fontSize=11.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
