@@ -497,24 +497,30 @@ try:
         tap(wait(desc='Cerrar fotografías'))
     tap(wait(desc='Volver a Inicio'))
     def open_strip_card(tag):
-        for _ in range(7):
-            root = tree()
-            visible = next((find(root, tag=t) for t in ['open-photos','open-time','open-videos','open-podcast'] if find(root,tag=t) is not None), None)
-            if visible is not None: break
-            adb('shell','input','swipe','360','1180','360','550','350')
-            time.sleep(1)
-        assert visible is not None, 'Discovery strip missing'
+        # A partially visible strip can sit directly under the floating music
+        # control. Reveal its photo area first; never start a swipe on the FAB.
+        for _ in range(10):
+            root=tree()
+            visible=next((find(root,tag=t) for t in ['open-photos','open-time','open-videos','open-podcast'] if find(root,tag=t) is not None),None)
+            if visible is not None:
+                x1,y1,x2,y2=map(int,re.findall(r'\d+',visible.get('bounds')))
+                if y2-y1>=250 and y2<=1200:break
+            adb('shell','input','swipe','300','1180','300','650','350');time.sleep(0.5)
+        else:raise AssertionError('Discovery strip not fully revealed')
         for _ in range(6):
-            root = tree(); node = find(root,tag=tag)
+            root=tree();node=find(root,tag=tag)
             if node is not None:
                 x1,y1,x2,y2=map(int,re.findall(r'\d+',node.get('bounds')))
-                if x2-x1 > 150:
-                    tap(node); return
+                if x2-x1>150 and y2-y1>=250 and y2<=1200:
+                    tap(node);return
             visible=next(find(root,tag=t) for t in ['open-photos','open-time','open-videos','open-podcast'] if find(root,tag=t) is not None)
             x1,y1,x2,y2=map(int,re.findall(r'\d+',visible.get('bounds')))
             y=(y1+y2)//2
-            adb('shell','input','swipe','630',str(y),'120',str(y),'350')
-            time.sleep(1)
+            fab=find(root,tag='welcome-music-toggle')
+            if fab is not None:
+                fx1,fy1,fx2,fy2=map(int,re.findall(r'\d+',fab.get('bounds')))
+                assert not (fx1<=630<=fx2 and fy1<=y<=fy2),'Swipe starts on the music control'
+            adb('shell','input','swipe','630',str(y),'120',str(y),'350');time.sleep(0.5)
         raise AssertionError('Unable to open '+tag)
     open_strip_card('open-time')
     wait(tag='time-screen'); time.sleep(3); capture('discovery-time')
