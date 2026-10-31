@@ -340,6 +340,7 @@ try:
     tap(wait(desc='Volver a Inicio'))
     home_card('open-postcards')
     wait(tag='postcards-screen');wait(tag='postcard-live-current',seconds=50)
+    assert find(tree(),tag='welcome-music-toggle') is None,'Music control overlaps the postcard editor'
     capture('discovery-postcard-live-editor')
     for _ in range(12):
         zoom=find(tree(),tag='postcard-zoom')

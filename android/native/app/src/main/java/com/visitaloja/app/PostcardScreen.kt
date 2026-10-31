@@ -123,7 +123,7 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
     Column(Modifier.fillMaxSize()) {
     if(!preview) Surface(color=MaterialTheme.colorScheme.primaryContainer,modifier=Modifier.fillMaxWidth().height(previewHeight).testTag("postcard-live-preview")) {
         Column(Modifier.padding(8.dp),horizontalAlignment=Alignment.CenterHorizontally) {
-            Text("Vista previa en vivo · Toca para ampliar",style=MaterialTheme.typography.labelSmall)
+            Text("Vista previa en vivo · Toca para ampliar",style=MaterialTheme.typography.labelSmall,modifier=if(liveRendered?.key==key&&liveError==null)Modifier.testTag("postcard-live-current") else Modifier)
             Box(Modifier.weight(1f).fillMaxWidth(),contentAlignment=Alignment.Center) {
                 val live=liveRendered?.takeIf { it.key.source==source }
                 if(source==null) Text("Elige una foto para comenzar")
@@ -131,7 +131,7 @@ fun PostcardScreen(config: PostcardConfig,photos: PublicContent<List<LojaPhoto>>
                 else if(liveError==null) CircularProgressIndicator()
                 if(liveError!=null) Text(liveError.orEmpty(),color=MaterialTheme.colorScheme.error)
             }
-            if(source!=null&&liveError==null) Text(if(liveRendered?.key==key) "Vista actualizada" else "Actualizando vista previa…",style=MaterialTheme.typography.labelSmall,modifier=if(liveRendered?.key==key)Modifier.testTag("postcard-live-current") else Modifier)
+            if(source!=null&&liveError==null) Text(if(liveRendered?.key==key) "Vista actualizada" else "Actualizando vista previa…",style=MaterialTheme.typography.labelSmall)
         }
     }
     LazyColumn(Modifier.weight(1f).fillMaxWidth().testTag("postcards-screen"),state=if(preview)reviewScroll else editorScroll,contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {

@@ -18,5 +18,5 @@ object WelcomeMusicPolicy {
         return WelcomeMusicConfig(raw["welcomeMusicEnabled"] != false && url != null, url, volume)
     }
     fun confirmed(content: PublicContent<WelcomeMusicConfig>) = !content.loading && !content.cached && !content.error && content.value.enabled && content.value.url != null
-    fun blocked(tab: String, overlay: Boolean) = overlay || tab in setOf("map", "videos", "time", "podcast", "stories")
+    fun blocked(tab: String, overlay: Boolean) = overlay || tab in setOf("map", "videos", "time", "podcast", "stories", "postcards")
 }

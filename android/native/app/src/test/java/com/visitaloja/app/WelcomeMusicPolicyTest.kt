@@ -24,7 +24,7 @@ class WelcomeMusicPolicyTest {
         assertFalse(WelcomeMusicPolicy.confirmed(c.copy(cached=true)));assertFalse(WelcomeMusicPolicy.confirmed(c.copy(error=true)));assertFalse(WelcomeMusicPolicy.confirmed(c.copy(loading=true)));assertFalse(WelcomeMusicPolicy.confirmed(PublicContent(WelcomeMusicConfig(),loading=false)))
     }
     @Test fun mediaAndMapAndOverlaysSuppressWelcomeMusic() {
-        listOf("map","videos","time","podcast","stories").forEach {assertTrue(WelcomeMusicPolicy.blocked(it,false))}
+        listOf("map","videos","time","podcast","stories","postcards").forEach {assertTrue(WelcomeMusicPolicy.blocked(it,false))}
         assertTrue(WelcomeMusicPolicy.blocked("home",true));assertFalse(WelcomeMusicPolicy.blocked("home",false));assertFalse(WelcomeMusicPolicy.blocked("photos",false))
     }
 }
