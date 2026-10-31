@@ -36,7 +36,7 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun HomeHero(content: PublicContent<HomeContent>, english: Boolean, visible: Boolean, openMap: () -> Unit, openRoute: () -> Unit) {
     val data=content.value
@@ -62,7 +62,7 @@ internal fun HomeHero(content: PublicContent<HomeContent>, english: Boolean, vis
     Surface(shape=RoundedCornerShape(data.radius.dp),color=Color(0xFF0C3768),contentColor=Color.White,modifier=Modifier.padding(horizontal=22.dp).fillMaxWidth().testTag("home-hero")) {
         Column {
             if(photo!=null) {
-                Box(Modifier.fillMaxWidth().height((data.height*.66f).dp).clickable {enlarged=true}.testTag("home-hero-photo")) {
+                Box(Modifier.fillMaxWidth().height((data.height*.44f).dp).clickable {enlarged=true}.testTag("home-hero-photo")) {
                     AsyncImage(photo.photo.url,photo.photo.alt,Modifier.fillMaxSize(),contentScale=ContentScale.Crop,alignment=BiasAlignment(photo.x*2-1,photo.y*2-1),colorFilter=ColorFilter.colorMatrix(ColorMatrix().apply{setToScale(data.brightness,data.brightness,data.brightness,1f)}))
                     Text(if(english)"Tap to view full photo" else "Toca para ver la foto completa",color=Color.White,style=MaterialTheme.typography.labelSmall,modifier=Modifier.align(Alignment.TopStart).background(Color(0xC010243A)).padding(8.dp))
                     Text("${data.photos.indexOf(photo)+1} / ${data.photos.size}",color=Color.White,modifier=Modifier.align(Alignment.TopEnd).background(Color(0xC010243A)).padding(8.dp).testTag("home-hero-counter"))
@@ -74,13 +74,15 @@ internal fun HomeHero(content: PublicContent<HomeContent>, english: Boolean, vis
                     IconButton(onClick={paused=true;current=HomePolicy.step(data.photos,id,1)},enabled=data.photos.size>1,modifier=Modifier.testTag("home-hero-next")){Icon(Icons.AutoMirrored.Filled.ArrowForward,if(english)"Next photo" else "Foto siguiente",tint=Color.White)}
                 }
             }
-            Column(Modifier.padding(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
-                Text(copy.title,fontSize=27.sp,lineHeight=33.sp,fontWeight=FontWeight.ExtraBold)
-                Text(copy.description,lineHeight=23.sp,color=Color(0xFFE0EDFF))
+            Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+                Text(copy.title,fontSize=23.sp,lineHeight=28.sp,fontWeight=FontWeight.ExtraBold)
+                Text(copy.description,fontSize=14.sp,lineHeight=20.sp,color=Color(0xFFE0EDFF))
                 if(content.cached||content.error)Text("Portada sin confirmar: conéctate para actualizar.",style=MaterialTheme.typography.labelSmall)
                 if(!content.loading&&!content.cached&&!content.error)Text("VisitaLoja.com",style=MaterialTheme.typography.labelSmall,modifier=Modifier.testTag("home-hero-ready"))
-                Button(onClick=openMap,modifier=Modifier.fillMaxWidth().testTag("home-hero-map"),colors=ButtonDefaults.buttonColors(containerColor=Color.White,contentColor=Color(0xFF0C3768))){Icon(Icons.Default.Map,null);Spacer(Modifier.width(8.dp));Text(copy.mapButton)}
-                OutlinedButton(onClick=openRoute,modifier=Modifier.fillMaxWidth().testTag("home-hero-route"),colors=ButtonDefaults.outlinedButtonColors(contentColor=Color.White)){Icon(Icons.Default.Route,null);Spacer(Modifier.width(8.dp));Text(copy.routeButton)}
+                FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                    Button(onClick=openMap,modifier=Modifier.testTag("home-hero-map"),colors=ButtonDefaults.buttonColors(containerColor=Color.White,contentColor=Color(0xFF0C3768))){Icon(Icons.Default.Map,null);Spacer(Modifier.width(8.dp));Text(copy.mapButton)}
+                    OutlinedButton(onClick=openRoute,modifier=Modifier.testTag("home-hero-route"),colors=ButtonDefaults.outlinedButtonColors(contentColor=Color.White)){Icon(Icons.Default.Route,null);Spacer(Modifier.width(8.dp));Text(copy.routeButton)}
+                }
             }
         }
     }
