@@ -66,7 +66,7 @@ private val AppColors = lightColorScheme(primary = Blue, onPrimary = Color.White
 private data class Category(val id: String, val name: String, val icon: ImageVector)
 private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.LocalCafe), Category("hotel", "Hospedaje", Icons.Default.Hotel), Category("food", "Gastronomía", Icons.Default.Restaurant), Category("turismo", "Turismo", Icons.Default.Explore))
 
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel(), noticeRequest: Int = 0, linkRequest: NativeLinkRequest? = null) {
     val mesa: MesaViewModel = viewModel()
@@ -91,8 +91,12 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val audioPlayer: DiscoveryAudioViewModel = viewModel()
     val audioState by audioPlayer.state.collectAsStateWithLifecycle()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    var foreground by remember(lifecycle) { mutableStateOf(lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) }
     DisposableEffect(lifecycle, audioPlayer) {
-        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_STOP) audioPlayer.pause() }
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) foreground = true
+            if (event == Lifecycle.Event.ON_STOP) { foreground = false; audioPlayer.pause() }
+        }
         lifecycle.addObserver(observer)
         onDispose { lifecycle.removeObserver(observer) }
     }
@@ -182,15 +186,23 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null, onBack = back)
     BackHandler(enabled = pendingLink != null) { pendingLink = null }
     LaunchedEffect(tab) { if (tab == "map") audioPlayer.pause() }
+    val musicBlocked = WelcomeMusicPolicy.blocked(tab, selected != null || selectedEvent != null || visitState.place != null || legalDocument != null || pendingLink != null)
+    LaunchedEffect(discoveryState.music, foreground, tab, musicBlocked) {
+        audioPlayer.configureWelcome(discoveryState.music, foreground && tab == "home" && !musicBlocked)
+        if (!foreground || musicBlocked) audioPlayer.pauseWelcome()
+    }
+    val otherAudioPlaying = audioState.key != null && audioState.key != WelcomeMusicPolicy.KEY && (audioState.playing || audioState.buffering)
+    val musicControlVisible = foreground && !musicBlocked && !WindowInsets.isImeVisible && WelcomeMusicPolicy.confirmed(discoveryState.music) && !otherAudioPlaying
     MaterialTheme(colorScheme = AppColors) {
         AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null)
         legalDocument?.let { LegalDialog(it, { legalDocument = null }, { key -> legalDocument = key }) }
         Scaffold(
             modifier = Modifier.semantics { testTagsAsResourceId = true },
             snackbarHost = { SnackbarHost(snack) },
+            floatingActionButton = { if (musicControlVisible) WelcomeMusicControl(audioState, audioPlayer::toggleWelcome) },
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") "Volver a Secciones" else if (tab == "canton") "Volver a Cantones" else "Volver a Inicio", back) { navigate("sections", "all") } },
             bottomBar = { Column {
-                if (audioState.key != null && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
+                if (audioState.key != null && audioState.key != WelcomeMusicPolicy.KEY && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
                 AppNavigation(if (tab in setOf("contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)

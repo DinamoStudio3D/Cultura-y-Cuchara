@@ -91,6 +91,19 @@ try:
     adb('shell', 'am', 'force-stop', PKG)
     adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
     time.sleep(4)
+    # The same public welcome recording must decode and enter playing state.
+    wait(tag='welcome-music-toggle',seconds=50)
+    wait(desc='Pausar música de bienvenida',seconds=60);capture('discovery-welcome-music-playing')
+    tap(wait(tag='welcome-music-toggle'));wait(desc='Reanudar música de bienvenida');capture('discovery-welcome-music-paused')
+    tap(wait(tag='welcome-music-toggle'));wait(desc='Pausar música de bienvenida',seconds=45)
+    adb('shell','input','keyevent','KEYCODE_HOME');time.sleep(2)
+    adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(desc='Reanudar música de bienvenida');capture('discovery-welcome-music-foreground-paused')
+    tap(wait(tag='welcome-music-toggle'));wait(desc='Pausar música de bienvenida',seconds=45)
+    tap(wait(tag='nav-map'));wait(tag='map-canvas')
+    assert find(tree(),tag='welcome-music-toggle') is None,'Welcome music control overlaps the map'
+    tap(wait(tag='nav-home'));wait(desc='Reanudar música de bienvenida')
+    (OUT/'welcome-music-summary.json').write_text(json.dumps({'actual_playing_state_verified':True,'floating_pause_resume_verified':True,'background_pause_verified':True,'no_automatic_foreground_restart':True,'map_suppression_verified':True},indent=2))
     # Published platform contacts and legal readers, without opening any external channel.
     adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/#contacto','-n',PKG+'/com.visitaloja.app.MainActivity')
     wait(tag='platform-contact-screen');wait(tag='platform-contact-ready',seconds=50);capture('discovery-platform-contact')

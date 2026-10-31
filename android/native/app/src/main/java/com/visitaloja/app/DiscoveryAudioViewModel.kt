@@ -22,9 +22,11 @@ data class DiscoveryAudioState(val key: String? = null, val title: String = "", 
     val playing: Boolean = false, val buffering: Boolean = false, val position: Long = 0,
     val duration: Long = 0, val error: String? = null)
 
-/** One foreground player: never auto-plays a different recording, never writes to Firestore. */
+/** One foreground player: welcome music and foreground recordings can never play together. */
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class DiscoveryAudioViewModel(app: Application) : AndroidViewModel(app) {
+    private var welcome: WelcomeMusicConfig? = null
+    private var welcomeAutoAttempted = false
     private val mutable = MutableStateFlow(DiscoveryAudioState())
     val state = mutable.asStateFlow()
     private val player = ExoPlayer.Builder(app)
@@ -43,15 +45,46 @@ class DiscoveryAudioViewModel(app: Application) : AndroidViewModel(app) {
     }
     private fun update() {
         mutable.update { it.copy(playing = player.isPlaying, buffering = player.playbackState == Player.STATE_BUFFERING && player.playWhenReady,
-            position = player.currentPosition.coerceAtLeast(0), duration = player.duration.takeIf { duration -> duration != C.TIME_UNSET && duration > 0 } ?: 0) }
+            position = if (it.key == WelcomeMusicPolicy.KEY) 0 else player.currentPosition.coerceAtLeast(0), duration = if (it.key == WelcomeMusicPolicy.KEY) 0 else player.duration.takeIf { duration -> duration != C.TIME_UNSET && duration > 0 } ?: 0) }
     }
     fun play(key: String, title: String, url: String) {
         if (DiscoveryPolicy.media(url) != url) return
         if (mutable.value.key == key && mutable.value.url == url) { toggle(); return }
         player.stop()
         mutable.value = DiscoveryAudioState(key = key, title = title, url = url)
+        player.setAudioAttributes(AudioAttributes.Builder().setUsage(C.USAGE_MEDIA).setContentType(if (key == WelcomeMusicPolicy.KEY) C.AUDIO_CONTENT_TYPE_MUSIC else C.AUDIO_CONTENT_TYPE_SPEECH).build(), true)
+        player.volume = if (key == WelcomeMusicPolicy.KEY) welcome?.volume ?: .2f else 1f
         player.setMediaItem(MediaItem.fromUri(url)); player.prepare(); player.play()
     }
+    /** Start once per app session; never restart after a manual/lifecycle pause. */
+    fun configureWelcome(content: PublicContent<WelcomeMusicConfig>, startAllowed: Boolean) {
+        if (!WelcomeMusicPolicy.confirmed(content)) {
+            welcome = null
+            if (mutable.value.key == WelcomeMusicPolicy.KEY) close()
+            return
+        }
+        val next = content.value
+        welcome = next
+        val active = mutable.value
+        if (active.key == WelcomeMusicPolicy.KEY) {
+            if (active.url != next.url) {
+                val resume = active.playing || active.buffering
+                close()
+                if (resume && startAllowed) playWelcome()
+            } else player.volume = next.volume
+        }
+        if (startAllowed && !welcomeAutoAttempted) {
+            welcomeAutoAttempted = true
+            if (mutable.value.key == null) playWelcome()
+        }
+    }
+    private fun playWelcome() { welcome?.takeIf { it.enabled }?.url?.let { play(WelcomeMusicPolicy.KEY, "La canción de VisitaLoja", it) } }
+    fun toggleWelcome() {
+        welcomeAutoAttempted = true
+        if (welcome == null) return
+        if (mutable.value.key == WelcomeMusicPolicy.KEY) toggle() else playWelcome()
+    }
+    fun pauseWelcome() { if (mutable.value.key == WelcomeMusicPolicy.KEY) player.pause() }
     fun toggle() {
         if (mutable.value.key == null) return
         if (player.playWhenReady && player.playbackState != Player.STATE_ENDED) player.pause() else {
