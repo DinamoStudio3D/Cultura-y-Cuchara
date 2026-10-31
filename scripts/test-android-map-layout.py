@@ -133,8 +133,19 @@ try:
     adb("emu", "geo", "fix", "-79.20422", "-3.99313")
     threading.Thread(target=gps_updates, daemon=True).start()
     adb("shell", "am", "start", "-n", PACKAGE + "/com.visitaloja.app.MainActivity")
-    tap(wait_for(lambda tree: find(tree, tag="nav-map")))
-    wait_for(lambda tree: find(tree, tag="map-canvas"))
+    wait_for(lambda tree: find(tree, tag="home-sections"))
+    # During a cold launch the first frame and its touch targets can be replaced
+    # after the accessibility dump. Repeat only this idempotent navigation, once,
+    # and only if the app is still visibly on Home. Never skip map verification.
+    for navigation_attempt in range(2):
+        tap(wait_for(lambda tree: find(tree, tag="nav-map")))
+        try:
+            wait_for(lambda tree: find(tree, tag="map-canvas"), seconds=15)
+            break
+        except AssertionError:
+            if navigation_attempt == 1 or find(hierarchy(), tag="home-sections") is None:
+                raise
+    (OUTPUT / "map-navigation-summary.json").write_text(json.dumps({"map_opened": True, "attempts": navigation_attempt + 1}, indent=2))
     time.sleep(4)
     initial = geometry("portrait-map")
     tap(wait_for(lambda tree: (node if (node := find(tree, tag="map-location-control")) is not None and node.attrib.get("enabled") == "true" else None), seconds=60))
