@@ -300,6 +300,9 @@ fun rememberNativeMapController(initialCamera: MapCamera = MapCamera()): NativeM
 }
 
 @Composable
-fun NativeMapView(controller: NativeMapController, modifier: Modifier = Modifier) {
-    key(controller) { AndroidView(factory = { controller.view }, modifier = modifier) }
+fun NativeMapView(controller: NativeMapController, places: List<Place>, selectedId: String?, modifier: Modifier = Modifier) {
+    val latestPlaces by rememberUpdatedState(places)
+    val latestSelection by rememberUpdatedState(selectedId)
+    key(controller) { AndroidView(factory = { controller.view }, modifier = modifier,
+        update = { controller.update(latestPlaces, latestSelection) }) }
 }

@@ -134,8 +134,6 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
             nearbyIds = ids.filter { id -> livePoints.any { it.id == id } }
             selection = nearbyIds.firstOrNull()
         }
-        // Deliver the committed Compose snapshot directly to the imperative renderer.
-        controller.update(points, selected?.id)
     }
     LaunchedEffect(points, selection, ready) {
         if (selection != null && selected == null) { selection = null; nearbyIds = emptyList() }
@@ -161,7 +159,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
     BoxWithConstraints(Modifier.fillMaxSize().semantics { testTagsAsResourceId = true }.testTag("map-root")) {
         val compact = maxHeight < 380.dp
         val previewSpace = if (selected != null) { if (compact) 96.dp else 180.dp } else 0.dp
-        Box(Modifier.fillMaxSize().testTag("map-canvas")) { NativeMapView(controller, Modifier.fillMaxSize()) }
+        Box(Modifier.fillMaxSize().testTag("map-canvas")) { NativeMapView(controller, points, selected?.id, Modifier.fillMaxSize()) }
         Surface(Modifier.align(Alignment.TopCenter).padding(horizontal = 12.dp, vertical = 10.dp).fillMaxWidth().testTag("map-search-bar"),
             shape = RoundedCornerShape(20.dp), color = Color.White, shadowElevation = 6.dp) {
             TextField(value = query, onValueChange = { following = false; onQuery(it) }, singleLine = true,
