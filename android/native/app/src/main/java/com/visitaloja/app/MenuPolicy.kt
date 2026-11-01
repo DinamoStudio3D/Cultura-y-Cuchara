@@ -20,7 +20,7 @@ object MenuPolicy {
         if (target.scheme != "https" || target.userInfo != null || target.port !in setOf(-1, 443) ||
             !(host in setOf("visitaloja.com", "www.visitaloja.com") || Regex("visitaloja-[a-z0-9]+-dinamostudio3d\\.vercel\\.app").matches(host)) || target.path != "/menu-digital.html") return null
         val query = runCatching { target.rawQuery.orEmpty().split('&').map { it.split('=', limit = 2) }.filter { it.size == 2 }.map { java.net.URLDecoder.decode(it[0], "UTF-8") to java.net.URLDecoder.decode(it[1], "UTF-8") } }.getOrNull() ?: return null
-        if (query.firstOrNull { it.first == "id" }?.second != id) return null
+        if (query.filter { it.first == "id" }.singleOrNull()?.second != id) return null
         var validDates = true
         fun date(key: String): LocalDate? {
             val value = data[key] as? String ?: return null

@@ -5,7 +5,7 @@ import java.net.URLDecoder
 import java.util.Locale
 
 internal data class NativeLinkRequest(val id: String, val text: String)
-internal data class NativeLinkTarget(val route: String, val place: String? = null, val category: String = "all")
+internal data class NativeLinkTarget(val route: String, val place: String? = null, val category: String = "all", val menuId: String? = null)
 internal object NativeLinkPolicy {
     private val sections = mapOf("" to "home", "inicio" to "home", "mapa" to "map", "agenda" to "agenda", "fiavl" to "agenda", "misiones" to "missions", "pasaporte" to "passport", "promociones" to "promotions", "historias" to "stories", "emprendedores" to "enterprises", "loja-en-video" to "videos", "loja-tiempo" to "time", "loja-en-imagenes" to "photos", "podcast" to "podcast", "tienda" to "shop", "postales" to "postcards", "especias" to "shop", "establecimientos" to "explore", "categorias" to "explore", "registeredBrands" to "supporters", "contacto" to "contact")
     private val categories = mapOf("/cafeterias-en-loja" to "cafe", "/hoteles-en-loja" to "hotel", "/restaurantes-en-loja" to "food", "/huecas-en-loja" to "hueca", "/panaderias-en-loja" to "panaderia", "/heladerias-en-loja" to "heladeria", "/bares-en-loja" to "bar", "/artesanias-en-loja" to "artesania", "/que-hacer-en-loja" to "turismo")
@@ -21,6 +21,7 @@ internal object NativeLinkPolicy {
                 val path = u.path.ifBlank { "/" }
                 when {
                     keys.any { it.first == "qr" } || keys.size > 1 -> null
+                    path == "/menu-digital.html" -> pairs.filter { it.first == "id" }.singleOrNull()?.second?.takeIf { keys.isEmpty() && MenuPolicy.validId(it) }?.let { NativeLinkTarget("menu", menuId = it) }
                     Regex("/parada/[A-Za-z0-9_-]+/?").matches(path) && keys.isEmpty() -> id(path.trimEnd('/').substringAfterLast('/'))?.let { NativeLinkTarget("explore", it) }
                     path == "/" && keys.size == 1 && keys[0].first in setOf("checkin", "lugar") -> id(keys[0].second)?.let { NativeLinkTarget("explore", it) }
                     path in setOf("/fidelidad.html", "/opiniones.html") && keys.size == 1 && keys[0].first == "place" -> id(keys[0].second)?.let { NativeLinkTarget("explore", it) }

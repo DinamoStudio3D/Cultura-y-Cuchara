@@ -25,6 +25,10 @@ class MenuPolicyTest {
         for (url in listOf("http://i.imgur.com/a.jpg", "https://i.imgur.com@evil.test/a.jpg", "https://evil.test/a.jpg", "javascript:alert(1)", "https://i.imgur.com:8080/a.jpg")) assertNull(url, read(mapOf("menuImageUrl" to url)))
         for (url in listOf("https://evil.test/menu-digital.html?id=menu-sport-burger", "/menu-digital.html?id=other", "/other?id=menu-sport-burger", "https://www.visitaloja.com@evil.test/menu-digital.html?id=menu-sport-burger")) assertNull(url, read(mapOf("targetUrl" to url)))
     }
+    @Test fun duplicateMenuBindingsAreRejectedEvenWhenFirstIdMatches() {
+        assertNull(read(mapOf("targetUrl" to "/menu-digital.html?id=menu-sport-burger&id=other")))
+        assertNull(read(mapOf("targetUrl" to "/menu-digital.html?id=menu-sport-burger&%69d=menu-sport-burger")))
+    }
     @Test fun benefitsUseInclusiveEcuadorCalendarBoundaries() {
         val menu = read(extras + mapOf("menuPlanStarts" to today.toString(), "menuPlanExpires" to today.toString()))!!
         assertNotNull(menu.logo); assertNotNull(menu.whatsapp); assertNotNull(menu.instagram)

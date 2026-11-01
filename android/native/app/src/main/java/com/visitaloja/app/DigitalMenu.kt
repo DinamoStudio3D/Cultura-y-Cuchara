@@ -76,7 +76,7 @@ fun DigitalMenuEntry(place: Place) {
 }
 
 @Composable
-private fun DigitalMenuDialog(menu: DigitalMenu, cached: Boolean, refresh: () -> Unit, close: () -> Unit) {
+internal fun DigitalMenuDialog(menu: DigitalMenu, cached: Boolean, refresh: () -> Unit, close: () -> Unit) {
     val context = LocalContext.current
     var scale by remember(menu.id, menu.image) { mutableFloatStateOf(1f) }
     var pan by remember(menu.id, menu.image) { mutableStateOf(Offset.Zero) }

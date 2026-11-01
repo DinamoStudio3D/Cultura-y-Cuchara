@@ -1,5 +1,14 @@
 ## 0.29.0 — Vista previa en vivo de postales y portada sincronizada
 
+## 0.35.0 — Enlaces de menús QR en la app
+
+Los enlaces públicos `menu-digital.html?id=...` se pueden recibir por Compartir → VisitaLoja, por Abrir enlace en Todas las secciones y mediante un intent HTTPS cuando Android elige la app. Abren directamente el visor nativo completo, sin pasar por una ficha ni ejecutar el destino del QR. Solo se usa el identificador validado para consultar `qrCodes`; se ignoran imágenes, títulos y destinos añadidos al enlace. Se rechazan IDs duplicados, rutas administrativas, enlaces externos y QRs de visita. El documento debe ser un menú válido, activo y confirmado por servidor; los errores y retiradas eliminan el menú anterior. Los extras conservan las fechas y beneficios de la web.
+
+El lector se retira al cerrar o salir de primer plano y vuelve a comprobar la publicación al regresar. La música y el anuncio de entrada no se superponen al visor. Cerrar regresa a la pantalla anterior; nuevas recepciones sustituyen la pendiente sin acumular visores. El menú existente dentro de las fichas conserva su acceso y visor. No añade escáner/cámara, permisos, cuentas, escrituras, reglas o verificación de dominio. Android puede seguir eligiendo el navegador para HTTPS; Compartir y pegar funcionan independientemente.
+
+Chabaquito actualiza su reloj al recibir datos para evitar un aviso de conexión transitorio mientras el directorio acaba de refrescarse. Las imágenes de sus sugerencias se muestran completas, incluidos logos verticales, sin recortar el contenido.
+
+
 ## 0.34.0 — Habla con Chabaquito
 
 Inicio y Todas las secciones incorporan al mismo compañero de `js/chabaquito-guide.js`, con la imagen original, opciones de café/comida/paseo/hospedaje y sugerencias basadas en el directorio público. Usa los criterios de la web y prioriza horarios verificables sin asumir atención cuando no se conoce. Permite ver la ficha nativa, elegir otra opción, cambiar de idea y acceder a misiones o Mi recorrido. Se recorren las alternativas antes de repetir; con una sola opción se informa claramente.

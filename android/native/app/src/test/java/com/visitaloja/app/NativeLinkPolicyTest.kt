@@ -17,8 +17,15 @@ class NativeLinkPolicyTest {
     @Test fun hostSpoofingAndNonHttpsIntentsAreRejected() {
         for (url in listOf("http://www.visitaloja.com/", "https://www.visitaloja.com.evil.test/", "https://www.visitaloja.com@evil.test/", "https://evil.test@www.visitaloja.com/", "https://www.visitaloja.com:443/", "intent://visitaloja.com", "file:///etc/passwd", "https://www.visitaloja.com/\\evil", "https://www.visitaloja.com/\n")) assertNull(url,NativeLinkPolicy.parse(url))
     }
-    @Test fun administrativeMenusAndEncodedPathsAreNotClaimed() {
-        for (path in listOf("/admin.html", "/merchant-dashboard.html", "/api/chabaquito-ranking", "/menu-digital.html?id=test", "/qr.html?qr=test", "/?qr=test", "/parada/%73port-burger", "/parada/../admin.html", "/%2f%2fevil.test", "/#desconocido")) assertNull(path,NativeLinkPolicy.parse("https://www.visitaloja.com$path"))
+    @Test fun administrativeVisitQrAndEncodedPathsAreNotClaimed() {
+        for (path in listOf("/admin.html", "/merchant-dashboard.html", "/api/chabaquito-ranking", "/qr.html?qr=test", "/?qr=test", "/parada/%73port-burger", "/parada/../admin.html", "/%2f%2fevil.test", "/#desconocido")) assertNull(path,NativeLinkPolicy.parse("https://www.visitaloja.com$path"))
+    }
+    @Test fun publicMenuLinksUseValidatedIdsAndIgnoreDisplayOverrides() {
+        assertEquals(NativeLinkTarget("menu",menuId="prueba-3-sport-burger"),NativeLinkPolicy.parse("https://www.visitaloja.com/menu-digital.html?id=prueba-3-sport-burger"))
+        assertEquals(NativeLinkTarget("menu",menuId="test"),NativeLinkPolicy.shared("Mira el menú: https://visitaloja.com/menu-digital.html?id=test&utm_source=share&image=https%3A%2F%2Fevil.test%2Fimage.png"))
+    }
+    @Test fun menuLinksRejectMissingAmbiguousUnsafeAndVisitIdentifiers() {
+        for(query in listOf("", "?image=https://evil.test/image.png", "?id=", "?id=a&id=b", "?id=a&%69d=a", "?id=a%2Fb", "?id="+"a".repeat(101), "?id=a&qr=visit", "?id=a&checkin=visit", "?id=%zz")) assertNull(query,NativeLinkPolicy.parse("https://visitaloja.com/menu-digital.html$query"))
     }
     @Test fun checkinAndLoyaltyLinksOnlySelectAPlaceNeverClaimOrStamp() {
         for (path in listOf("/?checkin=loc_123", "/?lugar=loc_123", "/fidelidad.html?place=loc_123")) assertEquals(NativeLinkTarget("explore", "loc_123"),NativeLinkPolicy.parse("https://www.visitaloja.com$path"))

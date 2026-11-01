@@ -139,6 +139,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     LaunchedEffect(accountState.uid, tab) { wallet.bind(if (tab == "passport") accountState.uid else null) }
     var category by rememberSaveable { mutableStateOf("all") }
     var query by rememberSaveable { mutableStateOf("") }
+    var directMenuId by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
     val selected = state.places.find { it.id == selectedId }
     var selectedEventId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -151,10 +152,10 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val queueLink: (String) -> Unit = { text ->
         pendingLink = text; linkRequiredVersion = 0L
         val target = NativeLinkPolicy.shared(text)
-        if (target != null) { legalDocument = null; selectedId = null; selectedEventId = null; visits.close(); audioPlayer.pause() }
+        if (target != null) { directMenuId = null; legalDocument = null; selectedId = null; selectedEventId = null; visits.close(); audioPlayer.pause() }
         if (target?.place != null) linkRequiredVersion = model.refreshForLink()
     }
-    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { legalDocument = null; pendingLink = null; selectedId = null; selectedEventId = null; visits.close(); fromSections = false; tab = "notices" } }
+    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { directMenuId = null; legalDocument = null; pendingLink = null; selectedId = null; selectedEventId = null; visits.close(); fromSections = false; tab = "notices" } }
     LaunchedEffect(linkMessage) { linkMessage?.let { snack.showSnackbar(it); linkMessage = null } }
     LaunchedEffect(linkRequest?.id) {
         if (linkRequest != null && linkRequest.id != handledLink) {
@@ -164,17 +165,19 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     LaunchedEffect(pendingLink, state.places, state.loading, state.offline, state.error, state.fetchedAt, state.fetchedVersion, linkRequiredVersion) {
         val text = pendingLink ?: return@LaunchedEffect
         val target = NativeLinkPolicy.shared(text)
-        if (target == null) { pendingLink = null; linkMessage = "Este enlace no corresponde a una parada o sección compatible de VisitaLoja."; return@LaunchedEffect }
+        if (target == null) { pendingLink = null; linkMessage = "Este enlace no corresponde a una parada, menú QR o sección compatible de VisitaLoja."; return@LaunchedEffect }
         if (target.place != null && !NativeLinkPolicy.ready(state, linkRequiredVersion)) return@LaunchedEffect
         val place = target.place?.let { NativeLinkPolicy.place(state.places, it) }
         pendingLink = null
         if (target.place != null && place == null) { linkMessage = "No encontramos esta parada publicada. Puede haber cambiado o ya no estar disponible."; return@LaunchedEffect }
         visits.close(); selectedId = null; selectedEventId = null; audioPlayer.pause()
+        if (target.menuId != null) { directMenuId = target.menuId; return@LaunchedEffect }
+        directMenuId = null
         fromSections = false; tab = target.route; category = target.category; query = ""
         if (place != null) selectedId = place.id
     }
     val navigate: (String, String) -> Unit = { target, filter ->
-        legalDocument = null; pendingLink = null
+        directMenuId = null; legalDocument = null; pendingLink = null
         fromSections = tab == "sections" || (fromSections && tab == "cantons" && target == "canton")
         tab = target; category = filter; query = ""
     }
@@ -186,7 +189,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     BackHandler(enabled = tab != "home" && selected == null && selectedEvent == null, onBack = back)
     BackHandler(enabled = pendingLink != null) { pendingLink = null }
     LaunchedEffect(tab) { if (tab == "map") audioPlayer.pause() }
-    val musicBlocked = WelcomeMusicPolicy.blocked(tab, selected != null || selectedEvent != null || visitState.place != null || legalDocument != null || pendingLink != null)
+    val musicBlocked = WelcomeMusicPolicy.blocked(tab, selected != null || selectedEvent != null || visitState.place != null || legalDocument != null || pendingLink != null || directMenuId != null)
     LaunchedEffect(discoveryState.music, foreground, tab, musicBlocked) {
         audioPlayer.configureWelcome(discoveryState.music, foreground && tab == "home" && !musicBlocked)
         if (!foreground || musicBlocked) audioPlayer.pauseWelcome()
@@ -194,7 +197,8 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val otherAudioPlaying = audioState.key != null && audioState.key != WelcomeMusicPolicy.KEY && (audioState.playing || audioState.buffering)
     val musicControlVisible = foreground && !musicBlocked && !WindowInsets.isImeVisible && WelcomeMusicPolicy.confirmed(discoveryState.music) && !otherAudioPlaying
     MaterialTheme(colorScheme = AppColors) {
-        AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null)
+        AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null && directMenuId == null)
+        directMenuId?.let { DirectMenuEntry(it) { directMenuId = null } }
         legalDocument?.let { LegalDialog(it, { legalDocument = null }, { key -> legalDocument = key }) }
         Scaffold(
             modifier = Modifier.semantics { testTagsAsResourceId = true },

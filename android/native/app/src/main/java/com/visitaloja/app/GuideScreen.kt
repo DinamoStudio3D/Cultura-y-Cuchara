@@ -35,9 +35,10 @@ internal fun GuideScreen(state:PlacesState,refresh:()->Unit,open:(Place)->Unit,m
     var now by remember{mutableLongStateOf(System.currentTimeMillis())}
     val lifecycle=LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(lifecycle){lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){refresh();while(true){now=System.currentTimeMillis();delay(10_000)}}}
-    val fresh=RoutePlannerPolicy.fresh(state,now)
-    val choices=GuidePolicy.candidates(state,interest.orEmpty(),now)
-    val selected=GuidePolicy.current(state,interest.orEmpty(),selectedId,now)
+    val moment=maxOf(now,System.currentTimeMillis())
+    val fresh=RoutePlannerPolicy.fresh(state,moment)
+    val choices=GuidePolicy.candidates(state,interest.orEmpty(),moment)
+    val selected=GuidePolicy.current(state,interest.orEmpty(),selectedId,moment)
     val twoColumns=LocalConfiguration.current.let{it.screenWidthDp>=360&&it.fontScale<=1.2f}
     fun choose(key:String){
         val options=GuidePolicy.candidates(state,key,System.currentTimeMillis())
@@ -89,13 +90,13 @@ internal fun GuideScreen(state:PlacesState,refresh:()->Unit,open:(Place)->Unit,m
         if(interest!=null&&fresh) {
             if(selected!=null)item(key="suggestion-${selected.id}") {
                 Card(Modifier.fillMaxWidth().testTag("guide-result"),colors=CardDefaults.cardColors(containerColor=Color.White),shape=RoundedCornerShape(22.dp)) {
-                    PlacePolicy.safeImage(selected.imageUrl)?.let{url->AsyncImage(model=url,contentDescription=null,modifier=Modifier.fillMaxWidth().height(170.dp),contentScale=ContentScale.Crop)}
+                    PlacePolicy.safeImage(selected.imageUrl)?.let{url->AsyncImage(model=url,contentDescription=null,modifier=Modifier.fillMaxWidth().height(170.dp),contentScale=ContentScale.Fit)}
                     Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
                         Text("TU PRÓXIMA PARADA",color=MaterialTheme.colorScheme.primary,style=MaterialTheme.typography.labelLarge)
                         Text(selected.title,style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Bold,modifier=Modifier.testTag("guide-place-title"))
                         if(selected.description.isNotBlank())Text(selected.description,maxLines=4,overflow=TextOverflow.Ellipsis)
                         Text(selected.address.ifBlank{"Loja, Ecuador"},style=MaterialTheme.typography.bodyMedium)
-                        val status=PlaceInfoPolicy.open(selected.info,now)
+                        val status=PlaceInfoPolicy.open(selected.info,moment)
                         Text(when(status){true->"Dentro de su horario general publicado";false->"Fuera de su horario general publicado";else->"Horario por confirmar"},fontWeight=FontWeight.Medium,color=MaterialTheme.colorScheme.primary)
                         Text("Confirma la atención y el horario antes de ir.",style=MaterialTheme.typography.bodySmall)
                         Button(onClick={GuidePolicy.current(state,interest.orEmpty(),selectedId,System.currentTimeMillis())?.let(open)},modifier=Modifier.fillMaxWidth().testTag("guide-open-place")){Text("¡Vamos! Ver este lugar");Spacer(Modifier.width(6.dp));Icon(Icons.AutoMirrored.Filled.ArrowForward,null)}

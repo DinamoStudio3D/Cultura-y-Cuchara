@@ -494,6 +494,23 @@ try:
             adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(1)
 
     (OUT/'menu-summary.json').write_text(json.dumps({'viewer_verified':menu_verified,'note':'Published Sport menu opened' if menu_verified else 'No available published menu in the current Sport search'},indent=2))
+    # Reopen the same confirmed QR directly, independent of a place sheet or browser.
+    direct_menu_verified=False
+    if menu_verified:
+        cache=json.loads(adb('exec-out','run-as',PKG,'cat','files/published-places-v1.json'))
+        place_id=card.get('resource-id','').split('place-card-',1)[-1]
+        menu_id=next(p['menuQrId'] for p in cache['places'] if p['id']==place_id)
+        assert re.fullmatch(r'[A-Za-z0-9_-]{1,100}',menu_id),menu_id
+        menu_url='https://www.visitaloja.com/menu-digital.html?id='+menu_id
+        adb('shell','am','start','-a','android.intent.action.VIEW','-d',menu_url,'-n',PKG+'/com.visitaloja.app.MainActivity')
+        wait(desc='Ampliar menú',seconds=50);capture('discovery-menu-direct-link')
+        assert find(tree(),tag='welcome-music-toggle') is None,'Music control overlaps a direct menu'
+        tap(wait(desc='Ampliar menú'));capture('discovery-menu-direct-zoom')
+        tap(wait(desc='Cerrar menú'));wait(tag='explore-search')
+        adb('shell','am','start','-a','android.intent.action.SEND','-t','text/plain','--es','android.intent.extra.TEXT',menu_url,'-n',PKG+'/com.visitaloja.app.MainActivity')
+        wait(desc='Ampliar menú',seconds=50);capture('discovery-menu-shared-link')
+        tap(wait(desc='Cerrar menú'));wait(tag='explore-search');direct_menu_verified=True
+    (OUT/'direct-menu-summary.json').write_text(json.dumps({'direct_and_shared_links_verified':direct_menu_verified,'browser_opened':False,'remote_writes':False,'note':'Same live QR as the published Sport place' if direct_menu_verified else 'No published Sport menu available'},indent=2))
     # Only inspect public media controls; never change a business publication or entitlement.
     field=wait(tag='explore-search');tap(field)
     adb('shell','input','keyevent','KEYCODE_MOVE_END')
