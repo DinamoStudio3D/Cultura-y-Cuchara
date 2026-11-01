@@ -30,12 +30,16 @@ def wait(tag):
 def tap(n):
     x1,y1,x2,y2=map(int,re.findall(r'\d+',n.get('bounds')))
     adb('shell','input','tap',str((x1+x2)//2),str((y1+y2)//2))
+log_file=(OUT/'logo-tag-logcat.txt').open('w')
+log_process=subprocess.Popen(['adb','logcat','-v','brief','VisitaLojaLogos:V','*:S'],stdout=log_file,stderr=subprocess.STDOUT)
 try:
     adb('logcat','-c');adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(4)
     tap(wait('nav-map'));wait('map-canvas');tap(wait('map-search-bar'))
     adb('shell','input','text','Codeproim');adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(8)
     (OUT/'codeproim-focused.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
-    logs=adb('logcat','-d','-t','1000');(OUT/'logo-logcat.txt').write_text(logs)
+    logs=adb('logcat','-d');(OUT/'logo-logcat.txt').write_text(logs)
+    log_process.terminate();log_process.wait(timeout=10);log_file.close()
+    logs=(OUT/'logo-tag-logcat.txt').read_text()
     traces=[]
     for line in logs.splitlines():
         if 'VisitaLojaLogos' in line and '{' in line:
@@ -43,8 +47,12 @@ try:
             except json.JSONDecodeError:pass
     (OUT/'logo-render-summary.json').write_text(json.dumps(traces,indent=2))
     assert traces,'No marker renderer diagnostics'
-    last=traces[-1]
+    records=[r for r in traces if 'pinCount' in r]
+    assert records,traces
+    last=records[-1]
     assert last['logoLoaded'] and last['imagePresent'],last
     assert last['pinCount']>0 and last['inView'],last
 finally:
+    if log_process.poll() is None:log_process.terminate();log_process.wait(timeout=10)
+    log_file.close()
     adb('shell','am','force-stop',PKG)
