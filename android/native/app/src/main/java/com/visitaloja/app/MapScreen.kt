@@ -63,7 +63,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
     var locationDetailsOpen by remember { mutableStateOf(false) }
     val viewport: MapViewportViewModel = viewModel()
     val controller = rememberNativeMapController(viewport.camera)
-    var ready by remember { mutableStateOf(false) }
+    var ready by remember(controller) { mutableStateOf(false) }
     var mapError by remember { mutableStateOf(false) }
     var attempt by remember { mutableIntStateOf(0) }
     val owner = LocalLifecycleOwner.current
@@ -134,16 +134,17 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
             nearbyIds = ids.filter { id -> livePoints.any { it.id == id } }
             selection = nearbyIds.firstOrNull()
         }
+        // Deliver the committed Compose snapshot directly to the imperative renderer.
+        controller.update(points, selected?.id)
     }
     LaunchedEffect(points, selection, ready) {
         if (selection != null && selected == null) { selection = null; nearbyIds = emptyList() }
-        controller.update(points, selected?.id)
     }
-    LaunchedEffect(selected?.id) {
+    LaunchedEffect(controller, selected?.id) {
         if (selected != null) { following = false; delay(200); controller.focusPlace(selected) }
     }
     // Favorite/server updates must not pull the camera away while exploring or following.
-    LaunchedEffect(ready, query, category, savedOnly, state.loading) {
+    LaunchedEffect(controller, ready, query, category, savedOnly, state.loading) {
         if (ready && !state.loading && query.isNotBlank() && points.isNotEmpty() && !following) { delay(300); controller.focus(points) }
     }
     LaunchedEffect(attempt) { delay(25000); if (!ready) mapError = true }

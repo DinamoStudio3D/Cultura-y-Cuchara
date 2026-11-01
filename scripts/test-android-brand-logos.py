@@ -30,10 +30,11 @@ def wait(tag):
 def tap(n):
     x1,y1,x2,y2=map(int,re.findall(r'\d+',n.get('bounds')))
     adb('shell','input','tap',str((x1+x2)//2),str((y1+y2)//2))
+adb('logcat','-c')
 log_file=(OUT/'logo-tag-logcat.txt').open('w')
 log_process=subprocess.Popen(['adb','logcat','-v','brief','VisitaLojaLogos:V','*:S'],stdout=log_file,stderr=subprocess.STDOUT)
 try:
-    adb('logcat','-c');adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(4)
+    adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(4)
     tap(wait('nav-map'));wait('map-canvas');tap(wait('map-search-bar'))
     adb('shell','input','text','Codeproim');adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(8)
     (OUT/'codeproim-focused.png').write_bytes(adb('exec-out','screencap','-p',binary=True))

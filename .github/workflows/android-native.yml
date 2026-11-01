@@ -8,6 +8,7 @@ on:
       - 'terminos.html'
       - 'scripts/test-android-map-layout.py'
       - 'scripts/test-android-discovery.py'
+      - 'scripts/test-android-brand-logos.py'
       - '.github/workflows/android-native.yml'
       - 'mascota-vive-loja.png'
       - 'assets/brand/visitaloja-splash.webp'

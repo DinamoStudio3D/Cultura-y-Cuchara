@@ -2,6 +2,8 @@
 
 ## 0.36.0 — Logos coherentes en el mapa y las fichas
 
+La lista de paradas filtradas se sincroniza directamente con el renderizador nativo después de confirmar la composición. El visor y sus efectos de cámara se asocian al controlador activo para que cambios de filtro o recreación no conserven datos de otro visor. La prueba enfocada comprueba que el SDK informa un marcador realmente dibujado, además de tener la imagen del logo cargada.
+
 La URL retirada de Codeproim se resuelve al mismo PNG aprobado incluido con la app. Una única política se usa en el cargador de marcadores, miniatura del mapa, tarjetas, galerías, cantones, sugerencias y marcas aliadas. Evita descargar la imagen de error que Imgur puede entregar con respuesta correcta y reutilizarla como logo. Reconoce el enlace retirado con parámetros y la referencia local del mismo archivo; las URLs nuevas y otros logos conservan su configuración. No sustituye por nombre del negocio ni altera beneficios, planes o selección de iconos. Los logos sustituidos se muestran completos. Pruebas de alias, referencias seguras, logos diferentes y permisos del marcador; capturas del registro real de Codeproim y de su marcador filtrado para revisión visual. Sin cambios en datos, web o main.
 
 

@@ -164,7 +164,7 @@ class NativeMapController(private val context: Context, private val initialCamer
         }
     }
     fun update(places: List<Place>, id: String?) {
-        if(context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) android.util.Log.i("VisitaLojaLogos",JSONObject().put("event","update").put("controller",System.identityHashCode(this)).put("count",places.size).put("alive",alive).put("local",places.singleOrNull()?.let { BrandImagePolicy.localLogo(MapPolicy.logoUrl(it)) != null }?:false).toString())
+        if(places != this.places && context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) android.util.Log.i("VisitaLojaLogos",JSONObject().put("event","update").put("controller",System.identityHashCode(this)).put("count",places.size).put("alive",alive).put("local",places.singleOrNull()?.let { BrandImagePolicy.localLogo(MapPolicy.logoUrl(it)) != null }?:false).toString())
         this.places = places
         val next = MapPolicy.geoJson(places)
         selected = id
@@ -183,7 +183,7 @@ class NativeMapController(private val context: Context, private val initialCamer
         if(context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE == 0)return
         val place=places.singleOrNull()?.takeIf { BrandImagePolicy.localLogo(MapPolicy.logoUrl(it)) != null }?:return
         android.util.Log.i("VisitaLojaLogos",JSONObject().put("event","schedule").put("controller",System.identityHashCode(this)).toString())
-        logoDiagnostic?.cancel()
+        if(logoDiagnostic?.isActive==true)return
         logoDiagnostic=scope.launch {
             delay(1500)
             val current=map?:return@launch;val target=style?:return@launch
@@ -301,5 +301,5 @@ fun rememberNativeMapController(initialCamera: MapCamera = MapCamera()): NativeM
 
 @Composable
 fun NativeMapView(controller: NativeMapController, modifier: Modifier = Modifier) {
-    AndroidView(factory = { controller.view }, modifier = modifier)
+    key(controller) { AndroidView(factory = { controller.view }, modifier = modifier) }
 }
