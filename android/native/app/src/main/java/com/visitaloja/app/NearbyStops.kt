@@ -25,15 +25,16 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class NearbyViewModel(app: Application) : AndroidViewModel(app) {
     private val prefs = NearbyGeofences.prefs(app)
-    private val _enabled = MutableStateFlow(NearbyGeofences.enabled(app))
-    val enabled = _enabled.asStateFlow()
-    private val _status = MutableStateFlow(prefs.getString("status", "Desactivados") ?: "Desactivados")
-    val status = _status.asStateFlow()
+    private val _enabled: MutableStateFlow<Boolean> = MutableStateFlow(NearbyGeofences.enabled(app))
+    val enabled: StateFlow<Boolean> = _enabled.asStateFlow()
+    private val _status: MutableStateFlow<String> = MutableStateFlow(prefs.getString("status", "Desactivados") ?: "Desactivados")
+    val status: StateFlow<String> = _status.asStateFlow()
     private val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         _enabled.value = NearbyGeofences.enabled(app)
         _status.value = prefs.getString("status", "Desactivados") ?: "Desactivados"
