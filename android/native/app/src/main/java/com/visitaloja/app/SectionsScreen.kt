@@ -43,7 +43,7 @@ internal object SectionsPolicy {
         AppSection("time", "Loja en el Tiempo", "Historia y fotografías de ayer y hoy", groups[0], Icons.Default.History),
         AppSection("videos", "Videos", "Conoce Loja en movimiento", groups[0], Icons.Default.PlayCircle),
         AppSection("podcast", "Podcast", "Historias y sonidos para escuchar", groups[0], Icons.Default.Headphones),
-        AppSection("itinerary", "Mi ruta", "Organiza el recorrido de tus favoritos", groups[1], Icons.Default.Route),
+        AppSection("itinerary", "Mi ruta", "Prepara una propuesta o recorre tus favoritos", groups[1], Icons.Default.Route),
         AppSection("missions", "Chabaquito", "Retos, insignias y tu aventura", groups[1], Icons.Default.EmojiEvents),
         AppSection("passport", "Pasaporte y fidelidad", "Consulta tus sellos y recompensas", groups[1], Icons.Default.MenuBook),
         AppSection("saved", "Favoritos", "Tus próximas paradas, siempre a mano", groups[1], Icons.Default.FavoriteBorder),

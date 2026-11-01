@@ -403,6 +403,35 @@ try:
     home_card('open-itinerary')
     wait(tag='itinerary-screen');capture('discovery-itinerary')
     assert 'Tu próxima aventura empieza aquí' in ' '.join(n.get('text','') for n in tree().iter('node'))
+    # Native suggested route: public directory only, local plan separate from guest favourites.
+    def planner_control(tag):
+        for _ in range(16):
+            node=find(tree(),tag=tag)
+            if node is not None:
+                x1,y1,x2,y2=map(int,re.findall(r'\d+',node.get('bounds')))
+                if y2-y1>=64 and y1>=180 and y2<=1250:return node
+            adb('shell','input','swipe','300','1130','300','760','300');time.sleep(0.4)
+        raise AssertionError('Planner control not fully visible: '+tag)
+    tap(wait(tag='itinerary-planner'));wait(tag='route-planner-screen')
+    tap(planner_control('planner-time-480'))
+    tap(planner_control('planner-transport-drive'));capture('discovery-route-options')
+    generate=planner_control('planner-generate')
+    if generate.get('enabled')!='true':time.sleep(5);generate=wait(tag='planner-generate')
+    assert generate.get('enabled')=='true','Fresh published directory required for route'
+    tap(generate);time.sleep(2)
+    # Scroll to the generated stops, not a clipped accessibility node at the bottom edge.
+    for _ in range(12):
+        if find(tree(),tag='planner-results') is not None:break
+        adb('shell','input','swipe','300','1130','300','760','300');time.sleep(0.4)
+    assert find(tree(),tag='planner-results') is not None,'No published stops fit an all-day drive'
+    capture('discovery-route-results')
+    tap(planner_control('planner-use'));wait(tag='itinerary-screen')
+    tap(planner_control('itinerary-start'));wait(tag='itinerary-next');capture('discovery-route-started')
+    # Re-entering and switching back must preserve the original empty favourites route.
+    for _ in range(4):adb('shell','input','swipe','300','520','300','1150','250')
+    tap(wait(tag='itinerary-favourites-mode'))
+    assert 'Tu próxima aventura empieza aquí' in ' '.join(n.get('text','') for n in tree().iter('node')),'Suggested route changed guest favourites'
+    (OUT/'route-planner-summary.json').write_text(json.dumps({'generated_from_public_directory':True,'all_day_drive':True,'local_plan_saved_and_started':True,'favourites_unchanged':True,'gps_requested':False,'remote_writes':False},indent=2))
     # Public menu smoke: no account or document writes; catalogue availability is reported explicitly.
     explore = next(n for n in tree().iter('node') if n.get('text') == 'Explorar paradas')
     tap(explore); tap(wait(tag='explore-search'))

@@ -241,7 +241,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                         else if (route != null) navigate(route, "all")
                         else PushPolicy.link(link)?.let { safe -> try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.visitaloja.com$safe"))) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay un navegador disponible.", Toast.LENGTH_LONG).show() } }
                     }
-                    "itinerary" -> ItineraryScreen(state, accountState.uid, accountState.uid == null || (accountState.favouritesReady && accountState.favouritesError == null), { selectedId = it.id }, { navigate("explore", "all") })
+                    "itinerary" -> ItineraryScreen(state, accountState.uid, accountState.uid == null || (accountState.favouritesReady && accountState.favouritesError == null), { selectedId = it.id }, { navigate("explore", "all") }, model::refresh)
                     "missions" -> MissionsScreen(missionsState, accountState.uid, guestState, missions, { navigate("account", "all") }, { navigate("explore", "all") }, { selectedId = it.id })
                     "videos" -> VideosScreen(videoState, videos::refresh, audioPlayer::pause)
                     "photos" -> PhotosScreen(discoveryState.photos, discovery::refresh)
