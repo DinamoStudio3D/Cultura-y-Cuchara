@@ -69,6 +69,10 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel(), noticeRequest: Int = 0, linkRequest: NativeLinkRequest? = null) {
+    val nearby: NearbyViewModel = viewModel()
+    val nearbyEnabled by nearby.enabled.collectAsStateWithLifecycle()
+    val nearbyStatus by nearby.status.collectAsStateWithLifecycle()
+    var nearbySettings by remember { mutableStateOf(false) }
     val mesa: MesaViewModel = viewModel()
     val mesaState by mesa.state.collectAsStateWithLifecycle()
     val supporters: SupportersViewModel = viewModel()
@@ -200,6 +204,8 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null && directMenuId == null)
         directMenuId?.let { DirectMenuEntry(it) { directMenuId = null } }
         legalDocument?.let { LegalDialog(it, { legalDocument = null }, { key -> legalDocument = key }) }
+        NearbySession(nearby, state.places, state.fetchedAt)
+        if (nearbySettings) NearbySettings(nearbyEnabled, nearbyStatus, nearby::enable) { nearbySettings = false }
         Scaffold(
             modifier = Modifier.semantics { testTagsAsResourceId = true },
             snackbarHost = { SnackbarHost(snack) },
@@ -224,8 +230,13 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                 }
                 when (tab) {
                     "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen({ navigate(it, "all") }, queueLink) }
-                    "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh)
-                    "account" -> AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") }, { legalDocument = "privacy" }, { navigate("contact", "all") })
+                    "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh, { nearbySettings = true })
+                    "account" -> Column(Modifier.fillMaxSize()) {
+                        TextButton(onClick = { nearbySettings = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("nearby-settings")) {
+                            Icon(Icons.Default.NearMe, null); Spacer(Modifier.width(8.dp)); Text("Paradas cercanas · " + if (nearbyEnabled) "Activadas" else "Configurar")
+                        }
+                        Box(Modifier.weight(1f)) { AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") }, { legalDocument = "privacy" }, { navigate("contact", "all") }) }
+                    }
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState, { input -> navigate("explore", "all"); query = input })
                     "contact" -> PlatformContactScreen({ legalDocument = it })

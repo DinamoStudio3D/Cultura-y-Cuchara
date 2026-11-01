@@ -49,7 +49,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (String) -> Unit,
     onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit,
-    list: () -> Unit, retry: () -> Unit) {
+    list: () -> Unit, retry: () -> Unit, nearbySettings: () -> Unit) {
     val context = LocalContext.current
     var savedOnly by rememberSaveable { mutableStateOf(false) }
     var selection by rememberSaveable { mutableStateOf<String?>(null) }
@@ -277,6 +277,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
             }
             FilterChip(selected = savedOnly, onClick = { following = false; savedOnly = !savedOnly; filtersOpen = false }, label = { Text("Mis favoritos") }, leadingIcon = { Icon(Icons.Default.Favorite, null, Modifier.size(16.dp)) })
             HorizontalDivider()
+            TextButton(onClick = { filtersOpen = false; nearbySettings() }) { Icon(Icons.Default.NearMe, null); Spacer(Modifier.width(10.dp)); Text("Avisos de paradas cercanas") }
             TextButton(onClick = { following = false; controller.focus(points); filtersOpen = false }) { Icon(Icons.Default.CenterFocusStrong, null); Spacer(Modifier.width(10.dp)); Text("Ver todas las paradas filtradas") }
             TextButton(onClick = { following = false; controller.city(); filtersOpen = false }) { Icon(Icons.Default.LocationCity, null); Spacer(Modifier.width(10.dp)); Text("Volver al centro de Loja") }
             TextButton(onClick = { retry(); controller.reload(); filtersOpen = false }) { Icon(Icons.Default.Refresh, null); Spacer(Modifier.width(10.dp)); Text("Actualizar mapa y paradas") }
