@@ -1,5 +1,10 @@
 ## 0.29.0 — Vista previa en vivo de postales y portada sincronizada
 
+## 0.36.0 — Logos coherentes en el mapa y las fichas
+
+La URL retirada de Codeproim se resuelve al mismo PNG aprobado incluido con la app. Una única política se usa en el cargador de marcadores, miniatura del mapa, tarjetas, galerías, cantones, sugerencias y marcas aliadas. Evita descargar la imagen de error que Imgur puede entregar con respuesta correcta y reutilizarla como logo. Reconoce el enlace retirado con parámetros y la referencia local del mismo archivo; las URLs nuevas y otros logos conservan su configuración. No sustituye por nombre del negocio ni altera beneficios, planes o selección de iconos. Los logos sustituidos se muestran completos. Pruebas de alias, referencias seguras, logos diferentes y permisos del marcador; capturas del registro real de Codeproim y de su marcador filtrado para revisión visual. Sin cambios en datos, web o main.
+
+
 ## 0.35.0 — Enlaces de menús QR en la app
 
 Los enlaces públicos `menu-digital.html?id=...` se pueden recibir por Compartir → VisitaLoja, por Abrir enlace en Todas las secciones y mediante un intent HTTPS cuando Android elige la app. Abren directamente el visor nativo completo, sin pasar por una ficha ni ejecutar el destino del QR. Solo se usa el identificador validado para consultar `qrCodes`; se ignoran imágenes, títulos y destinos añadidos al enlace. Se rechazan IDs duplicados, rutas administrativas, enlaces externos y QRs de visita. El documento debe ser un menú válido, activo y confirmado por servidor; los errores y retiradas eliminan el menú anterior. Los extras conservan las fechas y beneficios de la web.

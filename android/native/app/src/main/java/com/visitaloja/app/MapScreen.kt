@@ -247,8 +247,8 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                     overlap.forEach { place -> FilterChip(selected = selected.id == place.id, onClick = { selection = place.id }, label = { Text(place.title, maxLines = 1) }) }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    AsyncImage(model = selected.imageUrl, contentDescription = null, placeholder = painterResource(R.drawable.visitaloja_logo),
-                        error = painterResource(R.drawable.visitaloja_logo), contentScale = ContentScale.Crop, modifier = Modifier.size(if (compact) 40.dp else 48.dp).clip(RoundedCornerShape(10.dp)))
+                    AsyncImage(model = BrandImagePolicy.model(selected.imageUrl), contentDescription = null, placeholder = painterResource(R.drawable.visitaloja_logo),
+                        error = painterResource(R.drawable.visitaloja_logo), contentScale = if (BrandImagePolicy.localLogo(selected.imageUrl) != null) ContentScale.Fit else ContentScale.Crop, modifier = Modifier.size(if (compact) 40.dp else 48.dp).clip(RoundedCornerShape(10.dp)))
                     Column(Modifier.weight(1f).padding(start = 10.dp)) {
                         Text(selected.title, fontSize = 15.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text(selected.categoryLabel, fontSize = 11.sp, color = MaterialTheme.colorScheme.primary)

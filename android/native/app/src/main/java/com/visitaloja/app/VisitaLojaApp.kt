@@ -452,9 +452,10 @@ private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String,
 
 @Composable
 private fun PlaceImage(place: Place, modifier: Modifier = Modifier) {
-    when (place.imageUrl) {
-        "https://i.imgur.com/CpCnMpw.png" -> Image(painterResource(R.drawable.codeproim_logo), place.title, modifier.background(Pale), contentScale = ContentScale.Fit)
-        null -> Image(painterResource(R.drawable.visitaloja_logo), place.title, modifier.background(Pale).padding(28.dp), contentScale = ContentScale.Fit)
+    val local = BrandImagePolicy.localLogo(place.imageUrl)
+    when {
+        local != null -> Image(painterResource(local), place.title, modifier.background(Pale), contentScale = ContentScale.Fit)
+        place.imageUrl == null -> Image(painterResource(R.drawable.visitaloja_logo), place.title, modifier.background(Pale).padding(28.dp), contentScale = ContentScale.Fit)
         else -> AsyncImage(model = place.imageUrl, contentDescription = place.title, modifier = modifier.background(Pale), contentScale = ContentScale.Crop, error = painterResource(R.drawable.visitaloja_logo), placeholder = painterResource(R.drawable.visitaloja_logo))
     }
 }

@@ -60,7 +60,7 @@ private fun SupporterCard(item: Supporter, config: SupportConfig, modifier: Modi
     var failed by remember(item.logo) { mutableStateOf(false) }
     val body: @Composable () -> Unit = {
         Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            if (item.logo != null && !failed) AsyncImage(item.logo,null,Modifier.fillMaxWidth().height(92.dp),contentScale=ContentScale.Fit,onError={failed=true})
+            if (item.logo != null && !failed) AsyncImage(BrandImagePolicy.model(item.logo),null,Modifier.fillMaxWidth().height(92.dp),contentScale=ContentScale.Fit,onError={failed=true})
             if (item.logo == null || failed || config.showNames) Text(item.name,fontWeight=FontWeight.Bold,fontSize=14.sp,textAlign=androidx.compose.ui.text.style.TextAlign.Center)
             if (config.clickable) Text(if (item.institution) "Conocer institución →" else "Conocer negocio →",fontSize=11.sp,color=if(item.institution)Color(0xFFC3E3FF) else MaterialTheme.colorScheme.primary)
         }

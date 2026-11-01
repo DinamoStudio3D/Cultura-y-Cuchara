@@ -192,7 +192,7 @@ class NativeMapController(private val context: Context, private val initialCamer
             scope.launch {
                 val image = downloads.withPermit {
                     runCatching {
-                        val result = context.imageLoader.execute(ImageRequest.Builder(context).data(url).size(160).allowHardware(false).build())
+                        val result = context.imageLoader.execute(ImageRequest.Builder(context).data(BrandImagePolicy.model(url)).size(160).allowHardware(false).build())
                         (result as? SuccessResult)?.drawable?.toBitmap()
                     }.getOrNull()
                 }

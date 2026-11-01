@@ -90,7 +90,7 @@ internal fun GuideScreen(state:PlacesState,refresh:()->Unit,open:(Place)->Unit,m
         if(interest!=null&&fresh) {
             if(selected!=null)item(key="suggestion-${selected.id}") {
                 Card(Modifier.fillMaxWidth().testTag("guide-result"),colors=CardDefaults.cardColors(containerColor=Color.White),shape=RoundedCornerShape(22.dp)) {
-                    PlacePolicy.safeImage(selected.imageUrl)?.let{url->AsyncImage(model=url,contentDescription=null,modifier=Modifier.fillMaxWidth().height(170.dp),contentScale=ContentScale.Fit)}
+                    PlacePolicy.safeImage(selected.imageUrl)?.let{url->AsyncImage(model=BrandImagePolicy.model(url),contentDescription=null,modifier=Modifier.fillMaxWidth().height(170.dp),contentScale=ContentScale.Fit)}
                     Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
                         Text("TU PRÓXIMA PARADA",color=MaterialTheme.colorScheme.primary,style=MaterialTheme.typography.labelLarge)
                         Text(selected.title,style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Bold,modifier=Modifier.testTag("guide-place-title"))

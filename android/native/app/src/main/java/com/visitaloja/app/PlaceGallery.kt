@@ -40,8 +40,8 @@ fun PlaceGallery(place: Place, heading: String? = null) {
         Text(heading ?: "Conoce el lugar · ${photos.size} ${if (photos.size == 1) "foto" else "fotos"}", style = MaterialTheme.typography.titleMedium)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             itemsIndexed(photos, key = { _, photo -> photo.url }) { index, photo ->
-                AsyncImage(model = if (photo.url == "https://i.imgur.com/CpCnMpw.png") R.drawable.codeproim_logo else photo.url, contentDescription = "Abrir fotografía ${index + 1} de ${place.title}",
-                    contentScale = ContentScale.Crop, modifier = Modifier.size(112.dp, 88.dp).clip(RoundedCornerShape(14.dp)).background(MaterialTheme.colorScheme.surfaceVariant).clickable { selected = index },
+                AsyncImage(model = BrandImagePolicy.model(photo.url), contentDescription = "Abrir fotografía ${index + 1} de ${place.title}",
+                    contentScale = if (BrandImagePolicy.localLogo(photo.url) != null) ContentScale.Fit else ContentScale.Crop, modifier = Modifier.size(112.dp, 88.dp).clip(RoundedCornerShape(14.dp)).background(MaterialTheme.colorScheme.surfaceVariant).clickable { selected = index },
                     placeholder = painterResource(R.drawable.visitaloja_logo), error = painterResource(R.drawable.visitaloja_logo))
             }
         }
@@ -58,7 +58,7 @@ fun PlaceGallery(place: Place, heading: String? = null) {
                         IconButton(onClick = { selected = null }) { Icon(Icons.Default.Close, "Cerrar fotografías", tint = Color.White) }
                     }
                     HorizontalPager(state = pager, modifier = Modifier.weight(1f).fillMaxWidth()) { index ->
-                        AsyncImage(model = if (photos[index].url == "https://i.imgur.com/CpCnMpw.png") R.drawable.codeproim_logo else photos[index].url, contentDescription = photos[index].caption.ifBlank { "Fotografía de ${place.title}" },
+                        AsyncImage(model = BrandImagePolicy.model(photos[index].url), contentDescription = photos[index].caption.ifBlank { "Fotografía de ${place.title}" },
                             contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize(), error = painterResource(R.drawable.visitaloja_logo), placeholder = painterResource(R.drawable.visitaloja_logo))
                     }
                     val photo = photos[pager.currentPage]

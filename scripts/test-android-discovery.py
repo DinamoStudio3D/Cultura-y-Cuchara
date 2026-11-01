@@ -670,6 +670,17 @@ try:
         adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity')
         wait(desc='Reproducir audio')
         capture('discovery-player-paused')
+    # Actual Codeproim record: bundled replacement must also reach the map loader.
+    adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/?checkin=HHSL0Cb1u3eFfxGzbfoC','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(desc='Cerrar ficha',seconds=50);capture('discovery-codeproim-place-logo')
+    assert 'codeproim' in ' '.join(n.get('text','') for n in tree().iter('node')).lower()
+    tap(wait(desc='Cerrar ficha'))
+    tap(wait(tag='nav-map'));wait(tag='map-canvas')
+    tap(wait(tag='map-search-bar'));adb('shell','input','text','Codeproim');adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(6)
+    capture('discovery-codeproim-map-logo')
+    cache=json.loads(adb('exec-out','run-as',PKG,'cat','files/published-places-v1.json'))
+    actual=next(p for p in cache['places'] if p['id']=='HHSL0Cb1u3eFfxGzbfoC')
+    (OUT/'brand-logo-summary.json').write_text(json.dumps({'actual_codeproim_record_opened':True,'filtered_map_captured':True,'configured_logo':actual.get('mapBrand',{}).get('logoUrl'),'visual_logo_review_required':True,'remote_writes':False},indent=2))
     (OUT/'discovery-summary.json').write_text(json.dumps({'passed':True,'screens':checks},indent=2))
 except BaseException:
     try:
