@@ -54,6 +54,7 @@ class NativeMapController(private val context: Context, private val initialCamer
     private val logoRetryAt = mutableMapOf<String, Long>()
     private val logoImages = mutableMapOf<String, Bitmap>()
     private val installedIcons = mutableSetOf<String>()
+    private var logoDiagnostic: Job? = null
     private var places = emptyList<Place>()
     val view: MapView
     var map: MapLibreMap? = null
@@ -177,7 +178,22 @@ class NativeMapController(private val context: Context, private val initialCamer
             if (installedIcons.add(key)) target.addImage(key, renderer.render(place, logoImages[key]))
         }
     }
+    private fun traceLogo() {
+        if(context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE == 0)return
+        val place=places.singleOrNull()?.takeIf { BrandImagePolicy.localLogo(MapPolicy.logoUrl(it)) != null }?:return
+        logoDiagnostic?.cancel()
+        logoDiagnostic=scope.launch {
+            delay(1500)
+            val current=map?:return@launch;val target=style?:return@launch
+            if(!alive||places.singleOrNull()?.id!=place.id)return@launch
+            val key=MapPolicy.markerKey(place)
+            val source=target.getSourceAs<GeoJsonSource>(PLACES)?.querySourceFeatures(null).orEmpty()
+            val pins=current.queryRenderedFeatures(RectF(0f,0f,view.width.toFloat(),view.height.toFloat()),PINS)
+            android.util.Log.i("VisitaLojaLogos",JSONObject().put("place",place.id).put("sourceCount",source.size).put("sourceKeys",org.json.JSONArray(source.map { runCatching { JSONObject(it.toJson()).optJSONObject("properties")?.optString("pin") }.getOrNull() })).put("expectedKey",key).put("pinCount",pins.size).put("imagePresent",target.getImage(key)!=null).put("logoLoaded",logoImages.containsKey(key)).put("inView",current.projection.visibleRegion.latLngBounds.contains(LatLng(place.latitude!!,place.longitude!!))).toString())
+        }
+    }
     private fun loadVisibleLogos() {
+        traceLogo()
         val current = map ?: return
         if (!alive || style == null) return
         val bounds = current.projection.visibleRegion.latLngBounds
