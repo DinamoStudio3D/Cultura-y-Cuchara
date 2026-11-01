@@ -400,6 +400,31 @@ try:
     assert local_notice is not None,'Android did not show the local notification'
     tap(local_notice);wait(tag='push-screen');capture('discovery-notification-open')
     tap(wait(desc='Volver a Inicio'))
+    # Chabaquito reuses actual public places; no chat submission, GPS or account writes.
+    def guide_control(tag):
+        for _ in range(14):
+            node=find(tree(),tag=tag)
+            if node is not None:
+                x1,y1,x2,y2=map(int,re.findall(r'\d+',node.get('bounds')))
+                if y2-y1>=64 and y1>=180 and y2<=1250:return node
+            adb('shell','input','swipe','300','1130','300','760','300');time.sleep(0.4)
+        raise AssertionError('Guide control not reachable: '+tag)
+    home_card('open-guide');wait(tag='guide-screen');capture('discovery-guide-choices')
+    coffee=guide_control('guide-interest-cafe')
+    for _ in range(8):
+        if coffee.get('enabled')=='true':break
+        time.sleep(1);coffee=wait(tag='guide-interest-cafe')
+    assert coffee.get('enabled')=='true','Guide requires a confirmed public directory'
+    tap(coffee)
+    open_place=guide_control('guide-open-place');capture('discovery-guide-suggestion')
+    tap(open_place);wait(desc='Cerrar ficha');capture('discovery-guide-place')
+    tap(wait(desc='Cerrar ficha'));wait(tag='guide-screen')
+    tap(guide_control('guide-route'));wait(tag='itinerary-screen');wait(tag='itinerary-planner')
+    tap(wait(desc='Volver a Inicio'))
+    home_card('open-guide');wait(tag='guide-screen')
+    tap(guide_control('guide-missions'));wait(tag='missions-screen')
+    tap(wait(desc='Volver a Inicio'))
+    (OUT/'guide-summary.json').write_text(json.dumps({'guided_choices_verified':True,'public_suggestion_opened_in_native_place':True,'route_access_verified':True,'mission_access_verified':True,'gps_requested':False,'remote_writes':False},indent=2))
     home_card('open-itinerary')
     wait(tag='itinerary-screen');capture('discovery-itinerary')
     assert 'Tu próxima aventura empieza aquí' in ' '.join(n.get('text','') for n in tree().iter('node'))

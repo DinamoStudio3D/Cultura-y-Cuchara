@@ -1,5 +1,18 @@
 ## 0.29.0 — Vista previa en vivo de postales y portada sincronizada
 
+## 0.34.0 — Habla con Chabaquito
+
+Inicio y Todas las secciones incorporan al mismo compañero de `js/chabaquito-guide.js`, con la imagen original, opciones de café/comida/paseo/hospedaje y sugerencias basadas en el directorio público. Usa los criterios de la web y prioriza horarios verificables sin asumir atención cuando no se conoce. Permite ver la ficha nativa, elegir otra opción, cambiar de idea y acceder a misiones o Mi recorrido. Se recorren las alternativas antes de repetir; con una sola opción se informa claramente.
+
+Solo propone paradas publicadas desde un directorio confirmado recientemente. Ante retirada, cambio de categoría, error, caché o vencimiento, deja de presentar la elección como vigente y ofrece actualizar. No requiere coordenadas ni permiso GPS y no escribe historial, favoritos, sellos o recompensas. No añade chat remoto, cuentas, servicios ni IA generativa. Pruebas unitarias del filtrado, horarios, rotación y retirada, y recorrido público en emulador sin cuentas ni escrituras.
+
+## 0.33.0 — Planificador de recorridos
+
+Mi recorrido permite preparar una propuesta con tiempo, categoría, caminar/vehículo, intensidad y horario verificable al llegar. Reutiliza paradas publicadas con coordenadas válidas; el origen es el centro de Loja o una ubicación opcional tomada solo en primer plano. Las distancias geodésicas y los tiempos son orientativos y no sustituyen un trayecto de carretera. El presupuesto incluye desplazamientos y visitas, incluso la primera parada. Guardar exige directorio confirmado y propuesta vigente.
+
+El plan local se guarda separado por cuenta y de los favoritos; permite ordenar, iniciar, avanzar, pausar, compartir y eliminar sin sellos ni recompensas. Se guardan identificadores y transporte, sin coordenadas del usuario. La caché o un fallo de carga no borran el recorrido. Validación: 239 pruebas unitarias, lint y recorrido completo de emulador aprobados. GPS físico y flujos privados siguen pendientes de prueba manual.
+
+
 El editor de postales mantiene una previsualización fija sobre los controles, incluso al desplazarse o abrir el teclado. El render ligero conserva el mismo lienzo lógico, encuadre, formato, texto, filtros, giro y marco del PNG final; usa hasta 720 px para previsualizar y conserva las dimensiones completas al revisar, guardar o compartir. Los cambios se procesan de forma secuencial con confluencia: mientras se dibuja una imagen se conserva el último ajuste pendiente. No se borra la imagen anterior al mover un control; se indica si está actualizando y se ocultan fotos retiradas o reemplazadas. Tocar la previsualización abre la revisión grande. Compartir exige el render completo correspondiente a los ajustes actuales.
 
 La portada lee título, descripción, antetítulo, buscador, botones de mapa/ruta y textos ES/EN de settings/main y homepageContent. El buscador de Inicio lleva el texto al listado de paradas. El carrusel usa exclusivamente las fotos activas de Portada principal del mismo gestor web: orden, título, autor y punto de enfoque móvil/escritorio. Respeta intervalo, altura móvil, brillo y esquinas, con controles anterior/siguiente, pausa y vista completa. El avance se limita a la portada visible, primer plano, datos confirmados y preferencias de movimiento/accesibilidad; la navegación manual pausa el avance. Una biblioteca inicializada vacía no resucita la imagen fija anterior.

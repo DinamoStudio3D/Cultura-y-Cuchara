@@ -203,7 +203,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") "Volver a Secciones" else if (tab == "canton") "Volver a Cantones" else "Volver a Inicio", back) { navigate("sections", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && audioState.key != WelcomeMusicPolicy.KEY && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("guide", "contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -241,6 +241,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                         else if (route != null) navigate(route, "all")
                         else PushPolicy.link(link)?.let { safe -> try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.visitaloja.com$safe"))) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay un navegador disponible.", Toast.LENGTH_LONG).show() } }
                     }
+                    "guide" -> GuideScreen(state, model::refresh, { selectedId = it.id }, { navigate("missions", "all") }, { navigate("itinerary", "all") })
                     "itinerary" -> ItineraryScreen(state, accountState.uid, accountState.uid == null || (accountState.favouritesReady && accountState.favouritesError == null), { selectedId = it.id }, { navigate("explore", "all") }, model::refresh)
                     "missions" -> MissionsScreen(missionsState, accountState.uid, guestState, missions, { navigate("account", "all") }, { navigate("explore", "all") }, { selectedId = it.id })
                     "videos" -> VideosScreen(videoState, videos::refresh, audioPlayer::pause)
@@ -384,6 +385,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
                 }
             }
         }
+        item(key = "guide") { GuideShortcut(english) { openDiscovery("guide") } }
         item(key = "discovery") { DiscoveryHome(discovery, videos, openDiscovery) }
         item(key = "supporters") { HomeSupporters(supporters, state, detail, { openDiscovery("supporters") }, { openDiscovery("mesa") }) }
         item(key = "cantons") { CantonsShortcut(openCantons) }

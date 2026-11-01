@@ -10,10 +10,10 @@ class SectionsPolicyTest {
         assertTrue(SectionsPolicy.filter("sellos videos", "Todas").isEmpty())
     }
     @Test fun filterCombinesGroupAndSearchWithoutFallingBackToOtherGroups() {
-        assertEquals(4, SectionsPolicy.filter("", "Tu aventura").size)
+        assertEquals(5, SectionsPolicy.filter("", "Tu aventura").size)
         assertTrue(SectionsPolicy.filter("videos", "Tu aventura").isEmpty())
-        assertEquals(22, SectionsPolicy.filter("   ", "Todas").size)
-        assertEquals(22, SectionsPolicy.sections.map { it.route }.distinct().size)
+        assertEquals(23, SectionsPolicy.filter("   ", "Todas").size)
+        assertEquals(23, SectionsPolicy.sections.map { it.route }.distinct().size)
     }
     @Test fun backReturnsToSectionsAndPreservesCantonHierarchy() {
         assertEquals("sections", SectionsPolicy.parent("shop", true))
