@@ -69,6 +69,9 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.ui.ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel(), noticeRequest: Int = 0, linkRequest: NativeLinkRequest? = null) {
+    val merchantBusiness: MerchantBusinessViewModel = viewModel()
+    val merchantBusinessState by merchantBusiness.state.collectAsStateWithLifecycle()
+    var merchantBusinessOpen by remember { mutableStateOf(false) }
     val merchantScanner: MerchantScanViewModel = viewModel()
     val merchantScanState by merchantScanner.state.collectAsStateWithLifecycle()
     var merchantScanOpen by remember { mutableStateOf(false) }
@@ -120,6 +123,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val guestState by model.state.collectAsStateWithLifecycle()
     LaunchedEffect(guestState.places, guestState.loading, guestState.offline, guestState.error) { audioPlayer.reconcilePlaces(guestState) }
     val accountState by account.state.collectAsStateWithLifecycle()
+    LaunchedEffect(accountState.uid, merchantBusinessOpen) { merchantBusiness.bind(if (merchantBusinessOpen) accountState.uid else null) }
     LaunchedEffect(accountState.uid, merchantScanOpen) { merchantScanner.bind(if (merchantScanOpen) accountState.uid else null) }
     LaunchedEffect(accountState.uid) { visits.bind(accountState.uid); claims.bind(accountState.uid) }
     val snack = remember { SnackbarHostState() }
@@ -208,6 +212,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null && directMenuId == null)
         directMenuId?.let { DirectMenuEntry(it) { directMenuId = null } }
         legalDocument?.let { LegalDialog(it, { legalDocument = null }, { key -> legalDocument = key }) }
+        if (merchantBusinessOpen) MerchantBusinessScreen(if (merchantBusinessState.uid == accountState.uid) merchantBusinessState else MerchantBusinessState(uid = accountState.uid, busy = true), merchantBusiness, { merchantBusinessOpen = false; merchantScanOpen = true }) { merchantBusinessOpen = false }
         if (merchantScanOpen) MerchantScanScreen(if (merchantScanState.uid == accountState.uid) merchantScanState else MerchantScanState(uid = accountState.uid, busy = true), merchantScanner) { merchantScanOpen = false }
         NearbySession(nearby, state.places, state.fetchedAt)
         if (nearbySettings) NearbySettings(nearbyEnabled, nearbyStatus, nearby::enable) { nearbySettings = false }
@@ -239,6 +244,9 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "account" -> Column(Modifier.fillMaxSize()) {
                         TextButton(onClick = { nearbySettings = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("nearby-settings")) {
                             Icon(Icons.Default.NearMe, null); Spacer(Modifier.width(8.dp)); Text("Paradas cercanas · " + if (nearbyEnabled) "Activadas" else "Configurar")
+                        }
+                        TextButton(onClick = { merchantBusinessOpen = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("merchant-open-business")) {
+                            Icon(Icons.Default.Storefront, null); Spacer(Modifier.width(8.dp)); Text("Mi negocio · Clientes, visitas y premios")
                         }
                         TextButton(onClick = { merchantScanOpen = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("merchant-open-scanner")) {
                             Icon(Icons.Default.QrCodeScanner, null); Spacer(Modifier.width(8.dp)); Text("Soy encargado · Escanear y sellar")
