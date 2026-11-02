@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import kotlinx.coroutines.CancellationException
@@ -65,8 +66,11 @@ class MerchantScanViewModel : ViewModel() {
             try {
                 val access = db.collection("missionRewardMerchants").document(uid).get(Source.SERVER).await()
                 check(access.exists() && access.getBoolean("active") != false && (access.get("placeIds") as? List<*>)?.contains(place.id) == true) { "Tu cuenta ya no tiene acceso a esta parada." }
-                val direct = db.collection("visitCodes").document(MerchantScanPolicy.requestId(place.id, code, System.currentTimeMillis())).get(Source.SERVER).await()
-                val doc: DocumentSnapshot? = if (direct.exists()) direct else db.collection("visitCodes").whereEqualTo("code", code).whereEqualTo("placeId", place.id).limit(25).get(Source.SERVER).await().documents
+                // Existing rules can deny a get on a missing document; the scoped query
+                // still safely returns no matches or finds a code spanning midnight.
+                val direct = try { db.collection("visitCodes").document(MerchantScanPolicy.requestId(place.id, code, System.currentTimeMillis())).get(Source.SERVER).await() }
+                    catch (e: FirebaseFirestoreException) { if (e.code != FirebaseFirestoreException.Code.PERMISSION_DENIED) throw e else null }
+                val doc: DocumentSnapshot? = if (direct?.exists() == true) direct else db.collection("visitCodes").whereEqualTo("code", code).whereEqualTo("placeId", place.id).limit(25).get(Source.SERVER).await().documents
                     .filter { it.getString("status") == "pending" && (it.getTimestamp("expiresAt")?.toDate()?.time ?: 0) > System.currentTimeMillis() }.maxByOrNull { it.getTimestamp("createdAt")?.toDate()?.time ?: 0 }
                 check(doc != null && doc.getString("code") == code && doc.getString("placeId") == place.id) { "No encontramos un código para la parada seleccionada." }
                 if (!current(uid, epoch)) return@launch
