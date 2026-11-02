@@ -6,7 +6,7 @@ import java.time.Instant
 import java.time.ZoneId
 
 object MerchantScanPolicy {
-    const val ENDPOINT = "https://visitaloja-chabaquito-preview.sukogames1996.workers.dev/merchant-confirm-visit"
+    const val ENDPOINT = "https://visitaloja-chabaquito.sukogames1996.workers.dev/merchant-confirm-visit"
     fun code(raw: String?): String? {
         val value = raw?.trim()?.takeIf { it.length <= 64 } ?: return null
         return value.removePrefix("VISITALOJA:").takeIf { it.matches(Regex("[0-9]{6}")) }
