@@ -10,3 +10,7 @@ test('propietario solo gestiona su parada',()=>{assert.equal(assertAssigned({rol
 test('ediciones incompatibles con sellos se rechazan',()=>{assert.throws(()=>assertSafeEdit(sample,{...sample,targetVisits:20},{hasProgress:true}),/sellos/)});
 test('cupo no puede bajar de premios emitidos',()=>{assert.throws(()=>assertSafeEdit(sample,{...sample,stock:1},{claimedCount:2}),/cupo/)});
 test('se permiten ajustes sin progreso',()=>{assert.equal(assertSafeEdit(sample,{...sample,targetVisits:20},{claimedCount:0}),true)});
+
+test('rechaza campos numéricos vacíos y fraccionarios',()=>{assert.throws(()=>normalizeLoyalty({...sample,targetVisits:''}),/meta/);assert.throws(()=>normalizeLoyalty({...sample,maxVisitsPerDay:'1.5'}),/límite/);assert.throws(()=>normalizeLoyalty({...sample,rewardValidityDays:null}),/validez/)});
+test('no acepta identidades o roles sin asignación',()=>{assert.throws(()=>assertAssigned({role:'merchant',assignedPlaceIds:[],placeId:'expreso-al-sur'}),/autorización/);assert.throws(()=>assertAssigned({role:'visitor',assignedPlaceIds:['expreso-al-sur'],placeId:'expreso-al-sur'}),/autorización/)});
+test('protege condiciones de premios emitidos',()=>{assert.throws(()=>assertSafeEdit(sample,{...sample,rewardTitle:'Otro premio'},{hasProgress:true}),/sellos/)});
