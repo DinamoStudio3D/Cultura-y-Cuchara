@@ -37,3 +37,14 @@ test('admin preview does not expose any direct Firestore mutation operation',()=
   assert.doesNotMatch(html,new RegExp('\\.'+operation+'\\s*\\('),'Forbidden write operation: '+operation);
  }
 });
+
+test('JSON import and export are local-only, schema checked, and never publish',()=>{
+ assert.match(html,/id="exportDraft"/);
+ assert.match(html,/id="importDraft"/);
+ assert.match(html,/function exportLocalDraft\(\)/);
+ assert.match(html,/async function importLocalDraft\(event\)/);
+ assert.match(html,/data\.schemaVersion!==1/);
+ assert.match(html,/data\.status!=='draft'/);
+ assert.match(html,/file\.size>16384/);
+ assert.match(html,/No se ha guardado ni publicado en Firebase/);
+});
