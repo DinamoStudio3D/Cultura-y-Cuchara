@@ -1,0 +1,28 @@
+name: Rewards center policy tests
+on:
+  push:
+    branches:
+      - feature/rewards-center-web-v1
+    paths:
+      - 'functions/rewards-*.js'
+      - 'functions/rewards-center-*.js'
+      - 'scripts/test-rewards-*.cjs'
+      - '.github/workflows/rewards-center-tests.yml'
+  workflow_dispatch:
+jobs:
+  policy-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate JavaScript syntax
+        run: |
+          node --check functions/rewards-center-access.js
+          node --check functions/rewards-center-policy.js
+          node --check functions/rewards-lifecycle-policy.js
+      - name: Run rewards policy tests
+        run: node --test scripts/test-rewards-center-access.cjs scripts/test-rewards-center-policy.cjs scripts/test-rewards-lifecycle-policy.cjs
