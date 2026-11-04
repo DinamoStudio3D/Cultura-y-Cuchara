@@ -38,3 +38,12 @@ test('owner reward drafts remain isolated and restricted to verified owner or ad
  assert.match(block,/request\.resource\.data\.createdAt == resource\.data\.createdAt/);
  assert.doesNotMatch(block,/isAssignedVisitMerchant/);
 });
+
+test('drafts require server timestamps and bounded stock',()=>{
+ const block=matchBlock('rewardProgramDrafts');
+ assert.match(block,/request\.resource\.data\.createdAt is timestamp/);
+ assert.match(block,/request\.resource\.data\.updatedAt is timestamp/);
+ assert.match(block,/request\.resource\.data\.updatedAt == request\.time/);
+ assert.match(block,/request\.resource\.data\.stock <= 1000000/);
+ assert.match(block,/request\.resource\.data\.createdAt == request\.time/);
+});
