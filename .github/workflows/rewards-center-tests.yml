@@ -26,5 +26,6 @@ jobs:
           node --check functions/rewards-center-access.js
           node --check functions/rewards-center-policy.js
           node --check functions/rewards-lifecycle-policy.js
+          node --check functions/rewards-draft-schema.js
       - name: Run rewards policy tests
-        run: node --test scripts/test-rewards-center-access.cjs scripts/test-rewards-center-policy.cjs scripts/test-rewards-lifecycle-policy.cjs scripts/test-rewards-firestore-rules.cjs scripts/test-rewards-admin-preview.cjs
+        run: node --test scripts/test-rewards-center-access.cjs scripts/test-rewards-center-policy.cjs scripts/test-rewards-lifecycle-policy.cjs scripts/test-rewards-firestore-rules.cjs scripts/test-rewards-admin-preview.cjs scripts/test-rewards-draft-schema.cjs
