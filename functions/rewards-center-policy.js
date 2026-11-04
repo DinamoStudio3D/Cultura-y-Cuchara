@@ -19,7 +19,7 @@ function normalizeLoyalty(input){
 }
 function assertAssigned({role,assignedPlaceIds,placeId}){
  if(role==='admin')return true;
- if(role!=='merchant'||!Array.isArray(assignedPlaceIds)||!assignedPlaceIds.includes(placeId))
+ if(role!=='owner'||!Array.isArray(assignedPlaceIds)||!assignedPlaceIds.includes(placeId))
   fail('No tienes autorización para configurar esta parada.');
  return true;
 }
