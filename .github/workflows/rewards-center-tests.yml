@@ -8,6 +8,7 @@ on:
       - 'functions/rewards-center-*.js'
       - 'scripts/test-rewards-*.cjs'
       - 'firestore.rules'
+      - 'rewards-center-admin.html'
       - '.github/workflows/rewards-center-tests.yml'
   workflow_dispatch:
 jobs:
@@ -26,4 +27,4 @@ jobs:
           node --check functions/rewards-center-policy.js
           node --check functions/rewards-lifecycle-policy.js
       - name: Run rewards policy tests
-        run: node --test scripts/test-rewards-center-access.cjs scripts/test-rewards-center-policy.cjs scripts/test-rewards-lifecycle-policy.cjs scripts/test-rewards-firestore-rules.cjs
+        run: node --test scripts/test-rewards-center-access.cjs scripts/test-rewards-center-policy.cjs scripts/test-rewards-lifecycle-policy.cjs scripts/test-rewards-firestore-rules.cjs scripts/test-rewards-admin-preview.cjs
