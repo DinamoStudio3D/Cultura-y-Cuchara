@@ -48,3 +48,9 @@ test('JSON import and export are local-only, schema checked, and never publish',
  assert.match(html,/file\.size>16384/);
  assert.match(html,/No se ha guardado ni publicado en Firebase/);
 });
+
+test('draft JSON stock limit matches Firestore and validator',()=>{
+ assert.match(html,/id="draftStock"[^>]*max="1000000"/);
+ assert.match(html,/stock>1000000/);
+ assert.match(html,/data\.stock>1000000/);
+});
