@@ -28,3 +28,13 @@ test('passport milestone rules must not be enabled without explicit authorizatio
  const block=matchBlock('loyaltyPrograms');
  assert.doesNotMatch(block,/hasBusinessOwnerAccess\(placeId\)/);
 });
+
+test('owner reward drafts remain isolated and restricted to verified owner or admin',()=>{
+ const block=matchBlock('rewardProgramDrafts');
+ assert.match(block,/request\.auth\.uid == uid/);
+ assert.match(block,/isViveLojaAdmin\(\) \|\| hasBusinessOwnerAccess\(placeId\)/);
+ assert.match(block,/request\.resource\.data\.status == 'draft'/);
+ assert.match(block,/allow list: if false/);
+ assert.match(block,/request\.resource\.data\.createdAt == resource\.data\.createdAt/);
+ assert.doesNotMatch(block,/isAssignedVisitMerchant/);
+});
