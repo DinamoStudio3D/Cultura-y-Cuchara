@@ -858,6 +858,55 @@ service cloud.firestore {
       allow create, update, delete: if isViveLojaAdmin();
     }
 
+    // Borradores aislados: nunca modifican programas, sellos ni canjes existentes.
+    // Requiere despliegue explícito de reglas; los cambios en Git no activan permisos.
+    match /rewardProgramDrafts/{placeId}/byUser/{uid} {
+      function canEditDraft() {
+        return request.auth != null
+          && request.auth.uid == uid
+          && (isViveLojaAdmin() || hasBusinessOwnerAccess(placeId));
+      }
+      function validDraft() {
+        return request.resource.data.keys().hasOnly([
+          'placeId', 'authorUid', 'status', 'title', 'description',
+          'targetVisits', 'validityDays', 'stock', 'rewardType',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'placeId', 'authorUid', 'status', 'title', 'description',
+          'targetVisits', 'validityDays', 'stock', 'rewardType',
+          'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.placeId == placeId
+        && request.resource.data.authorUid == uid
+        && request.resource.data.status == 'draft'
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 1000
+        && request.resource.data.targetVisits is int
+        && request.resource.data.targetVisits >= 10
+        && request.resource.data.targetVisits <= 30
+        && request.resource.data.validityDays is int
+        && request.resource.data.validityDays >= 1
+        && request.resource.data.validityDays <= 365
+        && request.resource.data.stock is int
+        && request.resource.data.stock >= 0
+        && request.resource.data.rewardType in ['product', 'discount', 'surprise']
+        && request.resource.data.updatedAt == request.time;
+      }
+      allow get: if canEditDraft();
+      allow list: if false;
+      allow create: if canEditDraft() && validDraft()
+        && request.resource.data.createdAt == request.time;
+      allow update: if canEditDraft() && validDraft()
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.authorUid == resource.data.authorUid
+        && request.resource.data.placeId == resource.data.placeId;
+      allow delete: if canEditDraft() && resource.data.status == 'draft';
+    }
+
     match /businessEntitlements/{placeId} {
       allow read: if isViveLojaAdmin()
         || hasBusinessOwnerAccess(placeId)
