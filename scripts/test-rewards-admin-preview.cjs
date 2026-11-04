@@ -21,3 +21,13 @@ test('drafts are scoped to signed-in user',()=>{
  assert.match(html,/sessionStorage/);
  assert.match(html,/authorizedUid/);
 });
+
+test('refresh restores session drafts only once per admin login',()=>{
+ assert.match(html,/draftsRestored=false/);
+ assert.match(html,/function reset\(\)\{detailRequest\+\+;refreshRequest\+\+;draftsRestored=false/);
+ assert.match(html,/if\(!draftsRestored\)\{restoreLocalDraft\(\);restorePassportDraft\(\);draftsRestored=true\}/);
+});
+test('outdated Firebase responses do not update the panel',()=>{
+ assert.match(html,/requestId=\+\+refreshRequest/);
+ assert.match(html,/requestId!==refreshRequest/);
+});
