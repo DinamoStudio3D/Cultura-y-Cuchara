@@ -3,6 +3,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
+const vm=require('node:vm');
 const html=fs.readFileSync(path.join(__dirname,'../rewards-center-admin.html'),'utf8');
 test('admin preview uses authenticated admin access guard',()=>{
  assert.match(html,/VisitaLojaAdminAccess\.resolve\(user/);
@@ -53,4 +54,10 @@ test('draft JSON stock limit matches Firestore and validator',()=>{
  assert.match(html,/id="draftStock"[^>]*max="1000000"/);
  assert.match(html,/stock>1000000/);
  assert.match(html,/data\.stock>1000000/);
+});
+
+test('inline admin preview JavaScript parses successfully',()=>{
+ const scripts=[...html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g)].map(match=>match[1]).filter(Boolean);
+ assert.equal(scripts.length,1,'Expected one inline application script');
+ assert.doesNotThrow(()=>new vm.Script(scripts[0],{filename:'rewards-center-admin-inline.js'}));
 });
