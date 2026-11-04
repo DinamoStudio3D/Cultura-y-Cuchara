@@ -15,6 +15,8 @@ module.exports=async function handler(req,res){
   if(process.env.REWARDS_CENTER_WRITE_ENABLED!=='true')return res.status(503).json({error:'El editor de recompensas todavía no está habilitado.'});
   const db=firestore();
   const actor=await resolveRewardsActor({db,user,placeId:data.placeId});
+  // Merchant/employee roles need a separately verified owner-only write grant.
+  if(actor.role!=='admin')throw fail(403,'La edición por propietarios todavía no está habilitada.');
   const placeRef=db.collection('locales').doc(data.placeId);
   const programRef=db.collection('loyaltyPrograms').doc(data.placeId);
   // Refuse all edits to existing cards until progress and issuance checks are integrated.
