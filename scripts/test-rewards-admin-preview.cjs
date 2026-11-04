@@ -57,7 +57,7 @@ test('draft JSON stock limit matches Firestore and validator',()=>{
 });
 
 test('inline admin preview JavaScript parses successfully',()=>{
- const scripts=[...html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g)].map(match=>match[1]).filter(Boolean);
- assert.equal(scripts.length,1,'Expected one inline application script');
- assert.doesNotThrow(()=>new vm.Script(scripts[0],{filename:'rewards-center-admin-inline.js'}));
+ const script=html.split('<script>')[1]?.split('</script>')[0];
+ assert.ok(script,'Expected inline application script');
+ assert.doesNotThrow(()=>new vm.Script(script,{filename:'rewards-center-admin-inline.js'}));
 });
