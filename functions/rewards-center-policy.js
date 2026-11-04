@@ -2,7 +2,7 @@
 // Pure policy helpers for the web rewards editor. No database writes or permissions granted.
 const TYPES=new Set(['product','discount','surprise']);
 function fail(message){throw new Error(message)}
-function int(value,min,max,label){const n=Number(value);if(!Number.isSafeInteger(n)||n<min||n>max)fail('Revisa '+label+'.');return n}
+function int(value,min,max,label){const n=typeof value==='number'?value:(typeof value==='string'&&value.trim()!==''?Number(value):NaN);if(!Number.isSafeInteger(n)||n<min||n>max)fail('Revisa '+label+'.');return n}
 function str(value,max,label,required=false){if(typeof value!=='string')fail('Revisa '+label+'.');const v=value.trim();if((required&&!v)||v.length>max)fail('Revisa '+label+'.');return v}
 function normalizeLoyalty(input){
  if(!input||typeof input!=='object'||Array.isArray(input))fail('Configuración inválida.');
