@@ -34,6 +34,6 @@ test('outdated Firebase responses do not update the panel',()=>{
 
 test('admin preview does not expose any direct Firestore mutation operation',()=>{
  for(const operation of ['set','update','delete','add','batch','runTransaction']){
-  assert.doesNotMatch(html,new RegExp('\\\\.'+operation+'\\\\s*\\\\('),'Forbidden write operation: '+operation);
+  assert.doesNotMatch(html,new RegExp('\\.'+operation+'\\s*\\('),'Forbidden write operation: '+operation);
  }
 });
