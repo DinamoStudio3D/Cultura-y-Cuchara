@@ -41,3 +41,13 @@ test('export does not disclose the owner user identifier',()=>{
  assert.match(html,/schemaVersion:1,placeId:data\.placeId,status:'draft'/);
  assert.doesNotMatch(html,/JSON\.stringify\(\{schemaVersion:1,\.\.\.data\}/);
 });
+
+test('editing a draft disables export until saved again',()=>{
+ assert.match(html,/el\('draft'\)\.addEventListener\('input',\(\)=>\{showPreview\(\);el\('export'\)\.disabled=true;/);
+ assert.match(html,/sessionStorage\.setItem\(key\(placeId\)/);
+});
+test('restored browser drafts are validated before enabling export',()=>{
+ assert.match(html,/Number\.isSafeInteger\(value\.stock\)/);
+ assert.match(html,/value\.targetVisits>=10/);
+ assert.match(html,/value\.validityDays<=365/);
+});
