@@ -5,19 +5,16 @@ const deny=(message='No tienes permiso para gestionar esta recompensa.')=>Object
 async function resolveRewardsActor({db,user,placeId}){
  if(!db||!user?.uid||typeof placeId!=='string'||!placeId||placeId.includes('/'))throw deny();
  const uid=user.uid;
- const [adminSnap,merchantSnap,ownerSnap]=await Promise.all([
+ const [adminSnap,ownerSnap]=await Promise.all([
   db.collection('adminUsers').doc(uid).get(),
-  db.collection('missionRewardMerchants').doc(uid).get(),
   db.collection('businessAccess').doc(uid+'_'+placeId).get()
  ]);
  const admin=adminSnap.exists&&adminSnap.data().active===true&&adminSnap.data().role==='admin';
  if(admin||user.admin===true||user.role==='admin')return {uid,role:'admin',placeId};
- const merchant=merchantSnap.exists?merchantSnap.data():null;
  const owner=ownerSnap.exists?ownerSnap.data():null;
- const merchantAssigned=merchant?.active===true&&Array.isArray(merchant.placeIds)&&merchant.placeIds.includes(placeId);
  const ownerAssigned=owner?.active===true&&owner.uid===uid&&owner.placeId===placeId&&owner.role==='owner';
- if(!merchantAssigned&&!ownerAssigned)throw deny();
- return {uid,role:'merchant',placeId};
+ if(!ownerAssigned)throw deny('Solo el propietario verificado puede administrar premios del negocio.');
+ return {uid,role:'owner',placeId};
 }
 async function assertPassportEditor({db,user}){
  if(!db||!user?.uid)throw deny();
