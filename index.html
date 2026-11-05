@@ -310,7 +310,7 @@
 
 
 <link rel="stylesheet" href="css/public-layout.css?v=201">
-<link rel="stylesheet" href="css/banco-portada.css?v=3">
+<link rel="stylesheet" href="css/banco-portada.css?v=4">
 <link rel="stylesheet" href="css/business-cards.css?v=1">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
@@ -1085,8 +1085,19 @@
     </section>
 
     <!-- Map Section -->
-    <section id="banco-de-loja-destacado" class="vl-bank-spotlight" data-vl-surface="dark" aria-labelledby="vl-bank-spotlight-title">
-        <div class="vl-bank-spotlight__card">
+    <section id="banco-de-loja-destacado" class="vl-bank-spotlight" data-vl-surface="dark" aria-labelledby="vl-sponsor-showcase-title">
+        <header class="vl-sponsor-showcase__heading">
+            <p>Propuesta de patrocinio</p>
+            <h2 id="vl-sponsor-showcase-title">Marcas que impulsan Loja</h2>
+            <span>Cuatro espacios de marca en la portada de VisitaLoja.</span>
+        </header>
+        <ul class="vl-sponsor-showcase__slots" aria-label="Espacios de patrocinio">
+            <li><a href="/banco-de-loja.html"><img src="/banco-de-loja.png" alt="" width="256" height="213" loading="lazy"><strong>Banco de Loja</strong><span>Sector financiero <span aria-hidden="true">↗</span></span></a></li>
+            <li><div><span class="vl-sponsor-showcase__number" aria-hidden="true">02</span><strong>Espacio 2</strong><span>Marca por definir</span></div></li>
+            <li><div><span class="vl-sponsor-showcase__number" aria-hidden="true">03</span><strong>Espacio 3</strong><span>Marca por definir</span></div></li>
+            <li><div><span class="vl-sponsor-showcase__number" aria-hidden="true">04</span><strong>Espacio 4</strong><span>Marca por definir</span></div></li>
+        </ul>
+        <article class="vl-bank-spotlight__card" aria-labelledby="vl-bank-spotlight-title">
             <picture class="vl-bank-spotlight__visual">
                 <source media="(max-width: 620px)" srcset="/assets/photos/responsive/atardecer-loja-640.webp">
                 <img class="vl-bank-spotlight__city" src="/assets/photos/responsive/atardecer-loja-1280.webp" alt="" loading="lazy" decoding="async">
@@ -1094,7 +1105,7 @@
             <div class="vl-bank-spotlight__body">
                 <div class="vl-bank-spotlight__copy">
                     <p class="vl-bank-spotlight__eyebrow">Loja, Ecuador <span aria-hidden="true">·</span> Espacio de marca</p>
-                    <h2 id="vl-bank-spotlight-title">Banco de Loja</h2>
+                    <h3 id="vl-bank-spotlight-title">Banco de Loja</h3>
                     <p class="vl-bank-spotlight__description">Encuentra una oficina cerca de ti o consulta los canales oficiales de atención.</p>
                     <a class="vl-bank-spotlight__link" href="/banco-de-loja.html">Conocer Banco de Loja <span aria-hidden="true">↗</span></a>
                 </div>
@@ -1105,7 +1116,7 @@
                 <a href="https://www.bancodeloja.fin.ec/canales-de-atencion"><i class="fa-solid fa-headset" aria-hidden="true"></i> Canales de atención <span aria-hidden="true">↗</span></a>
                 <span class="vl-bank-spotlight__demo">Demostración de patrocinio</span>
             </div>
-        </div>
+        </article>
     </section>
 
     <section id="mapa" data-vl-surface="light" class="py-16 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto reveal">

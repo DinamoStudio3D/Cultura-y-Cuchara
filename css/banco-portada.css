@@ -42,7 +42,7 @@
   font-size: .73rem;
   font-weight: 800;
 }
-.vl-bank-spotlight h2 {
+.vl-bank-spotlight__copy h3 {
   margin: 0;
   color: #fff;
   font-size: clamp(2.15rem, 5.6vw, 4.85rem);
@@ -115,4 +115,76 @@
   .vl-bank-spotlight__body { grid-template-columns: 1fr; gap: 16px; padding: 20px; }
   .vl-bank-spotlight__logo { grid-row: 1; width: 78px; padding: 8px; border-radius: 12px; }
   .vl-bank-spotlight__demo { margin: 0 9px 8px; }
+}
+
+#banco-de-loja-destacado .vl-sponsor-showcase__heading {
+  --vl-text: #102e4c;
+  --vl-muted: #415d77;
+  --vl-accent: #245b88;
+  margin-bottom: 13px;
+  padding: 16px;
+  background: #f4f8fc;
+  border-radius: 14px;
+}
+#banco-de-loja-destacado .vl-sponsor-showcase__heading h2 {
+  margin: 0;
+  color: #102e4c;
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -.04em;
+  font-size: clamp(1.8rem, 4vw, 3.25rem);
+}
+#banco-de-loja-destacado .vl-sponsor-showcase__heading p {
+  margin: 0 0 6px;
+  color: #245b88;
+  font-size: .74rem;
+  letter-spacing: .12em;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+#banco-de-loja-destacado .vl-sponsor-showcase__heading > span {
+  display: inline-block;
+  margin-top: 6px;
+  color: #415d77;
+}
+.vl-sponsor-showcase__slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 13px;
+  padding: 0;
+  list-style: none;
+}
+.vl-sponsor-showcase__slots li { min-width: 0; }
+#banco-de-loja-destacado .vl-sponsor-showcase__slots li > * {
+  --vl-text: #102e4c;
+  --vl-muted: #415d77;
+  --vl-accent: #245b88;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  column-gap: 10px;
+  min-height: 79px;
+  height: 100%;
+  padding: 10px 12px;
+  color: #102e4c;
+  background: #f8fbff;
+  border: 1px dashed #9db6ce;
+  border-radius: 14px;
+  text-decoration: none;
+}
+#banco-de-loja-destacado .vl-sponsor-showcase__slots a { border: 1px solid #4179a8; background: #fff; }
+#banco-de-loja-destacado .vl-sponsor-showcase__slots a:hover { background: #e8f4ff; }
+.vl-sponsor-showcase__slots img, .vl-sponsor-showcase__number {
+  grid-row: span 2;
+  width: 32px;
+  height: 32px;
+}
+.vl-sponsor-showcase__slots img { object-fit: contain; }
+.vl-sponsor-showcase__number { display: grid; place-items: center; border-radius: 7px; background: #e4eef9; font-size: .8rem; font-weight: 850; }
+.vl-sponsor-showcase__slots strong { font-size: .96rem; line-height: 1.15; }
+.vl-sponsor-showcase__slots li > * > span:not(.vl-sponsor-showcase__number) { font-size: .74rem; }
+@media (max-width: 760px) {
+  .vl-sponsor-showcase__slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
