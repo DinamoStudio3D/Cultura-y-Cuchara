@@ -402,7 +402,13 @@
     {
       "type": "Feature",
       "id": "fiavl-venue-023",
-      "geometry": null,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.20139,
+          -4.00262
+        ]
+      },
       "properties": {
         "name": "Centro Cultural Alfredo Mora Reyes",
         "events": 10,
@@ -416,10 +422,12 @@
           "2026-11-21",
           "2026-11-22"
         ],
-        "verification": "pending",
+        "verification": "verified",
         "location_type": "venue",
         "source": "FIAVL 2026 preliminary program",
-        "notes": "No coordinates assigned until independently verified"
+        "notes": "No coordinates assigned until independently verified",
+        "coordinate_source": "https://mapcarta.com/es/W453409840",
+        "coordinate_scope": "Edificio o área general según OpenStreetMap/Mapcarta; acceso exacto del evento pendiente"
       }
     },
     {
@@ -581,7 +589,13 @@
     {
       "type": "Feature",
       "id": "fiavl-venue-033",
-      "geometry": null,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.20446,
+          -3.97167
+        ]
+      },
       "properties": {
         "name": "Parque Jipiro",
         "events": 13,
@@ -597,10 +611,12 @@
           "2026-11-21",
           "2026-11-22"
         ],
-        "verification": "pending",
+        "verification": "verified",
         "location_type": "venue",
         "source": "FIAVL 2026 preliminary program",
-        "notes": "No coordinates assigned until independently verified"
+        "notes": "No coordinates assigned until independently verified",
+        "coordinate_source": "https://mapcarta.com/es/W1226784636",
+        "coordinate_scope": "Edificio o área general según OpenStreetMap/Mapcarta; acceso exacto del evento pendiente"
       }
     },
     {
@@ -878,7 +894,13 @@
     {
       "type": "Feature",
       "id": "fiavl-venue-047",
-      "geometry": null,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.20074,
+          -3.99826
+        ]
+      },
       "properties": {
         "name": "Teatro Bolívar",
         "events": 15,
@@ -894,16 +916,24 @@
           "2026-11-21",
           "2026-11-22"
         ],
-        "verification": "pending",
+        "verification": "verified",
         "location_type": "venue",
         "source": "FIAVL 2026 preliminary program",
-        "notes": "No coordinates assigned until independently verified"
+        "notes": "No coordinates assigned until independently verified",
+        "coordinate_source": "https://mapcarta.com/es/W329672618",
+        "coordinate_scope": "Edificio o área general según OpenStreetMap/Mapcarta; acceso exacto del evento pendiente"
       }
     },
     {
       "type": "Feature",
       "id": "fiavl-venue-048",
-      "geometry": null,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.20135,
+          -3.97167
+        ]
+      },
       "properties": {
         "name": "Teatro Nacional Benjamín Carrión Mora",
         "events": 11,
@@ -918,10 +948,12 @@
           "2026-11-20",
           "2026-11-22"
         ],
-        "verification": "pending",
+        "verification": "verified",
         "location_type": "venue",
         "source": "FIAVL 2026 preliminary program",
-        "notes": "No coordinates assigned until independently verified"
+        "notes": "No coordinates assigned until independently verified",
+        "coordinate_source": "https://mapcarta.com/W453397745",
+        "coordinate_scope": "Edificio o área general según OpenStreetMap/Mapcarta; acceso exacto del evento pendiente"
       }
     },
     {
