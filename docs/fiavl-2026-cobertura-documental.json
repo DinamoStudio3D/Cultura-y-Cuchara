@@ -3,8 +3,8 @@
   "source": "PROGRAMACION 2026 digital.pdf",
   "scope": "Recuento de registros existentes; NO acredita que se hayan transcrito todas las actividades del PDF.",
   "generated_for_branch": "preview/fiavl-2026-agenda-mapa",
-  "events_total": 393,
-  "pdf_pages_with_event_references": 39,
+  "events_total": 394,
+  "pdf_pages_with_event_references": 40,
   "pages": {
     "8": 9,
     "10": 10,
@@ -21,6 +21,7 @@
     "22": 9,
     "23": 11,
     "24": 12,
+    "25": 1,
     "26": 11,
     "27": 7,
     "28": 6,
@@ -49,7 +50,6 @@
   "pages_without_event_references_in_8_to_50": [
     9,
     19,
-    25,
     33
   ],
   "official_circuit": {
@@ -241,7 +241,7 @@
       "limitation": "La lectura textual de la página 25 muestra funciones sin título claramente asociado (14 noviembre 22:00 y 17 noviembre 19:30). No se atribuyen a un espectáculo ni se crean eventos hasta revisar el diseño visual."
     },
     "total_compared_from_selected_pdf_pages": 33,
-    "total_missing_added": 1,
+    "total_missing_added": 2,
     "page_25_visual_review": {
       "pdf_page": 25,
       "review_type": "Imagen original de página del PDF",
@@ -280,18 +280,18 @@
           "time": "17:00",
           "venue": "Parque Jipiro, Teatro Indomalaico",
           "existing_event": true
-        }
-      ],
-      "needs_followup": [
+        },
         {
           "title": "El horrible",
           "date": "2026-11-17",
+          "time": "19:30",
           "venue": "Teatrino de la Casona Cultural",
-          "existing_event_time": "10:30",
-          "reason": "Extracción de texto muestra tanto 10h30 como 19h30; verificar el horario en una imagen de mayor resolución antes de corregir."
+          "existing_event": false,
+          "action": "added to preview agenda"
         }
       ],
-      "outcome": "La función del 14 de noviembre a las 22h00 corresponde a Los Intrépidos y ya estaba registrada. No agregar evento duplicado."
+      "needs_followup": [],
+      "outcome": "La imagen de alta resolución muestra dos funciones de El horrible el 17 noviembre: 10h30 y 19h30. Se añadió la segunda, sin reemplazar la primera."
     }
   },
   "pages_without_event_references_in_8_to_50_note": "No interpretar como páginas sin eventos: son páginas de cartelera con funciones ya representadas parcialmente en la agenda por día."
