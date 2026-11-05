@@ -1,0 +1,28 @@
+name: FIAVL 2026 - Validate preview data
+
+on:
+  push:
+    branches:
+      - preview/fiavl-2026-agenda-mapa
+    paths:
+      - 'fiavl-2026-preview.html'
+      - 'data/fiavl-2026-venues.geojson'
+      - 'scripts/check-fiavl-2026.cjs'
+      - '.github/workflows/fiavl-2026-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-fiavl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout preview branch
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate FIAVL agenda and venue registry
+        run: node scripts/check-fiavl-2026.cjs
