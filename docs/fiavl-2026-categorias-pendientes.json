@@ -2,10 +2,10 @@
   "source": "fiavl-2026-preview.html",
   "purpose": "Cola de revisión de categorías; no modificar categorías sin confirmar el PDF",
   "total_events": 394,
-  "needs_category_review": 65,
+  "needs_category_review": 54,
   "by_date": {
-    "2026-11-16": 34,
-    "2026-11-19": 31
+    "2026-11-16": 30,
+    "2026-11-19": 24
   },
   "items": [
     {
@@ -14,15 +14,6 @@
       "hora": "10:00",
       "titulo": "El Monstruo que no Soy",
       "lugar": "Teatro Bolívar",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "23"
-    },
-    {
-      "id": "1e02f0021faf",
-      "fecha": "2026-11-16",
-      "hora": "10:00",
-      "titulo": "El Mundo de Dondo",
-      "lugar": "Plaza Santo Domingo",
       "categoria_actual": "Por clasificar",
       "pagina_pdf": "23"
     },
@@ -90,15 +81,6 @@
       "pagina_pdf": "23"
     },
     {
-      "id": "b900923ce338",
-      "fecha": "2026-11-16",
-      "hora": "11:00",
-      "titulo": "Pintura Mural",
-      "lugar": "Calle Azuay entre Bolívar y Sucre",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "23"
-    },
-    {
       "id": "01bddcc59ca4",
       "fecha": "2026-11-16",
       "hora": "11:00",
@@ -149,15 +131,6 @@
       "hora": "15:00–18:00",
       "titulo": "Seminario de Derecho \"\"Manuel",
       "lugar": "Auditorio Manuel Carrión Pinzano",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "24"
-    },
-    {
-      "id": "01a33e95435d",
-      "fecha": "2026-11-16",
-      "hora": "15:00–21:00",
-      "titulo": "La Historia de la Moneda",
-      "lugar": "Bernardo Valdivieso",
       "categoria_actual": "Por clasificar",
       "pagina_pdf": "24"
     },
@@ -243,15 +216,6 @@
       "pagina_pdf": "26"
     },
     {
-      "id": "f5500401c0d9",
-      "fecha": "2026-11-16",
-      "hora": "19:00",
-      "titulo": "Striaria",
-      "lugar": "Plaza Central",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
       "id": "8e7904d24168",
       "fecha": "2026-11-16",
       "hora": "19:30",
@@ -324,15 +288,6 @@
       "pagina_pdf": "35"
     },
     {
-      "id": "ba92820a0f95",
-      "fecha": "2026-11-19",
-      "hora": "09:00",
-      "titulo": "Dibujo y Pintura en Vivo",
-      "lugar": "Bernardo Valdivieso entre 10 de Agosto y Rocafuerte",
-      "categoria_actual": "Sin clasificar",
-      "pagina_pdf": "35"
-    },
-    {
       "id": "167c837dfb67",
       "fecha": "2026-11-19",
       "hora": "09:00",
@@ -378,15 +333,6 @@
       "pagina_pdf": "35"
     },
     {
-      "id": "cb8b72010ea7",
-      "fecha": "2026-11-19",
-      "hora": "10:00",
-      "titulo": "Feria Brote Sur Cuarta Edición",
-      "lugar": "Casa Colonial Brycoff",
-      "categoria_actual": "Sin clasificar",
-      "pagina_pdf": "35"
-    },
-    {
       "id": "1e591b94895b",
       "fecha": "2026-11-19",
       "hora": "10:00",
@@ -394,24 +340,6 @@
       "lugar": "Teatro Nacional Benjamín Carrión Mora",
       "categoria_actual": "Sin clasificar",
       "pagina_pdf": "35"
-    },
-    {
-      "id": "c872e66ef8a8",
-      "fecha": "2026-11-19",
-      "hora": "10:30",
-      "titulo": "El Gato Simple",
-      "lugar": "Plaza Santo Domingo",
-      "categoria_actual": "Sin clasificar",
-      "pagina_pdf": "36"
-    },
-    {
-      "id": "0076abda475c",
-      "fecha": "2026-11-19",
-      "hora": "10:30",
-      "titulo": "La Embajada de la Alegría",
-      "lugar": "Plaza Central",
-      "categoria_actual": "Sin clasificar",
-      "pagina_pdf": "36"
     },
     {
       "id": "6e92d366ac7d",
@@ -450,15 +378,6 @@
       "pagina_pdf": "36"
     },
     {
-      "id": "d8d8374a5863",
-      "fecha": "2026-11-19",
-      "hora": "15:30",
-      "titulo": "SINFÍN",
-      "lugar": "Plaza de la Cultura",
-      "categoria_actual": "Sin clasificar",
-      "pagina_pdf": "36"
-    },
-    {
       "id": "2a070ceb07c0",
       "fecha": "2026-11-19",
       "hora": "16:00",
@@ -473,15 +392,6 @@
       "hora": "17:30",
       "titulo": "Formación Escénica y Difusión de la Cultura Milenaria de Santa Elena",
       "lugar": "Plaza Central",
-      "categoria_actual": "Sin clasificar",
-      "pagina_pdf": "37"
-    },
-    {
-      "id": "0bc3358e0930",
-      "fecha": "2026-11-19",
-      "hora": "18:00",
-      "titulo": "Striaria",
-      "lugar": "Plaza Santo Domingo",
       "categoria_actual": "Sin clasificar",
       "pagina_pdf": "37"
     },
@@ -511,15 +421,6 @@
       "lugar": "Teatrino de la Casona Cultural",
       "categoria_actual": "Sin clasificar",
       "pagina_pdf": "37"
-    },
-    {
-      "id": "22166a9b2f19",
-      "fecha": "2026-11-19",
-      "hora": "20:00",
-      "titulo": "Grotte",
-      "lugar": "Teatro Segundo Cueva Celi - CCE",
-      "categoria_actual": "Sin clasificar",
-      "pagina_pdf": "38"
     },
     {
       "id": "8bdea232b5c4",
@@ -593,5 +494,74 @@
       "categoria_actual": "Sin clasificar",
       "pagina_pdf": "38"
     }
-  ]
+  ],
+  "completed_by_cross_record_consistency": [
+    {
+      "id": "1e02f0021faf",
+      "title": "El Mundo de Dondo",
+      "previous": "Por clasificar",
+      "new": "Teatro y títeres"
+    },
+    {
+      "id": "b900923ce338",
+      "title": "Pintura Mural",
+      "previous": "Por clasificar",
+      "new": "Exposiciones y artes visuales"
+    },
+    {
+      "id": "01a33e95435d",
+      "title": "La Historia de la Moneda",
+      "previous": "Por clasificar",
+      "new": "Exposiciones y artes visuales"
+    },
+    {
+      "id": "f5500401c0d9",
+      "title": "Striaria",
+      "previous": "Por clasificar",
+      "new": "Circo y artes de calle"
+    },
+    {
+      "id": "ba92820a0f95",
+      "title": "Dibujo y Pintura en Vivo",
+      "previous": "Sin clasificar",
+      "new": "Artes visuales"
+    },
+    {
+      "id": "cb8b72010ea7",
+      "title": "Feria Brote Sur Cuarta Edición",
+      "previous": "Sin clasificar",
+      "new": "Feria de arte"
+    },
+    {
+      "id": "c872e66ef8a8",
+      "title": "El Gato Simple",
+      "previous": "Sin clasificar",
+      "new": "Títeres"
+    },
+    {
+      "id": "0076abda475c",
+      "title": "La Embajada de la Alegría",
+      "previous": "Sin clasificar",
+      "new": "Títeres"
+    },
+    {
+      "id": "d8d8374a5863",
+      "title": "SINFÍN",
+      "previous": "Sin clasificar",
+      "new": "Música"
+    },
+    {
+      "id": "0bc3358e0930",
+      "title": "Striaria",
+      "previous": "Sin clasificar",
+      "new": "Circo y artes de calle"
+    },
+    {
+      "id": "22166a9b2f19",
+      "title": "Grotte",
+      "previous": "Sin clasificar",
+      "new": "Circo y artes de calle"
+    }
+  ],
+  "method_note": "11 categorías asignadas por coincidencia de título con registros del mismo espectáculo y categoría única; no equivale a validación individual del PDF. Los casos con categorías conflictivas se mantienen pendientes."
 }
