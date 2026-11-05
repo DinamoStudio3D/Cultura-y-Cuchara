@@ -20,7 +20,12 @@ const harness="class MiniNode{\n constructor(tag,doc){this.dataset={};this.style
  for(const[name,p,expected]of cases)assert.equal(m.paidActive(p,now),expected,name);
  const fixture=[{id:'a',title:'A',subscription:{plan:'impulse'}},{id:'b',title:'B',subscription:{plan:'free'}},{id:'c',title:'C',publicationStatus:'draft',subscription:{plan:'premium'}},{id:'d',title:'D',subscription:{plan:'premium',endDate:'2026-10-19'}}];
  assert.deepEqual(m.select(fixture,{mode:'selected',selectedIds:['a','b','c','d']},now).map(p=>p.id),['a']);
- assert.equal(m.normalize({title:'Marcas que ya trabajan con nosotros'}).title,'Ellos hacen posible VisitaLoja');
+ assert.equal(m.normalize({title:'Marcas que ya trabajan con nosotros'}).title,'Negocios aliados de VisitaLoja');
 
+ assert.equal(m.normalize({title:'Ellos hacen posible VisitaLoja'}).title,'Negocios aliados de VisitaLoja');
+ assert.match(m.defaults.subtitle,/con su suscripción/);
+ const publicRoot={VisitaLojaBrandsModel:m};
+ new Function('window',read('js/registered-brands.js'))(publicRoot);
+ assert.deepEqual(publicRoot.VisitaLojaRegisteredBrands.entries(places,{includeMesa:true}).map(item=>item.id),['a','b','d']);
  console.log(result+'; 7 configuration checks and 17 paid-plan checks passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

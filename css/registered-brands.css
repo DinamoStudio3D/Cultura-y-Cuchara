@@ -63,3 +63,10 @@
 @media(min-width:1000px) and (prefers-reduced-motion:reduce){
  #registeredBrands .vr-group{justify-content:center;padding-right:0}
 }
+
+#registeredBrands .vr-cta{font:700 11px/1.25 system-ui,sans-serif;text-align:center;text-decoration:underline;text-underline-offset:2px}
+#registeredBrands .vr-brand:has(.vr-cta){height:132px;padding:10px 8px}
+#registeredBrands .vr-brand:has(.vr-cta) .vr-logo{max-height:44px;max-width:90%}
+#registeredBrands .vr-brand:has(.vr-cta) .vr-name{font-size:12px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#registeredBrands .vr-institution{display:block;width:fit-content;margin:10px auto 16px;font-size:12px;text-underline-offset:3px}
+@media(min-width:1000px){#registeredBrands .vr-institution{margin:10px 0 0}}

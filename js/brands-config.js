@@ -1,7 +1,18 @@
 (function(root){'use strict';
-const defaults={active:true,includeMesa:true,title:'Ellos hacen posible VisitaLoja',titleEn:'They make VisitaLoja possible',subtitle:'Conoce los negocios que apoyan este proyecto y nos ayudan a mostrar lo mejor de Loja.',subtitleEn:'Meet the businesses that support this project and help us showcase the best of Loja.',mode:'all',selectedIds:[],excludedIds:[],orderIds:[],size:'medium',duration:35,direction:'left',motion:true,pauseOnHover:true,showNames:false,clickable:true};
+const defaults={active:true,includeMesa:true,title:'Negocios aliados de VisitaLoja',titleEn:'VisitaLoja partner businesses',subtitle:'Descubre los negocios locales que, con su suscripción, ayudan a que VisitaLoja siga mostrando lo mejor de nuestra provincia.',subtitleEn:'Discover the local businesses whose subscriptions help VisitaLoja keep sharing the best of our province.',mode:'all',selectedIds:[],excludedIds:[],orderIds:[],size:'medium',duration:35,direction:'left',motion:true,pauseOnHover:true,showNames:true,clickable:true};
+const previousCopy = {
+ title: ['Marcas que ya trabajan con nosotros', 'Ellos hacen posible VisitaLoja'],
+ titleEn: ['Brands already working with us', 'They make VisitaLoja possible'],
+ subtitle: ['Conoce los negocios que apoyan este proyecto y nos ayudan a mostrar lo mejor de Loja.'],
+ subtitleEn: ['Meet the businesses that support this project and help us showcase the best of Loja.']
+};
+function copy(key,value,max){
+ if(typeof value!=='string')return defaults[key];
+ const clean=value.trim();
+ return previousCopy[key].includes(clean)?defaults[key]:clean.slice(0,max);
+}
 const ids=v=>Array.isArray(v)?[...new Set(v.filter(x=>typeof x==='string'&&x.length<=180))].slice(0,1000):[];
-function normalize(v={}){return {active:v.active!==false,includeMesa:v.includeMesa!==false,title:typeof v.title==='string'&&v.title!=='Marcas que ya trabajan con nosotros'?v.title.trim().slice(0,120):defaults.title,titleEn:typeof v.titleEn==='string'&&v.titleEn!=='Brands already working with us'?v.titleEn.trim().slice(0,120):defaults.titleEn,subtitle:typeof v.subtitle==='string'?v.subtitle.trim().slice(0,300):defaults.subtitle,subtitleEn:typeof v.subtitleEn==='string'?v.subtitleEn.trim().slice(0,300):defaults.subtitleEn,mode:v.mode==='selected'?'selected':'all',selectedIds:ids(v.selectedIds),excludedIds:ids(v.excludedIds),orderIds:ids(v.orderIds),size:['small','medium','large'].includes(v.size)?v.size:'medium',duration:Math.max(20,Math.min(120,Number(v.duration)||35)),direction:v.direction==='right'?'right':'left',motion:v.motion!==false,pauseOnHover:v.pauseOnHover!==false,showNames:v.showNames===true,clickable:v.clickable!==false};}
+function normalize(v={}){return {active:v.active!==false,includeMesa:v.includeMesa!==false,title:copy('title',v.title,120),titleEn:copy('titleEn',v.titleEn,120),subtitle:copy('subtitle',v.subtitle,300),subtitleEn:copy('subtitleEn',v.subtitleEn,300),mode:v.mode==='selected'?'selected':'all',selectedIds:ids(v.selectedIds),excludedIds:ids(v.excludedIds),orderIds:ids(v.orderIds),size:['small','medium','large'].includes(v.size)?v.size:'medium',duration:Math.max(20,Math.min(120,Number(v.duration)||35)),direction:v.direction==='right'?'right':'left',motion:v.motion!==false,pauseOnHover:v.pauseOnHover!==false,showNames:v.showNames!==false,clickable:v.clickable!==false};}
 function publicPlace(p){return p&&p.id&&p.title&&p.active!==false&&p.hidden!==true&&p.published!==false&&(!p.publicationStatus||p.publicationStatus==='published');}
 function time(value,end=false){
  if(value==null||value==='')return null;
