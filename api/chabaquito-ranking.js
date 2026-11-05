@@ -4,6 +4,7 @@ const { authenticatedUser, firestore } = require("./_firebase-admin");
 const { publicRankingProjection, rankingDocumentId, rankingPreferencePatch } = require("../functions/chabaquito-public-ranking");
 
 module.exports=async function handler(req,res){
+  if(req.query?.action==='rewards-drafts')return require('../functions/rewards-drafts-api')(req,res);
   if(req.query?.action==='notifications')return require('../functions/push-campaigns')(req,res);
   if(req.query?.action==='push-test')return require('../functions/push-test')(req,res);
   res.setHeader("Cache-Control","no-store");

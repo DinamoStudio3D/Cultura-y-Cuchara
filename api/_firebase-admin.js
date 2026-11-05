@@ -13,7 +13,8 @@ function credentials(env=process.env){
   return serviceAccount;
 }
 function app(env=process.env){
-  if(getApps().length) return getApps()[0];
+  const existing=getApps().find(candidate=>candidate.name==='[DEFAULT]');
+  if(existing) return existing;
   return initializeApp({credential:cert(credentials(env)),projectId:"cultura-y-cuchara"});
 }
 async function authenticatedUser(req,env=process.env){

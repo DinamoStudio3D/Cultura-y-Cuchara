@@ -7,8 +7,6 @@
     }
   ],
   "rewrites": [
-    {"source":"/api/notifications","destination":"/api/chabaquito-ranking?action=notifications"},
-    {"source":"/api/push-test","destination":"/api/chabaquito-ranking?action=push-test"},
     {
       "source": "/",
       "has": [
@@ -19,6 +17,9 @@
       ],
       "destination": "/qr.html"
     },
+    {"source":"/api/rewards-drafts","destination":"/api/chabaquito-ranking?action=rewards-drafts"},
+    {"source":"/api/notifications","destination":"/api/chabaquito-ranking?action=notifications"},
+    {"source":"/api/push-test","destination":"/api/chabaquito-ranking?action=push-test"},
     {
       "source": "/canton/:canton",
       "destination": "/api/categoria-seo?canton=:canton"

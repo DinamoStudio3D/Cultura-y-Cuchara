@@ -7,7 +7,7 @@ const rules=fs.readFileSync(path.join(__dirname,'../firestore.rules'),'utf8');
 function matchBlock(name){
  const start=rules.indexOf('match /'+name+'/{');
  assert.notEqual(start,-1,'Falta regla para '+name);
- const open=rules.indexOf('{',start);
+ const open=rules.indexOf(' {',start)+1;
  let depth=0;
  for(let i=open;i<rules.length;i++){
   if(rules[i]==='{')depth++;

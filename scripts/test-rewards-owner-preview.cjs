@@ -18,7 +18,7 @@ test('merchant business cards link to the owner editor with exact placeId',()=>{
  assert.match(merchant,/encodeURIComponent\(place\.id\)/);
 });
 test('owner authorization checks exact businessAccess document and role',()=>{
- assert.match(html,/doc\(user\.uid\+'_'+placeId\)\.get\(\)/);
+ assert.match(html,/doc\(user\.uid\+'_'\+placeId\)\.get\(\)/);
  assert.match(html,/data\?\.role!=='owner'/);
  assert.match(html,/data\?\.active!==true/);
  assert.match(html,/data\?\.placeId!==placeId/);

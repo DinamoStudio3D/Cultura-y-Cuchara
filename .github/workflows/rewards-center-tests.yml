@@ -7,6 +7,10 @@ on:
       - 'functions/rewards-*.js'
       - 'functions/rewards-center-*.js'
       - 'scripts/test-rewards-*.cjs'
+      - 'api/_firebase-admin.js'
+      - 'api/chabaquito-ranking.js'
+      - 'js/rewards-draft-client.js'
+      - 'vercel.json'
       - 'firestore.rules'
       - 'rewards-center-admin.html'
       - 'rewards-center-owner-preview.html'
@@ -30,4 +34,4 @@ jobs:
           node --check functions/rewards-lifecycle-policy.js
           node --check functions/rewards-draft-schema.js
       - name: Run rewards policy tests
-        run: node --test scripts/test-rewards-center-access.cjs scripts/test-rewards-center-policy.cjs scripts/test-rewards-lifecycle-policy.cjs scripts/test-rewards-firestore-rules.cjs scripts/test-rewards-admin-preview.cjs scripts/test-rewards-draft-schema.cjs scripts/test-rewards-owner-preview.cjs
+        run: node --test scripts/test-rewards-*.cjs
