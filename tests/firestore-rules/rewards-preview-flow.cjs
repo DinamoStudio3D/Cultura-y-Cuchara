@@ -52,6 +52,26 @@ async function main() {
     assert.equal((await db.collection(CLAIMS).get()).size, 1);
     assert.equal((await db.collection(PRIZES).doc(prizeId).get()).data().remaining, 0);
     assert.equal((await db.doc('loyaltyCounters/' + winner.userId).get()).data().visitCount, 10);
+    const seasonal = {...draft, seasonStart: '2030-06-10', seasonEnd: '2030-06-10',
+      imageUrl: 'https://res.cloudinary.com/demo/image/upload/reward.jpg'};
+    const before = Timestamp.fromDate(new Date('2030-06-10T04:59:59.999Z'));
+    const start = Timestamp.fromDate(new Date('2030-06-10T05:00:00Z'));
+    const end = Timestamp.fromDate(new Date('2030-06-11T05:00:00Z'));
+    await assert.rejects(run('owner', 'save', {revision: 4, draft: {...seasonal, seasonEnd: '2030-06-09'}}), {status: 400});
+    await assert.rejects(run('owner', 'save', {revision: 4, draft: {...seasonal, imageUrl: 'https://example.com/image.jpg'}}), {status: 400});
+    await run('owner', 'save', {revision: 4, draft: seasonal}, before);
+    await run('owner', 'submit', {revision: 5}, before);
+    await run('admin', 'approve', {authorUid: 'owner', revision: 6}, before);
+    await assert.rejects(run('admin', 'publish', {authorUid: 'owner', revision: 7}, end), /ya terminó/);
+    const seasonPrize = await run('admin', 'publish', {authorUid: 'owner', revision: 7}, before);
+    const seasonInput = {prizeId: seasonPrize.draft.prizeId};
+    const details = await run('customer', 'prize', seasonInput);
+    assert.equal(details.prize.imageUrl, seasonal.imageUrl);
+    assert.equal(details.prize.startsAtMs, start.toMillis());
+    assert.equal(details.prize.expiresAtMs, end.toMillis());
+    await assert.rejects(run('customer', 'claim', seasonInput, before), /todavía no empieza/);
+    await assert.rejects(run('customer', 'claim', seasonInput, end), /venció/);
+    assert.equal((await run('customer', 'claim', seasonInput, start)).claim.status, 'claimed');
     console.log('Flujo verificado: publicación autorizada, vigencia, sellos, último cupo y reintento sin duplicado.');
   } finally {
     await deleteApp(app);

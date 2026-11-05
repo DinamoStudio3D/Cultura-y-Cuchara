@@ -8,6 +8,7 @@
 </head><body><main>
 <h1>Canje de fidelidad en pruebas</h1>
 <p>Usa tu cuenta de cliente de prueba para comprobar tus sellos y reservar un cupo.</p>
+<section id="prizeDetails" hidden><h2 id="prizeTitle"></h2><p id="prizeDescription"></p><p id="prizeTerms"></p><img id="prizePhoto" hidden alt="Foto del premio" referrerpolicy="no-referrer" style="max-width:100%;max-height:260px;border-radius:12px"></section>
 <p id="status" role="status">Comprobando sesión…</p>
 <button id="claim" type="button" disabled>Reclamar premio</button>
 </main><script>
@@ -17,9 +18,27 @@ const auth=firebase.auth();
 const prizeId=new URLSearchParams(location.search).get('prize');
 const status=document.getElementById('status'),button=document.getElementById('claim');
 const valid=/^[a-f0-9]{64}$/.test(prizeId||'');
-auth.onAuthStateChanged(user=>{
-  button.disabled=!valid||!user;
-  status.textContent=!valid?'El enlace de canje no es válido.':user?'Sesión lista.':'Inicia sesión en VisitaLoja dentro de este mismo Preview y vuelve al enlace.';
+auth.onAuthStateChanged(async user=>{
+  button.disabled=true;
+  const details=document.getElementById('prizeDetails');
+  details.hidden=true;
+  const photo=document.getElementById('prizePhoto');
+  photo.removeAttribute('src');
+  photo.hidden=true;
+  status.textContent=!valid?'El enlace de canje no es válido.':user?'Cargando premio…':'Inicia sesión en VisitaLoja dentro de este mismo Preview y vuelve al enlace.';
+  if(!valid||!user)return;
+  try{
+    const {prize}=await requestRewardsDraft(auth,{action:'prize',prizeId});
+    if(auth.currentUser!==user)return;
+    document.getElementById('prizeTitle').textContent=prize.title;
+    document.getElementById('prizeDescription').textContent=prize.description;
+    const date=new Intl.DateTimeFormat('es-EC',{timeZone:'America/Guayaquil',dateStyle:'medium'});
+    document.getElementById('prizeTerms').textContent=prize.targetVisits+' sellos · Hasta el '+date.format(prize.expiresAtMs-1);
+    if(prize.imageUrl){photo.src=prize.imageUrl;photo.hidden=false}
+    details.hidden=false;
+    button.disabled=false;
+    status.textContent=prize.startsAtMs>Date.now()?'Disponible desde el '+date.format(prize.startsAtMs)+'.':'Sesión lista.';
+  }catch(error){if(auth.currentUser===user)status.textContent=error.message}
 });
 button.addEventListener('click',async()=>{
   const user=auth.currentUser;

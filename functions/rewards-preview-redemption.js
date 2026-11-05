@@ -1,5 +1,6 @@
 'use strict';
 
+const {windowFor}=require('../js/reward-season-fields');
 const {createHash} = require('node:crypto');
 const PRIZES = 'rewardsCenterPrizesPreview';
 const CLAIMS = 'rewardsCenterClaimsPreview';
@@ -9,13 +10,22 @@ const pairId = (first, second) => createHash('sha256').update(JSON.stringify([fi
 function publishPreviewPrize({db, tx, draftRef, draft, now}) {
   if (draft.stock < 1) fail(409, 'El premio necesita al menos un cupo para publicarse.');
   const prizeId = pairId(draftRef.id, draft.revision);
-  const expiresAt = new Date(now.toMillis() + draft.validityDays * 86400000);
+  let window;
+  try { window = windowFor(draft, now.toMillis()); } catch (error) { fail(409, error.message); }
   tx.set(db.collection(PRIZES).doc(prizeId), {
     prizeId, placeId: draft.placeId, title: draft.title, description: draft.description,
     rewardType: draft.rewardType, targetVisits: draft.targetVisits,
-    stock: draft.stock, remaining: draft.stock, publishedAt: now, expiresAt
+    stock: draft.stock, remaining: draft.stock, publishedAt: now, ...window, imageUrl: draft.imageUrl || ''
   });
   return prizeId;
+}
+
+async function getPreviewPrize({db, prizeId}) {
+  if (typeof prizeId !== 'string' || !/^[a-f0-9]{64}$/.test(prizeId)) fail(400, 'Premio inválido.');
+  const prize = (await db.collection(PRIZES).doc(prizeId).get()).data();
+  if (!prize) fail(404, 'Premio no encontrado.');
+  const {title, description, imageUrl, targetVisits, startsAt, expiresAt} = prize;
+  return {prize: {title, description, imageUrl, targetVisits, startsAtMs: startsAt?.toMillis() ?? null, expiresAtMs: expiresAt.toMillis()}};
 }
 
 async function claimPreviewPrize({db, user, prizeId, now}) {
@@ -28,6 +38,7 @@ async function claimPreviewPrize({db, user, prizeId, now}) {
     if (existing.exists) return {claim: existing.data()};
     const prize = (await tx.get(prizeRef)).data();
     if (!prize) fail(404, 'Premio no encontrado.');
+    if (prize.startsAt?.toMillis() > now.toMillis()) fail(409, 'La temporada todavía no empieza.');
     if (prize.expiresAt.toMillis() <= now.toMillis()) fail(409, 'Este premio venció.');
     if (!Number.isSafeInteger(prize.remaining) || prize.remaining < 1) fail(409, 'No quedan cupos.');
     const matches = await tx.get(db.collection('loyaltyCounters')
@@ -65,4 +76,4 @@ async function deliverPreviewPrize({db, user, claimId, placeId, now}) {
   });
 }
 
-module.exports = {PRIZES, CLAIMS, publishPreviewPrize, claimPreviewPrize, deliverPreviewPrize};
+module.exports = {PRIZES, CLAIMS, publishPreviewPrize, getPreviewPrize, claimPreviewPrize, deliverPreviewPrize};

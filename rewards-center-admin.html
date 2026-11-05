@@ -84,6 +84,15 @@ async function refreshReviewQueue(){
       const approve=reviewText('button',approved?'Publicar en pruebas':'Aprobar'),reject=reviewText('button','Devolver');
       approve.type=reject.type='button';
       card.append(reviewText('h3',draft.title),reviewText('p',draft.placeId+' · '+draft.targetVisits+' sellos · '+draft.stock+' cupos · '+draft.validityDays+' días'),reviewText('p',draft.description),note,approve,reject);
+      if(draft.seasonStart)card.prepend(reviewText('p','Temporada · '+draft.seasonStart+' a '+draft.seasonEnd+' (Ecuador continental)'));
+      if(draft.imageUrl){
+        const photo=document.createElement('img');
+        photo.src=draft.imageUrl;
+        photo.alt='Foto del premio';
+        photo.referrerPolicy='no-referrer';
+        photo.style.cssText='max-width:100%;max-height:180px;border-radius:10px';
+        card.prepend(photo);
+      }
       note.hidden=reject.hidden=approved;
       async function decide(action){
         if(!current())return;

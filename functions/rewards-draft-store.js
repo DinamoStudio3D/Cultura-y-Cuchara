@@ -1,7 +1,7 @@
 'use strict';
 const {normalizeRewardDraft}=require('./rewards-draft-schema');
 const {resolveRewardsActor,assertPassportEditor}=require('./rewards-center-access');
-const {publishPreviewPrize,claimPreviewPrize,deliverPreviewPrize}=require('./rewards-preview-redemption');
+const {publishPreviewPrize,getPreviewPrize,claimPreviewPrize,deliverPreviewPrize}=require('./rewards-preview-redemption');
 const COLLECTION='rewardsCenterDraftsPreview';
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status})};
 function enabled(env){return env.VERCEL_ENV==='preview'&&env.REWARDS_DRAFT_WRITES==='approved-preview-v1'}
@@ -12,6 +12,7 @@ async function execute({db,user,input,now,env=process.env}){
  if(!input||typeof input!=='object'||Array.isArray(input))fail(400,'Solicitud inválida.');
  const {action}=input;
  if(action==='deliver')return deliverPreviewPrize({db,user,claimId:input.claimId,placeId:input.placeId,now});
+ if(action==='prize')return getPreviewPrize({db,prizeId:input.prizeId});
  if(action==='claim')return claimPreviewPrize({db,user,prizeId:input.prizeId,now});
  if(action==='queue'||action==='approvedQueue'){
   await assertPassportEditor({db,user});
@@ -41,7 +42,7 @@ async function execute({db,user,input,now,env=process.env}){
   let next;
   if(action==='save'){
    if(old&& !['draft','rejected','approved','published'].includes(old.status))fail(409,'El borrador está en revisión.');
-   let data;try{data=normalizeRewardDraft(input.draft,placeId,authorUid,now)}catch(_){fail(400,'Revisa los campos del premio.');}
+   let data;try{data=normalizeRewardDraft(input.draft,placeId,authorUid,now)}catch(error){fail(400,error.message==='Invalid reward draft fields'?'Revisa los campos del premio.':error.message);}
    next={...data,createdAt:old?.createdAt||now,status:'draft'};
   }else if(action==='publish'){
    if(old?.status!=='approved')fail(409,'Solo se pueden publicar premios aprobados.');
