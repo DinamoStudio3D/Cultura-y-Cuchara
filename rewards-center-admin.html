@@ -107,8 +107,8 @@ async function refreshReviewQueue(){
           if(current()){
             if(action==='approve'){await refreshReviewQueue();return}
             if(action==='publish'){
-              const link=reviewText('a','Abrir enlace de canje de prueba');
-              link.href='rewards-preview-claim.html?prize='+encodeURIComponent(result.draft.prizeId);
+              const link=reviewText('a','Abrir enlace de recompensas de la parada');
+              link.href='rewards-preview-claim.html?place='+encodeURIComponent(result.draft.placeId);
               link.target='_blank';
               link.rel='noopener';
               card.replaceChildren(link);

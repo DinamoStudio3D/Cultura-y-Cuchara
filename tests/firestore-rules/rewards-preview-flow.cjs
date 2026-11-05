@@ -57,14 +57,23 @@ async function main() {
     const before = Timestamp.fromDate(new Date('2030-06-10T04:59:59.999Z'));
     const start = Timestamp.fromDate(new Date('2030-06-10T05:00:00Z'));
     const end = Timestamp.fromDate(new Date('2030-06-11T05:00:00Z'));
-    await assert.rejects(run('owner', 'save', {revision: 4, draft: {...seasonal, seasonEnd: '2030-06-09'}}), {status: 400});
-    await assert.rejects(run('owner', 'save', {revision: 4, draft: {...seasonal, imageUrl: 'https://example.com/image.jpg'}}), {status: 400});
-    await run('owner', 'save', {revision: 4, draft: seasonal}, before);
+    await run('owner', 'save', {revision: 4, draft}, before);
     await run('owner', 'submit', {revision: 5}, before);
     await run('admin', 'approve', {authorUid: 'owner', revision: 6}, before);
-    await assert.rejects(run('admin', 'publish', {authorUid: 'owner', revision: 7}, end), /ya terminó/);
-    const seasonPrize = await run('admin', 'publish', {authorUid: 'owner', revision: 7}, before);
+    const normal = await run('admin', 'publish', {authorUid: 'owner', revision: 7}, before);
+    const normalId = normal.draft.prizeId;
+    await assert.rejects(run('owner', 'save', {revision: 8, draft: {...seasonal, seasonEnd: '2030-06-09'}}), {status: 400});
+    await assert.rejects(run('owner', 'save', {revision: 8, draft: {...seasonal, imageUrl: 'https://example.com/image.jpg'}}), {status: 400});
+    await run('owner', 'save', {revision: 8, draft: seasonal}, before);
+    await run('owner', 'submit', {revision: 9}, before);
+    await run('admin', 'approve', {authorUid: 'owner', revision: 10}, before);
+    await assert.rejects(run('admin', 'publish', {authorUid: 'owner', revision: 11}, end), /ya terminó/);
+    const seasonPrize = await run('admin', 'publish', {authorUid: 'owner', revision: 11}, before);
     const seasonInput = {prizeId: seasonPrize.draft.prizeId};
+    assert.equal((await run('customer', 'prize', {}, before)).prize.prizeId, normalId);
+    assert.equal((await run('customer', 'prize', {}, start)).prize.prizeId, seasonInput.prizeId);
+    assert.equal((await run('customer', 'prize', {}, end)).prize.prizeId, normalId);
+    await assert.rejects(run('customer', 'claim', {prizeId: normalId}, start), /no es el vigente/);
     const details = await run('customer', 'prize', seasonInput);
     assert.equal(details.prize.imageUrl, seasonal.imageUrl);
     assert.equal(details.prize.startsAtMs, start.toMillis());
@@ -72,6 +81,7 @@ async function main() {
     await assert.rejects(run('customer', 'claim', seasonInput, before), /todavía no empieza/);
     await assert.rejects(run('customer', 'claim', seasonInput, end), /venció/);
     assert.equal((await run('customer', 'claim', seasonInput, start)).claim.status, 'claimed');
+    assert.equal((await run('customer', 'claim', {prizeId: normalId}, end)).claim.status, 'claimed');
     console.log('Flujo verificado: publicación autorizada, vigencia, sellos, último cupo y reintento sin duplicado.');
   } finally {
     await deleteApp(app);

@@ -12,7 +12,7 @@ async function execute({db,user,input,now,env=process.env}){
  if(!input||typeof input!=='object'||Array.isArray(input))fail(400,'Solicitud inválida.');
  const {action}=input;
  if(action==='deliver')return deliverPreviewPrize({db,user,claimId:input.claimId,placeId:input.placeId,now});
- if(action==='prize')return getPreviewPrize({db,prizeId:input.prizeId});
+ if(action==='prize')return getPreviewPrize({db,prizeId:input.prizeId,placeId:input.placeId===undefined?undefined:id(input.placeId),now});
  if(action==='claim')return claimPreviewPrize({db,user,prizeId:input.prizeId,now});
  if(action==='queue'||action==='approvedQueue'){
   await assertPassportEditor({db,user});
@@ -46,7 +46,7 @@ async function execute({db,user,input,now,env=process.env}){
    next={...data,createdAt:old?.createdAt||now,status:'draft'};
   }else if(action==='publish'){
    if(old?.status!=='approved')fail(409,'Solo se pueden publicar premios aprobados.');
-   const prizeId=publishPreviewPrize({db,tx,draftRef:ref,draft:old,now});
+   const prizeId=await publishPreviewPrize({db,tx,draftRef:ref,draft:old,now});
    next={...old,status:'published',prizeId,updatedAt:now};
   }else{
    if(!old)fail(404,'Borrador inexistente.');
