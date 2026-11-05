@@ -744,7 +744,13 @@
     {
       "type": "Feature",
       "id": "fiavl-venue-040",
-      "geometry": null,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.2013,
+          -4.00154
+        ]
+      },
       "properties": {
         "name": "Plaza San Sebastián",
         "events": 23,
@@ -760,16 +766,24 @@
           "2026-11-21",
           "2026-11-22"
         ],
-        "verification": "pending",
+        "verification": "verified",
         "location_type": "venue",
         "source": "FIAVL 2026 preliminary program",
-        "notes": "No coordinates assigned until independently verified"
+        "notes": "No coordinates assigned until independently verified",
+        "coordinate_source": "https://mapcarta.com/es/N368222331",
+        "coordinate_scope": "Monumento de San Sebastián como referencia dentro de la plaza; escenario y acceso exactos por confirmar"
       }
     },
     {
       "type": "Feature",
       "id": "fiavl-venue-041",
-      "geometry": null,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.20163,
+          -3.99835
+        ]
+      },
       "properties": {
         "name": "Plaza Santo Domingo",
         "events": 47,
@@ -785,10 +799,12 @@
           "2026-11-21",
           "2026-11-22"
         ],
-        "verification": "pending",
+        "verification": "verified",
         "location_type": "venue",
         "source": "FIAVL 2026 preliminary program",
-        "notes": "No coordinates assigned until independently verified"
+        "notes": "No coordinates assigned until independently verified",
+        "coordinate_source": "https://mapcarta.com/es/W329673193",
+        "coordinate_scope": "Centro cartográfico de la plaza; ubicación general, no acceso ni escenario exacto"
       }
     },
     {
