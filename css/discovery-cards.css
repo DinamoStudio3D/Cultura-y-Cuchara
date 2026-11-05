@@ -144,3 +144,34 @@ body[data-card-style="soft"] #establecimientos #localesGrid > .local-item:not(.h
   #establecimientos #localesGrid>.local-item:not(.hidden-item){max-width:100%!important}
  }
 }
+
+/* Two-card pilot for stops whose cover is primarily their logo. */
+#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) { align-self: start; }
+#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) > .vl17-media {
+  aspect-ratio: auto;
+  background: transparent;
+}
+#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) > .vl17-media > .absolute.top-3 {
+  padding: 14px 16px 0;
+}
+#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) .vl-stop-compact__heading {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) .vl-stop-compact__heading > h3 {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) .vl-stop-compact__logo {
+  flex: 0 0 76px;
+  width: 76px;
+  height: 76px;
+  box-sizing: border-box;
+  padding: 5px;
+  object-fit: contain;
+  border: 1px solid #d6e2ed;
+  border-radius: 14px;
+  background: #fff;
+}
