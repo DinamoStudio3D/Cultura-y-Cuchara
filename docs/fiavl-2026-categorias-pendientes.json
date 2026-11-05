@@ -2,9 +2,9 @@
   "source": "fiavl-2026-preview.html",
   "purpose": "Cola de revisión de categorías; no modificar categorías sin confirmar el PDF",
   "total_events": 394,
-  "needs_category_review": 35,
+  "needs_category_review": 25,
   "by_date": {
-    "2026-11-16": 11,
+    "2026-11-16": 1,
     "2026-11-19": 24
   },
   "items": [
@@ -16,96 +16,6 @@
       "lugar": "Plazoleta 1ro de Mayo",
       "categoria_actual": "Por clasificar",
       "pagina_pdf": "24"
-    },
-    {
-      "id": "0e055c3afe09",
-      "fecha": "2026-11-16",
-      "hora": "18:00",
-      "titulo": "Coro Polifónico Municipal",
-      "lugar": "Plaza Santo Domingo",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "71183e26f849",
-      "fecha": "2026-11-16",
-      "hora": "18:00",
-      "titulo": "El  Monstruo que no Soy",
-      "lugar": "Teatro Bolivar",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "829809d9a00b",
-      "fecha": "2026-11-16",
-      "hora": "18:00",
-      "titulo": "Loja y sus letras sobre ruedas",
-      "lugar": "Plazoleta 1ro de Mayo",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "8e7904d24168",
-      "fecha": "2026-11-16",
-      "hora": "19:30",
-      "titulo": "Los 4: Una aventura musical",
-      "lugar": "Teatrino de la Casona Cultural",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "4585d3ad1d25",
-      "fecha": "2026-11-16",
-      "hora": "19:30",
-      "titulo": "Versos de Sobremesa",
-      "lugar": "Gato Suco",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "df39781d991c",
-      "fecha": "2026-11-16",
-      "hora": "20:00",
-      "titulo": "Circo a la Gorra",
-      "lugar": "Plaza de la Cultura",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "6ff782223032",
-      "fecha": "2026-11-16",
-      "hora": "20:00",
-      "titulo": "Festival de Danzas Folclóricas",
-      "lugar": "Plaza Central",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "053453e906ff",
-      "fecha": "2026-11-16",
-      "hora": "20:00",
-      "titulo": "La Serva Padrona de G. B.",
-      "lugar": "Teatro Nacional Benjamín Carrión Mora",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "476cbfd59264",
-      "fecha": "2026-11-16",
-      "hora": "21:00",
-      "titulo": "Circo a la Gorra",
-      "lugar": "Plaza de la Cultura",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
-    },
-    {
-      "id": "48e0ca9beb80",
-      "fecha": "2026-11-16",
-      "hora": "21:00",
-      "titulo": "Orquesta Tropical Son Especial",
-      "lugar": "Plaza Santo Domingo",
-      "categoria_actual": "Por clasificar",
-      "pagina_pdf": "26"
     },
     {
       "id": "bacda1c99c3e",
@@ -392,7 +302,7 @@
       "new": "Circo y artes de calle"
     }
   ],
-  "method_note": "19 categorías confirmadas visualmente en páginas 23 y 24 del PDF oficial; 11 anteriores por consistencia entre registros. Casos ambiguos pendientes.",
+  "method_note": "Páginas 23, 24 y 26 revisadas visualmente. El Cojeno de Jade no tiene género explícito en página 24; sigue pendiente. 'Circo a la Gorra' se clasificó Circo por su título. Otros géneros se basan en etiquetas o descripciones visibles.",
   "completed_from_pdf_pages_23_24": [
     {
       "id": "5f2d8d384dcc",
@@ -526,6 +436,68 @@
       "previous": "Por clasificar",
       "new": "Títeres",
       "pdf_page": "24"
+    }
+  ],
+  "completed_from_pdf_page_26": [
+    {
+      "id": "0e055c3afe09",
+      "title": "Coro Polifónico Municipal",
+      "new": "Música",
+      "pdf_page": "26"
+    },
+    {
+      "id": "71183e26f849",
+      "title": "El  Monstruo que no Soy",
+      "new": "Teatro musical",
+      "pdf_page": "26"
+    },
+    {
+      "id": "829809d9a00b",
+      "title": "Loja y sus letras sobre ruedas",
+      "new": "Trivia literaria",
+      "pdf_page": "26"
+    },
+    {
+      "id": "8e7904d24168",
+      "title": "Los 4: Una aventura musical",
+      "new": "Microteatro",
+      "pdf_page": "26"
+    },
+    {
+      "id": "4585d3ad1d25",
+      "title": "Versos de Sobremesa",
+      "new": "Literatura - Música",
+      "pdf_page": "26"
+    },
+    {
+      "id": "df39781d991c",
+      "title": "Circo a la Gorra",
+      "new": "Circo",
+      "pdf_page": "26"
+    },
+    {
+      "id": "6ff782223032",
+      "title": "Festival de Danzas Folclóricas",
+      "new": "Danza folclórica",
+      "pdf_page": "26"
+    },
+    {
+      "id": "053453e906ff",
+      "title": "La Serva Padrona de G. B.",
+      "new": "Ópera",
+      "pdf_page": "26"
+    },
+    {
+      "id": "476cbfd59264",
+      "title": "Circo a la Gorra",
+      "new": "Circo",
+      "pdf_page": "26"
+    },
+    {
+      "id": "48e0ca9beb80",
+      "title": "Orquesta Tropical Son Especial",
+      "new": "Música",
+      "pdf_page": "26"
     }
   ]
 }
