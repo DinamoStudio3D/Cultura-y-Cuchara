@@ -43,8 +43,11 @@
 #establecimientos #localesGrid .vl-card-image-stage > img {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  box-sizing: border-box;
 }
 #establecimientos #localesGrid .vl-card-image-stage > .vl-card-image-wash {
   object-fit: cover;
