@@ -14,6 +14,8 @@ const aliases = Object.fromEntries([...aliasBlock[1].matchAll(/'([^']+)':'([^']+
 const venues = new Map(geo.features.map(f => [f.properties.name, f]));
 const failures = [];
 const ids = new Set();
+const eventFingerprints = new Map();
+let unclassified = 0;
 const normalized = e => aliases[e.lugar] || e.lugar;
 for (const e of events) {
   if (!e.id || ids.has(e.id)) failures.push('Missing or duplicate event ID: ' + e.id);
@@ -21,6 +23,12 @@ for (const e of events) {
   if (!/^2026-11-(1[2-9]|2[0-2])$/.test(e.fecha)) failures.push('Unexpected date: ' + e.id);
   if (!/^([01]?\d|2[0-3]):[0-5]\d(?:–(?:[01]?\d|2[0-4]):[0-5]\d)?$/.test(e.hora)) failures.push('Time format: ' + e.id + ' ' + e.hora);
   if (!e.titulo || !e.lugar || !venues.has(normalized(e))) failures.push('Missing title/venue registry entry: ' + e.id);
+  const fingerprint = [e.fecha, e.hora, String(e.titulo || '').trim().toLocaleLowerCase('es'), normalized(e).trim().toLocaleLowerCase('es')].join('|');
+  if (eventFingerprints.has(fingerprint)) failures.push('Duplicate performance: ' + eventFingerprints.get(fingerprint) + ' / ' + e.id);
+  else eventFingerprints.set(fingerprint, e.id);
+  if (!Number.isInteger(Number(e.pagina)) || Number(e.pagina) < 1 || Number(e.pagina) > 52) failures.push('Invalid PDF page: ' + e.id);
+  if (/clasificar|revis/i.test(e.categoria || '')) unclassified++;
+
 }
 const venueNames = new Set();
 const circuitNumbers = new Set();
@@ -46,5 +54,6 @@ for (const f of geo.features) {
     if (!p.coordinate_source) failures.push('Verified venue without coordinate source: ' + p.name);
   } else if (f.geometry !== null) failures.push('Unverified venue has geometry: ' + p.name);
 }
-console.log(JSON.stringify({ events: events.length, venues: geo.features.length, verifiedVenues: verified, errors: failures.length, failures }, null, 2));
+if (/estos 392 registros|contiene 392 registros/.test(html)) failures.push('Outdated hard-coded event count in page notice');
+console.log(JSON.stringify({ events: events.length, venues: geo.features.length, verifiedVenues: verified, unclassifiedEvents: unclassified, errors: failures.length, failures }, null, 2));
 if (failures.length) process.exitCode = 1;
