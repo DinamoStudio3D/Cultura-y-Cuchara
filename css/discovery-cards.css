@@ -14,9 +14,9 @@
 #categorias #exploreCategoryGrid > button > span:first-child{grid-column:1;grid-row:1/3;align-self:center}
 #categorias #exploreCategoryGrid > button > strong{grid-column:2;margin:0!important;overflow-wrap:anywhere;line-height:1.35}
 #categorias #exploreCategoryGrid > button > span:last-child{grid-column:2;margin-top:5px}
-#establecimientos #localesGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))!important;gap:24px!important;align-items:start}
+#establecimientos #localesGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))!important;gap:24px!important;align-items:stretch}
 #establecimientos #localesGrid > .local-item:not(.hidden-item){display:flex!important;flex-direction:column!important;grid-template-columns:none!important;border-radius:var(--premium-radius,1.25rem)!important;border:1px solid #e7dfd4!important;min-width:0;box-shadow:0 8px 28px #2532410c!important}
-/* Let the original image proportions determine the media height. Badges stay in their own rows. */
+/* Align media frames across cards while keeping every image uncropped. */
 #establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media {
   position: relative;
   display: flex !important;
@@ -43,6 +43,7 @@
   min-height: 0 !important;
   max-height: none !important;
   padding: 0;
+  aspect-ratio: 1 / 1;
   object-fit: contain !important;
   transform: none !important;
 }
@@ -56,6 +57,9 @@
   display: flex;
   flex-wrap: wrap;
   max-width: none !important;
+  box-sizing: border-box;
+  min-height: 64px;
+  align-content: flex-start;
   padding: 8px 10px 4px;
 }
 #establecimientos #localesGrid > .local-item.vl-has-video:not(.hidden-item) > .vl17-media::after {
@@ -68,11 +72,11 @@
   margin: 0 10px 8px;
   padding: 4px 9px;
 }
-#establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-detail{flex:0 0 auto;display:flex!important;min-width:0}
+#establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-detail{flex:1 1 auto;display:flex!important;min-width:0}
 #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl-card-content{padding:22px!important;width:100%;gap:10px!important}
 #establecimientos #localesGrid > .local-item:not(.hidden-item) .local-title{font-size:23px!important;line-height:1.25!important;overflow-wrap:anywhere}
 #establecimientos #localesGrid > .local-item:not(.hidden-item) .local-desc{font-size:14px!important;line-height:1.65!important}
-#establecimientos #localesGrid > .local-item:not(.hidden-item) .vl18-tools{margin-top:0!important;padding-top:8px!important}
+#establecimientos #localesGrid > .local-item:not(.hidden-item) .vl18-tools{margin-top:auto!important;padding-top:8px!important}
 #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl-card-explore{min-height:44px;font-size:13px!important;align-items:center}
 #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl18-favorite{width:46px!important;height:46px!important;min-width:46px;min-height:46px}
 body[data-card-style="bordered"] #establecimientos #localesGrid > .local-item:not(.hidden-item),body[data-card-style="bordered"] #categorias #exploreCategoryGrid > button{box-shadow:none!important;border-color:#b5c1c8!important}
@@ -138,4 +142,16 @@ body[data-card-style="soft"] #establecimientos #localesGrid > .local-item:not(.h
   body #establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media.vl17-partner-media > img {
     padding: 0 !important;
   }
+}
+
+/* Reserve a small, consistent amount of copy space on multi-column rows. */
+@media (min-width: 640px) {
+  #establecimientos #localesGrid > .local-item:not(.hidden-item) .local-title {
+    min-height: 2.5em;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  #establecimientos #localesGrid > .local-item:not(.hidden-item) .local-desc { min-height: 4.95em !important; }
 }

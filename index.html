@@ -309,18 +309,18 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=201">
+<link rel="stylesheet" href="css/public-layout.css?v=202">
 <link rel="stylesheet" href="css/banco-portada.css?v=4">
 <link rel="stylesheet" href="css/business-cards.css?v=1">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
-<link rel="stylesheet" href="css/discovery-cards.css?v=106">
+<link rel="stylesheet" href="css/discovery-cards.css?v=107">
 <link rel="stylesheet" href="css/place-experience-v101.css?v=104">
 <link rel="stylesheet" href="css/discovery-sections-v104.css?v=104">
     <link rel="stylesheet" href="css/time-discovery-v79.css?v=79">
     <link rel="stylesheet" href="css/podcast-v80.css?v=80">
 <script src="js/public-color-contract.js?v=55"></script>
-<link rel="stylesheet" href="css/site-spacing-v105.css?v=105"><link rel="stylesheet" href="/css/public-brand-blue-v202.css">
+<link rel="stylesheet" href="css/site-spacing-v105.css?v=106"><link rel="stylesheet" href="/css/public-brand-blue-v202.css">
 <link rel="stylesheet" href="css/photo-credits.css?v=4"><link rel="stylesheet" href="css/mobile-welcome.css?v=2">
 <script src="js/account-access.js?v=2"></script><link rel="stylesheet" href="css/visitor-avatars.css?v=1"><script src="js/visitor-avatars.js?v=1"></script>
 <style id="vl-card-accessibility-2026">
@@ -547,6 +547,10 @@
 <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-group-4" onclick="vl29ToggleMenu(this)"><span>Más</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-group-4" class="vl29-dropdown" hidden><a href="#loja-tiempo">Loja en el Tiempo</a><a href="#postales">Postales</a><a href="#emprendedores">Emprendedores</a><a href="tienda.html">Tienda</a><a href="sumar-negocio.html">Sumar mi negocio</a><button type="button" onclick="vl29CloseMenus();openAccountModal()">Ingresar / Mi cuenta</button></div></div>
 </div>
 <div class="vl28-nav-actions"><button type="button" class="vl28-route-button" onclick="openModal('itineraryModal')"><i class="fa-solid fa-route"></i> Mi ruta</button><button type="button" class="vl29-account" onclick="openAccountModal()" aria-label="Ingresar o abrir mi cuenta"><i class="fa-solid fa-circle-user"></i><span>Ingresar</span></button></div>
+            <button id="accountFloatingInvite" type="button" onclick="openAccountFromFloatingInvite()" class="vl-account-invite hidden" aria-label="Crear una cuenta gratis en VisitaLoja">
+                <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+                <span>Crear cuenta</span><small>Gratis</small>
+            </button>
             <!-- Hamburger Button for Mobile / Tablet -->
             <button id="mobileMenuButton" type="button" onclick="toggleMobileMenu()" class="2xl:hidden text-white text-xl p-2 relative" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
                 <i class="fa-solid fa-bars"></i>
@@ -2616,12 +2620,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Botón flotante de cuenta: visible solo cuando el administrador lo activa -->
-    <button id="accountFloatingInvite" type="button" onclick="openAccountFromFloatingInvite()" class="vl-account-invite bg-brandDark text-white" aria-label="Únete gratis a Visita Loja" title="Únete gratis a Visita Loja">
-        <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
-        <span>Únete gratis</span>
-    </button>
 
     <!-- Toast Notification -->
     <div id="dataSyncStatus" role="status" aria-live="polite" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-[65] max-w-[calc(100%-2rem)] bg-brandDark/95 text-white border border-white/15 rounded-full px-4 py-2 text-xs font-bold shadow-xl backdrop-blur whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-down mr-2 text-cyan-300"></i><span>Actualizando paradas…</span></div>
@@ -5356,7 +5354,6 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                                 ${loc.category==='aliado'?'':openBadge}
                             </div>
 
-                            ${hasFeaturedVideo?`<span class="vl-video-photo-badge"><i class="fa-solid fa-circle-play" aria-hidden="true"></i>${currentLang==='en'?'ON VIDEO':'EN VÍDEO'}</span>`:''}
                         </div>
                         <div class="vl17-detail"><div class="vl-card-content p-5 relative">
                             <div class="vl-card-kicker"><i class="fa-solid ${hasFeaturedVideo?'fa-film':'fa-location-dot'}"></i> ${hasFeaturedVideo?(currentLang==='en'?'BUSINESS ON VIDEO':'CONTENIDO AUDIOVISUAL'):'DESCUBRE LOJA'}</div>

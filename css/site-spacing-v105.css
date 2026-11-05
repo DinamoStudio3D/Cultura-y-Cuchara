@@ -23,5 +23,5 @@
  #mapa [data-sponsor-experience="netplus"] .vl-experience-sponsor { margin-top:0 !important; padding:9px 12px; border-radius:12px; }
  #mapa [data-sponsor-experience="netplus"] .vl-experience-sponsor img { width:28px; height:28px; flex:0 0 28px; }
  #mapa [data-sponsor-experience="netplus"] .vl-experience-sponsor span { font-size:10px; line-height:1.5; }
- body.vl-browsing-visible :is(#webMascot,#webMascotRestore,#accountFloatingInvite) { visibility:hidden !important; pointer-events:none !important; }
+ body.vl-browsing-visible :is(#webMascot,#webMascotRestore) { visibility:hidden !important; pointer-events:none !important; }
 }

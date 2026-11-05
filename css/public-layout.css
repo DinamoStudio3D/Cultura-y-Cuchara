@@ -5,39 +5,32 @@
   .vl-map-controls { display: flex; gap: 8px; right: 16px; flex-wrap: wrap; }
   .vl-map-controls > button { min-height: 44px; }
   #accountFloatingInvite {
-    position: fixed;
-    right: max(12px, env(safe-area-inset-right));
-    bottom: calc(14px + env(safe-area-inset-bottom));
-    z-index: 95;
     align-items: center;
-    gap: 9px;
-    box-sizing: border-box;
+    justify-content: center;
+    gap: 6px;
+    flex: 0 0 auto;
     min-height: 44px;
-    max-width: calc(100% - 24px);
-    padding: 5px 14px 5px 5px;
-    border: 1px solid #6555be;
-    border-radius: 999px;
-    font: 800 .83rem/1.25 system-ui, sans-serif;
+    padding: 6px 10px;
+    border: 1px solid #d1e5f8;
+    border-radius: 10px;
+    font: 800 .78rem/1.2 system-ui, sans-serif;
+    white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 5px 16px #213a8552;
   }
   #accountFloatingInvite:not(.hidden) { display: inline-flex !important; }
   #accountFloatingInvite.hidden { display: none !important; }
-  #accountFloatingInvite > i {
-    display: grid;
-    flex: 0 0 32px;
-    width: 32px;
-    height: 32px;
-    place-items: center;
-    border-radius: 50%;
-    font-size: .82rem;
-  }
-  #accountFloatingInvite > span { white-space: nowrap; }
+  #accountFloatingInvite > small { font-size: .64rem; border-radius: 5px; padding: 3px 4px; }
+  nav:has(#accountFloatingInvite:not(.hidden):not(.interface-layer-hidden)) .vl29-account { display: none !important; }
   @media (max-width: 639px) {
     .vl-map-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .vl-map-controls > button { justify-content: center; padding: 8px; font-size: 11px; }
-    #accountFloatingInvite { gap: 7px; padding-right: 11px; font-size: .78rem; }
-    #accountFloatingInvite > i { flex-basis: 30px; width: 30px; height: 30px; }
+    #accountFloatingInvite { padding-inline: 8px; }
+  }
+  @media (max-width: 480px) {
+    nav:has(#accountFloatingInvite:not(.hidden):not(.interface-layer-hidden)) :is(.vl28-nav-actions,[data-i18n="navSub"]) { display: none !important; }
+  }
+  @media (max-width: 380px) {
+    #accountFloatingInvite > :is(i,small) { display: none; }
   }
 /* Base styles */
 html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-action: manipulation; }
@@ -984,7 +977,7 @@ nav.glass-nav.sticky .vl28-nav-actions{margin-left:0!important}
 .vl-footer-contact a:focus-visible{outline:3px solid #9bdcff;outline-offset:4px}
 @media(max-width:640px){.vl-footer-contact{flex-direction:column;text-align:center;padding-bottom:30px}.vl-footer-contact a{font-size:14px;max-width:100%;overflow-wrap:anywhere}}
 
-body:is(.vl-footer-visible,.vl-welcome-visible,.vl-passport-visible,.vl-adventure-visible,.vl-agenda-visible) :is(#webMascot,#webMascotRestore,#accountFloatingInvite){visibility:hidden!important;pointer-events:none!important}
+body:is(.vl-footer-visible,.vl-welcome-visible,.vl-passport-visible,.vl-adventure-visible,.vl-agenda-visible) :is(#webMascot,#webMascotRestore){visibility:hidden!important;pointer-events:none!important}
 
 /* Passport and missions: authored component layouts, with surface colors in the contract. */
 #pasaporte.vl-passport-section{padding:64px 32px!important;box-shadow:none!important}
@@ -1751,13 +1744,13 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
 
 @layer vl-colors {
   #accountFloatingInvite {
-    --vl-text: #fff;
-    --vl-muted: #fff;
-    --vl-accent: #fff;
-    color: #fff !important;
-    background: linear-gradient(115deg, #0759ae 5%, #5338a8 100%) !important;
+    --vl-text: #123b66;
+    --vl-muted: #123b66;
+    --vl-accent: #123b66;
+    color: #123b66 !important;
+    background: #fff !important;
   }
-  #accountFloatingInvite > i { color: #2b1d59 !important; background: #ffd26c; }
-  #accountFloatingInvite:hover { background: #3b338d !important; }
-  #accountFloatingInvite:focus-visible { outline: 3px solid #207bbb !important; outline-offset: 3px; }
+  #accountFloatingInvite > small { color: #533609 !important; background: #ffda83; }
+  #accountFloatingInvite:hover { background: #e7f3ff !important; }
+  #accountFloatingInvite:focus-visible { outline: 3px solid #ffda83 !important; outline-offset: 3px; }
 }
