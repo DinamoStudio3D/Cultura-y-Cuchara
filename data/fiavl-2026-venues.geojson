@@ -427,7 +427,11 @@
         "source": "FIAVL 2026 preliminary program",
         "notes": "No coordinates assigned until independently verified",
         "coordinate_source": "https://mapcarta.com/es/W453409840",
-        "coordinate_scope": "Edificio o área general según OpenStreetMap/Mapcarta; acceso exacto del evento pendiente"
+        "coordinate_scope": "Edificio o área general según OpenStreetMap/Mapcarta; acceso exacto del evento pendiente",
+        "official_circuit_2026": true,
+        "official_circuit_number": 9,
+        "official_circuit_source": "PROGRAMACION 2026 digital.pdf, página PDF 2 (mapa del Circuito Cultural)",
+        "official_circuit_label": "Centro Cultural Alfredo Mora Reyes"
       }
     },
     {
@@ -746,7 +750,11 @@
         "address_reference": "Olmedo y Rocafuerte, Loja",
         "address_source": "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura",
         "address_verification": "intersection_confirmed",
-        "address_notes": "Dirección corroborada por Municipio de Loja y prensa local en 2026: Olmedo y Rocafuerte. Coordenadas exactas aún pendientes."
+        "address_notes": "Dirección corroborada por Municipio de Loja y prensa local en 2026: Olmedo y Rocafuerte. Coordenadas exactas aún pendientes.",
+        "official_circuit_2026": true,
+        "official_circuit_number": 6,
+        "official_circuit_source": "PROGRAMACION 2026 digital.pdf, página PDF 2 (mapa del Circuito Cultural)",
+        "official_circuit_label": "Plaza de la Cultura"
       }
     },
     {
@@ -779,7 +787,11 @@
         "source": "FIAVL 2026 preliminary program",
         "notes": "No coordinates assigned until independently verified",
         "coordinate_source": "https://mapcarta.com/es/N368222331",
-        "coordinate_scope": "Monumento de San Sebastián como referencia dentro de la plaza; escenario y acceso exactos por confirmar"
+        "coordinate_scope": "Monumento de San Sebastián como referencia dentro de la plaza; escenario y acceso exactos por confirmar",
+        "official_circuit_2026": true,
+        "official_circuit_number": 4,
+        "official_circuit_source": "PROGRAMACION 2026 digital.pdf, página PDF 2 (mapa del Circuito Cultural)",
+        "official_circuit_label": "Plaza San Sebastián"
       }
     },
     {
@@ -812,7 +824,11 @@
         "source": "FIAVL 2026 preliminary program",
         "notes": "No coordinates assigned until independently verified",
         "coordinate_source": "https://mapcarta.com/es/W329673193",
-        "coordinate_scope": "Centro cartográfico de la plaza; ubicación general, no acceso ni escenario exacto"
+        "coordinate_scope": "Centro cartográfico de la plaza; ubicación general, no acceso ni escenario exacto",
+        "official_circuit_2026": true,
+        "official_circuit_number": 3,
+        "official_circuit_source": "PROGRAMACION 2026 digital.pdf, página PDF 2 (mapa del Circuito Cultural)",
+        "official_circuit_label": "Plaza Santo Domingo"
       }
     },
     {
@@ -839,7 +855,11 @@
         "address_reference": "Bernardo Valdivieso y Azuay, Loja",
         "address_source": "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf",
         "address_verification": "intersection_confirmed",
-        "address_notes": "Inventario de patrimonio edificado de la Universidad Nacional de Loja: Bernardo Valdivieso y Azuay, esquina; conocida como Parque de las Flores. Coordenadas del espacio aún pendientes."
+        "address_notes": "Inventario de patrimonio edificado de la Universidad Nacional de Loja: Bernardo Valdivieso y Azuay, esquina; conocida como Parque de las Flores. Coordenadas del espacio aún pendientes.",
+        "official_circuit_2026": true,
+        "official_circuit_number": 5,
+        "official_circuit_source": "PROGRAMACION 2026 digital.pdf, página PDF 2 (mapa del Circuito Cultural)",
+        "official_circuit_label": "Plazoleta 1ro de Mayo"
       }
     },
     {
@@ -949,7 +969,11 @@
         "source": "FIAVL 2026 preliminary program",
         "notes": "No coordinates assigned until independently verified",
         "coordinate_source": "https://mapcarta.com/es/W329672618",
-        "coordinate_scope": "Edificio o área general según OpenStreetMap/Mapcarta; acceso exacto del evento pendiente"
+        "coordinate_scope": "Edificio o área general según OpenStreetMap/Mapcarta; acceso exacto del evento pendiente",
+        "official_circuit_2026": true,
+        "official_circuit_number": 7,
+        "official_circuit_source": "PROGRAMACION 2026 digital.pdf, página PDF 2 (mapa del Circuito Cultural)",
+        "official_circuit_label": "Teatro Bolívar"
       }
     },
     {
@@ -1001,7 +1025,11 @@
         "verification": "pending",
         "location_type": "venue",
         "source": "FIAVL 2026 preliminary program",
-        "notes": "No coordinates assigned until independently verified"
+        "notes": "No coordinates assigned until independently verified",
+        "official_circuit_2026": true,
+        "official_circuit_number": 8,
+        "official_circuit_source": "PROGRAMACION 2026 digital.pdf, página PDF 2 (mapa del Circuito Cultural)",
+        "official_circuit_label": "Teatro Segundo Cueva Celi"
       }
     }
   ]
