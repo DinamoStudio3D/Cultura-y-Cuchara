@@ -11,7 +11,7 @@ async function execute({db,user,input,now,env=process.env}){
  if(!user?.uid)fail(401,'Inicia sesión.');
  if(!input||typeof input!=='object'||Array.isArray(input))fail(400,'Solicitud inválida.');
  const {action}=input;
- if(action==='deliver')return deliverPreviewPrize({db,user,claimId:input.claimId,now});
+ if(action==='deliver')return deliverPreviewPrize({db,user,claimId:input.claimId,placeId:input.placeId,now});
  if(action==='claim')return claimPreviewPrize({db,user,prizeId:input.prizeId,now});
  if(action==='queue'||action==='approvedQueue'){
   await assertPassportEditor({db,user});

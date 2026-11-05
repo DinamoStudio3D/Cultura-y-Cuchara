@@ -41,21 +41,27 @@ async function claimPreviewPrize({db, user, prizeId, now}) {
   });
 }
 
-async function deliverPreviewPrize({db, user, claimId, now}) {
+async function deliverPreviewPrize({db, user, claimId, placeId, now}) {
   if (typeof claimId !== 'string' || !/^[a-f0-9]{64}$/.test(claimId)) fail(400, 'Referencia inválida.');
   return db.runTransaction(async tx => {
     const profile = (await tx.get(db.collection('adminUsers').doc(user.uid))).data();
-    if (!(profile?.active === true && profile.role === 'admin') && user.admin !== true && user.role !== 'admin') {
-      fail(403, 'Solo administración puede confirmar la entrega en esta prueba.');
+    const admin = (profile?.active === true && profile.role === 'admin') || user.admin === true || user.role === 'admin';
+    if (!admin) {
+      const assignment = (await tx.get(db.collection('missionRewardMerchants').doc(user.uid))).data();
+      if (typeof placeId !== 'string' || assignment?.active !== true ||
+          !Array.isArray(assignment.placeIds) || !assignment.placeIds.includes(placeId)) {
+        fail(403, 'Tu cuenta no está autorizada para confirmar entregas en esta parada.');
+      }
     }
     const ref = db.collection(CLAIMS).doc(claimId);
     const claim = (await tx.get(ref)).data();
-    if (!claim) fail(404, 'Canje no encontrado.');
-    if (claim.status === 'delivered') return {claim};
+    if (!claim || (!admin && claim.placeId !== placeId)) fail(404, 'Canje no encontrado para esta parada.');
+    const receipt = ({title, status, deliveredAt}) => ({title, status, deliveredAt});
+    if (claim.status === 'delivered') return {claim: receipt(claim), alreadyDelivered: true};
     if (claim.status !== 'claimed') fail(409, 'El canje no está pendiente de entrega.');
     const next = {...claim, status: 'delivered', deliveredAt: now, deliveredBy: user.uid};
     tx.set(ref, next);
-    return {claim: next};
+    return {claim: receipt(next), alreadyDelivered: false};
   });
 }
 

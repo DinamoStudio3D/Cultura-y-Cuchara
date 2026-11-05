@@ -37,7 +37,16 @@ async function main() {
     const repeated = await run(winner.userId, 'claim', {prizeId});
     assert.equal(repeated.claim.claimId, winner.claimId);
     await assert.rejects(run(winner.userId, 'deliver', {claimId: winner.claimId}), {status: 403});
-    const deliveries = await Promise.all([run('admin', 'deliver', {claimId: winner.claimId}), run('admin', 'deliver', {claimId: winner.claimId})]);
+    const claimInput = {claimId: winner.claimId};
+    await db.doc('missionRewardMerchants/staff').set({active: true, placeIds: [placeId]});
+    await db.doc('missionRewardMerchants/other').set({active: true, placeIds: ['otra-parada']});
+    await db.doc('missionRewardMerchants/inactive').set({active: false, placeIds: [placeId]});
+    await assert.rejects(run('other', 'deliver', claimInput), {status: 403});
+    await assert.rejects(run('other', 'deliver', {...claimInput, placeId: 'otra-parada'}), {status: 404});
+    await assert.rejects(run('inactive', 'deliver', claimInput), {status: 403});
+    const deliveries = await Promise.all([run('staff', 'deliver', claimInput), run('admin', 'deliver', claimInput)]);
+    assert.equal(deliveries.filter(item => !item.alreadyDelivered).length, 1);
+    assert.equal(deliveries[0].claim.userId, undefined);
     assert.equal(deliveries[0].claim.status, 'delivered');
     assert.ok(deliveries[0].claim.deliveredAt.isEqual(deliveries[1].claim.deliveredAt));
     assert.equal((await db.collection(CLAIMS).get()).size, 1);

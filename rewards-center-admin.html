@@ -125,8 +125,8 @@ el('previewDelivery').addEventListener('submit',async event=>{
   if(!user||user.uid!==authorizedUid)return;
   if(button)button.disabled=true;
   try{
-    const {claim}=await requestRewardsDraft(auth,{action:'deliver',claimId:el('previewClaimId').value});
-    if(auth.currentUser===user)el('previewDeliveryStatus').textContent='Entrega registrada para '+claim.title+'.';
+    const {claim,alreadyDelivered}=await requestRewardsDraft(auth,{action:'deliver',claimId:el('previewClaimId').value});
+    if(auth.currentUser===user)el('previewDeliveryStatus').textContent=alreadyDelivered?'Este premio ya se entregó.':'Entrega registrada para '+claim.title+'.';
   }catch(error){
     if(auth.currentUser===user)el('previewDeliveryStatus').textContent=error.message;
   }finally{if(button)button.disabled=false}
