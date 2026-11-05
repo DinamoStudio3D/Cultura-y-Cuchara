@@ -16,7 +16,7 @@
 #categorias #exploreCategoryGrid > button > span:last-child{grid-column:2;margin-top:5px}
 #establecimientos #localesGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))!important;gap:24px!important}
 #establecimientos #localesGrid > .local-item:not(.hidden-item){display:flex!important;flex-direction:column!important;grid-template-columns:none!important;border-radius:var(--premium-radius,1.25rem)!important;border:1px solid #e7dfd4!important;min-width:0;box-shadow:0 8px 28px #2532410c!important}
-/* Keep the whole artwork visible. Badge rows have their own space above and below the image. */
+/* Let the original image proportions determine the media height. Badges stay in their own rows. */
 #establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media {
   position: relative;
   display: flex !important;
@@ -26,41 +26,30 @@
   width: 100% !important;
   height: auto !important;
   min-height: 0 !important;
-  aspect-ratio: 4/3;
+  aspect-ratio: auto !important;
+  flex-shrink: 0;
   padding: 0 !important;
   background: #edf3f8;
   overflow: hidden;
 }
-#establecimientos #localesGrid .vl-card-image-stage {
-  position: relative;
-  isolation: isolate;
+#establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media > img {
+  position: static !important;
   order: 1;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: hidden;
-  background: #dce7f1;
-}
-#establecimientos #localesGrid .vl-card-image-stage > img {
-  position: absolute;
-  inset: 0;
+  display: block;
+  flex: 0 0 auto;
+  box-sizing: border-box;
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
   min-height: 0 !important;
   max-height: none !important;
-  box-sizing: border-box;
+  padding: 0;
+  object-fit: contain !important;
+  transform: none !important;
 }
-#establecimientos #localesGrid .vl-card-image-stage > .vl-card-image-wash {
-  object-fit: cover;
-  filter: blur(20px) saturate(.85) brightness(.83);
-  transform: scale(1.25);
-  opacity: .8;
-  pointer-events: none;
+#establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media.vl17-partner-media > img {
+  padding: 0 !important;
+  max-height: none !important;
 }
-#establecimientos #localesGrid .vl-card-image-stage > .vl-card-image-art {
-  object-fit: contain;
-  transform: none;
-}
-#establecimientos #localesGrid .vl17-partner-media .vl-card-image-art { padding: 8px 14px; }
 #establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media > .absolute.top-3 {
   position: static !important;
   order: 0;
@@ -145,33 +134,8 @@ body[data-card-style="soft"] #establecimientos #localesGrid > .local-item:not(.h
  }
 }
 
-/* Two-card pilot for stops whose cover is primarily their logo. */
-#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) { align-self: start; }
-#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) > .vl17-media {
-  aspect-ratio: auto;
-  background: transparent;
-}
-#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) > .vl17-media > .absolute.top-3 {
-  padding: 14px 16px 0;
-}
-#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) .vl-stop-compact__heading {
-  display: flex;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) .vl-stop-compact__heading > h3 {
-  flex: 1 1 8rem;
-  min-width: 0;
-}
-#establecimientos #localesGrid > .local-item.vl-stop-compact:not(.hidden-item) .vl-stop-compact__logo {
-  flex: 0 0 76px;
-  width: 76px;
-  height: 76px;
-  box-sizing: border-box;
-  padding: 5px;
-  object-fit: contain;
-  border: 1px solid #d6e2ed;
-  border-radius: 14px;
-  background: #fff;
+@layer vl-layout {
+  body #establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media.vl17-partner-media > img {
+    padding: 0 !important;
+  }
 }
