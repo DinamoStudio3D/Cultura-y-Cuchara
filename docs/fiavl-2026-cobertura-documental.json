@@ -3,8 +3,8 @@
   "source": "PROGRAMACION 2026 digital.pdf",
   "scope": "Recuento de registros existentes; NO acredita que se hayan transcrito todas las actividades del PDF.",
   "generated_for_branch": "preview/fiavl-2026-agenda-mapa",
-  "events_total": 392,
-  "pdf_pages_with_event_references": 38,
+  "events_total": 393,
+  "pdf_pages_with_event_references": 39,
   "pages": {
     "8": 9,
     "10": 10,
@@ -12,6 +12,7 @@
     "12": 13,
     "13": 12,
     "14": 12,
+    "15": 1,
     "16": 14,
     "17": 14,
     "18": 11,
@@ -47,7 +48,6 @@
   },
   "pages_without_event_references_in_8_to_50": [
     9,
-    15,
     19,
     25,
     33
@@ -172,7 +172,26 @@
       }
     ],
     "limitations": "Coincidencia por título, no reconciliación exhaustiva de todas las funciones de esas páginas. Se requiere contrastar cada fecha/hora/lugar; no agregar duplicados automáticamente.",
-    "source": "PROGRAMACION 2026 digital.pdf, páginas PDF 9, 15, 19, 25, 33"
+    "source": "PROGRAMACION 2026 digital.pdf, páginas PDF 9, 15, 19, 25, 33",
+    "verified_performance_comparison": {
+      "pdf_pages": [
+        9,
+        15
+      ],
+      "performances_compared": 22,
+      "matched_before_update": 21,
+      "missing_added": 1,
+      "added_event": {
+        "id": "fiavl-striaria-20261120-1700",
+        "title": "Striaria",
+        "date": "2026-11-20",
+        "time": "17:00",
+        "venue": "Plaza Santo Domingo",
+        "pdf_page": 15
+      },
+      "method": "Manual transcription of visible parsed PDF entries and exact title/date/time/venue comparison",
+      "remaining": "Other functions on pages 19,25,33 and full program not exhaustively reconciled"
+    }
   },
   "pages_without_event_references_in_8_to_50_note": "No interpretar como páginas sin eventos: son páginas de cartelera con funciones ya representadas parcialmente en la agenda por día."
 }
