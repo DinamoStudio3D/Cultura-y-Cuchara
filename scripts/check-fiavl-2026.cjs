@@ -23,6 +23,7 @@ for (const e of events) {
   if (!e.titulo || !e.lugar || !venues.has(normalized(e))) failures.push('Missing title/venue registry entry: ' + e.id);
 }
 const venueNames = new Set();
+const circuitNumbers = new Set();
 let verified = 0;
 for (const f of geo.features) {
   const p = f.properties || {};
@@ -30,6 +31,14 @@ for (const f of geo.features) {
   venueNames.add(p.name);
   const count = events.filter(e => normalized(e) === p.name).length;
   if (count !== p.events) failures.push('Venue event count mismatch: ' + p.name + ' expected ' + count + ', stored ' + p.events);
+  if (p.address_verification === 'intersection_confirmed' || p.address_verification === 'reference_confirmed') {
+    if (!p.address_reference || !p.address_source) failures.push('Documented address missing reference/source: ' + p.name);
+  }
+  if (p.official_circuit_2026) {
+    if (!Number.isInteger(p.official_circuit_number) || p.official_circuit_number < 1 || p.official_circuit_number > 9 || !p.official_circuit_source) failures.push('Invalid official circuit metadata: ' + p.name);
+    if (circuitNumbers.has(p.official_circuit_number)) failures.push('Duplicate official circuit number: ' + p.official_circuit_number);
+    circuitNumbers.add(p.official_circuit_number);
+  }
   if (p.verification === 'verified') {
     verified++;
     const c = f.geometry?.coordinates;
