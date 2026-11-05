@@ -303,7 +303,7 @@ assert(index.includes('restaurantMenuModal" class="fixed inset-0 z-[100]'), 'El 
 
 assert(index.includes('function syncFloatingAccountInviteVisibility'), 'La invitación de registro responde al estado de menús y diálogos');
 assert(index.includes('interface-layer-hidden'), 'La invitación flotante se oculta dentro de submenús');
-assert(index.includes("querySelectorAll('[role=\"dialog\"], #mobileMenu')"), 'Se vigilan tanto ventanas como el menú móvil');
+assert(index.includes('querySelectorAll(inviteBlockingOverlays)') && index.includes('[aria-modal="true"], dialog, #accountModal, #mobileMenu'), 'Se vigilan diálogos modales y el menú sin bloquear avisos no modales');
 
 
 assert(index.includes("rawDesc=String("), 'Las descripciones vacías activan un texto de respaldo');

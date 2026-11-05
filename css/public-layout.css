@@ -17,7 +17,7 @@
     white-space: nowrap;
     cursor: pointer;
   }
-  #accountFloatingInvite:not(.hidden) { display: inline-flex !important; }
+  #accountFloatingInvite:not(.hidden):not(.interface-layer-hidden) { display: inline-flex !important; }
   #accountFloatingInvite.hidden { display: none !important; }
   #accountFloatingInvite > small { font-size: .64rem; border-radius: 5px; padding: 3px 4px; }
   nav:has(#accountFloatingInvite:not(.hidden):not(.interface-layer-hidden)) .vl29-account { display: none !important; }
