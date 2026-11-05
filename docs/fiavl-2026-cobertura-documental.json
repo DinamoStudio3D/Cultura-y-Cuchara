@@ -191,7 +191,57 @@
       },
       "method": "Manual transcription of visible parsed PDF entries and exact title/date/time/venue comparison",
       "remaining": "Other functions on pages 19,25,33 and full program not exhaustively reconciled"
-    }
+    },
+    "additional_verified_comparison": {
+      "pdf_pages": [
+        19,
+        25,
+        33
+      ],
+      "performances_compared": 11,
+      "matched": 11,
+      "missing": 0,
+      "details": [
+        {
+          "page": 19,
+          "title": "Dos pájaros de un Tiro",
+          "matched": 2
+        },
+        {
+          "page": 19,
+          "title": "Angel Velásquez y su Orquesta",
+          "matched": 1
+        },
+        {
+          "page": 25,
+          "title": "El horrible",
+          "matched": 3
+        },
+        {
+          "page": 25,
+          "title": "Títeres Sakados del Tacho",
+          "matched": 2
+        },
+        {
+          "page": 33,
+          "title": "Don Medardo Sinfónico",
+          "matched": 1
+        },
+        {
+          "page": 33,
+          "title": "Circo en el Parque",
+          "matched": 1
+        },
+        {
+          "page": 33,
+          "title": "La Embajada de la Alegría",
+          "matched": 1
+        }
+      ],
+      "limitation": "La lectura textual de la página 25 muestra funciones sin título claramente asociado (14 noviembre 22:00 y 17 noviembre 19:30). No se atribuyen a un espectáculo ni se crean eventos hasta revisar el diseño visual."
+    },
+    "total_compared_from_selected_pdf_pages": 33,
+    "total_missing_added": 1
   },
   "pages_without_event_references_in_8_to_50_note": "No interpretar como páginas sin eventos: son páginas de cartelera con funciones ya representadas parcialmente en la agenda por día."
 }
