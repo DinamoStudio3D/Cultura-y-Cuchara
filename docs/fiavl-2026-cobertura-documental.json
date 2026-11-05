@@ -240,7 +240,7 @@
       ],
       "limitation": "La lectura textual de la página 25 muestra funciones sin título claramente asociado (14 noviembre 22:00 y 17 noviembre 19:30). No se atribuyen a un espectáculo ni se crean eventos hasta revisar el diseño visual."
     },
-    "total_compared_from_selected_pdf_pages": 33,
+    "total_compared_from_selected_pdf_pages": 36,
     "total_missing_added": 2,
     "page_25_visual_review": {
       "pdf_page": 25,
@@ -296,7 +296,8 @@
     "additional_visual_checks": {
       "pdf_pages": [
         9,
-        19
+        19,
+        33
       ],
       "method": "Inspección de imagen original de cada página y comparación con registros de agenda",
       "verified": [
@@ -329,9 +330,27 @@
           "date": "2026-11-12",
           "time": "22:30",
           "venue": "Plaza San Sebastián"
+        },
+        {
+          "title": "Don Medardo Sinfónico",
+          "date": "2026-11-17",
+          "time": "22:30",
+          "venue": "Plaza San Sebastián"
+        },
+        {
+          "title": "Circo en el Parque",
+          "date": "2026-11-15",
+          "time": "18:00",
+          "venue": "Plaza Central"
+        },
+        {
+          "title": "La Embajada de la Alegría",
+          "date": "2026-11-19",
+          "time": "10:30",
+          "venue": "Plaza Central"
         }
       ],
-      "outcome": "Cinco funciones coinciden con la agenda existente; no agregar duplicados.",
+      "outcome": "Ocho funciones cotejadas visualmente en páginas 9, 19 y 33 coinciden con la agenda; no agregar duplicados.",
       "limitations": "Revisión visual puntual, no acreditación de integridad total de las páginas."
     }
   },
