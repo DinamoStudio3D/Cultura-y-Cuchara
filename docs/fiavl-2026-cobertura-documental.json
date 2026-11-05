@@ -292,6 +292,47 @@
       ],
       "needs_followup": [],
       "outcome": "La imagen de alta resolución muestra dos funciones de El horrible el 17 noviembre: 10h30 y 19h30. Se añadió la segunda, sin reemplazar la primera."
+    },
+    "additional_visual_checks": {
+      "pdf_pages": [
+        9,
+        19
+      ],
+      "method": "Inspección de imagen original de cada página y comparación con registros de agenda",
+      "verified": [
+        {
+          "title": "AU-D",
+          "date": "2026-11-12",
+          "time": "21:00",
+          "venue": "Plaza San Sebastián"
+        },
+        {
+          "title": "Esto es eso",
+          "date": "2026-11-19",
+          "time": "22:30",
+          "venue": "Plaza San Sebastián"
+        },
+        {
+          "title": "Dos pájaros de un Tiro",
+          "date": "2026-11-21",
+          "time": "18:30",
+          "venue": "Plaza Central"
+        },
+        {
+          "title": "Dos pájaros de un Tiro",
+          "date": "2026-11-22",
+          "time": "16:30",
+          "venue": "Plaza Central"
+        },
+        {
+          "title": "Angel Velásquez y su Orquesta",
+          "date": "2026-11-12",
+          "time": "22:30",
+          "venue": "Plaza San Sebastián"
+        }
+      ],
+      "outcome": "Cinco funciones coinciden con la agenda existente; no agregar duplicados.",
+      "limitations": "Revisión visual puntual, no acreditación de integridad total de las páginas."
     }
   },
   "pages_without_event_references_in_8_to_50_note": "No interpretar como páginas sin eventos: son páginas de cartelera con funciones ya representadas parcialmente en la agenda por día."
