@@ -12,14 +12,14 @@
     align-items: center;
     gap: 9px;
     box-sizing: border-box;
-    min-height: 46px;
+    min-height: 44px;
     max-width: calc(100% - 24px);
-    padding: 5px 13px 5px 6px;
-    border: 1px solid #367eb5;
+    padding: 5px 14px 5px 5px;
+    border: 1px solid #6555be;
     border-radius: 999px;
-    font: 750 .83rem/1.25 system-ui, sans-serif;
+    font: 800 .83rem/1.25 system-ui, sans-serif;
     cursor: pointer;
-    box-shadow: 0 6px 18px #123b6638;
+    box-shadow: 0 5px 16px #213a8552;
   }
   #accountFloatingInvite:not(.hidden) { display: inline-flex !important; }
   #accountFloatingInvite.hidden { display: none !important; }
@@ -1755,9 +1755,9 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
     --vl-muted: #fff;
     --vl-accent: #fff;
     color: #fff !important;
-    background: linear-gradient(135deg, #07569a, #123b66) !important;
+    background: linear-gradient(115deg, #0759ae 5%, #5338a8 100%) !important;
   }
-  #accountFloatingInvite > i { color: #fff !important; background: #ffffff26; }
-  #accountFloatingInvite:hover { background: #123b66 !important; }
+  #accountFloatingInvite > i { color: #2b1d59 !important; background: #ffd26c; }
+  #accountFloatingInvite:hover { background: #3b338d !important; }
   #accountFloatingInvite:focus-visible { outline: 3px solid #207bbb !important; outline-offset: 3px; }
 }
