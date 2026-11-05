@@ -241,7 +241,58 @@
       "limitation": "La lectura textual de la página 25 muestra funciones sin título claramente asociado (14 noviembre 22:00 y 17 noviembre 19:30). No se atribuyen a un espectáculo ni se crean eventos hasta revisar el diseño visual."
     },
     "total_compared_from_selected_pdf_pages": 33,
-    "total_missing_added": 1
+    "total_missing_added": 1,
+    "page_25_visual_review": {
+      "pdf_page": 25,
+      "review_type": "Imagen original de página del PDF",
+      "confirmed": [
+        {
+          "title": "Los Intrépidos",
+          "date": "2026-11-14",
+          "time": "22:00",
+          "venue": "Plaza San Sebastián",
+          "existing_event": true
+        },
+        {
+          "title": "El horrible",
+          "date": "2026-11-15",
+          "time": "16:00",
+          "venue": "Parque Jipiro, Teatro Indomalaico",
+          "existing_event": true
+        },
+        {
+          "title": "El horrible",
+          "date": "2026-11-16",
+          "time": "10:30",
+          "venue": "Plaza Central",
+          "existing_event": true
+        },
+        {
+          "title": "Títeres Sakados del Tacho",
+          "date": "2026-11-14",
+          "time": "17:30",
+          "venue": "Plaza Santo Domingo",
+          "existing_event": true
+        },
+        {
+          "title": "Títeres Sakados del Tacho",
+          "date": "2026-11-15",
+          "time": "17:00",
+          "venue": "Parque Jipiro, Teatro Indomalaico",
+          "existing_event": true
+        }
+      ],
+      "needs_followup": [
+        {
+          "title": "El horrible",
+          "date": "2026-11-17",
+          "venue": "Teatrino de la Casona Cultural",
+          "existing_event_time": "10:30",
+          "reason": "Extracción de texto muestra tanto 10h30 como 19h30; verificar el horario en una imagen de mayor resolución antes de corregir."
+        }
+      ],
+      "outcome": "La función del 14 de noviembre a las 22h00 corresponde a Los Intrépidos y ya estaba registrada. No agregar evento duplicado."
+    }
   },
   "pages_without_event_references_in_8_to_50_note": "No interpretar como páginas sin eventos: son páginas de cartelera con funciones ya representadas parcialmente en la agenda por día."
 }
