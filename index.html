@@ -314,7 +314,7 @@
 <link rel="stylesheet" href="css/business-cards.css?v=1">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
-<link rel="stylesheet" href="css/discovery-cards.css?v=105">
+<link rel="stylesheet" href="css/discovery-cards.css?v=106">
 <link rel="stylesheet" href="css/place-experience-v101.css?v=104">
 <link rel="stylesheet" href="css/discovery-sections-v104.css?v=104">
     <link rel="stylesheet" href="css/time-discovery-v79.css?v=79">
@@ -5352,7 +5352,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 cards.push(`
                     <div class="local-item ${loc.category} ${hasFeaturedVideo?'vl-has-video':''} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="group" tabindex="0" aria-label="Ver detalles de ${locTitle}. Pulsa Enter para abrir" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
-                            <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.category==='aliado'&&hasCustomLogo?loc.customLogoUrl:loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="${loc.category==='aliado'&&hasCustomLogo?`Logo de ${locTitle}`:''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                            <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.category==='aliado'&&hasCustomLogo?loc.customLogoUrl:loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="${loc.category==='aliado'&&hasCustomLogo?`Logo de ${locTitle}`:''}" class="w-full h-full object-contain" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
                                 <span class="${loc.category==='aliado'?'bg-violet-700 text-white':'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${loc.category==='aliado'?'<i class="fa-solid fa-handshake mr-1"></i>Marca aliada':locTag}</span>${hasPaidBadge&&loc.category!=='aliado'?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Destacado Visita Loja</span>':''}
                                 ${loc.category==='aliado'?'':openBadge}
