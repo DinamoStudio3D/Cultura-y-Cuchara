@@ -13,6 +13,12 @@
 <p>Revisa el premio, sus condiciones y los cupos antes de aprobarlo. La aprobación queda registrada para una futura publicación.</p>
 <button id="loadReviewQueue" type="button">Consultar pendientes</button>
 <p id="reviewStatus" role="status"></p><div id="reviewQueue"></div>
+<form id="previewDelivery">
+  <label for="previewClaimId">Referencia de canje de prueba</label>
+  <input id="previewClaimId" required pattern="[a-f0-9]{64}" maxlength="64" autocomplete="off">
+  <button type="submit">Confirmar entrega de prueba</button>
+  <p id="previewDeliveryStatus" role="status"></p>
+</form>
 </section>
 <section class="panel" aria-labelledby="draftHeading"><h2 id="draftHeading">Diseñar una recompensa de fidelidad</h2><p class="draft-note">Borrador local para revisar el diseño. No se guarda en Firebase, no se publica y no sustituye el programa existente.</p><div class="draft-grid"><form id="draftForm"><label for="draftPlace">Establecimiento</label><select id="draftPlace" required><option value="">Selecciona una parada</option></select><label for="draftTitle">Nombre del premio</label><input id="draftTitle" maxlength="100" required placeholder="Ej.: Café de cortesía"><label for="draftDescription">Condiciones</label><textarea id="draftDescription" maxlength="400" placeholder="Indica cómo reclamar el beneficio"></textarea><label for="draftType">Tipo de premio</label><select id="draftType"><option value="product">Producto</option><option value="discount">Descuento</option><option value="surprise">Sorpresa</option></select><label for="draftTarget">Sellos necesarios</label><input id="draftTarget" type="number" min="10" max="30" step="1" value="10" required><label for="draftValidity">Validez del premio (días)</label><input id="draftValidity" type="number" min="1" max="365" step="1" value="30" required><label for="draftStock">Cupos (vacío = sin límite indicado)</label><input id="draftStock" type="number" min="0" max="1000000" step="1" placeholder="Opcional"><label for="draftImage">Fotografía de referencia (solo en este dispositivo)</label><input id="draftImage" type="file" accept="image/png,image/jpeg,image/webp"><p class="muted">Máximo 3 MB. La imagen no se sube ni se almacena.</p><div class="actions"><button type="submit">Revisar borrador</button><button type="button" id="saveDraft">Guardar borrador en este navegador</button><button type="button" id="clearDraft">Descartar borrador</button><button type="button" id="exportDraft">Exportar JSON</button><label for="importDraft" style="margin:0">Importar borrador JSON</label><input id="importDraft" type="file" accept=".json,application/json" style="max-width:230px"></div><p class="muted">El borrador se guarda únicamente en esta sesión y cuenta, sin fotografía. No llega a Firebase.</p><p id="draftStatus" role="status"></p></form><div class="draft-preview"><span class="draft-tag">VISTA PREVIA · FIDELIDAD</span><img id="draftImagePreview" alt="Fotografía de referencia del premio" hidden style="width:100%;max-height:220px;object-fit:contain;border-radius:12px;margin-top:12px"><h3 id="draftPreviewTitle">Nombre del premio</h3><p id="draftPreviewPlace">Selecciona un establecimiento</p><p id="draftPreviewDescription"></p><div id="draftStamps" class="stamp-row" aria-hidden="true"></div><strong id="draftPreviewTarget"></strong><p id="draftPreviewTerms" class="muted"></p></div></div></section><section class="panel" aria-labelledby="passportHeading"><h2 id="passportHeading">Recompensas del pasaporte · Diseño administrativo</h2><p class="draft-note">Editor de demostración. No crea beneficios reales ni modifica el pasaporte, los sellos o los canjes existentes.</p><div class="draft-grid"><form id="passportForm"><label for="passportKind">Modalidad</label><select id="passportKind"><option value="general">Premio general de VisitaLoja</option><option value="sponsored">Beneficio patrocinado por un negocio</option></select><div id="sponsorFields" hidden><label for="passportSponsor">Establecimiento patrocinador</label><select id="passportSponsor"><option value="">Selecciona un establecimiento</option></select></div><label for="passportTitle">Nombre del beneficio</label><input id="passportTitle" maxlength="100" required placeholder="Ej.: Recuerdo de Loja"><label for="passportMilestone">Sellos necesarios</label><input id="passportMilestone" type="number" min="1" max="1000" step="1" value="10" required><label for="passportTerms">Condiciones</label><textarea id="passportTerms" maxlength="400" placeholder="Requisitos para reclamar"></textarea><label for="passportStock">Cupos disponibles</label><input id="passportStock" type="number" min="0" step="1" placeholder="Sin límite indicado"><label for="passportExpiry">Fecha de finalización (opcional)</label><input id="passportExpiry" type="date"><div class="actions" style="margin-top:16px"><button type="submit">Revisar beneficio</button><button type="button" id="savePassportDraft">Guardar borrador local</button><button type="button" id="clearPassportDraft">Descartar</button></div><p class="muted">Los borradores permanecen solo en esta sesión, sin sincronización ni publicación.</p><p id="passportStatus" role="status"></p></form><div class="draft-preview"><span class="draft-tag">VISTA PREVIA · PASAPORTE</span><h3 id="passportPreviewTitle">Nombre del beneficio</h3><p id="passportPreviewKind">Premio general de VisitaLoja</p><strong id="passportPreviewMilestone">10 sellos</strong><p id="passportPreviewTerms"></p><p id="passportPreviewStock"></p><p id="passportPreviewExpiry"></p><p class="muted">Los sellos obtenidos permanecen intactos al desbloquear o reclamar el premio.</p></div></div></section></section></main>
 <script src="js/rewards-draft-client.js"></script>
@@ -63,9 +69,10 @@ async function refreshReviewQueue(){
   reviewQueue.replaceChildren();
   reviewStatus.textContent='Consultando borradores…';
   try{
-    const {drafts}=await requestRewardsDraft(auth,{action:'queue'});
+    const queues=await Promise.all(['queue','approvedQueue'].map(action=>requestRewardsDraft(auth,{action})));
+    const drafts=queues.flatMap(queue=>queue.drafts);
     if(!current())return;
-    reviewStatus.textContent=drafts.length ? 'Pendientes: '+drafts.length : 'No hay borradores pendientes.';
+    reviewStatus.textContent=drafts.length ? 'Para revisar o publicar: '+drafts.length : 'No hay borradores pendientes.';
     for(const draft of drafts){
       const card=document.createElement('article');
       card.className='panel review-card';
@@ -73,9 +80,11 @@ async function refreshReviewQueue(){
       note.maxLength=1000;
       note.setAttribute('aria-label','Motivo de devolución');
       note.placeholder='Motivo de devolución';
-      const approve=reviewText('button','Aprobar'),reject=reviewText('button','Devolver');
+      const approved=draft.status==='approved';
+      const approve=reviewText('button',approved?'Publicar en pruebas':'Aprobar'),reject=reviewText('button','Devolver');
       approve.type=reject.type='button';
       card.append(reviewText('h3',draft.title),reviewText('p',draft.placeId+' · '+draft.targetVisits+' sellos · '+draft.stock+' cupos · '+draft.validityDays+' días'),reviewText('p',draft.description),note,approve,reject);
+      note.hidden=reject.hidden=approved;
       async function decide(action){
         if(!current())return;
         if(action==='reject'&&!note.value.trim()){
@@ -85,20 +94,42 @@ async function refreshReviewQueue(){
         }
         approve.disabled=reject.disabled=true;
         try{
-          await requestRewardsDraft(auth,{action,placeId:draft.placeId,authorUid:draft.authorUid,revision:draft.revision,note:note.value});
+          const result=await requestRewardsDraft(auth,{action,placeId:draft.placeId,authorUid:draft.authorUid,revision:draft.revision,note:note.value});
           if(current()){
+            if(action==='approve'){await refreshReviewQueue();return}
+            if(action==='publish'){
+              const link=reviewText('a','Abrir enlace de canje de prueba');
+              link.href='rewards-preview-claim.html?prize='+encodeURIComponent(result.draft.prizeId);
+              link.target='_blank';
+              link.rel='noopener';
+              card.replaceChildren(link);
+              reviewStatus.textContent='Premio publicado en el entorno de pruebas.';
+              return;
+            }
             card.remove();
-            reviewStatus.textContent=action==='approve'?'Borrador aprobado.':'Borrador devuelto al propietario.';
+            reviewStatus.textContent='Borrador devuelto al propietario.';
           }
         }catch(error){if(current())reviewStatus.textContent=error.message}
         finally{approve.disabled=reject.disabled=false}
       }
-      approve.addEventListener('click',()=>decide('approve'));
+      approve.addEventListener('click',()=>decide(approved?'publish':'approve'));
       reject.addEventListener('click',()=>decide('reject'));
       reviewQueue.append(card);
     }
   }catch(error){if(current())reviewStatus.textContent=error.message}
 }
 el('loadReviewQueue').addEventListener('click',refreshReviewQueue);
-auth.onAuthStateChanged(()=>{reviewRequest++;reviewQueue.replaceChildren();reviewStatus.textContent=''});
+el('previewDelivery').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const user=auth.currentUser,button=event.submitter;
+  if(!user||user.uid!==authorizedUid)return;
+  if(button)button.disabled=true;
+  try{
+    const {claim}=await requestRewardsDraft(auth,{action:'deliver',claimId:el('previewClaimId').value});
+    if(auth.currentUser===user)el('previewDeliveryStatus').textContent='Entrega registrada para '+claim.title+'.';
+  }catch(error){
+    if(auth.currentUser===user)el('previewDeliveryStatus').textContent=error.message;
+  }finally{if(button)button.disabled=false}
+});
+auth.onAuthStateChanged(()=>{el('previewDelivery').reset();el('previewDeliveryStatus').textContent='';reviewRequest++;reviewQueue.replaceChildren();reviewStatus.textContent=''});
 </script></body></html>

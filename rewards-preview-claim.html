@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex"><title>Canje de prueba | VisitaLoja</title>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="js/rewards-draft-client.js"></script>
+<style>body{font:1rem system-ui;background:#eef4ff;color:#102750;padding:1rem}main{max-width:32rem;margin:3rem auto;background:#fff;padding:1.5rem;border-radius:1rem}button{padding:.8rem;border:0;border-radius:.5rem;background:#174baf;color:#fff;font:inherit}button:disabled{opacity:.65}</style>
+</head><body><main>
+<h1>Canje de fidelidad en pruebas</h1>
+<p>Usa tu cuenta de cliente de prueba para comprobar tus sellos y reservar un cupo.</p>
+<p id="status" role="status">Comprobando sesión…</p>
+<button id="claim" type="button" disabled>Reclamar premio</button>
+</main><script>
+const firebaseConfig={apiKey:"AIzaSyAfPB59mntjuK7Yi8H-Bn9fUGdpJzTrRYE",authDomain:"cultura-y-cuchara.firebaseapp.com",projectId:"cultura-y-cuchara",storageBucket:"cultura-y-cuchara.firebasestorage.app",messagingSenderId:"974351327730",appId:"1:974351327730:web:08573026a46d1bb6598b6b"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const prizeId=new URLSearchParams(location.search).get('prize');
+const status=document.getElementById('status'),button=document.getElementById('claim');
+const valid=/^[a-f0-9]{64}$/.test(prizeId||'');
+auth.onAuthStateChanged(user=>{
+  button.disabled=!valid||!user;
+  status.textContent=!valid?'El enlace de canje no es válido.':user?'Sesión lista.':'Inicia sesión en VisitaLoja dentro de este mismo Preview y vuelve al enlace.';
+});
+button.addEventListener('click',async()=>{
+  const user=auth.currentUser;
+  button.disabled=true;
+  try{
+    const {claim}=await requestRewardsDraft(auth,{action:'claim',prizeId});
+    if(auth.currentUser===user)status.textContent=(claim.status==='delivered'?'Premio entregado: ':'Cupo reservado para ')+claim.title+'. Referencia: '+claim.claimId;
+  }catch(error){
+    if(auth.currentUser===user){status.textContent=error.message;button.disabled=false}
+  }
+});
+</script></body></html>
