@@ -1,0 +1,122 @@
+{
+  "title": "FIAVL 2026 — revisión de cobertura documental y circuito cultural",
+  "source": "PROGRAMACION 2026 digital.pdf",
+  "scope": "Recuento de registros existentes; NO acredita que se hayan transcrito todas las actividades del PDF.",
+  "generated_for_branch": "preview/fiavl-2026-agenda-mapa",
+  "events_total": 392,
+  "pdf_pages_with_event_references": 38,
+  "pages": {
+    "8": 9,
+    "10": 10,
+    "11": 12,
+    "12": 13,
+    "13": 12,
+    "14": 12,
+    "16": 14,
+    "17": 14,
+    "18": 11,
+    "20": 12,
+    "21": 14,
+    "22": 9,
+    "23": 11,
+    "24": 12,
+    "26": 11,
+    "27": 7,
+    "28": 6,
+    "29": 4,
+    "30": 4,
+    "31": 11,
+    "32": 14,
+    "34": 12,
+    "35": 9,
+    "36": 8,
+    "37": 5,
+    "38": 9,
+    "39": 11,
+    "40": 11,
+    "41": 8,
+    "42": 8,
+    "43": 8,
+    "44": 12,
+    "45": 14,
+    "46": 14,
+    "47": 9,
+    "48": 12,
+    "49": 15,
+    "50": 5
+  },
+  "pages_without_event_references_in_8_to_50": [
+    9,
+    15,
+    19,
+    25,
+    33
+  ],
+  "official_circuit": {
+    "source_pdf_page": 2,
+    "places": [
+      "Plaza San Francisco",
+      "Parque Central",
+      "Plaza Santo Domingo",
+      "Plaza San Sebastián",
+      "Plazoleta 1ro de Mayo",
+      "Plaza de la Cultura",
+      "Teatro Bolívar",
+      "Teatro Segundo Cueva Celi",
+      "Centro Cultural Alfredo Mora Reyes"
+    ],
+    "exact_or_documented_matches": [
+      {
+        "name": "Centro Cultural Alfredo Mora Reyes",
+        "official_label": "Centro Cultural Alfredo Mora Reyes",
+        "events": 10
+      },
+      {
+        "name": "Plaza de la Cultura",
+        "official_label": "Plaza de la Cultura",
+        "events": 46
+      },
+      {
+        "name": "Plaza San Sebastián",
+        "official_label": "Plaza San Sebastián",
+        "events": 23
+      },
+      {
+        "name": "Plaza Santo Domingo",
+        "official_label": "Plaza Santo Domingo",
+        "events": 47
+      },
+      {
+        "name": "Plazoleta 1ro de Mayo",
+        "official_label": "Plazoleta 1ro de Mayo",
+        "events": 31
+      },
+      {
+        "name": "Teatro Bolívar",
+        "official_label": "Teatro Bolívar",
+        "events": 15
+      },
+      {
+        "name": "Teatro Segundo Cueva Celi - CCE",
+        "official_label": "Teatro Segundo Cueva Celi",
+        "events": 6
+      }
+    ],
+    "requires_manual_reconciliation": [
+      {
+        "official_label": "Parque Central",
+        "registry_candidates": [
+          "Plaza Central",
+          "Parque Central, frente al Municipio"
+        ],
+        "note": "No fusionar automáticamente: confirmar si todas las actividades usan el mismo espacio."
+      },
+      {
+        "official_label": "Plaza San Francisco",
+        "registry_candidates": [],
+        "note": "Aparece en el mapa oficial, pero no hay escenario con ese nombre exacto en los 392 registros. Puede no tener actividades listadas o existir una omisión; verificar el PDF."
+      }
+    ]
+  },
+  "next_review": "Contrastar por página y por día los títulos, horas, escenarios y actividades que pudieran faltar; no inferir omisiones por páginas sin registros."
+}
