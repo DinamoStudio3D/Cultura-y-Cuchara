@@ -31,22 +31,33 @@
   background: #edf3f8;
   overflow: hidden;
 }
-#establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media > img {
-  position: static !important;
+#establecimientos #localesGrid .vl-card-image-stage {
+  position: relative;
+  isolation: isolate;
   order: 1;
   flex: 1 1 0;
-  box-sizing: border-box;
-  width: 100% !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  max-height: none !important;
-  padding: 4px 10px 10px;
-  object-fit: contain !important;
-  transform: none !important;
+  min-height: 0;
+  overflow: hidden;
+  background: #dce7f1;
 }
-#establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media.vl17-partner-media > img {
-  padding: 8px 20px 14px !important;
+#establecimientos #localesGrid .vl-card-image-stage > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
+#establecimientos #localesGrid .vl-card-image-stage > .vl-card-image-wash {
+  object-fit: cover;
+  filter: blur(20px) saturate(.85) brightness(.83);
+  transform: scale(1.25);
+  opacity: .8;
+  pointer-events: none;
+}
+#establecimientos #localesGrid .vl-card-image-stage > .vl-card-image-art {
+  object-fit: contain;
+  transform: none;
+}
+#establecimientos #localesGrid .vl17-partner-media .vl-card-image-art { padding: 8px 14px; }
 #establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media > .absolute.top-3 {
   position: static !important;
   order: 0;
