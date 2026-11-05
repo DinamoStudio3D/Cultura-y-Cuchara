@@ -70,3 +70,8 @@
 #registeredBrands .vr-brand:has(.vr-cta) .vr-name{font-size:12px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 #registeredBrands .vr-institution{display:block;width:fit-content;margin:10px auto 16px;font-size:12px;text-underline-offset:3px}
 @media(min-width:1000px){#registeredBrands .vr-institution{margin:10px 0 0}}
+
+/* Short carousels become a regular row that wraps on narrow screens. */
+#registeredBrands[data-motion=false] .vr-viewport { overflow: visible; }
+#registeredBrands[data-motion=false] .vr-group { box-sizing: border-box; gap: 10px; }
+#registeredBrands[data-motion=false] .vr-brand { box-sizing: border-box; max-width: 100%; }
