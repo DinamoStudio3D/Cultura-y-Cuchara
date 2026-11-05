@@ -82,6 +82,36 @@ async function main() {
     await assert.rejects(run('customer', 'claim', seasonInput, end), /venció/);
     assert.equal((await run('customer', 'claim', seasonInput, start)).claim.status, 'claimed');
     assert.equal((await run('customer', 'claim', {prizeId: normalId}, end)).claim.status, 'claimed');
+    const stampTime = Timestamp.now();
+    await db.doc('siteContent/passport').set({active: true, campaignId: 'test-campaign'});
+    await db.doc('locales/test-cafe').set({title: 'Café de prueba'});
+    const passport = {kind: 'sponsored', sponsor: placeId, title: 'Beneficio del pasaporte', terms: '', milestone: 2, stock: 1, expiry: ''};
+    await assert.rejects(run('owner', 'passportPublish', passport), {status: 403});
+    const publishedPassport = await run('admin', 'passportPublish', passport);
+    await assert.rejects(run('admin', 'passportPublish', passport), {status: 409});
+    assert.equal((await run('admin', 'passportList')).prizes[0].prizeId, publishedPassport.prizeId);
+    async function stamp(requestId, stop, status = 'confirmed') {
+      await db.doc('loyaltyVisits/' + requestId).set({userId: 'customer', placeId: stop, status, confirmedAt: stampTime});
+      await db.doc('securePassportStamps/' + requestId).set({userId: 'customer', placeId: stop, requestId, campaignId: 'test-campaign', confirmedAt: stampTime});
+    }
+    await stamp('visit1', placeId);
+    await stamp('visit2', placeId);
+    await stamp('reversed', 'otra-parada', 'reversed');
+    await assert.rejects(run('customer', 'passportClaim', publishedPassport), /meta de sellos/);
+    await stamp('visit3', 'otra-parada');
+    const [firstPassport, retryPassport] = await Promise.all([
+      run('customer', 'passportClaim', publishedPassport), run('customer', 'passportClaim', publishedPassport)
+    ]);
+    assert.equal(firstPassport.claim.claimId, retryPassport.claim.claimId);
+    assert.equal((await db.collection('securePassportStamps').get()).size, 4);
+    assert.deepEqual((await db.doc('loyaltyVisits/visit3').get()).data(),
+      {userId: 'customer', placeId: 'otra-parada', status: 'confirmed', confirmedAt: stampTime});
+    await assert.rejects(run('second', 'passportClaim', publishedPassport), /cupos/);
+    assert.equal((await run('staff', 'deliver', {claimId: firstPassport.claim.claimId})).claim.status, 'delivered');
+    const general = await run('admin', 'passportPublish', {...passport, kind: 'general', title: 'Premio general', stock: null});
+    const generalClaim = (await run('customer', 'passportClaim', general)).claim;
+    await assert.rejects(run('staff', 'deliver', {claimId: generalClaim.claimId}), {status: 404});
+    assert.equal((await run('admin', 'deliver', {claimId: generalClaim.claimId})).claim.status, 'delivered');
     console.log('Flujo verificado: publicación autorizada, vigencia, sellos, último cupo y reintento sin duplicado.');
   } finally {
     await deleteApp(app);

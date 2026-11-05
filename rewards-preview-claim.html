@@ -6,7 +6,7 @@
 <script src="js/rewards-draft-client.js"></script>
 <style>body{font:1rem system-ui;background:#eef4ff;color:#102750;padding:1rem}main{max-width:32rem;margin:3rem auto;background:#fff;padding:1.5rem;border-radius:1rem}button{padding:.8rem;border:0;border-radius:.5rem;background:#174baf;color:#fff;font:inherit}button:disabled{opacity:.65}</style>
 </head><body><main>
-<h1>Canje de fidelidad en pruebas</h1>
+<h1 id="pageHeading">Canje de fidelidad en pruebas</h1>
 <p>Usa tu cuenta de cliente de prueba para comprobar tus sellos y reservar un cupo.</p>
 <section id="prizeDetails" hidden><h2 id="prizeTitle"></h2><p id="prizeDescription"></p><p id="prizeTerms"></p><img id="prizePhoto" hidden alt="Foto del premio" referrerpolicy="no-referrer" style="max-width:100%;max-height:260px;border-radius:12px"></section>
 <p id="status" role="status">Comprobando sesión…</p>
@@ -17,9 +17,11 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const params=new URLSearchParams(location.search);
 const linkedPrizeId=params.get('prize'),placeId=params.get('place');
+const passportPrizeId=params.get('passport');
+if(passportPrizeId)document.getElementById('pageHeading').textContent='Canje de pasaporte en pruebas';
 let activePrizeId=null;
 const status=document.getElementById('status'),button=document.getElementById('claim');
-const valid=!!placeId||/^[a-f0-9]{64}$/.test(linkedPrizeId||'');
+const valid=passportPrizeId?/^[a-f0-9]{64}$/.test(passportPrizeId):!!placeId||/^[a-f0-9]{64}$/.test(linkedPrizeId||'');
 auth.onAuthStateChanged(async user=>{
   button.disabled=true;
   activePrizeId=null;
@@ -31,12 +33,12 @@ auth.onAuthStateChanged(async user=>{
   status.textContent=!valid?'El enlace de canje no es válido.':user?'Cargando premio…':'Inicia sesión en VisitaLoja dentro de este mismo Preview y vuelve al enlace.';
   if(!valid||!user)return;
   try{
-    const {prize}=await requestRewardsDraft(auth,{action:'prize',...(placeId?{placeId}:{prizeId:linkedPrizeId})});
+    const {prize}=await requestRewardsDraft(auth,passportPrizeId?{action:'passportPrize',prizeId:passportPrizeId}:{action:'prize',...(placeId?{placeId}:{prizeId:linkedPrizeId})});
     if(auth.currentUser!==user)return;
     document.getElementById('prizeTitle').textContent=prize.title;
     document.getElementById('prizeDescription').textContent=prize.description;
     const date=new Intl.DateTimeFormat('es-EC',{timeZone:'America/Guayaquil',dateStyle:'medium'});
-    document.getElementById('prizeTerms').textContent=prize.targetVisits+' sellos · Hasta el '+date.format(prize.expiresAtMs-1);
+    document.getElementById('prizeTerms').textContent=prize.targetVisits+' sellos'+(passportPrizeId?' · Conservas tus sellos':'')+(prize.expiresAtMs?' · Hasta el '+date.format(prize.expiresAtMs-1):'');
     if(prize.imageUrl){photo.src=prize.imageUrl;photo.hidden=false}
     activePrizeId=prize.prizeId;
     details.hidden=false;
@@ -49,7 +51,7 @@ button.addEventListener('click',async()=>{
   if(!activePrizeId)return;
   button.disabled=true;
   try{
-    const {claim}=await requestRewardsDraft(auth,{action:'claim',prizeId:activePrizeId});
+    const {claim}=await requestRewardsDraft(auth,{action:passportPrizeId?'passportClaim':'claim',prizeId:activePrizeId});
     if(auth.currentUser===user)status.textContent=(claim.status==='delivered'?'Premio entregado: ':'Cupo reservado para ')+claim.title+'. Referencia: '+claim.claimId;
   }catch(error){
     if(auth.currentUser===user){status.textContent=error.message;button.disabled=false}

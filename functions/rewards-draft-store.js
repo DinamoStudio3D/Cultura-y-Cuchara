@@ -2,6 +2,7 @@
 const {normalizeRewardDraft}=require('./rewards-draft-schema');
 const {resolveRewardsActor,assertPassportEditor}=require('./rewards-center-access');
 const {publishPreviewPrize,getPreviewPrize,claimPreviewPrize,deliverPreviewPrize}=require('./rewards-preview-redemption');
+const {executePassportRewards}=require('./rewards-preview-passport');
 const COLLECTION='rewardsCenterDraftsPreview';
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status})};
 function enabled(env){return env.VERCEL_ENV==='preview'&&env.REWARDS_DRAFT_WRITES==='approved-preview-v1'}
@@ -11,6 +12,7 @@ async function execute({db,user,input,now,env=process.env}){
  if(!user?.uid)fail(401,'Inicia sesión.');
  if(!input||typeof input!=='object'||Array.isArray(input))fail(400,'Solicitud inválida.');
  const {action}=input;
+ if(['passportPublish','passportList','passportPrize','passportClaim'].includes(action))return executePassportRewards({db,user,input,now});
  if(action==='deliver')return deliverPreviewPrize({db,user,claimId:input.claimId,placeId:input.placeId,now});
  if(action==='prize')return getPreviewPrize({db,prizeId:input.prizeId,placeId:input.placeId===undefined?undefined:id(input.placeId),now});
  if(action==='claim')return claimPreviewPrize({db,user,prizeId:input.prizeId,now});
