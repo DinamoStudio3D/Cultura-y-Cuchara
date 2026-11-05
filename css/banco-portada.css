@@ -3,32 +3,56 @@
   margin: clamp(22px, 4vw, 48px) auto;
 }
 .vl-bank-spotlight__card {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  min-width: 0;
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
   border-radius: 24px;
   background: #102e4c;
   color: #fff;
+  box-shadow: 0 16px 38px #102e4c24;
 }
-.vl-bank-spotlight__copy { padding: clamp(24px, 5vw, 56px); }
+.vl-bank-spotlight__visual, .vl-bank-spotlight__city, .vl-bank-spotlight__card::before {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.vl-bank-spotlight__visual { z-index: -2; }
+.vl-bank-spotlight__city { object-fit: cover; object-position: center 55%; }
+.vl-bank-spotlight__card::before {
+  content: "";
+  z-index: -1;
+  background: linear-gradient(90deg, #071d32f5 0%, #0b2740de 43%, #142f4a55 100%);
+}
+.vl-bank-spotlight__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  padding: clamp(24px, 5vw, 56px);
+}
 .vl-bank-spotlight .vl-bank-spotlight__eyebrow {
   margin: 0 0 10px;
-  color: #bfdcf4;
+  color: #c6e5ff;
   text-transform: uppercase;
-  letter-spacing: .1em;
-  font-size: .72rem;
+  letter-spacing: .11em;
+  font-size: .73rem;
   font-weight: 800;
 }
 .vl-bank-spotlight h2 {
   margin: 0;
   color: #fff;
-  font-size: clamp(2rem, 5vw, 4.3rem);
+  font-size: clamp(2.15rem, 5.6vw, 4.85rem);
   line-height: 1.03;
   font-weight: 900;
-  letter-spacing: -.045em;
+  letter-spacing: -.05em;
 }
-.vl-bank-spotlight .vl-bank-spotlight__description { margin: 12px 0 20px; color: #e2effa; font-size: .98rem; }
+.vl-bank-spotlight .vl-bank-spotlight__description {
+  max-width: 44ch;
+  margin: 12px 0 20px;
+  color: #f0f7ff;
+  font-size: 1rem;
+}
 .vl-bank-spotlight .vl-bank-spotlight__link {
   display: inline-flex;
   align-items: center;
@@ -41,45 +65,48 @@
   font-weight: 800;
   text-decoration: none;
 }
-.vl-bank-spotlight .vl-bank-spotlight__link:hover { background: #e8f4ff; }
-.vl-bank-spotlight__link:focus-visible { outline: 3px solid #8ad5ff; outline-offset: 4px; }
-.vl-bank-spotlight__visual {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  place-items: center;
-  min-height: 210px;
-}
-.vl-bank-spotlight__visual::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: #12345b33;
-}
-.vl-bank-spotlight__city {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.vl-bank-spotlight .vl-bank-spotlight__link:hover { background: #d9eeff; }
+.vl-bank-spotlight a:focus-visible { outline: 3px solid #8ad5ff; outline-offset: 3px; }
 .vl-bank-spotlight__logo {
   display: grid;
   place-items: center;
-  width: clamp(112px, 20vw, 168px);
+  width: clamp(110px, 18vw, 170px);
   aspect-ratio: 1;
-  padding: 16px;
+  padding: 15px;
   border-radius: 18px;
   background: #fff;
-  box-shadow: 0 12px 34px #11264d55;
+  box-shadow: 0 12px 34px #07172966;
 }
 .vl-bank-spotlight__logo img { display: block; width: 100%; height: auto; }
+.vl-bank-spotlight__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 5px clamp(16px, 5vw, 56px);
+  border-top: 1px solid #ffffff44;
+  background: #071c32e8;
+}
+.vl-bank-spotlight .vl-bank-spotlight__bar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 3px 9px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  font-size: .89rem;
+  text-decoration: none;
+}
+.vl-bank-spotlight .vl-bank-spotlight__bar a:hover { background: #ffffff22; }
+.vl-bank-spotlight__bar i { color: #9ed4ff; }
+.vl-bank-spotlight__demo { margin-left: auto; color: #d2e4f3; font-size: .74rem; }
 @media (max-width: 620px) {
   .vl-bank-spotlight { width: calc(100% - 28px); }
-  .vl-bank-spotlight__card { grid-template-columns: minmax(0, 1fr); border-radius: 18px; }
-  .vl-bank-spotlight__visual { grid-row: 1; min-height: 138px; }
-  .vl-bank-spotlight__logo { width: 90px; padding: 10px; border-radius: 13px; }
-  .vl-bank-spotlight__copy { padding: 20px; }
+  .vl-bank-spotlight__card { border-radius: 18px; }
+  .vl-bank-spotlight__card::before { background: linear-gradient(10deg, #071d32fd 0%, #0a253bdc 54%, #102e4c40 100%); }
+  .vl-bank-spotlight__body { grid-template-columns: 1fr; gap: 16px; padding: 20px; }
+  .vl-bank-spotlight__logo { grid-row: 1; width: 78px; padding: 8px; border-radius: 12px; }
+  .vl-bank-spotlight__demo { margin: 0 9px 8px; }
 }

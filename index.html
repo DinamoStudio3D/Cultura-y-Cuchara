@@ -310,7 +310,7 @@
 
 
 <link rel="stylesheet" href="css/public-layout.css?v=201">
-<link rel="stylesheet" href="css/banco-portada.css">
+<link rel="stylesheet" href="css/banco-portada.css?v=2">
 <link rel="stylesheet" href="css/business-cards.css?v=1">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
@@ -1087,15 +1087,23 @@
     <!-- Map Section -->
     <section id="banco-de-loja-destacado" class="vl-bank-spotlight" aria-labelledby="vl-bank-spotlight-title">
         <div class="vl-bank-spotlight__card">
-            <div class="vl-bank-spotlight__copy">
-                <p class="vl-bank-spotlight__eyebrow">Espacio de marca <span aria-hidden="true">·</span> Demostración</p>
-                <h2 id="vl-bank-spotlight-title">Banco de Loja</h2>
-                <p class="vl-bank-spotlight__description">Conoce el banco y encuentra sus oficinas y canales de atención.</p>
-                <a class="vl-bank-spotlight__link" href="/banco-de-loja.html">Conocer Banco de Loja <span aria-hidden="true">↗</span></a>
-            </div>
-            <div class="vl-bank-spotlight__visual">
-                <img class="vl-bank-spotlight__city" src="/assets/photos/responsive/atardecer-loja-640.webp" alt="" loading="lazy" decoding="async" width="640" height="480">
+            <picture class="vl-bank-spotlight__visual">
+                <source media="(max-width: 620px)" srcset="/assets/photos/responsive/atardecer-loja-640.webp">
+                <img class="vl-bank-spotlight__city" src="/assets/photos/responsive/atardecer-loja-1280.webp" alt="" loading="lazy" decoding="async">
+            </picture>
+            <div class="vl-bank-spotlight__body">
+                <div class="vl-bank-spotlight__copy">
+                    <p class="vl-bank-spotlight__eyebrow">Loja, Ecuador <span aria-hidden="true">·</span> Espacio de marca</p>
+                    <h2 id="vl-bank-spotlight-title">Banco de Loja</h2>
+                    <p class="vl-bank-spotlight__description">Encuentra una oficina cerca de ti o consulta los canales oficiales de atención.</p>
+                    <a class="vl-bank-spotlight__link" href="/banco-de-loja.html">Conocer Banco de Loja <span aria-hidden="true">↗</span></a>
+                </div>
                 <div class="vl-bank-spotlight__logo"><img src="/banco-de-loja.png" alt="" loading="lazy" decoding="async" width="256" height="213"></div>
+            </div>
+            <div class="vl-bank-spotlight__bar">
+                <a href="https://www.bancodeloja.fin.ec/oficinas"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Oficinas y horarios <span aria-hidden="true">↗</span></a>
+                <a href="https://www.bancodeloja.fin.ec/canales-de-atencion"><i class="fa-solid fa-headset" aria-hidden="true"></i> Canales de atención <span aria-hidden="true">↗</span></a>
+                <span class="vl-bank-spotlight__demo">Demostración de patrocinio</span>
             </div>
         </div>
     </section>
