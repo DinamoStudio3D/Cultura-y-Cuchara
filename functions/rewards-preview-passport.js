@@ -1,4 +1,5 @@
 'use strict';
+const {normalize} = require('../js/reward-season-fields');
 const {createHash} = require('node:crypto');
 const {assertPassportEditor} = require('./rewards-center-access');
 const {CLAIMS} = require('./rewards-preview-redemption');
@@ -6,8 +7,8 @@ const COLLECTION = 'rewardsCenterPassportPrizesPreview';
 const fail = (status, message) => { throw Object.assign(new Error(message), {status}); };
 const hash = (...parts) => createHash('sha256').update(JSON.stringify(parts)).digest('hex');
 const validId = value => typeof value === 'string' && /^[a-zA-Z0-9_-]{1,120}$/.test(value);
-const publicPrize = ({title, terms, milestone, expiresAtMs, campaignId}) =>
-  ({title, description: terms, targetVisits: milestone, expiresAtMs, campaignId});
+const publicPrize = ({title, terms, milestone, expiresAtMs, campaignId, imageUrl}) =>
+  ({title, description: terms, targetVisits: milestone, expiresAtMs, campaignId, imageUrl});
 
 function validate(input, now) {
   const title = typeof input.title === 'string' ? input.title.trim() : '';
@@ -28,7 +29,10 @@ function validate(input, now) {
     }
     expiresAtMs = ms + 86400000;
   }
-  return {title, terms, milestone, remaining: stock, expiresAtMs, placeId: kind === 'sponsored' ? sponsor : null};
+  let photo;
+  try { photo = normalize({imageUrl: input.imageUrl}); }
+  catch (error) { fail(400, error.message); }
+  return {...photo, title, terms, milestone, remaining: stock, expiresAtMs, placeId: kind === 'sponsored' ? sponsor : null};
 }
 
 async function executePassportRewards({db, user, input, now}) {

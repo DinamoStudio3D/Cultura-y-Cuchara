@@ -85,9 +85,11 @@ async function main() {
     const stampTime = Timestamp.now();
     await db.doc('siteContent/passport').set({active: true, campaignId: 'test-campaign'});
     await db.doc('locales/test-cafe').set({title: 'Café de prueba'});
-    const passport = {kind: 'sponsored', sponsor: placeId, title: 'Beneficio del pasaporte', terms: '', milestone: 2, stock: 1, expiry: ''};
+    const passport = {kind: 'sponsored', sponsor: placeId, title: 'Beneficio del pasaporte', terms: '', milestone: 2, stock: 1, expiry: '', imageUrl: seasonal.imageUrl};
     await assert.rejects(run('owner', 'passportPublish', passport), {status: 403});
+    await assert.rejects(run('admin', 'passportPublish', {...passport, imageUrl: 'https://example.com/photo.jpg'}), {status: 400});
     const publishedPassport = await run('admin', 'passportPublish', passport);
+    assert.equal((await run('customer', 'passportPrize', publishedPassport)).prize.imageUrl, seasonal.imageUrl);
     await assert.rejects(run('admin', 'passportPublish', passport), {status: 409});
     assert.equal((await run('admin', 'passportList')).prizes[0].prizeId, publishedPassport.prizeId);
     async function stamp(requestId, stop, status = 'confirmed') {
