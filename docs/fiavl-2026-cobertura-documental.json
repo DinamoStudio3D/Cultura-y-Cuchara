@@ -118,5 +118,61 @@
       }
     ]
   },
-  "next_review": "Contrastar por página y por día los títulos, horas, escenarios y actividades que pudieran faltar; no inferir omisiones por páginas sin registros."
+  "next_review": "Contrastar por página y por día los títulos, horas, escenarios y actividades que pudieran faltar; no inferir omisiones por páginas sin registros.",
+  "page_reference_review": {
+    "reviewed_pdf_pages": [
+      9,
+      15,
+      19,
+      25,
+      33
+    ],
+    "finding": "Las cinco páginas contienen actividades y títulos; los eventos equivalentes pueden estar referenciados en páginas de agenda por día. Ausencia de referencias no demuestra ausencia de actividades.",
+    "examples": [
+      {
+        "pdf_page": 9,
+        "titles": [
+          "Cuidado!! Un Payaso Malo Puede Arruinar tu Vida",
+          "Tuttotorna"
+        ],
+        "existing_records_found": true
+      },
+      {
+        "pdf_page": 15,
+        "titles": [
+          "Striaria",
+          "Semillas de Fuego"
+        ],
+        "existing_records_found": true
+      },
+      {
+        "pdf_page": 19,
+        "titles": [
+          "Dos pájaros de un Tiro",
+          "Angel Velásquez y su Orquesta"
+        ],
+        "existing_records_found": true
+      },
+      {
+        "pdf_page": 25,
+        "titles": [
+          "El horrible",
+          "Títeres Sakados del Tacho"
+        ],
+        "existing_records_found": true
+      },
+      {
+        "pdf_page": 33,
+        "titles": [
+          "Don Medardo Sinfónico",
+          "Circo en el Parque",
+          "La Embajada de la Alegría"
+        ],
+        "existing_records_found": true
+      }
+    ],
+    "limitations": "Coincidencia por título, no reconciliación exhaustiva de todas las funciones de esas páginas. Se requiere contrastar cada fecha/hora/lugar; no agregar duplicados automáticamente.",
+    "source": "PROGRAMACION 2026 digital.pdf, páginas PDF 9, 15, 19, 25, 33"
+  },
+  "pages_without_event_references_in_8_to_50_note": "No interpretar como páginas sin eventos: son páginas de cartelera con funciones ya representadas parcialmente en la agenda por día."
 }
