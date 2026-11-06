@@ -1646,6 +1646,12 @@
                 </div>
             </div>
 
+            <div id="fiavlParadeHighlight" hidden class="rounded-2xl border border-fuchsia-400/40 bg-white/10 p-4 mb-7">
+                <p id="fiavlParadeHighlightLabel" class="text-xs font-black uppercase tracking-wider text-fuchsia-300"></p>
+                <p id="fiavlParadeHighlightTime" class="mt-1 text-sm font-bold text-white"></p>
+                <button id="fiavlParadeHighlightLink" type="button" class="mt-2 text-sm font-bold text-cyan-300 underline"></button>
+            </div>
+
             <div id="festival-agenda">
                 <h3 class="text-xl font-black mb-4">Agenda diaria</h3>
                 <div id="festivalDayTabs" class="flex gap-2 overflow-x-auto pb-3 mb-3"></div>
@@ -4090,8 +4096,24 @@
             const saved = safeReadJSON('cyc_saved_festival_events', []);
             document.getElementById('festivalAgendaGrid').innerHTML = visible.map(event => {
                 const description = currentLang === 'en' && event.descEn ? event.descEn : event.description || event.desc;
-                return `<article class="bg-white/5 border border-white/15 rounded-2xl p-5 hover:border-fuchsia-400/60 transition"><div class="flex items-start justify-between gap-3"><span class="text-xs font-black text-cyan-300 uppercase tracking-wider">${event.category || 'Arte'}</span><span class="text-xs ${event.free ? 'text-green-300' : 'text-yellow-300'}">${event.free ? 'Entrada libre' : 'Consultar acceso'}</span></div><h4 class="font-black text-lg mt-3">${event.title}</h4><p class="text-sm text-gray-300 mt-2"><i class="fa-regular fa-clock text-fuchsia-300 mr-2"></i>${event.time} &nbsp;·&nbsp; <i class="fa-solid fa-location-dot text-fuchsia-300 mr-1"></i>${escapeHTML(event.place)}</p>${description ? `<p class="text-sm text-gray-300 mt-2 leading-relaxed">${escapeHTML(description)}</p>` : ''}<div class="grid grid-cols-2 gap-2 mt-4"><button type="button" onclick="saveFestivalEvent('${event.id}')" class="rounded-xl py-2.5 text-xs font-bold border ${saved.includes(event.id) ? 'bg-yellow-300 text-black border-yellow-300' : 'border-white/20 hover:bg-white/10'}"><i class="fa-${saved.includes(event.id) ? 'solid' : 'regular'} fa-star mr-1"></i>${saved.includes(event.id) ? 'Guardado' : 'Mi agenda'}</button>${event.mapUrl ? `<a href="${event.mapUrl}" target="_blank" rel="noopener noreferrer" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600 hover:bg-fuchsia-500"><i class="fa-solid fa-route mr-1"></i>${festivalMapLinkLabel(event)}</a>` : `<span class="rounded-xl py-2.5 text-xs text-center text-gray-500 border border-white/10">${event.locationPrecision === 'recorrido' ? (currentLang === 'en' ? 'Parade route' : 'Recorrido del desfile') : 'Ubicación pendiente'}</span>`}</div></article>`;
+                return `<article data-festival-event-id="${escapeHTML(event.id)}" tabindex="-1" class="bg-white/5 border border-white/15 rounded-2xl p-5 hover:border-fuchsia-400/60 transition"><div class="flex items-start justify-between gap-3"><span class="text-xs font-black text-cyan-300 uppercase tracking-wider">${event.category || 'Arte'}</span><span class="text-xs ${event.free ? 'text-green-300' : 'text-yellow-300'}">${event.free ? 'Entrada libre' : 'Consultar acceso'}</span></div><h4 class="font-black text-lg mt-3">${event.title}</h4><p class="text-sm text-gray-300 mt-2"><i class="fa-regular fa-clock text-fuchsia-300 mr-2"></i>${event.time} &nbsp;·&nbsp; <i class="fa-solid fa-location-dot text-fuchsia-300 mr-1"></i>${escapeHTML(event.place)}</p>${description ? `<p class="text-sm text-gray-300 mt-2 leading-relaxed">${escapeHTML(description)}</p>` : ''}<div class="grid grid-cols-2 gap-2 mt-4"><button type="button" onclick="saveFestivalEvent('${event.id}')" class="rounded-xl py-2.5 text-xs font-bold border ${saved.includes(event.id) ? 'bg-yellow-300 text-black border-yellow-300' : 'border-white/20 hover:bg-white/10'}"><i class="fa-${saved.includes(event.id) ? 'solid' : 'regular'} fa-star mr-1"></i>${saved.includes(event.id) ? 'Guardado' : 'Mi agenda'}</button>${event.mapUrl ? `<a href="${event.mapUrl}" target="_blank" rel="noopener noreferrer" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600 hover:bg-fuchsia-500"><i class="fa-solid fa-route mr-1"></i>${festivalMapLinkLabel(event)}</a>` : `<span class="rounded-xl py-2.5 text-xs text-center text-gray-500 border border-white/10">${event.locationPrecision === 'recorrido' ? (currentLang === 'en' ? 'Parade route' : 'Recorrido del desfile') : 'Ubicación pendiente'}</span>`}</div></article>`;
             }).join('');
+            const parade = events.find(event => fiavlPreviewIds.has(event.id) && event.id === 'fiavl2026-21d664ab2cee');
+            const highlight = document.getElementById('fiavlParadeHighlight');
+            highlight.hidden = !parade;
+            if (parade) {
+                const en = currentLang === 'en';
+                document.getElementById('fiavlParadeHighlightLabel').textContent = en ? 'Opening parade' : 'Desfile inaugural';
+                document.getElementById('fiavlParadeHighlightTime').textContent = `${formatFestivalDay(parade.date)} · ${parade.time}`;
+                const link = document.getElementById('fiavlParadeHighlightLink');
+                link.textContent = en ? 'View parade route' : 'Ver recorrido del desfile';
+                link.onclick = () => {
+                    selectFestivalDay(parade.date);
+                    const card = document.querySelector(`[data-festival-event-id="${CSS.escape(parade.id)}"]`);
+                    card?.focus({ preventScroll: true });
+                    card?.scrollIntoView({ block: 'center' });
+                };
+            }
             document.getElementById('festivalEmpty').classList.toggle('hidden', visible.length > 0);
             renderFestivalEventMarkers();
             updateFestivalClock();
