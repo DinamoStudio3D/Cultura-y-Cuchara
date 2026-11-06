@@ -70,3 +70,27 @@ test('task search opens rewards and claims for the exact selected place',()=>{
  assert.deepEqual(calls.at(-2),['expreso','fidelity','programs']);
  assert.equal(calls.at(-1),'close');
 });
+
+test('sidebar search renders stop actions and keeps its own result indexes',()=>{
+ const html=fs.readFileSync(require('node:path').join(__dirname,'../admin.html'),'utf8');
+ const calls=[],box={};
+ const context={
+  adminGlobalSearchItems:()=>[{type:'Módulo',label:'Premios Expreso',module:'fidelity'}],
+  adminPlaceTaskResults:()=>[{type:'Tarea de la parada',label:'Ver canjes · Expreso al Sur',fidelityView:'activity',placeId:'expreso'}],
+  adminSearchMatches:()=>true,ADMIN_MODULE_LABELS:{},escapeAdminHtml:String,
+  adminGlobalSearchResults:[],openPlaceManagement:(...args)=>{calls.push(args);return true;},
+  closeAdminGlobalSearch(){},window:{scrollTo(){}}
+ };
+ for(const name of ['findAdminSearchResults','renderAdminSearchButtons','renderAdminSidebarSearch','openAdminGlobalSearchResult']){
+  const start=html.indexOf('function '+name+'('),end=html.indexOf('\n}',start)+2;
+  vm.runInNewContext(html.slice(start,end),context);
+ }
+ assert.equal(context.renderAdminSidebarSearch('premio expreso',box),1);
+ assert.equal(box.hidden,false);
+ assert.match(box.innerHTML,/Ver canjes · Expreso al Sur/);
+ assert.match(box.innerHTML,/openAdminGlobalSearchResult\(0,true\)/);
+ context.openAdminGlobalSearchResult(0,true);
+ assert.deepEqual(calls,[['expreso','fidelity','activity']]);
+ assert.equal(context.renderAdminSidebarSearch('',box),0);
+ assert.equal(box.hidden,true);
+});
