@@ -3307,12 +3307,18 @@
       "place": "Bernardo Valdivieso",
       "category": "Exposiciones y artes visuales",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.998648,
+      "lng": -79.2010756,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.998648,-79.2010756",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del tramo entre Rocafuerte y Miguel Riofrío, usado en las otras funciones",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32698246",
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://www.openstreetmap.org/node/367908896"
+      ]
     },
     {
       "id": "fiavl2026-003c8f24e6b8",
