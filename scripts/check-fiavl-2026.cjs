@@ -23,6 +23,14 @@ for (const e of events) {
   if (!/^2026-11-(1[2-9]|2[0-2])$/.test(e.fecha)) failures.push('Unexpected date: ' + e.id);
   if (!/^([01]?\d|2[0-3]):[0-5]\d(?:–(?:[01]?\d|2[0-4]):[0-5]\d)?$/.test(e.hora)) failures.push('Time format: ' + e.id + ' ' + e.hora);
   if (!e.titulo || !e.lugar || !venues.has(normalized(e))) failures.push('Missing title/venue registry entry: ' + e.id);
+  if (!e.categoria || !String(e.categoria).trim()) failures.push('Missing event category: ' + e.id);
+  if (e.titulo && /<[^>]*>/.test(e.titulo)) failures.push('Unexpected HTML in event title: ' + e.id);
+  if (e.lugar && /<[^>]*>/.test(e.lugar)) failures.push('Unexpected HTML in event venue: ' + e.id);
+  if (e.hora && e.hora.includes('–')) {
+    const [start, end] = e.hora.split('–');
+    const minutes = value => { const [h,m] = value.split(':').map(Number); return h*60+m; };
+    if (minutes(end) <= minutes(start)) failures.push('Invalid same-day time range: ' + e.id+' '+e.hora);
+  }
   const fingerprint = [e.fecha, e.hora, String(e.titulo || '').trim().toLocaleLowerCase('es'), normalized(e).trim().toLocaleLowerCase('es')].join('|');
   if (eventFingerprints.has(fingerprint)) failures.push('Duplicate performance: ' + eventFingerprints.get(fingerprint) + ' / ' + e.id);
   else eventFingerprints.set(fingerprint, e.id);
