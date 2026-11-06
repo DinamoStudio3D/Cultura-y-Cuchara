@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.Instant
 import java.net.URI
+import org.json.JSONObject
 
 data class FestivalEvent(
     val id: String, val title: String, val day: LocalDate, val time: LocalTime,
@@ -44,7 +45,7 @@ object FestivalPolicy {
         return FestivalEvent(id, title, day, time, value("category").ifBlank { "Arte" },
             value("place").ifBlank { value("location") }, value("description").ifBlank { value("desc") },
             row["free"] == true, row["durationMinutes"]?.toString()?.toDoubleOrNull()?.takeIf { it in 1.0..1440.0 }?.toLong(),
-            map, row["route"] is Map<*, *> || row["route"] == true, value("locationPrecision"))
+            map, row["route"] is Map<*, *> || row["route"] is JSONObject || row["route"] == true, value("locationPrecision"))
     }
 
     fun merge(published: List<FestivalEvent>, imported: List<FestivalEvent>): List<FestivalEvent> {
