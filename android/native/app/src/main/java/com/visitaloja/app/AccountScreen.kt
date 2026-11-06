@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,6 +16,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
+import coil.compose.AsyncImage
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,15 +72,7 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
             TextButton(onClick = { password = ""; model.resetPassword(email) }, enabled = !state.busy) { Text("Olvidé mi contraseña") }
             Text("Usa el mismo método de acceso que en VisitaLoja.com. Si tu cuenta es de Google, pulsa Continuar con Google.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
-            Surface(color = Color(0xFFF2F7FD), shape = RoundedCornerShape(22.dp)) {
-                Column(Modifier.fillMaxWidth().padding(22.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.AccountCircle, null, Modifier.size(44.dp), tint = MaterialTheme.colorScheme.primary)
-                    Text(state.name.ifBlank { "Tu cuenta de VisitaLoja" }, fontSize = 23.sp, fontWeight = FontWeight.Bold)
-                    Text(state.email, fontSize = 14.sp)
-                    if (state.city.isNotBlank()) Text(state.city, fontSize = 13.sp)
-                    if (state.visitorType in setOf("lojano", "turista")) Text(if (state.visitorType == "lojano") "Modo lojano" else "Modo turista", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                }
-            }
+            AccountIdentity(state)
             Text(if (state.profileComplete) "Perfil completo para tus beneficios" else "Completa tu perfil para solicitar recompensas", fontWeight = FontWeight.Bold)
             Button(onClick = { editingProfile = true }, enabled = state.profileReady && !state.busy, modifier = Modifier.fillMaxWidth()) { Text(if (state.profileComplete) "Editar mis datos" else "Completar mi perfil") }
             Text("Tus favoritos, contigo", fontSize = 21.sp, fontWeight = FontWeight.Bold)
@@ -104,4 +101,38 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
         text = { Text("Tus favoritos seguirán en tu cuenta. En este teléfono se mostrarán los favoritos guardados sin sesión.") },
         confirmButton = { TextButton(onClick = { password = ""; confirmSignOut = false; model.signOut(context) }) { Text("Cerrar sesión") } },
         dismissButton = { TextButton(onClick = { confirmSignOut = false }) { Text("Cancelar") } })
+}
+
+
+@Composable
+private fun AccountIdentity(state: AccountState) {
+    val name = state.name.ifBlank { "Tu cuenta de VisitaLoja" }
+    val initials = remember(state.name, state.email) {
+        state.name.trim().split(Regex("\\s+")).filter(String::isNotBlank).take(2)
+            .joinToString("") { it.take(1) }.ifBlank { state.email.take(1) }.uppercase().ifBlank { "VL" }
+    }
+    Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(26.dp)) {
+        Column(Modifier.fillMaxWidth().padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(7.dp)) {
+            Surface(Modifier.size(116.dp), shape = CircleShape, color = MaterialTheme.colorScheme.surface) {
+                Box(Modifier.fillMaxSize().padding(5.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center) {
+                    Text(initials, color = MaterialTheme.colorScheme.onPrimary, fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                    state.photoUrl?.let { url ->
+                        AsyncImage(model = url, contentDescription = "Foto de perfil", modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop)
+                    }
+                }
+            }
+            Text(name, fontSize = 23.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onPrimaryContainer)
+            if (state.email.isNotBlank()) Text(state.email, fontSize = 14.sp, textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onPrimaryContainer)
+            if (state.city.isNotBlank()) Text(state.city, fontSize = 13.sp, textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onPrimaryContainer)
+            if (state.visitorType in setOf("lojano", "turista")) Text(
+                if (state.visitorType == "lojano") "Modo lojano" else "Modo turista",
+                color = MaterialTheme.colorScheme.onPrimaryContainer, fontWeight = FontWeight.Bold)
+        }
+    }
 }

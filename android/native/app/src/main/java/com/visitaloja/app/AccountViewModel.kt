@@ -32,6 +32,7 @@ import kotlinx.coroutines.tasks.await
 
 data class AccountState(
     val uid: String? = null, val name: String = "", val email: String = "", val city: String = "", val visitorType: String = "",
+    val photoUrl: String? = null,
     val busy: Boolean = false, val message: String? = null, val profileError: String? = null,
     val favourites: Set<String> = emptySet(), val favouritesReady: Boolean = false, val favouritesError: String? = null,
     val savedFestivalEvents: Set<String> = emptySet(),
@@ -54,7 +55,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         if (user?.uid != mutable.value.uid || generation == 0) {
             generation++
             profileListener?.remove(); progressListener?.remove()
-            mutable.value = AccountState(uid = user?.uid, name = user?.displayName.orEmpty(), email = user?.email.orEmpty())
+            mutable.value = AccountState(uid = user?.uid, name = user?.displayName.orEmpty(), email = user?.email.orEmpty(), photoUrl = PlacePolicy.safeImage(user?.photoUrl?.toString()))
             if (user != null) observe(user.uid, generation)
         }
     }
@@ -66,6 +67,8 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
             if (!same(uid, epoch)) return@addSnapshotListener
             mutable.update { it.copy(
                 name = doc?.getString("fullName")?.takeIf(String::isNotBlank) ?: auth.currentUser?.displayName.orEmpty(),
+                photoUrl = PlacePolicy.safeImage(doc?.get("photoURL") as? String)
+                    ?: PlacePolicy.safeImage(auth.currentUser?.photoUrl?.toString()),
                 city = doc?.getString("city").orEmpty(), visitorType = doc?.getString("visitorType").orEmpty(),
                 profile = if (error == null) ProfilePolicy.draft(doc?.data, auth.currentUser?.displayName.orEmpty()) else null,
                 profileComplete = error == null && doc?.getBoolean("profileComplete") == true, profileReady = error == null && doc != null && !doc.metadata.isFromCache,
