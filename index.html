@@ -1543,7 +1543,7 @@
                     </p>
 
                     <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                        <a href="#agenda" class="bg-brandGold text-white font-bold px-6 py-3 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-xs uppercase tracking-wider flex items-center gap-2">
+                        <a id="fiavlAgendaLink" href="#agenda" class="bg-brandGold text-white font-bold px-6 py-3 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-xs uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-calendar-check"></i> <span data-i18n="btnFiavlAgenda">Ver Agenda y Teatros</span>
                         </a>
                         <a href="#establecimientos" class="bg-white/10 text-white font-bold px-6 py-3 rounded-xl border border-white/20 hover:bg-white/20 transition-all text-xs uppercase tracking-wider flex items-center gap-2">
@@ -1624,7 +1624,7 @@
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
                 <div>
-                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Modo Festival · Demostración</span>
+                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Próximo Festival</span>
                     <h2 id="festivalModeTitle" class="text-3xl sm:text-4xl font-black mt-4">Loja se convierte en escenario</h2>
                     <p id="festivalModeSubtitle" class="text-sm text-gray-300 mt-2 max-w-2xl">Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.</p>
                 </div>
@@ -1647,7 +1647,7 @@
             </div>
 
             <div id="festival-agenda">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><h3 class="text-xl font-black">Agenda diaria</h3><span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Contenido inicial de demostración</span></div>
+                <h3 class="text-xl font-black mb-4">Agenda diaria</h3>
                 <div id="festivalDayTabs" class="flex gap-2 overflow-x-auto pb-3 mb-3"></div>
                 <div id="festivalAgendaGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
                 <p id="festivalEmpty" class="hidden text-center text-gray-400 bg-white/5 rounded-2xl p-8">No hay actividades cargadas para este día.</p>
@@ -3110,7 +3110,7 @@
             "Mensaje de Chabaquito":"A message from Chabaquito","“Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!”":"“Let’s celebrate our identity by exploring, tasting and caring for Loja. See you on the route!”",
             "Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.":"Discover what is happening now and plan your experience during the International Festival of Performing Arts.",
             "Preparando la agenda del Festival":"Preparing the Festival schedule","La próxima actividad aparecerá aquí.":"The next activity will appear here.","Agenda diaria":"Daily schedule",
-            "Contenido inicial de demostración":"Initial demo content","No hay actividades cargadas para este día.":"No activities have been added for this day.",
+            "No hay actividades cargadas para este día.":"No activities have been added for this day.",
             "Beneficios por tiempo limitado":"Limited-time benefits","Descubre beneficios disponibles ahora en nuestros negocios aliados.":"Discover benefits currently available at our partner businesses.",
             "Historias de Loja":"Stories of Loja","Relatos que conectan sabores, lugares y tradiciones.":"Stories connecting flavors, places and traditions.",
             "El Rincón Lojano":"The Loja Corner","Tradición familiar preparando el mejor repe lojano.":"A family tradition preparing the finest Loja-style repe.",
@@ -4116,6 +4116,7 @@
                 fiavlPreviewIds.clear();
                 imported.forEach(event => fiavlPreviewIds.add(event.id));
                 festivalConfig = { ...festivalConfig, active: true, demo: false, events: [...originals, ...imported] };
+                document.getElementById('fiavlAgendaLink').href = '#festival-agenda';
                 document.getElementById('fiavlPreviewAgendaFilters').hidden = false;
                 renderAgendaUI();
             }
