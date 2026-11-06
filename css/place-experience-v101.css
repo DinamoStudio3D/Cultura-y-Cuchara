@@ -76,20 +76,53 @@
  #mapa #previewFavBtn :is(i,svg) { color:var(--vl-text) !important; }
 }
 
-/* Mobile stop cards: scoped to the public directory; desktop remains unchanged. */
+/* Compact public stop cards on phones. */
 @layer vl-layout {
  @media (max-width:639px) {
-  #establecimientos #localesGrid { grid-template-columns:minmax(0,1fr)!important; gap:18px!important; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) { width:100%; max-width:100%; overflow:hidden; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media { aspect-ratio:4/3; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content { padding:16px!important; gap:10px!important; min-width:0; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title { font-size:21px!important; line-height:1.3!important; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-desc { font-size:14px!important; line-height:1.55!important; overflow-wrap:anywhere; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools { width:100%; gap:10px!important; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools-links { flex:1 1 100%; width:100%; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks { width:100%; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action { flex:1 1 calc(50% - 8px)!important; min-width:0!important; min-height:44px; }
-  #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore { width:100%; min-height:48px; }
+  body #establecimientos #localesGrid { grid-template-columns:minmax(0,1fr)!important; gap:14px!important; }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media {
+   height:clamp(112px,34vw,158px)!important; min-height:0!important; aspect-ratio:auto!important;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-partner-media {
+   padding:10px 16px!important;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-partner-media>img {
+   max-height:100%!important; padding:20px 4px 0!important;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content {
+   padding:12px 14px!important; gap:6px!important; min-width:0;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-kicker { display:none!important; }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-title {
+   font-size:18px!important; line-height:1.25!important;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .local-desc {
+   font-size:13px!important; line-height:1.45!important; overflow-wrap:anywhere;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-hours {
+   padding:4px 8px!important; margin-top:0!important;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools {
+   width:100%; flex-wrap:nowrap!important; gap:6px!important; padding-top:6px!important; margin-top:0!important;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-tools-links {
+   flex:1 1 0; min-width:0;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks {
+   width:100%; gap:6px!important;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl18-quicklinks>.vl-card-action {
+   flex:1 1 85px!important; min-width:44px!important; min-height:44px!important; padding:6px!important; gap:4px;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-explore {
+   margin-top:0!important; min-height:44px!important; padding:6px 10px!important;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .discovery-card-links>a {
+   min-height:44px; display:inline-flex; align-items:center;
+  }
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item) .discovery-card-links>a:nth-child(2) {
+   display:none;
+  }
  }
 }
 
