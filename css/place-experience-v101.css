@@ -81,13 +81,13 @@
  @media (max-width:639px) {
   body #establecimientos #localesGrid { grid-template-columns:minmax(0,1fr)!important; gap:14px!important; }
   body #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media {
-   height:clamp(112px,34vw,158px)!important; min-height:0!important; aspect-ratio:auto!important;
+   height:auto!important; min-height:0!important;
   }
-  body #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-partner-media {
-   padding:10px 16px!important;
+  body #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-media>img {
+   height:clamp(148px,49vw,220px)!important; object-fit:contain!important;
   }
   body #establecimientos #localesGrid>.local-item:not(.hidden-item)>.vl17-partner-media>img {
-   max-height:100%!important; padding:20px 4px 0!important;
+   height:clamp(104px,34vw,152px)!important; padding:8px 12px!important;
   }
   body #establecimientos #localesGrid>.local-item:not(.hidden-item) .vl-card-content {
    padding:12px 14px!important; gap:6px!important; min-width:0;
