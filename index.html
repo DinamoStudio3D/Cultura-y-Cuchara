@@ -1690,7 +1690,22 @@
                 <p id="agendaSavedCount" class="text-xs font-bold text-gray-600 px-3"></p>
             </div>
 
+            <div id="fiavlPreviewAgendaFilters" hidden class="mb-7 rounded-2xl border border-fuchsia-200 bg-white p-4">
+                <p class="text-sm font-bold text-brandDark mb-3">FIAVL 2026 · Programación preliminar</p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <label class="flex-1 text-xs font-bold text-brandDark"><span data-i18n="agendaSearchLabel">Busca un evento</span>
+                        <input id="agendaSearch" type="search" oninput="resetFiavlAgendaPage()" class="block w-full mt-1 px-3 py-2 border border-gray-300 rounded-xl text-sm font-normal">
+                    </label>
+                    <label class="text-xs font-bold text-brandDark"><span data-i18n="agendaDateFilterLabel">Cuándo</span>
+                        <select id="agendaDateFilter" onchange="resetFiavlAgendaPage()" class="block w-full mt-1 px-3 py-2 border border-gray-300 rounded-xl text-sm font-normal">
+                            <option value="all">Todas las fechas</option><option value="today">Hoy</option><option value="week">Próximos 7 días</option><option value="undated">Sin fecha confirmada</option>
+                        </select>
+                    </label>
+                </div>
+                <p id="agendaResultCount" class="text-xs text-gray-600 mt-3" aria-live="polite"></p>
+            </div>
             <section id="eventsSpotlight" data-vl-surface="light" aria-label="Próximos eventos de Loja" hidden></section><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="agendaGridContainer"></div>
+            <button id="fiavlAgendaMore" hidden type="button" class="mt-5 rounded-xl border border-fuchsia-600 px-5 py-3 text-sm font-bold text-fuchsia-700" onclick="showMoreFiavlAgenda()">Ver más eventos</button>
         </div>
     </section>
 
@@ -3855,6 +3870,9 @@
             ]
         };
         let festivalConfig = { ...defaultFestivalConfig };
+        let festivalSource = defaultFestivalConfig;
+        let fiavlPreviewEvents = [];
+        const fiavlPreviewIds = new Set();
         let selectedFestivalDay = defaultFestivalConfig.events[0].date;
         let festivalClockTimer = null;
         let festivalEventLayer = null;
@@ -3963,36 +3981,72 @@
             return { emoji: '🎭', color: '#9333ea' };
         }
 
+        function festivalLocation(event) {
+            if ([event.lat, event.lng].some(value => value == null || String(value).trim() === '')) return null;
+            const lat = Number(event.lat);
+            const lng = Number(event.lng);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return null;
+            return [lat, lng];
+        }
+
+        function openFiavlVenue(eventId) {
+            const event = festivalConfig.events.find(item => item.id === eventId);
+            if (!event) return;
+            const search = document.getElementById('agendaSearch');
+            search.value = event.place;
+            document.getElementById('agendaDateFilter').value = 'all';
+            setAgendaView('all');
+            map.closePopup();
+            search.focus({ preventScroll: true });
+            document.getElementById('agenda').scrollIntoView({ behavior: 'smooth' });
+        }
+
         function renderFestivalEventMarkers() {
             if (!festivalEventLayer) return;
             festivalEventLayer.clearLayers();
             if (!festivalEventsVisible || festivalConfig.active === false) return;
             const now = new Date();
-            const previewVenueCounts = new Map();
-            if (window.__fiavlPreviewEvents) for (const e of window.__fiavlPreviewEvents) if(e.lat != null && e.lng != null) previewVenueCounts.set(e.place, (previewVenueCounts.get(e.place) || 0) + 1);
-            const renderedPreviewVenues = new Set();
-            (festivalConfig.events || []).forEach(event => {
-                if (window.__fiavlPreviewEvents && String(event.id || '').startsWith('fiavl2026-')) {
-                    if (renderedPreviewVenues.has(event.place)) return;
-                    renderedPreviewVenues.add(event.place);
+            const venues = new Map();
+            const markers = [];
+            for (const event of festivalConfig.events) {
+                const coordinates = festivalLocation(event);
+                if (!coordinates) continue;
+                const eventEnd = festivalDateTime(event).getTime() + Number(event.durationMinutes || 90) * 60000;
+                if (!Number.isFinite(eventEnd) || eventEnd < now.getTime()) continue;
+                if (fiavlPreviewIds.has(event.id)) {
+                    const key = coordinates.join('|');
+                    if (!venues.has(key)) {
+                        const venue = { event, coordinates, count: 0, places: new Map() };
+                        venues.set(key, venue);
+                        markers.push(venue);
+                    }
+                    const venue = venues.get(key);
+                    venue.count++;
+                    if (!venue.places.has(event.place)) venue.places.set(event.place, event.id);
+                } else {
+                    markers.push({ event, coordinates, count: 0 });
                 }
-                if (event.lat == null || event.lng == null || String(event.lat).trim() === '' || String(event.lng).trim() === '') return;
-                const lat = Number(event.lat);
-                const lng = Number(event.lng);
-                if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return;
-                const eventEnd = new Date(festivalDateTime(event).getTime() + Number(event.durationMinutes || 90) * 60000);
-                if (eventEnd < now) return;
-                const style = festivalMarkerStyle(event.category);
+            }
+
+            markers.forEach(({ event, coordinates: [lat, lng], count, places }) => {
+                const style = count ? { color: '#86198f' } : festivalMarkerStyle(event.category);
                 const icon = L.divIcon({
                     className: 'festival-leaflet-icon',
-                    html: `<div class="festival-map-pin" style="background:${style.color};--pin-color:${style.color}"><span>${style.emoji}</span></div>`,
+                    html: `<div class="festival-map-pin" style="background:${style.color};--pin-color:${style.color}"><span>${count ? '<i class="fa-solid fa-masks-theater" aria-hidden="true" style="color:#fff!important"></i>' : style.emoji}</span></div>`,
                     iconSize: [28, 28], iconAnchor: [14, 27], popupAnchor: [0, -27]
                 });
                 const safeId = escapeHTML(event.id || '');
                 const mapLink = event.mapUrl || `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-                const previewCount = window.__fiavlPreviewEvents && String(event.id || '').startsWith('fiavl2026-') ? (previewVenueCounts.get(event.place) || 0) : 0;
-                const popup = `<div style="min-width:220px"><p style="font-size:11px;font-weight:900;text-transform:uppercase;color:${style.color};margin:0 0 5px">${escapeHTML(event.category || 'Artes Vivas')}</p><h3 style="font-size:16px;font-weight:900;margin:0 0 8px">${escapeHTML(previewCount ? event.place + ' · ' + previewCount + ' actividades FIAVL' : (event.title || 'Evento FIAVL'))}</h3><p style="font-size:12px;margin:4px 0">🗓️ ${escapeHTML(formatFestivalDay(event.date))} · ${escapeHTML(event.time || '')}</p><p style="font-size:12px;margin:4px 0">📍 ${escapeHTML(event.place || 'Ubicación por confirmar')}</p><p style="font-size:11px;font-weight:700;color:${event.free ? '#15803d' : '#a16207'};margin:7px 0">${event.free ? '✓ Entrada libre' : 'Consultar acceso'}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button type="button" onclick="saveFestivalEvent('${safeId}')" style="border:1px solid #d946ef;border-radius:8px;padding:8px;font-size:11px;font-weight:800;background:white">☆ Mi agenda</button><a href="${escapeHTML(mapLink)}" target="_blank" rel="noopener noreferrer" style="border-radius:8px;padding:8px;font-size:11px;font-weight:800;text-align:center;background:${style.color};color:white;text-decoration:none">Cómo llegar</a></div></div>`;
-                L.marker([lat, lng], { icon, zIndexOffset: 700 }).bindPopup(popup).addTo(festivalEventLayer);
+                const popup = count
+                    ? `<div class="fiavl-venue-popup"><p style="color:#86198f;font-weight:800">Programación preliminar · FIAVL 2026</p><h3 style="font-size:16px;font-weight:900">${places.size === 1 ? escapeHTML(event.place) : 'Escenarios en este punto'}</h3><p>${count} ${count === 1 ? 'actividad' : 'actividades'} en este punto</p>${event.locationPrecision?.startsWith('referencia') ? '<p>Ubicación de referencia</p>' : ''}${[...places].map(([place, id]) => `<button type="button" data-fiavl-venue="${escapeHTML(id)}" style="display:block;text-align:left;padding:8px 0;font-weight:800;color:#86198f;text-decoration:underline">${places.size === 1 ? 'Ver actividades en la agenda' : escapeHTML(place)}</button>`).join('')}<a href="${escapeHTML(mapLink)}" target="_blank" rel="noopener noreferrer">Cómo llegar</a></div>`
+                    : `<div style="min-width:220px"><p style="font-size:11px;font-weight:900;text-transform:uppercase;color:${style.color};margin:0 0 5px">${escapeHTML(event.category || 'Artes Vivas')}</p><h3 style="font-size:16px;font-weight:900;margin:0 0 8px">${escapeHTML(event.title || 'Evento FIAVL')}</h3><p style="font-size:12px;margin:4px 0">🗓️ ${escapeHTML(formatFestivalDay(event.date))} · ${escapeHTML(event.time || '')}</p><p style="font-size:12px;margin:4px 0">📍 ${escapeHTML(event.place || 'Ubicación por confirmar')}</p><p style="font-size:11px;font-weight:700;color:${event.free ? '#15803d' : '#a16207'};margin:7px 0">${event.free ? '✓ Entrada libre' : 'Consultar acceso'}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button type="button" onclick="saveFestivalEvent('${safeId}')" style="border:1px solid #d946ef;border-radius:8px;padding:8px;font-size:11px;font-weight:800;background:white">☆ Mi agenda</button><a href="${escapeHTML(mapLink)}" target="_blank" rel="noopener noreferrer" style="border-radius:8px;padding:8px;font-size:11px;font-weight:800;text-align:center;background:${style.color};color:white;text-decoration:none">Cómo llegar</a></div></div>`;
+                const marker = L.marker([lat, lng], { icon, zIndexOffset: count ? 690 : 700, title: count ? event.place : event.title })
+                    .bindPopup(popup, { maxWidth: 260 }).addTo(festivalEventLayer);
+                if (count) marker.on('popupopen', ({ popup }) => {
+                    popup.getElement().querySelectorAll('[data-fiavl-venue]').forEach(button => {
+                        button.onclick = () => openFiavlVenue(button.dataset.fiavlVenue);
+                    });
+                });
             });
         }
 
@@ -4032,26 +4086,50 @@
             updateFestivalClock();
         }
 
+        function normalizeAgendaText(value) {
+            return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        }
+
+        function festivalEventKey(event) {
+            const time = String(event.time || '').match(/^(\d{1,2}):(\d{2})(?::00)?$/);
+            const parts = [event.date, time ? time[1].padStart(2, '0') + ':' + time[2] : event.time,
+                event.title, event.location || event.place];
+            return JSON.stringify(parts.map(value => normalizeAgendaText(value).replace(/\s+/g, ' ')));
+        }
+
         function applyFestivalConfiguration(data) {
             if (!data || typeof data !== 'object') return;
-            festivalConfig = { ...defaultFestivalConfig, ...data, events: Array.isArray(data.events) ? data.events : defaultFestivalConfig.events };
-            if (window.__fiavlPreviewEvents) {
-                const original = festivalConfig.events.filter(e => !String(e.id || '').startsWith('fiavl-demo-') && !String(e.id || '').startsWith('fiavl2026-'));
-                const keys = new Set(original.map(e => [String(e.date), String(e.time), String(e.title || '').trim().toLocaleLowerCase('es'), String(e.place || '').trim().toLocaleLowerCase('es')].join('|')));
-                festivalConfig.events = [...original, ...window.__fiavlPreviewEvents.filter(e => !keys.has([e.date,e.time,String(e.title||'').trim().toLocaleLowerCase('es'),String(e.place||'').trim().toLocaleLowerCase('es')].join('|')))];
-                festivalConfig.demo = false;
+            festivalSource = data;
+            const existing = Array.isArray(data.events) ? data.events : defaultFestivalConfig.events;
+            festivalConfig = { ...defaultFestivalConfig, ...data, events: existing };
+            if (fiavlPreviewEvents.length) {
+                const originals = existing === defaultFestivalConfig.events ? [] : existing;
+                const keys = new Set(originals.map(festivalEventKey));
+                const ids = new Set(originals.map(event => String(event.id)));
+                const imported = fiavlPreviewEvents.filter(event => {
+                    const key = festivalEventKey(event);
+                    if (ids.has(event.id) || keys.has(key)) return false;
+                    ids.add(event.id);
+                    keys.add(key);
+                    return true;
+                });
+                fiavlPreviewIds.clear();
+                imported.forEach(event => fiavlPreviewIds.add(event.id));
+                festivalConfig = { ...festivalConfig, active: true, demo: false, events: [...originals, ...imported] };
+                document.getElementById('fiavlPreviewAgendaFilters').hidden = false;
+                renderAgendaUI();
             }
             renderFestivalAgenda();
         }
 
-        // Opt-in integration testing only: the existing public map, Firestore and admin data stay unchanged.
+        // Read-only overlay for this URL. Live events remain in their own data source.
         if (new URLSearchParams(location.search).get('fiavl2026') === 'preview') {
             fetch('./data/fiavl-2026-import-preview.json', { cache: 'no-store' })
                 .then(response => { if (!response.ok) throw Error('FIAVL preview HTTP '+response.status); return response.json(); })
                 .then(payload => {
                     if (!Array.isArray(payload.events) || payload.events.length !== 394) throw Error('FIAVL preview data incomplete');
-                    window.__fiavlPreviewEvents = payload.events;
-                    applyFestivalConfiguration(festivalConfig);
+                    fiavlPreviewEvents = payload.events;
+                    applyFestivalConfiguration(festivalSource);
                 })
                 .catch(error => console.warn('FIAVL preview data not loaded; keeping existing events', error));
         }
@@ -5831,6 +5909,18 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         let agendaViewMode = 'all';
+        const fiavlAgendaPageSize = 24;
+        let fiavlAgendaLimit = fiavlAgendaPageSize;
+
+        function resetFiavlAgendaPage() {
+            fiavlAgendaLimit = fiavlAgendaPageSize;
+            renderAgendaUI();
+        }
+
+        function showMoreFiavlAgenda() {
+            fiavlAgendaLimit += fiavlAgendaPageSize;
+            renderAgendaUI();
+        }
 
         function agendaEventKey(ev, index) {
             return String(ev.id || [ev.title || 'evento', ev.date || '', index].join('|'));
@@ -5843,7 +5933,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function setAgendaView(mode) {
             agendaViewMode = mode === 'saved' ? 'saved' : 'all';
-            renderAgendaUI();
+            resetFiavlAgendaPage();
         }
 
         function toggleAgendaEventSaved(eventId) {
@@ -5923,29 +6013,40 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const upcomingGeneralItems = allGeneralItems.filter(item => !item.event.date || item.event.date >= todayStr);
             const festivalItems = (festivalConfig?.events || [])
                 .map(event => ({ kind: 'festival', event, eventId: String(event.id || '') }))
-                .filter(item => item.eventId && savedFestival.includes(item.eventId));
+                .filter(item => item.eventId);
             const savedItems = [
                 ...allGeneralItems.filter(item => savedGeneral.includes(item.eventId)),
-                ...festivalItems
+                ...festivalItems.filter(item => savedFestival.includes(item.eventId))
             ];
             const agendaGroupOrder = { today: 0, week: 1, later: 2, undated: 3, past: 4 };
             const weekLimit = new Date(todayStr + 'T12:00:00-05:00');
             weekLimit.setDate(weekLimit.getDate() + 7);
             const weekLimitStr = weekLimit.toISOString().split('T')[0];
             const itemGroup = item => !item.event.date ? 'undated' : item.event.date < todayStr ? 'past' : item.event.date === todayStr ? 'today' : item.event.date <= weekLimitStr ? 'week' : 'later';
-            const baseItems=agendaViewMode === 'saved' ? savedItems : upcomingGeneralItems;
-            const search=document.getElementById('agendaSearch'),dateFilter=document.getElementById('agendaDateFilter'),query=String(search?.value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+            const generalKeys = new Set(fiavlPreviewEvents.length ? upcomingGeneralItems.map(item => festivalEventKey(item.event)) : []);
+            const upcomingFestivalItems = fiavlPreviewEvents.length ? festivalItems.filter(({ event }) =>
+                event.date >= todayStr && !generalKeys.has(festivalEventKey(event))) : [];
+            const baseItems = agendaViewMode === 'saved' ? savedItems : [...upcomingGeneralItems, ...upcomingFestivalItems];
+            const search=document.getElementById('agendaSearch'),dateFilter=document.getElementById('agendaDateFilter'),query=normalizeAgendaText(search?.value);
             if(search)search.placeholder=currentLang==='en'?'Name, activity or place':'Nombre, actividad o lugar';
             const dateLabels=currentLang==='en'?['All dates','Today','Next 7 days','Date to be confirmed']:['Todas las fechas','Hoy','Próximos 7 días','Sin fecha confirmada'];
-            [...(dateFilter?.options||[])].forEach((option,index)=>option.textContent=dateLabels[index]);
+            [...dateFilter.options].slice(0, dateLabels.length).forEach((option, index) => option.textContent = dateLabels[index]);
+            if (fiavlPreviewEvents.length && dateFilter.options.length === dateLabels.length) {
+                const days = [...new Set(fiavlPreviewEvents.map(event => event.date))].sort();
+                days.forEach(day => dateFilter.add(new Option(formatFestivalDay(day), day)));
+            }
+            [...dateFilter.options].slice(dateLabels.length).forEach(option => option.textContent = formatFestivalDay(option.value));
             const visibleItems = baseItems.filter(({event})=>{
-                const group=itemGroup({event}),matchesDate=!dateFilter||dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value);
-                const text=[event.title,event.titleEn,event.desc,event.descEn,event.description,event.location,event.place,event.type].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+                const group=itemGroup({event}),matchesDate=!dateFilter||dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value || event.date===dateFilter.value);
+                const text=[event.title,event.titleEn,event.desc,event.descEn,event.description,event.location,event.place,event.type,event.category].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
                 return matchesDate&&(!query||text.includes(query));
             })
-                .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')));
+                .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')) || (fiavlPreviewEvents.length ? String(a.event.time || '').localeCompare(String(b.event.time || '')) : 0));
 
             if(document.getElementById('agendaResultCount'))document.getElementById('agendaResultCount').textContent=currentLang==='en'?`${visibleItems.length} of ${baseItems.length} events`:`${visibleItems.length} de ${baseItems.length} eventos`;
+            const more = document.getElementById('fiavlAgendaMore');
+            more.hidden = !fiavlPreviewEvents.length || visibleItems.length <= fiavlAgendaLimit;
+            more.textContent = currentLang === 'en' ? 'Show more events' : 'Ver más eventos';
             const totalSaved = savedItems.length;
             const allButton = document.getElementById('agendaAllButton');
             const savedButton = document.getElementById('agendaSavedButton');
@@ -5976,11 +6077,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 ? { today: 'Today', week: 'This week', later: 'Coming up', undated: 'Date to be confirmed', past: 'Finished events' }
                 : { today: 'Hoy', week: 'Esta semana', later: 'Más adelante', undated: 'Fecha por confirmar', past: 'Eventos finalizados' };
             let previousGroup = '';
-            visibleItems.forEach(({ kind, event: ev, eventId }) => {
+            const cards = [];
+            const page = fiavlPreviewEvents.length ? visibleItems.slice(0, fiavlAgendaLimit) : visibleItems;
+            page.forEach(({ kind, event: ev, eventId }) => {
                 const group = itemGroup({ event: ev });
                 if (agendaViewMode === 'saved' && group !== previousGroup) {
                     previousGroup = group;
-                    agendaContainer.innerHTML += `<div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3 pt-3"><span class="h-px flex-1 bg-gray-200"></span><h3 class="text-xs font-black uppercase tracking-widest ${group === 'past' ? 'text-gray-400' : 'text-brandGold'}">${groupLabels[group]}</h3><span class="h-px flex-1 bg-gray-200"></span></div>`;
+                    cards.push(`<div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3 pt-3"><span class="h-px flex-1 bg-gray-200"></span><h3 class="text-xs font-black uppercase tracking-widest ${group === 'past' ? 'text-gray-400' : 'text-brandGold'}">${groupLabels[group]}</h3><span class="h-px flex-1 bg-gray-200"></span></div>`);
                 }
                 const eventDate = /^\d{4}-\d{2}-\d{2}$/.test(ev.date || '') ? new Date(ev.date + 'T12:00:00-05:00') : null;
                 const displayDate = eventDate && Number.isFinite(eventDate.getTime())
@@ -5993,14 +6096,14 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const place = ev.location || ev.place || 'Ubicación por confirmar';
                 const image = ev.img || ev.image || ev.imageUrl || '';
                 const isSaved = isFestival ? savedFestival.includes(eventId) : savedGeneral.includes(eventId);
-                const safeId = encodeURIComponent(eventId);
+                const safeId = encodeURIComponent(eventId).replace(/'/g, '%27');
                 const badge = isFestival ? 'FIAVL' : (ev.type || 'Evento');
                 const toggleAction = isFestival
                     ? `saveFestivalEvent(decodeURIComponent('${safeId}'))`
                     : `toggleAgendaEventSaved(decodeURIComponent('${safeId}'))`;
                 const mapUrl = ev.mapUrl || ((ev.lat != null && ev.lng != null && Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng))) ? `https://www.google.com/maps/search/?api=1&query=${ev.lat},${ev.lng}` : '');
 
-                agendaContainer.innerHTML += `
+                cards.push(`
                     <article class="vl-agenda-card glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between ${isPast ? 'vl-agenda-past' : ''}">
                         <div class="vl-agenda-media">
                             ${image ? `<img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(image))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="" loading="lazy" decoding="async">` : `<div class="vl-agenda-calendar-art" aria-hidden="true"><i class="fa-regular fa-calendar-days"></i><strong>${escapeHTML(displayDate)}</strong></div>`}
@@ -6014,11 +6117,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         <div class="vl-agenda-card-actions">
                             <p class="text-xs text-gray-500 mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${escapeHTML(place)}</p>
                             ${isFestival
-                                ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : '<span></span>'}</div>`
+                                ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : '<span class="border border-gray-200 text-gray-600 px-3 py-2.5 rounded-xl text-center text-xs">Ubicación pendiente</span>'}</div>`
                                 : `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-regular fa-calendar-plus mr-1"></i> ${currentLang === 'en' ? 'Calendar' : 'Calendario'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-route mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : `<span class="border border-gray-200 text-gray-400 px-3 py-2.5 rounded-xl text-center text-xs">${currentLang === 'en' ? 'Location pending' : 'Ubicación pendiente'}</span>`}</div>`}
                         </div></div>
-                    </article>`;
+                    </article>`);
             });
+            agendaContainer.innerHTML = cards.join('');
             renderAdminEventsList();
         }
 

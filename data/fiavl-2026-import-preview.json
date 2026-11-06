@@ -157,12 +157,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 10,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-842046d9cee9",
@@ -189,12 +194,17 @@
       "place": "Teatro Segundo Cueva Celi - CCE",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 10,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-830cf685f073",
@@ -221,12 +231,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 10,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-f22f2f60863b",
@@ -237,12 +252,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 10,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-c7cc4bdeb9b0",
@@ -253,12 +273,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 10,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-8c792b7aabfe",
@@ -269,12 +294,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 10,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-dbfb80411582",
@@ -285,12 +315,16 @@
       "place": "Bolívar y Azuay",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 10,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-a4689078e811",
@@ -317,12 +351,17 @@
       "place": "Plaza de la Cultura",
       "category": "Otros eventos",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 11,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-e823462d2c74",
@@ -333,12 +372,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 11,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-a139c8f5f33d",
@@ -349,12 +393,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 11,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-a4e9f17d1209",
@@ -413,12 +462,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 11,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-db82d380f592",
@@ -477,12 +531,16 @@
       "place": "Gato Suco, Rocafuerte y Macará",
       "category": "Exposiciones y artes visuales",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9977937,
+      "lng": -79.1974974,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9977937,-79.1974974",
       "sourcePage": 11,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/12552398101"
+      ]
     },
     {
       "id": "fiavl2026-56f507fe8460",
@@ -493,12 +551,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-b41c0474572b",
@@ -525,12 +588,17 @@
       "place": "Plaza de la Cultura",
       "category": "Otros eventos",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 11,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-748e56710142",
@@ -541,12 +609,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-608054ad2d60",
@@ -557,12 +630,16 @@
       "place": "Bolívar y Azuay",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-a578496ae2e3",
@@ -573,12 +650,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-626939fa177e",
@@ -621,12 +703,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-1721eccb2af9",
@@ -669,12 +756,17 @@
       "place": "Plaza Central",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-70dd7c07bb24",
@@ -685,12 +777,16 @@
       "place": "24 de Mayo y José Antonio Eguiguren",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9960032,
+      "lng": -79.1982353,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9960032,-79.1982353",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/9943923728"
+      ]
     },
     {
       "id": "fiavl2026-b3207223d109",
@@ -701,12 +797,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-4fa18db6a3a6",
@@ -717,12 +818,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Otros eventos",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 13,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-d652f9e730ba",
@@ -749,12 +855,16 @@
       "place": "Rocafuerte y Bernardo Valdivieso, esquina",
       "category": "Exposiciones y artes visuales",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 13,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552"
+      ]
     },
     {
       "id": "fiavl2026-33f7834db7d3",
@@ -781,12 +891,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 13,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-b3a8085d1e29",
@@ -829,12 +944,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 13,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-5ac6d1a20152",
@@ -861,12 +981,16 @@
       "place": "Gato Suco, Rocafuerte y Macará",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9977937,
+      "lng": -79.1974974,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9977937,-79.1974974",
       "sourcePage": 13,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/12552398101"
+      ]
     },
     {
       "id": "fiavl2026-e09444c37f05",
@@ -973,12 +1097,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 14,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-f89f5b54169d",
@@ -1037,12 +1166,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 14,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-10e07323b6c7",
@@ -1053,12 +1187,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 14,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-a076fe2b77d3",
@@ -1069,12 +1208,17 @@
       "place": "Casona Cultural, Bernardo Valdivieso y Rocafuerte",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 16,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-99f797c5aed1",
@@ -1149,12 +1293,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 16,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-3b8aab6f9627",
@@ -1165,12 +1314,16 @@
       "place": "Bolívar y Azuay",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 16,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-4250895046d0",
@@ -1197,12 +1350,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 16,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-b6ec651af5b6",
@@ -1245,12 +1403,16 @@
       "place": "24 de Mayo y Mercadillo",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0011228,
+      "lng": -79.1977096,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0011228,-79.1977096",
       "sourcePage": 16,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10252387596"
+      ]
     },
     {
       "id": "fiavl2026-08c08ab8f443",
@@ -1261,12 +1423,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 16,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-153e93ea41b5",
@@ -1309,12 +1476,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 16,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-0524560077fd",
@@ -1325,12 +1497,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-e799c2390e7f",
@@ -1341,12 +1518,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-7d78896a036c",
@@ -1389,12 +1571,16 @@
       "place": "24 de Mayo y José Antonio Eguiguren",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9960032,
+      "lng": -79.1982353,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9960032,-79.1982353",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/9943923728"
+      ]
     },
     {
       "id": "fiavl2026-0826347fe3c1",
@@ -1405,12 +1591,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-a336f3efabf4",
@@ -1421,12 +1612,17 @@
       "place": "Plaza Central",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-222fdf1db698",
@@ -1437,12 +1633,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-abb8cec01939",
@@ -1469,12 +1670,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-bc32af9b9901",
@@ -1485,12 +1691,16 @@
       "place": "Bernardo Valdivieso y Rocafuerte",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552"
+      ]
     },
     {
       "id": "fiavl2026-1270c60ab3a5",
@@ -1517,12 +1727,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-e56c132f7b50",
@@ -1549,12 +1764,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 17,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-7594a81c3b9e",
@@ -1581,12 +1801,16 @@
       "place": "Gato Suco, Rocafuerte y Macará",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9977937,
+      "lng": -79.1974974,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9977937,-79.1974974",
       "sourcePage": 18,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/12552398101"
+      ]
     },
     {
       "id": "fiavl2026-17985bd1556b",
@@ -1757,12 +1981,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 20,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-267e109045f3",
@@ -1789,12 +2018,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 20,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-604b48cb840c",
@@ -1869,12 +2103,16 @@
       "place": "Bolívar y Azuay",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 21,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-c8ff98e80c7b",
@@ -1885,12 +2123,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 20,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-ae6763314ac7",
@@ -1965,12 +2208,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 21,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-4b6518d614af",
@@ -1997,12 +2245,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 21,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-cb69578286de",
@@ -2029,12 +2282,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 21,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-99d3ccbdfff3",
@@ -2061,12 +2319,17 @@
       "place": "Plaza Central",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 21,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-37e104f47e39",
@@ -2093,12 +2356,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 21,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-3b3925445ead",
@@ -2125,12 +2393,16 @@
       "place": "Bolívar y Azuay",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 21,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-c09f1524ce26",
@@ -2157,12 +2429,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Otros",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 22,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-e466779f191e",
@@ -2173,12 +2450,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 22,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-936cbda7f004",
@@ -2189,12 +2471,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 22,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-790f67cff72d",
@@ -2221,12 +2508,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 22,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-9f63af5fe345",
@@ -2253,12 +2545,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 22,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-477bfa1999c4",
@@ -2269,12 +2566,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 22,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-5f2d8d384dcc",
@@ -2317,12 +2619,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Taller creativo práctico",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 23,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-ac089ba3c15c",
@@ -2349,12 +2656,17 @@
       "place": "Plaza Central",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 23,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-4be9bd0db45d",
@@ -2365,12 +2677,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Microteatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 23,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-08ee38f3ccb3",
@@ -2397,12 +2714,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 23,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-8285fbc491dc",
@@ -2413,12 +2735,16 @@
       "place": "Bolívar y Azuay",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 23,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-b900923ce338",
@@ -2445,12 +2771,17 @@
       "place": "Teatro Segundo Cueva Celi - CCE",
       "category": "Teatro - Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 23,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-f86cc365cbc1",
@@ -2461,12 +2792,17 @@
       "place": "Sala Eduardo Kingman",
       "category": "Presentación de libro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-f03beb066bb6",
@@ -2477,12 +2813,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Por clasificar",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-24bb8a5f0a1c",
@@ -2493,12 +2834,16 @@
       "place": "Bolívar y Azuay",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-72c4aaccbf77",
@@ -2557,12 +2902,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-ebcb94002b5a",
@@ -2573,12 +2923,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-f9045d6d40da",
@@ -2605,12 +2960,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Conversatorio de creación literaria",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-d7e83db51c85",
@@ -2621,12 +2981,17 @@
       "place": "Plaza de la Cultura",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-086647a4f1dd",
@@ -2637,12 +3002,16 @@
       "place": "Bolívar y Azuay",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 24,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-0e055c3afe09",
@@ -2685,12 +3054,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Trivia literaria",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 26,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-f5500401c0d9",
@@ -2701,12 +3075,17 @@
       "place": "Plaza Central",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 26,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-8e7904d24168",
@@ -2717,12 +3096,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Microteatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 26,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-4585d3ad1d25",
@@ -2733,12 +3117,16 @@
       "place": "Gato Suco",
       "category": "Literatura - Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9977937,
+      "lng": -79.1974974,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9977937,-79.1974974",
       "sourcePage": 26,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/12552398101"
+      ]
     },
     {
       "id": "fiavl2026-df39781d991c",
@@ -2749,12 +3137,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 26,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-6ff782223032",
@@ -2765,12 +3158,17 @@
       "place": "Plaza Central",
       "category": "Danza folclórica",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 26,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-053453e906ff",
@@ -2797,12 +3195,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 26,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-48e0ca9beb80",
@@ -2877,12 +3280,17 @@
       "place": "Plaza Central",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 27,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-e346652d28f8",
@@ -2893,12 +3301,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 27,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-8d3b9d8a565b",
@@ -2925,12 +3338,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 28,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-ac06148232fd",
@@ -2941,12 +3359,17 @@
       "place": "Teatro Segundo Cueva Celi - CCE",
       "category": "Cine y audiovisual",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 27,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-c16ff3af2331",
@@ -2957,12 +3380,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 28,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-f9c244dda1fd",
@@ -2989,12 +3417,16 @@
       "place": "Bolívar y Azuay",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 28,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-4501f0891f21",
@@ -3021,12 +3453,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 28,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-d723d290b25a",
@@ -3037,12 +3474,17 @@
       "place": "Plaza Central",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 29,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-c7a96782691e",
@@ -3069,12 +3511,17 @@
       "place": "Plaza Central",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 29,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-2940e3cac1a8",
@@ -3085,12 +3532,17 @@
       "place": "Teatro Segundo Cueva Celi - CCE",
       "category": "Cine y audiovisual",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 29,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-fiavl-el-horrible-20261117-1930",
@@ -3101,12 +3553,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 25,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-2ecec9bf145a",
@@ -3117,12 +3574,16 @@
       "place": "Gato Suco, Rocafuerte y Macará",
       "category": "Otros",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9977937,
+      "lng": -79.1974974,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9977937,-79.1974974",
       "sourcePage": 30,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/12552398101"
+      ]
     },
     {
       "id": "fiavl2026-9643f8dd611b",
@@ -3149,12 +3610,17 @@
       "place": "Plaza Central",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 30,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-cd76e616972f",
@@ -3197,12 +3663,17 @@
       "place": "Sala Eduardo Kingman",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 31,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-cf18ef8b24d5",
@@ -3213,12 +3684,17 @@
       "place": "Sala Eduardo Kingman",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 31,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-9bb4d1b96d95",
@@ -3245,12 +3721,17 @@
       "place": "Plaza Central",
       "category": "Otros",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 31,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-ac9336c7874d",
@@ -3293,12 +3774,17 @@
       "place": "Sala Eduardo Kingman",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 31,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-21f28b9d8781",
@@ -3325,12 +3811,16 @@
       "place": "Bolívar y Azuay",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 31,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-83a50ae3fbdd",
@@ -3341,12 +3831,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 31,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-0970e1650a78",
@@ -3357,12 +3852,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-0e4f174f9c6b",
@@ -3389,12 +3889,17 @@
       "place": "Sala Eduardo Kingman",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-1857fd7accfa",
@@ -3421,12 +3926,17 @@
       "place": "Plaza Central",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-9832e0bccca7",
@@ -3437,12 +3947,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-132cb458d267",
@@ -3453,12 +3968,17 @@
       "place": "Plaza de la Cultura",
       "category": "Artes visuales",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-58f1cf061318",
@@ -3485,12 +4005,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-580b29feb38f",
@@ -3501,12 +4026,17 @@
       "place": "Plaza de la Cultura",
       "category": "Artes visuales",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-f3af682fcc32",
@@ -3533,12 +4063,17 @@
       "place": "Plaza Central",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-debb5aaf2a70",
@@ -3565,12 +4100,17 @@
       "place": "Plaza Central",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 32,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-d93acb6ecfcf",
@@ -3597,12 +4137,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura y talleres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 34,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-3b88f5f0f137",
@@ -3613,12 +4158,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 34,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-b44656d0f28b",
@@ -3629,12 +4179,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 34,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-39f67f108287",
@@ -3645,12 +4200,17 @@
       "place": "Teatro Segundo Cueva Celi - CCE",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 34,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-21f40c22c401",
@@ -3677,12 +4237,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro y títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 34,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-6dc6e89e881b",
@@ -3693,12 +4258,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 34,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-6e851c792995",
@@ -3709,12 +4279,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 34,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-64f32bddb903",
@@ -3757,12 +4332,17 @@
       "place": "Plaza de la Cultura",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 34,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-bacda1c99c3e",
@@ -3773,12 +4353,17 @@
       "place": "Plaza Central",
       "category": "Sin clasificar",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 35,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-ba92820a0f95",
@@ -3805,12 +4390,17 @@
       "place": "Sala Eduardo Kingman",
       "category": "Feria del libro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 35,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-79de852b677a",
@@ -3869,12 +4459,17 @@
       "place": "Sala Eduardo Kingman",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 35,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-cb8b72010ea7",
@@ -3933,12 +4528,17 @@
       "place": "Plaza Central",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 36,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-6e92d366ac7d",
@@ -3965,12 +4565,16 @@
       "place": "Bolívar y Azuay",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 36,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-c650d3b6b3fc",
@@ -4013,12 +4617,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 36,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-2a070ceb07c0",
@@ -4045,12 +4654,17 @@
       "place": "Plaza Central",
       "category": "Multidisciplinario",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 37,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-0bc3358e0930",
@@ -4109,12 +4723,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 37,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-22166a9b2f19",
@@ -4125,12 +4744,17 @@
       "place": "Teatro Segundo Cueva Celi - CCE",
       "category": "Circo y artes de calle",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 38,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-8bdea232b5c4",
@@ -4157,12 +4781,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 38,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-1f98f4539945",
@@ -4189,12 +4818,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 38,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-f1a591f1b6f1",
@@ -4205,12 +4839,17 @@
       "place": "Plaza Central",
       "category": "Fuego",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 38,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-f2b785e1bfc7",
@@ -4237,12 +4876,16 @@
       "place": "Gato Suco, Rocafuerte y Macará",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9977937,
+      "lng": -79.1974974,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9977937,-79.1974974",
       "sourcePage": 38,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/12552398101"
+      ]
     },
     {
       "id": "fiavl2026-f4b9084d39cb",
@@ -4269,12 +4912,16 @@
       "place": "Hall de la Prefectura de Loja",
       "category": "Exposición",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.996003,
+      "lng": -79.2014707,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.996003,-79.2014707",
       "sourcePage": 39,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/5534166199"
+      ]
     },
     {
       "id": "fiavl2026-8699fdb535e6",
@@ -4301,12 +4948,17 @@
       "place": "Sala Eduardo Kingman",
       "category": "Feria",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99786,
+      "lng": -79.20128,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99786,-79.20128",
       "sourcePage": 39,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del edificio",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/329774892",
+        "https://www.casadelacultura.gob.ec/lotaip/12/2018/Marzo/rendicion_cuentas_2017_cce_loja.pdf"
+      ]
     },
     {
       "id": "fiavl2026-bef2a36ece5d",
@@ -4333,12 +4985,17 @@
       "place": "Plaza Central",
       "category": "Exposición turística",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 39,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-13c1e8f59631",
@@ -4397,12 +5054,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro comedia",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 39,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-fefa08727091",
@@ -4461,12 +5123,17 @@
       "place": "Plaza Central",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 40,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-639b98abbbf9",
@@ -4493,12 +5160,17 @@
       "place": "Plaza de la Cultura",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 40,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-5981d0264325",
@@ -4509,12 +5181,17 @@
       "place": "Plaza de la Cultura",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 40,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-628debf39fcc",
@@ -4525,12 +5202,16 @@
       "place": "24 de Mayo y Miguel Riofrío",
       "category": "Feria de emprendimientos",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9989586,
+      "lng": -79.197961,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9989586,-79.197961",
       "sourcePage": 40,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/9943923723"
+      ]
     },
     {
       "id": "fiavl2026-334c87294176",
@@ -4621,12 +5302,16 @@
       "place": "Bolívar y Azuay",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 41,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-de87b369f705",
@@ -4653,12 +5338,17 @@
       "place": "Plaza Central",
       "category": "Circo",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 41,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-ba7d63974db2",
@@ -4701,12 +5391,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 41,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-ce76ec9a23ff",
@@ -4733,12 +5428,17 @@
       "place": "Plaza de la Cultura",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 41,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-fiavl-striaria-20261120-1700",
@@ -4765,12 +5465,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Performance",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 42,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-2f0124c8e082",
@@ -4813,12 +5518,17 @@
       "place": "Plaza de la Cultura",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 42,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-90fc4125162b",
@@ -4829,12 +5539,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 42,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-650837534d92",
@@ -4845,12 +5560,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro comedia",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 42,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-e5d1bea7ab71",
@@ -4861,12 +5581,16 @@
       "place": "24 de Mayo y José Antonio Eguiguren",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9960032,
+      "lng": -79.1982353,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9960032,-79.1982353",
       "sourcePage": 42,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/9943923728"
+      ]
     },
     {
       "id": "fiavl2026-f982e442ff4f",
@@ -4877,12 +5601,17 @@
       "place": "Hotel Sonesta",
       "category": "Comedia inmersiva",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.99324,
+      "lng": -79.19749,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.99324,-79.19749",
       "sourcePage": 43,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/1552310306",
+        "https://www.sonesta.com/sonesta-hotels-resorts/ecu/loja/sonesta-hotel-loja"
+      ]
     },
     {
       "id": "fiavl2026-5326012cb45b",
@@ -4893,12 +5622,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro comedia",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 43,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-6ba84bd4b30a",
@@ -4925,12 +5659,17 @@
       "place": "Plaza Central",
       "category": "Circo",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 43,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-000873d165b9",
@@ -4973,12 +5712,17 @@
       "place": "Plaza Central",
       "category": "Danza - Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 43,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-d1c04773e5d3",
@@ -5005,12 +5749,16 @@
       "place": "Gato Suco, Rocafuerte y Macará",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9977937,
+      "lng": -79.1974974,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9977937,-79.1974974",
       "sourcePage": 43,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/12552398101"
+      ]
     },
     {
       "id": "fiavl2026-97f4af324cce",
@@ -5069,12 +5817,17 @@
       "place": "Plaza Central",
       "category": "Exposición turística",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 44,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-6b80f23aff48",
@@ -5133,12 +5886,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 44,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-8147a3acc0a6",
@@ -5149,12 +5907,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 44,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-e5db481d4102",
@@ -5165,12 +5928,17 @@
       "place": "Plaza de la Cultura",
       "category": "Presentación",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 44,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-c758563aac9e",
@@ -5213,12 +5981,16 @@
       "place": "24 de Mayo y Miguel Riofrío",
       "category": "Feria de emprendimientos",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9989586,
+      "lng": -79.197961,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9989586,-79.197961",
       "sourcePage": 44,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/9943923723"
+      ]
     },
     {
       "id": "fiavl2026-5a27ca002d09",
@@ -5229,12 +6001,17 @@
       "place": "Plaza de la Cultura",
       "category": "Presentación",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 45,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-4447712c8b44",
@@ -5261,12 +6038,16 @@
       "place": "24 de Mayo y Mercadillo",
       "category": "Exposición",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0011228,
+      "lng": -79.1977096,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0011228,-79.1977096",
       "sourcePage": 45,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10252387596"
+      ]
     },
     {
       "id": "fiavl2026-b5b6edbf5c4b",
@@ -5341,12 +6122,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 45,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-3d1769798dab",
@@ -5357,12 +6143,16 @@
       "place": "24 de Mayo y José Antonio Eguiguren",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9960032,
+      "lng": -79.1982353,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9960032,-79.1982353",
       "sourcePage": 45,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/9943923728"
+      ]
     },
     {
       "id": "fiavl2026-3b2d156cf013",
@@ -5389,12 +6179,17 @@
       "place": "Plaza Central",
       "category": "Circo",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 45,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-d534145d6f57",
@@ -5421,12 +6216,17 @@
       "place": "Plaza Central",
       "category": "Danza multidisciplinaria",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-bb6eeaa3102e",
@@ -5469,12 +6269,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-2b3724e288ad",
@@ -5485,12 +6290,17 @@
       "place": "Plaza de la Cultura",
       "category": "Presentación",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-8bf87188bcb9",
@@ -5501,12 +6311,16 @@
       "place": "Bolívar y Azuay",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-ee0753e9e479",
@@ -5517,12 +6331,17 @@
       "place": "Plaza Central",
       "category": "Danza",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-3ddb93c93942",
@@ -5565,12 +6384,17 @@
       "place": "Plaza Central",
       "category": "Comedia",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-7417faceb9a9",
@@ -5581,12 +6405,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-ab195bda4b51",
@@ -5597,12 +6426,16 @@
       "place": "Bolívar y Miguel Riofrío",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9992383,
+      "lng": -79.2019037,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9992383,-79.2019037",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910418"
+      ]
     },
     {
       "id": "fiavl2026-9f580de2e409",
@@ -5613,12 +6446,16 @@
       "place": "Bolívar y Azuay",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-087656f8cc6e",
@@ -5645,12 +6482,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 47,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-9e891ce2c204",
@@ -5661,12 +6503,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-483bf44a2154",
@@ -5709,12 +6556,17 @@
       "place": "Plaza Central",
       "category": "Danza folclórica",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 47,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-778aae070648",
@@ -5773,12 +6625,16 @@
       "place": "Gato Suco",
       "category": "Música - evento pagado",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9977937,
+      "lng": -79.1974974,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9977937,-79.1974974",
       "sourcePage": 47,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/12552398101"
+      ]
     },
     {
       "id": "fiavl2026-1d8e61df1c1a",
@@ -5837,12 +6693,17 @@
       "place": "Plaza Central",
       "category": "Exposición turística",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 48,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-9bee9f636424",
@@ -5869,12 +6730,17 @@
       "place": "Plaza de la Cultura",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 48,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-55b3662b7090",
@@ -5917,12 +6783,17 @@
       "place": "Plaza de la Cultura",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 48,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-a012b5138bc2",
@@ -5933,12 +6804,16 @@
       "place": "24 de Mayo y Miguel Riofrío",
       "category": "Feria de emprendimientos",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9989586,
+      "lng": -79.197961,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9989586,-79.197961",
       "sourcePage": 48,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/9943923723"
+      ]
     },
     {
       "id": "fiavl2026-fb9b85f46b9b",
@@ -5949,12 +6824,17 @@
       "place": "Plaza Central",
       "category": "Danza folclórica",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 48,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-683246ee3b10",
@@ -5965,12 +6845,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Actividad cultural",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 48,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-c6839f1dc9c2",
@@ -6013,12 +6898,16 @@
       "place": "Bolívar y Azuay",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003007,
+      "lng": -79.2018127,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003007,-79.2018127",
       "sourcePage": 49,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "intersección",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/367910421"
+      ]
     },
     {
       "id": "fiavl2026-71c5e2660fa4",
@@ -6077,12 +6966,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Escritura creativa",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 49,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-871d560fe22f",
@@ -6093,12 +6987,17 @@
       "place": "Plaza de la Cultura",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 49,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-9a28295a2d7d",
@@ -6125,12 +7024,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Microteatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 49,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-77336905aa95",
@@ -6141,12 +7045,17 @@
       "place": "Plaza Central",
       "category": "Comedia",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 49,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-92eaa2ffe398",
@@ -6157,12 +7066,17 @@
       "place": "Plaza de la Cultura",
       "category": "Teatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9980274,
+      "lng": -79.2000824,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9980274,-79.2000824",
       "sourcePage": 49,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/3249333673",
+        "https://loja.gob.ec/noticia/2018-11/talentos-juveniles-se-presentaron-en-la-plaza-de-la-cultura"
+      ]
     },
     {
       "id": "fiavl2026-f7a8c0b6cc3a",
@@ -6189,12 +7103,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Monólogo",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 49,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-14301e5bf184",
@@ -6221,12 +7140,17 @@
       "place": "Teatrino de la Casona Cultural",
       "category": "Microteatro",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9981045,
+      "lng": -79.2011172,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9981045,-79.2011172",
       "sourcePage": 49,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.openstreetmap.org/node/10116715552",
+        "https://vivem.loja.gob.ec/noticia/2025-07/los-mas-pequenos-podran-disfrutar-de-dos-peliculas-animadas"
+      ]
     },
     {
       "id": "fiavl2026-a7a5691fe062",
@@ -6237,12 +7161,17 @@
       "place": "Plaza Central",
       "category": "Títeres",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9967473,
+      "lng": -79.2016591,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9967473,-79.2016591",
       "sourcePage": 50,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://cronica.com.ec/2026/10/29/11-dias-de-arte-y-cultura-con-el-festival-de-artes-vivas-loja-2026/"
+      ]
     },
     {
       "id": "fiavl2026-e2e8e040cf13",
@@ -6269,12 +7198,17 @@
       "place": "Plazoleta 1ro de Mayo",
       "category": "Literatura",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -4.0003845,
+      "lng": -79.2007358,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-4.0003845,-79.2007358",
       "sourcePage": 50,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "escenario",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/37429845",
+        "https://dspace.unl.edu.ec/jspui/bitstream/123456789/1019/1/INFORME.pdf"
+      ]
     },
     {
       "id": "fiavl2026-58b108a1ec8a",
