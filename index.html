@@ -7,6 +7,27 @@
     // Legacy printed QR links must leave the homepage before branding or media load.
     (()=>{const params=new URLSearchParams(location.search);if(!params.has('qr')||params.has('checkin'))return;document.documentElement.style.visibility='hidden';const target=new URL('/qr.html',location.origin);target.searchParams.set('qr',params.get('qr')||'');location.replace(target.href);})();
     </script>
+    <script>
+        const fiavlProgramPath = '/programacion-fiavl-2026';
+        const fiavlProgramPage = location.pathname.replace(/\/$/, '') === fiavlProgramPath;
+        const fiavlPreviewRequested = new URLSearchParams(location.search).get('fiavl2026') === 'preview';
+        if (fiavlProgramPage) document.documentElement.classList.add('fiavl-program-page');
+        else if (fiavlPreviewRequested && location.hash === '#festival-agenda') location.replace(fiavlProgramPath);
+    </script>
+    <style>
+        body.vl-fiavl-visible :is(#webMascot,#webMascotRestore,#accountFloatingInvite),
+        .fiavl-program-page body > :is(header,nav,footer,#splash-screen,#webMascot,#webMascotRestore,#accountFloatingInvite,#welcomeMusicToggle,#vl-chabaquito-install,#dataSyncStatus),
+        .fiavl-program-page #main-content > :not(#fiavl,script,style),
+        .fiavl-program-page :is(#fiavlOverview,#festivalCampaignHeader,#festivalNowCard,#promoPopupModal) { display:none!important }
+        .fiavl-program-page body { overflow-y:auto!important }
+        .fiavl-program-page #fiavl { padding-block:clamp(20px,4vw,52px)!important; opacity:1!important; transform:none!important }
+        .fiavl-program-page #festival-live { margin-top:0!important }
+        #fiavlProgramHeader { margin-bottom:1.5rem }
+        #fiavlProgramHeader h1 { font-size:clamp(1.8rem,4vw,3rem); line-height:1.1; font-weight:900; margin:.6rem 0 }
+        #fiavlProgramActions { display:flex; flex-wrap:wrap; gap:.65rem; margin-top:1rem }
+        #fiavlProgramActions > :is(a,button) { padding:.6rem .85rem; border:1px solid #b9cfe6; border-radius:.65rem; color:#fff!important; font-weight:700 }
+        #fiavlShareUrl { width:100%; max-width:30rem; margin-top:.75rem; padding:.5rem; color:#142c45; background:#fff }
+    </style>
     <meta property="og:title" content="Visita Loja | Turismo, gastronomía y qué visitar en Loja, Ecuador">
     <meta property="og:description" content="VisitaLoja.com: descubre qué hacer en Loja, Ecuador. Explora lugares turísticos, restaurantes, cafeterías, hoteles, eventos y cantones en un mapa interactivo.">
     <meta property="og:image" content="https://www.visitaloja.com/visitaloja-compartir-v2.jpg">
@@ -1514,7 +1535,18 @@
         <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="max-w-7xl mx-auto relative z-10">
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+            <div id="fiavlProgramHeader" hidden>
+                <a href="/">VisitaLoja.com</a>
+                <h1>Programación FIAVL 2026</h1>
+                <p>12 al 22 de noviembre · Loja, Ecuador</p>
+                <div id="fiavlProgramActions">
+                    <a href="/?fiavl2026=preview#mapa">Ver mapa interactivo</a>
+                    <button type="button" onclick="shareFiavlProgram()">Compartir programación</button>
+                </div>
+                <p id="fiavlShareStatus" role="status"></p>
+                <input id="fiavlShareUrl" type="url" readonly hidden aria-label="Enlace directo a la programación">
+            </div>
+            <div id="fiavlOverview" class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
                 <div class="w-full lg:w-1/2 text-center lg:text-left flex flex-col items-center lg:items-start">
                     
                     <!-- Imagen destacada grandecita con halo dorado y efecto flotante -->
@@ -1622,7 +1654,7 @@
         <div id="festivalCampaignGlow" class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
         <div class="absolute -right-12 -top-12 vl-decoration text-[13rem] text-white -rotate-12 pointer-events-none" aria-hidden="true"><i id="festivalCampaignIcon" class="fa-solid fa-masks-theater"></i></div>
         <div class="max-w-7xl mx-auto relative z-10">
-            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+            <div id="festivalCampaignHeader" class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
                 <div>
                     <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Próximo Festival</span>
                     <h2 id="festivalModeTitle" class="text-3xl sm:text-4xl font-black mt-4">Loja se convierte en escenario</h2>
@@ -3204,6 +3236,7 @@
                 });
             });
             document.documentElement.lang = currentLang;
+            if (fiavlProgramPage) { document.title = 'Programación FIAVL 2026 | Visita Loja'; return; }
             document.title = currentLang === 'en' ? 'Visita Loja | Things to do and tourism in Loja, Ecuador' : 'Visita Loja | Turismo, gastronomía y qué visitar en Loja, Ecuador';
         }
 
@@ -4088,7 +4121,7 @@
             const festivalGlow=document.getElementById('festivalCampaignGlow');if(festivalGlow)festivalGlow.style.background=`radial-gradient(circle at 15% 20%,${festivalPrimary} 0,transparent 30%),radial-gradient(circle at 85% 70%,${festivalSecondary} 0,transparent 32%)`;
             const festivalIcons=new Set(['fa-masks-theater','fa-music','fa-landmark','fa-star','fa-palette']),festivalIcon=document.getElementById('festivalCampaignIcon');if(festivalIcon)festivalIcon.className=`fa-solid ${festivalIcons.has(festivalConfig.icon)?festivalConfig.icon:defaultFestivalConfig.icon}`;
             document.querySelectorAll('#festivalCountdown strong').forEach((element,index)=>element.style.color=index%2?festivalSecondary:festivalPrimary);
-            const events = festivalConfig.events || [];
+            const events = fiavlProgramPage && !fiavlPreviewEvents.length ? [] : festivalConfig.events || [];
             const eventsByDay = new Map();
             for (const event of events) {
                 if (!eventsByDay.has(event.date)) eventsByDay.set(event.date, []);
@@ -4143,7 +4176,9 @@
                     card?.scrollIntoView({ block: 'center' });
                 };
             }
-            document.getElementById('festivalEmpty').classList.toggle('hidden', visible.length > 0);
+            const empty = document.getElementById('festivalEmpty');
+            if (fiavlProgramPage && fiavlPreviewEvents.length) empty.textContent = 'No hay actividades cargadas para este día.';
+            empty.classList.toggle('hidden', visible.length > 0);
             renderFestivalEventMarkers();
             updateFestivalClock();
         }
@@ -4178,23 +4213,53 @@
                 fiavlPreviewIds.clear();
                 imported.forEach(event => fiavlPreviewIds.add(event.id));
                 festivalConfig = { ...festivalConfig, active: true, demo: false, events: [...originals, ...imported] };
-                document.getElementById('fiavlAgendaLink').href = '#festival-agenda';
+                document.getElementById('fiavlAgendaLink').href = fiavlProgramPath;
                 document.getElementById('fiavlPreviewAgendaFilters').hidden = false;
                 renderAgendaUI();
             }
             renderFestivalAgenda();
         }
 
+        async function shareFiavlProgram() {
+            const url = new URL(fiavlProgramPath, location.origin).href;
+            const status = document.getElementById('fiavlShareStatus');
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'Programación FIAVL 2026', url });
+                    return;
+                } catch (error) {
+                    if (error.name === 'AbortError') return;
+                }
+            }
+            try {
+                await navigator.clipboard.writeText(url);
+                status.textContent = 'Enlace copiado.';
+            } catch {
+                const field = document.getElementById('fiavlShareUrl');
+                field.value = url;
+                field.hidden = false;
+                field.select();
+                status.textContent = 'Copia este enlace para compartir la programación.';
+            }
+        }
+
+        if (fiavlProgramPage) {
+            document.getElementById('fiavlProgramHeader').hidden = false;
+            document.getElementById('festivalEmpty').textContent = 'Cargando programación…';
+        }
         // Read-only overlay for this URL. Live events remain in their own data source.
-        if (new URLSearchParams(location.search).get('fiavl2026') === 'preview') {
-            fetch('./data/fiavl-2026-import-preview.json', { cache: 'no-store' })
+        if (fiavlProgramPage || fiavlPreviewRequested) {
+            fetch('/data/fiavl-2026-import-preview.json', { cache: 'no-store' })
                 .then(response => { if (!response.ok) throw Error('FIAVL preview HTTP '+response.status); return response.json(); })
                 .then(payload => {
                     if (!Array.isArray(payload.events) || payload.events.length !== 394) throw Error('FIAVL preview data incomplete');
                     fiavlPreviewEvents = payload.events;
                     applyFestivalConfiguration(festivalSource);
                 })
-                .catch(error => console.warn('FIAVL preview data not loaded; keeping existing events', error));
+                .catch(error => {
+                    console.warn('FIAVL preview data not loaded', error);
+                    if (fiavlProgramPage) document.getElementById('festivalEmpty').textContent = 'No se pudo cargar la programación. Vuelve a intentarlo.';
+                });
         }
         if (db) {
             db.collection('siteContent').doc('tourismDay').onSnapshot(
@@ -8131,11 +8196,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             festivalClockTimer = setInterval(updateFestivalClock, 1000);
             initPassport();
             initTimeSliderEvents();
-            initChabaquitoMissions();
-            initWebMascot();
+            if (!fiavlProgramPage) {
+                initChabaquitoMissions();
+                initWebMascot();
+            }
             // Keep the main welcome, adventure actions and contact clear of fixed invitations.
             if ('IntersectionObserver' in window) {
-                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible'], ['#pasaporte', 'vl-passport-visible'], ['#misiones', 'vl-adventure-visible'], ['#agenda', 'vl-agenda-visible']]) {
+                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible'], ['#pasaporte', 'vl-passport-visible'], ['#misiones', 'vl-adventure-visible'], ['#agenda', 'vl-agenda-visible'], ['#fiavl', 'vl-fiavl-visible']]) {
                     const surface = document.querySelector(selector);
                     if (surface) new IntersectionObserver(([entry]) => document.body.classList.toggle(state, entry.isIntersecting)).observe(surface);
                 }

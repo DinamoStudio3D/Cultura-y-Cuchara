@@ -6,7 +6,11 @@
       "permanent": true
     }
   ],
+  "headers": [
+    {"source":"/programacion-fiavl-2026","headers":[{"key":"X-Robots-Tag","value":"noindex"}]}
+  ],
   "rewrites": [
+    {"source":"/programacion-fiavl-2026","destination":"/"},
     {"source":"/api/notifications","destination":"/api/chabaquito-ranking?action=notifications"},
     {"source":"/api/push-test","destination":"/api/chabaquito-ranking?action=push-test"},
     {
