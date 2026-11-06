@@ -3927,8 +3927,33 @@
             return new Intl.DateTimeFormat(currentLang === 'en' ? 'en-US' : 'es-EC', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'America/Guayaquil' }).format(new Date(`${dateValue}T12:00:00-05:00`));
         }
 
+        let nextFiavlMapRefresh = Infinity;
+
+        function fiavlActivityTimes(event) {
+            const start = festivalDateTime(event).getTime();
+            const duration = Number(event.durationMinutes);
+            const hasDuration = Number.isFinite(duration) && duration > 0;
+            const end = hasDuration ? start + duration * 60000
+                : Date.parse(`${event.date}T00:00:00-05:00`) + 86400000;
+            return { start, end, hasDuration };
+        }
+
+        function updateFiavlActivityStatuses(now) {
+            const en = currentLang === 'en';
+            for (const badge of document.querySelectorAll('#festivalAgendaGrid [data-fiavl-status]')) {
+                const { start, end, duration } = badge.dataset;
+                const label = now >= Number(end) ? (en ? 'Finished' : 'Finalizada')
+                    : now < Number(start) ? ''
+                    : duration === 'true' ? (en ? 'In progress' : 'En curso') : (en ? 'Already started' : 'Ya inició');
+                if (badge.textContent !== label) badge.textContent = label;
+                badge.hidden = !label;
+            }
+            if (now >= nextFiavlMapRefresh) renderFestivalEventMarkers();
+        }
+
         function updateFestivalClock() {
             const now = new Date();
+            if (fiavlPreviewEvents.length) updateFiavlActivityStatuses(now.getTime());
             const start = new Date(festivalConfig.startDate);
             const end = new Date(festivalConfig.endDate);
             const countdown = document.getElementById('festivalCountdown');
@@ -3965,12 +3990,21 @@
             const events = [...(festivalConfig.events || [])].sort((a,b) => festivalDateTime(a) - festivalDateTime(b));
             const now = new Date();
             const live = events.find(event => {
+                if (fiavlPreviewIds.has(event.id)) {
+                    const { start, end, hasDuration } = fiavlActivityTimes(event);
+                    return hasDuration && now >= start && now < end;
+                }
                 const start = festivalDateTime(event);
                 const finish = new Date(start.getTime() + Number(event.durationMinutes || 90) * 60000);
                 return now >= start && now <= finish;
             });
             const next = events.find(event => festivalDateTime(event) > now);
-            const chosen = live || next;
+            const started = !live && !next && events.findLast(event => {
+                if (!fiavlPreviewIds.has(event.id)) return false;
+                const { start, end, hasDuration } = fiavlActivityTimes(event);
+                return !hasDuration && now >= start && now < end;
+            });
+            const chosen = live || next || started;
             const label = document.getElementById('festivalNowLabel');
             const title = document.getElementById('festivalNowTitle');
             const meta = document.getElementById('festivalNowMeta');
@@ -3981,7 +4015,7 @@
                 if (meta) meta.textContent = 'Muy pronto compartiremos nuevas experiencias culturales.';
                 return;
             }
-            if (label) label.textContent = live ? 'En este momento' : 'Próxima actividad';
+            if (label) label.textContent = live ? 'En este momento' : started ? 'Ya inició' : 'Próxima actividad';
             if (title) title.textContent = chosen.title;
             if (meta) meta.textContent = `${formatFestivalDay(chosen.date)} · ${chosen.time} · ${chosen.place}`;
             if (action) {
@@ -4069,20 +4103,26 @@
         function renderFestivalEventMarkers() {
             if (!festivalEventLayer) return;
             festivalEventLayer.clearLayers();
+            nextFiavlMapRefresh = Infinity;
             if (!festivalEventsVisible || festivalConfig.active === false) return;
             const now = new Date();
             const venues = new Map();
             const markers = [];
+            const showParadeRoute = new URLSearchParams(location.search).get('fiavlRuta') === 'desfile';
             for (const event of festivalConfig.events) {
-                if (fiavlPreviewIds.has(event.id) && Array.isArray(event.route?.points) && event.route.points.length > 1) {
-                    renderFiavlParadeRoute(event);
+                const imported = fiavlPreviewIds.has(event.id);
+                const eventEnd = imported ? fiavlActivityTimes(event).end
+                    : festivalDateTime(event).getTime() + Number(event.durationMinutes || 90) * 60000;
+                const upcoming = Number.isFinite(eventEnd) && eventEnd > now.getTime();
+                if (imported && event.route?.points?.length > 1) {
+                    if (upcoming || showParadeRoute) renderFiavlParadeRoute(event);
+                    if (upcoming && !showParadeRoute) nextFiavlMapRefresh = Math.min(nextFiavlMapRefresh, eventEnd);
                     continue;
                 }
                 const coordinates = festivalLocation(event);
-                if (!coordinates) continue;
-                const eventEnd = festivalDateTime(event).getTime() + Number(event.durationMinutes || 90) * 60000;
-                if (!Number.isFinite(eventEnd) || eventEnd < now.getTime()) continue;
-                if (fiavlPreviewIds.has(event.id)) {
+                if (!coordinates || !upcoming) continue;
+                if (imported) {
+                    nextFiavlMapRefresh = Math.min(nextFiavlMapRefresh, eventEnd);
                     const key = coordinates.join('|');
                     if (!venues.has(key)) {
                         const venue = { event, coordinates, count: 0, places: new Map() };
@@ -4180,7 +4220,10 @@
             const saved = safeReadJSON('cyc_saved_festival_events', []);
             document.getElementById('festivalAgendaGrid').innerHTML = visible.map(event => {
                 const description = currentLang === 'en' && event.descEn ? event.descEn : event.description || event.desc;
-                return `<article data-festival-event-id="${escapeHTML(event.id)}" tabindex="-1" class="bg-white/5 border border-white/15 rounded-2xl p-5 hover:border-fuchsia-400/60 transition"><div class="flex items-start justify-between gap-3"><span class="text-xs font-black text-cyan-300 uppercase tracking-wider">${event.category || 'Arte'}</span><span class="text-xs ${event.free ? 'text-green-300' : 'text-yellow-300'}">${event.free ? 'Entrada libre' : 'Consultar acceso'}</span></div><h4 class="font-black text-lg mt-3">${event.title}</h4><p class="text-sm text-gray-300 mt-2"><i class="fa-regular fa-clock text-fuchsia-300 mr-2"></i>${event.time} &nbsp;·&nbsp; <i class="fa-solid fa-location-dot text-fuchsia-300 mr-1"></i>${escapeHTML(event.place)}</p>${description ? `<p class="text-sm text-gray-300 mt-2 leading-relaxed">${escapeHTML(description)}</p>` : ''}<div class="grid grid-cols-2 gap-2 mt-4"><button type="button" onclick="saveFestivalEvent('${event.id}')" class="rounded-xl py-2.5 text-xs font-bold border ${saved.includes(event.id) ? 'bg-yellow-300 text-black border-yellow-300' : 'border-white/20 hover:bg-white/10'}"><i class="fa-${saved.includes(event.id) ? 'solid' : 'regular'} fa-star mr-1"></i>${saved.includes(event.id) ? 'Guardado' : 'Mi agenda'}</button>${event.mapUrl ? `<a href="${event.mapUrl}" target="_blank" rel="noopener noreferrer" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600 hover:bg-fuchsia-500"><i class="fa-solid fa-route mr-1"></i>${festivalMapLinkLabel(event)}</a>` : event.route ? `<a href="${fiavlParadeMapUrl}" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600">${currentLang === 'en' ? 'View route on map' : 'Ver recorrido en el mapa'}</a>` : `<span class="rounded-xl py-2.5 text-xs text-center text-gray-500 border border-white/10">${event.locationPrecision === 'recorrido' ? (currentLang === 'en' ? 'Parade route' : 'Recorrido del desfile') : 'Ubicación pendiente'}</span>`}</div></article>`;
+                const { start, end, hasDuration } = fiavlActivityTimes(event);
+                const status = fiavlPreviewIds.has(event.id)
+                    ? `<span hidden data-fiavl-status data-start="${start}" data-end="${end}" data-duration="${hasDuration}" class="text-xs font-bold text-yellow-300"></span>` : '';
+                return `<article data-festival-event-id="${escapeHTML(event.id)}" tabindex="-1" class="bg-white/5 border border-white/15 rounded-2xl p-5 hover:border-fuchsia-400/60 transition"><div class="flex items-start justify-between gap-3"><span class="text-xs font-black text-cyan-300 uppercase tracking-wider">${event.category || 'Arte'}</span><span class="text-xs ${event.free ? 'text-green-300' : 'text-yellow-300'}">${event.free ? 'Entrada libre' : 'Consultar acceso'}</span></div><h4 class="font-black text-lg mt-3">${event.title}</h4>${status}<p class="text-sm text-gray-300 mt-2"><i class="fa-regular fa-clock text-fuchsia-300 mr-2"></i>${event.time} &nbsp;·&nbsp; <i class="fa-solid fa-location-dot text-fuchsia-300 mr-1"></i>${escapeHTML(event.place)}</p>${description ? `<p class="text-sm text-gray-300 mt-2 leading-relaxed">${escapeHTML(description)}</p>` : ''}<div class="grid grid-cols-2 gap-2 mt-4"><button type="button" onclick="saveFestivalEvent('${event.id}')" class="rounded-xl py-2.5 text-xs font-bold border ${saved.includes(event.id) ? 'bg-yellow-300 text-black border-yellow-300' : 'border-white/20 hover:bg-white/10'}"><i class="fa-${saved.includes(event.id) ? 'solid' : 'regular'} fa-star mr-1"></i>${saved.includes(event.id) ? 'Guardado' : 'Mi agenda'}</button>${event.mapUrl ? `<a href="${event.mapUrl}" target="_blank" rel="noopener noreferrer" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600 hover:bg-fuchsia-500"><i class="fa-solid fa-route mr-1"></i>${festivalMapLinkLabel(event)}</a>` : event.route ? `<a href="${fiavlParadeMapUrl}" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600">${currentLang === 'en' ? 'View route on map' : 'Ver recorrido en el mapa'}</a>` : `<span class="rounded-xl py-2.5 text-xs text-center text-gray-500 border border-white/10">${event.locationPrecision === 'recorrido' ? (currentLang === 'en' ? 'Parade route' : 'Recorrido del desfile') : 'Ubicación pendiente'}</span>`}</div></article>`;
             }).join('');
             const parade = events.find(event => fiavlPreviewIds.has(event.id) && event.id === 'fiavl2026-21d664ab2cee');
             const highlight = document.getElementById('fiavlParadeHighlight');
