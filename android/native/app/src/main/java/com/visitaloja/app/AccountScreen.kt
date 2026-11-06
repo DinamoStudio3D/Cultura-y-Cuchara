@@ -20,6 +20,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -106,6 +108,7 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
 
 @Composable
 private fun AccountIdentity(state: AccountState) {
+    val context = LocalContext.current
     val name = state.name.ifBlank { "Tu cuenta de VisitaLoja" }
     val initials = remember(state.name, state.email) {
         state.name.trim().split(Regex("\\s+")).filter(String::isNotBlank).take(2)
@@ -119,7 +122,13 @@ private fun AccountIdentity(state: AccountState) {
                     contentAlignment = Alignment.Center) {
                     Text(initials, color = MaterialTheme.colorScheme.onPrimary, fontSize = 36.sp, fontWeight = FontWeight.Bold)
                     state.photoUrl?.let { url ->
-                        AsyncImage(model = url, contentDescription = "Foto de perfil", modifier = Modifier.fillMaxSize(),
+                        val image = remember(context, url) {
+                            ImageRequest.Builder(context).data(url).apply {
+                                if (url.substringBefore('?').endsWith(".svg", ignoreCase = true))
+                                    decoderFactory(SvgDecoder.Factory())
+                            }.build()
+                        }
+                        AsyncImage(model = image, contentDescription = "Foto de perfil", modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop)
                     }
                 }

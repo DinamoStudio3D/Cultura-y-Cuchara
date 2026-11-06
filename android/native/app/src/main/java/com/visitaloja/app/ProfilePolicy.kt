@@ -4,6 +4,14 @@ import java.time.LocalDate
 
 data class ProfileDraft(val name: String = "", val phone: String = "", val city: String = "", val mode: String = "turista", val birth: String = "", val document: String = "")
 object ProfilePolicy {
+    private val bundledWebAvatars = setOf("mascota-vive-loja.png", "assets/avatars/jipiro.svg",
+        "assets/avatars/puerta.svg", "assets/avatars/villonaco.svg", "assets/avatars/cafe.svg")
+
+    fun avatarUrl(value: String?): String? {
+        val path = value?.trim()?.removePrefix("/") ?: return null
+        return if (path in bundledWebAvatars) "https://www.visitaloja.com/$path" else PlacePolicy.safeImage(value)
+    }
+
     fun draft(data: Map<String, Any?>?, name: String): ProfileDraft = ProfileDraft(data?.text("fullName")?.ifBlank { name } ?: name,
         data?.text("whatsappDisplay").orEmpty(), data?.text("city").orEmpty(), if (data?.text("visitorType") == "lojano") "lojano" else "turista",
         data?.text("birthDate").orEmpty(), data?.text("documentNumber").orEmpty())

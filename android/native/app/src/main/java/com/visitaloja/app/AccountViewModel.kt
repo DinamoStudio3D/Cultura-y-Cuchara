@@ -67,7 +67,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
             if (!same(uid, epoch)) return@addSnapshotListener
             mutable.update { it.copy(
                 name = doc?.getString("fullName")?.takeIf(String::isNotBlank) ?: auth.currentUser?.displayName.orEmpty(),
-                photoUrl = PlacePolicy.safeImage(doc?.get("photoURL") as? String)
+                photoUrl = ProfilePolicy.avatarUrl(doc?.get("photoURL") as? String)
                     ?: PlacePolicy.safeImage(auth.currentUser?.photoUrl?.toString()),
                 city = doc?.getString("city").orEmpty(), visitorType = doc?.getString("visitorType").orEmpty(),
                 profile = if (error == null) ProfilePolicy.draft(doc?.data, auth.currentUser?.displayName.orEmpty()) else null,
