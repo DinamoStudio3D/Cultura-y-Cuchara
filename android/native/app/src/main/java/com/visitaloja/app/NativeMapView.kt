@@ -1,5 +1,7 @@
 package com.visitaloja.app
 
+import android.animation.ValueAnimator
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.res.Configuration
@@ -44,6 +46,10 @@ private const val GROUPS = "vl-groups"
 private const val SELECTED = "vl-selected"
 private const val POSITION = "vl-position"
 private const val ACCURACY = "vl-accuracy"
+private const val POSITION_DOT = "vl-position-dot"
+private const val POSITION_RING = "vl-position-ring"
+private const val DOT_RADIUS = 10f
+private const val RING_RADIUS = 15f
 
 class NativeMapController(private val context: Context, private val initialCamera: MapCamera = MapCamera()) {
     private val renderer = MapMarkerRenderer(context)
@@ -64,6 +70,7 @@ class NativeMapController(private val context: Context, private val initialCamer
     private var data = MapPolicy.geoJson(emptyList())
     private var selected: String? = null
     private var location: MapFix? = null
+    private var positionAnimator: ValueAnimator? = null
     var onGesture: () -> Unit = {}
     var onManualCamera: () -> Unit = {}
     var onCamera: (MapCamera) -> Unit = {}
@@ -156,8 +163,13 @@ class NativeMapController(private val context: Context, private val initialCamer
                 loaded.addSource(GeoJsonSource(POSITION, fix?.let { MapPolicy.locationJson(it.latitude, it.longitude) } ?: MapPolicy.geoJson(emptyList())))
                 loaded.addSource(GeoJsonSource(ACCURACY, fix?.let(MapPolicy::accuracyJson) ?: MapPolicy.geoJson(emptyList())))
                 loaded.addLayerBelow(FillLayer("vl-position-accuracy", ACCURACY).withProperties(fillColor("#168BE8"), fillOpacity(0.16f), fillOutlineColor("#168BE8")), GROUPS)
-                loaded.addLayer(CircleLayer("vl-position-dot", POSITION).withProperties(circleRadius(7f), circleColor("#168BE8"), circleStrokeWidth(3f), circleStrokeColor("#FFFFFF")))
+                loaded.addLayer(CircleLayer(POSITION_RING, POSITION).withProperties(
+                    circleRadius(RING_RADIUS), circleColor("#0C417D"), circleOpacity(0.30f),
+                    circleStrokeColor("#0C417D"), circleStrokeWidth(1.5f), circleStrokeOpacity(0.55f)))
+                loaded.addLayer(CircleLayer(POSITION_DOT, POSITION).withProperties(
+                    circleRadius(DOT_RADIUS), circleColor("#0068D6"), circleStrokeWidth(3.5f), circleStrokeColor("#FFFFFF")))
                 style = loaded
+                if (fix != null) animatePosition()
                 onReady()
                 loadVisibleLogos()
             }
@@ -241,15 +253,47 @@ class NativeMapController(private val context: Context, private val initialCamer
     fun city() { if (alive) map?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(MapPolicy.LOJA_LAT, MapPolicy.LOJA_LNG), MapPolicy.DEFAULT_ZOOM)) }
     fun position(fix: MapFix, follow: Boolean, recenter: Boolean = false) {
         if (!alive || !MapLocationPolicy.valid(fix, SystemClock.elapsedRealtime())) return
+        val appeared = location == null
         location = fix
         style?.getSourceAs<GeoJsonSource>(POSITION)?.setGeoJson(MapPolicy.locationJson(fix.latitude, fix.longitude))
         style?.getSourceAs<GeoJsonSource>(ACCURACY)?.setGeoJson(MapPolicy.accuracyJson(fix))
+        if (appeared || recenter) animatePosition()
         if (follow) map?.let { current ->
             val zoom = if (recenter) MapLocationPolicy.zoom(fix.accuracy) else current.cameraPosition.zoom
             current.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(fix.latitude, fix.longitude), zoom), 700)
         }
     }
+    private fun animatePosition() {
+        if (!alive || !resumed || !ValueAnimator.areAnimatorsEnabled()) return
+        val target = style ?: return
+        val dot = target.getLayer(POSITION_DOT) as? CircleLayer ?: return
+        val ring = target.getLayer(POSITION_RING) as? CircleLayer ?: return
+        stopPositionAnimation()
+        positionAnimator = ValueAnimator.ofFloat(0f, 1f, 0f, 0.45f, 0f).apply {
+            duration = 900L
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener { animation ->
+                if (alive && style === target) {
+                    val strength = animation.animatedValue as Float
+                    dot.setProperties(circleRadius(DOT_RADIUS + 3.5f * strength))
+                    ring.setProperties(circleRadius(RING_RADIUS + 9f * strength),
+                        circleOpacity(0.30f - 0.14f * strength))
+                }
+            }
+            start()
+        }
+    }
+
+    private fun stopPositionAnimation() {
+        val animator = positionAnimator ?: return
+        positionAnimator = null
+        animator.cancel()
+        (style?.getLayer(POSITION_DOT) as? CircleLayer)?.setProperties(circleRadius(DOT_RADIUS))
+        (style?.getLayer(POSITION_RING) as? CircleLayer)?.setProperties(circleRadius(RING_RADIUS), circleOpacity(0.30f))
+    }
+
     fun clearPosition() {
+        stopPositionAnimation()
         location = null
         if (alive) {
             style?.getSourceAs<GeoJsonSource>(POSITION)?.setGeoJson(MapPolicy.geoJson(emptyList()))
@@ -262,7 +306,7 @@ class NativeMapController(private val context: Context, private val initialCamer
     fun lowMemory() { if (alive) view.onLowMemory() }
     fun start() { if (alive && !started) { view.onStart(); started = true } }
     fun resume() { start(); if (alive && !resumed) { view.onResume(); resumed = true; loadVisibleLogos() } }
-    fun pause() { if (alive && resumed) { view.onPause(); resumed = false } }
+    fun pause() { if (alive && resumed) { stopPositionAnimation(); view.onPause(); resumed = false } }
     fun stop() { pause(); if (alive && started) { view.onStop(); started = false } }
     fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); logoAttempts.clear(); logoRetryAt.clear(); onSelect = {}; onGesture = {}; onManualCamera = {}; onCamera = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
 
