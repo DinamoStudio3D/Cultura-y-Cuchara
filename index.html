@@ -1540,7 +1540,7 @@
                 <h1>Programación FIAVL 2026</h1>
                 <p>12 al 22 de noviembre · Loja, Ecuador</p>
                 <div id="fiavlProgramActions">
-                    <a href="/?fiavl2026=preview#mapa">Ver mapa interactivo</a>
+                    <a href="/#mapa">Ver mapa interactivo</a>
                     <button type="button" onclick="shareFiavlProgram()">Compartir programación</button>
                 </div>
                 <p id="fiavlShareStatus" role="status"></p>
@@ -4082,7 +4082,7 @@
             document.getElementById('agenda').scrollIntoView({ behavior: 'smooth' });
         }
 
-        const fiavlParadeMapUrl = '/?fiavl2026=preview&fiavlRuta=desfile#mapa';
+        const fiavlParadeMapUrl = '/?fiavlRuta=desfile#mapa';
         let fiavlParadeRouteFocused = false;
 
         function renderFiavlParadeRoute(event) {
@@ -4312,20 +4312,21 @@
             document.getElementById('fiavlProgramHeader').hidden = false;
             document.getElementById('festivalEmpty').textContent = 'Cargando programación…';
         }
-        // Read-only overlay for this URL. Live events remain in their own data source.
-        if (fiavlProgramPage || fiavlPreviewRequested) {
-            fetch('/data/fiavl-2026-import-preview.json', { cache: 'no-store' })
-                .then(response => { if (!response.ok) throw Error('FIAVL preview HTTP '+response.status); return response.json(); })
-                .then(payload => {
-                    if (!Array.isArray(payload.events) || payload.events.length !== 394) throw Error('FIAVL preview data incomplete');
-                    fiavlPreviewEvents = payload.events;
-                    applyFestivalConfiguration(festivalSource);
-                })
-                .catch(error => {
-                    console.warn('FIAVL preview data not loaded', error);
-                    if (fiavlProgramPage) document.getElementById('festivalEmpty').textContent = 'No se pudo cargar la programación. Vuelve a intentarlo.';
-                });
-        }
+        // Read-only festival schedule. Published events keep their existing source.
+        fetch('/data/fiavl-2026-import-preview.json', { cache: 'no-store' })
+            .then(response => {
+                if (!response.ok) throw Error('FIAVL schedule HTTP ' + response.status);
+                return response.json();
+            })
+            .then(payload => {
+                if (!Array.isArray(payload.events) || payload.events.length !== 394) throw Error('FIAVL schedule data incomplete');
+                fiavlPreviewEvents = payload.events;
+                applyFestivalConfiguration(festivalSource);
+            })
+            .catch(error => {
+                console.warn('FIAVL schedule data not loaded', error);
+                if (fiavlProgramPage) document.getElementById('festivalEmpty').textContent = 'No se pudo cargar la programación. Vuelve a intentarlo.';
+            });
         if (db) {
             db.collection('siteContent').doc('tourismDay').onSnapshot(
                 snapshot => window.applyTourismDayConfiguration?.(snapshot.exists ? snapshot.data() : null),
