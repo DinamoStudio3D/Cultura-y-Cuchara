@@ -895,12 +895,17 @@
       "place": "Parque Jipiro, zona Skateboard",
       "category": "Música",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9729673,
+      "lng": -79.2034405,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9729673,-79.2034405",
       "sourcePage": 12,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de la zona de skate",
+      "locationSources": [
+        "https://mapcarta.com/es/N13179791288",
+        "https://www.openstreetmap.org/node/13179791288"
+      ]
     },
     {
       "id": "fiavl2026-cb6d97674acb",
@@ -4819,12 +4824,17 @@
       "place": "Centro de la Memoria Histórica de Loja",
       "category": "Archivo histórico",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9945474,
+      "lng": -79.2057151,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9945474,-79.2057151",
       "sourcePage": 35,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://www.loja.gob.ec/files/image/LOTAIP/2021/mar/literal_d_servicios_que_ofrece_marzo2021.pdf",
+        "https://www.openstreetmap.org/node/437493502"
+      ]
     },
     {
       "id": "fiavl2026-a2e4f9b49ec8",
@@ -4851,12 +4861,17 @@
       "place": "Parque Central, frente al Municipio",
       "category": "Concurso de café",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.996346,
+      "lng": -79.2017379,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.996346,-79.2017379",
       "sourcePage": 35,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia del sector",
+      "locationSources": [
+        "https://www.openstreetmap.org/way/32722682",
+        "https://www.openstreetmap.org/way/37387226"
+      ]
     },
     {
       "id": "fiavl2026-c164212779c1",
@@ -6778,12 +6793,18 @@
       "place": "Av. Occidental y Escalinatas Bolívar Bailón",
       "category": "Festival",
       "free": null,
-      "lat": null,
-      "lng": null,
-      "mapUrl": "",
+      "lat": -3.9867109,
+      "lng": -79.2100008,
+      "mapUrl": "https://www.google.com/maps/search/?api=1&query=-3.9867109,-79.2100008",
       "sourcePage": 46,
       "source": "PROGRAMACION 2026 digital.pdf",
-      "status": "preliminar"
+      "status": "preliminar",
+      "locationPrecision": "referencia de acceso",
+      "locationSources": [
+        "https://hora32.com.ec/una-escalinata-de-loja-se-llena-de-color-con-arte-publico/",
+        "https://www.openstreetmap.org/way/1102755703",
+        "https://www.openstreetmap.org/node/10091212727"
+      ]
     },
     {
       "id": "fiavl2026-4244604237f7",
