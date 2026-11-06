@@ -7,7 +7,7 @@ import java.util.Locale
 internal data class NativeLinkRequest(val id: String, val text: String)
 internal data class NativeLinkTarget(val route: String, val place: String? = null, val category: String = "all", val menuId: String? = null)
 internal object NativeLinkPolicy {
-    private val sections = mapOf("" to "home", "inicio" to "home", "mapa" to "map", "agenda" to "agenda", "fiavl" to "agenda", "misiones" to "missions", "pasaporte" to "passport", "promociones" to "promotions", "historias" to "stories", "emprendedores" to "enterprises", "loja-en-video" to "videos", "loja-tiempo" to "time", "loja-en-imagenes" to "photos", "podcast" to "podcast", "tienda" to "shop", "postales" to "postcards", "especias" to "shop", "establecimientos" to "explore", "categorias" to "explore", "registeredBrands" to "supporters", "contacto" to "contact")
+    private val sections = mapOf("" to "home", "inicio" to "home", "mapa" to "map", "agenda" to "agenda", "fiavl" to "festival", "misiones" to "missions", "pasaporte" to "passport", "promociones" to "promotions", "historias" to "stories", "emprendedores" to "enterprises", "loja-en-video" to "videos", "loja-tiempo" to "time", "loja-en-imagenes" to "photos", "podcast" to "podcast", "tienda" to "shop", "postales" to "postcards", "especias" to "shop", "establecimientos" to "explore", "categorias" to "explore", "registeredBrands" to "supporters", "contacto" to "contact")
     private val categories = mapOf("/cafeterias-en-loja" to "cafe", "/hoteles-en-loja" to "hotel", "/restaurantes-en-loja" to "food", "/huecas-en-loja" to "hueca", "/panaderias-en-loja" to "panaderia", "/heladerias-en-loja" to "heladeria", "/bares-en-loja" to "bar", "/artesanias-en-loja" to "artesania", "/que-hacer-en-loja" to "turismo")
     private fun id(value: String) = value.takeIf { it.length in 1..120 && Regex("[A-Za-z0-9_-]+").matches(it) }
     fun parse(value: String): NativeLinkTarget? = try {
@@ -31,6 +31,7 @@ internal object NativeLinkPolicy {
                     path == "/terminos.html" -> NativeLinkTarget("terms")
                     path == "/mesa-turistica.html" -> NativeLinkTarget("mesa")
                     path == "/cantones.html" -> NativeLinkTarget("cantons")
+                    path.trimEnd('/') == "/programacion-fiavl-2026" -> NativeLinkTarget("festival")
                     path == "/agenda.html" -> NativeLinkTarget("agenda")
                     path == "/loja-en-el-tiempo.html" -> NativeLinkTarget("time")
                     path == "/fidelidad.html" -> NativeLinkTarget("passport")

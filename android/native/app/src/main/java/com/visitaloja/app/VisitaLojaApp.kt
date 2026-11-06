@@ -228,7 +228,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") "Volver a Secciones" else if (tab == "canton") "Volver a Cantones" else "Volver a Inicio", back) { navigate("sections", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && audioState.key != WelcomeMusicPolicy.KEY && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("guide", "contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("guide", "contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "festival", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -287,6 +287,12 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "photos" -> PhotosScreen(discoveryState.photos, discovery::refresh)
                     "time" -> TimeScreen(discoveryState.history, audioState, audioPlayer, discovery::refresh)
                     "podcast" -> PodcastScreen(discoveryState.podcast, audioState, audioPlayer, discovery::refresh)
+                    "festival" -> {
+                        val festival: FestivalViewModel = viewModel()
+                        val festivalState by festival.state.collectAsStateWithLifecycle()
+                        LaunchedEffect(festival) { festival.refresh() }
+                        FestivalScreen(festivalState, festival::refresh)
+                    }
                     "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
                     "cantons", "canton" -> {
                         val canton = CantonPolicy.catalogue.find { it.id == selectedCantonId }
@@ -385,6 +391,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
                 }
             }
         }
+        item(key = "festival") { FestivalShortcut({ openDiscovery("festival") }, Modifier.padding(horizontal = 18.dp)) }
         item(key = "agenda") { HomeAgenda(agenda, openAgenda, event) }
         item(key = "places") {
             Column {

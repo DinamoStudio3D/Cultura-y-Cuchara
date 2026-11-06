@@ -30,11 +30,12 @@ object PushPolicy {
         return when (uri.path) {
             "/mesa-turistica.html" -> "mesa"
             "/cantones.html" -> "cantons"
+            "/programacion-fiavl-2026", "/programacion-fiavl-2026/" -> "festival"
             "/agenda.html" -> "agenda"
             "/loja-en-el-tiempo.html" -> "time"
             "/fidelidad.html" -> "passport"
             "/" -> when (uri.fragment) {
-                "mapa" -> "map"; "agenda", "fiavl" -> "agenda"; "misiones" -> "missions"; "pasaporte" -> "passport"
+                "mapa" -> "map"; "agenda" -> "agenda"; "fiavl" -> "festival"; "misiones" -> "missions"; "pasaporte" -> "passport"
                 "registeredBrands" -> "supporters"
                 "promociones" -> "promotions"
                 "historias" -> "stories"; "emprendedores" -> "enterprises"; "loja-en-video" -> "videos"; "loja-tiempo" -> "time"; "loja-en-imagenes" -> "photos"; null, "", "inicio" -> "home"; else -> null
