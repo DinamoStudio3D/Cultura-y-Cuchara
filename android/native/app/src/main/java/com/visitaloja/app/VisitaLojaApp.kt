@@ -238,6 +238,8 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         ) { padding ->
             BrandBackdrop(Modifier.padding(padding).fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
+                FirstRunPush(tab == "home" && pendingLink == null && directMenuId == null,
+                    pushState, push) { navigate("account", "all") }
                 if (state.offline && tab != "map") OfflineBanner(state.fetchedAt, state.loading, model::refresh)
                 if (pendingLink != null && NativeLinkPolicy.shared(pendingLink.orEmpty())?.place != null) {
                     Surface(color = MaterialTheme.colorScheme.primaryContainer) {
