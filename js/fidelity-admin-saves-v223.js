@@ -13,7 +13,9 @@
     if(!deps.current(session))return false;
     await write(data,session);
     if(!deps.current(session))return false;
-    deps.say(status,'Cambios guardados correctamente.');
+    deps.say(status,status==='programMsg'
+      ? 'Premio guardado para '+data.placeName+'. La tarjeta quedó '+(data.active?'activa.':'pausada.')
+      : 'Cambios guardados correctamente.');
     await deps.refresh();return true;
    }catch(error){if(deps.current(session))deps.say(status,deps.error(error));return false;}
    finally{controls.forEach((node,i)=>node.disabled=states[i]);busy=false;}

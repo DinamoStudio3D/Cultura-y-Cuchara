@@ -6,3 +6,10 @@ test('failed writes retain fields, restore controls and allow a deliberate retry
 test('session changes suppress stale success and refresh after in-flight writes',async()=>{const f=fixture();let release;f.deps.saveAssignment=()=>new Promise(r=>release=r);const work=f.api.assign('owner');f.logout();release();assert.equal(await work,false);assert.equal(f.refreshes,0);assert.equal(f.messages.length,1);assert.equal(await f.api.program(),false);assert.match(f.messages.at(-1)[1],/iniciar sesión/);});
 test('invalid program fields and unknown assignments cannot write',async()=>{const f=fixture();f.deps.programData=()=>({placeId:'cafe',targetVisits:2,maxVisitsPerDay:1,rewardValidityDays:30,stock:null});assert.equal(await f.api.program(),false);assert.equal(await f.api.assign('other'),false);f.deps.assignment=()=>['missing'];assert.equal(await f.api.assign('owner'),false);assert.equal(f.writes.length,0);assert.equal(f.control.disabled,false);});
 test('assignment can deliberately remove all paradas without changing account activation',async()=>{const f=fixture();f.deps.assignment=()=>[];assert.equal(await f.api.assign('owner'),true);assert.equal(f.writes[0].uid,'owner');assert.equal(f.writes[0].placeIds.length,0);assert.equal('active' in f.writes[0],false);});
+
+test('successful save names the stop and confirms whether its card is paused',async()=>{
+ const f=fixture(),program=f.deps.programData();
+ f.deps.programData=()=>({...program,active:false});
+ assert.equal(await f.api.program(),true);
+ assert.deepEqual(f.messages.at(-1),['programMsg','Premio guardado para Café. La tarjeta quedó pausada.']);
+});
