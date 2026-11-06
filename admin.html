@@ -1576,24 +1576,29 @@ document.getElementById('merchantCreateForm').addEventListener('submit',async ev
 });
 function auditDate(value){if(value===null||value===undefined||value==='')return null;try{const date=value?.toDate?value.toDate():new Date(value);return Number.isFinite(date?.getTime())?date:null;}catch(_){return null;}}
 function auditActionLabel(action){
-    const labels={'admin.created':'Administrador creado','admin.role':'Rol administrativo cambiado','admin.login':'Inicio de sesión','admin.logout':'Cierre de sesión','backup.download':'Descarga de respaldo','content.update':'Contenido actualizado','business.update':'Negocio actualizado','reward.deliver':'Premio entregado','stamp.add':'Sello agregado','stamp.remove':'Sello retirado'};
+    const labels={'admin.created':'Administrador creado','admin.role':'Rol administrativo cambiado','admin.login':'Inicio de sesión','admin.logout':'Cierre de sesión','backup.download':'Descarga de respaldo','content.update':'Contenido actualizado','business.update':'Negocio actualizado','reward.deliver':'Premio entregado','loyalty.program.save':'Configuración de premio','stamp.add':'Sello agregado','stamp.remove':'Sello retirado'};
     return labels[action]||String(action||'Acción administrativa').replaceAll('.',' · ');
 }
 function auditModuleLabel(module){return({access:'Accesos',security:'Seguridad',content:'Contenido',business:'Negocios',rewards:'Premios',loyalty:'Fidelidad'})[module]||module||'Sistema';}
 function auditDateLabel(value){const date=auditDate(value);return date?new Intl.DateTimeFormat('es-EC',{dateStyle:'medium',timeStyle:'short',timeZone:'America/Guayaquil'}).format(date):'Fecha no disponible';}
+function renderLoyaltyAuditDetails(item){
+    if(item.action!=='loyalty.program.save'||!Array.isArray(item.details?.changes))return '';
+    const rows=item.details.changes.map(change=>`<li class="mt-2"><strong>${escapeAdminHtml(change.label)}</strong><div class="break-words whitespace-pre-wrap">Antes: ${escapeAdminHtml(change.before)}</div><div class="break-words whitespace-pre-wrap">Después: ${escapeAdminHtml(change.after)}</div></li>`).join('');
+    return `<details class="mt-3 text-sm text-gray-300"><summary class="cursor-pointer font-bold">${escapeAdminHtml(item.details.placeName||'Parada')} · Ver cambios</summary><ul>${rows}</ul></details>`;
+}
 function renderAdminAudit(){
     const list=document.getElementById('auditList');if(!list)return;
     const term=normalizeUserSearch(document.getElementById('auditSearch')?.value||'').trim();
     const type=document.getElementById('auditTypeFilter')?.value||'all';
     const filtered=adminAuditEntries.filter(item=>{
         const matchesType=type==='all'||item.module===type;
-        const haystack=normalizeUserSearch([item.actorEmail,item.action,item.summary,auditActionLabel(item.action),auditModuleLabel(item.module)].join(' '));
+        const haystack=normalizeUserSearch([item.actorEmail,item.action,item.summary,item.details?.placeName,auditActionLabel(item.action),auditModuleLabel(item.module)].join(' '));
         return matchesType&&(!term||haystack.includes(term));
     });
     document.getElementById('auditResultCount').textContent=filtered.length+' de '+adminAuditEntries.length+' registros cargados';
     for(const [id,module] of [['auditLoadedTotal',null],['auditLoadedAccess','access'],['auditLoadedContent','content'],['auditLoadedSecurity','security']])document.getElementById(id).textContent=module?adminAuditEntries.filter(item=>item.module===module).length:adminAuditEntries.length;
     if(!filtered.length){list.innerHTML=`<div class="border border-dashed border-gray-700 rounded-2xl p-8 text-center"><i class="fa-solid fa-clock-rotate-left text-3xl text-gray-600"></i><p class="font-bold mt-3">${adminAuditEntries.length?'No hay resultados con estos filtros.':'Todavía no existen registros.'}</p><p class="text-sm text-gray-500 mt-1">${adminAuditEntries.length?'Prueba otra búsqueda.':'Todavía no hay acciones disponibles en el historial cargado.'}</p></div>`;return;}
-    list.innerHTML=filtered.map(item=>`<article class="bg-black/25 border border-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3"><div class="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-300 flex items-center justify-center flex-none"><i class="fa-solid fa-shield-halved"></i></div><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><strong>${escapeAdminHtml(auditActionLabel(item.action))}</strong><span class="text-[10px] font-black uppercase tracking-widest rounded-full px-2 py-1 bg-white/5 text-gray-300">${escapeAdminHtml(auditModuleLabel(item.module))}</span></div><p class="text-sm text-gray-400 mt-1">${escapeAdminHtml(item.summary||'Acción registrada')}</p><p class="text-xs text-gray-500 mt-2"><i class="fa-solid fa-user mr-1"></i>${escapeAdminHtml(item.actorEmail||'Administrador')}<span class="mx-2">•</span><i class="fa-regular fa-clock mr-1"></i>${escapeAdminHtml(auditDateLabel(item.createdAt))}</p></div></article>`).join('');
+    list.innerHTML=filtered.map(item=>`<article class="bg-black/25 border border-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3"><div class="w-11 h-11 rounded-xl bg-rose-500/10 text-rose-300 flex items-center justify-center flex-none"><i class="fa-solid fa-shield-halved"></i></div><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><strong>${escapeAdminHtml(auditActionLabel(item.action))}</strong><span class="text-[10px] font-black uppercase tracking-widest rounded-full px-2 py-1 bg-white/5 text-gray-300">${escapeAdminHtml(auditModuleLabel(item.module))}</span></div><p class="text-sm text-gray-400 mt-1">${escapeAdminHtml(item.summary||'Acción registrada')}</p><p class="text-xs text-gray-500 mt-2"><i class="fa-solid fa-user mr-1"></i>${escapeAdminHtml(item.actorEmail||'Administrador')}<span class="mx-2">•</span><i class="fa-regular fa-clock mr-1"></i>${escapeAdminHtml(auditDateLabel(item.createdAt))}</p>${renderLoyaltyAuditDetails(item)}</div></article>`).join('');
 }
 async function loadAdminAudit(){
     const button=document.getElementById('auditRefreshBtn'),notice=document.getElementById('auditMessage'),list=document.getElementById('auditList');

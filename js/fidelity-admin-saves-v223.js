@@ -1,6 +1,20 @@
 /* Preserve existing writes while guarding duplicate submissions and stale feedback. */
 (function(root){
  'use strict';
+ function programChanges(previous,next){
+  const labels={active:'Estado de la tarjeta',targetVisits:'Sellos para el premio',maxVisitsPerDay:'Sellos por día',rewardTitle:'Nombre del premio',rewardDescription:'Descripción y condiciones',rewardType:'Tipo de premio',rewardValidityDays:'Días de vigencia',stock:'Cantidad total de premios',seasons:'Temporadas'};
+  function format(key,value){
+   if(value===undefined)return 'Sin configurar';
+   if(key==='active')return value?'Activa':'Pausada';
+   if(key==='stock'&&value===null)return 'Sin límite';
+   if(key==='rewardType')return ({product:'Producto',discount:'Descuento',surprise:'Premio sorpresa'})[value]||String(value);
+   if(key==='seasons')return JSON.stringify(value);
+   return String(value??'');
+  }
+  return Object.entries(labels).filter(([key])=>Object.hasOwn(next,key)&&JSON.stringify(previous[key])!==JSON.stringify(next[key]))
+   .map(([key,label])=>({label,before:format(key,previous[key]),after:format(key,next[key])}));
+ }
+ root.VisitaLojaFidelityProgramChanges=programChanges;
  function controller(deps){
   let busy=false;
   async function run(status,prepare,write){
@@ -51,6 +65,13 @@
   validForm:()=>get('programForm').reportValidity(),
   programData:()=>({placeId:get('programPlace').value,active:get('programActive').checked,targetVisits:Number(get('programTarget').value),maxVisitsPerDay:Number(get('programDaily').value),rewardTitle:get('programReward').value.trim(),rewardDescription:get('programDescription').value.trim(),rewardType:get('programType').value,rewardValidityDays:Number(get('programValidity').value),stock:get('programStock').value===''?null:Number(get('programStock').value),...(root.VisitaLojaSeasonEditor?.read()===undefined?{}:{seasons:root.VisitaLojaSeasonEditor.read()})}),
   saveAssignment:({uid,placeIds})=>db.collection('missionRewardMerchants').doc(uid).update({placeIds,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}),
-  saveProgram:(data,session)=>db.runTransaction(async tx=>{const ref=db.collection('loyaltyPrograms').doc(data.placeId),saved=await tx.get(ref);if(data.seasons!==undefined){const current=saved.exists?saved.data():{},before=root.VisitaLojaLoyaltySeasonPolicy.normalize(current.seasons||[]);for(const season of before){const used=current.seasonUsage?.[season.id]===true,next=data.seasons.find(item=>item.id===season.id),withoutStock=value=>{if(!value)return null;const {stock,...rest}=value;return rest;};if(used&&JSON.stringify(withoutStock(season))!==JSON.stringify(withoutStock(next)))throw Error('Esta temporada ya tiene sellos. Conserva sus condiciones y crea otra para nuevas fechas.');if(next?.stock!==null&&next?.stock!==undefined&&next.stock<Number(current.seasonClaimedCounts?.[season.id]||0))throw Error('Los cupos no pueden ser menores que los premios ya emitidos.');}}if(adminSessionUid!==session.uid||auth.currentUser?.uid!==session.uid||adminAccessGeneration!==session.generation)throw Error('La sesión cambió.');tx.set(ref,{...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:session.email},{merge:true});})
+  saveProgram:(data,session)=>db.runTransaction(async tx=>{const ref=db.collection('loyaltyPrograms').doc(data.placeId),saved=await tx.get(ref),current=saved.exists?saved.data():{};if(data.seasons!==undefined){const before=root.VisitaLojaLoyaltySeasonPolicy.normalize(current.seasons||[]);for(const season of before){const used=current.seasonUsage?.[season.id]===true,next=data.seasons.find(item=>item.id===season.id),withoutStock=value=>{if(!value)return null;const {stock,...rest}=value;return rest;};if(used&&JSON.stringify(withoutStock(season))!==JSON.stringify(withoutStock(next)))throw Error('Esta temporada ya tiene sellos. Conserva sus condiciones y crea otra para nuevas fechas.');if(next?.stock!==null&&next?.stock!==undefined&&next.stock<Number(current.seasonClaimedCounts?.[season.id]||0))throw Error('Los cupos no pueden ser menores que los premios ya emitidos.');}}if(adminSessionUid!==session.uid||auth.currentUser?.uid!==session.uid||adminAccessGeneration!==session.generation)throw Error('La sesión cambió.');tx.set(ref,{...data,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:session.email},{merge:true});
+   const changes=programChanges(current,data);
+   if(changes.length)tx.set(db.collection('adminAudit').doc(),{
+    action:'loyalty.program.save',module:'loyalty',summary:saved.exists?'Actualizó un premio de fidelidad':'Configuró un premio de fidelidad',
+    details:{placeId:data.placeId,placeName:data.placeName,changes},
+    actorUid:session.uid,actorEmail:session.email,createdAt:firebase.firestore.FieldValue.serverTimestamp()
+   });
+  })
  });
 })(window);

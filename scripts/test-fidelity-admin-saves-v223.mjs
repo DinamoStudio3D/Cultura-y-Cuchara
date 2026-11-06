@@ -13,3 +13,15 @@ test('successful save names the stop and confirms whether its card is paused',as
  assert.equal(await f.api.program(),true);
  assert.deepEqual(f.messages.at(-1),['programMsg','Premio guardado para Café. La tarjeta quedó pausada.']);
 });
+
+test('audit includes only changed reward fields and preserves zero stock',()=>{
+ const changes=window.VisitaLojaFidelityProgramChanges(
+  {rewardTitle:'Café',stock:null,active:true,targetVisits:10},
+  {rewardTitle:'Té',stock:0,active:true,targetVisits:10,placeId:'cafe'}
+ );
+ assert.equal(changes.length,2);
+ assert.equal(changes[0].before,'Café');
+ assert.equal(changes[0].after,'Té');
+ assert.equal(changes[1].before,'Sin límite');
+ assert.equal(changes[1].after,'0');
+});
