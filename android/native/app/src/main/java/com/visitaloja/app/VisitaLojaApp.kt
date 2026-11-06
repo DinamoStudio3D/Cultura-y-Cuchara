@@ -252,21 +252,12 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                 when (tab) {
                     "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen({ navigate(it, "all") }, queueLink) }
                     "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh, { nearbySettings = true }, festivalState, focusParade, { focusParade = false }) { navigate("festival", "all") }
-                    "account" -> Column(Modifier.fillMaxSize()) {
-                        TextButton(onClick = { nearbySettings = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("nearby-settings")) {
-                            Icon(Icons.Default.NearMe, null); Spacer(Modifier.width(8.dp)); Text("Paradas cercanas · " + if (nearbyEnabled) "Activadas" else "Configurar")
-                        }
-                        TextButton(onClick = { merchantRewardOpen = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("merchant-open-rewards")) {
-                            Icon(Icons.Default.Redeem, null); Spacer(Modifier.width(8.dp)); Text("Validar y entregar premios · QR")
-                        }
-                        TextButton(onClick = { merchantBusinessOpen = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("merchant-open-business")) {
-                            Icon(Icons.Default.Storefront, null); Spacer(Modifier.width(8.dp)); Text("Mi negocio · Clientes, visitas y premios")
-                        }
-                        TextButton(onClick = { merchantScanOpen = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("merchant-open-scanner")) {
-                            Icon(Icons.Default.QrCodeScanner, null); Spacer(Modifier.width(8.dp)); Text("Soy encargado · Escanear y sellar")
-                        }
-                        Box(Modifier.weight(1f)) { AccountScreen(accountState, guestState.favourites, account, { navigate("passport", "all") }, { navigate("notices", "all") }, { legalDocument = "privacy" }, { navigate("contact", "all") }) }
-                    }
+                    "account" -> AccountScreen(accountState, guestState.favourites, account,
+                        wallet = { navigate("passport", "all") }, notices = { navigate("notices", "all") },
+                        privacy = { legalDocument = "privacy" }, contact = { navigate("contact", "all") },
+                        nearby = { nearbySettings = true }, nearbyEnabled = nearbyEnabled,
+                        business = { merchantBusinessOpen = true }, scan = { merchantScanOpen = true },
+                        rewards = { merchantRewardOpen = true })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState, { input -> navigate("explore", "all"); query = input })
                     "contact" -> PlatformContactScreen({ legalDocument = it })

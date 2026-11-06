@@ -23,6 +23,9 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,7 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: AccountViewModel, wallet: () -> Unit, notices: () -> Unit = {}, privacy: () -> Unit = {}, contact: () -> Unit = {}) {
+fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: AccountViewModel, wallet: () -> Unit, notices: () -> Unit = {}, privacy: () -> Unit = {}, contact: () -> Unit = {},
+    nearby: () -> Unit, nearbyEnabled: Boolean, business: () -> Unit, scan: () -> Unit, rewards: () -> Unit) {
     val context = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
     // Passwords are deliberately excluded from saved instance state.
@@ -53,6 +57,7 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
             return@Column
         }
         if (state.uid == null) {
+            NearbyAccountAction(nearby, nearbyEnabled)
             Surface(color = Color(0xFFF2F7FD), shape = RoundedCornerShape(22.dp)) {
                 Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
                     Image(painterResource(R.drawable.visitaloja_logo), "VisitaLoja", Modifier.size(68.dp))
@@ -77,6 +82,20 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
             AccountIdentity(state)
             Text(if (state.profileComplete) "Perfil completo para tus beneficios" else "Completa tu perfil para solicitar recompensas", fontWeight = FontWeight.Bold)
             Button(onClick = { editingProfile = true }, enabled = state.profileReady && !state.busy, modifier = Modifier.fillMaxWidth()) { Text(if (state.profileComplete) "Editar mis datos" else "Completar mi perfil") }
+            Card(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Text("Herramientas del negocio", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("Para dueños y encargados con acceso autorizado.", style = MaterialTheme.typography.bodySmall)
+                    AccountAction("Escanear y sellar", "Confirma una visita con el QR del cliente.",
+                        Icons.Default.QrCodeScanner, "merchant-open-scanner", scan)
+                    HorizontalDivider()
+                    AccountAction("Validar y entregar premios", "Consulta un QR de canje antes de entregar el premio.",
+                        Icons.Default.Redeem, "merchant-open-rewards", rewards)
+                    HorizontalDivider()
+                    AccountAction("Clientes, visitas y premios", "Consulta los registros disponibles para tu negocio.",
+                        Icons.Default.Storefront, "merchant-open-business", business)
+                }
+            }
             Text("Tus favoritos, contigo", fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(if (!state.favouritesReady) "Consultando tus favoritos…" else "${state.favourites.size} lugares guardados en tu cuenta. Los cambios se comparten con la web.", fontSize = 14.sp)
             if (state.fromCache) Text("Sin confirmación del servidor. Conéctate para consultar y cambiar tus favoritos.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -90,6 +109,7 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
         }
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         if (state.message != null) Surface(color = Color(0xFFF2F7FD), shape = RoundedCornerShape(12.dp)) { Text(state.message, modifier = Modifier.padding(16.dp), fontSize = 13.sp) }
+        if (state.uid != null) NearbyAccountAction(nearby, nearbyEnabled)
         OutlinedButton(onClick = notices, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Notifications, null); Spacer(Modifier.width(8.dp)); Text("Avisos y notificaciones") }
         TextButton(onClick = privacy) { Text("Privacidad y uso de tus datos") }
         TextButton(onClick = contact) { Text("Contacto y redes de VisitaLoja") }
@@ -142,6 +162,30 @@ private fun AccountIdentity(state: AccountState) {
             if (state.visitorType in setOf("lojano", "turista")) Text(
                 if (state.visitorType == "lojano") "Modo lojano" else "Modo turista",
                 color = MaterialTheme.colorScheme.onPrimaryContainer, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun NearbyAccountAction(open: () -> Unit, enabled: Boolean) {
+    TextButton(onClick = open, modifier = Modifier.testTag("nearby-settings")) {
+        Icon(Icons.Default.NearMe, null)
+        Spacer(Modifier.width(8.dp))
+        Text("Paradas cercanas · " + if (enabled) "Activadas" else "Configurar")
+    }
+}
+
+@Composable
+private fun AccountAction(title: String, subtitle: String, icon: ImageVector, tag: String, open: () -> Unit) {
+    Surface(onClick = open, modifier = Modifier.fillMaxWidth().testTag(tag), shape = RoundedCornerShape(12.dp)) {
+        Row(Modifier.padding(horizontal = 9.dp, vertical = 11.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Icon(icon, null, tint = MaterialTheme.colorScheme.primary)
+            Column(Modifier.weight(1f)) {
+                Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = MaterialTheme.colorScheme.primary)
         }
     }
 }
