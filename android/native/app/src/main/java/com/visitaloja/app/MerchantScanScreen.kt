@@ -33,11 +33,14 @@ fun MerchantScanScreen(state: MerchantScanState, model: MerchantScanViewModel, d
     var amount by remember(state.visit?.id) { mutableStateOf("") }
     var reason by remember(state.visit?.id) { mutableStateOf("") }
     var receipt by remember(state.visit?.id) { mutableStateOf("") }
+    var reversing by remember(state.visit?.id) { mutableStateOf(false) }
+    var reversalReason by remember(state.visit?.id) { mutableStateOf("") }
     var confirming by remember(state.visit?.id) { mutableStateOf(false) }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) { while (true) { now = System.currentTimeMillis(); delay(1000) } }
     val busy = state.busy || scanning
     val visit = state.visit
+    val canReverse = visit?.let { it.status == "confirmed" && it.undoUntil > 0 && now <= it.undoUntil } == true
     Dialog(onDismissRequest = { if (!busy) dismiss() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(), color = MaterialTheme.colorScheme.background) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -81,8 +84,11 @@ fun MerchantScanScreen(state: MerchantScanState, model: MerchantScanViewModel, d
                     Text(visit.visitor, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     Text(visit.placeName)
                     when {
-                        visit.status == "confirmed" -> Text("VISITA YA CONFIRMADA. No vuelvas a sellarla.", fontWeight = FontWeight.Bold)
-                        visit.status == "reversed" -> Text("Esta visita fue anulada; consulta el panel del negocio.")
+                        visit.status == "confirmed" -> {
+                            Text("VISITA CONFIRMADA", fontWeight = FontWeight.Bold)
+                            if (canReverse) OutlinedButton(onClick = { reversalReason = ""; reversing = true }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("Deshacer último sello") }
+                        }
+                        visit.status == "reversed" -> Text("Este sello fue anulado.")
                         visit.status == "review" -> Text("Resultado pendiente de comprobar. Pulsa Consultar código para recuperar el estado real; no generes otro sello.")
                         !MerchantScanPolicy.confirmable(visit.status, visit.expires, state.selected == visit.placeId, now) -> Text("Código vencido o no disponible. Pide al visitante generar otro.")
                         else -> {
@@ -109,4 +115,13 @@ fun MerchantScanScreen(state: MerchantScanState, model: MerchantScanViewModel, d
         text = { Text("${visit.visitor}\n${visit.placeName}\n" + when (kind) { "purchase" -> "Compra: USD $amount"; "courtesy" -> "Cortesía: $reason"; else -> "Visita turística" } + "\n\nVerifica que el visitante esté presente. Se aplicarán las reglas actuales de fidelidad y pasaporte.") },
         confirmButton = { TextButton(onClick = { confirming = false; model.confirm(kind, amount, reason, receipt) }, enabled = !busy) { Text("Confirmar sello") } },
         dismissButton = { TextButton(onClick = { confirming = false }) { Text("Cancelar") } })
+    if (reversing && visit != null) AlertDialog(onDismissRequest = { reversing = false }, title = { Text("¿Deshacer este sello?") },
+        text = { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("${visit.visitor} · ${visit.placeName}")
+            Text("Se ajustarán el consumo, los sellos y las recompensas asociadas que correspondan.")
+            if (!canReverse) Text("Terminó el plazo de 15 minutos.", color = MaterialTheme.colorScheme.error)
+            OutlinedTextField(reversalReason, { reversalReason = it.take(240) }, label = { Text("Motivo obligatorio · 5 a 240 caracteres") }, modifier = Modifier.fillMaxWidth())
+        } }, confirmButton = { TextButton(onClick = { reversing = false; model.reverse(reversalReason) }, enabled = canReverse && !busy && reversalReason.trim().length >= 5) { Text("Confirmar anulación", color = if (canReverse) MaterialTheme.colorScheme.error else LocalContentColor.current) } },
+        dismissButton = { TextButton(onClick = { reversing = false }) { Text("Cancelar") } })
+
 }

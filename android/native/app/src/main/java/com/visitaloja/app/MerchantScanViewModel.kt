@@ -17,7 +17,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 private data class MerchantPlace(val id: String, val name: String, val tourist: Boolean)
-data class MerchantVisit(val id: String, val placeId: String, val placeName: String, val visitor: String, val status: String, val expires: Long, val tourist: Boolean)
+data class MerchantVisit(val id: String, val placeId: String, val placeName: String, val visitor: String, val status: String, val expires: Long, val tourist: Boolean, val undoUntil: Long = 0)
 data class MerchantScanState(val uid: String? = null, val busy: Boolean = false, val ready: Boolean = false,
     val places: List<Pair<String, String>> = emptyList(), val selected: String = "", val visit: MerchantVisit? = null, val message: String? = null)
 class MerchantScanViewModel : ViewModel() {
@@ -75,12 +75,53 @@ class MerchantScanViewModel : ViewModel() {
                 check(doc != null && doc.getString("code") == code && doc.getString("placeId") == place.id) { "No encontramos un código para la parada seleccionada." }
                 if (!current(uid, epoch)) return@launch
                 val visit = MerchantVisit(doc.id, place.id, place.name, doc.getString("userName")?.takeIf { it.isNotBlank() } ?: "Visitante", doc.getString("status").orEmpty(), doc.getTimestamp("expiresAt")?.toDate()?.time ?: 0, place.tourist)
-                mutable.update { it.copy(visit = visit, message = null) }
+                val resolved = visit.copy(undoUntil = undoDeadline(visit, uid))
+                if (current(uid, epoch)) mutable.update { it.copy(visit = resolved, message = null) }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (e: Exception) { if (current(uid, epoch)) mutable.update { it.copy(message = if (e is IllegalStateException) e.message else "No pudimos consultar el código. Verifica la conexión y tus permisos; no se registró ningún sello desde esta consulta.") } }
             finally { if (current(uid, epoch)) mutable.update { it.copy(busy = false) } }
         }
     }
+    private suspend fun undoDeadline(visit: MerchantVisit, uid: String): Long {
+        if (visit.status != "confirmed") return 0
+        return try {
+            val saved = db.collection("loyaltyVisits").document(visit.id).get(Source.SERVER).await()
+            val at = saved.getTimestamp("confirmedAt")?.toDate()?.time ?: return 0
+            val actor = saved.getString("confirmedBy").orEmpty()
+            val status = saved.getString("status").orEmpty()
+            val hasClaim = (saved.get("passportClaimIds") as? List<*>)?.isNotEmpty() == true
+            val visitorId = saved.getString("userId").orEmpty()
+            if (saved.getString("placeId") != visit.placeId || visitorId.isBlank() ||
+                !MerchantScanPolicy.reversible(status, at, actor, uid, true, hasClaim, System.currentTimeMillis())) return 0
+            val counterId = "${visitorId}_${visit.placeId}".replace(Regex("[^A-Za-z0-9_-]"), "-").take(180)
+            val counter = db.collection("loyaltyCounters").document(counterId).get(Source.SERVER).await()
+            if (counter.getString("lastVisitRequestId") == visit.id) at + MerchantScanPolicy.REVERSE_WINDOW_MS else 0
+        } catch (cancelled: CancellationException) { throw cancelled }
+        catch (_: Exception) { 0 }
+    }
+
+    fun reverse(reason: String) {
+        val snapshot = mutable.value; val uid = snapshot.uid ?: return; val visit = snapshot.visit ?: return
+        if (snapshot.busy || !snapshot.ready || snapshot.selected != visit.placeId || visit.status != "confirmed" || visit.undoUntil <= 0 || System.currentTimeMillis() > visit.undoUntil) return
+        val payload = try { MerchantScanPolicy.reversalPayload(visit.id, reason) } catch (e: IllegalArgumentException) { message(e.message.orEmpty()); return }
+        val epoch = generation
+        mutable.update { it.copy(busy = true, message = null) }
+        viewModelScope.launch {
+            try {
+                val user = auth.currentUser?.takeIf { it.uid == uid } ?: error("Sesión cambiada")
+                val token = user.getIdToken(false).await().token ?: error("Sesión caducada")
+                check(current(uid, epoch))
+                val result = withContext(Dispatchers.IO) { NativeApi.post(MerchantScanPolicy.REVERSE_ENDPOINT, token, payload) }
+                check(result.optBoolean("ok")) { result.optString("error") }
+                if (current(uid, epoch)) mutable.update { it.copy(visit = visit.copy(status = "reversed", undoUntil = 0),
+                    message = "Sello anulado. Fidelidad: ${result.optInt("visitCount")} / ${result.optInt("target", 10)}." +
+                        if (result.optBoolean("missionsPending")) " La actualización de Misiones quedó pendiente." else "") }
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (e: Exception) { if (current(uid, epoch)) mutable.update { it.copy(visit = visit.copy(status = "review", undoUntil = 0), message = MerchantScanPolicy.reversalError(e.message.orEmpty())) } }
+            finally { if (current(uid, epoch)) mutable.update { it.copy(busy = false) } }
+        }
+    }
+
     fun confirm(kind: String, amount: String, reason: String, receipt: String) {
         val snapshot = mutable.value; val uid = snapshot.uid ?: return; val visit = snapshot.visit ?: return
         if (snapshot.busy || !snapshot.ready || !MerchantScanPolicy.confirmable(visit.status, visit.expires, visit.placeId == snapshot.selected && available.any { it.id == visit.placeId }, System.currentTimeMillis())) return
@@ -94,7 +135,9 @@ class MerchantScanViewModel : ViewModel() {
                 check(current(uid, epoch))
                 val result = withContext(Dispatchers.IO) { NativeApi.post(MerchantScanPolicy.ENDPOINT, token, payload) }
                 check(result.optBoolean("ok")) { result.optString("error") }
-                if (current(uid, epoch)) mutable.update { it.copy(visit = visit.copy(status = "confirmed"), message = "Visita confirmada. Fidelidad: ${result.optInt("visitCount")} / ${result.optInt("target", 10)}. Los sellos de pasaporte que correspondan se procesan con las reglas actuales." + if (result.optBoolean("missionsPending")) " La actualización de Misiones quedó pendiente; no repitas el sello." else "") }
+                val confirmed = visit.copy(status = "confirmed")
+                val resolved = confirmed.copy(undoUntil = undoDeadline(confirmed, uid))
+                if (current(uid, epoch)) mutable.update { it.copy(visit = resolved, message = "Visita confirmada. Fidelidad: ${result.optInt("visitCount")} / ${result.optInt("target", 10)}. Los sellos de pasaporte que correspondan se procesan con las reglas actuales." + if (result.optBoolean("missionsPending")) " La actualización de Misiones quedó pendiente; no repitas el sello." else "") }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (e: Exception) { if (current(uid, epoch)) mutable.update { it.copy(visit = visit.copy(status = "review"), message = MerchantScanPolicy.error(e.message.orEmpty())) } }
             finally { if (current(uid, epoch)) mutable.update { it.copy(busy = false) } }
