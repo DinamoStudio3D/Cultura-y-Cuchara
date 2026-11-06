@@ -925,8 +925,8 @@
         <div class="max-w-2xl mx-auto panel rounded-2xl overflow-hidden shadow-2xl">
             <div class="p-4 border-b border-white/10">
                 <div class="flex items-center justify-between gap-3 mb-3"><div><p class="text-[10px] uppercase tracking-widest text-amber-300 font-black">Acceso rápido</p><h3 id="adminGlobalSearchTitle" class="font-black text-lg">Buscar en todo el panel</h3></div><button type="button" onclick="closeAdminGlobalSearch()" class="w-10 h-10 rounded-xl border border-gray-700 text-gray-300 hover:text-white" aria-label="Cerrar buscador"><i class="fa-solid fa-xmark"></i></button></div>
-                <label class="sr-only" for="adminGlobalSearchInput">Buscar contenido o módulo</label>
-                <div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-amber-300"></i><input id="adminGlobalSearchInput" class="field !pl-11 !py-3" placeholder="Ej.: Dinamo, evento, audio, pasaporte…" autocomplete="off" oninput="renderAdminGlobalSearch(this.value)"></div>
+                <label class="sr-only" for="adminGlobalSearchInput">Buscar tarea, parada o contenido</label>
+                <div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-amber-300"></i><input id="adminGlobalSearchInput" class="field !pl-11 !py-3" placeholder="Ej.: premio Expreso al Sur, anuncio especial…" autocomplete="off" oninput="renderAdminGlobalSearch(this.value)"></div>
             </div>
             <div id="adminGlobalSearchResults" class="max-h-[60vh] overflow-y-auto p-2" aria-live="polite"></div>
             <p class="px-4 py-3 border-t border-white/10 text-[11px] text-gray-500">Usa <strong class="text-gray-300">Ctrl + K</strong> para abrir y <strong class="text-gray-300">Esc</strong> para cerrar.</p>
@@ -1318,6 +1318,28 @@ function adminGlobalSearchItems(){
     ];
     return [...shortcuts,...modules,...records];
 }
+function adminPlaceTaskResults(query){
+    if(!query)return [];
+    const words=query.split(/\s+/).filter(word=>!['a','al','de','del','el','en','la','las','los','para'].includes(word));
+    const tasks=[
+        {label:'Configurar premio',view:'programs',terms:'premio premios fidelidad beneficio recompensa tarjeta sellos configurar editar'},
+        {label:'Ver canjes',view:'activity',terms:'premio premios fidelidad recompensa canje canjes entregado entregados historial consultar ver'}
+    ];
+    return adminPlaces.flatMap(place=>{
+        if(!place.id)return [];
+        const title=place.title||place.titleEn||place.id;
+        const name=normalizeUserSearch([place.title,place.titleEn].filter(Boolean).join(' ')||title);
+        return tasks.filter(task=>{
+            const terms=task.terms.split(' ');
+            return words.some(word=>word.length>=2&&name.includes(word)&&!terms.includes(word))
+                && words.some(word=>terms.includes(word)&&!name.includes(word))
+                && adminSearchMatches(words.join(' '),name,task.terms);
+        }).map(task=>({
+            module:'fidelity',label:task.label+' · '+title,type:'Tarea de la parada',
+            detail:[place.tag,place.address].filter(Boolean).join(' · '),placeId:place.id,fidelityView:task.view
+        }));
+    });
+}
 function openAdminGlobalSearch(){
     const modal=document.getElementById('adminGlobalSearchModal'),input=document.getElementById('adminGlobalSearchInput');
     if(!modal||!input)return;
@@ -1329,12 +1351,19 @@ function closeAdminGlobalSearch(){
 function renderAdminGlobalSearch(value){
     const box=document.getElementById('adminGlobalSearchResults'),query=normalizeUserSearch(value).trim();
     if(!box)return;
-    adminGlobalSearchResults=adminGlobalSearchItems().filter(item=>!query||adminSearchMatches(query,item.label,item.type,item.detail,item.terms,ADMIN_MODULE_LABELS[item.module])).slice(0,40);
+    const matches=adminGlobalSearchItems().filter(item=>!query||adminSearchMatches(query,item.label,item.type,item.detail,item.terms,ADMIN_MODULE_LABELS[item.module]));
+    adminGlobalSearchResults=[...adminPlaceTaskResults(query),...matches].slice(0,40);
     if(!adminGlobalSearchResults.length){box.innerHTML='<p class="text-center text-sm text-gray-500 p-8">No encontramos coincidencias.</p>';return;}
     box.innerHTML=adminGlobalSearchResults.map((item,index)=>`<button type="button" onclick="openAdminGlobalSearchResult(${index})" class="w-full text-left rounded-xl px-4 py-3 hover:bg-white/5 flex items-center gap-3"><span class="w-10 h-10 shrink-0 rounded-xl bg-amber-500/10 text-amber-300 grid place-items-center"><i class="fa-solid ${item.type==='Módulo'?'fa-table-cells-large':'fa-file-lines'}"></i></span><span class="min-w-0 flex-1"><span class="block font-bold truncate">${escapeAdminHtml(item.label)}</span><span class="block text-xs text-gray-500 truncate">${escapeAdminHtml(item.type)}${item.detail?' · '+escapeAdminHtml(item.detail):''}</span></span><i class="fa-solid fa-arrow-right text-gray-600"></i></button>`).join('');
 }
 function openAdminGlobalSearchResult(index){
     const item=adminGlobalSearchResults[index];if(!item)return;
+    if(item.fidelityView){
+        if(!openPlaceManagement(item.placeId,'fidelity',item.fidelityView))return;
+        closeAdminGlobalSearch();
+        window.scrollTo({top:0,behavior:'smooth'});
+        return;
+    }
     if(item.section){
         if(openAdminSection(item.module,item.section)===false)return;
         closeAdminGlobalSearch();
@@ -2293,8 +2322,8 @@ function renderPlaceCommercialSummary(place,galleryCount){
 }
 function openPlaceManagement(placeId,moduleName,fidelityView='programs'){
     const place=adminPlaces.find(item=>item.id===placeId);
-    if(!place||!['merchants','subscriptions','fidelity'].includes(moduleName))return;
-    if(showAdminModule(moduleName)===false)return;
+    if(!place||!['merchants','subscriptions','fidelity'].includes(moduleName))return false;
+    if(showAdminModule(moduleName)===false)return false;
     window.VisitaLojaAdminBusinessJourney?.select(place);
     if(moduleName==='fidelity'){
         const frame=document.getElementById('fidelityFrame');
@@ -2308,6 +2337,7 @@ function openPlaceManagement(placeId,moduleName,fidelityView='programs'){
         const select=document.getElementById('merchantCreatePlaces');
         if(select){[...select.options].forEach(option=>option.selected=option.value===placeId);}
     }
+    return true;
 }
 function clearAdminPlaceFilters(){document.getElementById('placesPublicationFilter').value='all';document.getElementById('placesCategoryFilter').value='all';document.getElementById('placesSearch').value='';renderAdminPlaces();}
 function revealSavedAdminPlace(place){const ids={publication:'placesPublicationFilter',category:'placesCategoryFilter',search:'placesSearch',sort:'placesSort'},filters=Object.fromEntries(Object.entries(ids).map(([key,id])=>[key,document.getElementById(id).value]));const next=window.VisitaLojaAdminPlaceDirectory.filtersAfterSave(place,filters,category=>placeCategoryMeta(category).label);for(const[key,id]of Object.entries(ids))document.getElementById(id).value=next[key];renderAdminPlaces();}

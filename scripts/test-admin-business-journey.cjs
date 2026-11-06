@@ -41,3 +41,32 @@ test('canjes uses the stop ID even when two businesses have the same name',()=>{
  nodes.activityPlace.value='all';
  assert.equal(context.filteredActivities().length,2);
 });
+
+test('task search opens rewards and claims for the exact selected place',()=>{
+ const html=fs.readFileSync(require('node:path').join(__dirname,'../admin.html'),'utf8');
+ const calls=[];
+ const context={
+  adminPlaces:[{id:'expreso',title:'Expreso al Sur'},{id:'other',title:'Otro Café'}],
+  normalizeUserSearch:text=>text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),
+  openPlaceManagement:(...args)=>{calls.push(args);return context.allow;},
+  closeAdminGlobalSearch:()=>calls.push('close'),window:{scrollTo(){}}
+ };
+ const functions=['adminSearchMatches','adminPlaceTaskResults','openAdminGlobalSearchResult'];
+ for(const name of functions){
+  const start=html.indexOf('function '+name+'('),end=html.indexOf('\n}',start)+2;
+  vm.runInNewContext(html.slice(start,end),context);
+ }
+ assert.equal(context.adminPlaceTaskResults('premio').length,0);
+ assert.equal(context.adminPlaceTaskResults('expreso al sur').length,0);
+ const results=context.adminPlaceTaskResults('premio de expreso al sur');
+ assert.deepEqual(Array.from(results,item=>item.fidelityView),['programs','activity']);
+ assert.ok(results.every(item=>item.placeId==='expreso'));
+ assert.equal(context.adminPlaceTaskResults('ver canjes expreso')[0].fidelityView,'activity');
+ context.adminGlobalSearchResults=results;
+ context.openAdminGlobalSearchResult(1);
+ assert.deepEqual(calls,[['expreso','fidelity','activity']]);
+ context.allow=true;
+ context.openAdminGlobalSearchResult(0);
+ assert.deepEqual(calls.at(-2),['expreso','fidelity','programs']);
+ assert.equal(calls.at(-1),'close');
+});
