@@ -3465,6 +3465,39 @@
         let syncedFavoritesUserId = null;
         let visitorAccountGeneration = 0;
         let favoritesSyncTimer = null;
+        let stopFestivalProgress = null;
+        let festivalSavePending = false;
+
+        function setSavedFestivalEvents(ids) {
+            localStorage.setItem('cyc_saved_festival_events', JSON.stringify(ids));
+            renderFestivalAgenda();
+            renderAgendaUI();
+            checkLiveEventsBanner();
+            renderVisitorExperience();
+        }
+
+        function observeFestivalProgress(user) {
+            stopFestivalProgress = db.collection('userProgress').doc(user.uid).onSnapshot(snapshot => {
+                if (!VisitaLojaAccountAccess.sameUser(visitorAuth, user.uid) || snapshot.metadata.fromCache) return;
+                const ids = snapshot.data()?.savedFestivalEvents;
+                setSavedFestivalEvents(Array.isArray(ids) ? ids.filter(id => typeof id === 'string').slice(0, 150) : []);
+            }, error => console.warn('No se pudo actualizar Mi agenda:', error));
+        }
+
+        async function writeAccountFavorites(user) {
+            const ref = db.collection('userProgress').doc(user.uid);
+            const payload = userProgressPayload(user);
+            await db.runTransaction(async transaction => {
+                const snapshot = await transaction.get(ref);
+                if (!VisitaLojaAccountAccess.sameUser(visitorAuth, user.uid)) return;
+                if (snapshot.exists) {
+                    const { savedFestivalEvents, ...fields } = payload;
+                    transaction.update(ref, fields);
+                } else {
+                    transaction.set(ref, payload);
+                }
+            });
+        }
 
         function refreshFavoritesUI() {
             if (typeof updateItineraryUI === 'function') updateItineraryUI();
@@ -3489,7 +3522,7 @@
             const user = visitorAuth?.currentUser;
             if (!user || !db) return;
             try {
-                await db.collection('userProgress').doc(user.uid).set(userProgressPayload(user));
+                await writeAccountFavorites(user);
             } catch (error) {
                 console.warn('No se pudieron sincronizar los favoritos con la cuenta:', error);
             }
@@ -3522,7 +3555,7 @@
                 }
                 syncedFavoritesUserId = user.uid;
                 localStorage.setItem('cyc_favorites', JSON.stringify(favoriteLocations));
-                await progressRef.set(userProgressPayload(user));
+                await writeAccountFavorites(user);
                 refreshFavoritesUI();
             } catch (error) {
                 console.warn('No se pudieron recuperar los favoritos de la cuenta:', error);
@@ -3548,6 +3581,9 @@
 
         async function handleVisitorAuthState(user) {
             const generation=++visitorAccountGeneration;
+            stopFestivalProgress?.();
+            stopFestivalProgress = null;
+            festivalSavePending = false;
             if(favoritesSyncTimer)clearTimeout(favoritesSyncTimer);
             currentVisitorProfile = null;
             syncedFavoritesUserId=null;
@@ -3573,6 +3609,8 @@
                 await syncSecurePassportStamps(user);
                 if(generation!==visitorAccountGeneration||!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 await syncAccountFavorites(user);
+                if(generation!==visitorAccountGeneration||!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
+                observeFestivalProgress(user);
                 const snapshot = await readVisitorProfileSecurely(user);
                 if(generation!==visitorAccountGeneration||!VisitaLojaAccountAccess.sameUser(visitorAuth,user.uid))return;
                 if (snapshot.exists && snapshot.data().profileComplete === true && /^\d{4}-\d{2}-\d{2}$/.test(snapshot.data().birthDate||'') && snapshot.data().documentNumber) {
@@ -4031,16 +4069,44 @@
             renderFestivalAgenda();
         }
 
-        function saveFestivalEvent(eventId) {
-            const key = 'cyc_saved_festival_events';
-            const saved = safeReadJSON(key, []);
-            const next = saved.includes(eventId) ? saved.filter(id => id !== eventId) : [...saved, eventId];
-            localStorage.setItem(key, JSON.stringify(next));
-            renderFestivalAgenda();
-            renderAgendaUI();
-            checkLiveEventsBanner();
-            renderVisitorExperience();
-            showToast(next.includes(eventId)?(currentLang==='en'?'Activity saved to your agenda':'Actividad guardada en tu agenda'):(currentLang==='en'?'Activity removed from your agenda':'Actividad retirada de tu agenda'));
+        async function saveFestivalEvent(eventId) {
+            const user = visitorAuth?.currentUser;
+            const current = safeReadJSON('cyc_saved_festival_events', []);
+            const toggle = ids => {
+                const next = ids.includes(eventId) ? ids.filter(id => id !== eventId) : [...ids, eventId];
+                if (next.length > 150) throw Error('Puedes guardar hasta 150 actividades.');
+                return next;
+            };
+            const notify = next => showToast(next.includes(eventId)
+                ? (currentLang === 'en' ? 'Activity saved to your agenda' : 'Actividad guardada en tu agenda')
+                : (currentLang === 'en' ? 'Activity removed from your agenda' : 'Actividad retirada de tu agenda'));
+            if (!user || !db) {
+                try { const next = toggle(current); setSavedFestivalEvents(next); notify(next); }
+                catch (error) { showToast(error.message); }
+                return;
+            }
+            if (festivalSavePending) return;
+            festivalSavePending = true;
+            const generation = visitorAccountGeneration;
+            const ref = db.collection('userProgress').doc(user.uid);
+            try {
+                const next = await db.runTransaction(async transaction => {
+                    const snapshot = await transaction.get(ref);
+                    if (generation !== visitorAccountGeneration || !VisitaLojaAccountAccess.sameUser(visitorAuth, user.uid)) throw Error('La sesión cambió.');
+                    const remote = snapshot.data()?.savedFestivalEvents;
+                    const ids = toggle(Array.isArray(remote) ? remote : current);
+                    const changes = { savedFestivalEvents: ids, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+                    if (snapshot.exists) transaction.update(ref, changes);
+                    else transaction.set(ref, { ...userProgressPayload(user), ...changes });
+                    return ids;
+                });
+                if (generation === visitorAccountGeneration) { setSavedFestivalEvents(next); notify(next); }
+            } catch (error) {
+                if (generation === visitorAccountGeneration) showToast(error.message === 'Puedes guardar hasta 150 actividades.'
+                    ? error.message : 'No se pudo actualizar Mi agenda. Comprueba tu conexión.');
+            } finally {
+                if (generation === visitorAccountGeneration) festivalSavePending = false;
+            }
         }
 
         function festivalMarkerStyle(category) {
