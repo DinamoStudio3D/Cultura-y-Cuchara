@@ -34,6 +34,7 @@ data class AccountState(
     val uid: String? = null, val name: String = "", val email: String = "", val city: String = "", val visitorType: String = "",
     val busy: Boolean = false, val message: String? = null, val profileError: String? = null,
     val favourites: Set<String> = emptySet(), val favouritesReady: Boolean = false, val favouritesError: String? = null,
+    val savedFestivalEvents: Set<String> = emptySet(),
     val fromCache: Boolean = false, val profile: ProfileDraft? = null, val profileComplete: Boolean = false, val profileReady: Boolean = false, val profileRevision: Int = 0
 )
 
@@ -74,6 +75,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         progressListener = db.collection("userProgress").document(uid).addSnapshotListener(MetadataChanges.INCLUDE) { doc, error ->
             if (!same(uid, epoch)) return@addSnapshotListener
             mutable.update { it.copy(favourites = if (error == null && doc != null) AccountPolicy.favourites(doc.data) else it.favourites,
+                savedFestivalEvents = if (error == null && doc != null) AccountPolicy.festival(doc.data) else it.savedFestivalEvents,
                 favouritesReady = error == null && doc != null,
                 fromCache = doc?.metadata?.isFromCache ?: false,
                 favouritesError = if (error != null) "No pudimos sincronizar tus favoritos. Comprueba la conexión y reintenta desde Mi cuenta." else null) }
@@ -137,6 +139,26 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         NativePush.stop(context, clearHistory = true)
         auth.signOut(); mutable.value = AccountState()
         viewModelScope.launch { try { CredentialManager.create(context).clearCredentialState(ClearCredentialStateRequest()) } catch (_: Exception) { /* Firebase session is already closed. */ } }
+    }
+
+    fun toggleFestival(id: String) {
+        val uid = auth.currentUser?.uid ?: return
+        val epoch = generation
+        if (!mutable.value.favouritesReady || mutable.value.fromCache) {
+            mutable.update { it.copy(message = "Conéctate para actualizar Mi agenda.") }
+            return
+        }
+        operation {
+            val ref = db.collection("userProgress").document(uid)
+            db.runTransaction { transaction ->
+                check(same(uid, epoch)) { "La sesión cambió. Vuelve a iniciar sesión." }
+                val snapshot = transaction.get(ref)
+                val payload = AccountPolicy.festivalUpdate(uid, snapshot.data, id, FieldValue.serverTimestamp())
+                if (snapshot.exists()) transaction.update(ref, mapOf("savedFestivalEvents" to payload["savedFestivalEvents"], "updatedAt" to payload["updatedAt"]))
+                else transaction.set(ref, payload)
+                Unit
+            }.await()
+        }
     }
 
     fun toggleFavourite(id: String) = editFavourites { current -> if (id in current) current - id else current + id }

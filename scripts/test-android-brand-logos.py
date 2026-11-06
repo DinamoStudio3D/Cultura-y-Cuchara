@@ -35,8 +35,12 @@ log_file=(OUT/'logo-tag-logcat.txt').open('w')
 log_process=subprocess.Popen(['adb','logcat','-v','brief','VisitaLojaLogos:V','*:S'],stdout=log_file,stderr=subprocess.STDOUT)
 try:
     adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(4)
-    tap(wait('nav-map'));wait('map-canvas');tap(wait('map-search-bar'))
-    adb('shell','input','text','Codeproim');adb('shell','input','keyevent','KEYCODE_BACK');time.sleep(8)
+    tap(wait('nav-map'));wait('map-canvas');tap(wait('map-query-input'))
+    adb('shell','input','text','Codeproim');adb('shell','input','keyevent','KEYCODE_BACK');wait('map-query-input')
+    deadline=time.monotonic()+35
+    while time.monotonic()<deadline:
+        if 'pinCount' in (OUT/'logo-tag-logcat.txt').read_text():break
+        time.sleep(1)
     (OUT/'codeproim-focused.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
     logs=adb('logcat','-d');(OUT/'logo-logcat.txt').write_text(logs)
     log_process.terminate();log_process.wait(timeout=10);log_file.close()

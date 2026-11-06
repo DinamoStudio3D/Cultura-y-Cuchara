@@ -48,7 +48,8 @@ fun FestivalShortcut(open: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FestivalScreen(state: FestivalState, retry: () -> Unit, openMap: () -> Unit) {
+fun FestivalScreen(state: FestivalState, retry: () -> Unit, account: AccountState,
+    toggleSaved: (String) -> Unit, signIn: () -> Unit, openMap: () -> Unit) {
     val context = LocalContext.current
     fun open(url: String) {
         try {
@@ -61,14 +62,16 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, openMap: () -> Unit)
             Toast.makeText(context, "No hay una aplicación para abrir este enlace.", Toast.LENGTH_SHORT).show()
         }
     }
+    var savedOnly by rememberSaveable { mutableStateOf(false) }
     var selected by rememberSaveable { mutableStateOf<String?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
     val grouped = remember(state.events) { state.events.groupBy(FestivalEvent::day).toSortedMap() }
     val days = grouped.keys.toList()
     val day = days.find { it.toString() == selected } ?: FestivalPolicy.defaultDay(days, state.now)
     val tokens = remember(query) { PlacePolicy.normalize(query).split(' ').filter(String::isNotBlank) }
-    val visible = remember(state.events, day, tokens) {
-        if (tokens.isEmpty()) FestivalPolicy.forDay(grouped, day)
+    val visible = remember(state.events, day, tokens, savedOnly, account.savedFestivalEvents, account.uid) {
+        if (savedOnly) state.events.filter { event -> account.uid != null && event.id in account.savedFestivalEvents }
+        else if (tokens.isEmpty()) FestivalPolicy.forDay(grouped, day)
         else state.events.filter { event ->
             val searchable = PlacePolicy.normalize("${event.title} ${event.category} ${event.place}")
             tokens.all { it in searchable }
@@ -81,13 +84,21 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, openMap: () -> Unit)
             Text("Festival Internacional de Artes Vivas de Loja", color = MaterialTheme.colorScheme.onSurfaceVariant)
             TextButton(onClick = openMap) { Text("Ver eventos en el mapa") }
         }
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(!savedOnly, { savedOnly = false }, label = { Text("Programación") })
+                FilterChip(savedOnly, { savedOnly = true }, label = { Text("Mi agenda") })
+            }
+            if (savedOnly && account.uid == null) TextButton(onClick = signIn) { Text("Ingresa para ver tu agenda") }
+            else if (savedOnly && !account.favouritesReady) Text("Consultando tu agenda…")
+        }
         if (state.loading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
         if (state.offline) item {
             Text(if (state.events.isEmpty()) "No se pudo cargar la programación." else "Estás viendo una copia guardada. Conéctate para consultar cambios.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             TextButton(onClick = retry) { Text("Actualizar programación") }
         }
-        if (days.isNotEmpty()) {
+        if (days.isNotEmpty() && !savedOnly) {
             item {
                 OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth(), singleLine = true,
                     label = { Text("Buscar en todo el festival") },
@@ -109,6 +120,8 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, openMap: () -> Unit)
                 if (visible.isEmpty()) Text("Prueba con otro nombre, categoría o lugar.")
             }
         }
+        if (savedOnly && account.uid != null && account.favouritesReady && visible.isEmpty() && !state.loading)
+            item { Text("Todavía no tienes actividades guardadas del festival.") }
         items(visible, key = FestivalEvent::id) { event ->
             OutlinedCard(modifier = Modifier.fillMaxWidth().testTag("festival-event"), shape = RoundedCornerShape(18.dp)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -120,6 +133,11 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, openMap: () -> Unit)
                         if (event.free) "Entrada libre" else "Consultar acceso",
                         fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (event.description.isNotBlank()) Text(event.description, fontSize = 14.sp)
+                    val saved = event.id in account.savedFestivalEvents
+                    TextButton(enabled = account.uid == null || !account.busy,
+                        onClick = { if (account.uid == null) signIn() else toggleSaved(event.id) }) {
+                        Text(if (saved) "Quitar de Mi agenda" else "Guardar en Mi agenda")
+                    }
                     when {
                         event.mapUrl != null -> TextButton(onClick = { open(event.mapUrl) }) {
                             Text(if (event.precision.startsWith("referencia", true)) "Ver ubicación aproximada" else "Cómo llegar")

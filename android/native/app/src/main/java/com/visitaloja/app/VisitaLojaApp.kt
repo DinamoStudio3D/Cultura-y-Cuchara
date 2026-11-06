@@ -291,7 +291,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "time" -> TimeScreen(discoveryState.history, audioState, audioPlayer, discovery::refresh)
                     "podcast" -> PodcastScreen(discoveryState.podcast, audioState, audioPlayer, discovery::refresh)
                     "festival" -> {
-                        FestivalScreen(festivalState, festival::refresh) { navigate("map", "all") }
+                        FestivalScreen(festivalState, festival::refresh, accountState, account::toggleFestival, { navigate("account", "all") }) { navigate("map", "all") }
                     }
                     "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
                     "cantons", "canton" -> {

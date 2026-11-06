@@ -173,7 +173,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
         Surface(Modifier.align(Alignment.TopCenter).padding(horizontal = 12.dp, vertical = 10.dp).fillMaxWidth().testTag("map-search-bar"),
             shape = RoundedCornerShape(20.dp), color = Color.White, shadowElevation = 6.dp) {
             TextField(value = query, onValueChange = { following = false; onQuery(it) }, singleLine = true,
-                modifier = Modifier.fillMaxWidth(), placeholder = { Text("Busca en VisitaLoja", fontSize = 13.sp) },
+                modifier = Modifier.fillMaxWidth().testTag("map-query-input"), placeholder = { Text("Busca en VisitaLoja", fontSize = 13.sp) },
                 leadingIcon = { Image(painterResource(R.drawable.visitaloja_logo), "VisitaLoja", Modifier.size(36.dp)) },
                 trailingIcon = { Row(verticalAlignment = Alignment.CenterVertically) {
                     if (query.isNotBlank()) IconButton(onClick = { following = false; onQuery("") }, modifier = Modifier.size(38.dp)) { Icon(Icons.Default.Close, "Borrar búsqueda", Modifier.size(20.dp)) }

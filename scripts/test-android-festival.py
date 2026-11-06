@@ -45,3 +45,6 @@ try:
 except Exception:
     (OUT / "festival-failure.log").write_bytes(adb("logcat", "-d", "-b", "crash"))
     raise
+
+finally:
+    adb("shell", "am", "force-stop", PKG)
