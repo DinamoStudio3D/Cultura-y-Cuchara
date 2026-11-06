@@ -287,6 +287,9 @@ exports.deliverRewardSecurely = onCall({ region: REGION, enforceAppCheck: false 
       : (merchant.campaignIds || []).includes(claim.campaignId);
     if (!authorized) throw new HttpsError("permission-denied", "No tienes permiso para entregar este premio.");
     const now = Timestamp.now();
+    if (type === "loyalty" && (!(claim.expiresAt instanceof Timestamp) || claim.expiresAt.toMillis() <= now.toMillis())) {
+      throw new HttpsError("failed-precondition", "El premio está vencido o no tiene una vigencia válida.");
+    }
     tx.update(ref, { status: "delivered", [config.time]: now, [config.actor]: type === "loyalty" ? merchant.uid : merchant.email, ...(type === "loyalty" ? { updatedAt: now } : {}) });
     tx.create(auditRef(), { action: `${type}_reward_delivered`, actorUid: merchant.uid, actorEmail: merchant.email, actorName: merchant.businessName || "", userId: claim.userId || "", placeId: claim.placeId || "", claimId, claimCode: claim.claimCode || "", createdAt: now });
     return { delivered: true };

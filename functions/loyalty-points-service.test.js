@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const {service,prepareAward,prepareReversal,key,configData,rewardData}=require('./loyalty-points-service');
 function fixture(){
  const records=new Map(),writes=[];let tail=Promise.resolve(),autoId=0;
- const clone=value=>{if(Array.isArray(value))return value.map(clone);if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,clone(v)]));return value;};
+ const clone=value=>{if(typeof value?.toMillis==='function')return value;if(Array.isArray(value))return value.map(clone);if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,clone(v)]));return value;};
  const snap=(ref,data=records.get(ref.path))=>({id:ref.id,exists:data!==undefined,data:()=>data===undefined?undefined:clone(data)});
  const db={collection(name){return {doc(docId){docId=docId??("auto"+(++autoId));const ref={id:docId,path:name+'/'+docId};ref.get=async()=>snap(ref);return ref;},where(field,op,value){return query(name,[[field,value]])}}},async runTransaction(fn){let release;const previous=tail;tail=new Promise(r=>release=r);await previous;let writing=false;const pending=[];
  const tx={async get(ref){if(writing)throw Error('read after write');return snap(ref);},set(ref,data){writing=true;pending.push(['set',ref,data]);},create(ref,data){writing=true;if(records.has(ref.path))throw Error('already exists');pending.push(['set',ref,data]);},update(ref,data){writing=true;if(!records.has(ref.path))throw Error('missing');pending.push(['update',ref,data]);},delete(ref){writing=true;pending.push(['delete',ref]);}};
@@ -34,7 +34,7 @@ test('disabled owner can no longer edit rewards and stock cannot erase reservati
 test('follow is explicit, private, no push and revocable during pause',async()=>{const f=fixture();await f.api.follow(f.customer,{placeId:'cafe',active:true,promotions:false,birthdays:true});const value=f.get('loyaltyFollows',key('customer','cafe'));assert.equal(value.promotions,false);assert.equal(value.pushConsent,false);assert(!('email' in value));assert.equal((await f.api.overview(f.owner,{placeId:'cafe'})).followers.total,1);f.put('settings','loyaltyV83',{enabled:false});await f.api.follow(f.customer,{placeId:'cafe',active:false,promotions:true,birthdays:true});assert.equal(f.get('loyaltyFollows',key('customer','cafe')).birthdays,false);});
 test('wallet reads only own business and owner overview exposes aggregates',async()=>{const f=fixture();await f.award();await f.reward();await f.api.follow(f.customer,{placeId:'cafe',active:true,promotions:true,birthdays:false});const wallet=await f.api.wallet(f.customer,{placeId:'cafe',userId:'stranger'});assert.equal(wallet.account.balance,10);assert.equal(wallet.ledger.length,1);const overview=await f.api.overview(f.owner,{placeId:'cafe'});assert.deepEqual(overview.followers,{total:1,promotions:1,birthdays:0});assert(!JSON.stringify(overview).includes('customer'));await assert.rejects(f.api.overview(f.owner,{placeId:'hotel'}),error('permission-denied'));});
 test('reject malformed amounts and identity',()=>{assert.throws(()=>configData({pointsPerStamp:1.5}));assert.throws(()=>rewardData({title:'a',cost:-1}));assert.throws(()=>key('bad/path'));});
-function handlers(f){const fs=require('node:fs'),vm=require('node:vm'),out={},stamp=value=>({millis:value,toMillis(){return this.millis}}),Timestamp={now:()=>stamp(Date.now()),fromMillis:stamp};class HttpsError extends Error{constructor(code,message){super(message);this.code=code}}
+function handlers(f){const fs=require('node:fs'),vm=require('node:vm'),out={},stamp=value=>new Timestamp(value);class Timestamp{constructor(millis){this.millis=millis}toMillis(){return this.millis}static now(){return stamp(Date.now())}static fromMillis(value){return stamp(value)}}class HttpsError extends Error{constructor(code,message){super(message);this.code=code}}
 const context={exports:out,console,require(name){if(name==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError};if(name==='firebase-functions/v2/firestore')return {onDocumentWritten:(_,fn)=>fn};if(name==='firebase-admin/app')return {initializeApp(){}};if(name==='firebase-admin/firestore')return {getFirestore:()=>f.db,Timestamp,FieldValue:{increment:v=>v}};if(name==='./chabaquito-v1-visit-validation')return {processValidatedVisit:async()=>{}};if(name==='./chabaquito-missions-v2-service')return {safeSyncUserMissionsV2:async()=>{}};return require(name);}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/index.js','utf8'),context,{filename:'index.js'});
 f.put('visitCodes','v1',{status:'pending',expiresAt:stamp(Date.now()+60000),userId:'customer',placeId:'cafe'});f.put('loyaltyPrograms','cafe',{active:true,targetVisits:10,maxVisitsPerDay:3});return {out,Timestamp};}
@@ -44,3 +44,28 @@ test('actual handlers reject revoked merchant and balance misuse without partial
 test('actual callable wrapper maps service authorization and error codes',async()=>{const f=fixture(),{out}=handlers(f);await assert.rejects(out.redeemLoyaltyPoints({auth:null,data:{placeId:'cafe',rewardId:'coffee',requestId:'r1'}}),error('unauthenticated'));await assert.rejects(out.configureLoyaltyPoints({auth:f.customer,data:{placeId:'cafe',enabled:true,ownerCanConfigure:true,pointsPerStamp:10}}),error('permission-denied'));});
 test('paused feature preserves own wallet, owner overview and refunds without permitting new credits',async()=>{const f=fixture();await f.award();await f.reward();const claim=await f.api.redeem(f.customer,{placeId:'cafe',rewardId:'coffee',requestId:'paused'});f.put('settings','loyaltyV83',{enabled:false,maxPointsPerStamp:25});const wallet=await f.api.wallet(f.customer,{placeId:'cafe'});assert.equal(wallet.runtime.enabled,false);assert.equal(wallet.account.balance,0);assert.equal(wallet.claims[0].status,'pending');const overview=await f.api.overview(f.owner,{placeId:'cafe'});assert.equal(overview.runtime.maxPointsPerStamp,25);assert.equal(overview.claims.length,1);await assert.rejects(f.api.redeem(f.customer,{placeId:'cafe',rewardId:'coffee',requestId:'next'}),error('failed-precondition'));await assert.rejects(f.api.configure(f.admin,{placeId:'cafe',enabled:true,ownerCanConfigure:true,pointsPerStamp:10}),error('failed-precondition'));await assert.rejects(f.api.settle(f.owner,{claimId:claim.claimId,action:'deliver'}),error('failed-precondition'));await f.api.settle(f.owner,{claimId:claim.claimId,action:'cancel'});assert.equal((await f.api.wallet(f.customer,{placeId:'cafe'})).account.balance,10);assert.equal(await f.award('paused-visit'),0);});
 test('paused reads still deny other owners and never accept a forged client UID',async()=>{const f=fixture();await f.award();f.put('settings','loyaltyV83',{enabled:false});await assert.rejects(f.api.overview({uid:'stranger'},{placeId:'cafe'}),error('permission-denied'));assert.equal((await f.api.wallet({uid:'stranger'},{placeId:'cafe',userId:'customer'})).account.balance,0);await assert.rejects(f.api.wallet(null,{placeId:'cafe'}),error('unauthenticated'));});
+
+test('the final stamp creates a reward that only its assigned business can deliver once',async()=>{
+ const f=fixture(),{out,Timestamp}=handlers(f);
+ f.put('loyaltyCounters','customer_cafe',{visitCount:9,rewardCycles:0});
+ const stamp=await out.confirmLoyaltyVisit({auth:f.owner,data:{requestId:'v1'}});
+ assert.equal(stamp.rewardCreated,true);
+ const claimId='customer_cafe_1',claim=f.get('loyaltyRewardClaims',claimId);
+ assert.match(claim.claimCode,/^FID-/);
+ const request={auth:f.owner,data:{type:'loyalty',claimId}};
+ f.put('missionRewardMerchants','other',{active:true,placeIds:['hotel']});
+ await assert.rejects(out.deliverRewardSecurely({...request,auth:{uid:'other',token:{}}}),error('permission-denied'));
+ for(const expiresAt of [undefined,Timestamp.fromMillis(Date.now()-1000)]){
+  f.put('loyaltyRewardClaims',claimId,{...claim,expiresAt});
+  const before=f.writes.length;
+  await assert.rejects(out.deliverRewardSecurely(request),error('failed-precondition'));
+  assert.equal(f.writes.length,before);
+ }
+ f.put('loyaltyRewardClaims',claimId,claim);
+ const attempts=await Promise.allSettled([out.deliverRewardSecurely(request),out.deliverRewardSecurely(request)]);
+ assert.equal(attempts.filter(result=>result.status==='fulfilled').length,1);
+ const delivered=f.get('loyaltyRewardClaims',claimId);
+ assert.equal(delivered.status,'delivered');
+ assert.equal(delivered.deliveredBy,'owner');
+ assert.ok(delivered.deliveredAt instanceof Timestamp);
+});

@@ -12,3 +12,21 @@ test('free businesses retain management and only eligible businesses are queried
 test('no statistics entitlement opens management without querying client activity',async()=>{const f=fixture({paid:[]});await f.start();assert.equal(f.queries.length,0);assert.equal(f.shown,'app');assert.equal(f.ctx.places.length,2);});
 test('denied birthday read leaves drafts usable and blocks campaign publication',async()=>{const f=fixture({fail:'birthdayOffers'});await f.start();assert.equal(f.shown,'app');assert.equal(f.ctx.birthdayLoadedIds.length,0);assert.match(f.el('loadNotice').textContent,/Cumpleaños/);assert.equal(f.ctx.places.length,2);});
 test('responses after logout never restore prior account data',async()=>{const f=fixture({hold:true});const work=f.start();for(let i=0;i<12;i++)await Promise.resolve();f.ctx.auth.currentUser=null;vm.runInContext('dashboardGeneration++',f.ctx);f.ctx.places=[];f.ctx.statsPlaces=[];const rendered=f.renders;f.release();await work;assert.equal(f.renders,rendered);assert.equal(f.ctx.birthdayLoadedIds.length,0);assert.equal(f.ctx.places.length,0);});
+
+test('dashboard and verification agree on reward availability, and progress follows the applicable card',()=>{
+ const context={window:{}};
+ vm.createContext(context);
+ for(const path of ['js/merchant-reward-state-v231.js','functions/loyalty-season-policy.js']){
+  vm.runInContext(fs.readFileSync(new URL('../'+path,import.meta.url),'utf8'),context);
+ }
+ const begin=html.indexOf('function statusOf(');
+ vm.runInContext(html.slice(begin,html.indexOf('async function loadDashboard',begin)),context);
+ assert.equal(context.statusOf({status:'pending'}).canDeliver,false);
+ assert.equal(context.statusOf({status:'cancelled'}).label,'Anulado');
+ assert.equal(context.statusOf({status:'pending',expiresAt:Date.now()+60000}).canDeliver,true);
+ assert.equal(context.clientCardProgress({targetVisits:15},{visitCount:10,rewardCycles:0,permanentPolicy:{targetVisits:10}}).percent,100);
+ const season={id:'fest',title:'Festival',rewardTitle:'Café',active:true,startAt:new Date(Date.now()-60000).toISOString(),endAt:new Date(Date.now()+60000).toISOString(),targetVisits:20};
+ const current=context.clientCardProgress({targetVisits:10,seasons:[season]},{visitCount:7,seasonalCards:{fest:{visitCount:4,rewardCycles:0}}});
+ assert.equal(current.target,20);
+ assert.equal(current.percent,20);
+});
