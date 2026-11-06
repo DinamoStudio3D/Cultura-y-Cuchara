@@ -54,6 +54,9 @@ for (const f of geo.features) {
     if (!p.coordinate_source) failures.push('Verified venue without coordinate source: ' + p.name);
   } else if (f.geometry !== null) failures.push('Unverified venue has geometry: ' + p.name);
 }
+if (events.length !== 394) failures.push('Unexpected activity total: '+events.length+' (review documentary coverage before changing the baseline)');
+if (geo.features.length !== 49) failures.push('Unexpected venue total: '+geo.features.length+' (review venue aliases before changing the baseline)');
+if (unclassified !== 2) failures.push('Unclassified category count changed: '+unclassified+' (review remaining PDF ambiguities and update baseline)');
 if (/estos 392 registros|contiene 392 registros/.test(html)) failures.push('Outdated hard-coded event count in page notice');
 console.log(JSON.stringify({ events: events.length, venues: geo.features.length, verifiedVenues: verified, unclassifiedEvents: unclassified, errors: failures.length, failures }, null, 2));
 if (failures.length) process.exitCode = 1;
