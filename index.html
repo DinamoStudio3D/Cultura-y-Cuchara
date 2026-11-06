@@ -4027,9 +4027,26 @@
         function applyFestivalConfiguration(data) {
             if (!data || typeof data !== 'object') return;
             festivalConfig = { ...defaultFestivalConfig, ...data, events: Array.isArray(data.events) ? data.events : defaultFestivalConfig.events };
+            if (window.__fiavlPreviewEvents) {
+                const original = festivalConfig.events.filter(e => !String(e.id || '').startsWith('fiavl-demo-') && !String(e.id || '').startsWith('fiavl2026-'));
+                const keys = new Set(original.map(e => [String(e.date), String(e.time), String(e.title || '').trim().toLocaleLowerCase('es'), String(e.place || '').trim().toLocaleLowerCase('es')].join('|')));
+                festivalConfig.events = [...original, ...window.__fiavlPreviewEvents.filter(e => !keys.has([e.date,e.time,String(e.title||'').trim().toLocaleLowerCase('es'),String(e.place||'').trim().toLocaleLowerCase('es')].join('|')))];
+                festivalConfig.demo = false;
+            }
             renderFestivalAgenda();
         }
 
+        // Opt-in integration testing only: the existing public map, Firestore and admin data stay unchanged.
+        if (new URLSearchParams(location.search).get('fiavl2026') === 'preview') {
+            fetch('./data/fiavl-2026-import-preview.json', { cache: 'no-store' })
+                .then(response => { if (!response.ok) throw Error('FIAVL preview HTTP '+response.status); return response.json(); })
+                .then(payload => {
+                    if (!Array.isArray(payload.events) || payload.events.length !== 394) throw Error('FIAVL preview data incomplete');
+                    window.__fiavlPreviewEvents = payload.events;
+                    applyFestivalConfiguration(festivalConfig);
+                })
+                .catch(error => console.warn('FIAVL preview data not loaded; keeping existing events', error));
+        }
         if (db) {
             db.collection('siteContent').doc('tourismDay').onSnapshot(
                 snapshot => window.applyTourismDayConfiguration?.(snapshot.exists ? snapshot.data() : null),
