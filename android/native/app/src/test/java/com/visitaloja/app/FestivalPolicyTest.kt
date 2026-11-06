@@ -18,7 +18,15 @@ class FestivalPolicyTest {
         assertEquals(394, events.size)
         assertEquals(394, program.size)
         assertEquals(11, program.map { it.day }.distinct().size)
-        assertTrue(program.any { it.id == "fiavl2026-21d664ab2cee" && it.route })
+        val parade = program.single { it.id == "fiavl2026-21d664ab2cee" }
+        assertTrue(parade.route)
+        assertTrue(parade.routePoints.size > 2)
+        val features = JSONObject(FestivalPolicy.venueGeoJson(emptyList(), parade.routePoints)).getJSONArray("features")
+        assertEquals("LineString", features.getJSONObject(0).getJSONObject("geometry").getString("type"))
+        assertEquals(3, features.length())
+        val first = features.getJSONObject(0).getJSONObject("geometry").getJSONArray("coordinates").getJSONArray(0)
+        assertEquals(parade.routePoints.first().longitude, first.getDouble(0), 0.0)
+        assertEquals(parade.routePoints.first().latitude, first.getDouble(1), 0.0)
         assertEquals("2026-11-12", FestivalPolicy.defaultDay(program.map { it.day }.distinct(),
             Instant.parse("2026-11-07T02:00:00Z").toEpochMilli()).toString())
     }

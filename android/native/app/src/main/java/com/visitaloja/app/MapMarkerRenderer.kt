@@ -31,4 +31,24 @@ class MapMarkerRenderer(context: Context) {
         canvas.drawCircle(96f, 96f, 74f, paint)
         return bitmap
     }
+
+    fun pointedPin(background: Int, glyph: String): Bitmap {
+        val bitmap = Bitmap.createBitmap(96, 108, Bitmap.Config.ARGB_8888).apply { density = 480 }
+        val canvas = Canvas(bitmap)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        val shape = Path().apply {
+            moveTo(48f, 103f)
+            cubicTo(36f, 90f, 8f, 67f, 8f, 46f)
+            cubicTo(8f, -7f, 88f, -7f, 88f, 46f)
+            cubicTo(88f, 67f, 60f, 90f, 48f, 103f)
+            close()
+        }
+        paint.color = background
+        canvas.drawPath(shape, paint)
+        paint.style = Paint.Style.STROKE; paint.strokeWidth = 5f; paint.color = Color.WHITE
+        canvas.drawPath(shape, paint)
+        paint.style = Paint.Style.FILL; paint.typeface = font; paint.textSize = 39f; paint.textAlign = Paint.Align.CENTER
+        canvas.drawText(glyph, 48f, 43f - (paint.ascent() + paint.descent()) / 2f, paint)
+        return bitmap
+    }
 }

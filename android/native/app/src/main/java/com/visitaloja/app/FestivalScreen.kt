@@ -49,7 +49,7 @@ fun FestivalShortcut(open: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 fun FestivalScreen(state: FestivalState, retry: () -> Unit, account: AccountState,
-    toggleSaved: (String) -> Unit, signIn: () -> Unit, openMap: () -> Unit) {
+    toggleSaved: (String) -> Unit, signIn: () -> Unit, openParade: () -> Unit, openMap: () -> Unit) {
     val context = LocalContext.current
     fun open(url: String) {
         try {
@@ -142,7 +142,7 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, account: AccountStat
                         event.mapUrl != null -> TextButton(onClick = { open(event.mapUrl) }) {
                             Text(if (event.precision.startsWith("referencia", true)) "Ver ubicación aproximada" else "Cómo llegar")
                         }
-                        event.route -> TextButton(onClick = { open(FestivalPolicy.PARADE) }) { Text("Ver recorrido del desfile") }
+                        event.route -> TextButton(onClick = { if (event.routePoints.isNotEmpty()) openParade() else open(FestivalPolicy.PARADE) }) { Text("Ver recorrido del desfile") }
                         event.place.isNotBlank() -> Text("Ubicación en el mapa pendiente", fontSize = 12.sp)
                     }
                 }

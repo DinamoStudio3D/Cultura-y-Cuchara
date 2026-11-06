@@ -138,6 +138,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val favourite: (String) -> Unit = { id -> if (accountState.uid == null) model.toggleFavourite(id) else account.toggleFavourite(id) }
     val sectionState = rememberSaveableStateHolder()
     var legalDocument by rememberSaveable { mutableStateOf<String?>(null) }
+    var focusParade by rememberSaveable { mutableStateOf(false) }
     var tab by rememberSaveable { mutableStateOf("home") }
     var fromSections by rememberSaveable { mutableStateOf(false) }
     var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -248,7 +249,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                 }
                 when (tab) {
                     "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen({ navigate(it, "all") }, queueLink) }
-                    "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh, { nearbySettings = true }, festivalState) { navigate("festival", "all") }
+                    "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh, { nearbySettings = true }, festivalState, focusParade, { focusParade = false }) { navigate("festival", "all") }
                     "account" -> Column(Modifier.fillMaxSize()) {
                         TextButton(onClick = { nearbySettings = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("nearby-settings")) {
                             Icon(Icons.Default.NearMe, null); Spacer(Modifier.width(8.dp)); Text("Paradas cercanas · " + if (nearbyEnabled) "Activadas" else "Configurar")
@@ -291,7 +292,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "time" -> TimeScreen(discoveryState.history, audioState, audioPlayer, discovery::refresh)
                     "podcast" -> PodcastScreen(discoveryState.podcast, audioState, audioPlayer, discovery::refresh)
                     "festival" -> {
-                        FestivalScreen(festivalState, festival::refresh, accountState, account::toggleFestival, { navigate("account", "all") }) { navigate("map", "all") }
+                        FestivalScreen(festivalState, festival::refresh, accountState, account::toggleFestival, { navigate("account", "all") }, { focusParade = true; navigate("map", "all") }) { navigate("map", "all") }
                     }
                     "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
                     "cantons", "canton" -> {

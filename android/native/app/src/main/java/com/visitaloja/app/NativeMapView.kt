@@ -33,6 +33,7 @@ import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression.*
 import android.os.SystemClock
+import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.CircleLayer
 import org.maplibre.android.style.layers.SymbolLayer
@@ -50,8 +51,9 @@ private const val POSITION = "vl-position"
 private const val ACCURACY = "vl-accuracy"
 private const val POSITION_DOT = "vl-position-dot"
 private const val POSITION_RING = "vl-position-ring"
-private const val DOT_RADIUS = 10f
-private const val RING_RADIUS = 15f
+private const val DOT_RADIUS = 4f
+private const val RING_RADIUS = 7f
+private const val POSITION_PIN = "vl-position-pin"
 
 class NativeMapController(private val context: Context, private val initialCamera: MapCamera = MapCamera()) {
     private val renderer = MapMarkerRenderer(context)
@@ -124,7 +126,7 @@ class NativeMapController(private val context: Context, private val initialCamer
                                 val anchor = readyMap.projection.toScreenLocation(LatLng(coords.getDouble(1), coords.getDouble(0)))
                                 id to kotlin.math.hypot((screen.x - anchor.x).toDouble(), (screen.y - anchor.y).toDouble())
                             }.minByOrNull { it.second }
-                        if (venue != null && venue.second <= 14f * density) {
+                        if (venue != null) {
                             onFestivalSelect(venue.first)
                             return@addOnMapClickListener true
                         }
@@ -179,8 +181,17 @@ class NativeMapController(private val context: Context, private val initialCamer
                     textField(get("title")), textSize(12f), textColor("#0f233a"), textHaloColor("#FFFFFF"), textHaloWidth(2.5f),
                     textFont(arrayOf("Noto Sans Regular")), textAnchor("top"), textOffset(arrayOf(0f, 2.6f)), textMaxWidth(12f), textAllowOverlap(false)))
                 loaded.addSource(GeoJsonSource(FESTIVAL, festivalData))
-                loaded.addLayer(CircleLayer(FESTIVAL_PINS, FESTIVAL).withProperties(
-                    circleColor("#86198F"), circleRadius(10f), circleStrokeWidth(2.5f), circleStrokeColor("#FFFFFF")))
+                loaded.addImage("vl-fiavl-marker", renderer.pointedPin(android.graphics.Color.rgb(134, 25, 143), "\uf630"))
+                loaded.addLayerBelow(LineLayer("vl-parade-outline", FESTIVAL).withFilter(eq(get("kind"), literal("parade"))).withProperties(
+                    lineColor("#FFFFFF"), lineWidth(9f), lineCap("round"), lineJoin("round")), PINS)
+                loaded.addLayerBelow(LineLayer("vl-parade-route", FESTIVAL).withFilter(eq(get("kind"), literal("parade"))).withProperties(
+                    lineColor("#86198F"), lineWidth(5.5f), lineCap("round"), lineJoin("round")), PINS)
+                loaded.addLayer(SymbolLayer(FESTIVAL_PINS, FESTIVAL).withFilter(eq(get("kind"), literal("venue"))).withProperties(
+                    iconImage("vl-fiavl-marker"), iconAnchor("bottom"), iconAllowOverlap(true), iconIgnorePlacement(true)))
+                loaded.addLayer(CircleLayer("vl-parade-endpoints", FESTIVAL)
+                    .withFilter(any(eq(get("kind"), literal("start")), eq(get("kind"), literal("finish")))).withProperties(
+                        circleRadius(8f), circleColor("#86198F"), circleStrokeWidth(2.5f), circleStrokeColor("#FFFFFF")))
+                loaded.addImage(POSITION_PIN, renderer.pointedPin(android.graphics.Color.rgb(0, 100, 208), "\uf05b"))
                 val fix = location?.takeIf { MapLocationPolicy.valid(it, SystemClock.elapsedRealtime()) }
                 loaded.addSource(GeoJsonSource(POSITION, fix?.let { MapPolicy.locationJson(it.latitude, it.longitude) } ?: MapPolicy.geoJson(emptyList())))
                 loaded.addSource(GeoJsonSource(ACCURACY, fix?.let(MapPolicy::accuracyJson) ?: MapPolicy.geoJson(emptyList())))
@@ -190,6 +201,9 @@ class NativeMapController(private val context: Context, private val initialCamer
                     circleStrokeColor("#0C417D"), circleStrokeWidth(1.5f), circleStrokeOpacity(0.55f)))
                 loaded.addLayer(CircleLayer(POSITION_DOT, POSITION).withProperties(
                     circleRadius(DOT_RADIUS), circleColor("#0068D6"), circleStrokeWidth(3.5f), circleStrokeColor("#FFFFFF")))
+                loaded.addLayer(SymbolLayer(POSITION_PIN, POSITION).withProperties(
+                    iconImage(POSITION_PIN), iconAnchor("bottom"), iconAllowOverlap(true), iconIgnorePlacement(true),
+                    iconTranslateAnchor("viewport")))
                 style = loaded
                 if (fix != null) animatePosition()
                 onReady()
@@ -264,6 +278,12 @@ class NativeMapController(private val context: Context, private val initialCamer
             }
         }
     }
+    fun focusFestivalRoute(points: List<FestivalPoint>) {
+        if (!alive || points.size < 2 || view.width == 0 || view.height == 0) return
+        val bounds = LatLngBounds.Builder().includes(points.map { LatLng(it.latitude, it.longitude) }).build()
+        map?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,
+            MapLocationPolicy.fitPadding(view.width, view.height, density)))
+    }
     fun focus(places: List<Place>) {
         if (!alive) return
         val points = places.filter(MapPolicy::located).map { LatLng(it.latitude!!, it.longitude!!) }
@@ -293,7 +313,7 @@ class NativeMapController(private val context: Context, private val initialCamer
     private fun animatePosition() {
         if (!alive || !resumed || !ValueAnimator.areAnimatorsEnabled()) return
         val target = style ?: return
-        val dot = target.getLayer(POSITION_DOT) as? CircleLayer ?: return
+        val pin = target.getLayer(POSITION_PIN) as? SymbolLayer ?: return
         val ring = target.getLayer(POSITION_RING) as? CircleLayer ?: return
         stopPositionAnimation()
         positionAnimator = ValueAnimator.ofFloat(0f, 1f, 0f, 0.45f, 0f).apply {
@@ -302,7 +322,7 @@ class NativeMapController(private val context: Context, private val initialCamer
             addUpdateListener { animation ->
                 if (alive && style === target) {
                     val strength = animation.animatedValue as Float
-                    dot.setProperties(circleRadius(DOT_RADIUS + 3.5f * strength))
+                    pin.setProperties(iconTranslate(arrayOf(0f, -22f * strength)))
                     ring.setProperties(circleRadius(RING_RADIUS + 9f * strength),
                         circleOpacity(0.30f - 0.14f * strength))
                 }
@@ -315,7 +335,7 @@ class NativeMapController(private val context: Context, private val initialCamer
         val animator = positionAnimator ?: return
         positionAnimator = null
         animator.cancel()
-        (style?.getLayer(POSITION_DOT) as? CircleLayer)?.setProperties(circleRadius(DOT_RADIUS))
+        (style?.getLayer(POSITION_PIN) as? SymbolLayer)?.setProperties(iconTranslate(arrayOf(0f, 0f)))
         (style?.getLayer(POSITION_RING) as? CircleLayer)?.setProperties(circleRadius(RING_RADIUS), circleOpacity(0.30f))
     }
 

@@ -49,15 +49,16 @@ import kotlinx.coroutines.delay
 @Composable
 fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (String) -> Unit,
     onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit,
-    list: () -> Unit, retry: () -> Unit, nearbySettings: () -> Unit, festival: FestivalState, openFestival: () -> Unit) {
+    list: () -> Unit, retry: () -> Unit, nearbySettings: () -> Unit, festival: FestivalState, focusParade: Boolean, onParadeFocused: () -> Unit, openFestival: () -> Unit) {
     val context = LocalContext.current
     var savedOnly by rememberSaveable { mutableStateOf(false) }
     var showFestival by rememberSaveable { mutableStateOf(true) }
     var festivalVenueId by rememberSaveable { mutableStateOf<String?>(null) }
     val festivalVenues = remember(festival.events, festival.now) { FestivalPolicy.venues(festival.events, festival.now) }
     val festivalVenue = festivalVenues.find { it.id == festivalVenueId }
-    val festivalGeoJson = remember(showFestival, festivalVenues) {
-        FestivalPolicy.venueGeoJson(if (showFestival) festivalVenues else emptyList())
+    val parade = remember(festival.events) { festival.events.firstOrNull { it.routePoints.size >= 2 }?.routePoints.orEmpty() }
+    val festivalGeoJson = remember(showFestival, festivalVenues, parade) {
+        FestivalPolicy.venueGeoJson(if (showFestival) festivalVenues else emptyList(), if (showFestival) parade else emptyList())
     }
     var selection by rememberSaveable { mutableStateOf<String?>(null) }
     var nearbyIds by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -131,6 +132,14 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
             recenterPending = false
         } else controller.clearPosition()
     }
+    LaunchedEffect(controller, ready, focusParade, parade) {
+        if (ready && focusParade && parade.isNotEmpty()) {
+            following = false
+            showFestival = true
+            controller.focusFestivalRoute(parade)
+            onParadeFocused()
+        }
+    }
     LaunchedEffect(controller, festivalGeoJson) { controller.updateFestival(festivalGeoJson) }
     SideEffect {
         controller.onFestivalSelect = { id -> selection = null; nearbyIds = emptyList(); festivalVenueId = id }
@@ -200,12 +209,18 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 }, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
             }
         }
-        if (festivalVenues.isNotEmpty()) FilterChip(
+        if (festivalVenues.isNotEmpty() || parade.isNotEmpty()) FilterChip(
             selected = showFestival,
             onClick = { showFestival = !showFestival; festivalVenueId = null },
             modifier = Modifier.align(Alignment.TopStart).padding(start = 14.dp, top = 112.dp).testTag("map-festival-toggle"),
             label = { Text("Eventos FIAVL", fontSize = 11.sp) },
             leadingIcon = { Icon(Icons.Default.Event, null, Modifier.size(16.dp), tint = Color(0xFF86198F)) })
+        if (showFestival && parade.isNotEmpty() && !compact) FilterChip(
+            selected = false,
+            enabled = ready,
+            onClick = { following = false; controller.focusFestivalRoute(parade) },
+            modifier = Modifier.align(Alignment.TopStart).padding(start = 14.dp, top = 157.dp).testTag("map-parade-route"),
+            label = { Text("Recorrido del desfile", fontSize = 11.sp) })
         if (!compact) Surface(Modifier.align(Alignment.TopEnd).padding(end = 14.dp, top = 78.dp), shape = RoundedCornerShape(16.dp), color = Color.White, shadowElevation = 5.dp) {
             Column {
                 IconButton(onClick = { refineAccuracy = null; controller.zoom(1.0) }, enabled = ready) { Icon(Icons.Default.Add, "Acercar", tint = MaterialTheme.colorScheme.primary) }
