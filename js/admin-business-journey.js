@@ -10,7 +10,7 @@
   buttons.forEach(button=>button.disabled=!selected);
   const state=selected?.publicationStatus||'published',labels={published:'Publicada',draft:'Borrador',hidden:'Oculta'};
   summary.textContent=selected?selected.title+' · '+(labels[state]||'Estado por revisar')+'. Cada paso se guarda en su propio formulario.':'Selecciona una parada o crea una nueva para comenzar.';
-  context.textContent=selected?'Estás preparando: '+selected.title:'';
+  context.textContent=selected?'Parada seleccionada: '+selected.title:'';
   notice.hidden=!selected||!['places','merchants','fidelity','subscriptions'].includes(moduleName);
  }
  function choose(place){
@@ -35,20 +35,23 @@
   }
   return showAdminModule('places')!==false;
  }
- function edit(publication=false){
+ function edit(fieldId){
   if(!selected||!permitEditor())return false;
   const id=selected.id;
   Promise.resolve(editAdminPlace(id)).then(()=>{
-   if(publication&&selected?.id===id){const field=document.getElementById('placePublicationStatus');field?.focus();field?.scrollIntoView({block:'center',behavior:'auto'});}
+   if(fieldId&&selected?.id===id){const field=document.getElementById(fieldId);field?.focus();field?.scrollIntoView({block:'center',behavior:'auto'});}
   });return true;
  }
  select.addEventListener('change',()=>{const place=places.find(item=>item.id===select.value);selected=null;if(place)choose(place);else render();});
  buttons.forEach(button=>button.addEventListener('click',()=>{
   if(!selected)return;
   const action=button.dataset.journeyAction;
-  if(action==='edit'||action==='publish')edit(action==='publish');
+  if(action==='edit')edit();
+  else if(action==='publish')edit('placePublicationStatus');
+  else if(action==='menu')edit('placeMenuQrId');
   else if(action==='owner')openPlaceManagement(selected.id,'merchants');
   else if(action==='benefits')openPlaceManagement(selected.id,'fidelity');
+  else if(action==='claims')openPlaceManagement(selected.id,'fidelity','activity');
  }));
  document.getElementById('adminJourneyNew').addEventListener('click',()=>{if(permitEditor()){selected=null;render();resetPlaceForm();}});
  document.getElementById('adminJourneyBack').addEventListener('click',()=>{if(showAdminModule('places')===false)return;document.getElementById('adminJourneyTitle').scrollIntoView({block:'start',behavior:'auto'});select.focus();});

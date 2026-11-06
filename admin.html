@@ -225,7 +225,7 @@
 <button type="button" onclick="showAdminModule('fidelity')" class="admin-workspace-card"><i class="fa-solid fa-gift" aria-hidden="true"></i><span><strong>Fidelidad por parada</strong><small>Abre las tarjetas, sellos y recompensas de cada negocio.</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
 <button type="button" onclick="openAdminSection('settings','settingsPopupSection')" class="admin-workspace-card"><i class="fa-solid fa-bullhorn" aria-hidden="true"></i><span><strong>Anuncios de entrada</strong><small>Programa el anuncio que aparece al entrar a la web.</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
 <button type="button" onclick="showAdminModule('events')" class="admin-workspace-card"><i class="fa-solid fa-calendar" aria-hidden="true"></i><span><strong>Eventos y agenda</strong><small>Gestiona las actividades de la cartelera.</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
-<button type="button" onclick="showAdminModule('places')" class="admin-workspace-card"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><strong>Paradas y negocios</strong><small>Edita fichas, fotos y publicación.</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+<button type="button" onclick="openAdminSection('places','adminJourneyPlace')" class="admin-workspace-card"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><strong>Gestionar una parada</strong><small>Abre su ficha, menú QR, accesos y premios.</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
 <button type="button" onclick="showAdminModule('qr')" class="admin-workspace-card"><i class="fa-solid fa-qrcode" aria-hidden="true"></i><span><strong>Menús digitales y QR</strong><small>Crea, edita y descarga códigos QR.</small></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
 </div></section>
 <section class="admin-dashboard-attention" aria-label="Tareas por atender"><h3>Por atender</h3><p>Resumen de los registros consultados. Abre cada área para revisar los detalles.</p><div id="dashboardAttentionCards" class="admin-dashboard-attention-grid"><p>Cargando tareas…</p></div></section>
@@ -484,13 +484,13 @@
                     </div>
 
                     <section class="admin-journey" aria-labelledby="adminJourneyTitle">
-                        <div class="admin-journey-heading"><div><span class="admin-journey-eyebrow">PASO A PASO</span><h3 id="adminJourneyTitle">Prepara tu negocio para VisitaLoja</h3><p>Guarda primero la ficha. Después vincula al dueño y configura los beneficios de esa misma parada.</p></div><button type="button" id="adminJourneyNew">+ Crear una parada</button></div>
-                        <label class="admin-journey-selector">Continuar con una parada guardada<select id="adminJourneyPlace"><option value="">Selecciona una parada</option></select></label>
+                        <div class="admin-journey-heading"><div><span class="admin-journey-eyebrow">ADMINISTRACIÓN POR PARADA</span><h3 id="adminJourneyTitle">Gestionar una parada</h3><p>Elige un negocio para abrir sus ajustes, configurar su premio o consultar sus canjes.</p></div><button type="button" id="adminJourneyNew">+ Crear una parada</button></div>
+                        <label class="admin-journey-selector">Selecciona un negocio<select id="adminJourneyPlace"><option value="">Selecciona una parada</option></select></label>
                         <p id="adminJourneySummary" role="status">Selecciona una parada o crea una nueva para comenzar.</p>
                         <ol class="admin-journey-steps">
-                            <li><span class="admin-journey-number">1</span><h4>Ficha del negocio</h4><p>Completa nombre, ubicación, fotografías y contacto.</p><button type="button" data-journey-action="edit" disabled>Revisar ficha</button></li>
+                            <li><span class="admin-journey-number">1</span><h4>Ficha del negocio</h4><p>Edita nombre, ubicación, fotografías, contacto y menú.</p><button type="button" data-journey-action="edit" disabled>Editar ficha y fotos</button><button type="button" data-journey-action="menu" disabled>Configurar menú QR</button></li>
                             <li><span class="admin-journey-number">2</span><h4>Dueño y accesos</h4><p>Crea su cuenta o asigna una existente a esta parada.</p><button type="button" data-journey-action="owner" disabled>Asignar al dueño</button></li>
-                            <li><span class="admin-journey-number">3</span><h4>Fidelidad y beneficios</h4><p>Define los sellos necesarios, el premio y sus condiciones.</p><button type="button" data-journey-action="benefits" disabled>Configurar beneficios</button></li>
+                            <li><span class="admin-journey-number">3</span><h4>Fidelidad y beneficios</h4><p>Define los sellos necesarios, el premio y sus condiciones.</p><button type="button" data-journey-action="benefits" disabled>Configurar premio</button><button type="button" data-journey-action="claims" disabled>Ver canjes</button></li>
                             <li><span class="admin-journey-number">4</span><h4>Revisión y publicación</h4><p>Revisa la ficha y elige su estado antes de guardar.</p><button type="button" data-journey-action="publish" disabled>Revisar publicación</button></li>
                         </ol>
                     </section>
@@ -1306,7 +1306,7 @@ function adminGlobalSearchItems(){
         {module:'settings',label:'Anuncios de entrada',type:'Acceso directo',detail:'Programar el anuncio especial de la web',section:'settingsPopupSection',terms:'banner emergente popup'}
     ];
     const records=[
-        ...adminPlaces.map(item=>({module:'places',label:item.title||item.titleEn||'Parada sin nombre',type:'Parada',detail:[item.tag,item.category,item.address].filter(Boolean).join(' · '),query:item.title||''})),
+        ...adminPlaces.map(item=>({module:'places',label:item.title||item.titleEn||'Parada sin nombre',type:'Parada',placeId:item.id,detail:[item.tag,item.category,item.address].filter(Boolean).join(' · '),query:item.title||''})),
         ...generalEvents.map(item=>({module:'events',label:item.title||'Evento sin título',type:'Evento',detail:[item.date,item.location].filter(Boolean).join(' · ')})),
         ...adminStories.map(item=>({module:'stories',label:item.title||item.titleEn||'Historia sin título',type:'Historia de Loja',detail:[item.category,item.era,item.source].filter(Boolean).join(' · ')})),
         ...adminEntrepreneurs.map(item=>({module:'entrepreneurs',label:item.name||'Emprendimiento sin nombre',type:'Emprendimiento',detail:item.category||''})),
@@ -1341,7 +1341,15 @@ function openAdminGlobalSearchResult(index){
     }
     if(showAdminModule(item.module)===false)return;
     closeAdminGlobalSearch();
-    if(item.module==='places'&&item.query){const input=document.getElementById('placesSearch');if(input){input.value=item.query;renderAdminPlaces();}}
+    if(item.placeId){
+        const place=adminPlaces.find(entry=>entry.id===item.placeId);
+        if(window.VisitaLojaAdminBusinessJourney?.select(place)){
+            const selector=document.getElementById('adminJourneyPlace');
+            selector?.scrollIntoView({block:'center'});
+            selector?.focus({preventScroll:true});
+            return;
+        }
+    }
     window.scrollTo({top:0,behavior:'smooth'});
 }
 document.addEventListener('keydown',event=>{
@@ -2251,14 +2259,14 @@ function renderPlaceCommercialSummary(place,galleryCount){
         field('Plan',plan)+field('Vencimiento',expires)+
         field('Estado comercial',benefitState)+field('Beneficios','Consultar configuración de fidelización');
 }
-function openPlaceManagement(placeId,moduleName){
+function openPlaceManagement(placeId,moduleName,fidelityView='programs'){
     const place=adminPlaces.find(item=>item.id===placeId);
     if(!place||!['merchants','subscriptions','fidelity'].includes(moduleName))return;
     if(showAdminModule(moduleName)===false)return;
     window.VisitaLojaAdminBusinessJourney?.select(place);
     if(moduleName==='fidelity'){
         const frame=document.getElementById('fidelityFrame');
-        if(frame){const url='gestion-fidelidad.html?embed=1&placeId='+encodeURIComponent(placeId)+'#programs';if(frame.getAttribute('src')!==url)frame.setAttribute('src',url);}
+        if(frame){const history=fidelityView==='activity';const url='gestion-fidelidad.html?embed=1&placeId='+encodeURIComponent(placeId)+(history?'&view=claims#activity':'#programs');if(frame.getAttribute('src')!==url)frame.setAttribute('src',url);}
     }
     if(moduleName==='subscriptions'){
         const search=document.getElementById('subscriptionCenterSearch');
@@ -3185,7 +3193,7 @@ document.getElementById('passportForm').addEventListener('submit',async event=>{
 <script src="js/homepage-editor.js?v=78"></script>
 <script src="js/canton-content.js?v=99"></script><script src="js/admin-cantons.js?v=99"></script><script src="js/admin-place-gallery.js?v=93"></script><script src="js/admin-canton-media.js?v=94.1"></script><script src="js/admin-workspace-v220.js?v=2"></script><script src="js/admin-places-organizer.js?v=2"></script>
 <script src="js/admin-business-workflow-v222.js"></script>
-<script src="js/admin-business-journey.js?v=1"></script>
+<script src="js/admin-business-journey.js?v=2"></script>
 <script src="js/admin-account-management-v224.js"></script>
 <link rel="stylesheet" href="css/photo-manager.css?v=5">
 <script src="js/photo-library-model.js?v=4"></script>

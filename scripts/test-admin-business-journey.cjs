@@ -3,7 +3,7 @@ const source=fs.readFileSync(require('node:path').join(__dirname,'../js/admin-bu
 function fixture(){
  const calls=[],nodes={};
  const node=id=>nodes[id]||=( {value:'',textContent:'',hidden:false,disabled:false,options:[],handlers:{},dataset:{},addEventListener(type,fn){this.handlers[type]=fn;},replaceChildren(...options){this.options=options;},add(option){this.options.push(option);},focus(){calls.push(['focus',id]);},scrollIntoView(){},click(){this.handlers.click?.();}} );
- const buttons=['edit','owner','benefits','publish'].map(action=>{const b=node(action);b.dataset.journeyAction=action;return b;});
+ const buttons=['edit','owner','benefits','publish','menu','claims'].map(action=>{const b=node(action);b.dataset.journeyAction=action;return b;});
  const window={confirm:()=>false};
  const context={window,document:{getElementById:node,querySelectorAll:()=>buttons},Option:function(text,value){this.text=text;this.value=value;},adminUnsavedChanges:false,setAdminUnsavedChanges:value=>{context.adminUnsavedChanges=value;},showAdminModule:name=>{calls.push(['module',name]);return context.allowNavigation;},editAdminPlace:id=>calls.push(['edit',id]),resetPlaceForm:()=>calls.push(['new']),openPlaceManagement:(...args)=>calls.push(args)};
  vm.createContext(context);vm.runInContext(source,context);return{api:window.VisitaLojaAdminBusinessJourney,nodes,calls,context,window};
@@ -13,3 +13,31 @@ test('deleting the selected stop clears its context and disables actions',()=>{c
 test('cancelled unsaved-change confirmation cannot reset or replace the current form',()=>{const f=fixture();f.api.select({id:'a',title:'Café'});f.context.adminUnsavedChanges=true;f.nodes.adminJourneyNew.click();f.nodes.edit.click();assert.equal(f.calls.length,0);assert.equal(f.context.adminUnsavedChanges,true);});
 test('new place clears selection only after navigation succeeds',()=>{const f=fixture();f.api.select({id:'a',title:'Café'});f.context.allowNavigation=false;f.nodes.adminJourneyNew.click();assert.equal(f.nodes.owner.disabled,false);f.context.allowNavigation=true;f.nodes.adminJourneyNew.click();assert.equal(f.nodes.owner.disabled,true);assert.ok(f.calls.some(call=>call[0]==='new'));});
 test('saved place title and publication status refresh without interpreting access as configured',()=>{const f=fixture();f.api.select({id:'a',title:'Antes'});f.api.update([{id:'a',title:'Después',publicationStatus:'hidden'}]);assert.match(f.nodes.adminJourneySummary.textContent,/Después · Oculta/);f.api.clear();assert.equal(f.nodes.adminJourneyPlace.value,'');assert.equal(f.nodes.publish.disabled,true);});
+
+test('canjes opens the selected stop history and menu opens the existing QR selector',async()=>{
+ const f=fixture();
+ f.api.update([{id:'expreso',title:'Expreso al Sur'},{id:'other',title:'Otra parada'}]);
+ f.nodes.adminJourneyPlace.value='expreso';
+ f.nodes.adminJourneyPlace.handlers.change();
+ f.nodes.claims.click();
+ f.nodes.menu.click();
+ await Promise.resolve();
+ assert.deepEqual(f.calls,[['expreso','fidelity','activity'],['module','places'],['edit','expreso'],['focus','placeMenuQrId']]);
+});
+
+test('canjes uses the stop ID even when two businesses have the same name',()=>{
+ const html=fs.readFileSync(require('node:path').join(__dirname,'../gestion-fidelidad.html'),'utf8');
+ const nodes={activityPlace:{value:'expreso'},activityType:{value:'loyalty'},activityStatus:{value:'all'},activitySearch:{value:''},activityFrom:{value:''},activityTo:{value:''}};
+ const activities=[
+  {type:'loyalty',placeId:'expreso',place:'Café',date:1,status:'delivered'},
+  {type:'loyalty',placeId:'other',place:'Café',date:1,status:'delivered'},
+  {type:'visit',placeId:'expreso',place:'Café',date:1,status:'confirmed'}
+ ];
+ const start=html.indexOf('function filteredActivities()'),end=html.indexOf('\nfunction renderActivity()',start);
+ const context={el:id=>nodes[id],activities,ms:Number};
+ vm.runInNewContext(html.slice(start,end),context);
+ assert.equal(context.filteredActivities().length,1);
+ assert.equal(context.filteredActivities()[0],activities[0]);
+ nodes.activityPlace.value='all';
+ assert.equal(context.filteredActivities().length,2);
+});
