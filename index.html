@@ -4089,10 +4089,39 @@
             const festivalIcons=new Set(['fa-masks-theater','fa-music','fa-landmark','fa-star','fa-palette']),festivalIcon=document.getElementById('festivalCampaignIcon');if(festivalIcon)festivalIcon.className=`fa-solid ${festivalIcons.has(festivalConfig.icon)?festivalConfig.icon:defaultFestivalConfig.icon}`;
             document.querySelectorAll('#festivalCountdown strong').forEach((element,index)=>element.style.color=index%2?festivalSecondary:festivalPrimary);
             const events = festivalConfig.events || [];
-            const days = [...new Set(events.map(event => event.date))].sort();
-            if (!days.includes(selectedFestivalDay)) selectedFestivalDay = days[0] || '';
-            document.getElementById('festivalDayTabs').innerHTML = days.map(day => `<button type="button" onclick="selectFestivalDay('${day}')" class="flex-shrink-0 px-4 py-2 rounded-full text-xs font-black border transition ${day === selectedFestivalDay ? 'bg-fuchsia-500 border-fuchsia-400 text-white' : 'bg-white/5 border-white/15 text-gray-300 hover:border-fuchsia-400'}">${formatFestivalDay(day)}</button>`).join('');
-            const visible = events.filter(event => event.date === selectedFestivalDay).sort((a,b) => String(a.time).localeCompare(String(b.time)));
+            const eventsByDay = new Map();
+            for (const event of events) {
+                if (!eventsByDay.has(event.date)) eventsByDay.set(event.date, []);
+                eventsByDay.get(event.date).push(event);
+            }
+            const days = [...eventsByDay.keys()].sort();
+            if (!eventsByDay.has(selectedFestivalDay)) selectedFestivalDay = days[0] || '';
+            const tabs = document.getElementById('festivalDayTabs');
+            const previousScroll = tabs.scrollLeft;
+            const focusedDay = tabs.contains(document.activeElement) ? document.activeElement.dataset.festivalDay : '';
+            tabs.innerHTML = days.map(day => {
+                const selected = day === selectedFestivalDay;
+                const count = eventsByDay.get(day).length;
+                const date = escapeHTML(day);
+                const countLabel = currentLang === 'en'
+                    ? (count === 1 ? '1 activity' : `${count} activities`)
+                    : (count === 1 ? '1 actividad' : `${count} actividades`);
+                return `<button type="button" data-festival-day="${date}" aria-pressed="${selected}" class="flex-shrink-0 px-4 py-2 rounded-full text-xs font-black border transition ${selected ? 'bg-fuchsia-500 border-fuchsia-400 text-white' : 'bg-white/5 border-white/15 text-gray-300 hover:border-fuchsia-400'}">${formatFestivalDay(day)}${fiavlPreviewEvents.length ? `<span class="block mt-1">${countLabel}</span>` : ''}</button>`;
+            }).join('');
+            tabs.scrollLeft = previousScroll;
+            tabs.querySelectorAll('button').forEach(button => {
+                const day = button.dataset.festivalDay;
+                button.onclick = () => selectFestivalDay(day);
+                if (day === focusedDay) button.focus({ preventScroll: true });
+            });
+            const selectedTab = tabs.querySelector('[aria-pressed="true"]');
+            if (selectedTab) {
+                const tabRect = selectedTab.getBoundingClientRect();
+                const viewport = tabs.getBoundingClientRect();
+                if (tabRect.left < viewport.left) tabs.scrollLeft += tabRect.left - viewport.left;
+                else if (tabRect.right > viewport.right) tabs.scrollLeft += tabRect.right - viewport.right;
+            }
+            const visible = [...(eventsByDay.get(selectedFestivalDay) || [])].sort((a,b) => String(a.time).localeCompare(String(b.time)));
             const saved = safeReadJSON('cyc_saved_festival_events', []);
             document.getElementById('festivalAgendaGrid').innerHTML = visible.map(event => {
                 const description = currentLang === 'en' && event.descEn ? event.descEn : event.description || event.desc;
