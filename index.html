@@ -3968,7 +3968,14 @@
             festivalEventLayer.clearLayers();
             if (!festivalEventsVisible || festivalConfig.active === false) return;
             const now = new Date();
+            const previewVenueCounts = new Map();
+            if (window.__fiavlPreviewEvents) for (const e of window.__fiavlPreviewEvents) if(e.lat != null && e.lng != null) previewVenueCounts.set(e.place, (previewVenueCounts.get(e.place) || 0) + 1);
+            const renderedPreviewVenues = new Set();
             (festivalConfig.events || []).forEach(event => {
+                if (window.__fiavlPreviewEvents && String(event.id || '').startsWith('fiavl2026-')) {
+                    if (renderedPreviewVenues.has(event.place)) return;
+                    renderedPreviewVenues.add(event.place);
+                }
                 if (event.lat == null || event.lng == null || String(event.lat).trim() === '' || String(event.lng).trim() === '') return;
                 const lat = Number(event.lat);
                 const lng = Number(event.lng);
@@ -3983,7 +3990,8 @@
                 });
                 const safeId = escapeHTML(event.id || '');
                 const mapLink = event.mapUrl || `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-                const popup = `<div style="min-width:220px"><p style="font-size:11px;font-weight:900;text-transform:uppercase;color:${style.color};margin:0 0 5px">${escapeHTML(event.category || 'Artes Vivas')}</p><h3 style="font-size:16px;font-weight:900;margin:0 0 8px">${escapeHTML(event.title || 'Evento FIAVL')}</h3><p style="font-size:12px;margin:4px 0">🗓️ ${escapeHTML(formatFestivalDay(event.date))} · ${escapeHTML(event.time || '')}</p><p style="font-size:12px;margin:4px 0">📍 ${escapeHTML(event.place || 'Ubicación por confirmar')}</p><p style="font-size:11px;font-weight:700;color:${event.free ? '#15803d' : '#a16207'};margin:7px 0">${event.free ? '✓ Entrada libre' : 'Consultar acceso'}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button type="button" onclick="saveFestivalEvent('${safeId}')" style="border:1px solid #d946ef;border-radius:8px;padding:8px;font-size:11px;font-weight:800;background:white">☆ Mi agenda</button><a href="${escapeHTML(mapLink)}" target="_blank" rel="noopener noreferrer" style="border-radius:8px;padding:8px;font-size:11px;font-weight:800;text-align:center;background:${style.color};color:white;text-decoration:none">Cómo llegar</a></div></div>`;
+                const previewCount = window.__fiavlPreviewEvents && String(event.id || '').startsWith('fiavl2026-') ? (previewVenueCounts.get(event.place) || 0) : 0;
+                const popup = `<div style="min-width:220px"><p style="font-size:11px;font-weight:900;text-transform:uppercase;color:${style.color};margin:0 0 5px">${escapeHTML(event.category || 'Artes Vivas')}</p><h3 style="font-size:16px;font-weight:900;margin:0 0 8px">${escapeHTML(previewCount ? event.place + ' · ' + previewCount + ' actividades FIAVL' : (event.title || 'Evento FIAVL'))}</h3><p style="font-size:12px;margin:4px 0">🗓️ ${escapeHTML(formatFestivalDay(event.date))} · ${escapeHTML(event.time || '')}</p><p style="font-size:12px;margin:4px 0">📍 ${escapeHTML(event.place || 'Ubicación por confirmar')}</p><p style="font-size:11px;font-weight:700;color:${event.free ? '#15803d' : '#a16207'};margin:7px 0">${event.free ? '✓ Entrada libre' : 'Consultar acceso'}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button type="button" onclick="saveFestivalEvent('${safeId}')" style="border:1px solid #d946ef;border-radius:8px;padding:8px;font-size:11px;font-weight:800;background:white">☆ Mi agenda</button><a href="${escapeHTML(mapLink)}" target="_blank" rel="noopener noreferrer" style="border-radius:8px;padding:8px;font-size:11px;font-weight:800;text-align:center;background:${style.color};color:white;text-decoration:none">Cómo llegar</a></div></div>`;
                 L.marker([lat, lng], { icon, zIndexOffset: 700 }).bindPopup(popup).addTo(festivalEventLayer);
             });
         }
