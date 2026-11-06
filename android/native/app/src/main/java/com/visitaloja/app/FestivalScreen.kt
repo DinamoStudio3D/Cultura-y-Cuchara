@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +48,7 @@ fun FestivalShortcut(open: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FestivalScreen(state: FestivalState, retry: () -> Unit) {
+fun FestivalScreen(state: FestivalState, retry: () -> Unit, openMap: () -> Unit) {
     val context = LocalContext.current
     fun open(url: String) {
         try {
@@ -67,17 +68,18 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit) {
     val day = days.find { it.toString() == selected } ?: FestivalPolicy.defaultDay(days, state.now)
     val tokens = remember(query) { PlacePolicy.normalize(query).split(' ').filter(String::isNotBlank) }
     val visible = remember(state.events, day, tokens) {
-        if (tokens.isEmpty()) grouped[day].orEmpty()
+        if (tokens.isEmpty()) FestivalPolicy.forDay(grouped, day)
         else state.events.filter { event ->
             val searchable = PlacePolicy.normalize("${event.title} ${event.category} ${event.place}")
             tokens.all { it in searchable }
         }
     }
-    LazyColumn(contentPadding = PaddingValues(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(modifier = Modifier.testTag("festival-agenda"), contentPadding = PaddingValues(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Text("LOJA · ARTES VIVAS", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             Text("FIAVL 2026", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold)
             Text("Festival Internacional de Artes Vivas de Loja", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            TextButton(onClick = openMap) { Text("Ver eventos en el mapa") }
         }
         if (state.loading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
         if (state.offline) item {
@@ -108,7 +110,7 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit) {
             }
         }
         items(visible, key = FestivalEvent::id) { event ->
-            OutlinedCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp)) {
+            OutlinedCard(modifier = Modifier.fillMaxWidth().testTag("festival-event"), shape = RoundedCornerShape(18.dp)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(event.category, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
                     Text(event.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)

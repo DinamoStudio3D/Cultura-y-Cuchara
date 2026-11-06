@@ -119,6 +119,8 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val claims: PassportClaimViewModel = viewModel()
     val cantons: CantonsViewModel = viewModel()
     val cantonsState by cantons.state.collectAsStateWithLifecycle()
+    val festival: FestivalViewModel = viewModel()
+    val festivalState by festival.state.collectAsStateWithLifecycle()
     val agenda: AgendaViewModel = viewModel()
     val agendaState by agenda.state.collectAsStateWithLifecycle()
     val wallet: WalletViewModel = viewModel()
@@ -139,6 +141,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     var tab by rememberSaveable { mutableStateOf("home") }
     var fromSections by rememberSaveable { mutableStateOf(false) }
     var selectedCantonId by rememberSaveable { mutableStateOf<String?>(null) }
+    LaunchedEffect(tab) { if (tab == "festival" || tab == "map") festival.load() }
     LaunchedEffect(tab) { mesa.bind(tab == "mesa") }
     LaunchedEffect(tab) { supporters.bind(tab == "home" || tab == "supporters") }
     LaunchedEffect(tab, lifecycle) {
@@ -245,7 +248,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                 }
                 when (tab) {
                     "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen({ navigate(it, "all") }, queueLink) }
-                    "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh, { nearbySettings = true })
+                    "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh, { nearbySettings = true }, festivalState) { navigate("festival", "all") }
                     "account" -> Column(Modifier.fillMaxSize()) {
                         TextButton(onClick = { nearbySettings = true }, modifier = Modifier.padding(horizontal = 16.dp).testTag("nearby-settings")) {
                             Icon(Icons.Default.NearMe, null); Spacer(Modifier.width(8.dp)); Text("Paradas cercanas · " + if (nearbyEnabled) "Activadas" else "Configurar")
@@ -288,10 +291,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "time" -> TimeScreen(discoveryState.history, audioState, audioPlayer, discovery::refresh)
                     "podcast" -> PodcastScreen(discoveryState.podcast, audioState, audioPlayer, discovery::refresh)
                     "festival" -> {
-                        val festival: FestivalViewModel = viewModel()
-                        val festivalState by festival.state.collectAsStateWithLifecycle()
-                        LaunchedEffect(festival) { festival.refresh() }
-                        FestivalScreen(festivalState, festival::refresh)
+                        FestivalScreen(festivalState, festival::refresh) { navigate("map", "all") }
                     }
                     "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
                     "cantons", "canton" -> {

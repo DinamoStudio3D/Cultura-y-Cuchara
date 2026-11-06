@@ -39,9 +39,10 @@ class FestivalViewModel(private val app: Application) : AndroidViewModel(app) {
         }
 
     init {
-        refresh()
         viewModelScope.launch { while (true) { delay(30_000); mutable.update { it.copy(now = System.currentTimeMillis()) } } }
     }
+
+    fun load() { if (imported.isEmpty() && refreshJob == null) refresh() }
 
     fun refresh() {
         if (refreshJob?.isActive == true) return

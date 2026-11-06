@@ -9,7 +9,8 @@ import org.json.JSONObject
 data class FestivalEvent(
     val id: String, val title: String, val day: LocalDate, val time: LocalTime,
     val category: String, val place: String, val description: String, val free: Boolean,
-    val durationMinutes: Long?, val mapUrl: String?, val route: Boolean, val precision: String
+    val durationMinutes: Long?, val mapUrl: String?, val route: Boolean, val precision: String,
+    val latitude: Double?, val longitude: Double?
 ) {
     val start: Long get() = day.atTime(time).atZone(AgendaPolicy.zone).toInstant().toEpochMilli()
     fun status(now: Long): String? {
@@ -45,8 +46,31 @@ object FestivalPolicy {
         return FestivalEvent(id, title, day, time, value("category").ifBlank { "Arte" },
             value("place").ifBlank { value("location") }, value("description").ifBlank { value("desc") },
             row["free"] == true, row["durationMinutes"]?.toString()?.toDoubleOrNull()?.takeIf { it in 1.0..1440.0 }?.toLong(),
-            map, row["route"] is Map<*, *> || row["route"] is JSONObject || row["route"] == true, value("locationPrecision"))
+            map, row["route"] is Map<*, *> || row["route"] is JSONObject || row["route"] == true, value("locationPrecision"),
+            coordinate(row["lat"], 90.0), coordinate(row["lng"], 180.0))
     }
+
+    private fun coordinate(raw: Any?, limit: Double): Double? =
+        raw?.toString()?.toDoubleOrNull()?.takeIf { it in -limit..limit }
+
+    fun forDay(grouped: Map<LocalDate, List<FestivalEvent>>, day: LocalDate?): List<FestivalEvent> =
+        day?.let { grouped[it] }.orEmpty()
+
+    data class Venue(val id: String, val latitude: Double, val longitude: Double, val events: List<FestivalEvent>)
+
+    fun venues(events: List<FestivalEvent>, now: Long): List<Venue> = events
+        .filter { !it.route && it.latitude != null && it.longitude != null &&
+            (it.latitude != 0.0 || it.longitude != 0.0) && it.status(now) != "Finalizada" }
+        .groupBy { it.latitude!! to it.longitude!! }
+        .map { (point, rows) -> Venue("${point.first}|${point.second}", point.first, point.second, rows) }
+
+    fun venueGeoJson(venues: List<Venue>): String = JSONObject().put("type", "FeatureCollection")
+        .put("features", org.json.JSONArray(venues.map { venue ->
+            JSONObject().put("type", "Feature")
+                .put("properties", JSONObject().put("id", venue.id))
+                .put("geometry", JSONObject().put("type", "Point")
+                    .put("coordinates", org.json.JSONArray(listOf(venue.longitude, venue.latitude))))
+        })).toString()
 
     fun merge(published: List<FestivalEvent>, imported: List<FestivalEvent>): List<FestivalEvent> {
         val ids = mutableSetOf<String>()

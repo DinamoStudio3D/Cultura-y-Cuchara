@@ -23,6 +23,24 @@ class FestivalPolicyTest {
             Instant.parse("2026-11-07T02:00:00Z").toEpochMilli()).toString())
     }
 
+    @Test fun openingAgendaBeforeTheFirstSnapshotHasNoDayYet() {
+        val days = sortedMapOf<java.time.LocalDate, List<FestivalEvent>>()
+        assertTrue(FestivalPolicy.forDay(days, FestivalPolicy.defaultDay(emptyList(), 0)).isEmpty())
+    }
+
+    @Test fun mapGroupsActivitiesAndExcludesFinishedAndUnlocatedOnes() {
+        val row = mapOf("id" to "one", "title" to "Teatro", "date" to "2026-11-12",
+            "time" to "18:00", "lat" to -3.99, "lng" to "-79.20")
+        val first = requireNotNull(FestivalPolicy.parse(row))
+        val other = first.copy(id = "two")
+        val expired = first.copy(id = "old", day = first.day.minusDays(1))
+        val unlocated = first.copy(id = "unknown", longitude = null)
+        val venues = FestivalPolicy.venues(listOf(first, other, expired, unlocated), first.start)
+        assertEquals(listOf("one", "two"), venues.single().events.map { it.id })
+        val feature = JSONObject(FestivalPolicy.venueGeoJson(venues)).getJSONArray("features").getJSONObject(0)
+        assertEquals(-79.2, feature.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0), 0.00001)
+    }
+
     @Test fun publishedEventWinsAndStatusUsesLojaTime() {
         val row = mapOf("id" to "imported", "title" to "Música", "place" to "Plaza", "date" to "2026-11-12",
             "time" to "19:00", "durationMinutes" to 90, "mapUrl" to "https://evil.example/maps")

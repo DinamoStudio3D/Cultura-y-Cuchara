@@ -40,6 +40,8 @@ import org.maplibre.android.style.layers.PropertyFactory.*
 import org.maplibre.android.style.sources.GeoJsonOptions
 import org.maplibre.android.style.sources.GeoJsonSource
 
+private const val FESTIVAL = "vl-festival"
+private const val FESTIVAL_PINS = "vl-festival-pins"
 private const val PLACES = "vl-places"
 private const val PINS = "vl-pins"
 private const val GROUPS = "vl-groups"
@@ -69,6 +71,8 @@ class NativeMapController(private val context: Context, private val initialCamer
     private var alive = true
     private var data = MapPolicy.geoJson(emptyList())
     private var selected: String? = null
+    private var festivalData = FestivalPolicy.venueGeoJson(emptyList())
+    var onFestivalSelect: (String) -> Unit = {}
     private var location: MapFix? = null
     private var positionAnimator: ValueAnimator? = null
     var onGesture: () -> Unit = {}
@@ -109,6 +113,21 @@ class NativeMapController(private val context: Context, private val initialCamer
                         val screen = readyMap.projection.toScreenLocation(point)
                         val radius = 22f * density
                         val box = RectF(screen.x - radius, screen.y - radius, screen.x + radius, screen.y + radius)
+                        val festivalRadius = 12f * density
+                        val festivalBox = RectF(screen.x - festivalRadius, screen.y - festivalRadius, screen.x + festivalRadius, screen.y + festivalRadius)
+                        val venue = readyMap.queryRenderedFeatures(festivalBox, FESTIVAL_PINS)
+                            .mapNotNull { feature ->
+                                val item = JSONObject(feature.toJson())
+                                val id = item.optJSONObject("properties")?.optString("id")?.takeIf(String::isNotBlank)
+                                    ?: return@mapNotNull null
+                                val coords = item.getJSONObject("geometry").getJSONArray("coordinates")
+                                val anchor = readyMap.projection.toScreenLocation(LatLng(coords.getDouble(1), coords.getDouble(0)))
+                                id to kotlin.math.hypot((screen.x - anchor.x).toDouble(), (screen.y - anchor.y).toDouble())
+                            }.minByOrNull { it.second }
+                        if (venue != null && venue.second <= 14f * density) {
+                            onFestivalSelect(venue.first)
+                            return@addOnMapClickListener true
+                        }
                         val hits = readyMap.queryRenderedFeatures(box, PINS)
                         val ids = hits.mapNotNull { feature ->
                             val item = JSONObject(feature.toJson())
@@ -159,6 +178,9 @@ class NativeMapController(private val context: Context, private val initialCamer
                 loaded.addLayer(SymbolLayer("vl-names", PLACES).withFilter(not(has("point_count"))).apply { minZoom = 14.0f }.withProperties(
                     textField(get("title")), textSize(12f), textColor("#0f233a"), textHaloColor("#FFFFFF"), textHaloWidth(2.5f),
                     textFont(arrayOf("Noto Sans Regular")), textAnchor("top"), textOffset(arrayOf(0f, 2.6f)), textMaxWidth(12f), textAllowOverlap(false)))
+                loaded.addSource(GeoJsonSource(FESTIVAL, festivalData))
+                loaded.addLayer(CircleLayer(FESTIVAL_PINS, FESTIVAL).withProperties(
+                    circleColor("#86198F"), circleRadius(10f), circleStrokeWidth(2.5f), circleStrokeColor("#FFFFFF")))
                 val fix = location?.takeIf { MapLocationPolicy.valid(it, SystemClock.elapsedRealtime()) }
                 loaded.addSource(GeoJsonSource(POSITION, fix?.let { MapPolicy.locationJson(it.latitude, it.longitude) } ?: MapPolicy.geoJson(emptyList())))
                 loaded.addSource(GeoJsonSource(ACCURACY, fix?.let(MapPolicy::accuracyJson) ?: MapPolicy.geoJson(emptyList())))
@@ -174,6 +196,11 @@ class NativeMapController(private val context: Context, private val initialCamer
                 loadVisibleLogos()
             }
         }
+    }
+    fun updateFestival(next: String) {
+        if (!alive || next == festivalData) return
+        festivalData = next
+        style?.getSourceAs<GeoJsonSource>(FESTIVAL)?.setGeoJson(next)
     }
     fun update(places: List<Place>, id: String?) {
         if(places != this.places && context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) android.util.Log.i("VisitaLojaLogos",JSONObject().put("event","update").put("controller",System.identityHashCode(this)).put("count",places.size).put("alive",alive).put("local",places.singleOrNull()?.let { BrandImagePolicy.localLogo(MapPolicy.logoUrl(it)) != null }?:false).toString())
@@ -308,7 +335,7 @@ class NativeMapController(private val context: Context, private val initialCamer
     fun resume() { start(); if (alive && !resumed) { view.onResume(); resumed = true; loadVisibleLogos() } }
     fun pause() { if (alive && resumed) { stopPositionAnimation(); view.onPause(); resumed = false } }
     fun stop() { pause(); if (alive && started) { view.onStop(); started = false } }
-    fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); logoAttempts.clear(); logoRetryAt.clear(); onSelect = {}; onGesture = {}; onManualCamera = {}; onCamera = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
+    fun destroy() { if (alive) { stop(); alive = false; scope.cancel(); logoImages.clear(); requestedLogos.clear(); logoAttempts.clear(); logoRetryAt.clear(); onSelect = {}; onFestivalSelect = {}; onGesture = {}; onManualCamera = {}; onCamera = {}; onReady = {}; onError = {}; style = null; map = null; view.onDestroy() } }
 
 }
 

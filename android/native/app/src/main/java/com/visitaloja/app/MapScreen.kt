@@ -49,9 +49,16 @@ import kotlinx.coroutines.delay
 @Composable
 fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (String) -> Unit,
     onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit,
-    list: () -> Unit, retry: () -> Unit, nearbySettings: () -> Unit) {
+    list: () -> Unit, retry: () -> Unit, nearbySettings: () -> Unit, festival: FestivalState, openFestival: () -> Unit) {
     val context = LocalContext.current
     var savedOnly by rememberSaveable { mutableStateOf(false) }
+    var showFestival by rememberSaveable { mutableStateOf(true) }
+    var festivalVenueId by rememberSaveable { mutableStateOf<String?>(null) }
+    val festivalVenues = remember(festival.events, festival.now) { FestivalPolicy.venues(festival.events, festival.now) }
+    val festivalVenue = festivalVenues.find { it.id == festivalVenueId }
+    val festivalGeoJson = remember(showFestival, festivalVenues) {
+        FestivalPolicy.venueGeoJson(if (showFestival) festivalVenues else emptyList())
+    }
     var selection by rememberSaveable { mutableStateOf<String?>(null) }
     var nearbyIds by remember { mutableStateOf<List<String>>(emptyList()) }
     val points = remember(state.places, query, category, savedOnly, state.favourites) {
@@ -124,13 +131,16 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
             recenterPending = false
         } else controller.clearPosition()
     }
+    LaunchedEffect(controller, festivalGeoJson) { controller.updateFestival(festivalGeoJson) }
     SideEffect {
+        controller.onFestivalSelect = { id -> selection = null; nearbyIds = emptyList(); festivalVenueId = id }
         controller.onGesture = { following = false; refineAccuracy = null }
         controller.onManualCamera = { refineAccuracy = null }
         controller.onCamera = viewport::update
         controller.onReady = { ready = true; mapError = false }
         controller.onError = { mapError = true }
         controller.onSelect = { ids ->
+            festivalVenueId = null
             nearbyIds = ids.filter { id -> livePoints.any { it.id == id } }
             selection = nearbyIds.firstOrNull()
         }
@@ -190,6 +200,12 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 }, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
             }
         }
+        if (festivalVenues.isNotEmpty()) FilterChip(
+            selected = showFestival,
+            onClick = { showFestival = !showFestival; festivalVenueId = null },
+            modifier = Modifier.align(Alignment.TopStart).padding(start = 14.dp, top = 112.dp).testTag("map-festival-toggle"),
+            label = { Text("Eventos FIAVL", fontSize = 11.sp) },
+            leadingIcon = { Icon(Icons.Default.Event, null, Modifier.size(16.dp), tint = Color(0xFF86198F)) })
         if (!compact) Surface(Modifier.align(Alignment.TopEnd).padding(end = 14.dp, top = 78.dp), shape = RoundedCornerShape(16.dp), color = Color.White, shadowElevation = 5.dp) {
             Column {
                 IconButton(onClick = { refineAccuracy = null; controller.zoom(1.0) }, enabled = ready) { Icon(Icons.Default.Add, "Acercar", tint = MaterialTheme.colorScheme.primary) }
@@ -264,6 +280,23 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                         catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay una aplicación de mapas disponible.", Toast.LENGTH_LONG).show() }
                     }, modifier = Modifier.weight(1f), contentPadding = PaddingValues(8.dp)) { Icon(Icons.Default.Directions, null, Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("Cómo llegar") }
                 }
+            }
+        }
+    }
+    if (showFestival && festivalVenue != null) ModalBottomSheet(onDismissRequest = { festivalVenueId = null }) {
+        val format = java.time.format.DateTimeFormatter.ofPattern("EEE d MMM", java.util.Locale.forLanguageTag("es-EC"))
+        androidx.compose.foundation.lazy.LazyColumn(
+            Modifier.fillMaxWidth().heightIn(max = 460.dp), contentPadding = PaddingValues(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            item {
+                Text("Eventos FIAVL en este punto", fontSize = 21.sp, fontWeight = FontWeight.Bold)
+                TextButton(onClick = { festivalVenueId = null; openFestival() }) { Text("Ver programación completa") }
+            }
+            items(festivalVenue.events.size) { index ->
+                val event = festivalVenue.events[index]
+                Text(event.title, fontWeight = FontWeight.Bold)
+                Text("${event.day.format(format)} · ${event.time} · ${event.place}", fontSize = 13.sp)
+                HorizontalDivider(Modifier.padding(top = 8.dp))
             }
         }
     }
