@@ -3969,9 +3969,10 @@
             if (!festivalEventsVisible || festivalConfig.active === false) return;
             const now = new Date();
             (festivalConfig.events || []).forEach(event => {
+                if (event.lat == null || event.lng == null || String(event.lat).trim() === '' || String(event.lng).trim() === '') return;
                 const lat = Number(event.lat);
                 const lng = Number(event.lng);
-                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+                if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return;
                 const eventEnd = new Date(festivalDateTime(event).getTime() + Number(event.durationMinutes || 90) * 60000);
                 if (eventEnd < now) return;
                 const style = festivalMarkerStyle(event.category);
