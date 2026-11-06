@@ -1,8 +1,9 @@
 /* Seasonal configuration for the existing program form. Requires service capability first. */
 (function(){
  'use strict';const form=document.getElementById('programForm'),P=window.VisitaLojaLoyaltySeasonPolicy;if(!form||!P)return;
- const host=document.createElement('section');host.className='existing-season-editor';form.querySelector('button[type=submit]')?.before(host);
- if(!host.isConnected)form.insertBefore(host,document.getElementById('existingRewardSummary'));
+ const host=document.createElement('section');host.className='existing-season-editor';
+ const submit=form.querySelector('button[type=submit]');
+ if(submit)submit.before(host);else form.append(host);
  let ready=false,items=[];
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  function read(){if(!ready)return undefined;const result=items.map(item=>({...item}));host.querySelectorAll('[data-season-index]').forEach(panel=>{const item=result[Number(panel.dataset.seasonIndex)];panel.querySelectorAll('[data-season-field]').forEach(input=>{const key=input.dataset.seasonField;item[key]=input.type==='checkbox'?input.checked:input.type==='datetime-local'?VisitaLojaPopupSchedule.fromInput(input.value):input.type==='number'?(input.value===''?null:Number(input.value)):input.value.trim();});});return P.normalize(result);}
