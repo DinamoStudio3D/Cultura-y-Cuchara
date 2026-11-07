@@ -407,6 +407,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         }
         item(key = "festival") { FestivalShortcut({ openDiscovery("festival") }, Modifier.padding(horizontal = 18.dp)) }
         item(key = "agenda") { HomeAgenda(agenda, openAgenda, event) }
+        item(key = "campaigns") { HomeCampaigns(state, detail, { openDiscovery("promotions") }) }
         item(key = "places") {
             Column {
                 Column(Modifier.padding(horizontal = 18.dp)) { SectionHeading(if (english) "Places to discover" else "Paradas para descubrir", if (english) "See all" else "Ver todas") { explore("all") } }
@@ -429,6 +430,8 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
                     Triple("postcards", if (english) "Create a postcard" else "Crea una postal", Icons.Default.PhotoCamera),
                     Triple("missions", if (english) "Missions" else "Misiones", Icons.Default.Flag),
                     Triple("shop", if (english) "Loja souvenirs" else "Recuerdos de Loja", Icons.Default.ShoppingBag),
+                    Triple("promotions", if (english) "Offers" else "Promociones", Icons.Default.LocalOffer),
+                    Triple("videos", if (english) "Watch Loja" else "Loja en video", Icons.Default.PlayCircle),
                     Triple("notices", if (english) "News and notices" else "Avisos y novedades", Icons.Default.NotificationsActive)
                 )
                 actions.chunked(2).forEach { row ->

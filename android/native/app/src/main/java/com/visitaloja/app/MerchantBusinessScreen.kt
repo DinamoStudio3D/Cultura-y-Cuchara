@@ -27,6 +27,8 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
     var search by remember(state.uid,state.selected,state.tab) { mutableStateOf("") }
     var visitFilter by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
     var visitPeriod by remember(state.uid,state.selected,state.tab) { mutableStateOf("all") }
+    var clientSort by remember(state.uid,state.selected,state.tab) { mutableStateOf("visits") }
+    var clientReturning by remember(state.uid,state.selected,state.tab) { mutableStateOf(false) }
     var rewardFilter by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(state.tab) {
@@ -40,11 +42,12 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
         if (state.tab == "rewards") state.rows.groupingBy { MerchantBusinessPolicy.rewardStatus(it, now) }.eachCount() else emptyMap()
     }
     val filtered=state.rows.filter { row ->
+        (state.tab != "clients" || !clientReturning || row.count("visitCount") > 1) &&
         (state.tab != "visits" || MerchantBusinessPolicy.visitMatches(row, visitFilter, visitPeriod, now)) &&
         (state.tab != "rewards" || rewardFilter == null || MerchantBusinessPolicy.rewardStatus(row,now) == rewardFilter) &&
             (search.isBlank() || listOf(row.text("userName"),MerchantBusinessPolicy.maskedEmail(row.text("userEmail")),row.text("rewardTitle")).any { it.contains(search.trim(),true) })
     }
-        .sortedWith(if(state.tab=="clients")compareByDescending { it.count("visitCount") } else compareByDescending { (if (state.tab == "visits") MerchantBusinessPolicy.visitMoment(it) else timeMillis(it["createdAt"])) ?: 0 })
+        .sortedWith(if(state.tab=="clients")when(clientSort) { "spend" -> compareByDescending { MerchantBusinessPolicy.amount(it["totalSpend"]) }; "name" -> compareBy { PlacePolicy.normalize(it.text("userName")) }; else -> compareByDescending { it.count("visitCount") } } else compareByDescending { (if (state.tab == "visits") MerchantBusinessPolicy.visitMoment(it) else timeMillis(it["createdAt"])) ?: 0 })
     Dialog(onDismissRequest=dismiss,properties=DialogProperties(usePlatformDefaultWidth=false)) {
         Surface(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),color=MaterialTheme.colorScheme.background) {
             LazyColumn(Modifier.fillMaxSize().padding(horizontal=20.dp),verticalArrangement=Arrangement.spacedBy(12.dp),contentPadding=PaddingValues(vertical=16.dp)) {
@@ -72,6 +75,19 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                         item { Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                             listOf("clients" to "Clientes","visits" to "Visitas","rewards" to "Premios").forEach { (id,name)->FilterChip(selected=state.tab==id,onClick={model.tab(id)},enabled=!state.busy,label={Text(name)}) }
                         } }
+                        if (state.tab == "clients") item {
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text("Ordenar clientes", fontWeight = FontWeight.SemiBold)
+                                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    listOf("visits" to "Más visitas", "spend" to "Mayor consumo", "name" to "Nombre A–Z").forEach { (key, label) ->
+                                        FilterChip(clientSort == key, { clientSort = key }, label = { Text(label) })
+                                    }
+                                }
+                                FilterChip(clientReturning, { clientReturning = !clientReturning }, label = { Text("Clientes que han regresado") })
+                                Text("${filtered.size} clientes visibles · consumo acumulado: " + businessMoney(filtered.sumOf { MerchantBusinessPolicy.amount(it["totalSpend"]) }), fontSize = 12.sp)
+                                if (state.more) Text("Consulta parcial de los clientes cargados. Carga más abajo para ampliar los resultados.", fontSize = 12.sp)
+                            }
+                        }
                         if (state.tab == "visits") item {
                             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 Text("Visitas por fecha de sellado · hora de Loja", fontSize = 12.sp)

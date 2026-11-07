@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,11 +42,13 @@ private fun promotionClock(): Long {
 @Composable
 internal fun PromotionsScreen(state: PlacesState, refresh: () -> Unit, open: (Place) -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
+    var category by rememberSaveable { mutableStateOf("all") }
+    var endingFirst by rememberSaveable { mutableStateOf(false) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(lifecycle) { lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) { while (isActive) { refresh(); delay(60_000) } } }
     val now = promotionClock()
     val fresh = !state.offline && state.error == null && !state.loading
-    val result = PromotionPolicy.filter(state.places, query, now, fresh)
+    val result = PromotionPolicy.filter(state.places, query, now, fresh).filter { PlacePolicy.matches(it, category = category) }.let { rows -> if (endingFirst) rows.sortedBy { it.promotion.end ?: Long.MAX_VALUE } else rows.sortedBy { PlacePolicy.normalize(it.title) } }
     LazyColumn(Modifier.fillMaxSize().testTag("promotions-screen"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Surface(color = Color(0xFF0C3768), shape = RoundedCornerShape(24.dp)) {
@@ -56,6 +60,17 @@ internal fun PromotionsScreen(state: PlacesState, refresh: () -> Unit, open: (Pl
             }
         }
         item { OutlinedTextField(query, { query = it }, modifier = Modifier.fillMaxWidth().testTag("promotions-search"), singleLine = true, label = { Text("Buscar promoción o negocio") }, leadingIcon = { Icon(Icons.Default.Search, null) }, trailingIcon = { if (query.isNotBlank()) IconButton(onClick = { query = "" }) { Icon(Icons.Default.Close, "Borrar búsqueda de promociones") } }, shape = RoundedCornerShape(16.dp)) }
+        item {
+            Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("all" to "Todas", "food" to "Gastronomía", "cafe" to "Cafeterías", "hotel" to "Hospedaje", "turismo" to "Turismo").forEach { (key, label) ->
+                    FilterChip(category == key, { category = key }, label = { Text(label) })
+                }
+            }
+            Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(!endingFirst, { endingFirst = false }, label = { Text("Por negocio") })
+                FilterChip(endingFirst, { endingFirst = true }, label = { Text("Próximas a terminar") })
+            }
+        }
         when {
             state.loading -> item { LinearProgressIndicator(Modifier.fillMaxWidth()); Text("Actualizando promociones…", modifier = Modifier.padding(top = 12.dp)) }
             !fresh -> item { Text("Conéctate para consultar las promociones vigentes. Su disponibilidad puede cambiar."); Button(onClick = refresh) { Text("Reintentar") } }
