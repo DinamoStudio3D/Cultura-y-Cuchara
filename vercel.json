@@ -7,12 +7,29 @@
     }
   ],
   "headers": [
-    {"source":"/programacion-fiavl-2026","headers":[{"key":"X-Robots-Tag","value":"noindex"}]}
+    {
+      "source": "/programacion-fiavl-2026",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
   ],
   "rewrites": [
-    {"source":"/programacion-fiavl-2026","destination":"/"},
-    {"source":"/api/notifications","destination":"/api/chabaquito-ranking?action=notifications"},
-    {"source":"/api/push-test","destination":"/api/chabaquito-ranking?action=push-test"},
+    {
+      "source": "/programacion-fiavl-2026",
+      "destination": "/"
+    },
+    {
+      "source": "/api/notifications",
+      "destination": "/api/chabaquito-ranking?action=notifications"
+    },
+    {
+      "source": "/api/push-test",
+      "destination": "/api/chabaquito-ranking?action=push-test"
+    },
     {
       "source": "/",
       "has": [
@@ -84,6 +101,6 @@
       "destination": "/api/categoria-seo?categoria=marcas-aliadas-en-loja"
     }
   ],
-  "buildCommand": "npm run build:css",
+  "buildCommand": "npm run build:css && node scripts/prepare-share-metadata.mjs",
   "outputDirectory": "."
 }
