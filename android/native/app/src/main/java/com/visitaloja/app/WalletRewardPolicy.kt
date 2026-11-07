@@ -23,6 +23,6 @@ internal object WalletRewardPolicy {
                 words.all { it in PlacePolicy.normalize("${reward.title} ${reward.row.text("placeName")} ${reward.row.text("campaignId")}") }
         }.sortedWith(compareBy<WalletReward> { if (status(it, now) == "pending") 0 else 1 }
             .thenBy { if (status(it, now) == "pending") timeMillis(it.row["expiresAt"]) ?: Long.MAX_VALUE else Long.MAX_VALUE }
-            .thenByDescending { timeMillis(it.row["createdAt"]) ?: 0 })
+            .thenByDescending { timeMillis(it.row["createdAt"]) ?: timeMillis(it.row["completedAt"]) ?: 0 })
     }
 }

@@ -189,7 +189,8 @@ private fun RewardPanel(reward: Map<String, Any?>, now: Long, passport: Boolean 
     val usable = status == "pending" && allowCode && reward.text("claimCode").isNotBlank()
     WalletPanel(title, (if (passport) "Pasaporte" else "Fidelidad") + " · " + (reward.text("placeName").takeIf { it.isNotBlank() }?.plus(" · ") ?: "") + label) {
         fun date(value: Any?): String? = timeMillis(value)?.let { java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy · HH:mm", java.util.Locale.forLanguageTag("es-EC")).withZone(ZoneId.of("America/Guayaquil")).format(Instant.ofEpochMilli(it)) }
-        date(reward["createdAt"])?.let { Text("Registrado: $it", fontSize = 12.sp) }
+        (date(reward["createdAt"]) ?: date(reward["completedAt"]))?.let { Text("Registrado: $it", fontSize = 12.sp) }
+        reward.text("rewardDescription").ifBlank { reward.map("rewardSnapshot").text("description") }.takeIf { it.isNotBlank() }?.let { Text(it, fontSize = 13.sp) }
         date(reward["expiresAt"])?.let { Text("Vence: $it (hora de Ecuador)", fontSize = 12.sp) }
         if (status == "delivered") date(reward["deliveredAt"])?.let { Text("Entregado: $it", fontSize = 12.sp) }
         if (passport) reward.text("mode").takeIf { it in setOf("turista", "lojano") }?.let { Text("Modalidad: $it", fontSize = 12.sp) }
