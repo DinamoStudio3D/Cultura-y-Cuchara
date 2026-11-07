@@ -18,19 +18,21 @@
     cursor: pointer;
   }
   #accountFloatingInvite:not(.hidden):not(.interface-layer-hidden) { display: inline-flex !important; }
-  #accountFloatingInvite.hidden { display: none !important; }
-  #accountFloatingInvite > small { font-size: .64rem; border-radius: 5px; padding: 3px 4px; }
-  nav:has(#accountFloatingInvite:not(.hidden):not(.interface-layer-hidden)) .vl29-account { display: none !important; }
+  #accountFloatingInvite.hidden,
+  #accountFloatingInvite.interface-layer-hidden,
+  body.visitor-signed-in #accountFloatingInvite { display: none !important; }
+  #accountFloatingInvite > i { border-radius: 6px; padding: 4px; }
+  body:not(.visitor-signed-in) nav:has(#accountFloatingInvite:not(.hidden)) .vl29-account { display: none !important; }
   @media (max-width: 639px) {
     .vl-map-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .vl-map-controls > button { justify-content: center; padding: 8px; font-size: 11px; }
     #accountFloatingInvite { padding-inline: 8px; }
   }
   @media (max-width: 480px) {
-    nav:has(#accountFloatingInvite:not(.hidden):not(.interface-layer-hidden)) :is(.vl28-nav-actions,[data-i18n="navSub"]) { display: none !important; }
+    body:not(.visitor-signed-in) nav:has(#accountFloatingInvite:not(.hidden)) :is(.vl28-nav-actions,[data-i18n="navSub"]) { display: none !important; }
   }
   @media (max-width: 380px) {
-    #accountFloatingInvite > :is(i,small) { display: none; }
+    #accountFloatingInvite > i { display: none; }
   }
 /* Base styles */
 html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-action: manipulation; }
@@ -319,13 +321,6 @@ html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-actio
                 white-space: normal;
                 line-height: 1.1;
             }
-        }
-
-
-        /* Registration invite belongs only to the main browsing layer */
-        #accountFloatingInvite.interface-layer-hidden {
-            display: none !important;
-            pointer-events: none !important;
         }
 
 
@@ -1750,7 +1745,7 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
     color: #123b66 !important;
     background: #fff !important;
   }
-  #accountFloatingInvite > small { color: #533609 !important; background: #ffda83; }
+  #accountFloatingInvite > i { color: #533609 !important; background: #ffda83; }
   #accountFloatingInvite:hover { background: #e7f3ff !important; }
   #accountFloatingInvite:focus-visible { outline: 3px solid #ffda83 !important; outline-offset: 3px; }
 }

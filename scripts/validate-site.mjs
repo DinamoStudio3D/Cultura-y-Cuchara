@@ -301,9 +301,9 @@ assert(publicStyles.includes('Restaurant menu categories: compact, complete and 
 assert(index.includes('restaurantMenuModal" class="fixed inset-0 z-[100]'), 'El menú permanece sobre los botones flotantes');
 
 
-assert(index.includes('function syncFloatingAccountInviteVisibility'), 'La invitación de registro responde al estado de menús y diálogos');
-assert(index.includes('interface-layer-hidden'), 'La invitación flotante se oculta dentro de submenús');
-assert(index.includes('querySelectorAll(inviteBlockingOverlays)') && index.includes('[aria-modal="true"], dialog, #accountModal, #mobileMenu'), 'Se vigilan diálogos modales y el menú sin bloquear avisos no modales');
+assert(/id="accountFloatingInvite"[^>]*onclick="openAccountModal\(\)"[^>]*class="vl-account-invite"/.test(index) && index.includes('<span>Únete gratis</span>'), 'El registro se muestra en la cabecera desde el HTML inicial');
+assert(index.includes("classList.toggle('visitor-signed-in', Boolean(user))") && publicStyles.includes('body.visitor-signed-in #accountFloatingInvite'), 'El registro vuelve a estar disponible al cerrar sesión');
+assert(index.includes("classList.toggle('hidden', s.showAccountFloatingButton === false)"), 'El registro destacado respeta el ajuste administrativo');
 
 
 assert(index.includes("rawDesc=String("), 'Las descripciones vacías activan un texto de respaldo');

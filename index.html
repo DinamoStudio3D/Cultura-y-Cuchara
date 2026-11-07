@@ -309,7 +309,7 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=203">
+<link rel="stylesheet" href="css/public-layout.css?v=204">
 <link rel="stylesheet" href="css/banco-portada.css?v=4">
 <link rel="stylesheet" href="css/business-cards.css?v=1">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
@@ -547,9 +547,9 @@
 <div class="vl29-nav-group"><button type="button" aria-expanded="false" aria-controls="vl29-group-4" onclick="vl29ToggleMenu(this)"><span>Más</span><i class="fa-solid fa-chevron-down"></i></button><div id="vl29-group-4" class="vl29-dropdown" hidden><a href="#loja-tiempo">Loja en el Tiempo</a><a href="#postales">Postales</a><a href="#emprendedores">Emprendedores</a><a href="tienda.html">Tienda</a><a href="sumar-negocio.html">Sumar mi negocio</a><button type="button" onclick="vl29CloseMenus();openAccountModal()">Ingresar / Mi cuenta</button></div></div>
 </div>
 <div class="vl28-nav-actions"><button type="button" class="vl28-route-button" onclick="openModal('itineraryModal')"><i class="fa-solid fa-route"></i> Mi ruta</button><button type="button" class="vl29-account" onclick="openAccountModal()" aria-label="Ingresar o abrir mi cuenta"><i class="fa-solid fa-circle-user"></i><span>Ingresar</span></button></div>
-            <button id="accountFloatingInvite" type="button" onclick="openAccountFromFloatingInvite()" class="vl-account-invite hidden" aria-label="Crear una cuenta gratis en VisitaLoja">
+            <button id="accountFloatingInvite" type="button" onclick="openAccountModal()" class="vl-account-invite" aria-label="Crear una cuenta gratis en VisitaLoja">
                 <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
-                <span>Crear cuenta</span><small>Gratis</small>
+                <span>Únete gratis</span>
             </button>
             <!-- Hamburger Button for Mobile / Tablet -->
             <button id="mobileMenuButton" type="button" onclick="toggleMobileMenu()" class="2xl:hidden text-white text-xl p-2 relative" aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">
@@ -3250,6 +3250,7 @@
 
         function updateVisitorAccountLabels(user, profile = null) {
             const shortName = profile?.fullName?.trim().split(/\s+/)[0] || user?.displayName?.trim().split(/\s+/)[0] || 'Mi cuenta';
+            document.body.classList.toggle('visitor-signed-in', Boolean(user));
             const desktop = document.getElementById('accountNavLabel');
             const mobile = document.getElementById('accountMobileLabel');
             if (desktop) desktop.textContent = user ? shortName : 'Ingresar';
@@ -3340,7 +3341,6 @@
             updateVisitorAccountLabels(user, profile);
             renderVisitorExperience();
             syncExpiringBenefitNotifications(user);
-            const floatingInvite=document.getElementById('accountFloatingInvite');if(floatingInvite){floatingInvite.classList.add('hidden');floatingInvite.style.display='none';}
             if (missionRewardIntent) {
                 missionRewardIntent = false;
                 showToast(currentLang === 'en' ? 'Your account is ready. Return to Chabaquito missions to claim your reward.' : 'Tu cuenta está lista. Regresa a las misiones para reclamar tu recompensa.');
@@ -4730,6 +4730,7 @@
         }
 
         function applySettings(s) {
+            document.getElementById('accountFloatingInvite')?.classList.toggle('hidden', s.showAccountFloatingButton === false);
             window.__vlHeroCarouselSettings = { interval: Math.max(2, Math.min(60, Number(s.heroIntervalSeconds) || 6)), position: s.heroBgPosition || '50% 50%', mobilePosition: s.heroMobilePosition || 'same' };
             window.dispatchEvent(new Event('vl-hero-settings-updated'));
             window.VisitaLojaHomepage?.apply(s);
@@ -4738,7 +4739,6 @@
             document.querySelectorAll("[data-trending-nav]").forEach(el => el.classList.toggle("hidden", !showTrending));
             try { localStorage.setItem('cyc_settings', JSON.stringify(s || {})); } catch (_) {}
             const premium=s.premiumVisual!==false,body=document.body,root=document.documentElement,hero=document.getElementById('inicio'),heroBg=document.getElementById('heroBgWrapper'),heroShade=heroBg?.firstElementChild,heroStyle=['cinematic','classic','clean'].includes(s.heroStyle)?s.heroStyle:'cinematic',heroHeight=['compact','standard','immersive'].includes(s.heroHeight)?s.heroHeight:'immersive',cardStyle=['elevated','bordered','soft'].includes(s.cardStyle)?s.cardStyle:'elevated',cornerStyle=['medium','large','extra'].includes(s.cornerStyle)?s.cornerStyle:'large',radius={medium:'1rem',large:'1.25rem',extra:'1.75rem'}[cornerStyle];body?.classList.toggle('visual-premium',premium);body?.classList.toggle('visual-motion',premium&&s.premiumAnimations!==false);if(body){body.dataset.heroStyle=heroStyle;body.dataset.cardStyle=cardStyle;}root.style.setProperty('--premium-radius',radius);if(hero){hero.classList.remove('py-12','lg:py-16','py-20','lg:py-24','lg:py-32','min-h-[78vh]');const classes=heroHeight==='compact'?['py-12','lg:py-16']:heroHeight==='standard'?['py-20','lg:py-24']:['py-20','lg:py-32','min-h-[78vh]'];hero.classList.add(...classes);}if(heroBg)heroBg.style.opacity=String(Math.min(85,Math.max(25,Number(s.heroImageOpacity)||55))/100);if(heroShade)heroShade.style.opacity=heroStyle==='cinematic'?'0.92':heroStyle==='classic'?'0.78':'0.58';
-            showAccountFloatingInvite(s.showAccountFloatingButton !== false);
             const nowButton=document.getElementById('nowRecommendationBtn');if(nowButton)nowButton.classList.toggle('hidden',s.showNowPlanner===false);
             document.querySelectorAll('.subscription-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false));document.querySelectorAll('.business-signup-entry').forEach(element=>element.classList.toggle('hidden',s.showSubscriptions===false||s.showBusinessSignup===false));
             const badgeEl = document.getElementById('heroBadge');
@@ -8034,42 +8034,6 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 btn.classList.toggle('bg-white',!active);btn.classList.toggle('text-gray-600',!active);btn.classList.toggle('border-gray-200',!active);btn.setAttribute('aria-pressed',String(active));
             });
             searchItems();
-        }
-
-        const inviteBlockingOverlays = '[role="dialog"][aria-modal="true"], dialog, #accountModal, #mobileMenu';
-        function syncFloatingAccountInviteVisibility() {
-            const invite = document.getElementById('accountFloatingInvite');
-            if (!invite) return;
-            const blocked = Array.from(document.querySelectorAll(inviteBlockingOverlays)).some(overlay =>
-                !overlay.hidden && overlay.getAttribute('aria-hidden') !== 'true' &&
-                (overlay.tagName !== 'DIALOG' || overlay.open) &&
-                overlay.getClientRects().length > 0 && getComputedStyle(overlay).visibility !== 'hidden'
-            );
-            invite.classList.toggle('interface-layer-hidden', blocked);
-        }
-        const floatingInviteVisibilityObserver = new MutationObserver(syncFloatingAccountInviteVisibility);
-        document.querySelectorAll(inviteBlockingOverlays).forEach(element => {
-            floatingInviteVisibilityObserver.observe(element, {
-                attributes: true, attributeFilter: ['class', 'aria-hidden', 'hidden', 'open', 'style']
-            });
-        });
-        syncFloatingAccountInviteVisibility();
-
-        function showAccountFloatingInvite(enabled = true) {
-            const invite=document.getElementById('accountFloatingInvite');
-            if(!invite)return;
-            const shouldShow=enabled!==false&&!(visitorAuth?.currentUser&&currentVisitorProfile?.profileComplete);
-            invite.classList.toggle('hidden',!shouldShow);
-            invite.style.display=shouldShow?'block':'none';
-        }
-
-        function openAccountFromFloatingInvite() {
-            if (visitorAuth?.currentUser && currentVisitorProfile?.profileComplete) {
-                document.getElementById('pasaporte')?.scrollIntoView({ behavior: 'smooth' });
-                setTimeout(() => openModal('pasaporteModal'), 450);
-                return;
-            }
-            openAccountModal();
         }
 
         function showToast(message) {
