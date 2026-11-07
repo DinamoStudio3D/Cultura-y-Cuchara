@@ -37,6 +37,10 @@ fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesSta
     val claimState by claim.state.collectAsStateWithLifecycle()
     var selectedOption by rememberSaveable(account.uid, mode, state.config.text("campaignId")) { mutableStateOf("") }
     var confirmingClaim by remember(account.uid, mode, state.config.text("campaignId")) { mutableStateOf(false) }
+    if (section == "visits" && account.uid != null) {
+        PersonalVisitsScreen(account.uid, directory, { section = "passport" }, visit)
+        return
+    }
     LazyColumn(contentPadding = PaddingValues(22.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Text("CADA VISITA, UNA HISTORIA", color = MaterialTheme.colorScheme.primary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
@@ -50,6 +54,7 @@ fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesSta
         item { Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             FilterChip(section == "passport", { section = "passport" }, label = { Text("Pasaporte") }, leadingIcon = { Icon(Icons.Default.MenuBook, null, Modifier.size(18.dp)) })
             FilterChip(section == "cards", { section = "cards" }, label = { Text("Mis tarjetas") }, leadingIcon = { Icon(Icons.Default.CreditCard, null, Modifier.size(18.dp)) })
+            FilterChip(section == "visits", { section = "visits" }, label = { Text("Mis visitas") }, leadingIcon = { Icon(Icons.Default.History, null, Modifier.size(18.dp)) })
             FilterChip(section == "rewards", { section = "rewards" }, label = { Text("Mis premios") }, leadingIcon = { Icon(Icons.Default.Redeem, null, Modifier.size(18.dp)) })
         } }
         if (state.uid != account.uid) { item { LinearProgressIndicator(Modifier.fillMaxWidth()) }; return@LazyColumn }
