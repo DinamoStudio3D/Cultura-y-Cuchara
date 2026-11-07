@@ -32,6 +32,18 @@ object MerchantBusinessPolicy {
     fun cutoff(now: Long, months: Int): Long = Instant.ofEpochMilli(now).atZone(zone).minusMonths(months.toLong()).toInstant().toEpochMilli()
     fun inPeriod(row: Map<String, Any?>, tab: String, cutoff: Long): Boolean = tab == "clients" ||
         listOf(if (tab == "visits") "confirmedAt" else "createdAt", if (tab == "visits") "reversedAt" else "deliveredAt").firstNotNullOfOrNull { timeMillis(row[it]) }?.let { it >= cutoff } == true
+    fun visitMoment(row: Map<String, Any?>): Long? =
+        timeMillis(row["confirmedAt"]) ?: timeMillis(row["createdAt"])
+
+    fun visitMatches(row: Map<String, Any?>, status: String?, period: String, now: Long): Boolean {
+        if (status != null && row.text("status") != status) return false
+        if (period == "all") return true
+        val moment = visitMoment(row) ?: return false
+        val today = Instant.ofEpochMilli(now).atZone(zone).toLocalDate()
+        val start = (if (period == "week") today.minusDays(6) else today).atStartOfDay(zone).toInstant().toEpochMilli()
+        return moment in start..now
+    }
+
     fun amount(value: Any?): Double = (value as? Number)?.toDouble()?.takeIf { it.isFinite() && it >= 0 } ?: 0.0
     fun maskedEmail(raw: String): String = raw.split('@').takeIf { it.size == 2 && it.all(String::isNotBlank) }?.let { it[0].take(2) + "***@" + it[1] }.orEmpty()
     fun rewardStatus(row: Map<String, Any?>, now: Long): String = when {

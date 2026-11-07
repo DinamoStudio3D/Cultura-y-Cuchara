@@ -25,10 +25,12 @@ private fun businessDate(value: Any?): String = timeMillis(value)?.let { DateTim
 @Composable
 fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusinessViewModel, scan: () -> Unit, rewards: () -> Unit, dismiss: () -> Unit) {
     var search by remember(state.uid,state.selected,state.tab) { mutableStateOf("") }
+    var visitFilter by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
+    var visitPeriod by remember(state.uid,state.selected,state.tab) { mutableStateOf("all") }
     var rewardFilter by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(state.tab) {
-        if (state.tab == "rewards") while (true) {
+        if (state.tab in setOf("rewards", "visits")) while (true) {
             now = System.currentTimeMillis()
             kotlinx.coroutines.delay(30_000)
         } else now = System.currentTimeMillis()
@@ -38,10 +40,11 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
         if (state.tab == "rewards") state.rows.groupingBy { MerchantBusinessPolicy.rewardStatus(it, now) }.eachCount() else emptyMap()
     }
     val filtered=state.rows.filter { row ->
+        (state.tab != "visits" || MerchantBusinessPolicy.visitMatches(row, visitFilter, visitPeriod, now)) &&
         (state.tab != "rewards" || rewardFilter == null || MerchantBusinessPolicy.rewardStatus(row,now) == rewardFilter) &&
             (search.isBlank() || listOf(row.text("userName"),MerchantBusinessPolicy.maskedEmail(row.text("userEmail")),row.text("rewardTitle")).any { it.contains(search.trim(),true) })
     }
-        .sortedWith(if(state.tab=="clients")compareByDescending { it.count("visitCount") } else compareByDescending { timeMillis(it[if(state.tab=="visits")"confirmedAt" else "createdAt"]) ?: 0 })
+        .sortedWith(if(state.tab=="clients")compareByDescending { it.count("visitCount") } else compareByDescending { (if (state.tab == "visits") MerchantBusinessPolicy.visitMoment(it) else timeMillis(it["createdAt"])) ?: 0 })
     Dialog(onDismissRequest=dismiss,properties=DialogProperties(usePlatformDefaultWidth=false)) {
         Surface(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),color=MaterialTheme.colorScheme.background) {
             LazyColumn(Modifier.fillMaxSize().padding(horizontal=20.dp),verticalArrangement=Arrangement.spacedBy(12.dp),contentPadding=PaddingValues(vertical=16.dp)) {
@@ -69,6 +72,25 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                         item { Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                             listOf("clients" to "Clientes","visits" to "Visitas","rewards" to "Premios").forEach { (id,name)->FilterChip(selected=state.tab==id,onClick={model.tab(id)},enabled=!state.busy,label={Text(name)}) }
                         } }
+                        if (state.tab == "visits") item {
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text("Visitas por fecha de sellado · hora de Loja", fontSize = 12.sp)
+                                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    listOf("all" to "Todo el historial", "today" to "Hoy", "week" to "Últimos 7 días").forEach { (key, label) ->
+                                        FilterChip(visitPeriod == key, { visitPeriod = key }, label = { Text(label) })
+                                    }
+                                }
+                                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    listOf(null to "Todas", "confirmed" to "Confirmadas", "reversed" to "Anuladas").forEach { (key, label) ->
+                                        FilterChip(visitFilter == key, { visitFilter = key }, label = { Text(label) })
+                                    }
+                                }
+                                val visits = filtered.filter { it.text("status") == "confirmed" }
+                                Text("${filtered.size} visitas visibles · consumo confirmado: " +
+                                    businessMoney(visits.sumOf { MerchantBusinessPolicy.amount(it["purchaseAmount"]) }), fontSize = 12.sp)
+                                if (state.more) Text("El filtro abarca solo los registros cargados. Puedes cargar más abajo.", fontSize = 12.sp)
+                            }
+                        }
                         if (state.tab == "rewards") item {
                             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 Text("Estado del premio", fontWeight = FontWeight.SemiBold)
@@ -115,7 +137,12 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                                         "visits"->{
                                             val reversed=row.text("status")=="reversed"
                                             Text(if(reversed)"SELLO ANULADO" else if(row["passportAdded"]==true)"Pasaporte y fidelidad" else "Fidelidad",color=if(reversed)MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
-                                            Text(businessDate(row[if(reversed)"reversedAt" else "confirmedAt"]),fontSize=12.sp)
+                                            Text("Sellado: " + businessDate(row["confirmedAt"]),fontSize=12.sp)
+                                            if (reversed) {
+                                                Text("Anulado: " + businessDate(row["reversedAt"]),fontSize=12.sp)
+                                                row.text("reversalReason").takeIf(String::isNotBlank)?.let { Text("Motivo: $it",fontSize=13.sp) }
+                                                row.text("reversedByName").takeIf(String::isNotBlank)?.let { Text("Registrado por: $it",fontSize=12.sp) }
+                                            }
                                             Text((if(reversed)"Consumo retirado: " else "Consumo registrado: ")+businessMoney(row["purchaseAmount"]))
                                             row.text("receiptRef").takeIf { it.isNotBlank() }?.let { Text("Comprobante: $it",fontSize=12.sp) }
                                         }

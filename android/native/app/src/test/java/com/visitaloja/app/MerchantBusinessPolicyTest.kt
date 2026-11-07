@@ -44,4 +44,16 @@ class MerchantBusinessPolicyTest {
         assertEquals(0.0,MerchantBusinessPolicy.amount(-2),0.0)
         assertEquals(2.5,MerchantBusinessPolicy.amount(2.5),0.0)
     }
+    @Test fun visitFiltersUseTheLojaDayAndKeepReversalTimeSeparate() {
+        val clock = Instant.parse("2026-11-07T02:00:00Z").toEpochMilli()
+        val today = mapOf("status" to "confirmed", "confirmedAt" to Instant.parse("2026-11-06T06:00:00Z").toEpochMilli())
+        val yesterday = today + ("confirmedAt" to Instant.parse("2026-11-06T04:59:59Z").toEpochMilli())
+        assertTrue(MerchantBusinessPolicy.visitMatches(today, "confirmed", "today", clock))
+        assertFalse(MerchantBusinessPolicy.visitMatches(yesterday, null, "today", clock))
+        assertTrue(MerchantBusinessPolicy.visitMatches(yesterday, null, "week", clock))
+        val reversed = yesterday + mapOf("status" to "reversed", "reversedAt" to clock)
+        assertFalse(MerchantBusinessPolicy.visitMatches(reversed, "reversed", "today", clock))
+        assertTrue(MerchantBusinessPolicy.visitMatches(reversed, "reversed", "all", clock))
+        assertFalse(MerchantBusinessPolicy.visitMatches(reversed, "confirmed", "all", clock))
+    }
 }
