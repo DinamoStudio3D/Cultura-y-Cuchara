@@ -4,6 +4,17 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class NativeLinkPolicyTest {
+    @Test fun cantonsPreserveDestinationAndRejectAmbiguousReferences() {
+        CantonPolicy.catalogue.forEach { canton ->
+            assertEquals(NativeLinkTarget("canton", cantonId = canton.id), NativeLinkPolicy.parse("https://www.visitaloja.com/canton/${canton.id}?utm_source=test"))
+            assertEquals(canton.id, NativeLinkPolicy.parse("https://visitaloja.com/cantones.html?canton=${canton.id}")?.cantonId)
+        }
+        assertNull(NativeLinkPolicy.parse("https://www.visitaloja.com/canton/desconocido"))
+        assertNull(NativeLinkPolicy.parse("https://www.visitaloja.com/cantones.html?canton=loja&canton=paltas"))
+        assertNull(NativeLinkPolicy.parse("https://www.visitaloja.com/canton/loja?place=otro"))
+        assertEquals("festival", NativeLinkPolicy.parse("https://www.visitaloja.com/programacion-fiavl-2026/")?.route)
+        assertEquals("entretenimiento", NativeLinkPolicy.parse("https://www.visitaloja.com/entretenimiento-en-loja")?.category)
+    }
     @Test fun canonicalAndBareHostsResolvePublicPlacesWithTracking() {
         assertEquals(NativeLinkTarget("explore", "sport-burger"),NativeLinkPolicy.parse("https://www.visitaloja.com/parada/sport-burger?utm_source=whatsapp"))
         assertEquals(NativeLinkTarget("explore", "sport-burger"),NativeLinkPolicy.parse("https://visitaloja.com/parada/sport-burger/"))

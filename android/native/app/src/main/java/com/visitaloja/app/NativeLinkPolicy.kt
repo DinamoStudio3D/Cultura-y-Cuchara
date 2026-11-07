@@ -5,10 +5,10 @@ import java.net.URLDecoder
 import java.util.Locale
 
 internal data class NativeLinkRequest(val id: String, val text: String)
-internal data class NativeLinkTarget(val route: String, val place: String? = null, val category: String = "all", val menuId: String? = null)
+internal data class NativeLinkTarget(val route: String, val place: String? = null, val category: String = "all", val menuId: String? = null, val cantonId: String? = null)
 internal object NativeLinkPolicy {
     private val sections = mapOf("" to "home", "inicio" to "home", "mapa" to "map", "agenda" to "agenda", "fiavl" to "festival", "misiones" to "missions", "pasaporte" to "passport", "promociones" to "promotions", "historias" to "stories", "emprendedores" to "enterprises", "loja-en-video" to "videos", "loja-tiempo" to "time", "loja-en-imagenes" to "photos", "podcast" to "podcast", "tienda" to "shop", "postales" to "postcards", "especias" to "shop", "establecimientos" to "explore", "categorias" to "explore", "registeredBrands" to "supporters", "contacto" to "contact")
-    private val categories = mapOf("/cafeterias-en-loja" to "cafe", "/hoteles-en-loja" to "hotel", "/restaurantes-en-loja" to "food", "/huecas-en-loja" to "hueca", "/panaderias-en-loja" to "panaderia", "/heladerias-en-loja" to "heladeria", "/bares-en-loja" to "bar", "/artesanias-en-loja" to "artesania", "/que-hacer-en-loja" to "turismo")
+    private val categories = mapOf("/cafeterias-en-loja" to "cafe", "/hoteles-en-loja" to "hotel", "/restaurantes-en-loja" to "food", "/huecas-en-loja" to "hueca", "/panaderias-en-loja" to "panaderia", "/heladerias-en-loja" to "heladeria", "/bares-en-loja" to "bar", "/artesanias-en-loja" to "artesania", "/entretenimiento-en-loja" to "entretenimiento", "/que-hacer-en-loja" to "turismo")
     private fun id(value: String) = value.takeIf { it.length in 1..120 && Regex("[A-Za-z0-9_-]+").matches(it) }
     fun parse(value: String): NativeLinkTarget? = try {
         if (value.length !in 1..2048 || value.any { it.isWhitespace() || it.isISOControl() || it == '\\' }) null
@@ -17,11 +17,13 @@ internal object NativeLinkPolicy {
             if (u.scheme != "https" || u.host?.lowercase(Locale.ROOT) !in setOf("visitaloja.com", "www.visitaloja.com") || u.port != -1 || u.userInfo != null || u.rawPath != u.path) null
             else {
                 val pairs = u.rawQuery.orEmpty().split('&').filter(String::isNotBlank).map { it.split('=', limit = 2).let { p -> URLDecoder.decode(p[0], "UTF-8") to URLDecoder.decode(p.getOrElse(1) { "" }, "UTF-8") } }
-                val keys = pairs.filter { it.first in setOf("checkin", "lugar", "place", "qr") }
+                val keys = pairs.filter { it.first in setOf("checkin", "lugar", "place", "qr", "canton") }
                 val path = u.path.ifBlank { "/" }
                 when {
                     keys.any { it.first == "qr" } || keys.size > 1 -> null
                     path == "/menu-digital.html" -> pairs.filter { it.first == "id" }.singleOrNull()?.second?.takeIf { keys.isEmpty() && MenuPolicy.validId(it) }?.let { NativeLinkTarget("menu", menuId = it) }
+                    Regex("/canton/[a-z]+/?").matches(path) && keys.isEmpty() -> path.trimEnd('/').substringAfterLast('/').takeIf { ref -> CantonPolicy.catalogue.any { it.id == ref } }?.let { NativeLinkTarget("canton", cantonId = it) }
+                    path == "/cantones.html" && keys.size == 1 && keys[0].first == "canton" -> keys[0].second.takeIf { ref -> CantonPolicy.catalogue.any { it.id == ref } }?.let { NativeLinkTarget("canton", cantonId = it) }
                     Regex("/parada/[A-Za-z0-9_-]+/?").matches(path) && keys.isEmpty() -> id(path.trimEnd('/').substringAfterLast('/'))?.let { NativeLinkTarget("explore", it) }
                     path == "/" && keys.size == 1 && keys[0].first in setOf("checkin", "lugar") -> id(keys[0].second)?.let { NativeLinkTarget("explore", it) }
                     path in setOf("/fidelidad.html", "/opiniones.html") && keys.size == 1 && keys[0].first == "place" -> id(keys[0].second)?.let { NativeLinkTarget("explore", it) }

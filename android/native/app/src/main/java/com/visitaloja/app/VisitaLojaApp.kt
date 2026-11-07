@@ -208,7 +208,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         visits.close(); selectedId = null; selectedEventId = null; audioPlayer.pause()
         if (target.menuId != null) { directMenuId = target.menuId; return@LaunchedEffect }
         directMenuId = null
-        fromSections = false; tab = target.route; category = target.category; query = ""
+        fromSections = false; selectedCantonId = target.cantonId; tab = target.route; category = target.category; query = ""
         if (place != null) selectedId = place.id
     }
     val navigate: (String, String) -> Unit = { target, filter ->

@@ -89,3 +89,10 @@ SEO, sitemap y páginas destinadas a Google siguen siendo funciones de la web; n
 4. Ejecutar las pruebas reales acordadas y corregir diferencias visuales.
 
 No se asigna un porcentaje: contar pantallas existentes no mide la paridad de sus opciones ni su validación real.
+
+## Seguimiento: implementación 0.60
+
+- Se añadió el registro explícito con correo y confirmación de contraseña, usando el mismo Firebase Auth. El registro no escribe roles, visitas, premios ni suscripciones.
+- Se añadió resolución de `/canton/{id}` y de un parámetro `canton` válido en el directorio, conservando el cantón al abrir la pantalla nativa.
+- Se ampliaron los filtros de enlaces Android para categorías, cantones y festival. Continúa pendiente verificar el dominio para apertura automática de Android App Links; el sistema puede pedir elegir la aplicación.
+- Permanecen pendientes las pruebas reales de creación/acceso con cuenta nueva y apertura de enlaces desde aplicaciones externas. Las pruebas unitarias no sustituyen esas comprobaciones.

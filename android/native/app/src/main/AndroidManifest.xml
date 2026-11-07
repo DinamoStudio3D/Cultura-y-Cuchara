@@ -20,6 +20,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" /><category android:name="android.intent.category.DEFAULT" /><category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" /><data android:host="www.visitaloja.com" /><data android:host="visitaloja.com" />
+                <data android:pathPrefix="/canton/" /><data android:path="/programacion-fiavl-2026" /><data android:path="/programacion-fiavl-2026/" /><data android:path="/cafeterias-en-loja" /><data android:path="/hoteles-en-loja" /><data android:path="/restaurantes-en-loja" /><data android:path="/huecas-en-loja" /><data android:path="/panaderias-en-loja" /><data android:path="/heladerias-en-loja" /><data android:path="/bares-en-loja" /><data android:path="/artesanias-en-loja" /><data android:path="/entretenimiento-en-loja" /><data android:path="/que-hacer-en-loja" />
                 <data android:path="/" /><data android:pathPrefix="/parada/" /><data android:path="/cantones.html" /><data android:path="/agenda.html" /><data android:path="/programacion-fiavl-2026" /><data android:path="/programacion-fiavl-2026/" /><data android:path="/loja-en-el-tiempo.html" /><data android:path="/fidelidad.html" /><data android:path="/mesa-turistica.html" /><data android:path="/opiniones.html" /><data android:path="/menu-digital.html" /><data android:path="/privacidad.html" /><data android:path="/terminos.html" />
             </intent-filter>
         </activity>

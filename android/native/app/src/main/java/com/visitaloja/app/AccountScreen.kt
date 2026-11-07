@@ -43,13 +43,15 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
     var email by rememberSaveable { mutableStateOf("") }
     // Passwords are deliberately excluded from saved instance state.
     var password by remember { mutableStateOf("") }
+    var confirmation by remember { mutableStateOf("") }
+    var registering by rememberSaveable { mutableStateOf(false) }
     var visible by remember { mutableStateOf(false) }
     var choosingAvatar by remember(state.uid) { mutableStateOf(false) }
     var editingProfile by remember(state.uid) { mutableStateOf(false) }
     LaunchedEffect(state.profileRevision) { if (state.profileRevision > 0) editingProfile = false }
     var confirmImport by remember { mutableStateOf(false) }
     var confirmSignOut by remember { mutableStateOf(false) }
-    LaunchedEffect(state.uid) { password = ""; confirmImport = false; confirmSignOut = false }
+    LaunchedEffect(state.uid) { password = ""; confirmation = ""; registering = false; confirmImport = false; confirmSignOut = false }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding().padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text("TU HISTORIA EN LOJA", fontSize = 11.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
         Text("Mi cuenta", fontSize = 30.sp, fontWeight = FontWeight.ExtraBold)
@@ -70,16 +72,27 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
                     }
                 }
             }
-            Button(onClick = { model.googleLogin(context) }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp), shape = RoundedCornerShape(14.dp)) { Text("Continuar con Google") }
-            Text("O ingresa con tu correo y contraseña", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Button(onClick = { password = ""; confirmation = ""; model.googleLogin(context) }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp), shape = RoundedCornerShape(14.dp)) { Text("Continuar con Google") }
+            Text(if (registering) "Crea tu cuenta de VisitaLoja con correo" else "O ingresa con tu correo y contraseña", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             OutlinedTextField(email, { email = it }, label = { Text("Correo electrónico") }, singleLine = true, enabled = !state.busy,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email), modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp))
             OutlinedTextField(password, { password = it }, label = { Text("Contraseña") }, singleLine = true, enabled = !state.busy,
                 visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp),
                 trailingIcon = { IconButton(onClick = { visible = !visible }) { Icon(if (visible) Icons.Default.VisibilityOff else Icons.Default.Visibility, if (visible) "Ocultar contraseña" else "Mostrar contraseña") } })
-            OutlinedButton(onClick = { val value = password; password = ""; model.emailLogin(email, value) }, enabled = !state.busy && email.isNotBlank() && password.isNotEmpty(), modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) { Text("Ingresar con correo") }
-            TextButton(onClick = { password = ""; model.resetPassword(email) }, enabled = !state.busy) { Text("Olvidé mi contraseña") }
+            if (registering) {
+                Text("Usa entre 8 y 128 caracteres para tu contraseña.", style = MaterialTheme.typography.bodySmall)
+                OutlinedTextField(confirmation, { confirmation = it }, label = { Text("Confirmar contraseña") }, singleLine = true, enabled = !state.busy,
+                    visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp))
+                Text("Tu cuenta funcionará también en la web. Después podrás completar tu perfil y consultar tus beneficios.", style = MaterialTheme.typography.bodySmall)
+            }
+            OutlinedButton(onClick = {
+                val value = password; val repeated = confirmation
+                password = ""; confirmation = ""; visible = false
+                if (registering) model.emailRegister(email, value, repeated) else model.emailLogin(email, value)
+            }, enabled = !state.busy && email.isNotBlank() && password.isNotEmpty() && (!registering || confirmation.isNotEmpty()), modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) { Text(if (registering) "Crear mi cuenta" else "Ingresar con correo") }
+            TextButton(onClick = { registering = !registering; password = ""; confirmation = ""; visible = false; model.clearMessage() }, enabled = !state.busy) { Text(if (registering) "Ya tengo cuenta: ingresar" else "Crear una cuenta con correo") }
+            if (!registering) TextButton(onClick = { password = ""; confirmation = ""; model.resetPassword(email) }, enabled = !state.busy) { Text("Olvidé mi contraseña") }
             Text("Usa el mismo método de acceso que en VisitaLoja.com. Si tu cuenta es de Google, pulsa Continuar con Google.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
             AccountIdentity(state, canChange = state.profileReady && state.profileComplete && !state.busy,

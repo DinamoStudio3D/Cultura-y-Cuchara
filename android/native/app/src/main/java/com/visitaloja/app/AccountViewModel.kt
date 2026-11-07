@@ -135,6 +135,14 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         auth.signInWithEmailAndPassword(email.trim(), password).await()
     }
 
+    fun emailRegister(email: String, password: String, confirmation: String) = operation {
+        check(auth.currentUser == null) { "Ya tienes una sesión activa. Conserva tu cuenta actual." }
+        val address = RegistrationPolicy.validate(email, password, confirmation)
+        auth.createUserWithEmailAndPassword(address, password).await()
+    }
+
+    fun clearMessage() { if (!mutable.value.busy) mutable.update { it.copy(message = null) } }
+
     fun googleLogin(activity: Context) = operation {
         val manager = CredentialManager.create(activity)
         val option = GetSignInWithGoogleOption.Builder(activity.getString(R.string.default_web_client_id)).build()
@@ -226,6 +234,9 @@ private fun authError(error: Exception): String {
     if (error is IllegalArgumentException || error is IllegalStateException) return error.message ?: "No pudimos completar la solicitud."
     return when ((error as? FirebaseAuthException)?.errorCode) {
         "ERROR_INVALID_CREDENTIAL", "ERROR_WRONG_PASSWORD", "ERROR_USER_NOT_FOUND", "ERROR_INVALID_EMAIL" -> "No pudimos ingresar. Revisa el correo, la contraseña y el método que usas en la web."
+        "ERROR_EMAIL_ALREADY_IN_USE" -> "Este correo ya tiene una cuenta. Ingresa con tu método habitual o recupera la contraseña."
+        "ERROR_WEAK_PASSWORD" -> "Elige una contraseña más segura y vuelve a intentarlo."
+        "ERROR_OPERATION_NOT_ALLOWED" -> "El acceso con correo no está habilitado. Puedes continuar con Google o consultar a VisitaLoja."
         "ERROR_USER_DISABLED" -> "Esta cuenta está deshabilitada. Contacta con VisitaLoja."
         "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL", "ERROR_CREDENTIAL_ALREADY_IN_USE" -> "Este correo ya utiliza otro método de acceso. Ingresa como lo haces en la web para conservar tu información."
         "ERROR_TOO_MANY_REQUESTS" -> "Hay demasiados intentos. Espera unos minutos."
