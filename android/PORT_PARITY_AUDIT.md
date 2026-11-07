@@ -104,3 +104,12 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Cada parada ofrece ficha y, cuando dispone de coordenadas válidas, indicaciones externas. Se puede compartir el recorrido y acceder a la página pública del cantón.
 - Los destacados muestran también la etiqueta Recomendado, además del orden ya existente.
 - No se crearon rutas de muestra ni se escribieron datos de contenido. Si el panel todavía no contiene rutas completas, la sección permanece oculta como en la web.
+
+## Seguimiento: implementación 0.62
+
+- Inicio aplica la visibilidad de welcomePassport, welcomeMissions, shopGateway y provinceGateway a sus accesos equivalentes. Todas las secciones conserva sus pantallas independientes.
+- Los accesos de pasaporte, misiones, tienda y cantones, y los títulos de paradas, postales, tiempo y podcast leen sus textos correspondientes del panel. ES/EN usa español como respaldo si falta traducción.
+- Se ignora enabled para bloques marcados noVisibility en el esquema web. Los enlaces configurados no se ejecutan ni se convierten en rutas nativas.
+- Una consulta fallida conserva la última configuración de inicio y muestra el estado de error existente; no reactiva accesos ocultos por un fallo de red.
+- La fila final de accesos mantiene ancho uniforme cuando se ocultan tarjetas.
+- Este bloque no constituye traducción global ni paridad de todos los editores web. Pendiente comprobación visual en dispositivo.

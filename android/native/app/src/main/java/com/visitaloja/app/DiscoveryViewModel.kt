@@ -38,7 +38,7 @@ class DiscoveryViewModel(app: Application) : AndroidViewModel(app) {
             if (generation != epoch) return@addSnapshotListener
             mutable.update { state -> state.copy(
                 music = if (error != null || doc == null || !doc.exists()) PublicContent(WelcomeMusicConfig(), false, true) else PublicContent(WelcomeMusicPolicy.read(doc.data.orEmpty()), false, false, doc.metadata.isFromCache),
-                home = if (error != null || doc == null) PublicContent(HomeContent(), false, true) else PublicContent(HomePolicy.read(doc.data.orEmpty(), defaults), false, false, doc.metadata.isFromCache),
+                home = if (error != null || doc == null) state.home.copy(loading = false, error = true) else PublicContent(HomePolicy.read(doc.data.orEmpty(), defaults), false, false, doc.metadata.isFromCache),
                 photos = if (error != null || doc == null) state.photos.copy(loading = false, error = true) else PublicContent(DiscoveryPolicy.photos(doc.data ?: emptyMap(), defaults), false, false, doc.metadata.isFromCache)) }
         }
         listeners += db.collection("loja_tiempo").addSnapshotListener(MetadataChanges.INCLUDE) { snapshot, error ->

@@ -382,6 +382,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
     var english by rememberSaveable { mutableStateOf(false) }
     var input by rememberSaveable { mutableStateOf("") }
     val copy = if (english) discovery.home.value.english else discovery.home.value.spanish
+    val blocks = discovery.home.value.blocks
     val keyboard = LocalSoftwareKeyboardController.current
     val scroll = rememberLazyListState()
     val heroVisible by remember { derivedStateOf { scroll.layoutInfo.visibleItemsInfo.any { it.key == "home-hero" } } }
@@ -410,7 +411,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         item(key = "campaigns") { HomeCampaigns(state, detail, { openDiscovery("promotions") }) }
         item(key = "places") {
             Column {
-                Column(Modifier.padding(horizontal = 18.dp)) { SectionHeading(if (english) "Places to discover" else "Paradas para descubrir", if (english) "See all" else "Ver todas") { explore("all") } }
+                Column(Modifier.padding(horizontal = 18.dp)) { SectionHeading(blocks.text("placesIntro", "title", english, if (english) "Places to discover" else "Paradas para descubrir"), if (english) "See all" else "Ver todas") { explore("all") } }
                 when {
                     state.loading && state.places.isEmpty() -> LoadingPlaces()
                     state.error != null && state.places.isEmpty() -> Text(state.error, color = Muted, modifier = Modifier.padding(horizontal = 18.dp))
@@ -425,16 +426,16 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
             Column(Modifier.padding(horizontal = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(if (english) "Make it your own" else "Vive Loja a tu manera", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 val actions = listOf(
-                    Triple("passport", if (english) "My passport" else "Mi pasaporte", Icons.Default.MenuBook),
+                    Triple("passport", blocks.text("welcomePassport", "welcomePassport", english, if (english) "My passport" else "Mi pasaporte"), Icons.Default.MenuBook),
                     Triple("itinerary", if (english) "My route" else "Mi recorrido", Icons.Default.Route),
-                    Triple("postcards", if (english) "Create a postcard" else "Crea una postal", Icons.Default.PhotoCamera),
-                    Triple("missions", if (english) "Missions" else "Misiones", Icons.Default.Flag),
-                    Triple("shop", if (english) "Loja souvenirs" else "Recuerdos de Loja", Icons.Default.ShoppingBag),
+                    Triple("postcards", blocks.text("postcardsIntro", "title", english, if (english) "Create a postcard" else "Crea una postal"), Icons.Default.PhotoCamera),
+                    Triple("missions", blocks.text("welcomeMissions", "welcomeMissions", english, if (english) "Missions" else "Misiones"), Icons.Default.Flag),
+                    Triple("shop", blocks.text("shopGateway", "button", english, if (english) "Loja souvenirs" else "Recuerdos de Loja"), Icons.Default.ShoppingBag),
                     Triple("promotions", if (english) "Offers" else "Promociones", Icons.Default.LocalOffer),
                     Triple("videos", if (english) "Watch Loja" else "Loja en video", Icons.Default.PlayCircle),
                     Triple("notices", if (english) "News and notices" else "Avisos y novedades", Icons.Default.NotificationsActive)
                 )
-                actions.chunked(2).forEach { row ->
+                actions.filter { blocks.actionVisible(it.first) }.chunked(2).forEach { row ->
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         row.forEach { (id, title, icon) ->
                             Surface(onClick = { openDiscovery(id) }, modifier = Modifier.weight(1f).testTag("open-$id"), shape = RoundedCornerShape(14.dp), color = if (id == "passport") Color(0xFF0C3768) else Color.White, contentColor = if (id == "passport") Color.White else Ink) {
@@ -444,14 +445,15 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
                                 }
                             }
                         }
+                        if (row.size == 1) Spacer(Modifier.weight(1f))
                     }
                 }
             }
         }
         item(key = "guide") { GuideShortcut(english) { openDiscovery("guide") } }
-        item(key = "discovery") { DiscoveryHome(discovery, videos, openDiscovery) }
+        item(key = "discovery") { DiscoveryHome(discovery, videos, openDiscovery, english) }
         item(key = "supporters") { HomeSupporters(supporters, state, detail, { openDiscovery("supporters") }, { openDiscovery("mesa") }) }
-        item(key = "cantons") { CantonsShortcut(openCantons) }
+        if (blocks.visible("provinceGateway")) item(key = "cantons") { CantonsShortcut(openCantons, blocks, english) }
         item(key = "all-sections") {
             TextButton(onClick = { openDiscovery("sections") }, modifier = Modifier.padding(horizontal = 18.dp).fillMaxWidth()) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(8.dp)); Text(if (english) "Discover all of VisitaLoja" else "Descubre todo VisitaLoja"); Spacer(Modifier.width(8.dp)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
         }

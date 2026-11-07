@@ -48,15 +48,16 @@ import coil.compose.AsyncImage
 private val DiscoveryBlue = Color(0xFF075BB2)
 
 @Composable
-fun DiscoveryHome(state: DiscoveryState, videos: VideoGallery, open: (String) -> Unit) {
+fun DiscoveryHome(state: DiscoveryState, videos: VideoGallery, open: (String) -> Unit, english: Boolean = false) {
+    val blocks = state.home.value.blocks
     Column(Modifier.padding(horizontal = 22.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("OTRAS FORMAS DE VIVIR LOJA", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = DiscoveryBlue)
         Text("Mira, recuerda y escucha", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             item { DiscoveryShortcut("Loja en imágenes", "Paisajes con nombre y autor", state.photos.value.firstOrNull { it.section == "Loja en imágenes" }?.url, Icons.Default.PhotoLibrary, "open-photos") { open("photos") } }
-            item { DiscoveryShortcut("Loja en el Tiempo", "Desliza entre el ayer y el hoy", state.history.value.firstOrNull()?.present, Icons.Default.Compare, "open-time") { open("time") } }
+            item { DiscoveryShortcut(blocks.text("timeIntro", "title", english, if (english) "Loja Through Time" else "Loja en el Tiempo"), blocks.text("timeIntro", "description", english, if (english) "Compare yesterday and today" else "Desliza entre el ayer y el hoy"), state.history.value.firstOrNull()?.present, Icons.Default.Compare, "open-time") { open("time") } }
             item { DiscoveryShortcut("Loja en video", "YouTube dentro de VisitaLoja", videos.items.firstOrNull()?.let { it.thumbnail ?: it.source.thumbnail }, Icons.Default.VideoLibrary, "open-videos") { open("videos") } }
-            item { DiscoveryShortcut("El podcast", "Historias para escuchar", state.podcast.value?.cover, Icons.Default.Headphones, "open-podcast") { open("podcast") } }
+            item { DiscoveryShortcut(blocks.text("podcastIntro", "title", english, if (english) "The Loja Podcast" else "El podcast"), blocks.text("podcastIntro", "intro", english, if (english) "Stories to listen to" else "Historias para escuchar"), state.podcast.value?.cover, Icons.Default.Headphones, "open-podcast") { open("podcast") } }
         }
     }
 }

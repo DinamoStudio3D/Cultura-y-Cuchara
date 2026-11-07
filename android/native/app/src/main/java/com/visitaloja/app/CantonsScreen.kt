@@ -29,15 +29,16 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 
 @Composable
-fun CantonsShortcut(open: () -> Unit) {
+fun CantonsShortcut(open: () -> Unit, blocks: HomeBlocks = HomeBlocks(), english: Boolean = false) {
     OutlinedCard(onClick = open, shape = RoundedCornerShape(22.dp), modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp),
         colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
         Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Icon(Icons.Default.Landscape, null, Modifier.size(38.dp), tint = MaterialTheme.colorScheme.primary)
             Column(Modifier.weight(1f)) {
-                Text("MÁS LOJA POR DESCUBRIR", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                Text("16 cantones, nuevas historias", fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 5.dp))
-                Text("Paisajes, cultura y paradas para tu próxima visita.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 7.dp))
+                Text(blocks.text("provinceGateway", "kicker", english, if (english) "MORE LOJA TO DISCOVER" else "MÁS LOJA POR DESCUBRIR"), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text(blocks.text("provinceGateway", "title", english, if (english) "16 cantons, new stories" else "16 cantones, nuevas historias"), fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 5.dp))
+                Text(blocks.text("provinceGateway", "description", english, if (english) "Landscapes, culture and stops for your next visit." else "Paisajes, cultura y paradas para tu próxima visita."), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 7.dp))
+                Text(blocks.text("provinceGateway", "button", english, if (english) "Explore the cantons" else "Descubrir los cantones"), fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
             }
         }
     }

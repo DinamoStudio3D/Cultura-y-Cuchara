@@ -3,7 +3,30 @@ package com.visitaloja.app
 
 data class HomeCopy(val title: String, val description: String, val badge: String, val searchTitle: String, val placeholder: String, val searchButton: String, val mapButton: String, val routeButton: String)
 data class HomePhoto(val photo: LojaPhoto, val x: Float = .5f, val y: Float = .5f)
-data class HomeContent(val spanish: HomeCopy = HomePolicy.defaults(false), val english: HomeCopy = HomePolicy.defaults(true), val photos: List<HomePhoto> = emptyList(), val intervalSeconds: Long = 6, val height: Int = 360, val brightness: Float = 1f, val radius: Int = 20)
+data class HomeContent(val spanish: HomeCopy = HomePolicy.defaults(false), val english: HomeCopy = HomePolicy.defaults(true), val photos: List<HomePhoto> = emptyList(), val intervalSeconds: Long = 6, val height: Int = 360, val brightness: Float = 1f, val radius: Int = 20, val blocks: HomeBlocks = HomeBlocks())
+// Only blocks with matching native presentation are projected. URLs never become routes.
+data class HomeBlocks(val values: Map<String, Map<String, Any?>> = emptyMap()) {
+    fun visible(id: String): Boolean = values[id]?.get("enabled") != false
+    fun text(id: String, field: String, english: Boolean, fallback: String): String {
+        val block = values[id].orEmpty()
+        fun value(key: String) = (block[key] as? String)?.trim()?.takeIf { it.isNotEmpty() }?.take(700)
+        return (if (english) value(field + "En") else null) ?: value(field) ?: fallback
+    }
+    fun actionVisible(destination: String): Boolean = when (destination) {
+        "passport" -> visible("welcomePassport")
+        "missions" -> visible("welcomeMissions")
+        "shop" -> visible("shopGateway")
+        else -> true
+    }
+    companion object {
+        private val supported = setOf("welcomePassport", "welcomeMissions", "shopGateway", "provinceGateway", "placesIntro", "postcardsIntro", "timeIntro", "podcastIntro")
+        fun read(raw: Map<*, *>): HomeBlocks = HomeBlocks(supported.mapNotNull { id ->
+            val row = raw[id] as? Map<*, *> ?: return@mapNotNull null
+            id to row.entries.filter { it.key is String && (it.value is String || it.key == "enabled") }
+                .associate { it.key as String to it.value }
+        }.toMap())
+    }
+}
 object HomePolicy {
     fun defaults(english: Boolean) = if (english) HomeCopy("Flavors, Stories & Destinations", "Discover traditional local eateries, specialty coffee shops, hotels and must-see tourist spots through our interactive route.", "Loja is experienced, tasted and hosted", "What would you like to discover?", "Coffee, hotels, local food…", "Search", "Explore the map", "Plan my route") else HomeCopy("Sabores, Historias y Destinos", "Descubre las huecas tradicionales, cafeterías de especialidad, hoteles y rincones turísticos imperdibles a través de nuestra ruta interactiva.", "LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA", "¿Qué quieres descubrir?", "Café, hotel, comida lojana…", "Buscar", "Explorar el mapa", "Planificar mi recorrido")
     private fun number(value: Any?): Float? = when(value) { is Number -> value.toFloat(); is String -> value.toFloatOrNull(); else -> null }?.takeIf { it.isFinite() }
@@ -38,7 +61,7 @@ object HomePolicy {
         }
         val interval = (number(raw["heroIntervalSeconds"])?.takeUnless { it == 0f } ?: 6f).coerceIn(2f,60f).toLong()
         val visibility = number(raw["heroImageOpacity"])?.coerceIn(25f,85f) ?: 55f
-        return HomeContent(copy(false),copy(true),photos,interval,when(raw["heroHeight"]){"compact"->300;"standard"->330;else->360},1+(visibility-55)/100,when(raw["cornerStyle"]){"medium"->16;"extra"->28;else->20})
+        return HomeContent(copy(false),copy(true),photos,interval,when(raw["heroHeight"]){"compact"->300;"standard"->330;else->360},1+(visibility-55)/100,when(raw["cornerStyle"]){"medium"->16;"extra"->28;else->20},HomeBlocks.read(blocks))
     }
     fun share(photo: LojaPhoto): String = "https://www.visitaloja.com/?foto=${java.net.URLEncoder.encode(photo.id, "UTF-8")}" + if (photo.section == "Portada principal") "#inicio" else "#loja-en-imagenes"
     fun select(photos: List<HomePhoto>, current: String?): String? = photos.firstOrNull { it.photo.id == current }?.photo?.id ?: photos.firstOrNull()?.photo?.id

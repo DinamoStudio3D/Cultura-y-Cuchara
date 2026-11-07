@@ -42,4 +42,34 @@ class HomePolicyTest {
         assertEquals("https://www.visitaloja.com/?foto=cover#inicio",HomePolicy.share(photo))
         assertTrue(HomePolicy.share(photo.copy(section="Loja en imágenes")).endsWith("#loja-en-imagenes"))
     }
+    @Test fun configuredBlocksRespectVisibilityWithoutHidingUnrelatedDestinations() {
+        val data = HomePolicy.read(mapOf("homepageContent" to mapOf("blocks" to mapOf(
+            "welcomePassport" to mapOf("enabled" to false),
+            "welcomeMissions" to mapOf("enabled" to false),
+            "shopGateway" to mapOf("enabled" to false),
+            "provinceGateway" to mapOf("enabled" to false),
+            "timeIntro" to mapOf("enabled" to false)
+        ))), emptyList()).blocks
+        assertFalse(data.actionVisible("passport"))
+        assertFalse(data.actionVisible("missions"))
+        assertFalse(data.actionVisible("shop"))
+        assertFalse(data.visible("provinceGateway"))
+        assertTrue(data.actionVisible("itinerary"))
+        assertTrue(data.actionVisible("time")) // noVisibility in the web schema
+        assertTrue(HomeBlocks().actionVisible("passport"))
+    }
+    @Test fun blockCopyUsesEnglishThenSpanishThenNativeDefaultAndNeverReadsLinksAsText() {
+        val blocks = HomeBlocks.read(mapOf("provinceGateway" to mapOf(
+            "title" to "Nuestra provincia", "titleEn" to "Our province",
+            "description" to "Paisajes", "buttonUrl" to "https://example.com"
+        ), "unsupported" to mapOf("enabled" to false)))
+        assertEquals("Our province", blocks.text("provinceGateway", "title", true, "Default"))
+        assertEquals("Nuestra provincia", blocks.text("provinceGateway", "title", false, "Default"))
+        assertEquals("Paisajes", blocks.text("provinceGateway", "description", true, "Default"))
+        assertEquals("Default", blocks.text("provinceGateway", "missing", true, "Default"))
+        assertTrue(blocks.visible("unsupported"))
+        assertEquals(700, HomeBlocks.read(mapOf("placesIntro" to mapOf("title" to "x".repeat(800)))).text("placesIntro", "title", false, "Default").length)
+        assertTrue(HomeBlocks.read(mapOf("provinceGateway" to mapOf("enabled" to "false"))).visible("provinceGateway"))
+    }
+
 }
