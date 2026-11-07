@@ -119,6 +119,9 @@ fun EventDetail(event: LojaEvent) {
             val destination = if (event.latitude != null && event.longitude != null) "${event.latitude},${event.longitude}" else "${event.location}, Loja, Ecuador"
             open(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + Uri.encode(destination))))
         }, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Directions, null); Spacer(Modifier.width(8.dp)); Text("Cómo llegar") } }
+        item { OutlinedButton(onClick = { EventActions.calendar(context, event.title, event.description + "\nhttps://www.visitaloja.com/#agenda", event.location, event.start) }, modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Default.CalendarMonth, null); Spacer(Modifier.width(8.dp)); Text("Añadir al calendario")
+        } }
         item { OutlinedButton(onClick = {
             val send = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_SUBJECT, event.title); putExtra(Intent.EXTRA_TEXT, "${event.title}\n${eventDate(event)} · Hora de Loja\n${event.location}\nhttps://www.visitaloja.com/#agenda") }
             open(Intent.createChooser(send, "Compartir evento"))

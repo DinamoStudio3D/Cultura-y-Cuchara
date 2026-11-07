@@ -63,20 +63,17 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, account: AccountStat
         }
     }
     var savedOnly by rememberSaveable { mutableStateOf(false) }
+    var freeOnly by rememberSaveable { mutableStateOf(false) }
+    var upcomingOnly by rememberSaveable { mutableStateOf(false) }
+    var category by rememberSaveable { mutableStateOf<String?>(null) }
     var selected by rememberSaveable { mutableStateOf<String?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
     val grouped = remember(state.events) { state.events.groupBy(FestivalEvent::day).toSortedMap() }
     val days = grouped.keys.toList()
     val day = days.find { it.toString() == selected } ?: FestivalPolicy.defaultDay(days, state.now)
     val tokens = remember(query) { PlacePolicy.normalize(query).split(' ').filter(String::isNotBlank) }
-    val visible = remember(state.events, day, tokens, savedOnly, account.savedFestivalEvents, account.uid) {
-        if (savedOnly) state.events.filter { event -> account.uid != null && event.id in account.savedFestivalEvents }
-        else if (tokens.isEmpty()) FestivalPolicy.forDay(grouped, day)
-        else state.events.filter { event ->
-            val searchable = PlacePolicy.normalize("${event.title} ${event.category} ${event.place}")
-            tokens.all { it in searchable }
-        }
-    }
+    val visible = FestivalFilterPolicy.filter(state.events, day, query, savedOnly,
+        if (account.uid != null) account.savedFestivalEvents else emptySet(), freeOnly, upcomingOnly, category, state.now)
     LazyColumn(modifier = Modifier.testTag("festival-agenda"), contentPadding = PaddingValues(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Text("LOJA · ARTES VIVAS", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp)
@@ -98,13 +95,25 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, account: AccountStat
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             TextButton(onClick = retry) { Text("Actualizar programación") }
         }
-        if (days.isNotEmpty() && !savedOnly) {
+        if (days.isNotEmpty()) {
+            item {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    item { FilterChip(freeOnly, { freeOnly = !freeOnly }, label = { Text("Entrada libre") }) }
+                    item { FilterChip(upcomingOnly, { upcomingOnly = !upcomingOnly }, label = { Text("Por comenzar") }) }
+                }
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    item { FilterChip(category == null, { category = null }, label = { Text("Todas las categorías") }) }
+                    items(state.events.map { it.category }.distinct().sorted()) { choice ->
+                        FilterChip(category == choice, { category = choice }, label = { Text(choice) })
+                    }
+                }
+            }
             item {
                 OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth(), singleLine = true,
-                    label = { Text("Buscar en todo el festival") },
+                    label = { Text(if (savedOnly) "Buscar en Mi agenda" else "Buscar en todo el festival") },
                     trailingIcon = { if (query.isNotEmpty()) TextButton(onClick = { query = "" }) { Text("Borrar") } })
             }
-            if (tokens.isEmpty()) {
+            if (tokens.isEmpty() && !savedOnly) {
                 item {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(days) { date ->
@@ -117,11 +126,14 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, account: AccountStat
             item {
                 Text(if (visible.size == 1) "1 actividad" else "${visible.size} actividades",
                     fontWeight = FontWeight.Bold)
-                if (visible.isEmpty()) Text("Prueba con otro nombre, categoría o lugar.")
+                if (visible.isEmpty()) {
+                    Text("No hay actividades con estos filtros.")
+                    TextButton(onClick = { query = ""; freeOnly = false; upcomingOnly = false; category = null }) { Text("Restablecer filtros") }
+                }
             }
         }
         if (savedOnly && account.uid != null && account.favouritesReady && visible.isEmpty() && !state.loading)
-            item { Text("Todavía no tienes actividades guardadas del festival.") }
+            item { Text(if (account.savedFestivalEvents.isEmpty()) "Todavía no tienes actividades guardadas del festival." else "Prueba otros filtros para ver tus actividades guardadas.") }
         items(visible, key = FestivalEvent::id) { event ->
             OutlinedCard(modifier = Modifier.fillMaxWidth().testTag("festival-event"), shape = RoundedCornerShape(18.dp)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -137,6 +149,10 @@ fun FestivalScreen(state: FestivalState, retry: () -> Unit, account: AccountStat
                     TextButton(enabled = account.uid == null || !account.busy,
                         onClick = { if (account.uid == null) signIn() else toggleSaved(event.id) }) {
                         Text(if (saved) "Quitar de Mi agenda" else "Guardar en Mi agenda")
+                    }
+                    Column {
+                        TextButton(onClick = { EventActions.calendar(context, event.title, event.description + "\n" + FestivalPolicy.PROGRAM, event.place, event.start, event.durationMinutes) }) { Text("Añadir al calendario") }
+                        TextButton(onClick = { EventActions.share(context, event.title, event.start, event.place, FestivalPolicy.PROGRAM) }) { Text("Compartir") }
                     }
                     when {
                         event.mapUrl != null -> TextButton(onClick = { open(event.mapUrl) }) {
