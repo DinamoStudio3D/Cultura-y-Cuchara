@@ -25,9 +25,22 @@ private fun businessDate(value: Any?): String = timeMillis(value)?.let { DateTim
 @Composable
 fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusinessViewModel, scan: () -> Unit, rewards: () -> Unit, dismiss: () -> Unit) {
     var search by remember(state.uid,state.selected,state.tab) { mutableStateOf("") }
-    val now=System.currentTimeMillis()
+    var rewardFilter by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(state.tab) {
+        if (state.tab == "rewards") while (true) {
+            now = System.currentTimeMillis()
+            kotlinx.coroutines.delay(30_000)
+        } else now = System.currentTimeMillis()
+    }
     val selectedName=state.places.find { it.first==state.selected }?.second.orEmpty()
-    val filtered=state.rows.filter { row->search.isBlank() || listOf(row.text("userName"),MerchantBusinessPolicy.maskedEmail(row.text("userEmail")),row.text("rewardTitle")).any { it.contains(search,true) } }
+    val rewardCounts = remember(state.rows, state.tab, now) {
+        if (state.tab == "rewards") state.rows.groupingBy { MerchantBusinessPolicy.rewardStatus(it, now) }.eachCount() else emptyMap()
+    }
+    val filtered=state.rows.filter { row ->
+        (state.tab != "rewards" || rewardFilter == null || MerchantBusinessPolicy.rewardStatus(row,now) == rewardFilter) &&
+            (search.isBlank() || listOf(row.text("userName"),MerchantBusinessPolicy.maskedEmail(row.text("userEmail")),row.text("rewardTitle")).any { it.contains(search.trim(),true) })
+    }
         .sortedWith(if(state.tab=="clients")compareByDescending { it.count("visitCount") } else compareByDescending { timeMillis(it[if(state.tab=="visits")"confirmedAt" else "createdAt"]) ?: 0 })
     Dialog(onDismissRequest=dismiss,properties=DialogProperties(usePlatformDefaultWidth=false)) {
         Surface(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),color=MaterialTheme.colorScheme.background) {
@@ -56,6 +69,20 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                         item { Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                             listOf("clients" to "Clientes","visits" to "Visitas","rewards" to "Premios").forEach { (id,name)->FilterChip(selected=state.tab==id,onClick={model.tab(id)},enabled=!state.busy,label={Text(name)}) }
                         } }
+                        if (state.tab == "rewards") item {
+                            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Text("Estado del premio", fontWeight = FontWeight.SemiBold)
+                                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    listOf(null to "Todos", "Pendiente" to "Pendientes", "Entregada" to "Entregados",
+                                        "Vencida" to "Vencidos", "Anulada" to "Anulados").forEach { (key, title) ->
+                                        FilterChip(selected = rewardFilter == key, onClick = { rewardFilter = key }, label = {
+                                            Text("$title (${if (key == null) state.rows.size else rewardCounts[key] ?: 0})")
+                                        })
+                                    }
+                                }
+                                if (state.more) Text("Los filtros y totales abarcan solo los registros cargados.", fontSize = 12.sp)
+                            }
+                        }
                         item { OutlinedTextField(search,{search=it.take(100)},label={Text("Buscar en los registros cargados")},singleLine=true,modifier=Modifier.fillMaxWidth()) }
                         item {
                             val confirmed=state.rows.filter { it.text("status")!="reversed" }
@@ -65,7 +92,7 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                                     when(state.tab){
                                         "clients"->Text("${state.rows.size} tarjetas de clientes · consumo acumulado: "+businessMoney(state.rows.sumOf { MerchantBusinessPolicy.amount(it["totalSpend"]) }))
                                         "visits"->Text("${confirmed.size} visitas · ${state.rows.size-confirmed.size} anuladas\nConsumo confirmado: "+businessMoney(confirmed.sumOf { MerchantBusinessPolicy.amount(it["purchaseAmount"]) }))
-                                        else->Text("${state.rows.count { MerchantBusinessPolicy.rewardStatus(it,now)=="Pendiente" }} pendientes · ${state.rows.count { MerchantBusinessPolicy.rewardStatus(it,now)=="Entregada" }} entregadas")
+                                        else->Text("${rewardCounts["Pendiente"] ?: 0} pendientes · ${rewardCounts["Entregada"] ?: 0} entregadas")
                                     }
                                     if(state.more)Text("Resumen parcial. Carga más registros para completar la consulta.",fontSize=12.sp)
                                 }

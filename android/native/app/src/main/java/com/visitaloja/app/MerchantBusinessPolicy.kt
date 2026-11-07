@@ -36,8 +36,8 @@ object MerchantBusinessPolicy {
     fun maskedEmail(raw: String): String = raw.split('@').takeIf { it.size == 2 && it.all(String::isNotBlank) }?.let { it[0].take(2) + "***@" + it[1] }.orEmpty()
     fun rewardStatus(row: Map<String, Any?>, now: Long): String = when {
         row.text("status") == "delivered" -> "Entregada"
-        timeMillis(row["expiresAt"])?.let { it < now } == true -> "Vencida"
-        row.text("status") in setOf("cancelled","reversed","rejected") -> "Anulada"
+        row.text("status") in setOf("cancelled","reversed","rejected","void") -> "Anulada"
+        row.text("status") == "expired" || timeMillis(row["expiresAt"])?.let { it <= now } == true -> "Vencida"
         else -> "Pendiente"
     }
 }

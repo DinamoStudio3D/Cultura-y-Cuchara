@@ -33,6 +33,8 @@ class MerchantBusinessPolicyTest {
         assertEquals("Entregada",MerchantBusinessPolicy.rewardStatus(mapOf("status" to "delivered","expiresAt" to 1L),now))
         assertEquals("Vencida",MerchantBusinessPolicy.rewardStatus(mapOf("expiresAt" to 1L),now))
         assertEquals("Anulada",MerchantBusinessPolicy.rewardStatus(mapOf("status" to "cancelled"),now))
+        assertEquals("Anulada",MerchantBusinessPolicy.rewardStatus(mapOf("status" to "cancelled", "expiresAt" to now - 1),now))
+        assertEquals("Vencida",MerchantBusinessPolicy.rewardStatus(mapOf("status" to "pending", "expiresAt" to now),now))
         assertEquals("Pendiente",MerchantBusinessPolicy.rewardStatus(emptyMap(),now))
     }
     @Test fun contactAndMoneyProjectionAvoidsPrivateAndInvalidOutput(){
