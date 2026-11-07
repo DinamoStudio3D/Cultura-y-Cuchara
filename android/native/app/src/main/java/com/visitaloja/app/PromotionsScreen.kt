@@ -74,7 +74,7 @@ internal fun PromotionsScreen(state: PlacesState, refresh: () -> Unit, open: (Pl
         when {
             state.loading -> item { LinearProgressIndicator(Modifier.fillMaxWidth()); Text("Actualizando promociones…", modifier = Modifier.padding(top = 12.dp)) }
             !fresh -> item { Text("Conéctate para consultar las promociones vigentes. Su disponibilidad puede cambiar."); Button(onClick = refresh) { Text("Reintentar") } }
-            result.isEmpty() -> item { Text(if (query.isBlank()) "No hay promociones vigentes por ahora." else "No hay promociones con esta búsqueda.", fontWeight = FontWeight.Bold); TextButton(onClick = if (query.isBlank()) refresh else ({ query = "" })) { Text(if (query.isBlank()) "Actualizar promociones" else "Ver todas las promociones") } }
+            result.isEmpty() -> item { Text(if (query.isBlank() && category == "all") "No hay promociones vigentes por ahora." else "No hay promociones con estos filtros.", fontWeight = FontWeight.Bold); TextButton(onClick = if (query.isBlank() && category == "all") refresh else ({ query = ""; category = "all" })) { Text(if (query.isBlank() && category == "all") "Actualizar promociones" else "Restablecer filtros") } }
             else -> {
                 item { Text("${result.size} ${if (result.size == 1) "promoción disponible" else "promociones disponibles"}", fontWeight = FontWeight.Bold) }
                 items(result, key = { it.id }) { place ->
