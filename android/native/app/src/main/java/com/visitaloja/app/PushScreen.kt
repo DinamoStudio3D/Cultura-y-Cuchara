@@ -84,7 +84,7 @@ fun PushScreen(state: PushState, model: PushViewModel, account: () -> Unit, dest
         }
         state.message?.let { message -> item { Text(message, color = MaterialTheme.colorScheme.primary) } }
         item {
-            OutlinedButton(onClick = { request("test") }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().testTag("push-local-test")) { Text("Probar aviso local") }
+            OutlinedButton(onClick = { request("test") }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().testTag("push-local-test")) { Text("Ver una notificación de prueba") }
             Text("La prueba local solo comprueba que Android pueda mostrar el aviso. El envío desde el panel se prueba por separado después de activar la suscripción.", style = MaterialTheme.typography.bodySmall)
         }
         item {

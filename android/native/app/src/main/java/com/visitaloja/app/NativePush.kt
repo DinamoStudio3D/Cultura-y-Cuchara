@@ -12,6 +12,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.work.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
@@ -142,12 +143,16 @@ object NativePush {
         if (!allowed(context)) return
         val intent = Intent(context, MainActivity::class.java).setAction(openAction).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val pending = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val logo = ContextCompat.getDrawable(context, R.mipmap.ic_launcher)?.toBitmap(192, 192)
         val notification = NotificationCompat.Builder(context, channel).setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(notice.title).setContentText(notice.body).setStyle(NotificationCompat.BigTextStyle().bigText(notice.body))
+            .setLargeIcon(logo).setColor(0xFF173A70.toInt())
+            .setWhen(notice.receivedAt).setShowWhen(true)
+            .setCategory(NotificationCompat.CATEGORY_PROMO)
+            .setContentTitle(notice.title).setContentText(notice.body).setStyle(NotificationCompat.BigTextStyle().setBigContentTitle(notice.title).bigText(notice.body))
             .setContentIntent(pending).setAutoCancel(true).setVisibility(NotificationCompat.VISIBILITY_PRIVATE).build()
         NotificationManagerCompat.from(context).notify(notice.id, 1, notification)
     }
-    fun localTest(context: Context) { show(context, ReceivedNotice("local-test", "VisitaLoja · Prueba local", "Así se mostrarán los avisos en este móvil. Esta prueba no realiza un envío desde el servidor.", "/", System.currentTimeMillis())) }
+    fun localTest(context: Context) { show(context, ReceivedNotice("local-test", "¡Novedades en VisitaLoja! 🎁", "Descubre promociones, eventos y beneficios en Loja. Este es un aviso de prueba; no representa una promoción real.", "/#promociones", System.currentTimeMillis())) }
 }
 
 class PushTokenWorker(context: Context, parameters: WorkerParameters) : CoroutineWorker(context, parameters) {
