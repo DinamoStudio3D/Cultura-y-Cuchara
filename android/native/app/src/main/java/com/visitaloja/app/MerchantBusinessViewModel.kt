@@ -34,6 +34,7 @@ class MerchantBusinessViewModel : ViewModel() {
     private var cursor: DocumentSnapshot? = null
     private fun current(uid: String, epoch: Int) = generation == epoch && auth.currentUser?.uid == uid
     fun bind(uid: String?) {
+        val previous = mutable.value.takeIf { uid != null && it.uid == uid }
         val epoch = ++generation;catalog = emptyMap();settings = emptyMap();cursor = null;mutable.value = MerchantBusinessState(uid = uid, busy = uid != null)
         if (uid == null) return
         viewModelScope.launch {
@@ -47,8 +48,8 @@ class MerchantBusinessViewModel : ViewModel() {
                 if (!current(uid,epoch)) return@launch
                 check(places.isNotEmpty()) { "No encontramos tus paradas." }
                 catalog = places;settings = config
-                mutable.value = MerchantBusinessState(uid = uid, ready = true, places = places.map { (id,p) -> id to p.text("title").ifBlank { id } })
-                select(places.keys.first())
+                mutable.value = MerchantBusinessState(uid = uid, ready = true, tab = previous?.tab ?: "clients", places = places.map { (id,p) -> id to p.text("title").ifBlank { id } })
+                select(previous?.selected?.takeIf(places::containsKey) ?: places.keys.first())
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (e: Exception) { if(current(uid,epoch)) mutable.update { it.copy(busy=false,error=if(e is IllegalStateException)e.message else "No pudimos comprobar tu acceso y plan. Revisa la conexión y vuelve a intentar.") } }
         }

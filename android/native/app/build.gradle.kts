@@ -10,8 +10,8 @@ android {
         applicationId = "com.visitaloja.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 56
-        versionName = "0.49.0"
+        versionCode = 57
+        versionName = "0.50.0"
     }
     buildTypes {
         debug { applicationIdSuffix = ".preview"; versionNameSuffix = "-preview"; resValue("string", "app_name", "VisitaLoja Prueba") }

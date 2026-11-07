@@ -74,6 +74,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     var merchantRewardOpen by remember { mutableStateOf(false) }
     val merchantBusiness: MerchantBusinessViewModel = viewModel()
     val merchantBusinessState by merchantBusiness.state.collectAsStateWithLifecycle()
+    var merchantReturnToBusiness by remember { mutableStateOf(false) }
     var merchantBusinessOpen by remember { mutableStateOf(false) }
     val merchantScanner: MerchantScanViewModel = viewModel()
     val merchantScanState by merchantScanner.state.collectAsStateWithLifecycle()
@@ -129,7 +130,14 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     LaunchedEffect(guestState.places, guestState.loading, guestState.offline, guestState.error) { audioPlayer.reconcilePlaces(guestState) }
     val accountState by account.state.collectAsStateWithLifecycle()
     LaunchedEffect(accountState.uid, merchantRewardOpen) { merchantRewards.bind(if (merchantRewardOpen) accountState.uid else null) }
-    LaunchedEffect(accountState.uid, merchantBusinessOpen) { merchantBusiness.bind(if (merchantBusinessOpen) accountState.uid else null) }
+    val merchantBusinessSession = merchantBusinessOpen || merchantReturnToBusiness
+    LaunchedEffect(accountState.uid, merchantBusinessSession) { merchantBusiness.bind(if (merchantBusinessSession) accountState.uid else null) }
+    fun returnToBusiness() {
+        if (!merchantReturnToBusiness) return
+        merchantBusinessOpen = true
+        merchantReturnToBusiness = false
+        merchantBusiness.bind(accountState.uid)
+    }
     LaunchedEffect(accountState.uid, merchantScanOpen) { merchantScanner.bind(if (merchantScanOpen) accountState.uid else null) }
     LaunchedEffect(accountState.uid) { visits.bind(accountState.uid); claims.bind(accountState.uid) }
     val snack = remember { SnackbarHostState() }
@@ -220,9 +228,14 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null && directMenuId == null)
         directMenuId?.let { DirectMenuEntry(it) { directMenuId = null } }
         legalDocument?.let { LegalDialog(it, { legalDocument = null }, { key -> legalDocument = key }) }
-        if (merchantRewardOpen) MerchantRewardScreen(if (merchantRewardState.uid == accountState.uid) merchantRewardState else MerchantRewardState(uid = accountState.uid, busy = true), merchantRewards) { merchantRewardOpen = false }
-        if (merchantBusinessOpen) MerchantBusinessScreen(if (merchantBusinessState.uid == accountState.uid) merchantBusinessState else MerchantBusinessState(uid = accountState.uid, busy = true), merchantBusiness, { merchantBusinessOpen = false; merchantScanOpen = true }) { merchantBusinessOpen = false }
-        if (merchantScanOpen) MerchantScanScreen(if (merchantScanState.uid == accountState.uid) merchantScanState else MerchantScanState(uid = accountState.uid, busy = true), merchantScanner) { merchantScanOpen = false }
+        if (merchantRewardOpen) MerchantRewardScreen(if (merchantRewardState.uid == accountState.uid) merchantRewardState else MerchantRewardState(uid = accountState.uid, busy = true), merchantRewards) { merchantRewardOpen = false; returnToBusiness() }
+        if (merchantBusinessOpen) MerchantBusinessScreen(
+            if (merchantBusinessState.uid == accountState.uid) merchantBusinessState else MerchantBusinessState(uid = accountState.uid, busy = true),
+            merchantBusiness,
+            scan = { merchantReturnToBusiness = true; merchantBusinessOpen = false; merchantScanOpen = true },
+            rewards = { merchantReturnToBusiness = true; merchantBusinessOpen = false; merchantRewardOpen = true },
+            dismiss = { merchantBusinessOpen = false })
+        if (merchantScanOpen) MerchantScanScreen(if (merchantScanState.uid == accountState.uid) merchantScanState else MerchantScanState(uid = accountState.uid, busy = true), merchantScanner) { merchantScanOpen = false; returnToBusiness() }
         NearbySession(nearby, state.places, state.fetchedAt)
         if (nearbySettings) NearbySettings(nearbyEnabled, nearbyStatus, nearby::enable) { nearbySettings = false }
         Scaffold(

@@ -23,7 +23,7 @@ import java.util.Locale
 private fun businessMoney(amount: Any?) = java.text.NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-EC")).format(MerchantBusinessPolicy.amount(amount))
 private fun businessDate(value: Any?): String = timeMillis(value)?.let { DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm",Locale.forLanguageTag("es-EC")).withZone(ZoneId.of("America/Guayaquil")).format(Instant.ofEpochMilli(it)) } ?: "Sin fecha"
 @Composable
-fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusinessViewModel, scan: () -> Unit, dismiss: () -> Unit) {
+fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusinessViewModel, scan: () -> Unit, rewards: () -> Unit, dismiss: () -> Unit) {
     var search by remember(state.uid,state.selected,state.tab) { mutableStateOf("") }
     val now=System.currentTimeMillis()
     val selectedName=state.places.find { it.first==state.selected }?.second.orEmpty()
@@ -45,6 +45,11 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                         state.places.forEach { (id,name)->FilterChip(selected=state.selected==id,onClick={model.select(id)},enabled=!state.busy,label={Text(name)}) }
                     } }
                     item { Button(onClick=scan,modifier=Modifier.fillMaxWidth()) { Icon(Icons.Default.QrCodeScanner,null);Spacer(Modifier.width(8.dp));Text("Escanear y sellar una visita") } }
+                    item {
+                        OutlinedButton(onClick = rewards, modifier = Modifier.fillMaxWidth()) {
+                            Icon(Icons.Default.Redeem, null); Spacer(Modifier.width(8.dp)); Text("Validar y entregar un premio")
+                        }
+                    }
                     if(state.months<=0)item { Text("El plan de esta parada no incluye consulta de clientes, historial ni estadísticas. Puedes continuar sellando visitas.") }
                     else {
                         item { Text("Historial de visitas y premios: últimos ${state.months} meses. Clientes: progreso acumulado.",fontSize=12.sp) }
