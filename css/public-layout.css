@@ -15,9 +15,9 @@
   @media (max-width: 639px) {
     .vl-map-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .vl-map-controls > button { justify-content: center; padding: 8px; font-size: 11px; }
-    #accountFloatingInvite { width: 44px; height: 44px; padding: 0; font-size: 17px; }
+    #accountFloatingInvite { min-height: 44px; padding: 8px 12px; font-size: 12px; }
     #accountFloatingInvite > i { margin: 0; }
-    #accountFloatingInvite > span { display: none; }
+    #accountFloatingInvite > span { display: inline; }
   }
 /* Base styles */
 html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; touch-action: manipulation; }
@@ -1726,4 +1726,20 @@ footer .vl-photo-credits{max-width:1280px;margin:20px auto 0;border-top:1px soli
   body #welcomeMusicToggle {position:fixed!important;top:auto!important;right:max(12px,env(safe-area-inset-right,0px))!important;bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;width:48px!important;height:48px!important;min-height:48px!important;margin:0!important;border-radius:50%!important;z-index:68!important;box-shadow:0 4px 18px #071c2b40!important;}
   body #welcomeMusicToggle:focus-visible {outline:3px solid #e3ab48;outline-offset:3px;}
  }
+}
+
+/* Compact registration invitation, shared with the public blue palette. */
+@layer vl-colors {
+  #accountFloatingInvite {
+    color: #fff !important;
+    background: linear-gradient(120deg, #075fbb, #5541b6) !important;
+    border-color: #c6ddff;
+  }
+  #accountFloatingInvite > i {
+    color: #173663;
+    background: #ffd374;
+    border-radius: 50%;
+    padding: 6px;
+  }
+  #accountFloatingInvite:focus-visible { outline: 3px solid #ffd374; outline-offset: 3px; }
 }

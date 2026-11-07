@@ -330,7 +330,7 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=201">
+<link rel="stylesheet" href="css/public-layout.css?v=205">
 <link rel="stylesheet" href="css/banco-portada.css?v=4">
 <link rel="stylesheet" href="css/business-cards.css?v=1">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
@@ -3306,6 +3306,7 @@
 
         function updateVisitorAccountLabels(user, profile = null) {
             const shortName = profile?.fullName?.trim().split(/\s+/)[0] || user?.displayName?.trim().split(/\s+/)[0] || 'Mi cuenta';
+            showAccountFloatingInvite(safeReadJSON('cyc_settings', window.__initialSettings || {}).showAccountFloatingButton !== false);
             const desktop = document.getElementById('accountNavLabel');
             const mobile = document.getElementById('accountMobileLabel');
             if (desktop) desktop.textContent = user ? shortName : 'Ingresar';
@@ -8365,16 +8366,23 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             searchItems();
         }
 
+        const inviteBlockingOverlays = '[role="dialog"][aria-modal="true"], dialog, #accountModal, #mobileMenu';
         function syncFloatingAccountInviteVisibility() {
             const invite=document.getElementById('accountFloatingInvite');
             if(!invite)return;
-            const dialogOpen=Array.from(document.querySelectorAll('[role="dialog"]')).some(dialog=>!dialog.classList.contains('hidden'));
-            const mobileMenu=document.getElementById('mobileMenu');
-            const submenuOpen=mobileMenu&&!mobileMenu.classList.contains('hidden');
-            invite.classList.toggle('interface-layer-hidden',dialogOpen||submenuOpen);
+            const blocked = Array.from(document.querySelectorAll(inviteBlockingOverlays)).some(overlay =>
+                !overlay.hidden && overlay.getAttribute('aria-hidden') !== 'true' &&
+                (overlay.tagName !== 'DIALOG' || overlay.open) &&
+                overlay.getClientRects().length > 0 && getComputedStyle(overlay).visibility !== 'hidden'
+            );
+            invite.classList.toggle('interface-layer-hidden', blocked);
         }
-        const floatingInviteVisibilityObserver=new MutationObserver(syncFloatingAccountInviteVisibility);
-        document.querySelectorAll('[role="dialog"], #mobileMenu').forEach(element=>floatingInviteVisibilityObserver.observe(element,{attributes:true,attributeFilter:['class','aria-hidden']}));
+        const floatingInviteVisibilityObserver = new MutationObserver(syncFloatingAccountInviteVisibility);
+        document.querySelectorAll(inviteBlockingOverlays).forEach(element => {
+            floatingInviteVisibilityObserver.observe(element, {
+                attributes: true, attributeFilter: ['class', 'aria-hidden', 'hidden', 'open', 'style']
+            });
+        });
         syncFloatingAccountInviteVisibility();
 
         function showAccountFloatingInvite(enabled = true) {
@@ -8385,12 +8393,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             invite.style.display=shouldShow?'block':'none';
         }
 
-        function dismissAccountFloatingInvite() {
-            document.getElementById('accountFloatingInvite')?.classList.add('hidden');
-        }
-
         function openAccountFromFloatingInvite() {
-            dismissAccountFloatingInvite();
             if (visitorAuth?.currentUser && currentVisitorProfile?.profileComplete) {
                 document.getElementById('pasaporte')?.scrollIntoView({ behavior: 'smooth' });
                 setTimeout(() => openModal('pasaporteModal'), 450);
