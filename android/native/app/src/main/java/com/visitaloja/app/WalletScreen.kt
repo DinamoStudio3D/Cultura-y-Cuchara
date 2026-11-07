@@ -1,6 +1,8 @@
 package com.visitaloja.app
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +26,9 @@ import kotlinx.coroutines.delay
 @Composable
 fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesState, login: () -> Unit, retry: () -> Unit, visit: (Place) -> Unit, claim: PassportClaimViewModel) {
     var section by rememberSaveable(account.uid) { mutableStateOf("passport") }
+    var rewardQuery by rememberSaveable(account.uid) { mutableStateOf("") }
+    var rewardType by rememberSaveable(account.uid) { mutableStateOf("all") }
+    var rewardFilter by rememberSaveable(account.uid) { mutableStateOf("all") }
     var chosenMode by rememberSaveable(account.uid) { mutableStateOf<String?>(null) }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) { while (true) { delay(1000); now = System.currentTimeMillis() } }
@@ -40,14 +47,45 @@ fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesSta
             item { WalletPanel("Todo tu recorrido, en una cuenta", "Ingresa con la misma cuenta de la web para consultar tus sellos, tarjetas y recompensas.") { Button(onClick = login) { Text("Ingresar en Mi cuenta") } } }
             return@LazyColumn
         }
-        item { Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        item { Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             FilterChip(section == "passport", { section = "passport" }, label = { Text("Pasaporte") }, leadingIcon = { Icon(Icons.Default.MenuBook, null, Modifier.size(18.dp)) })
             FilterChip(section == "cards", { section = "cards" }, label = { Text("Mis tarjetas") }, leadingIcon = { Icon(Icons.Default.CreditCard, null, Modifier.size(18.dp)) })
+            FilterChip(section == "rewards", { section = "rewards" }, label = { Text("Mis premios") }, leadingIcon = { Icon(Icons.Default.Redeem, null, Modifier.size(18.dp)) })
         } }
         if (state.uid != account.uid) { item { LinearProgressIndicator(Modifier.fillMaxWidth()) }; return@LazyColumn }
         if (state.errors.isNotEmpty()) item { WalletPanel("No pudimos consultar parte de tu recorrido", "Comprueba la conexión y vuelve a intentar. Tus datos guardados se conservan.") { TextButton(onClick = retry) { Text("Reintentar consulta") } } }
         if (state.cached.isNotEmpty() || directory.offline) item { Text("Mostrando información guardada. Conéctate y actualiza antes de utilizar una recompensa.", color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
-        if (section == "passport") {
+        if (section == "rewards") {
+            val loaded = state.ready.containsAll(setOf("rewards", "completions"))
+            val allRewards = state.rewards.map { WalletReward(it, false) } + state.completions.map { WalletReward(it, true) }
+            val visibleRewards = WalletRewardPolicy.filter(allRewards, rewardQuery, rewardType, rewardFilter, now)
+            item {
+                Text("Mis premios", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text("Fidelidad y pasaporte en un solo lugar. Los premios pendientes aparecen primero, por fecha de vencimiento.", style = MaterialTheme.typography.bodySmall)
+                OutlinedTextField(rewardQuery, { rewardQuery = it.take(120) }, label = { Text("Buscar premio o negocio") }, modifier = Modifier.fillMaxWidth(), singleLine = true,
+                    trailingIcon = { if (rewardQuery.isNotBlank()) IconButton(onClick = { rewardQuery = "" }) { Icon(Icons.Default.Close, "Borrar búsqueda") } })
+                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("all" to "Todos", "loyalty" to "Fidelidad", "passport" to "Pasaporte").forEach { (key, label) ->
+                        FilterChip(rewardType == key, { rewardType = key }, label = { Text(label) })
+                    }
+                }
+                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("all" to "Todos", "pending" to "Pendientes", "delivered" to "Entregados", "expired" to "Vencidos", "unavailable" to "No disponibles").forEach { (key, label) ->
+                        FilterChip(rewardFilter == key, { rewardFilter = key }, label = { Text(label) })
+                    }
+                }
+                Text("${visibleRewards.size} premios visibles", style = MaterialTheme.typography.bodySmall)
+            }
+            if (!loaded) item { LinearProgressIndicator(Modifier.fillMaxWidth()); Text("Consultando tus recompensas…") }
+            if (loaded && visibleRewards.isEmpty()) item {
+                WalletPanel("No hay premios con estos filtros", if (allRewards.isEmpty()) "Tus recompensas aparecerán al completar las metas de fidelidad o registrar un premio de pasaporte." else "Prueba con otro estado o negocio.") {
+                    TextButton(onClick = { rewardQuery = ""; rewardType = "all"; rewardFilter = "all" }) { Text("Ver todos los premios") }
+                }
+            }
+            items(visibleRewards, key = { it.key }) { reward ->
+                RewardPanel(reward.row, now, reward.passport, allowCode = if (reward.passport) "completions" !in state.cached && "completions" in state.ready else "rewards" !in state.cached && "rewards" in state.ready)
+            }
+        } else if (section == "passport") {
             item { Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilterChip(mode == "turista", { chosenMode = "turista" }, label = { Text("Vista turista") })
                 FilterChip(mode == "lojano", { chosenMode = "lojano" }, label = { Text("Vista lojano") })
@@ -141,16 +179,25 @@ private fun WalletPanel(title: String, description: String, content: @Composable
 
 @Composable
 private fun RewardPanel(reward: Map<String, Any?>, now: Long, passport: Boolean = false, allowCode: Boolean) {
-    val expired = timeMillis(reward["expiresAt"])?.let { it <= now } ?: !passport
-    val status = reward.text("status")
-    val label = when { status == "delivered" -> "Entregada"; status != "pending" -> "No disponible"; expired -> "Vencida"; else -> "Pendiente de canje" }
-    val title = reward.text("rewardTitle").ifBlank { reward.map("rewardSnapshot").text("title").ifBlank { "Tu recompensa" } }
+    val clipboard = LocalClipboardManager.current
+    var copied by remember(reward.text("id")) { mutableStateOf(false) }
+    val entry = WalletReward(reward, passport)
+    val status = WalletRewardPolicy.status(entry, now)
+    val label = WalletRewardPolicy.label(status)
+    val title = entry.title
     var showQr by remember(reward.text("id")) { mutableStateOf(false) }
-    val usable = status == "pending" && !expired && allowCode && reward.text("claimCode").isNotBlank()
-    WalletPanel(title, (reward.text("placeName").takeIf { it.isNotBlank() }?.plus(" · ") ?: "") + label) {
+    val usable = status == "pending" && allowCode && reward.text("claimCode").isNotBlank()
+    WalletPanel(title, (if (passport) "Pasaporte" else "Fidelidad") + " · " + (reward.text("placeName").takeIf { it.isNotBlank() }?.plus(" · ") ?: "") + label) {
+        fun date(value: Any?): String? = timeMillis(value)?.let { java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy · HH:mm", java.util.Locale.forLanguageTag("es-EC")).withZone(ZoneId.of("America/Guayaquil")).format(Instant.ofEpochMilli(it)) }
+        date(reward["createdAt"])?.let { Text("Registrado: $it", fontSize = 12.sp) }
+        date(reward["expiresAt"])?.let { Text("Vence: $it (hora de Ecuador)", fontSize = 12.sp) }
+        if (status == "delivered") date(reward["deliveredAt"])?.let { Text("Entregado: $it", fontSize = 12.sp) }
+        if (passport) reward.text("mode").takeIf { it in setOf("turista", "lojano") }?.let { Text("Modalidad: $it", fontSize = 12.sp) }
+        if (status == "pending" && !allowCode) Text("Conéctate y actualiza para mostrar el código de canje.", fontSize = 12.sp)
         if (usable) {
             Text(reward.text("claimCode"), fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             Button(onClick = { showQr = true }) { Text("Mostrar QR para canjear") }
+            TextButton(onClick = { clipboard.setText(AnnotatedString(reward.text("claimCode"))); copied = true }) { Text(if (copied) "Código copiado" else "Copiar código") }
             Text("Código ya registrado. Presentarlo no confirma su entrega; el encargado debe validarlo.", fontSize = 12.sp)
         }
     }
