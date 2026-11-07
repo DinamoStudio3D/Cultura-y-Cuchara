@@ -1,0 +1,41 @@
+/* Mobile website navigation. Existing desktop layout remains the source of truth. */
+.vl-mobile-hub, .vl-mobile-bottom, .vl-mobile-section-back { display: none; }
+@media (max-width: 767px) {
+  html.vl-mobile-browse { scroll-padding-top: 86px; }
+  html.vl-mobile-browse body { padding-bottom: calc(74px + env(safe-area-inset-bottom)); }
+  html.vl-mobile-browse [data-mobile-away] { display: none !important; }
+  html.vl-mobile-browse .vl-mobile-hub:not([hidden]) { display: block; }
+  html.vl-mobile-browse #main-content > .vl-discovery-nav { display: none; }
+  html.vl-mobile-browse .vl-mobile-section-back:not([hidden]) { display: flex; align-items: center; gap: 12px; padding: 16px; background: #f1f6fc; color: #163f6b; }
+  .vl-mobile-section-back > a { flex: 0 0 auto; font-size: 14px; font-weight: 750; }
+  .vl-mobile-section-back > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+  .vl-mobile-hub { padding: 24px 16px; background: #f3f7fc; color: #173754; }
+  .vl-mobile-hub .vl-mobile-eyebrow { color: #0962b8; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; }
+  .vl-mobile-hub h2 { color: #163a60; font-size: 23px; line-height: 1.2; font-weight: 850; margin: 6px 0 8px; }
+  .vl-mobile-hub > p { font-size: 14px; line-height: 1.5; }
+  .vl-mobile-hub-grid { display: grid; gap: 9px; margin: 18px 0; }
+  .vl-mobile-hub-grid > a { display: flex; align-items: center; gap: 12px; padding: 13px; border: 1px solid #dbe6f3; border-radius: 14px; background: #fff; color: #193e64; text-decoration: none; min-height: 66px; }
+  .vl-mobile-hub-grid > a > i { display: grid; place-items: center; flex: 0 0 38px; height: 38px; border-radius: 12px; background: #e8f2ff; color: #0862b6; }
+  .vl-mobile-hub-grid > a:nth-child(3n) > i { color: #795018; background: #fff0cf; }
+  .vl-mobile-hub-grid > a > span:nth-child(2) { flex: 1; }
+  .vl-mobile-hub-grid > a[hidden] { display: none; }
+  .vl-mobile-hub-grid strong, .vl-mobile-hub-grid small { display: block; }
+  .vl-mobile-hub-grid strong { font-size: 14px; }
+  .vl-mobile-hub-grid small { color: #5a6c80; font-size: 12px; margin-top: 3px; }
+  .vl-mobile-hub details { border-top: 1px solid #d5e2f0; padding-top: 12px; }
+  .vl-mobile-hub summary { padding: 8px 0; font-weight: 750; cursor: pointer; }
+  .vl-mobile-more { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .vl-mobile-more a { color: #145a9c; padding: 10px 6px; font-size: 13px; }
+  html.vl-mobile-browse .vl-mobile-bottom { position: fixed; z-index: 45; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, 1fr); padding: 7px 8px calc(7px + env(safe-area-inset-bottom)); border-top: 1px solid #d7e2ef; background: #fff; box-shadow: 0 -4px 20px #153f6310; }
+  .vl-mobile-bottom :is(a, button) { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; border-radius: 11px; min-height: 48px; background: transparent; border: 0; color: #53677d; font: 650 11px/1.2 system-ui, sans-serif; text-decoration: none; }
+  .vl-mobile-bottom i { font-size: 19px; }
+  .vl-mobile-bottom [aria-current] { color: #075dab; background: #edf5ff; }
+  html.vl-mobile-browse #accountFloatingInvite { bottom: calc(88px + env(safe-area-inset-bottom)); }
+  html.vl-mobile-browse #inicio .vl-welcome-actions,
+  html.vl-mobile-browse #inicio .vl-mobile-updates,
+  html.vl-mobile-browse #inicio .vl149-category-link { display: none; }
+  html.vl-mobile-browse #inicio #heroSubtitle { font-size: 14px; line-height: 1.5; }
+  html.vl-mobile-browse #inicio .vl-welcome-copy { padding-block: 20px; }
+  html.vl-mobile-browse #inicio .vl-editorial-quicklinks { gap: 6px; }
+  html.vl-mobile-browse #inicio .vl-editorial-quicklinks a { padding: 9px 10px; font-size: 12px; }
+}
