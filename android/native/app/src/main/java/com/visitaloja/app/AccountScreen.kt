@@ -1,6 +1,8 @@
 package com.visitaloja.app
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -42,6 +44,7 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
     // Passwords are deliberately excluded from saved instance state.
     var password by remember { mutableStateOf("") }
     var visible by remember { mutableStateOf(false) }
+    var choosingAvatar by remember(state.uid) { mutableStateOf(false) }
     var editingProfile by remember(state.uid) { mutableStateOf(false) }
     LaunchedEffect(state.profileRevision) { if (state.profileRevision > 0) editingProfile = false }
     var confirmImport by remember { mutableStateOf(false) }
@@ -79,7 +82,8 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
             TextButton(onClick = { password = ""; model.resetPassword(email) }, enabled = !state.busy) { Text("Olvidé mi contraseña") }
             Text("Usa el mismo método de acceso que en VisitaLoja.com. Si tu cuenta es de Google, pulsa Continuar con Google.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
-            AccountIdentity(state)
+            AccountIdentity(state, canChange = state.profileReady && state.profileComplete && !state.busy,
+                change = { choosingAvatar = true })
             Text(if (state.profileComplete) "Perfil completo para tus beneficios" else "Completa tu perfil para solicitar recompensas", fontWeight = FontWeight.Bold)
             Button(onClick = { editingProfile = true }, enabled = state.profileReady && !state.busy, modifier = Modifier.fillMaxWidth()) { Text(if (state.profileComplete) "Editar mis datos" else "Completar mi perfil") }
             Card(Modifier.fillMaxWidth()) {
@@ -115,6 +119,10 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
         TextButton(onClick = contact) { Text("Contacto y redes de VisitaLoja") }
         Spacer(Modifier.height(12.dp))
     }
+    if (choosingAvatar && state.uid != null) AvatarPicker(state, close = { choosingAvatar = false }) { key ->
+        choosingAvatar = false
+        model.saveAvatar(key)
+    }
     if (confirmImport) AlertDialog(onDismissRequest = { confirmImport = false }, title = { Text("¿Añadir estos favoritos?") },
         text = { Text("Se añadirán los lugares guardados sin sesión en este teléfono a ${state.email}. Tus favoritos actuales se conservarán.") },
         confirmButton = { TextButton(onClick = { confirmImport = false; model.importGuest(guestFavourites) }) { Text("Añadir a mi cuenta") } },
@@ -127,8 +135,7 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
 
 
 @Composable
-private fun AccountIdentity(state: AccountState) {
-    val context = LocalContext.current
+private fun AccountIdentity(state: AccountState, canChange: Boolean, change: () -> Unit) {
     val name = state.name.ifBlank { "Tu cuenta de VisitaLoja" }
     val initials = remember(state.name, state.email) {
         state.name.trim().split(Regex("\\s+")).filter(String::isNotBlank).take(2)
@@ -141,18 +148,10 @@ private fun AccountIdentity(state: AccountState) {
                 Box(Modifier.fillMaxSize().padding(5.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center) {
                     Text(initials, color = MaterialTheme.colorScheme.onPrimary, fontSize = 36.sp, fontWeight = FontWeight.Bold)
-                    state.photoUrl?.let { url ->
-                        val image = remember(context, url) {
-                            ImageRequest.Builder(context).data(url).apply {
-                                if (url.substringBefore('?').endsWith(".svg", ignoreCase = true))
-                                    decoderFactory(SvgDecoder.Factory())
-                            }.build()
-                        }
-                        AsyncImage(model = image, contentDescription = "Foto de perfil", modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop)
-                    }
+                    state.photoUrl?.let { AvatarImage(it, "Foto de perfil", Modifier.fillMaxSize()) }
                 }
             }
+            if (canChange) TextButton(onClick = change, modifier = Modifier.testTag("change-profile-avatar")) { Text("Cambiar avatar") }
             Text(name, fontSize = 23.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onPrimaryContainer)
             if (state.email.isNotBlank()) Text(state.email, fontSize = 14.sp, textAlign = TextAlign.Center,
@@ -188,4 +187,36 @@ private fun AccountAction(title: String, subtitle: String, icon: ImageVector, ta
             Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = MaterialTheme.colorScheme.primary)
         }
     }
+}
+
+@Composable
+private fun AvatarImage(url: String, description: String?, modifier: Modifier) {
+    val context = LocalContext.current
+    val image = remember(context, url) {
+        ImageRequest.Builder(context).data(url).apply {
+            if (url.substringBefore('?').endsWith(".svg", ignoreCase = true)) decoderFactory(SvgDecoder.Factory())
+        }.build()
+    }
+    AsyncImage(model = image, contentDescription = description, modifier = modifier, contentScale = ContentScale.Crop)
+}
+
+@Composable
+private fun AvatarPicker(state: AccountState, close: () -> Unit, save: (String) -> Unit) {
+    val choices = ProfilePolicy.avatars + if (state.googlePhotoUrl != null) mapOf("google" to "Mi foto de Google") else emptyMap()
+    fun url(key: String) = if (key == "google") state.googlePhotoUrl else ProfilePolicy.avatarUrl(key)
+    var selected by rememberSaveable(state.uid) { mutableStateOf(choices.keys.firstOrNull { url(it) == state.photoUrl } ?: choices.keys.first()) }
+    AlertDialog(onDismissRequest = close, title = { Text("Elige tu avatar de Loja") }, text = {
+        Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
+            choices.forEach { (key, label) ->
+                Row(Modifier.fillMaxWidth().selectable(selected == key, role = Role.RadioButton, onClick = { selected = key })
+                    .padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    RadioButton(selected == key, onClick = null)
+                    url(key)?.let { AvatarImage(it, null, Modifier.size(42.dp).clip(CircleShape)) }
+                    Text(label)
+                }
+            }
+        }
+    }, confirmButton = { TextButton(onClick = { save(selected) }, enabled = selected in choices && !state.busy) { Text("Guardar avatar") } },
+        dismissButton = { TextButton(onClick = close) { Text("Cancelar") } })
 }

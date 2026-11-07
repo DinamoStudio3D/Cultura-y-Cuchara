@@ -4,12 +4,21 @@ import java.time.LocalDate
 
 data class ProfileDraft(val name: String = "", val phone: String = "", val city: String = "", val mode: String = "turista", val birth: String = "", val document: String = "")
 object ProfilePolicy {
-    private val bundledWebAvatars = setOf("mascota-vive-loja.png", "assets/avatars/jipiro.svg",
-        "assets/avatars/puerta.svg", "assets/avatars/villonaco.svg", "assets/avatars/cafe.svg")
+    val avatars = linkedMapOf(
+        "mascota-vive-loja.png" to "Chabaquito",
+        "assets/avatars/jipiro.svg" to "Jipiro",
+        "assets/avatars/puerta.svg" to "Puerta de la Ciudad",
+        "assets/avatars/villonaco.svg" to "Villonaco",
+        "assets/avatars/cafe.svg" to "Café lojano"
+    )
+
+    fun avatarChoice(key: String, googlePhoto: String?): String? =
+        if (key == "google") PlacePolicy.safeImage(googlePhoto)?.takeIf { it.length <= 1000 }
+        else key.takeIf { it in avatars }
 
     fun avatarUrl(value: String?): String? {
         val path = value?.trim()?.removePrefix("/") ?: return null
-        return if (path in bundledWebAvatars) "https://www.visitaloja.com/$path" else PlacePolicy.safeImage(value)
+        return if (path in avatars) "https://www.visitaloja.com/$path" else PlacePolicy.safeImage(value)
     }
 
     fun draft(data: Map<String, Any?>?, name: String): ProfileDraft = ProfileDraft(data?.text("fullName")?.ifBlank { name } ?: name,

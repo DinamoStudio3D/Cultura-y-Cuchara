@@ -32,7 +32,7 @@ import kotlinx.coroutines.tasks.await
 
 data class AccountState(
     val uid: String? = null, val name: String = "", val email: String = "", val city: String = "", val visitorType: String = "",
-    val photoUrl: String? = null,
+    val photoUrl: String? = null, val googlePhotoUrl: String? = null,
     val busy: Boolean = false, val message: String? = null, val profileError: String? = null,
     val favourites: Set<String> = emptySet(), val favouritesReady: Boolean = false, val favouritesError: String? = null,
     val savedFestivalEvents: Set<String> = emptySet(),
@@ -55,7 +55,7 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         if (user?.uid != mutable.value.uid || generation == 0) {
             generation++
             profileListener?.remove(); progressListener?.remove()
-            mutable.value = AccountState(uid = user?.uid, name = user?.displayName.orEmpty(), email = user?.email.orEmpty(), photoUrl = PlacePolicy.safeImage(user?.photoUrl?.toString()))
+            mutable.value = AccountState(uid = user?.uid, name = user?.displayName.orEmpty(), email = user?.email.orEmpty(), photoUrl = PlacePolicy.safeImage(user?.photoUrl?.toString()), googlePhotoUrl = PlacePolicy.safeImage(user?.photoUrl?.toString()))
             if (user != null) observe(user.uid, generation)
         }
     }
@@ -113,6 +113,21 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
             }
         }.await()
         if (same(uid, epoch)) mutable.update { it.copy(message = "Tu perfil quedó guardado en tu cuenta.", profileRevision = it.profileRevision + 1) }
+    }
+
+    fun saveAvatar(key: String) = operation {
+        val user = auth.currentUser ?: return@operation
+        val uid = user.uid
+        val epoch = generation
+        val photo = requireNotNull(ProfilePolicy.avatarChoice(key, user.photoUrl?.toString())) { "Elige un avatar disponible." }
+        val ref = db.collection("userProfiles").document(uid)
+        db.runTransaction { tx ->
+            check(same(uid, epoch)) { "La sesión cambió. Vuelve a ingresar." }
+            check(tx.get(ref).getBoolean("profileComplete") == true) { "Completa tu perfil antes de cambiar el avatar." }
+            tx.update(ref, mapOf("photoURL" to photo, "updatedAt" to FieldValue.serverTimestamp()))
+            Unit
+        }.await()
+        if (same(uid, epoch)) mutable.update { it.copy(photoUrl = ProfilePolicy.avatarUrl(photo), message = "Tu avatar quedó guardado en VisitaLoja.") }
     }
 
     fun emailLogin(email: String, password: String) = operation {
