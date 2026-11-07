@@ -96,3 +96,11 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Se añadió resolución de `/canton/{id}` y de un parámetro `canton` válido en el directorio, conservando el cantón al abrir la pantalla nativa.
 - Se ampliaron los filtros de enlaces Android para categorías, cantones y festival. Continúa pendiente verificar el dominio para apertura automática de Android App Links; el sistema puede pedir elegir la aplicación.
 - Permanecen pendientes las pruebas reales de creación/acceso con cuenta nueva y apertura de enlaces desde aplicaciones externas. Las pruebas unitarias no sustituyen esas comprobaciones.
+
+## Seguimiento: implementación 0.61
+
+- Las guías Android leen las rutas existentes de cada cantón: título, duración orientativa, notas y hasta 12 paradas por ruta, con un máximo de 8 rutas como la web.
+- Se muestran únicamente recorridos completos de al menos dos paradas publicadas del mismo cantón, conservando el orden administrado. Una ruta incompleta se oculta entera; no se inventan sustituciones.
+- Cada parada ofrece ficha y, cuando dispone de coordenadas válidas, indicaciones externas. Se puede compartir el recorrido y acceder a la página pública del cantón.
+- Los destacados muestran también la etiqueta Recomendado, además del orden ya existente.
+- No se crearon rutas de muestra ni se escribieron datos de contenido. Si el panel todavía no contiene rutas completas, la sección permanece oculta como en la web.

@@ -86,6 +86,7 @@ fun CantonDetailScreen(canton: Canton, state: CantonsState, directory: PlacesSta
     var category by rememberSaveable(canton.id) { mutableStateOf("all") }
     val guide = state.guides[canton.id] ?: CantonGuide()
     val places = CantonPolicy.places(canton.id, directory.places, guide, query, category)
+    val routes = guide.routes.map { it to CantonPolicy.routeStops(canton.id, it, directory.places) }.filter { it.second.isNotEmpty() }
     val context = LocalContext.current
     fun open(intent: Intent) { try { context.startActivity(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay una aplicación compatible disponible.", Toast.LENGTH_LONG).show() } }
     LazyColumn(contentPadding = PaddingValues(22.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
@@ -96,6 +97,34 @@ fun CantonDetailScreen(canton: Canton, state: CantonsState, directory: PlacesSta
         if (guide.description.isNotBlank()) item { Text(guide.description, lineHeight = 24.sp) }
         if (guide.highlights.isNotBlank()) item { CantonInfo("Lo que hace especial a ${canton.name}", guide.highlights) }
         items(guide.sections) { (title, body) -> CantonInfo(title, body) }
+        if (routes.isNotEmpty()) item {
+            Text("Rutas recomendadas en ${canton.name}", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text("Recorridos publicados por VisitaLoja. Las duraciones son orientativas; confirma horarios antes de salir.", style = MaterialTheme.typography.bodySmall)
+        }
+        items(routes, key = { "canton-route-${it.first.id}" }) { (route, stops) ->
+            OutlinedCard(shape = RoundedCornerShape(22.dp)) {
+                Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("RUTA RECOMENDADA · ${stops.size} PARADAS", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                    Text(route.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    if (route.duration.isNotBlank()) Text("Duración orientativa: ${route.duration}")
+                    if (route.notes.isNotBlank()) Text(route.notes)
+                    stops.forEachIndexed { index, place ->
+                        HorizontalDivider()
+                        Text("${index + 1}. ${place.title}", fontWeight = FontWeight.SemiBold)
+                        if (place.address.isNotBlank()) Text(place.address, style = MaterialTheme.typography.bodySmall)
+                        TextButton(onClick = { detail(place) }) { Text("Conocer esta parada") }
+                        CantonPolicy.directions(place)?.let { url ->
+                            TextButton(onClick = { open(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }) { Text("Cómo llegar a esta parada") }
+                        }
+                    }
+                    OutlinedButton(onClick = {
+                        val text = "${route.title} · ${canton.name}\n" + (if (route.duration.isBlank()) "" else "Duración orientativa: ${route.duration}\n") +
+                            stops.mapIndexed { index, place -> "${index + 1}. ${place.title}" }.joinToString("\n") + "\nhttps://www.visitaloja.com/canton/${canton.id}#cantonRoutesSection"
+                        open(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text) }, "Compartir ruta"))
+                    }) { Text("Compartir esta ruta") }
+                }
+            }
+        }
         item { Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             OutlinedButton(onClick = { open(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + Uri.encode("${canton.name}, Loja, Ecuador")))) }, modifier = Modifier.weight(1f)) { Text("Ubicar cantón") }
             OutlinedButton(onClick = { val send = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, "Descubre ${canton.name} en VisitaLoja\nhttps://www.visitaloja.com/canton/${canton.id}") }; open(Intent.createChooser(send, "Compartir cantón")) }, modifier = Modifier.weight(1f)) { Text("Compartir") }
@@ -110,7 +139,7 @@ fun CantonDetailScreen(canton: Canton, state: CantonsState, directory: PlacesSta
         if (places.isEmpty() && !directory.loading && directory.error == null) item { Text(if (query.isNotBlank() || category != "all") "No hay paradas con estos filtros." else "Todavía no hay paradas publicadas para este cantón.", color = MaterialTheme.colorScheme.onSurfaceVariant); if (query.isNotBlank() || category != "all") TextButton(onClick = { query = ""; category = "all" }) { Text("Ver todas las paradas") } }
         items(places, key = Place::id) { place -> OutlinedCard(onClick = { detail(place) }, shape = RoundedCornerShape(20.dp)) {
             if (place.imageUrl != null) AsyncImage(model = BrandImagePolicy.model(place.imageUrl), contentDescription = place.title, modifier = Modifier.fillMaxWidth().height(160.dp), contentScale = if (BrandImagePolicy.localLogo(place.imageUrl) != null) ContentScale.Fit else ContentScale.Crop, error = painterResource(R.drawable.visitaloja_logo))
-            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { Text(place.title, fontSize = 20.sp, fontWeight = FontWeight.Bold); Text(place.categoryLabel, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary); if (place.address.isNotBlank()) Text(place.address, fontSize = 13.sp); Text("Ver ficha →", color = MaterialTheme.colorScheme.primary) }
+            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { Text(place.title, fontSize = 20.sp, fontWeight = FontWeight.Bold); Text(place.categoryLabel, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary); if (place.id in guide.featured) Text("Recomendado", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary); if (place.address.isNotBlank()) Text(place.address, fontSize = 13.sp); Text("Ver ficha →", color = MaterialTheme.colorScheme.primary) }
         } }
         item { TextButton(onClick = retry) { Text("Actualizar guía y paradas") } }
     }
