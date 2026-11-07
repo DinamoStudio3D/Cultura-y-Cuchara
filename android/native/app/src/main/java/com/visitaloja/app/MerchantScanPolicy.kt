@@ -6,6 +6,11 @@ import java.time.Instant
 import java.time.ZoneId
 
 object MerchantScanPolicy {
+    fun initialPlace(allowed: List<String>, preferred: String?): String =
+        if (preferred != null) preferred.takeIf { it in allowed }.orEmpty()
+        else allowed.singleOrNull().orEmpty()
+
+
     const val ENDPOINT = "https://visitaloja-chabaquito.sukogames1996.workers.dev/merchant-confirm-visit"
     const val REVERSE_ENDPOINT = "https://visitaloja-chabaquito.sukogames1996.workers.dev/merchant-reverse-visit"
     const val REVERSE_WINDOW_MS = 15 * 60 * 1000L

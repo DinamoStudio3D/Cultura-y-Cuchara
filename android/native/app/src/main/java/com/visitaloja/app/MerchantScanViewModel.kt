@@ -28,7 +28,10 @@ class MerchantScanViewModel : ViewModel() {
     private var generation = 0
     private var available = emptyList<MerchantPlace>()
     private fun current(uid: String, epoch: Int) = generation == epoch && auth.currentUser?.uid == uid
-    fun bind(uid: String?) {
+    private var preferredPlace: String? = null
+    fun retryAccess() { bind(mutable.value.uid, preferredPlace) }
+    fun bind(uid: String?, preferred: String? = null) {
+        preferredPlace = preferred
         generation++; available = emptyList(); mutable.value = MerchantScanState(uid = uid)
         if (uid != null) load(uid, generation)
     }
@@ -46,7 +49,9 @@ class MerchantScanViewModel : ViewModel() {
             if (!current(uid, epoch)) return@launch
             check(rows.isNotEmpty()) { "No hay paradas disponibles para esta cuenta." }
             available = rows
-            mutable.update { it.copy(ready = true, places = rows.map { p -> p.id to p.name }, selected = rows.first().id, message = null) }
+            val selected = MerchantScanPolicy.initialPlace(rows.map(MerchantPlace::id), preferredPlace)
+            val hint = if (preferredPlace != null && selected.isEmpty()) "Ya no tienes acceso a la parada anterior. Elige una parada autorizada." else null
+            mutable.update { it.copy(ready = true, places = rows.map { p -> p.id to p.name }, selected = selected, message = hint) }
         } catch (cancelled: CancellationException) { throw cancelled }
         catch (e: Exception) { if (current(uid, epoch)) mutable.update { it.copy(ready = false, message = if (e is IllegalStateException) e.message else "No pudimos verificar el acceso. Revisa tu conexión y vuelve a intentar.") } }
         finally { if (current(uid, epoch)) mutable.update { it.copy(busy = false) } }

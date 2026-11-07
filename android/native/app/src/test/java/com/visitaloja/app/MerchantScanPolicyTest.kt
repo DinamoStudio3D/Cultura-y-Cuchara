@@ -40,4 +40,10 @@ class MerchantScanPolicyTest {
         assertTrue(MerchantScanPolicy.error("Daily visit limit reached").contains("mañana"))
         assertTrue(MerchantScanPolicy.error("Visit code is not pending").contains("ya fue procesada"))
     }
+    @Test fun preselectsOnlyAnAuthorizedStopAndNeverSwitchesSilently() {
+        assertEquals("sur", MerchantScanPolicy.initialPlace(listOf("centro", "sur"), "sur"))
+        assertEquals("", MerchantScanPolicy.initialPlace(listOf("centro"), "sur"))
+        assertEquals("", MerchantScanPolicy.initialPlace(listOf("centro", "sur"), null))
+        assertEquals("centro", MerchantScanPolicy.initialPlace(listOf("centro"), null))
+    }
 }

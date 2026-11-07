@@ -78,6 +78,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     var merchantBusinessOpen by remember { mutableStateOf(false) }
     val merchantScanner: MerchantScanViewModel = viewModel()
     val merchantScanState by merchantScanner.state.collectAsStateWithLifecycle()
+    var merchantScanPlace by remember { mutableStateOf<String?>(null) }
     var merchantScanOpen by remember { mutableStateOf(false) }
     val nearby: NearbyViewModel = viewModel()
     val nearbyEnabled by nearby.enabled.collectAsStateWithLifecycle()
@@ -138,7 +139,10 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         merchantReturnToBusiness = false
         merchantBusiness.bind(accountState.uid)
     }
-    LaunchedEffect(accountState.uid, merchantScanOpen) { merchantScanner.bind(if (merchantScanOpen) accountState.uid else null) }
+    LaunchedEffect(accountState.uid, merchantScanOpen, merchantScanPlace) {
+        merchantScanner.bind(if (merchantScanOpen) accountState.uid else null,
+            if (merchantScanOpen) merchantScanPlace else null)
+    }
     LaunchedEffect(accountState.uid) { visits.bind(accountState.uid); claims.bind(accountState.uid) }
     val snack = remember { SnackbarHostState() }
     LaunchedEffect(accountState.message) { accountState.message?.let { snack.showSnackbar(it) } }
@@ -232,10 +236,10 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         if (merchantBusinessOpen) MerchantBusinessScreen(
             if (merchantBusinessState.uid == accountState.uid) merchantBusinessState else MerchantBusinessState(uid = accountState.uid, busy = true),
             merchantBusiness,
-            scan = { merchantReturnToBusiness = true; merchantBusinessOpen = false; merchantScanOpen = true },
+            scan = { merchantScanPlace = merchantBusinessState.selected.takeIf(String::isNotBlank); merchantReturnToBusiness = true; merchantBusinessOpen = false; merchantScanOpen = true },
             rewards = { merchantReturnToBusiness = true; merchantBusinessOpen = false; merchantRewardOpen = true },
             dismiss = { merchantBusinessOpen = false })
-        if (merchantScanOpen) MerchantScanScreen(if (merchantScanState.uid == accountState.uid) merchantScanState else MerchantScanState(uid = accountState.uid, busy = true), merchantScanner) { merchantScanOpen = false; returnToBusiness() }
+        if (merchantScanOpen) MerchantScanScreen(if (merchantScanState.uid == accountState.uid) merchantScanState else MerchantScanState(uid = accountState.uid, busy = true), merchantScanner) { merchantScanOpen = false; merchantScanPlace = null; returnToBusiness() }
         NearbySession(nearby, state.places, state.fetchedAt)
         if (nearbySettings) NearbySettings(nearbyEnabled, nearbyStatus, nearby::enable) { nearbySettings = false }
         Scaffold(
@@ -269,7 +273,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                         wallet = { navigate("passport", "all") }, notices = { navigate("notices", "all") },
                         privacy = { legalDocument = "privacy" }, contact = { navigate("contact", "all") },
                         nearby = { nearbySettings = true }, nearbyEnabled = nearbyEnabled,
-                        business = { merchantBusinessOpen = true }, scan = { merchantScanOpen = true },
+                        business = { merchantBusinessOpen = true }, scan = { merchantScanPlace = null; merchantScanOpen = true },
                         rewards = { merchantRewardOpen = true })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState, { input -> navigate("explore", "all"); query = input })

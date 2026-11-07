@@ -50,13 +50,14 @@ fun MerchantScanScreen(state: MerchantScanState, model: MerchantScanViewModel, d
                 }
                 Text("PARA ENCARGADOS DE NEGOCIOS", fontSize = 11.sp, color = MaterialTheme.colorScheme.primary)
                 if (state.uid == null) Text("Inicia sesión en Mi cuenta con el correo autorizado de tu negocio.")
-                else if (!state.ready && !state.busy) OutlinedButton(onClick = { model.bind(state.uid) }) { Text("Verificar mi acceso") }
+                else if (!state.ready && !state.busy) OutlinedButton(onClick = model::retryAccess) { Text("Verificar mi acceso") }
                 if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
                 if (state.ready) {
                     Text("Parada que vas a sellar", fontWeight = FontWeight.SemiBold)
                     state.places.forEach { (id, name) ->
                         FilterChip(selected = state.selected == id, enabled = !busy, onClick = { model.select(id) }, label = { Text(name) })
                     }
+                    if (state.selected.isBlank()) Text("Elige una parada antes de escanear o consultar un código.")
                     Button(onClick = {
                         val uid = state.uid; val selected = state.selected
                         model.clearVisit(); scanning = true
@@ -74,9 +75,9 @@ fun MerchantScanScreen(state: MerchantScanState, model: MerchantScanViewModel, d
                             catch (_: Exception) { model.message("No se pudo abrir el escáner. Conecta el teléfono a internet para preparar el lector de Google Play Services, o escribe el código manualmente.") }
                             finally { scanning = false }
                         }
-                    }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("merchant-scan")) { Icon(Icons.Default.QrCodeScanner, null); Spacer(Modifier.width(8.dp)); Text(if (scanning) "Escaneando…" else "Escanear QR del visitante") }
-                    OutlinedTextField(code, { code = it.take(64); model.clearVisit() }, label = { Text("Código de visita · 6 números") }, singleLine = true, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("merchant-visit-code"))
-                    OutlinedButton(onClick = { model.lookup(code) }, enabled = !busy && MerchantScanPolicy.code(code) != null, modifier = Modifier.fillMaxWidth()) { Text("Consultar código") }
+                    }, enabled = !busy && state.selected.isNotBlank(), modifier = Modifier.fillMaxWidth().testTag("merchant-scan")) { Icon(Icons.Default.QrCodeScanner, null); Spacer(Modifier.width(8.dp)); Text(if (scanning) "Escaneando…" else "Escanear QR del visitante") }
+                    OutlinedTextField(code, { code = it.take(64); model.clearVisit() }, label = { Text("Código de visita · 6 números") }, singleLine = true, enabled = !busy && state.selected.isNotBlank(), modifier = Modifier.fillMaxWidth().testTag("merchant-visit-code"))
+                    OutlinedButton(onClick = { model.lookup(code) }, enabled = !busy && state.selected.isNotBlank() && MerchantScanPolicy.code(code) != null, modifier = Modifier.fillMaxWidth()) { Text("Consultar código") }
                 }
                 state.message?.let { Text(it, color = MaterialTheme.colorScheme.primary, modifier = Modifier.testTag("merchant-result")) }
                 if (visit != null) {
