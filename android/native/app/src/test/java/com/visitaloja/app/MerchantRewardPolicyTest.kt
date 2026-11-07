@@ -38,4 +38,13 @@ class MerchantRewardPolicyTest{
         assertEquals("passportCompletions",MerchantRewardPolicy.collection("passport"))
         assertEquals("missionRewardClaims",MerchantRewardPolicy.collection("mission"))
     }
+    @Test fun businessEntryRestrictsOnlyLoyaltyToSelectedStop() {
+        val claim = mapOf("placeId" to "sur")
+        assertTrue(MerchantRewardPolicy.withinStop("loyalty", claim, "sur"))
+        assertFalse(MerchantRewardPolicy.withinStop("loyalty", claim, "centro"))
+        assertFalse(MerchantRewardPolicy.withinStop("loyalty", emptyMap(), "sur"))
+        assertTrue(MerchantRewardPolicy.withinStop("loyalty", claim, null))
+        assertTrue(MerchantRewardPolicy.withinStop("passport", claim, "centro"))
+        assertTrue(MerchantRewardPolicy.withinStop("mission", claim, "centro"))
+    }
 }

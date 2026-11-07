@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 @Composable
-fun MerchantRewardScreen(state:MerchantRewardState,model:MerchantRewardViewModel,dismiss:()->Unit){
+fun MerchantRewardScreen(state:MerchantRewardState,model:MerchantRewardViewModel,stopName:String?=null,dismiss:()->Unit){
     val context=LocalContext.current;val scope=rememberCoroutineScope()
     var code by remember(state.uid){mutableStateOf("")};var scanning by remember{mutableStateOf(false)};var confirm by remember(state.claimId){mutableStateOf(false)}
     var now by remember{mutableLongStateOf(System.currentTimeMillis())}
@@ -35,6 +35,7 @@ fun MerchantRewardScreen(state:MerchantRewardState,model:MerchantRewardViewModel
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
                 Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text("Entregar premios",fontSize=25.sp,fontWeight=FontWeight.Bold);IconButton(onClick=dismiss,enabled=!busy){Icon(Icons.Default.Close,"Cerrar premios")}}
                 Text("FIDELIDAD · PASAPORTE · MISIONES",fontSize=11.sp,color=MaterialTheme.colorScheme.primary)
+                if (!stopName.isNullOrBlank()) Text("Fidelidad · $stopName", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 Text("Consulta el QR del visitante y verifica el premio antes de confirmar su entrega.")
                 if(state.uid==null)Text("Inicia sesión en Mi cuenta con el correo autorizado del negocio.")
                 else{
@@ -66,5 +67,5 @@ fun MerchantRewardScreen(state:MerchantRewardState,model:MerchantRewardViewModel
             }
         }
     }
-    if(confirm&&claim.isNotEmpty())AlertDialog(onDismissRequest={confirm=false},title={Text("¿Entregar este premio?")},text={Text("$title\n${claim.text("userName").ifBlank{"Visitante"}}\n\nConfirma que entregas el beneficio correcto a esta persona. Esta entrega se registrará en su cuenta.")},confirmButton={TextButton(onClick={confirm=false;model.deliver()},enabled=!busy){Text("Sí, registrar entrega")}},dismissButton={TextButton(onClick={confirm=false}){Text("Cancelar")}})
+    if(confirm&&claim.isNotEmpty())AlertDialog(onDismissRequest={confirm=false},title={Text("¿Entregar este premio?")},text={Text("$title\n${claim.text("userName").ifBlank{"Visitante"}}\n${if (state.type == "loyalty") claim.text("placeName").ifBlank { stopName ?: claim.text("placeId") } else claim.text("campaignId")}\n\nConfirma que entregas el beneficio correcto a esta persona. Esta entrega se registrará en su cuenta.")},confirmButton={TextButton(onClick={confirm=false;model.deliver()},enabled=!busy){Text("Sí, registrar entrega")}},dismissButton={TextButton(onClick={confirm=false}){Text("Cancelar")}})
 }

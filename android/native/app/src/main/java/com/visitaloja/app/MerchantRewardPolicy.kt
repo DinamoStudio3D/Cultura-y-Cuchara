@@ -3,6 +3,10 @@ package com.visitaloja.app
 import java.util.Locale
 
 object MerchantRewardPolicy {
+    fun withinStop(type: String, claim: Map<String, Any?>, stopId: String?): Boolean =
+        type != "loyalty" || stopId == null || claim["placeId"] == stopId
+
+
     fun code(raw: String?): String? = raw?.takeIf { it.length<=64 }?.trim()?.uppercase(Locale.ROOT)?.replace(Regex("\\s"),"")?.takeIf { it.matches(Regex("[A-Z0-9-]{6,20}")) }
     fun id(raw: String) = raw.matches(Regex("[A-Za-z0-9_-]{1,512}"))
     fun authorized(access: Map<String,Any?>, claim: Map<String,Any?>, type: String, uid: String): Boolean {

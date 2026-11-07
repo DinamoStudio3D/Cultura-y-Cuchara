@@ -71,6 +71,7 @@ private val categories = listOf(Category("cafe", "Cafeterías", Icons.Default.Lo
 internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: AccountViewModel = viewModel(), noticeRequest: Int = 0, linkRequest: NativeLinkRequest? = null) {
     val merchantRewards: MerchantRewardViewModel = viewModel()
     val merchantRewardState by merchantRewards.state.collectAsStateWithLifecycle()
+    var rewardStop by remember { mutableStateOf<Pair<String,String>?>(null) }
     var merchantRewardOpen by remember { mutableStateOf(false) }
     val merchantBusiness: MerchantBusinessViewModel = viewModel()
     val merchantBusinessState by merchantBusiness.state.collectAsStateWithLifecycle()
@@ -130,7 +131,9 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val guestState by model.state.collectAsStateWithLifecycle()
     LaunchedEffect(guestState.places, guestState.loading, guestState.offline, guestState.error) { audioPlayer.reconcilePlaces(guestState) }
     val accountState by account.state.collectAsStateWithLifecycle()
-    LaunchedEffect(accountState.uid, merchantRewardOpen) { merchantRewards.bind(if (merchantRewardOpen) accountState.uid else null) }
+    LaunchedEffect(accountState.uid, merchantRewardOpen, rewardStop) {
+        merchantRewards.bind(if (merchantRewardOpen) accountState.uid else null, if (merchantRewardOpen) rewardStop?.first else null)
+    }
     val merchantBusinessSession = merchantBusinessOpen || merchantReturnToBusiness
     LaunchedEffect(accountState.uid, merchantBusinessSession) { merchantBusiness.bind(if (merchantBusinessSession) accountState.uid else null) }
     fun returnToBusiness() {
@@ -232,12 +235,12 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null && directMenuId == null)
         directMenuId?.let { DirectMenuEntry(it) { directMenuId = null } }
         legalDocument?.let { LegalDialog(it, { legalDocument = null }, { key -> legalDocument = key }) }
-        if (merchantRewardOpen) MerchantRewardScreen(if (merchantRewardState.uid == accountState.uid) merchantRewardState else MerchantRewardState(uid = accountState.uid, busy = true), merchantRewards) { merchantRewardOpen = false; returnToBusiness() }
+        if (merchantRewardOpen) MerchantRewardScreen(if (merchantRewardState.uid == accountState.uid) merchantRewardState else MerchantRewardState(uid = accountState.uid, busy = true), merchantRewards, rewardStop?.second) { merchantRewardOpen = false; rewardStop = null; returnToBusiness() }
         if (merchantBusinessOpen) MerchantBusinessScreen(
             if (merchantBusinessState.uid == accountState.uid) merchantBusinessState else MerchantBusinessState(uid = accountState.uid, busy = true),
             merchantBusiness,
             scan = { merchantScanPlace = merchantBusinessState.selected.takeIf(String::isNotBlank); merchantReturnToBusiness = true; merchantBusinessOpen = false; merchantScanOpen = true },
-            rewards = { merchantReturnToBusiness = true; merchantBusinessOpen = false; merchantRewardOpen = true },
+            rewards = { rewardStop = merchantBusinessState.places.find { it.first == merchantBusinessState.selected }; merchantReturnToBusiness = true; merchantBusinessOpen = false; merchantRewardOpen = true },
             dismiss = { merchantBusinessOpen = false })
         if (merchantScanOpen) MerchantScanScreen(if (merchantScanState.uid == accountState.uid) merchantScanState else MerchantScanState(uid = accountState.uid, busy = true), merchantScanner) { merchantScanOpen = false; merchantScanPlace = null; returnToBusiness() }
         NearbySession(nearby, state.places, state.fetchedAt)
@@ -274,7 +277,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                         privacy = { legalDocument = "privacy" }, contact = { navigate("contact", "all") },
                         nearby = { nearbySettings = true }, nearbyEnabled = nearbyEnabled,
                         business = { merchantBusinessOpen = true }, scan = { merchantScanPlace = null; merchantScanOpen = true },
-                        rewards = { merchantRewardOpen = true })
+                        rewards = { rewardStop = null; merchantRewardOpen = true })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState, { input -> navigate("explore", "all"); query = input })
                     "contact" -> PlatformContactScreen({ legalDocument = it })
