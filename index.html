@@ -465,7 +465,7 @@
 <script src="/js/popup-schedule.js?v=2"></script>
 <link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
     <link rel="stylesheet" href="css/mobile-browse.css?v=3">
-    <script defer src="js/mobile-browse.js?v=6"></script>
+    <script defer src="js/mobile-browse.js?v=7"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -3298,6 +3298,13 @@
             const authMessage = document.getElementById('visitorAuthMessage');
             if (authMessage) authMessage.classList.add('hidden');
         }
+
+        document.addEventListener('click', event => {
+            const button = event.target.closest('[data-mobile-account]');
+            if (!button) return;
+            event.preventDefault();
+            openAccountModal();
+        }, true);
 
         function openAccountModal() {
             const modal = document.getElementById('accountModal');
