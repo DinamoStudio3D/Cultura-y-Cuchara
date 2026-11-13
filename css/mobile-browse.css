@@ -80,3 +80,14 @@
   .vl-mobile-more button { border: 0; background: transparent; text-align: left; min-height: 44px; }
   .vl-mobile-hub { padding-top: 18px; background: #f6f9fc; }
 }
+
+@media (max-width: 767px) {
+  html.vl-mobile-browse .vl-mobile-business { --vl-text:#173754; --vl-muted:#526a80; --vl-accent:#075dab; display:flex; align-items:center; gap:12px; margin:16px 0; padding:15px 12px; border:1px solid #bcd7ee; border-radius:16px; background:linear-gradient(120deg,#e8f3ff,#fff7e6); color:#173754; text-decoration:none; }
+  .vl-mobile-business-icon { display:grid; place-items:center; flex:0 0 40px; height:44px; border-radius:12px; background:#075dab; color:#fff; }
+  .vl-mobile-business > span:nth-child(2) { flex:1; min-width:0; }
+  .vl-mobile-business small { display:block; color:#075dab; font-size:10px; font-weight:800; letter-spacing:.08em; }
+  .vl-mobile-business strong { display:block; margin:4px 0; color:#173754; font-size:14px; line-height:1.35; }
+  .vl-mobile-business span > span { display:block; color:#526a80; font-size:12px; }
+  .vl-mobile-business > b { color:#075dab; font-size:22px; }
+  .vl-mobile-business:focus-visible { outline:3px solid #075dab; outline-offset:3px; }
+}
