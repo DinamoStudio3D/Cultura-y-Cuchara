@@ -77,7 +77,7 @@
         }
         hub.hidden = !home;
         back.hidden = home;
-        back.querySelector('span:last-child').textContent = selected?.querySelector('h2')?.textContent?.trim() || '';
+        back.lastElementChild.textContent = selected?.querySelector('h2')?.textContent?.trim() || '';
         for (const link of bar.querySelectorAll('a')) {
             const selectedLink = link.hash === '#' + (home ? 'inicio' : selected?.id === 'categorias' ? 'establecimientos' : selected?.id);
             if (selectedLink) link.setAttribute('aria-current', 'page');

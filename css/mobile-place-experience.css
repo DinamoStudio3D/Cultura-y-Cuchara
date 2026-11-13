@@ -23,15 +23,15 @@
   html.vl-mobile-browse #mapa { padding: 20px 12px !important; }
   html.vl-mobile-browse #mapa > .text-center { margin-bottom: 12px !important; }
   html.vl-mobile-browse #mapa #lojaMap { min-height: 360px !important; height: 64vh !important; height: 64dvh !important; }
-  html.vl-mobile-browse body #mapPreviewCard {
+  html.vl-mobile-browse body #mapa #mapPreviewCard {
    position: fixed !important; top: auto !important; left: 12px !important; right: 12px !important; bottom: calc(82px + env(safe-area-inset-bottom)) !important;
    z-index: 60 !important; min-height: 0 !important; max-height: 62vh !important; max-height: 62dvh !important; overflow-y: auto !important;
    width: auto !important; margin: 0 !important; padding: 12px !important; gap: 10px !important; border-radius: 18px !important; box-shadow: 0 8px 34px #0c2b4e40 !important;
   }
-  html.vl-mobile-browse body #mapPreviewCard:is([data-empty="true"], [data-mobile-dismissed="true"]) { display: none !important; }
-  html.vl-mobile-browse body #mapPreviewCard:not([data-mobile-expanded="true"]) > :not(.vl-mobile-map-summary) { display: none !important; }
-  html.vl-mobile-browse body #mapPreviewCard[data-mobile-expanded="true"] #previewFavBtn { top: 154px !important; }
-  html.vl-mobile-browse body #mapPreviewCard .vl-mobile-map-summary { display: grid !important; grid-template-columns: minmax(0, 1fr) 44px; align-items: start; gap: 6px; background: #fff; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard:is([data-empty="true"], [data-mobile-dismissed="true"]) { display: none !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard:not([data-mobile-expanded="true"]) > :not(.vl-mobile-map-summary) { display: none !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard[data-mobile-expanded="true"] #previewFavBtn { top: 154px !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard .vl-mobile-map-summary { display: grid !important; grid-template-columns: minmax(0, 1fr) 44px; align-items: start; gap: 6px; background: #fff; }
   .vl-mobile-map-summary strong { display: block; color: #193d61; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; }
   .vl-mobile-map-summary small { display: block; color: #556b81; font-size: 11px; margin-top: 4px; }
   .vl-mobile-map-summary > button { min-width: 44px; min-height: 44px; border-radius: 50%; color: #234c74; background: #edf4fb; font-size: 25px; }
@@ -45,8 +45,8 @@
  @media (max-width: 767px) {
   html.vl-mobile-browse body #establecimientos #localesGrid > .local-item .discovery-card-links > a:first-child { --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff; background: #075eb5 !important; color: #fff !important; }
   html.vl-mobile-browse body #establecimientos #localesGrid > .local-item .discovery-card-links > a:last-child { --vl-text: #164d80; --vl-muted: #164d80; --vl-accent: #164d80; background: #edf5ff !important; color: #164d80 !important; }
-  html.vl-mobile-browse body #mapPreviewCard .vl-mobile-map-summary [data-sheet-expand] { --vl-text: #fff; --vl-muted: #fff; color: #fff !important; background: #075eb5 !important; }
-  html.vl-mobile-browse body #mapPreviewCard { --vl-text: #173b60; --vl-muted: #52697e; --vl-accent: #075eb5; background: #fff !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard .vl-mobile-map-summary [data-sheet-expand] { --vl-text: #fff; --vl-muted: #fff; color: #fff !important; background: #075eb5 !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard { --vl-text: #173b60; --vl-muted: #52697e; --vl-accent: #075eb5; background: #fff !important; }
  }
 }
 @media (max-width: 767px) {
