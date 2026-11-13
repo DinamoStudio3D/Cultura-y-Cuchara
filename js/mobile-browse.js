@@ -3,7 +3,7 @@
     const main = document.getElementById('main-content');
     if (!main || document.documentElement.classList.contains('fiavl-program-page')) return;
     const media = matchMedia('(max-width: 767px)');
-    const homeIds = new Set(['inicio', 'registeredBrands', 'banco-de-loja-destacado', 'patrocinadores']);
+    const homeIds = new Set(['inicio', 'mobileExploreHub', 'registeredBrands', 'banco-de-loja-destacado', 'patrocinadores']);
     let current = 'inicio';
     const roots = () => [
         ...main.querySelectorAll(':scope > section'),
@@ -80,6 +80,7 @@
         if (!media.matches || !document.getElementById(id)) return;
         current = id;
         render();
+        if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
     }
     window.VisitaLojaMobileBrowse = { open };
     document.addEventListener('click', event => {
@@ -95,6 +96,7 @@
         try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
         if (!id) current = 'inicio';
         else if (id === 'inicio' || rootFor(id)) current = id;
+        else current = 'inicio';
         render();
         if (media.matches && id && rootFor(id)) {
             requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }));
@@ -106,3 +108,4 @@
     new MutationObserver(render).observe(main, { childList: true });
     fromHash();
 })();
+
