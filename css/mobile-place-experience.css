@@ -1,0 +1,62 @@
+/* Additional mobile web refinements. Existing desktop cards, filters and map keep their layout. */
+.vl-mobile-map-summary, .vl-mobile-active-filters { display: none; }
+
+@layer vl-layout {
+ @media (max-width: 767px) {
+  html.vl-mobile-browse body #establecimientos { padding-top: 22px !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid { grid-template-columns: 1fr !important; gap: 16px !important; align-items: start; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) { max-width: 100% !important; height: auto !important; min-height: 0 !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media { height: auto !important; min-height: 0 !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) > .vl17-media > img {
+   width: 100% !important; height: clamp(160px, 48vw, 230px) !important; max-height: 230px !important; object-fit: contain !important;
+  }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl-card-content { padding: 14px !important; gap: 9px !important; min-height: 0 !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) .local-title { font-size: 19px !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) .local-desc { -webkit-line-clamp: 2 !important; font-size: 13px !important; line-height: 1.5 !important; max-height: 3em !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl-card-hours { padding: 7px 10px !important; font-size: 11px !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) :is(.vl-card-kicker, .vl-card-explore, .vl18-quicklinks > a) { display: none !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) .vl18-tools { padding: 0 !important; margin: 0 !important; min-height: 44px; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) .discovery-card-links { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; margin-top: 0 !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item:not(.hidden-item) .discovery-card-links a { display: flex !important; align-items: center; justify-content: center; min-height: 44px !important; padding: 10px 8px !important; border-radius: 10px !important; font-size: 12px !important; text-align: center; }
+  html.vl-mobile-browse #clearFiltersButton { display: none !important; }
+
+  html.vl-mobile-browse #mapa { padding: 20px 12px !important; }
+  html.vl-mobile-browse #mapa > .text-center { margin-bottom: 12px !important; }
+  html.vl-mobile-browse #mapa #lojaMap { min-height: 360px !important; height: 64vh !important; height: 64dvh !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard {
+   position: fixed !important; top: auto !important; left: 12px !important; right: 12px !important; bottom: calc(82px + env(safe-area-inset-bottom)) !important;
+   z-index: 60 !important; min-height: 0 !important; max-height: 62vh !important; max-height: 62dvh !important; overflow-y: auto !important;
+   width: auto !important; margin: 0 !important; padding: 12px !important; gap: 10px !important; border-radius: 18px !important; box-shadow: 0 8px 34px #0c2b4e40 !important;
+  }
+  html.vl-mobile-browse body #mapa #mapPreviewCard:is([data-empty="true"], [data-mobile-dismissed="true"]) { display: none !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard:not([data-mobile-expanded="true"]) > :not(.vl-mobile-map-summary) { display: none !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard:not([data-mobile-expanded="true"]) #previewFavBtn { display: none !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard[data-mobile-expanded="true"] { max-height: min(75vh, calc(100vh - var(--vl-navigation-offset, 88px) - 100px)) !important; max-height: min(75dvh, calc(100dvh - var(--vl-navigation-offset, 88px) - 100px)) !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard[data-mobile-expanded="true"] #previewFavBtn { top: 154px !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard .vl-mobile-map-summary { display: grid !important; grid-template-columns: minmax(0, 1fr) 44px; align-items: start; gap: 6px; background: #fff; position: sticky; top: -12px; z-index: 20; margin: -12px -12px 0; padding: 12px; }
+  .vl-mobile-map-summary strong { display: block; color: #193d61; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; }
+  .vl-mobile-map-summary small { display: block; color: #556b81; font-size: 11px; margin-top: 4px; }
+  .vl-mobile-map-summary > button { min-width: 44px; min-height: 44px; border-radius: 50%; color: #234c74; background: #edf4fb; font-size: 25px; }
+  .vl-mobile-map-summary-actions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .vl-mobile-map-summary-actions > :is(a, button) { display: flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 9px; padding: 7px; text-align: center; color: #185b9c; background: #edf5ff; font-size: 12px; font-weight: 700; }
+  .vl-mobile-map-summary-actions > a:first-child { grid-column: 1 / -1; min-height: 30px; justify-content: flex-start; background: transparent; padding: 0; }
+  .vl-mobile-map-summary-actions [data-sheet-expand] { color: #fff; background: #075eb5; }
+ }
+}
+@layer vl-colors {
+ @media (max-width: 767px) {
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item .discovery-card-links > a:first-child { --vl-text: #fff; --vl-muted: #fff; --vl-accent: #fff; background: #075eb5 !important; color: #fff !important; }
+  html.vl-mobile-browse body #establecimientos #localesGrid > .local-item .discovery-card-links > a:last-child { --vl-text: #164d80; --vl-muted: #164d80; --vl-accent: #164d80; background: #edf5ff !important; color: #164d80 !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard .vl-mobile-map-summary [data-sheet-expand] { --vl-text: #fff; --vl-muted: #fff; color: #fff !important; background: #075eb5 !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard { --vl-text: #173b60; --vl-muted: #52697e; --vl-accent: #075eb5; background: #fff !important; }
+ }
+}
+@media (max-width: 767px) {
+ html.vl-mobile-browse body:has(#mapa:not([data-mobile-away]) #mapPreviewCard[data-empty="false"]:not([data-mobile-dismissed="true"])) :is(#welcomeMusicToggle, #accountFloatingInvite, #webMascot, #webMascotRestore) { visibility: hidden !important; pointer-events: none !important; }
+ html.vl-mobile-browse .vl-mobile-active-filters:not([hidden]) { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+ .vl-mobile-filter-chips { display: flex; gap: 6px; flex-wrap: wrap; max-width: 100%; }
+ .vl-mobile-filter-chips button { max-width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid #c7ddf5; border-radius: 999px; background: #edf5ff; color: #164c80; font-size: 12px; overflow-wrap: anywhere; }
+ .vl-mobile-active-filters > button { min-height: 44px; color: #075eb5; font-size: 12px; font-weight: 750; text-decoration: underline; text-underline-offset: 3px; }
+ html.vl-mobile-browse body:has(#vl-chabaquito-install.vl-install-visible) #accountFloatingInvite,
+ html.vl-mobile-browse body:has([role="dialog"][aria-modal="true"][aria-hidden="false"]) :is(#accountFloatingInvite, #vl-chabaquito-install) { display: none !important; }
+}

@@ -464,6 +464,12 @@
 <script src="/js/place-digital-menu.js?v=1"></script>
 <script src="/js/popup-schedule.js?v=2"></script>
 <link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
+    <link rel="stylesheet" href="css/mobile-browse.css?v=3">
+    <script defer src="js/mobile-browse.js?v=8"></script>
+    <link rel="stylesheet" href="css/mobile-place-experience.css?v=1">
+    <script defer src="js/mobile-place-experience.js?v=1"></script>
+    <link rel="stylesheet" href="css/mobile-agenda.css?v=1">
+    <script defer src="js/mobile-agenda.js?v=1"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -2678,7 +2684,7 @@
 
     <!-- Toast Notification -->
     <div id="dataSyncStatus" role="status" aria-live="polite" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-[65] max-w-[calc(100%-2rem)] bg-brandDark/95 text-white border border-white/15 rounded-full px-4 py-2 text-xs font-bold shadow-xl backdrop-blur whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-down mr-2 text-cyan-300"></i><span>Actualizando paradas…</span></div>
-    <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
+    <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="pointer-events-none fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
 
@@ -3401,7 +3407,7 @@
             if (missionRewardIntent) {
                 missionRewardIntent = false;
                 showToast(currentLang === 'en' ? 'Your account is ready. Return to Chabaquito missions to claim your reward.' : 'Tu cuenta está lista. Regresa a las misiones para reclamar tu recompensa.');
-                document.getElementById('misiones')?.scrollIntoView({behavior:'smooth'});
+                window.VisitaLojaMobileBrowse?.open('misiones');document.getElementById('misiones')?.scrollIntoView({behavior:'smooth'});
             }
             if (passportRewardIntent) {
                 passportRewardIntent = false;
@@ -3428,7 +3434,7 @@
             const selectedIndex=nextIndex>=0?nextIndex:fallbackIndex,next=locations[selectedIndex];
             setText('experienceNextTitle',next?.title||'Ya conociste todas las paradas');
             setText('experienceNextMeta',next?(isLocOpenNow(next)?'Abierto ahora · Nueva parada para tu pasaporte':'Descubre esta parada en tu próximo recorrido'):'Muy pronto agregaremos nuevos destinos.');
-            const nextButton=document.getElementById('experienceNextButton');if(nextButton){nextButton.disabled=!next;nextButton.onclick=()=>{if(!next)return;closeModal('accountModal');selectLocation(selectedIndex);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});};}
+            const nextButton=document.getElementById('experienceNextButton');if(nextButton){nextButton.disabled=!next;nextButton.onclick=()=>{if(!next)return;closeModal('accountModal');selectLocation(selectedIndex);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});};}
             const preview=document.getElementById('experienceFavoritePreview');if(preview){const favorites=favoriteLocations.map(id=>locations.find(location=>location.id===id)).filter(Boolean).slice(0,3);preview.innerHTML=favorites.length?favorites.map(location=>`<button type="button" onclick="openExperienceLocation('${String(location.id).replace(/'/g,"\\'")}')" class="w-full text-left bg-white border border-gray-200 rounded-xl p-2.5 flex items-center gap-3"><span class="w-8 h-8 rounded-full bg-orange-50 text-brandGold grid place-items-center"><i class="fa-solid fa-location-dot"></i></span><span class="min-w-0"><b class="block text-xs truncate">${escapeHTML(location.title||'Parada Visita Loja')}</b><small class="text-[10px] text-gray-500 truncate block">${escapeHTML(location.tag||location.address||'Loja')}</small></span></button>`).join(''):'<p class="text-xs text-gray-500 bg-gray-50 rounded-xl p-3">Todavía no guardaste lugares. Toca la hoja en una parada para añadirla.</p>';}
             const agendaPreview=document.getElementById('experienceAgendaPreview');
             if(agendaPreview){agendaPreview.innerHTML=combinedAgenda.length?combinedAgenda.slice(0,3).map(item=>{const event=item.event,title=(currentLang==='en'&&event.titleEn)?event.titleEn:event.title;const place=event.location||event.place||'Loja';const encodedId=encodeURIComponent(item.id);return `<button type="button" onclick="openExperienceAgendaItem('${item.kind}','${encodedId}')" class="w-full text-left bg-white border border-violet-100 rounded-xl p-2.5 flex items-center gap-3"><span class="w-8 h-8 rounded-full ${item.kind==='festival'?'bg-fuchsia-50 text-fuchsia-600':'bg-violet-50 text-violet-600'} grid place-items-center"><i class="fa-solid ${item.kind==='festival'?'fa-masks-theater':'fa-calendar-day'}"></i></span><span class="min-w-0 flex-1"><b class="block text-xs truncate">${escapeHTML(title||'Evento Visita Loja')}</b><small class="text-[10px] text-gray-500 truncate block">${escapeHTML(event.date||'Fecha por confirmar')} · ${escapeHTML(place)}</small></span><span class="text-[9px] font-black uppercase ${item.kind==='festival'?'text-fuchsia-600':'text-violet-600'}">${item.kind==='festival'?'Festival':'Cultural'}</span></button>`;}).join(''):'<p class="text-xs text-gray-500 bg-gray-50 rounded-xl p-3">Guarda eventos de la agenda cultural o del festival y los verás aquí.</p>';}
@@ -3436,9 +3442,9 @@
         function openExperiencePassport(){closeModal('accountModal');openModal('pasaporteModal');}
         function openExperienceFavorites(){closeModal('accountModal');openSavedPlaces();}
         function openExperiencePlanner(){closeModal('accountModal');openSmartRoutePlanner();}
-        function openExperienceAgenda(){closeModal('accountModal');agendaViewMode='saved';renderAgendaUI();document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
-        function openExperienceAgendaItem(kind,encodedId){const id=decodeURIComponent(encodedId);closeModal('accountModal');if(kind==='festival'){const event=(festivalConfig?.events||[]).find(item=>String(item.id)===String(id));if(event?.date)selectFestivalDay(event.date);document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'});return;}agendaViewMode='saved';renderAgendaUI();document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
-        function openExperienceLocation(id){const index=locations.findIndex(location=>String(location.id)===String(id));if(index<0)return;closeModal('accountModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
+        function openExperienceAgenda(){closeModal('accountModal');agendaViewMode='saved';renderAgendaUI();window.VisitaLojaMobileBrowse?.open('agenda');document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
+        function openExperienceAgendaItem(kind,encodedId){const id=decodeURIComponent(encodedId);closeModal('accountModal');if(kind==='festival'){const event=(festivalConfig?.events||[]).find(item=>String(item.id)===String(id));if(event?.date)selectFestivalDay(event.date);window.VisitaLojaMobileBrowse?.open('festival-live');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'});return;}agendaViewMode='saved';renderAgendaUI();window.VisitaLojaMobileBrowse?.open('agenda');document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
+        function openExperienceLocation(id){const index=locations.findIndex(location=>String(location.id)===String(id));if(index<0)return;closeModal('accountModal');selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
 
         function editVisitorProfile() {
             const user = visitorAuth?.currentUser;
@@ -4080,7 +4086,7 @@
             setAgendaView('all');
             map.closePopup();
             search.focus({ preventScroll: true });
-            document.getElementById('agenda').scrollIntoView({ behavior: 'smooth' });
+            window.VisitaLojaMobileBrowse?.open('agenda');document.getElementById('agenda').scrollIntoView({ behavior: 'smooth' });
         }
 
         const fiavlParadeMapUrl = '/?fiavlRuta=desfile#mapa';
@@ -4742,7 +4748,7 @@
                 indicator.classList.remove('hidden');
             }
 
-            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+            window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
         }
         try {
             map = L.map('lojaMap', { 
@@ -4931,7 +4937,7 @@
                 const loc = locations[currentIndex];
                 const title = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                 document.title = `${title} | Visita Loja`;
-                document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 if (markersMap[loc.id]) markersMap[loc.id].openPopup();
                 showToast(currentLang === 'en' ? `Showing ${title}` : `Descubre ${title}`);
             }, 350);
@@ -4970,7 +4976,7 @@
         function maybeTriggerPopup(settings) {
             if(!window.VisitaLojaPopupController){
                 window.VisitaLojaPopupController=window.VisitaLojaPopupSchedule.create({
-                    show(settings){if(document.hidden||!window.VisitaLojaPromoDialog||!document.getElementById('accountModal').classList.contains('hidden'))return false;
+                    show(settings){if(window.VisitaLojaMobilePlaces?.canShowNotice('promotion') === false)return false;if(document.hidden||!window.VisitaLojaPromoDialog||!document.getElementById('accountModal').classList.contains('hidden'))return false;
                 const titleEl = document.getElementById('popupTitleText');
                 const descEl = document.getElementById('popupDescText');
                 const imgEl = document.getElementById('popupImgEl');
@@ -5377,7 +5383,7 @@
             btnEl.onclick = () => focusEventOnMap(Number(next.lat) || -3.9931, Number(next.lng) || -79.2042, title || '', next.date || '', next.location || '', next.type || '');
         }
 
-function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===id);if(index<0)return;selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth',block:'start'});}
+function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===id);if(index<0)return;selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth',block:'start'});}
         function promotionValidityLabel(promo,language='es'){
             const value=promo.endAt||promo.endDate,en=language==='en';
             if(!value)return en?'Ask about validity':'Consulta la vigencia';
@@ -5397,7 +5403,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function closeStoryModal(){stopStoryNarration();document.getElementById('storyModal').classList.add('hidden');document.body.classList.remove('overflow-hidden');}
         function toggleStoryNarration(){if(!currentStory)return;if(activeStoryAudio||window.speechSynthesis?.speaking){stopStoryNarration();return;}const en=currentLang==='en',audioUrl=en?(currentStory.audioUrlEn||currentStory.audioUrl):(currentStory.audioUrl||currentStory.audioUrlEn),label=document.getElementById('storyAudioLabel');if(audioUrl){activeStoryAudio=new Audio(audioUrl);activeStoryAudio.onended=stopStoryNarration;activeStoryAudio.onerror=()=>speakStoryText(en);activeStoryAudio.play().then(()=>{label.textContent=en?'Stop audio':'Detener audio';completeChabaquitoMission('podcast');}).catch(()=>speakStoryText(en));}else speakStoryText(en);}
         function speakStoryText(en){window.VisitaLojaAudioFocus?.cancelSpeech();window.speechSynthesis?.cancel();const text=en?(currentStory.bodyEn||currentStory.body):(currentStory.body||currentStory.bodyEn),utterance=new SpeechSynthesisUtterance(text||'');utterance.lang=en?'en-US':'es-EC';utterance.onend=stopStoryNarration;window.VisitaLojaAudioFocus?.trackSpeech(utterance);window.speechSynthesis?.speak(utterance);completeChabaquitoMission('podcast');document.getElementById('storyAudioLabel').textContent=en?'Stop narration':'Detener narración';}
-        function openStoryPlace(id){closeStoryModal();const index=locations.findIndex(loc=>loc.id===id);if(index>=0){selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}}
+        function openStoryPlace(id){closeStoryModal();const index=locations.findIndex(loc=>loc.id===id);if(index>=0){selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}}
         async function shareCurrentStory(){if(!currentStory)return;const title=(currentLang==='en'&&currentStory.titleEn)||currentStory.title,url=`${location.origin}${location.pathname}#historias`,data={title,text:title,url};try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(`${title} ${url}`);showToast(currentLang==='en'?'Link copied':'Enlace copiado');}}catch(_){}}
 
         function renderEverything() {
@@ -5526,7 +5532,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(category==='aliado')return{color:'#7c3aed',glow:'rgba(124,58,237,.30)'};
             return{color:'#f59e0b',glow:'rgba(245,158,11,.30)'};
         }
-        function openCategoryList(category){const button=[...document.querySelectorAll('.filter-btn')].find(item=>item.dataset.placeCategory===category)||null;filterItems(category,button);document.getElementById('establecimientos')?.scrollIntoView({behavior:'smooth',block:'start'});}
+        function openCategoryList(category){window.VisitaLojaMobileBrowse?.open('establecimientos');const button=[...document.querySelectorAll('.filter-btn')].find(item=>item.dataset.placeCategory===category)||null;filterItems(category,button);document.getElementById('establecimientos')?.scrollIntoView({behavior:'smooth',block:'start'});}
 
         function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);button.setAttribute('aria-pressed',String(active));});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels=currentLang==='en'?{all:'All points',food:'Food & dining',stay:'Accommodation',tourism:'Attractions',partners:'Partner brands'}:{all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;const legend=document.getElementById('mapLegendPanel');if(legend&&!legend.classList.contains('vl113-map-toolbar'))legend.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
 
@@ -5692,6 +5698,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(activeMapGroup!=='all')filterMapGroup(activeMapGroup);
             else if(userMarkerInstance) userMarkerInstance.addTo(markersLayer);
 
+            window.dispatchEvent(new Event('visitaloja:places-rendered'));
             renderAdminLocationsList();
             updatePassportUI();
             window.VisitaLojaHomepage?.apply();
@@ -6108,11 +6115,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         let fiavlAgendaLimit = fiavlAgendaPageSize;
 
         function resetFiavlAgendaPage() {
+            window.VisitaLojaMobileAgenda?.reset();
             fiavlAgendaLimit = fiavlAgendaPageSize;
             renderAgendaUI();
         }
 
         function showMoreFiavlAgenda() {
+            if (window.VisitaLojaMobileAgenda?.more()) { renderAgendaUI(); return; }
             fiavlAgendaLimit += fiavlAgendaPageSize;
             renderAgendaUI();
         }
@@ -6194,6 +6203,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             showToast(currentLang==='en'?'Event ready to add to your calendar':'Evento listo para añadir a tu calendario');
         }
 
+        document.addEventListener('visitaloja:mobile-agenda-refresh', () => renderAgendaUI());
+
         function renderAgendaUI() {
             const agendaContainer = document.getElementById('agendaGridContainer');
             if (!agendaContainer) return;
@@ -6231,16 +6242,22 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 days.forEach(day => dateFilter.add(new Option(formatFestivalDay(day), day)));
             }
             [...dateFilter.options].slice(dateLabels.length).forEach(option => option.textContent = formatFestivalDay(option.value));
-            const visibleItems = baseItems.filter(({event})=>{
+            let visibleItems = baseItems.filter(({event})=>{
                 const group=itemGroup({event}),matchesDate=!dateFilter||dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value || event.date===dateFilter.value);
                 const text=[event.title,event.titleEn,event.desc,event.descEn,event.description,event.location,event.place,event.type,event.category].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
                 return matchesDate&&(!query||text.includes(query));
             })
                 .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')) || (fiavlPreviewEvents.length ? String(a.event.time || '').localeCompare(String(b.event.time || '')) : 0));
 
+            const mobileAgenda = window.VisitaLojaMobileAgenda;
+            const mobileAgendaActive = mobileAgenda?.active() === true;
+            visibleItems = mobileAgenda?.select(visibleItems, {saved: agendaViewMode === 'saved', now: Date.now()}) || visibleItems;
+            mobileAgenda?.onRender(agendaViewMode === 'saved');
+            const pageLimit = mobileAgenda?.pageLimit(fiavlAgendaLimit) || fiavlAgendaLimit;
+
             if(document.getElementById('agendaResultCount'))document.getElementById('agendaResultCount').textContent=currentLang==='en'?`${visibleItems.length} of ${baseItems.length} events`:`${visibleItems.length} de ${baseItems.length} eventos`;
             const more = document.getElementById('fiavlAgendaMore');
-            more.hidden = !fiavlPreviewEvents.length || visibleItems.length <= fiavlAgendaLimit;
+            more.hidden = (!mobileAgendaActive && !fiavlPreviewEvents.length) || visibleItems.length <= pageLimit;
             more.textContent = currentLang === 'en' ? 'Show more events' : 'Ver más eventos';
             const totalSaved = savedItems.length;
             const allButton = document.getElementById('agendaAllButton');
@@ -6255,8 +6272,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 : (totalSaved === 1 ? '1 evento guardado' : totalSaved + ' eventos guardados');
 
             if (!visibleItems.length && baseItems.length) {
-                agendaContainer.innerHTML=`<p class="vl-agenda-filter-empty">${currentLang==='en'?'No events match these filters. Try another date or search.':'No hay eventos con estos filtros. Prueba otra fecha o búsqueda.'}</p>`;
+                agendaContainer.innerHTML=mobileAgenda?.empty() || `<p class="vl-agenda-filter-empty">${currentLang==='en'?'No events match these filters. Try another date or search.':'No hay eventos con estos filtros. Prueba otra fecha o búsqueda.'}</p>`;
                 renderAdminEventsList();return;
+            }
+            if (!visibleItems.length && mobileAgenda?.empty()) {
+                agendaContainer.innerHTML = mobileAgenda.empty();
+                renderAdminEventsList();
+                return;
             }
             if (!visibleItems.length) {
                 agendaContainer.innerHTML = agendaViewMode === 'saved'
@@ -6273,7 +6295,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 : { today: 'Hoy', week: 'Esta semana', later: 'Más adelante', undated: 'Fecha por confirmar', past: 'Eventos finalizados' };
             let previousGroup = '';
             const cards = [];
-            const page = fiavlPreviewEvents.length ? visibleItems.slice(0, fiavlAgendaLimit) : visibleItems;
+            const page = (mobileAgendaActive || fiavlPreviewEvents.length) ? visibleItems.slice(0, pageLimit) : visibleItems;
             page.forEach(({ kind, event: ev, eventId }) => {
                 const group = itemGroup({ event: ev });
                 if (agendaViewMode === 'saved' && group !== previousGroup) {
@@ -6312,12 +6334,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         <div class="vl-agenda-card-actions">
                             <p class="text-xs text-gray-500 mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${escapeHTML(place)}</p>
                             ${isFestival
-                                ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${festivalMapLinkLabel(ev)}</a>` : ev.route ? `<a href="${fiavlParadeMapUrl}" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs">${currentLang === 'en' ? 'View route on map' : 'Ver recorrido en el mapa'}</a>` : `<span class="border border-gray-200 text-gray-600 px-3 py-2.5 rounded-xl text-center text-xs">${ev.locationPrecision === 'recorrido' ? (currentLang === 'en' ? 'Parade route' : 'Recorrido del desfile') : 'Ubicación pendiente'}</span>`}</div>`
+                                ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');window.VisitaLojaMobileBrowse?.open('festival-live');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${festivalMapLinkLabel(ev)}</a>` : ev.route ? `<a href="${fiavlParadeMapUrl}" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs">${currentLang === 'en' ? 'View route on map' : 'Ver recorrido en el mapa'}</a>` : `<span class="border border-gray-200 text-gray-600 px-3 py-2.5 rounded-xl text-center text-xs">${ev.locationPrecision === 'recorrido' ? (currentLang === 'en' ? 'Parade route' : 'Recorrido del desfile') : 'Ubicación pendiente'}</span>`}</div>`
                                 : `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-regular fa-calendar-plus mr-1"></i> ${currentLang === 'en' ? 'Calendar' : 'Calendario'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-route mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : `<span class="border border-gray-200 text-gray-400 px-3 py-2.5 rounded-xl text-center text-xs">${currentLang === 'en' ? 'Location pending' : 'Ubicación pendiente'}</span>`}</div>`}
                         </div></div>
                     </article>`);
             });
             agendaContainer.innerHTML = cards.join('');
+            mobileAgenda?.enhance(page);
             renderAdminEventsList();
         }
 
@@ -7876,6 +7899,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             stopAudioGuide();
             const loc = locations[index];
             if(!loc) return;
+            if (shouldCenterMap) window.VisitaLojaMobileBrowse?.open('mapa');
             currentLocationIndex = index;
             currentLocationId = loc.id || null;
             document.getElementById('previewFavBtn')?.removeAttribute('disabled');
@@ -7979,11 +8003,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             }
 
             if(shouldCenterMap&&map){const coordinates=publicPlaceCoordinates(loc);if(coordinates)map.setView(coordinates,16,{animate:true,duration:0.5});else map.closePopup?.();}
+            window.VisitaLojaMobilePlaces?.selection(loc.id, trackSelection);
         }
 
         function simulateMapClick(index) {
             const loc = locations[index];
             if (!loc) return;
+            window.VisitaLojaMobileBrowse?.open('mapa');
             const section = document.getElementById('mapa');
             section?.classList.add('vl192-selected-stop');
             selectLocation(index, false);
@@ -8226,7 +8252,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function renderPassportNextStops(visitedHotels=[],visitedFood=[]){const container=document.getElementById('passportNextStops');if(!container)return;const gastronomicCategories=new Set(['hueca','cafe','urbana','heladeria','panaderia','bar']);let candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&(passportMode==='turista'?(visitedHotels.length<1?item.location.category==='hotel':gastronomicCategories.has(item.location.category)):gastronomicCategories.has(item.location.category)));if(!candidates.length&&passportMode==='turista')candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&gastronomicCategories.has(item.location.category));if(userCoords)candidates.sort((a,b)=>calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(a.location.lat),Number(a.location.lng))-calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(b.location.lat),Number(b.location.lng)));const next=candidates.slice(0,2);container.innerHTML=next.length?next.map(({location,index})=>`<button type="button" onclick="openPassportNextStop(${index})" class="w-full bg-white border border-brandGold/30 rounded-xl p-3 text-left flex items-center gap-3 hover:border-brandGold"><span class="w-9 h-9 rounded-full bg-brandGold/15 text-brandGold grid place-items-center"><i class="fa-solid ${escapeHTML(location.iconClass||'fa-location-dot')}"></i></span><span class="min-w-0 flex-grow"><b class="block text-xs truncate">${escapeHTML(location.title||'Parada Visita Loja')}</b><span class="text-[10px] text-gray-500">${location.category==='hotel'?'Parada de hospedaje':'Parada gastronómica'} · Ver ubicación</span></span><i class="fa-solid fa-chevron-right text-brandGold"></i></button>`).join(''):'<p class="text-xs text-gray-500 bg-gray-100 rounded-xl p-3">Ya visitaste todas las paradas disponibles para este modo.</p>';}
 
-        function openPassportNextStop(index){closeModal('pasaporteModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});showToast('📍 Visita esta parada y escanea su QR para obtener el sello.');}
+        function openPassportNextStop(index){closeModal('pasaporteModal');selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});showToast('📍 Visita esta parada y escanea su QR para obtener el sello.');}
 
         function resetPassportProgess() {
             localStorage.removeItem('cyc_visited_locations'); 
@@ -8316,7 +8342,35 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         let placeDiscoveryCategory = 'all';
         for(const canton of window.ChabaquitoPlaceConfig.CANTONS){const option=new Option(canton.name,canton.id);document.getElementById('placeCantonFilter').append(option);}
-        function openSavedPlaces(){clearAllPlaceFilters();document.getElementById('placeSavedFilter').checked=true;searchItems();document.getElementById('establecimientos').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
+        function openSavedPlaces(){window.VisitaLojaMobileBrowse?.open('establecimientos');clearAllPlaceFilters();document.getElementById('placeSavedFilter').checked=true;searchItems();document.getElementById('establecimientos').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
+        document.addEventListener('visitaloja:mobile-place-filter', event => {
+            const {action, filter, state} = event.detail || {};
+            if (action === 'clear') {
+                clearAllPlaceFilters();
+                return;
+            }
+            if (action === 'restore' && state) {
+                document.getElementById('searchInput').value = String(state.query || '').slice(0, 300);
+                document.getElementById('placeCantonFilter').value = String(state.cantonId || '');
+                document.getElementById('placeOpenFilter').checked = state.openOnly === true;
+                document.getElementById('placeSavedFilter').checked = state.savedOnly === true;
+                filterItems(String(state.category || 'all'), null);
+                return;
+            }
+            if (action === 'remove') {
+                if (filter === 'category') {
+                    filterItems('all', null);
+                    return;
+                }
+                const fields = {query: 'searchInput', cantonId: 'placeCantonFilter', openOnly: 'placeOpenFilter', savedOnly: 'placeSavedFilter'};
+                const element = document.getElementById(fields[filter]);
+                if (!element) return;
+                if (element.type === 'checkbox') element.checked = false;
+                else element.value = '';
+            }
+            if (action === 'refresh' || action === 'remove') searchItems();
+        });
+
         function clearAllPlaceFilters() {
             document.getElementById('placeSavedFilter').checked=false;
             document.getElementById('placeCantonFilter').value='';
@@ -8330,6 +8384,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function searchFromWelcome(event) {
             event.preventDefault();
             const query = document.getElementById('welcomeSearch').value.trim();
+            window.VisitaLojaMobileBrowse?.open('establecimientos');
             runSmartSearch(query);
             document.getElementById('establecimientos').scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
         }
@@ -8354,6 +8409,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const en=currentLang==='en',emptySaved=savedOnly&&savedCount===0;document.getElementById('placeEmptyTitle').textContent=emptySaved?(en?'No saved places yet':'Todavía no tienes lugares guardados'):(savedOnly?(en?'No favorites match these filters':'No hay favoritos que coincidan con estos filtros'):(en?'No results found for that search.':'No encontramos resultados para esa búsqueda.'));document.getElementById('placeEmptyHelp').textContent=emptySaved?(en?'Tap the leaf on a place card to save it and find it here.':'Toca la hoja en la tarjeta de un lugar para guardarlo y encontrarlo aquí.'):(en?'Try another canton, category or fewer search words.':'Prueba con otro cantón, una categoría diferente o menos palabras.');
             window.VisitaLojaSearchSuggestions?.render(locations,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow,visible,en);
             const status=document.getElementById('smartSearchStatus');if(status)status.textContent=currentLang==='en'?`${visible} places match your filters.`:`${visible===1?'1 parada coincide':visible+' paradas coinciden'} con tu búsqueda y filtros.`;
+            window.VisitaLojaMobilePlaces?.filtersChanged({query,cantonId,openOnly,savedOnly,category:placeDiscoveryCategory});
         }
 
         function filterItems(category, btnElement) {
@@ -8395,7 +8451,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function openAccountFromFloatingInvite() {
             if (visitorAuth?.currentUser && currentVisitorProfile?.profileComplete) {
-                document.getElementById('pasaporte')?.scrollIntoView({ behavior: 'smooth' });
+                window.VisitaLojaMobileBrowse?.open('pasaporte');document.getElementById('pasaporte')?.scrollIntoView({ behavior: 'smooth' });
                 setTimeout(() => openModal('pasaporteModal'), 450);
                 return;
             }
@@ -8639,7 +8695,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 return `<article class="${position===0?'bg-gradient-to-br from-sky-50 to-cyan-50 border-2 border-sky-500':'bg-white border border-sky-200'} rounded-2xl p-4 shadow-sm">${position===0?'<p class="text-[10px] uppercase tracking-widest text-sky-700 font-black mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Tu mejor opción ahora</p>':''}<div class="flex items-start gap-3"><span class="w-11 h-11 flex-shrink-0 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid ${icon}"></i></span><div class="min-w-0 flex-grow"><div class="flex items-center justify-between gap-2"><h4 class="font-black truncate">${title}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 rounded-full px-2 py-1 font-black">ABIERTO</span></div><p class="text-xs text-gray-600 mt-1">${description}</p><p class="text-[11px] text-gray-500 mt-1 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${address}${distanceLabel}</p>${passportLabel}</div></div><div class="grid grid-cols-2 gap-2 mt-3"><button type="button" onclick="selectNowRecommendation(${index})" class="bg-sky-600 text-white rounded-xl py-2.5 text-xs font-black">Ver detalle</button><button type="button" onclick="openNowDirections(${index})" class="border border-sky-500 text-sky-700 rounded-xl py-2.5 text-xs font-black">Cómo llegar</button></div></article>`;
             }).join('');
         }
-        function selectNowRecommendation(index){closeModal('whatToDoNowModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
+        function selectNowRecommendation(index){closeModal('whatToDoNowModal');selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
         function openNowDirections(index){const location=locations[index];if(!location)return;window.open(publicPlaceDirectionsUrl(location,userCoords),'_blank','noopener,noreferrer');}
 
         function generateSmartRoute(event) {
@@ -8765,7 +8821,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const locationIndex = locations.findIndex(location => location.id === stop.id);
             if (locationIndex >= 0) selectLocation(locationIndex);
             closeModal('smartRouteModal');
-            document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth' });
+            window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth' });
         }
 
         function addSmartRouteToFavorites() {
