@@ -1,0 +1,58 @@
+/* Day-first mobile agenda, over the existing event data and saved-event actions. */
+.vl-mobile-agenda-header { display: none; }
+@media (max-width: 767px) {
+ html.vl-mobile-browse #agenda .vl-mobile-agenda-header { display: block; margin-bottom: 18px; }
+ html.vl-mobile-browse #agenda .vl-mobile-agenda-header h2 { font-size: 28px; line-height: 1.15; font-weight: 850; color: #183c61; margin: 5px 0 8px; }
+ .vl-mobile-agenda-eyebrow { color: #0b64b6; font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: .1em; }
+ [data-mobile-agenda-date] { color: #5b6e82; font-size: 14px; line-height: 1.5; }
+ .vl-mobile-agenda-days { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 7px; margin-top: 16px; }
+ .vl-mobile-agenda-days[hidden], .vl-mobile-agenda-date-input[hidden] { display: none; }
+ .vl-mobile-agenda-days button { min-height: 46px; padding: 9px 6px; border: 1px solid #d4e2f1; border-radius: 11px; color: #1b4c7c; background: #f4f8fd; font-size: 13px; font-weight: 750; }
+ .vl-mobile-agenda-days [aria-pressed="true"] { color: #fff; background: #075eb5; border-color: #075eb5; }
+ .vl-mobile-agenda-date-input { display: block; margin-top: 14px; font-size: 13px; color: #234b71; }
+ .vl-mobile-agenda-date-input input { display: block; margin-top: 6px; min-height: 46px; width: 100%; padding: 8px 12px; border: 1px solid #c6d9ed; border-radius: 10px; color: #193d61; background: #fff; font-size: 16px; }
+ html.vl-mobile-browse #agenda :is(.vl40-agenda-intro, .vl-agenda-legacy-header, .vl-agenda-desktop-date) { display: none !important; }
+ html.vl-mobile-browse #agenda #fiavlPreviewAgendaFilters { display: block !important; margin-bottom: 18px !important; padding: 12px !important; border-color: #d4e2f1; }
+ html.vl-mobile-browse #agenda #fiavlPreviewAgendaFilters > p:first-child { display: none; }
+ html.vl-mobile-browse #agenda #agendaSearch { min-height: 44px; font-size: 16px; }
+ html.vl-mobile-browse #agenda #agendaAllButton, html.vl-mobile-browse #agenda #agendaSavedButton { min-height: 44px; }
+ .vl-mobile-event-summary { display: grid; grid-template-columns: 66px minmax(0, 1fr); gap: 12px; grid-column: 1 / -1; padding-right: 38px; }
+ .vl-mobile-event-clock { border-right: 1px solid #dce6f2; padding-right: 9px; }
+ .vl-mobile-event-clock strong { display: block; font-size: 18px; font-weight: 850; color: #075eb5; }
+ .vl-mobile-event-clock small { display: block; font-size: 10px; color: #65798c; margin-top: 6px; line-height: 1.4; }
+ .vl-mobile-event-type { display: block; color: #5c6c80; font-size: 10px; font-weight: 750; margin-bottom: 4px; }
+ .vl-mobile-event-summary h3 { font-size: 16px; line-height: 1.35; font-weight: 800; color: #193e63; margin: 0 0 6px; }
+ .vl-mobile-event-summary p { font-size: 12px; line-height: 1.5; color: #61758a; overflow-wrap: anywhere; }
+ .vl-mobile-event-details { grid-row: 2; grid-column: 1 / -1; min-width: 0; }
+ .vl-mobile-event-details > summary { display: flex; align-items: center; min-height: 44px; padding: 8px 10px; border: 1px solid #d6e3f2; border-radius: 10px; background: #f4f8fd; color: #1d548c; font-size: 12px; font-weight: 700; cursor: pointer; list-style: none; }
+ .vl-mobile-event-details > summary::-webkit-details-marker { display: none; }
+ [data-mobile-event-directions] .vl-mobile-event-details > summary { max-width: calc(50% - 4px); }
+ .vl-mobile-event-directions { grid-row: 2; grid-column: 2; align-self: start; z-index: 1; display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 10px; padding: 8px; background: #075eb5; color: #fff; font-size: 12px; font-weight: 750; text-align: center; }
+ .vl-mobile-agenda-empty { padding: 24px 16px; border: 1px solid #d7e4f3; border-radius: 15px; background: #f5f9fe; }
+ .vl-mobile-agenda-empty h3 { font-size: 17px; font-weight: 800; color: #1b4269; }
+ .vl-mobile-agenda-empty p { font-size: 13px; color: #596e82; line-height: 1.6; margin-top: 8px; }
+ .vl-mobile-agenda-empty button { min-height: 44px; margin: 12px 8px 0 0; padding: 8px 12px; border-radius: 9px; background: #075eb5; color: #fff; font-size: 13px; }
+}
+@layer vl-layout {
+ @media (max-width: 767px) {
+  html.vl-mobile-browse body #agenda #agendaGridContainer { display: grid !important; grid-template-columns: 1fr !important; gap: 12px !important; }
+  html.vl-mobile-browse body #agenda #agendaGridContainer > .vl-agenda-card { position: relative !important; display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px 8px !important; min-height: 0 !important; padding: 15px !important; border-radius: 15px !important; align-content: start; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-summary h3 { font-size: 16px !important; line-height: 1.35 !important; margin: 0 0 6px !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-save { position: absolute !important; top: 9px !important; right: 9px !important; min-height: 44px !important; width: 44px !important; height: 44px !important; border-radius: 50%; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-details .vl-agenda-media { height: auto !important; min-height: 0 !important; margin-top: 12px; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-details .vl-agenda-media img { width: 100% !important; height: auto !important; max-height: 360px !important; object-fit: contain !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-details .vl-agenda-media > span { display: none !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-details .vl-agenda-calendar-art { display: none !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-details .vl-agenda-card-body { padding: 12px 0 0 !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-details .vl-agenda-card-body > :is(span, h3) { display: none !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-details .vl-agenda-card-actions { padding: 12px 0 0 !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-details .vl-agenda-card-actions p { display: none !important; }
+ }
+}
+@layer vl-colors {
+ @media (max-width: 767px) {
+  html.vl-mobile-browse body #agenda :is(.vl-mobile-agenda-days [aria-pressed="true"], .vl-mobile-agenda-empty button) { --vl-text: #fff; --vl-accent: #fff; color: #fff !important; background: #075eb5 !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-directions { --vl-text: #fff; --vl-accent: #fff; color: #fff !important; background: #075eb5 !important; }
+  html.vl-mobile-browse body #agenda .vl-mobile-event-directions :is(i, span) { color: #fff !important; }
+ }
+}

@@ -468,6 +468,8 @@
     <script defer src="js/mobile-browse.js?v=8"></script>
     <link rel="stylesheet" href="css/mobile-place-experience.css?v=1">
     <script defer src="js/mobile-place-experience.js?v=1"></script>
+    <link rel="stylesheet" href="css/mobile-agenda.css?v=1">
+    <script defer src="js/mobile-agenda.js?v=1"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -6113,11 +6115,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         let fiavlAgendaLimit = fiavlAgendaPageSize;
 
         function resetFiavlAgendaPage() {
+            window.VisitaLojaMobileAgenda?.reset();
             fiavlAgendaLimit = fiavlAgendaPageSize;
             renderAgendaUI();
         }
 
         function showMoreFiavlAgenda() {
+            if (window.VisitaLojaMobileAgenda?.more()) { renderAgendaUI(); return; }
             fiavlAgendaLimit += fiavlAgendaPageSize;
             renderAgendaUI();
         }
@@ -6199,6 +6203,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             showToast(currentLang==='en'?'Event ready to add to your calendar':'Evento listo para añadir a tu calendario');
         }
 
+        document.addEventListener('visitaloja:mobile-agenda-refresh', () => renderAgendaUI());
+
         function renderAgendaUI() {
             const agendaContainer = document.getElementById('agendaGridContainer');
             if (!agendaContainer) return;
@@ -6236,16 +6242,22 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 days.forEach(day => dateFilter.add(new Option(formatFestivalDay(day), day)));
             }
             [...dateFilter.options].slice(dateLabels.length).forEach(option => option.textContent = formatFestivalDay(option.value));
-            const visibleItems = baseItems.filter(({event})=>{
+            let visibleItems = baseItems.filter(({event})=>{
                 const group=itemGroup({event}),matchesDate=!dateFilter||dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value || event.date===dateFilter.value);
                 const text=[event.title,event.titleEn,event.desc,event.descEn,event.description,event.location,event.place,event.type,event.category].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
                 return matchesDate&&(!query||text.includes(query));
             })
                 .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')) || (fiavlPreviewEvents.length ? String(a.event.time || '').localeCompare(String(b.event.time || '')) : 0));
 
+            const mobileAgenda = window.VisitaLojaMobileAgenda;
+            const mobileAgendaActive = mobileAgenda?.active() === true;
+            visibleItems = mobileAgenda?.select(visibleItems, {saved: agendaViewMode === 'saved', now: Date.now()}) || visibleItems;
+            mobileAgenda?.onRender(agendaViewMode === 'saved');
+            const pageLimit = mobileAgenda?.pageLimit(fiavlAgendaLimit) || fiavlAgendaLimit;
+
             if(document.getElementById('agendaResultCount'))document.getElementById('agendaResultCount').textContent=currentLang==='en'?`${visibleItems.length} of ${baseItems.length} events`:`${visibleItems.length} de ${baseItems.length} eventos`;
             const more = document.getElementById('fiavlAgendaMore');
-            more.hidden = !fiavlPreviewEvents.length || visibleItems.length <= fiavlAgendaLimit;
+            more.hidden = (!mobileAgendaActive && !fiavlPreviewEvents.length) || visibleItems.length <= pageLimit;
             more.textContent = currentLang === 'en' ? 'Show more events' : 'Ver más eventos';
             const totalSaved = savedItems.length;
             const allButton = document.getElementById('agendaAllButton');
@@ -6260,8 +6272,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 : (totalSaved === 1 ? '1 evento guardado' : totalSaved + ' eventos guardados');
 
             if (!visibleItems.length && baseItems.length) {
-                agendaContainer.innerHTML=`<p class="vl-agenda-filter-empty">${currentLang==='en'?'No events match these filters. Try another date or search.':'No hay eventos con estos filtros. Prueba otra fecha o búsqueda.'}</p>`;
+                agendaContainer.innerHTML=mobileAgenda?.empty() || `<p class="vl-agenda-filter-empty">${currentLang==='en'?'No events match these filters. Try another date or search.':'No hay eventos con estos filtros. Prueba otra fecha o búsqueda.'}</p>`;
                 renderAdminEventsList();return;
+            }
+            if (!visibleItems.length && mobileAgenda?.empty()) {
+                agendaContainer.innerHTML = mobileAgenda.empty();
+                renderAdminEventsList();
+                return;
             }
             if (!visibleItems.length) {
                 agendaContainer.innerHTML = agendaViewMode === 'saved'
@@ -6278,7 +6295,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 : { today: 'Hoy', week: 'Esta semana', later: 'Más adelante', undated: 'Fecha por confirmar', past: 'Eventos finalizados' };
             let previousGroup = '';
             const cards = [];
-            const page = fiavlPreviewEvents.length ? visibleItems.slice(0, fiavlAgendaLimit) : visibleItems;
+            const page = (mobileAgendaActive || fiavlPreviewEvents.length) ? visibleItems.slice(0, pageLimit) : visibleItems;
             page.forEach(({ kind, event: ev, eventId }) => {
                 const group = itemGroup({ event: ev });
                 if (agendaViewMode === 'saved' && group !== previousGroup) {
@@ -6323,6 +6340,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                     </article>`);
             });
             agendaContainer.innerHTML = cards.join('');
+            mobileAgenda?.enhance(page);
             renderAdminEventsList();
         }
 
