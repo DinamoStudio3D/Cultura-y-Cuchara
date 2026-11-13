@@ -45,6 +45,26 @@
     back.className = 'vl-mobile-section-back';
     back.innerHTML = '<a href="#inicio"><span aria-hidden="true">‹</span> Volver al inicio</a><span></span>';
     main.prepend(back);
+    const controls = document.querySelector('#establecimientos .discovery-controls');
+    let filters;
+    if (controls) {
+        filters = document.createElement('details');
+        filters.className = 'vl-mobile-search-filters';
+        filters.innerHTML = '<summary>Cantón y horario <span aria-hidden="true">⌄</span></summary>';
+        controls.before(filters);
+        filters.append(controls);
+        filters.open = !media.matches;
+    }
+    function syncTyping() {
+        const field = document.activeElement;
+        const editing = field && (
+            field.tagName === 'TEXTAREA' ||
+            field.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'submit', 'range', 'file', 'color'].includes(field.type)
+        );
+        document.documentElement.classList.toggle('vl-mobile-typing', Boolean(media.matches && editing));
+    }
+    document.addEventListener('focusin', syncTyping);
+    document.addEventListener('focusout', () => requestAnimationFrame(syncTyping));
 
     function rootFor(id) {
         const element = document.getElementById(id);
@@ -56,15 +76,14 @@
         const selected = rootFor(current);
         const home = current === 'inicio' || !selected;
         for (const root of roots()) {
-            const visible = home ? homeIds.has(root.id) : root === selected ||
-                (current === 'establecimientos' && root.id === 'categorias');
+            const visible = home ? homeIds.has(root.id) : root === selected;
             root.toggleAttribute('data-mobile-away', !visible);
         }
         hub.hidden = !home;
         back.hidden = home;
         back.querySelector('span:last-child').textContent = selected?.querySelector('h2')?.textContent?.trim() || '';
         for (const link of bar.querySelectorAll('a')) {
-            const selectedLink = link.hash === '#' + (home ? 'inicio' : current);
+            const selectedLink = link.hash === '#' + (home ? 'inicio' : selected?.id === 'categorias' ? 'establecimientos' : selected?.id);
             if (selectedLink) link.setAttribute('aria-current', 'page');
             else link.removeAttribute('aria-current');
         }
@@ -72,7 +91,7 @@
             selected?.classList.add('active');
             requestAnimationFrame(() => {
                 // Leaflet measures its container only after the section becomes visible.
-                if (current === 'mapa') window.dispatchEvent(new Event('resize'));
+                if (selected?.id === 'mapa') window.dispatchEvent(new Event('resize'));
             });
         }
     }
@@ -103,7 +122,11 @@
         }
     }
     window.addEventListener('hashchange', fromHash);
-    media.addEventListener('change', render);
+    media.addEventListener('change', () => {
+        if (filters) filters.open = !media.matches;
+        syncTyping();
+        render();
+    });
     // Public sections can be inserted after Firestore settings arrive.
     new MutationObserver(render).observe(main, { childList: true });
     fromHash();
