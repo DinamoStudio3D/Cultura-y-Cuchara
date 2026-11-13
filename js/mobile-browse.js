@@ -3,7 +3,7 @@
     const main = document.getElementById('main-content');
     if (!main || document.documentElement.classList.contains('fiavl-program-page')) return;
     const media = matchMedia('(max-width: 767px)');
-    const homeIds = new Set(['inicio', 'mobileExploreHub', 'registeredBrands', 'banco-de-loja-destacado', 'patrocinadores']);
+    const homeIds = new Set(['inicio', 'mobileExploreHub', 'registeredBrands', 'banco-de-loja-destacado']);
     let current = 'inicio';
     const roots = () => [
         ...main.querySelectorAll(':scope > section'),
