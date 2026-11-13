@@ -465,7 +465,7 @@
 <script src="/js/popup-schedule.js?v=2"></script>
 <link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
     <link rel="stylesheet" href="css/mobile-browse.css?v=3">
-    <script defer src="js/mobile-browse.js?v=7"></script>
+    <script defer src="js/mobile-browse.js?v=5"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -2680,7 +2680,7 @@
 
     <!-- Toast Notification -->
     <div id="dataSyncStatus" role="status" aria-live="polite" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-[65] max-w-[calc(100%-2rem)] bg-brandDark/95 text-white border border-white/15 rounded-full px-4 py-2 text-xs font-bold shadow-xl backdrop-blur whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-down mr-2 text-cyan-300"></i><span>Actualizando paradas…</span></div>
-    <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
+    <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="pointer-events-none fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
 
@@ -3298,13 +3298,6 @@
             const authMessage = document.getElementById('visitorAuthMessage');
             if (authMessage) authMessage.classList.add('hidden');
         }
-
-        document.addEventListener('click', event => {
-            const button = event.target.closest('[data-mobile-account]');
-            if (!button) return;
-            event.preventDefault();
-            openAccountModal();
-        }, true);
 
         function openAccountModal() {
             const modal = document.getElementById('accountModal');

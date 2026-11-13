@@ -34,7 +34,8 @@
         ['establecimientos', 'fa-compass', 'Explorar'],
         ['mapa', 'fa-map-location-dot', 'Mapa']
     ].map(([id, icon, label]) => '<a href="#' + id + '"><i class="fa-solid ' + icon + '" aria-hidden="true"></i><span>' + label + '</span></a>').join('') +
-        '<button type="button" data-mobile-account aria-haspopup="dialog" aria-controls="accountModal"><i class="fa-solid fa-circle-user" aria-hidden="true"></i><span>Mi cuenta</span></button>';
+        '<button type="button" aria-haspopup="dialog" aria-controls="accountModal"><i class="fa-solid fa-circle-user" aria-hidden="true"></i><span>Mi cuenta</span></button>';
+    bar.querySelector('button').addEventListener('click', () => document.getElementById('accountNavButton')?.click());
     document.body.append(bar);
     const back = document.createElement('div');
     back.className = 'vl-mobile-section-back';
