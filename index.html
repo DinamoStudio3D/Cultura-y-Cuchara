@@ -465,7 +465,9 @@
 <script src="/js/popup-schedule.js?v=2"></script>
 <link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
     <link rel="stylesheet" href="css/mobile-browse.css?v=3">
-    <script defer src="js/mobile-browse.js?v=5"></script>
+    <script defer src="js/mobile-browse.js?v=8"></script>
+    <link rel="stylesheet" href="css/mobile-place-experience.css?v=1">
+    <script defer src="js/mobile-place-experience.js?v=1"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -4972,7 +4974,7 @@
         function maybeTriggerPopup(settings) {
             if(!window.VisitaLojaPopupController){
                 window.VisitaLojaPopupController=window.VisitaLojaPopupSchedule.create({
-                    show(settings){if(document.hidden||!window.VisitaLojaPromoDialog||!document.getElementById('accountModal').classList.contains('hidden'))return false;
+                    show(settings){if(window.VisitaLojaMobilePlaces?.canShowNotice('promotion') === false)return false;if(document.hidden||!window.VisitaLojaPromoDialog||!document.getElementById('accountModal').classList.contains('hidden'))return false;
                 const titleEl = document.getElementById('popupTitleText');
                 const descEl = document.getElementById('popupDescText');
                 const imgEl = document.getElementById('popupImgEl');
@@ -5694,6 +5696,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(activeMapGroup!=='all')filterMapGroup(activeMapGroup);
             else if(userMarkerInstance) userMarkerInstance.addTo(markersLayer);
 
+            window.dispatchEvent(new Event('visitaloja:places-rendered'));
             renderAdminLocationsList();
             updatePassportUI();
             window.VisitaLojaHomepage?.apply();
@@ -7982,11 +7985,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             }
 
             if(shouldCenterMap&&map){const coordinates=publicPlaceCoordinates(loc);if(coordinates)map.setView(coordinates,16,{animate:true,duration:0.5});else map.closePopup?.();}
+            window.VisitaLojaMobilePlaces?.selection(loc.id, trackSelection);
         }
 
         function simulateMapClick(index) {
             const loc = locations[index];
             if (!loc) return;
+            window.VisitaLojaMobileBrowse?.open('mapa');
             const section = document.getElementById('mapa');
             section?.classList.add('vl192-selected-stop');
             selectLocation(index, false);
@@ -8320,6 +8325,34 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         let placeDiscoveryCategory = 'all';
         for(const canton of window.ChabaquitoPlaceConfig.CANTONS){const option=new Option(canton.name,canton.id);document.getElementById('placeCantonFilter').append(option);}
         function openSavedPlaces(){window.VisitaLojaMobileBrowse?.open('establecimientos');clearAllPlaceFilters();document.getElementById('placeSavedFilter').checked=true;searchItems();document.getElementById('establecimientos').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
+        document.addEventListener('visitaloja:mobile-place-filter', event => {
+            const {action, filter, state} = event.detail || {};
+            if (action === 'clear') {
+                clearAllPlaceFilters();
+                return;
+            }
+            if (action === 'restore' && state) {
+                document.getElementById('searchInput').value = String(state.query || '').slice(0, 300);
+                document.getElementById('placeCantonFilter').value = String(state.cantonId || '');
+                document.getElementById('placeOpenFilter').checked = state.openOnly === true;
+                document.getElementById('placeSavedFilter').checked = state.savedOnly === true;
+                filterItems(String(state.category || 'all'), null);
+                return;
+            }
+            if (action === 'remove') {
+                if (filter === 'category') {
+                    filterItems('all', null);
+                    return;
+                }
+                const fields = {query: 'searchInput', cantonId: 'placeCantonFilter', openOnly: 'placeOpenFilter', savedOnly: 'placeSavedFilter'};
+                const element = document.getElementById(fields[filter]);
+                if (!element) return;
+                if (element.type === 'checkbox') element.checked = false;
+                else element.value = '';
+            }
+            if (action === 'refresh' || action === 'remove') searchItems();
+        });
+
         function clearAllPlaceFilters() {
             document.getElementById('placeSavedFilter').checked=false;
             document.getElementById('placeCantonFilter').value='';
@@ -8358,6 +8391,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const en=currentLang==='en',emptySaved=savedOnly&&savedCount===0;document.getElementById('placeEmptyTitle').textContent=emptySaved?(en?'No saved places yet':'Todavía no tienes lugares guardados'):(savedOnly?(en?'No favorites match these filters':'No hay favoritos que coincidan con estos filtros'):(en?'No results found for that search.':'No encontramos resultados para esa búsqueda.'));document.getElementById('placeEmptyHelp').textContent=emptySaved?(en?'Tap the leaf on a place card to save it and find it here.':'Toca la hoja en la tarjeta de un lugar para guardarlo y encontrarlo aquí.'):(en?'Try another canton, category or fewer search words.':'Prueba con otro cantón, una categoría diferente o menos palabras.');
             window.VisitaLojaSearchSuggestions?.render(locations,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow,visible,en);
             const status=document.getElementById('smartSearchStatus');if(status)status.textContent=currentLang==='en'?`${visible} places match your filters.`:`${visible===1?'1 parada coincide':visible+' paradas coinciden'} con tu búsqueda y filtros.`;
+            window.VisitaLojaMobilePlaces?.filtersChanged({query,cantonId,openOnly,savedOnly,category:placeDiscoveryCategory});
         }
 
         function filterItems(category, btnElement) {

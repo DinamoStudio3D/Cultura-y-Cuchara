@@ -31,7 +31,7 @@
     bar.setAttribute('aria-label', 'Navegación móvil');
     bar.innerHTML = [
         ['inicio', 'fa-house', 'Inicio'],
-        ['establecimientos', 'fa-compass', 'Explorar'],
+        ['establecimientos', 'fa-compass', 'Paradas'],
         ['mapa', 'fa-map-location-dot', 'Mapa']
     ].map(([id, icon, label]) => '<a href="#' + id + '"><i class="fa-solid ' + icon + '" aria-hidden="true"></i><span>' + label + '</span></a>').join('') +
         '<button type="button" aria-haspopup="dialog" aria-controls="accountModal"><i class="fa-solid fa-circle-user" aria-hidden="true"></i><span>Mi cuenta</span></button>';
@@ -93,8 +93,11 @@
     }
     function open(id) {
         if (!media.matches || !document.getElementById(id)) return;
+        const previous = current;
+        window.VisitaLojaMobilePlaces?.beforeSectionChange(previous, id);
         current = id;
         render();
+        window.VisitaLojaMobilePlaces?.afterSectionChange(previous, id);
         if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
     }
     window.VisitaLojaMobileBrowse = { open };
@@ -107,12 +110,15 @@
         if (id === 'inicio' || rootFor(id)) open(id);
     }, true);
     function fromHash() {
+        const previous = current;
         let id;
         try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
         if (!id) current = 'inicio';
         else if (id === 'inicio' || rootFor(id)) current = id;
         else current = 'inicio';
+        if (previous !== current) window.VisitaLojaMobilePlaces?.beforeSectionChange(previous, current);
         render();
+        if (previous !== current) window.VisitaLojaMobilePlaces?.afterSectionChange(previous, current);
         if (media.matches && id && rootFor(id)) {
             requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }));
         }
