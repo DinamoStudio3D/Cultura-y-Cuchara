@@ -30,6 +30,8 @@
   }
   html.vl-mobile-browse body #mapa #mapPreviewCard:is([data-empty="true"], [data-mobile-dismissed="true"]) { display: none !important; }
   html.vl-mobile-browse body #mapa #mapPreviewCard:not([data-mobile-expanded="true"]) > :not(.vl-mobile-map-summary) { display: none !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard:not([data-mobile-expanded="true"]) #previewFavBtn { display: none !important; }
+  html.vl-mobile-browse body #mapa #mapPreviewCard[data-mobile-expanded="true"] { max-height: 75vh !important; max-height: 75dvh !important; }
   html.vl-mobile-browse body #mapa #mapPreviewCard[data-mobile-expanded="true"] #previewFavBtn { top: 154px !important; }
   html.vl-mobile-browse body #mapa #mapPreviewCard .vl-mobile-map-summary { display: grid !important; grid-template-columns: minmax(0, 1fr) 44px; align-items: start; gap: 6px; background: #fff; }
   .vl-mobile-map-summary strong { display: block; color: #193d61; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; }
@@ -50,6 +52,7 @@
  }
 }
 @media (max-width: 767px) {
+ html.vl-mobile-browse body:has(#mapa:not([data-mobile-away]) #mapPreviewCard[data-empty="false"]:not([data-mobile-dismissed="true"])) :is(#welcomeMusicToggle, #accountFloatingInvite, #webMascot, #webMascotRestore) { visibility: hidden !important; pointer-events: none !important; }
  html.vl-mobile-browse .vl-mobile-active-filters:not([hidden]) { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
  .vl-mobile-filter-chips { display: flex; gap: 6px; flex-wrap: wrap; max-width: 100%; }
  .vl-mobile-filter-chips button { max-width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid #c7ddf5; border-radius: 999px; background: #edf5ff; color: #164c80; font-size: 12px; overflow-wrap: anywhere; }
