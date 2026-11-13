@@ -14,20 +14,34 @@
   .vl-mobile-hub .vl-mobile-eyebrow { color: #0962b8; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; }
   .vl-mobile-hub h2 { color: #163a60; font-size: 23px; line-height: 1.2; font-weight: 850; margin: 6px 0 8px; }
   .vl-mobile-hub > p { font-size: 14px; line-height: 1.5; }
-  .vl-mobile-hub-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 18px 0; }
-  .vl-mobile-hub-grid > a { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; padding: 12px; border: 1px solid #dbe6f3; border-radius: 14px; background: #fff; color: #193e64; text-decoration: none; min-height: 130px; }
-  .vl-mobile-hub-grid > a > span:last-child { display: none; }
-  .vl-mobile-hub-grid > a > i { display: grid; place-items: center; flex: 0 0 38px; height: 38px; border-radius: 12px; background: #e8f2ff; color: #0862b6; }
-  .vl-mobile-hub-grid > a:nth-child(3n) > i { color: #795018; background: #fff0cf; }
-  .vl-mobile-hub-grid > a > span:nth-child(2) { flex: 1; }
-  .vl-mobile-hub-grid > a[hidden] { display: none; }
-  .vl-mobile-hub-grid strong, .vl-mobile-hub-grid small { display: block; }
-  .vl-mobile-hub-grid strong { font-size: 14px; }
-  .vl-mobile-hub-grid small { color: #5a6c80; font-size: 12px; margin-top: 3px; }
+  .vl-mobile-hub-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .vl-mobile-hub-heading h2 { font-size: 22px; margin-bottom: 0; max-width: 240px; }
+  .vl-mobile-map-link { display: inline-flex; gap: 6px; align-items: center; min-height: 44px; flex-shrink: 0; color: #075dab; font-size: 12px; font-weight: 750; }
+  .vl-mobile-intents { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 19px 0 22px; }
+  .vl-mobile-intents a { display: flex; justify-content: center; align-items: center; gap: 7px; min-height: 48px; padding: 8px 4px; border: 1px solid #d9e5f2; border-radius: 12px; background: #fff; color: #1a466e; font-size: 12px; font-weight: 750; text-decoration: none; }
+  .vl-mobile-intents i { color: #0866b9; }
+  .vl-mobile-stories { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .vl-mobile-stories > a { position: relative; display: block; overflow: hidden; border-radius: 16px; background: #fff; border: 1px solid #dbe5ef; color: #183956; text-decoration: none; }
+  .vl-mobile-stories > a[hidden] { display: none; }
+  .vl-mobile-stories img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .vl-mobile-stories a > span { display: block; padding: 12px 10px 14px; }
+  .vl-mobile-stories strong { display: block; font-size: 14px; line-height: 1.35; }
+  .vl-mobile-stories small { display: block; margin-top: 4px; color: #5f7387; font-size: 11px; }
+  .vl-mobile-stories a > i { position: absolute; right: 8px; top: 8px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: #164b7d; background: #fff; }
+  .vl-mobile-passport-link { display: flex; align-items: center; gap: 12px; padding: 18px 14px; margin-top: 18px; border-radius: 16px; --vl-text: #fff; --vl-muted: #e8f2ff; color: #fff; background: #154b80; text-decoration: none; }
+  .vl-mobile-passport-link > i { display: grid; place-items: center; flex: 0 0 42px; height: 48px; color: #163d62; background: #ffdc93; border-radius: 10px; font-size: 22px; }
+  .vl-mobile-passport-link > span:nth-child(2) { flex: 1; min-width: 0; }
+  .vl-mobile-passport-link small, .vl-mobile-passport-link strong, .vl-mobile-passport-link span > span { display: block; color: #fff; }
+  .vl-mobile-passport-link small { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; opacity: .85; }
+  .vl-mobile-passport-link strong { font-size: 16px; margin: 3px 0; }
+  .vl-mobile-passport-link span > span { font-size: 11px; opacity: .9; }
+  .vl-mobile-secondary-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; margin: 10px 0 12px; }
+  .vl-mobile-secondary-links a { display: flex; align-items: center; gap: 6px; min-height: 44px; color: #205c94; font-size: 12px; font-weight: 650; }
   .vl-mobile-hub details { border-top: 1px solid #d5e2f0; padding-top: 12px; }
-  .vl-mobile-hub summary { padding: 8px 0; font-weight: 750; cursor: pointer; }
+  .vl-mobile-hub summary { display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 8px 0; font-size: 14px; font-weight: 750; cursor: pointer; list-style: none; }
+  .vl-mobile-hub summary::-webkit-details-marker { display: none; }
   .vl-mobile-more { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-  .vl-mobile-more a { color: #145a9c; padding: 10px 6px; font-size: 13px; }
+  .vl-mobile-more :is(a, button) { color: #145a9c; padding: 10px 6px; font-size: 13px; }
   html.vl-mobile-browse .vl-mobile-bottom { position: fixed; z-index: 45; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, 1fr); padding: 7px 8px calc(7px + env(safe-area-inset-bottom)); border-top: 1px solid #d7e2ef; background: #fff; box-shadow: 0 -4px 20px #153f6310; }
   .vl-mobile-bottom :is(a, button) { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; border-radius: 11px; min-height: 48px; background: transparent; border: 0; color: #53677d; font: 650 11px/1.2 system-ui, sans-serif; text-decoration: none; }
   .vl-mobile-bottom i { font-size: 19px; }
@@ -45,10 +59,7 @@
   html.vl-mobile-browse .vl-mobile-more a { display: flex; align-items: center; }
   html.vl-mobile-browse #inicio .vl-editorial-quicklinks > a[href="#loja-en-imagenes"],
   html.vl-mobile-browse #inicio .vl-editorial-quicklinks > a[href="#loja-en-video"] { display: none; }
-  @media (max-width: 340px) {
-    .vl-mobile-hub-grid { grid-template-columns: 1fr; }
-    .vl-mobile-hub-grid > a { flex-direction: row; min-height: 76px; align-items: center; }
-  }
+
   html.vl-mobile-browse #inicio .vl-welcome-actions,
   html.vl-mobile-browse #inicio .vl-mobile-updates,
   html.vl-mobile-browse #inicio .vl149-category-link { display: none; }
@@ -56,4 +67,16 @@
   html.vl-mobile-browse #inicio .vl-welcome-copy { padding-block: 20px; }
   html.vl-mobile-browse #inicio .vl-editorial-quicklinks { gap: 6px; }
   html.vl-mobile-browse #inicio .vl-editorial-quicklinks a { padding: 9px 10px; font-size: 12px; }
+}
+
+@media (max-width: 767px) {
+  html.vl-mobile-browse #inicio .vl-welcome-visual { min-height: 230px; border-radius: 0 0 22px 22px; }
+  html.vl-mobile-browse #inicio .vl-mobile-intro { padding: 30px 20px 32px; background: linear-gradient(transparent, #102f50f2); }
+  html.vl-mobile-browse #inicio .vl-mobile-intro h1 { font-size: 32px; margin-bottom: 7px; }
+  html.vl-mobile-browse #inicio .vl-mobile-intro p { font-size: 13px; max-width: 290px; }
+  html.vl-mobile-browse #inicio .vl-welcome-copy { padding: 0 16px 8px; }
+  html.vl-mobile-browse #inicio .vl-welcome-search { margin-top: -12px; border-radius: 14px; }
+  html.vl-mobile-browse #inicio .vl-editorial-quicklinks { display: none; }
+  .vl-mobile-more button { border: 0; background: transparent; text-align: left; min-height: 44px; }
+  .vl-mobile-hub { padding-top: 18px; background: #f6f9fc; }
 }
