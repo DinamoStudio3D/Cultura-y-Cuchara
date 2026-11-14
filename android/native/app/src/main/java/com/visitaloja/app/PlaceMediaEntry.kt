@@ -18,7 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Composable
-internal fun PlaceMediaEntry(place: Place, fresh: Boolean, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel) {
+internal fun PlaceMediaEntry(place: Place, fresh: Boolean, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel, uiEnglish: Boolean = false) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val now by produceState(System.currentTimeMillis(), lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) { while (isActive) { value = System.currentTimeMillis(); delay(15_000) } }
@@ -28,19 +28,19 @@ internal fun PlaceMediaEntry(place: Place, fresh: Boolean, audio: DiscoveryAudio
     LaunchedEffect(source?.url) { if (selected != source?.url) selected = null }
     if (source != null || place.media.audioEs != null || place.media.audioEn != null) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().testTag("place-media")) {
-            Text("Conoce este lugar", fontWeight = FontWeight.Bold)
+            Text((if (uiEnglish) "Discover this place" else "Conoce este lugar"), fontWeight = FontWeight.Bold)
             if (source != null) FilledTonalButton(onClick = { player.pause(); selected = source.url }, modifier = Modifier.fillMaxWidth().testTag("place-video"), shape = RoundedCornerShape(13.dp)) {
-                Icon(Icons.Default.PlayCircle, null);Spacer(Modifier.width(8.dp));Text("Conoce este lugar por video")
+                Icon(Icons.Default.PlayCircle, null);Spacer(Modifier.width(8.dp));Text((if (uiEnglish) "Discover this place on video" else "Conoce este lugar por video"))
             }
             listOf(false to place.media.audioEs, true to place.media.audioEn).forEach { (english, url) ->
                 if (url != null) {
                     val key = PlaceMediaPolicy.audioKey(place, english)
                     val active = audio.key == key && audio.url == url
-                    val language = if (english) "inglés" else "español"
+                    val language = if (uiEnglish) { if (english) "English" else "Spanish" } else if (english) "inglés" else "español"
                     val waiting = active && audio.buffering
                     val playing = active && audio.playing
                     OutlinedButton(onClick = { if (waiting || playing) player.pause() else player.play(key, "${place.title} · $language", url) }, modifier = Modifier.fillMaxWidth().testTag(if (english) "place-audio-en" else "place-audio-es"), shape = RoundedCornerShape(13.dp)) {
-                        Icon(if (waiting || playing) Icons.Default.Pause else Icons.Default.Headphones, null);Spacer(Modifier.width(8.dp));Text(if (waiting) "Cargando audio en $language…" else if (playing) "Pausar audio en $language" else if (active && audio.error != null) "Reintentar audio en $language" else "Escuchar en $language")
+                        Icon(if (waiting || playing) Icons.Default.Pause else Icons.Default.Headphones, null);Spacer(Modifier.width(8.dp));Text(if (waiting) (if (uiEnglish) "Loading $language audio…" else "Cargando audio en $language…") else if (playing) (if (uiEnglish) "Pause $language audio" else "Pausar audio en $language") else if (active && audio.error != null) (if (uiEnglish) "Retry $language audio" else "Reintentar audio en $language") else (if (uiEnglish) "Listen in $language" else "Escuchar en $language"))
                     }
                     if (active && audio.error != null) Text(audio.error, color = MaterialTheme.colorScheme.error)
                 }

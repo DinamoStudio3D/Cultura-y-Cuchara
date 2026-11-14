@@ -129,3 +129,11 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - La búsqueda reconoce coffee, lodging, hotels, accommodation, restaurants, food, tourism, sightseeing, bakery/bakeries y crafts conservando las reglas de publicación y filtros.
 - Una búsqueda sin coincidencias en Favoritos ofrece borrar la búsqueda y distingue ese caso de no tener lugares guardados.
 - Los visores independientes de menús, opiniones, multimedia y otros módulos conservan textos pendientes de traducción. Continúan pendientes pruebas físicas y FCM remoto.
+
+## Seguimiento: implementación 0.65
+
+- Menú QR y enlaces directos usan ES/EN en carga, retiradas, errores, zoom, compartir y cierre. El menú sigue siendo la imagen publicada; no se traduce la imagen ni se ejecuta el destino del QR.
+- Opiniones usa ES/EN en lectura, filtros, fechas, formulario, consentimiento y confirmación. Conserva las validaciones y los datos enviados; nombres y comentarios permanecen tal como se publicaron. Mensajes técnicos del servidor pueden conservar español.
+- Los controles de video y narraciones de la ficha distinguen el idioma de interfaz del idioma real de cada grabación; no traducen el audio.
+- La carta de productos inicia con la preferencia ES/EN de la app y conserva su selector local. Sus formularios independientes de pedidos/reservas y los reproductores internos aún tienen textos por traducir.
+- No se enviaron pedidos, opiniones ni mensajes en pruebas; pendientes validación física y pruebas privadas.

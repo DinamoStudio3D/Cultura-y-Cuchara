@@ -46,7 +46,7 @@ import java.time.LocalTime
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-internal fun BusinessMenuEntry(place: Place) {
+internal fun BusinessMenuEntry(place: Place, uiEnglish: Boolean = false) {
     val model: BusinessMenuViewModel = viewModel(key = "business-menu")
     val state by model.state.collectAsStateWithLifecycle()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -63,13 +63,13 @@ internal fun BusinessMenuEntry(place: Place) {
     }
     var menuOpen by remember(place.id) { mutableStateOf(false) }
     var request by remember(place.id) { mutableStateOf<BusinessRequest?>(null) }
-    var english by remember(place.id) { mutableStateOf(false) }
+    var english by remember(place.id, uiEnglish) { mutableStateOf(uiEnglish) }
     if (state.id != place.id) return
     val content = state.source
     if (content.loading) { LinearProgressIndicator(Modifier.fillMaxWidth());return }
     if (content.error || content.cached) {
-        Text("Conéctate para consultar la carta y las opciones actuales del negocio.", fontSize = 12.sp)
-        TextButton(onClick = { model.bind(place.id, true) }) { Text("Actualizar carta y pedidos") }
+        Text((if (uiEnglish) "Connect to view the current menu and business options." else "Conéctate para consultar la carta y las opciones actuales del negocio."), fontSize = 12.sp)
+        TextButton(onClick = { model.bind(place.id, true) }) { Text((if (uiEnglish) "Refresh menu and orders" else "Actualizar carta y pedidos")) }
         return
     }
     val catalogue = model.current(now) ?: return
@@ -77,10 +77,10 @@ internal fun BusinessMenuEntry(place: Place) {
     if (!enabled) return
     Column(Modifier.fillMaxWidth().semantics { testTagsAsResourceId = true }.testTag("business-commerce"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (catalogue.dishes.isNotEmpty()) OutlinedButton(onClick = { menuOpen = true }, modifier = Modifier.fillMaxWidth().testTag("open-business-menu")) {
-            Icon(Icons.Default.RestaurantMenu, null);Spacer(Modifier.width(8.dp));Text("Ver productos destacados · ${catalogue.dishes.size}")
+            Icon(Icons.Default.RestaurantMenu, null);Spacer(Modifier.width(8.dp));Text((if (uiEnglish) "View featured products · ${catalogue.dishes.size}" else "Ver productos destacados · ${catalogue.dishes.size}"))
         }
-        if (catalogue.orders) Button(onClick = { request = BusinessRequest(english = english) }, modifier = Modifier.fillMaxWidth().testTag("business-order")) { Text("Pedir al negocio") }
-        if (catalogue.reservations) OutlinedButton(onClick = { request = BusinessRequest(reservation = true, english = english) }, modifier = Modifier.fillMaxWidth().testTag("business-reserve")) { Text("Reservar una mesa") }
+        if (catalogue.orders) Button(onClick = { request = BusinessRequest(english = english) }, modifier = Modifier.fillMaxWidth().testTag("business-order")) { Text((if (uiEnglish) "Order from the business" else "Pedir al negocio")) }
+        if (catalogue.reservations) OutlinedButton(onClick = { request = BusinessRequest(reservation = true, english = english) }, modifier = Modifier.fillMaxWidth().testTag("business-reserve")) { Text((if (uiEnglish) "Request a table" else "Reservar una mesa")) }
     }
     if (menuOpen && catalogue.dishes.isNotEmpty()) BusinessMenuDialog(catalogue, english, { english = it }, { menuOpen = false }) { dish -> request = BusinessRequest(dish = dish.key, english = english) }
     request?.let { draft ->

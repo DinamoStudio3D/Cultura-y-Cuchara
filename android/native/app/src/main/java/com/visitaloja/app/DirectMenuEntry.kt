@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 /** A public menu link never executes the QR target or registers a visit. */
 @Composable
-internal fun DirectMenuEntry(id:String,close:()->Unit) {
+internal fun DirectMenuEntry(id:String,english:Boolean=false,close:()->Unit) {
     var raw by remember(id){mutableStateOf<Map<String,Any?>?>(null)}
     var loading by remember(id){mutableStateOf(true)}
     var failed by remember(id){mutableStateOf(false)}
@@ -50,11 +50,11 @@ internal fun DirectMenuEntry(id:String,close:()->Unit) {
         onDispose{alive=false;lifecycle.removeObserver(observer);stop()}
     }
     val menu=if(!loading&&!failed&&!cached)MenuPolicy.read(id,raw,today) else null
-    if(menu!=null)DigitalMenuDialog(menu,false,{retry++},close)
-    else AlertDialog(onDismissRequest=close,icon={Image(painterResource(R.drawable.visitaloja_logo),null,Modifier.size(62.dp))},title={Text("Menú digital de VisitaLoja")},text={
+    if(menu!=null)DigitalMenuDialog(menu,false,{retry++},english,close)
+    else AlertDialog(onDismissRequest=close,icon={Image(painterResource(R.drawable.visitaloja_logo),null,Modifier.size(62.dp))},title={Text((if (english) "VisitaLoja digital menu" else "Menú digital de VisitaLoja"))},text={
         Column(Modifier.testTag("direct-menu-status"),verticalArrangement=Arrangement.spacedBy(12.dp)) {
             if(loading)LinearProgressIndicator(Modifier.fillMaxWidth())
-            Text(when{failed->"No pudimos consultar este menú. Comprueba la conexión y vuelve a intentar.";loading->"Consultando el menú publicado…";cached->"Conéctate para comprobar que el menú sigue publicado.";else->"Este menú no está disponible. Puede haberse retirado o cambiado."})
+            Text(when{failed->(if (english) "Could not load this menu. Check your connection and try again." else "No pudimos consultar este menú. Comprueba la conexión y vuelve a intentar.");loading->(if (english) "Loading the published menu…" else "Consultando el menú publicado…");cached->(if (english) "Connect to check that this menu is still published." else "Conéctate para comprobar que el menú sigue publicado.");else->(if (english) "This menu is unavailable. It may have been removed or changed." else "Este menú no está disponible. Puede haberse retirado o cambiado.")})
         }
-    },confirmButton={if(!loading)TextButton(onClick={retry++}){Text("Reintentar")}},dismissButton={TextButton(onClick=close){Text("Cerrar menú")}})
+    },confirmButton={if(!loading)TextButton(onClick={retry++}){Text((if (english) "Retry" else "Reintentar"))}},dismissButton={TextButton(onClick=close){Text((if (english) "Close menu" else "Cerrar menú"))}})
 }

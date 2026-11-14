@@ -240,7 +240,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val musicControlVisible = foreground && !musicBlocked && !WindowInsets.isImeVisible && WelcomeMusicPolicy.confirmed(discoveryState.music) && !otherAudioPlaying
     MaterialTheme(colorScheme = AppColors) {
         AnnouncementEntry(allowed = tab == "home" && selected == null && selectedEvent == null && pendingLink == null && visitState.place == null && legalDocument == null && directMenuId == null)
-        directMenuId?.let { DirectMenuEntry(it) { directMenuId = null } }
+        directMenuId?.let { DirectMenuEntry(it, english) { directMenuId = null } }
         legalDocument?.let { LegalDialog(it, { legalDocument = null }, { key -> legalDocument = key }) }
         if (merchantRewardOpen) MerchantRewardScreen(if (merchantRewardState.uid == accountState.uid) merchantRewardState else MerchantRewardState(uid = accountState.uid, busy = true), merchantRewards, rewardStop?.second) { merchantRewardOpen = false; rewardStop = null; returnToBusiness() }
         if (merchantBusinessOpen) MerchantBusinessScreen(
@@ -555,11 +555,11 @@ private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState
             if (place.address.isNotBlank()) Text(place.address, color = Blue, fontSize = 13.sp)
             if (place.address.isNotBlank()) CopyPlaceAddress(place, english)
             PlaceHours(place.info, fresh, english)
-            DigitalMenuEntry(place)
-            BusinessMenuEntry(place)
-            ReviewsEntry(place, login, visit)
+            DigitalMenuEntry(place, english)
+            BusinessMenuEntry(place, english)
+            ReviewsEntry(place, login, visit, english)
             PlacePromotionEntry(place, fresh)
-            PlaceMediaEntry(place, fresh, audio, player)
+            PlaceMediaEntry(place, fresh, audio, player, english)
             PlaceGallery(place)
             if (place.description.isNotBlank()) Text(place.description, color = Muted, fontSize = 14.sp, lineHeight = 23.sp)
             PlaceServices(place.info, english)

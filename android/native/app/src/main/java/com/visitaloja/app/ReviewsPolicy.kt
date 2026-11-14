@@ -28,6 +28,12 @@ internal object ReviewsPolicy {
         comment.trim().length !in 3..600 || comment.any { it.isISOControl() && it != '\n' } -> "Escribe una opinión de 3 a 600 caracteres."
         else -> null
     }
+    fun displayError(error: String, english: Boolean): String = if (!english) error else when(error) {
+        "Escribe un nombre público de hasta 100 caracteres." -> "Enter a public name of up to 100 characters."
+        "Elige entre 1 y 5 estrellas." -> "Choose between 1 and 5 stars."
+        "Escribe una opinión de 3 a 600 caracteres." -> "Write a review of 3 to 600 characters."
+        else -> error
+    }
     fun sorted(items: List<VerifiedReview>, high: Boolean) = if (high) items.sortedWith(compareByDescending<VerifiedReview> { it.rating }.thenByDescending { it.updated }.thenBy { it.id }) else items.sortedWith(compareByDescending<VerifiedReview> { it.updated }.thenBy { it.id })
     fun average(items: List<VerifiedReview>): Double? = items.takeIf { it.isNotEmpty() }?.map { it.rating }?.average()
     fun commit(uid: String, place: String, placeName: String, name: String, rating: Int, comment: String, existing: Boolean): JSONObject {
