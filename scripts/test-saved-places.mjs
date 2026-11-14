@@ -7,9 +7,9 @@ test('saved places compose with existing text, canton, category and hours filter
  assert.deepEqual(savedIds,before);assert(model.matches(places[1],{}));
 });
 function harness(){
- const nodes=new Map(),node=id=>{if(!nodes.has(id))nodes.set(id,{value:'',checked:false,hidden:false,textContent:'',classList:{toggle(){}}});return nodes.get(id);};
+ const nodes=new Map(),node=id=>{if(!nodes.has(id))nodes.set(id,{value:'',checked:false,hidden:false,textContent:'',setAttribute(){},classList:{toggle(){}}});return nodes.get(id);};
  const cards=places.map(p=>({dataset:{locationId:p.id},style:{},classList:{toggle(name,hidden){this.hidden=hidden;}}}));
- const context={window:{VisitaLojaDiscovery:model,matchMedia:()=>({matches:true})},document:{addEventListener(){},getElementById:node,querySelector:()=>null,querySelectorAll:()=>cards},locations:places,favoriteLocations:['c','unavailable'],placeDiscoveryCategory:'all',isLocOpenNow:()=>true,currentLang:'es',userCoords:null,updateClearFiltersButton(value){context.clearVisible=value;}};
+ const context={window:{VisitaLojaDiscovery:model,matchMedia:()=>({matches:true})},document:{addEventListener(){},getElementById:node,querySelector:()=>null,querySelectorAll:()=>cards},locations:places,favoriteLocations:['c','unavailable'],placeDiscoveryCategory:'all',placeNearOnly:false,placeNearRequest:0,isLocOpenNow:()=>true,currentLang:'es',userCoords:null,updateClearFiltersButton(value){context.clearVisible=value;}};
  node('establecimientos').scrollIntoView=()=>{context.scrolled=true;};
  const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
  vm.runInNewContext(html.slice(html.indexOf('function searchItems()'),html.indexOf('function filterItems(')),context);
