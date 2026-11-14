@@ -151,3 +151,5 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - A petición del usuario, las pruebas de uso y emulador quedan para después; el workflow permite ejecutarlas manualmente con run_ui. Se mantiene la compilación y comprobaciones automáticas de código. No se publican campañas ni se cambian cuentas o datos reales durante el desarrollo.
 
 - Se completa la entrega de cumpleaños desde una visita confirmada: consulta de oferta y ventana anual, comprobación del consumo mínimo y confirmación explícita de presencia/fecha. El servidor conserva un único registro por usuario/parada/año y resuelve duplicados de forma transaccional. Esta nueva operación también necesita publicar el servicio preparado.
+
+- Los nuevos códigos nativos incorporan nombre, modo lojano/turista, ciudad y mes/día de cumpleaños desde el perfil confirmado, sin documento ni año de nacimiento. El servicio de cumpleaños usa el perfil actual y admite códigos antiguos sin mes/día.

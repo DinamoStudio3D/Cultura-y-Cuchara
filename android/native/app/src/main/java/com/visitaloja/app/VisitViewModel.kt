@@ -70,10 +70,11 @@ class VisitViewModel(application: Application) : AndroidViewModel(application) {
             val day = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(AgendaPolicy.zone).toLocalDate().toString()
             val next = candidate(uid, place) ?: VisitPolicy.candidate(place.id, day, System.currentTimeMillis())
             check(preferences.edit().putString(key(uid, place.id), JSONObject().put("id", next.id).put("code", next.code).put("expires", next.expires).toString()).commit()) { "No pudimos guardar la referencia del código en este teléfono." }
+            val profile = db.collection("userProfiles").document(uid).get(Source.SERVER).await().data.orEmpty()
             val token = user.getIdToken(false).await().token ?: error("Inicia sesión nuevamente.")
             if (!current(uid, epoch)) return@run
             try {
-                withContext(Dispatchers.IO) { NativeApi.post("https://firestore.googleapis.com/v1/projects/cultura-y-cuchara/databases/(default)/documents:commit", token, VisitPolicy.commit(uid, user.displayName.orEmpty(), user.email.orEmpty(), place, next)) }
+                withContext(Dispatchers.IO) { NativeApi.post("https://firestore.googleapis.com/v1/projects/cultura-y-cuchara/databases/(default)/documents:commit", token, VisitPolicy.commit(uid, user.displayName.orEmpty(), user.email.orEmpty(), place, next, profile)) }
             } catch (error: NativeHttpError) {
                 if (error.status == 409) {
                     // Recover an ambiguous previous request first. Never overwrite an existing code.
