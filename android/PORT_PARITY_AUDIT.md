@@ -113,3 +113,11 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Una consulta fallida conserva la última configuración de inicio y muestra el estado de error existente; no reactiva accesos ocultos por un fallo de red.
 - La fila final de accesos mantiene ancho uniforme cuando se ocultan tarjetas.
 - Este bloque no constituye traducción global ni paridad de todos los editores web. Pendiente comprobación visual en dispositivo.
+
+## Seguimiento: implementación 0.63
+
+- La selección ES/EN se guarda como preferencia de presentación del teléfono y se comparte entre Inicio, navegación y Todas las secciones. Se puede cambiar desde Inicio o el directorio y se vuelve a leer al iniciar el proceso.
+- Se traducen las cinco opciones inferiores, ayudas de navegación, títulos/descripciones/filtros del directorio y el diálogo para abrir enlaces. El directorio busca simultáneamente en español e inglés y conserva los identificadores de destinos y grupos.
+- Se reutiliza el respaldo español de los textos administrados de Inicio. Los contenidos de negocios, eventos y pantallas interiores que aún carecen de traducción conservan su idioma original; no se declara traducción global.
+- No cambia el idioma del sistema, los datos de cuenta ni los contenidos del panel. La preferencia pertenece al dispositivo y continúa al cerrar sesión.
+- Pendiente revisión física de idioma tras cerrar/reabrir y del diseño con texto grande.

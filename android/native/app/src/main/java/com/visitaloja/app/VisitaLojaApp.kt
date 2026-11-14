@@ -98,6 +98,13 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     val push: PushViewModel = viewModel()
     val pushState by push.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val languagePreferences = remember(context.applicationContext) { context.applicationContext.getSharedPreferences(LanguagePolicy.PREFERENCES, android.content.Context.MODE_PRIVATE) }
+    var language by remember { mutableStateOf(LanguagePolicy.normalize(languagePreferences.getString(LanguagePolicy.KEY, null))) }
+    val english = language == "en"
+    val changeLanguage: (Boolean) -> Unit = { useEnglish ->
+        language = LanguagePolicy.choose(useEnglish)
+        languagePreferences.edit().putString(LanguagePolicy.KEY, language).apply()
+    }
     val missions: MissionViewModel = viewModel()
     val missionsState by missions.state.collectAsStateWithLifecycle()
     val videos: VideoViewModel = viewModel()
@@ -249,10 +256,10 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
             modifier = Modifier.semantics { testTagsAsResourceId = true },
             snackbarHost = { SnackbarHost(snack) },
             floatingActionButton = { if (musicControlVisible) WelcomeMusicControl(audioState, audioPlayer::toggleWelcome) },
-            topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") "Volver a Secciones" else if (tab == "canton") "Volver a Cantones" else "Volver a Inicio", back) { navigate("sections", "all") } },
+            topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") (if (english) "Back to Sections" else "Volver a Secciones") else if (tab == "canton") (if (english) "Back to Cantons" else "Volver a Cantones") else (if (english) "Back to Home" else "Volver a Inicio"), back, english) { navigate("sections", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && audioState.key != WelcomeMusicPolicy.KEY && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("guide", "contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "festival", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("guide", "contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "festival", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab, english) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -270,7 +277,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     }
                 }
                 when (tab) {
-                    "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen({ navigate(it, "all") }, queueLink) }
+                    "sections" -> sectionState.SaveableStateProvider("sections") { SectionsScreen({ navigate(it, "all") }, queueLink, english, changeLanguage) }
                     "map" -> MapScreen(state, query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, { tab = "explore" }, model::refresh, { nearbySettings = true }, festivalState, focusParade, { focusParade = false }) { navigate("festival", "all") }
                     "account" -> AccountScreen(accountState, guestState.favourites, account,
                         wallet = { navigate("passport", "all") }, notices = { navigate("notices", "all") },
@@ -279,7 +286,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                         business = { merchantBusinessOpen = true }, scan = { merchantScanPlace = null; merchantScanOpen = true },
                         rewards = { rewardStop = null; merchantRewardOpen = true })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
-                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState, { input -> navigate("explore", "all"); query = input })
+                    "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState, { input -> navigate("explore", "all"); query = input }, english, changeLanguage)
                     "contact" -> PlatformContactScreen({ legalDocument = it })
                     "privacy", "terms" -> LegalScreen(tab, { navigate(it, "all") })
                     "mesa" -> sectionState.SaveableStateProvider("mesa") { MesaScreen(mesaState) { mesa.bind(true, true) } }
@@ -339,7 +346,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
 }
 
 @Composable
-private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, backLabel: String, back: () -> Unit, sections: () -> Unit) {
+private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, backLabel: String, back: () -> Unit, english: Boolean, sections: () -> Unit) {
     Surface(color = if (showBack) Color(0xFFF0F7FF) else Color.White) {
         Row(Modifier.statusBarsPadding().fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             if (showBack) IconButton(onClick = back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, backLabel) }
@@ -348,17 +355,17 @@ private fun AppTopBar(loading: Boolean, refresh: () -> Unit, showBack: Boolean, 
                 if (showBack) Text("VisitaLoja", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Default.LocationOn, null, Modifier.size(13.dp), tint = Muted); Text("Loja, Ecuador", fontSize = 12.sp, color = Muted) }
             }
-            IconButton(onClick = sections, modifier = Modifier.testTag("open-sections")) { Icon(Icons.Default.Apps, "Todas las secciones", tint = Blue) }
-            IconButton(onClick = refresh, enabled = !loading) { Icon(Icons.Default.Refresh, "Actualizar lugares", tint = Blue) }
+            IconButton(onClick = sections, modifier = Modifier.testTag("open-sections")) { Icon(Icons.Default.Apps, if (english) "All sections" else "Todas las secciones", tint = Blue) }
+            IconButton(onClick = refresh, enabled = !loading) { Icon(Icons.Default.Refresh, if (english) "Refresh places" else "Actualizar lugares", tint = Blue) }
         }
     }
 }
 
 @Composable
-private fun AppNavigation(tab: String, navigate: (String) -> Unit) {
+private fun AppNavigation(tab: String, english: Boolean, navigate: (String) -> Unit) {
     NavigationBar(containerColor = Color(0xFFF0F7FF), tonalElevation = 0.dp) {
         listOf(Triple("home", "Inicio", Icons.Default.Home), Triple("map", "Mapa", Icons.Default.Map), Triple("passport", "Pasaporte", Icons.Default.MenuBook), Triple("saved", "Favoritos", Icons.Default.FavoriteBorder), Triple("account", "Mi cuenta", Icons.Default.PersonOutline)).forEach { (id, label, icon) ->
-            NavigationBarItem(modifier = Modifier.testTag("nav-$id"), selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "map", "saved", "account", "passport"), icon = { Icon(icon, null) }, label = { Text(label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
+            NavigationBarItem(modifier = Modifier.testTag("nav-$id"), selected = id == tab, onClick = { navigate(id) }, enabled = id in setOf("home", "map", "saved", "account", "passport"), icon = { Icon(icon, null) }, label = { Text(if (english) when (id) { "home" -> "Home"; "map" -> "Map"; "passport" -> "Passport"; "saved" -> "Saved"; else -> "Account" } else label, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) }, colors = NavigationBarItemDefaults.colors(selectedIconColor = Blue, selectedTextColor = Blue, indicatorColor = Color(0xFFE5F1FF)))
         }
     }
 }
@@ -378,8 +385,7 @@ private fun OfflineBanner(time: Long, loading: Boolean, retry: () -> Unit) {
 }
 
 @Composable
-private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit, openMap: () -> Unit, discovery: DiscoveryState, videos: VideoGallery, openDiscovery: (String) -> Unit, supporters: PublicContent<SupportConfig>, search: (String) -> Unit) {
-    var english by rememberSaveable { mutableStateOf(false) }
+private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, agenda: AgendaState, openAgenda: () -> Unit, event: (String) -> Unit, openCantons: () -> Unit, openMap: () -> Unit, discovery: DiscoveryState, videos: VideoGallery, openDiscovery: (String) -> Unit, supporters: PublicContent<SupportConfig>, search: (String) -> Unit, english: Boolean, changeLanguage: (Boolean) -> Unit) {
     var input by rememberSaveable { mutableStateOf("") }
     val copy = if (english) discovery.home.value.english else discovery.home.value.spanish
     val blocks = discovery.home.value.blocks
@@ -392,7 +398,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         item(key = "search") {
             Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 OutlinedTextField(input, { input = it.take(120) }, modifier = Modifier.weight(1f).testTag("home-search-input"), placeholder = { Text(copy.placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis) }, singleLine = true, shape = RoundedCornerShape(14.dp), leadingIcon = { Icon(Icons.Default.Search, null) }, trailingIcon = { IconButton(onClick = submit, modifier = Modifier.testTag("home-search-submit")) { Icon(Icons.AutoMirrored.Filled.ArrowForward, copy.searchButton, tint = Blue) } }, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), keyboardActions = KeyboardActions(onSearch = { submit() }))
-                TextButton(onClick = { english = !english }, modifier = Modifier.testTag("home-language")) { Text(if (english) "ES" else "EN") }
+                TextButton(onClick = { changeLanguage(!english) }, modifier = Modifier.testTag("home-language")) { Text(if (english) "ES" else "EN") }
             }
         }
         item(key = "categories") {

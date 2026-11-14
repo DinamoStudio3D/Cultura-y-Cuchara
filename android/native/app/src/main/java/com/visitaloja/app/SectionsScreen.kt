@@ -55,10 +55,46 @@ internal object SectionsPolicy {
         AppSection("contact", "Contacto y redes", "Ayuda, alianzas, privacidad y términos de VisitaLoja", groups[2], Icons.Default.SupportAgent),
         AppSection("account", "Mi cuenta", "Tu perfil y acceso a VisitaLoja", groups[2], Icons.Default.PersonOutline)
     )
-    private fun key(value: String) = Normalizer.normalize(value, Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").lowercase(Locale.ROOT)
-    fun filter(query: String, group: String) = sections.filter { section ->
-        (group == "Todas" || group == section.group) && key(query).trim().split(Regex("\\s+")).all { it in key("${section.title} ${section.description} ${section.group}") }
+    private val englishCopy = mapOf(
+        "map" to ("Interactive map" to "Find places and your location in Loja"),
+        "explore" to ("Places" to "Coffee, local food, lodging and tourism"),
+        "promotions" to ("Offers" to "Current offers and business benefits"),
+        "festival" to ("FIAVL 2026" to "Festival of Live Arts programme"),
+        "agenda" to ("Events" to "Discover events and activities"),
+        "cantons" to ("Cantons" to "Explore the province’s 16 cantons"),
+        "stories" to ("Stories of Loja" to "Stories, flavours and traditions of our land"),
+        "mesa" to ("Mesa Turística de Loja" to "Institution, board, programme and projects"),
+        "supporters" to ("They make VisitaLoja possible" to "Meet the businesses and institution supporting the project"),
+        "enterprises" to ("Entrepreneurs" to "Meet and support local talent"),
+        "photos" to ("Photographs" to "Views of Loja and their photographers"),
+        "time" to ("Loja Through Time" to "History and photographs of yesterday and today"),
+        "videos" to ("Videos" to "See Loja in motion"),
+        "podcast" to ("Podcast" to "Stories and sounds to listen to"),
+        "itinerary" to ("My route" to "Plan a route or explore your saved places"),
+        "guide" to ("Talk to Chabaquito" to "Your companion for choosing your next stop"),
+        "missions" to ("Chabaquito missions" to "Challenges, badges and your adventure"),
+        "passport" to ("Passport and loyalty" to "Check your stamps and rewards"),
+        "saved" to ("Saved places" to "Your next stops, always at hand"),
+        "postcards" to ("Postcards" to "Create and share a memory of Loja"),
+        "shop" to ("Shop" to "Souvenirs of Loja and your order"),
+        "notices" to ("Notices" to "News and optional notifications"),
+        "contact" to ("Contact and social media" to "Help, partnerships, privacy and terms"),
+        "account" to ("My account" to "Your profile and access to VisitaLoja")
+    )
+    fun localize(section: AppSection, english: Boolean): AppSection {
+        val copy = englishCopy[section.route].takeIf { english } ?: return section
+        return section.copy(title = copy.first, description = copy.second)
     }
+    fun groupLabel(group: String, english: Boolean): String = if (!english) group else when (group) {
+        "Descubrir" -> "Discover"
+        "Tu aventura" -> "Your adventure"
+        "Recuerdos y novedades" -> "Memories and news"
+        else -> "All"
+    }
+    private fun key(value: String) = Normalizer.normalize(value, Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").lowercase(Locale.ROOT)
+    fun filter(query: String, group: String, english: Boolean = false) = sections.filter { section ->
+        (group == "Todas" || group == section.group) && key(query).trim().split(Regex("\\s+")).all { it in key("${section.title} ${section.description} ${section.group} ${localize(section, true).title} ${localize(section, true).description} ${groupLabel(section.group, true)}") }
+    }.map { localize(it, english) }
     fun parent(route: String, fromSections: Boolean): String = when {
         route == "canton" -> "cantons"
         fromSections && route != "sections" && route != "home" -> "sections"
@@ -67,10 +103,10 @@ internal object SectionsPolicy {
 }
 
 @Composable
-internal fun SectionsScreen(open: (String) -> Unit, openLink: (String) -> Unit) {
+internal fun SectionsScreen(open: (String) -> Unit, openLink: (String) -> Unit, english: Boolean = false, changeLanguage: (Boolean) -> Unit = {}) {
     var query by rememberSaveable { mutableStateOf("") }
     var group by rememberSaveable { mutableStateOf("Todas") }
-    val result = remember(query, group) { SectionsPolicy.filter(query, group) }
+    val result = remember(query, group, english) { SectionsPolicy.filter(query, group, english) }
     val wide = LocalConfiguration.current.let { it.screenWidthDp >= 600 && it.fontScale <= 1.3f }
     val blue = MaterialTheme.colorScheme.primary
     LazyColumn(Modifier.fillMaxSize().testTag("sections-screen"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -78,40 +114,45 @@ internal fun SectionsScreen(open: (String) -> Unit, openLink: (String) -> Unit) 
             Surface(color = Color(0xFF0C3768), shape = RoundedCornerShape(24.dp)) {
                 Row(Modifier.fillMaxWidth().padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("TODO VISITALOJA", color = Color(0xFFABDBFF), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                        Text("Loja, a tu manera", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 31.sp, modifier = Modifier.padding(top = 7.dp))
-                        Text("Elige qué quieres descubrir hoy.", color = Color(0xFFE2EFFF), fontSize = 13.sp, modifier = Modifier.padding(top = 8.dp))
+                        Text(if (english) "ALL OF VISITALOJA" else "TODO VISITALOJA", color = Color(0xFFABDBFF), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text(if (english) "Loja, your way" else "Loja, a tu manera", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 31.sp, modifier = Modifier.padding(top = 7.dp))
+                        Text(if (english) "Choose what you want to discover today." else "Elige qué quieres descubrir hoy.", color = Color(0xFFE2EFFF), fontSize = 13.sp, modifier = Modifier.padding(top = 8.dp))
                     }
                     Image(painterResource(R.drawable.visitaloja_logo), null, Modifier.padding(start = 12.dp).size(70.dp))
                 }
             }
         }
-        item { NativeLinkEntry(openLink) }
+        item {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TextButton(onClick = { changeLanguage(!english) }, modifier = Modifier.testTag("sections-language")) { Text(if (english) "Español" else "English") }
+            }
+        }
+        item { NativeLinkEntry(openLink, english) }
         item {
             OutlinedTextField(value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth().testTag("sections-search"), singleLine = true,
-                label = { Text("Buscar una sección") }, placeholder = { Text("Videos, postales, sellos…") },
-                leadingIcon = { Icon(Icons.Default.Search, null) }, trailingIcon = { if (query.isNotBlank()) IconButton(onClick = { query = "" }) { Icon(Icons.Default.Close, "Borrar búsqueda de secciones") } },
+                label = { Text(if (english) "Search sections" else "Buscar una sección") }, placeholder = { Text(if (english) "Videos, postcards, stamps…" else "Videos, postales, sellos…") },
+                leadingIcon = { Icon(Icons.Default.Search, null) }, trailingIcon = { if (query.isNotBlank()) IconButton(onClick = { query = "" }) { Icon(Icons.Default.Close, if (english) "Clear section search" else "Borrar búsqueda de secciones") } },
                 shape = RoundedCornerShape(16.dp), colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White))
         }
         item {
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 (listOf("Todas") + SectionsPolicy.groups).forEach { choice ->
-                    FilterChip(selected = group == choice, onClick = { group = choice }, label = { Text(choice) }, modifier = Modifier.testTag("sections-group-${SectionsPolicy.groups.indexOf(choice)}"))
+                    FilterChip(selected = group == choice, onClick = { group = choice }, label = { Text(SectionsPolicy.groupLabel(choice, english)) }, modifier = Modifier.testTag("sections-group-${SectionsPolicy.groups.indexOf(choice)}"))
                 }
             }
         }
         if (result.isEmpty()) item {
             Column(Modifier.fillMaxWidth().padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(Icons.Default.Search, null, Modifier.size(36.dp), tint = blue)
-                Text("Busquemos otra sección", fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.padding(top = 12.dp))
-                Text("Prueba con fotos, ruta o pasaporte.", color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
-                TextButton(onClick = { query = ""; group = "Todas" }, modifier = Modifier.testTag("sections-reset")) { Text("Ver todas las secciones") }
+                Text(if (english) "Let’s find another section" else "Busquemos otra sección", fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.padding(top = 12.dp))
+                Text(if (english) "Try photos, route or passport." else "Prueba con fotos, ruta o pasaporte.", color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
+                TextButton(onClick = { query = ""; group = "Todas" }, modifier = Modifier.testTag("sections-reset")) { Text(if (english) "View all sections" else "Ver todas las secciones") }
             }
         }
         SectionsPolicy.groups.forEach { sectionGroup ->
             val entries = result.filter { it.group == sectionGroup }
             if (entries.isNotEmpty()) {
-                item(key = "heading-$sectionGroup") { Text(sectionGroup, fontSize = 19.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp)) }
+                item(key = "heading-$sectionGroup") { Text(SectionsPolicy.groupLabel(sectionGroup, english), fontSize = 19.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp)) }
                 items(entries.chunked(if (wide) 2 else 1), key = { it.first().route }) { row ->
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         row.forEach { section -> SectionTile(section, Modifier.weight(1f)) { open(section.route) } }

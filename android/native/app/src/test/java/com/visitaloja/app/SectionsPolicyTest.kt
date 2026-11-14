@@ -23,4 +23,25 @@ class SectionsPolicyTest {
         assertEquals("sections", SectionsPolicy.parent("cantons", true))
         assertEquals("home", SectionsPolicy.parent("sections", false))
     }
+    @Test fun translatedDirectoryKeepsRoutesGroupsAndSpanishSearch() {
+        val es = SectionsPolicy.filter("", "Todas")
+        val en = SectionsPolicy.filter("", "Todas", true)
+        assertEquals(es.map { it.route }, en.map { it.route })
+        assertEquals(es.map { it.group }, en.map { it.group })
+        assertEquals("Passport and loyalty", SectionsPolicy.filter("sellos", "Todas", true).single().title)
+        assertEquals(listOf("passport"), SectionsPolicy.filter("stamps rewards", "Todas").map { it.route })
+        assertEquals(listOf("postcards"), SectionsPolicy.filter("postcards", "Todas", true).map { it.route })
+        assertTrue(SectionsPolicy.filter("postcards", "Tu aventura", true).isEmpty())
+        assertEquals("Your adventure", SectionsPolicy.groupLabel("Tu aventura", true))
+        assertEquals(es.first(), SectionsPolicy.localize(es.first(), false))
+    }
+    @Test fun languagePreferenceAcceptsOnlySupportedEnglishAndDefaultsToSpanish() {
+        assertEquals("es", LanguagePolicy.normalize(null))
+        assertEquals("es", LanguagePolicy.normalize("fr"))
+        assertEquals("es", LanguagePolicy.normalize("en-US"))
+        assertEquals("en", LanguagePolicy.normalize(" EN "))
+        assertEquals("en", LanguagePolicy.choose(true))
+        assertEquals("es", LanguagePolicy.choose(false))
+    }
+
 }
