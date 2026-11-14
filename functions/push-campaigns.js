@@ -8,7 +8,7 @@ function content(input){
  if(!title||title.length>80||!message||message.length>240)fail(400,'Escribe un título de hasta 80 caracteres y un mensaje de hasta 240.');
  if(!url.startsWith('/')||url.startsWith('//')||/[\\\s\x00-\x1f]/.test(url)||url.length>500)fail(400,'El destino debe ser una página de VisitaLoja.');
  const parsed=new URL(url,'https://www.visitaloja.com');
- const paths=['/','/cantones.html','/fidelidad.html','/agenda.html','/loja-en-el-tiempo.html','/mesa-turistica.html','/aliados.html','/que-hacer-en-loja','/hoteles-en-loja','/restaurantes-en-loja','/cafeterias-en-loja','/huecas-en-loja','/panaderias-en-loja','/heladerias-en-loja','/bares-en-loja','/entretenimiento-en-loja','/artesanias-en-loja'];
+ const paths=['/planes.html','/','/cantones.html','/fidelidad.html','/agenda.html','/loja-en-el-tiempo.html','/mesa-turistica.html','/aliados.html','/que-hacer-en-loja','/hoteles-en-loja','/restaurantes-en-loja','/cafeterias-en-loja','/huecas-en-loja','/panaderias-en-loja','/heladerias-en-loja','/bares-en-loja','/entretenimiento-en-loja','/artesanias-en-loja'];
  if(parsed.origin!=='https://www.visitaloja.com'||!paths.includes(parsed.pathname)&&!/^\/parada\/[a-zA-Z0-9_-]+\/?$/.test(parsed.pathname))fail(400,'Selecciona una página pública de VisitaLoja como destino.');
  return {title,message,url:parsed.pathname+parsed.search+parsed.hash};
 }
@@ -29,9 +29,13 @@ function service({db,send,clock=Date.now,uuid=randomUUID,wait=ms=>new Promise(re
    if(action==='device'){const snap=await ref.get();return {active:snap.exists&&eligible(snap.data(),user.uid)};}
    if(action==='subscribe'&&input.consent!==true)fail(400,'Debes aceptar recibir novedades y promociones de VisitaLoja.');
    if(action==='subscribe')await quota(root,user,'subscribe',60);
-   await db.runTransaction(async tx=>{const snap=await tx.get(ref),old=snap.exists?snap.data():null;if(old&&old.userId!==user.uid)fail(409,'Este navegador está asociado a otra cuenta. Desactívalo con esa cuenta primero.');if(action==='unsubscribe'){if(old)tx.set(ref,{...old,active:false,token:null,updatedAt:clock()});return;}tx.set(ref,{userId:user.uid,token,active:true,consentVersion:1,consentId:eligible(old,user.uid)?old.consentId:uuid(),createdAt:old?.createdAt||clock(),updatedAt:clock()});});return {active:action==='subscribe',deviceId:id};
+   await db.runTransaction(async tx=>{const snap=await tx.get(ref),old=snap.exists?snap.data():null;if(old&&old.userId!==user.uid)fail(409,'Este navegador está asociado a otra cuenta. Desactívalo con esa cuenta primero.');if(action==='unsubscribe'){if(old)tx.set(ref,{...old,active:false,token:null,updatedAt:clock()});return;}tx.set(ref,{userId:user.uid,token,platform:input.platform==='android'?'android':'web',label:typeof input.label==='string'?input.label.replace(/[\x00-\x1f]/g,'').slice(0,80):'',active:true,consentVersion:1,consentId:eligible(old,user.uid)?old.consentId:uuid(),createdAt:old?.createdAt||clock(),updatedAt:clock()});});return {active:action==='subscribe',deviceId:id};
   }
   await admin(user);
+  if(action==='devices'){
+   const list=await root.collection('devices').where('userId','==',user.uid).limit(100).get();
+   return {devices:list.docs.filter(doc=>eligible(doc.data(),user.uid)).map(doc=>({id:doc.id,platform:doc.data().platform==='android'?'android':'web',label:String(doc.data().label||'Dispositivo').slice(0,80),updatedAt:doc.data().updatedAt||null}))};
+  }
   if(action==='overview'){
    const [devices,campaigns]=await Promise.all([root.collection('devices').where('active','==',true).limit(401).get(),root.collection('campaigns').orderBy('createdAt','desc').limit(30).get()]);
    return {devices:devices.docs.filter(doc=>eligible(doc.data())).length,overLimit:devices.size>400,maxDevices:400,campaigns:campaigns.docs.map(project)};
@@ -50,9 +54,11 @@ function service({db,send,clock=Date.now,uuid=randomUUID,wait=ms=>new Promise(re
   const snapshot=await ref.get();if(!snapshot.exists)fail(404,'Aviso no encontrado.');const campaign=snapshot.data();
   if(action==='test'){
    if(campaign.status!=='prepared')fail(412,'Solo puedes probar un aviso que aún no se ha enviado.');
-   const token=tokenValue(input.token),deviceRef=root.collection('devices').doc(hash(token)),device=await deviceRef.get();if(!device.exists||!eligible(device.data(),user.uid))fail(412,'Activa las notificaciones de este dispositivo antes de probar.');
+   const chosen=input.deviceId?String(input.deviceId):hash(tokenValue(input.token));if(!/^[a-f0-9]{64}$/.test(chosen))fail(400,'Dispositivo inválido.');
+   const deviceRef=root.collection('devices').doc(chosen),device=await deviceRef.get();if(!device.exists||!eligible(device.data(),user.uid))fail(412,'Activa las notificaciones de este dispositivo antes de probar.');
+   const token=tokenValue(device.data().token),consentId=device.data().consentId;
    await quota(root,user,'test',20,60000);await wait(10000);
-   const current=await deviceRef.get();if(!current.exists||!eligible(current.data(),user.uid))fail(412,'El dispositivo fue desactivado.');
+   const current=await deviceRef.get();if(!current.exists||!eligible(current.data(),user.uid)||current.data().token!==token||current.data().consentId!==consentId)fail(412,'El dispositivo fue desactivado.');
    await send({token,data:{...{title:campaign.title,body:campaign.message,url:campaign.url},tag:'prueba-'+id},webpush:{headers:{TTL:'300'}}});
    await db.runTransaction(async tx=>{const current=await tx.get(ref);if(current.data()?.status==='prepared')tx.update(ref,{testedAt:clock()});});return {accepted:true,message:'Firebase aceptó la prueba. Confirma que llegó antes del envío general.'};
   }
