@@ -87,6 +87,7 @@ fun MerchantScanScreen(state: MerchantScanState, model: MerchantScanViewModel, d
                     when {
                         visit.status == "confirmed" -> {
                             Text("VISITA CONFIRMADA", fontWeight = FontWeight.Bold)
+                            MerchantBirthdayEntry(visit,state.uid)
                             if (canReverse) OutlinedButton(onClick = { reversalReason = ""; reversing = true }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("Deshacer último sello") }
                         }
                         visit.status == "reversed" -> Text("Este sello fue anulado.")

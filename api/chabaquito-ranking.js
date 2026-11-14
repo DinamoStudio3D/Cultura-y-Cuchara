@@ -11,8 +11,9 @@ module.exports=async function handler(req,res){
   try{
     const user=await authenticatedUser(req);
     if(req.query?.action==='merchant-program'){
-      const {merchantProgram}=require('../functions/merchant-program');
-      return res.status(200).json(await merchantProgram({db:firestore(),user,input:req.body||{},stamp:Timestamp.now()}));
+      const {merchantProgram,merchantBirthday}=require('../functions/merchant-program');
+      const operation=String(req.body?.action||'').startsWith('birthday-')?merchantBirthday:merchantProgram;
+      return res.status(200).json(await operation({db:firestore(),user,input:req.body||{},stamp:Timestamp.now()}));
     }
     if(req.query?.action==='passport-claim'){
       const {claimPassport}=require('../functions/passport-claim');

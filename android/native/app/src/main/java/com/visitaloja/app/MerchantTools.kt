@@ -91,7 +91,8 @@ internal class MerchantToolsViewModel(app: Application): AndroidViewModel(app) {
                         tx.update(ref,patch+mapOf("merchantUpdatedAt" to FieldValue.serverTimestamp(),"merchantUpdatedBy" to uid))
                     }
                 }.await()
-                if(same(uid,old.place,version)) mutable.value=mutable.value.copy(busy=false,profile=if(birthday)old.profile else old.profile+values,birthday=if(birthday)values else old.birthday,message="Cambios guardados.")
+                val birthdayAfter=if(birthday)try{ref.get(Source.SERVER).await().data}catch(e:CancellationException){throw e}catch(_:Exception){null}else null
+                if(same(uid,old.place,version)) mutable.value=mutable.value.copy(busy=false,loaded=if(birthday)birthdayAfter!=null else old.loaded,profile=if(birthday)old.profile else old.profile+values,birthday=if(birthday)birthdayAfter?:values else old.birthday,message=if(birthday&&birthdayAfter==null)"Campaña guardada. Actualiza para consultar su versión actual." else "Cambios guardados.")
             } catch(e: CancellationException){throw e}
             catch(e: Exception){if(same(uid,old.place,version))mutable.value=mutable.value.copy(busy=false,message=if(e is IllegalStateException)e.message else "No se pudo guardar. Comprueba conexión, permisos y límites del plan antes de reintentar.")}
         }
