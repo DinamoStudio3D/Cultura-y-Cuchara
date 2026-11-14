@@ -110,12 +110,54 @@
     document.addEventListener('focusin', syncTyping);
     document.addEventListener('focusout', () => requestAnimationFrame(syncTyping));
 
+    const mobileCopy = {
+        'Encuentra tu próximo plan':'Find your next experience', 'Ver mapa':'View map',
+        'Comer':'Eat', 'Hospedarse':'Stay', 'Visitar':'Visit',
+        'Loja en imágenes':'Loja in pictures', 'Rincones para descubrir':'Places to discover',
+        'Historias en video':'Video stories', 'Conoce cada lugar':'Discover each place',
+        'Cada visita cuenta':'Every visit counts', 'Tu pasaporte de Loja':'Your Loja passport',
+        'Consulta tus sellos y recompensas':'Check your stamps and rewards',
+        'Agenda de eventos':'Events agenda', 'Misiones de Chabaquito':'Chabaquito missions',
+        'Más para descubrir':'More to discover', 'Emprendedores':'Local ventures',
+        'Crear una postal':'Create a postcard', 'Loja en el tiempo':'Loja through time',
+        'Podcast':'Podcast', 'Sabores y tradiciones':'Flavours and traditions',
+        'Festival FIAVL':'FIAVL festival', 'Cantones de Loja':'Cantons of Loja', 'Tienda':'Shop',
+        'Planificar una ruta':'Plan a route', 'Hablar con Chabaquito':'Talk to Chabaquito',
+        'PARA NEGOCIOS':'FOR BUSINESSES', 'Haz que más personas te descubran':'Help more people discover you',
+        'Conoce los planes de VisitaLoja':'Discover VisitaLoja business plans',
+        'Planes para mi negocio':'Plans for my business', 'Inicio':'Home', 'Paradas':'Places',
+        'Mi cuenta':'My account', 'Mapa':'Map', 'Volver al inicio':'Back to home',
+        'Promociones vigentes':'Current offers', 'Historias de Loja':'Stories of Loja',
+        'En tendencia':'Trending', 'Alianzas de VisitaLoja':'VisitaLoja partners',
+        'Cantón y horario':'Canton and opening hours'
+    };
+    const sourceCopy = new WeakMap();
+    function translateMobile() {
+        const english = document.getElementById('langSelector')?.value === 'en';
+        const containers = [hub, bar, back, filters, menuMore?.querySelector('a[href="planes.html"]')].filter(Boolean);
+        for (const container of containers) {
+            const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                const original = sourceCopy.get(node) || node.textContent.trim();
+                if (!mobileCopy[original]) continue;
+                sourceCopy.set(node, original);
+                const next = english ? mobileCopy[original] : original;
+                if (node.textContent !== next) node.textContent = next;
+            }
+        }
+    }
+    window.addEventListener('languagechange', translateMobile);
+    document.getElementById('langSelectorMobile')?.addEventListener('change', () => requestAnimationFrame(translateMobile));
+    document.getElementById('langSelector')?.addEventListener('change', () => requestAnimationFrame(translateMobile));
+
     function rootFor(id) {
         const element = document.getElementById(id);
         return roots().find(root => root === element || root.contains(element));
     }
     function render() {
         syncExtraLinks();
+        translateMobile();
         const active = media.matches;
         document.documentElement.classList.toggle('vl-mobile-browse', active);
         const selected = rootFor(current);
@@ -180,8 +222,9 @@
     });
     // Public sections can be inserted after Firestore settings arrive.
     new MutationObserver(render).observe(main, { childList: true });
-    const publishedObserver = new MutationObserver(syncExtraLinks);
+    const publishedObserver = new MutationObserver(records => { if (records.every(record => hub.contains(record.target))) return; syncExtraLinks(); translateMobile(); });
     publishedObserver.observe(main, { subtree: true, attributes: true, attributeFilter: ['hidden', 'class', 'aria-hidden'], childList: true, characterData: true });
     fromHash();
 })();
+
 

@@ -464,8 +464,8 @@
 <script src="/js/place-digital-menu.js?v=1"></script>
 <script src="/js/popup-schedule.js?v=2"></script>
 <link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
-    <link rel="stylesheet" href="css/mobile-browse.css?v=3">
-    <script defer src="js/mobile-browse.js?v=8"></script>
+    <link rel="stylesheet" href="css/mobile-browse.css?v=4">
+    <script defer src="js/mobile-browse.js?v=9"></script>
     <link rel="stylesheet" href="css/mobile-place-experience.css?v=1">
     <script defer src="js/mobile-place-experience.js?v=1"></script>
     <link rel="stylesheet" href="css/mobile-agenda.css?v=1">
@@ -8432,6 +8432,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 overlay.getClientRects().length > 0 && getComputedStyle(overlay).visibility !== 'hidden'
             );
             invite.classList.toggle('interface-layer-hidden', blocked);
+            document.documentElement.classList.toggle('vl-mobile-overlay-open', blocked);
         }
         const floatingInviteVisibilityObserver = new MutationObserver(syncFloatingAccountInviteVisibility);
         document.querySelectorAll(inviteBlockingOverlays).forEach(element => {
@@ -9430,3 +9431,4 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMen
 <script src="/js/push-receiver.js?v=1" defer></script>
 </body>
 </html>
+

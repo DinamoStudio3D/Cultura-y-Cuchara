@@ -91,3 +91,11 @@
   .vl-mobile-business > b { color:#075dab; font-size:22px; }
   .vl-mobile-business:focus-visible { outline:3px solid #075dab; outline-offset:3px; }
 }
+
+
+@media (max-width:767px) {
+  html.vl-mobile-browse.vl-mobile-overlay-open body :is(#accountFloatingInvite,#welcomeMusicToggle,#webMascot,#webMascotRestore,.vl-mobile-bottom) { display:none!important; pointer-events:none!important; }
+  html.vl-mobile-browse body #accountFloatingInvite { max-width:calc(100vw - 32px); right:12px; bottom:calc(148px + env(safe-area-inset-bottom))!important; }
+  html.vl-mobile-browse body #welcomeMusicToggle { top:auto!important; right:12px!important; bottom:calc(88px + env(safe-area-inset-bottom))!important; width:44px!important; height:44px!important; }
+  html.vl-mobile-browse .vl-mobile-business-icon { background:#e0efff; color:#075dab; }
+}
