@@ -41,7 +41,9 @@ async function merchantBirthday({db,user,input,stamp,now=Date.now()}){
   const m=merchant.data()||{},v=visit.data()||{},o=offer.data()||{};
   if(m.active!==true||!Array.isArray(m.placeIds)||!m.placeIds.includes(place))fail(403,'No tienes acceso activo a esta parada.');
   if(!visit.exists||v.placeId!==place||v.status!=='confirmed'||typeof v.userId!=='string'||!v.userId||v.userId.includes('/'))fail(412,'Consulta y confirma primero la visita del cliente.');
-  const md=String(v.birthMonthDay||'');if(!/^\d{2}-\d{2}$/.test(md)||!offer.exists||o.active!==true)return{available:false};
+  const profile=await tx.get(db.collection('userProfiles').doc(v.userId));
+  const birth=String(profile.data()?.birthDate||'');
+  const md=/^\d{4}-\d{2}-\d{2}$/.test(birth)?birth.slice(5):String(v.birthMonthDay||'');if(!/^\d{2}-\d{2}$/.test(md)||!offer.exists||o.active!==true)return{available:false};
   const [month,day]=md.split('-').map(Number);if(month<1||month>12||day<1||day>31||new Date(Date.UTC(2000,month-1,day)).getUTCMonth()!==month-1)return{available:false};
   let birthday=Date.UTC(Number(year),month-1,day),distance=Math.round((birthday-today)/86400000);if(distance< -30){birthday=Date.UTC(Number(year)+1,month-1,day);distance=Math.round((birthday-today)/86400000);}
   const before=Number(o.daysBefore??7),after=Number(o.daysAfter??2),minimum=Number(o.minimumSpend||0);
