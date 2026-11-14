@@ -137,3 +137,15 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Los controles de video y narraciones de la ficha distinguen el idioma de interfaz del idioma real de cada grabación; no traducen el audio.
 - La carta de productos inicia con la preferencia ES/EN de la app y conserva su selector local. Sus formularios independientes de pedidos/reservas y los reproductores internos aún tienen textos por traducir.
 - No se enviaron pedidos, opiniones ni mensajes en pruebas; pendientes validación física y pruebas privadas.
+
+## Seguimiento: implementación 0.66 · funciones agrupadas
+
+- Herramientas nativas del negocio: editar descripción, teléfono, WhatsApp, horario, logo, portada y galería; selección de imágenes, compresión, orientación EXIF y subida mediante la firma Cloudinary existente. Guarda solo cambios autorizados y detecta edición concurrente.
+- Campañas nativas de cumpleaños: activación, título, condiciones, días previos/posteriores y consumo mínimo; utiliza birthdayOffers con las mismas autorizaciones y confirmación antes de guardar.
+- Configuración del premio habitual y de temporadas existentes, mediante un servicio autenticado de propietario que conserva metas, fechas, sellos, stock y contadores. Requiere publicar la nueva ruta del servicio; no permite crear programas ni cambiar permisos.
+- Exportación CSV de las filas cargadas de clientes/visitas/premios, correo enmascarado y protección frente a fórmulas. Las configuraciones avanzadas existentes quedan accesibles mediante un botón explícito al portal web.
+- Planes: pantalla nativa y accesos desde Inicio y Secciones, usando settings/subscriptions y la oferta compartida vigente. Consultar abre Contacto, sin iniciar un pago ni asignar planes.
+- Notificaciones: Android registra plataforma y etiqueta; el panel puede listar y seleccionar dispositivos propios suscritos para una prueba aislada sin exponer tokens. Revalida cuenta, consentimiento y token antes del envío. No se enviaron pruebas.
+- App Links: autoVerify y assetlinks para el paquete de pruebas y su firma estable, preparados en rama. La apertura verificada depende de publicar el archivo en ambos dominios canónicos, todavía sin desplegar main.
+- Pedidos y reservas incorporan las traducciones de sus controles principales. Textos publicados y algunos mensajes técnicos conservan el idioma original.
+- A petición del usuario, las pruebas de uso y emulador quedan para después; el workflow permite ejecutarlas manualmente con run_ui. Se mantiene la compilación y comprobaciones automáticas de código. No se publican campañas ni se cambian cuentas o datos reales durante el desarrollo.

@@ -10,6 +10,10 @@ module.exports=async function handler(req,res){
   if(req.method!=="POST") return res.status(405).json({error:"Método no permitido."});
   try{
     const user=await authenticatedUser(req);
+    if(req.query?.action==='merchant-program'){
+      const {merchantProgram}=require('../functions/merchant-program');
+      return res.status(200).json(await merchantProgram({db:firestore(),user,input:req.body||{},stamp:Timestamp.now()}));
+    }
     if(req.query?.action==='passport-claim'){
       const {claimPassport}=require('../functions/passport-claim');
       const result=await claimPassport({db:firestore(),user,input:req.body});

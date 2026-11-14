@@ -7,7 +7,7 @@ import java.util.Locale
 internal data class NativeLinkRequest(val id: String, val text: String)
 internal data class NativeLinkTarget(val route: String, val place: String? = null, val category: String = "all", val menuId: String? = null, val cantonId: String? = null)
 internal object NativeLinkPolicy {
-    private val sections = mapOf("" to "home", "inicio" to "home", "mapa" to "map", "agenda" to "agenda", "fiavl" to "festival", "misiones" to "missions", "pasaporte" to "passport", "promociones" to "promotions", "historias" to "stories", "emprendedores" to "enterprises", "loja-en-video" to "videos", "loja-tiempo" to "time", "loja-en-imagenes" to "photos", "podcast" to "podcast", "tienda" to "shop", "postales" to "postcards", "especias" to "shop", "establecimientos" to "explore", "categorias" to "explore", "registeredBrands" to "supporters", "contacto" to "contact")
+    private val sections = mapOf("" to "home", "inicio" to "home", "mapa" to "map", "agenda" to "agenda", "fiavl" to "festival", "misiones" to "missions", "pasaporte" to "passport", "promociones" to "promotions", "historias" to "stories", "emprendedores" to "enterprises", "loja-en-video" to "videos", "loja-tiempo" to "time", "loja-en-imagenes" to "photos", "podcast" to "podcast", "tienda" to "shop", "postales" to "postcards", "especias" to "shop", "establecimientos" to "explore", "categorias" to "explore", "registeredBrands" to "supporters", "contacto" to "contact", "planes" to "plans")
     private val categories = mapOf("/cafeterias-en-loja" to "cafe", "/hoteles-en-loja" to "hotel", "/restaurantes-en-loja" to "food", "/huecas-en-loja" to "hueca", "/panaderias-en-loja" to "panaderia", "/heladerias-en-loja" to "heladeria", "/bares-en-loja" to "bar", "/artesanias-en-loja" to "artesania", "/entretenimiento-en-loja" to "entretenimiento", "/que-hacer-en-loja" to "turismo")
     private fun id(value: String) = value.takeIf { it.length in 1..120 && Regex("[A-Za-z0-9_-]+").matches(it) }
     fun parse(value: String): NativeLinkTarget? = try {
@@ -21,6 +21,7 @@ internal object NativeLinkPolicy {
                 val path = u.path.ifBlank { "/" }
                 when {
                     keys.any { it.first == "qr" } || keys.size > 1 -> null
+                    path == "/planes.html" && keys.isEmpty() -> NativeLinkTarget("plans")
                     path == "/menu-digital.html" -> pairs.filter { it.first == "id" }.singleOrNull()?.second?.takeIf { keys.isEmpty() && MenuPolicy.validId(it) }?.let { NativeLinkTarget("menu", menuId = it) }
                     Regex("/canton/[a-z]+/?").matches(path) && keys.isEmpty() -> path.trimEnd('/').substringAfterLast('/').takeIf { ref -> CantonPolicy.catalogue.any { it.id == ref } }?.let { NativeLinkTarget("canton", cantonId = it) }
                     path == "/cantones.html" && keys.size == 1 && keys[0].first == "canton" -> keys[0].second.takeIf { ref -> CantonPolicy.catalogue.any { it.id == ref } }?.let { NativeLinkTarget("canton", cantonId = it) }

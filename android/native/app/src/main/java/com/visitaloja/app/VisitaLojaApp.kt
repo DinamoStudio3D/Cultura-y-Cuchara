@@ -259,7 +259,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
             topBar = { if (tab != "map") AppTopBar(state.loading, model::refresh, tab != "home", if (SectionsPolicy.parent(tab, fromSections) == "sections") (if (english) "Back to Sections" else "Volver a Secciones") else if (tab == "canton") (if (english) "Back to Cantons" else "Volver a Cantones") else (if (english) "Back to Home" else "Volver a Inicio"), back, english) { navigate("sections", "all") } },
             bottomBar = { Column {
                 if (audioState.key != null && audioState.key != WelcomeMusicPolicy.KEY && tab != "map") DiscoveryMiniPlayer(audioState, audioPlayer)
-                AppNavigation(if (tab in setOf("guide", "contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "festival", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab, english) { navigate(it, "all") }
+                AppNavigation(if (tab in setOf("plans", "guide", "contact", "privacy", "terms", "mesa", "supporters", "promotions", "stories", "enterprises", "sections", "agenda", "festival", "cantons", "canton", "photos", "time", "podcast", "videos", "missions", "itinerary", "notices", "shop", "postcards")) "home" else if (tab == "explore") "map" else tab, english) { navigate(it, "all") }
             } },
             containerColor = Color(0xFFF0F7FF)
         ) { padding ->
@@ -287,6 +287,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                         rewards = { rewardStop = null; merchantRewardOpen = true })
                     "passport" -> WalletScreen(accountState, walletState, guestState, { navigate("account", "all") }, { wallet.bind(accountState.uid); model.refresh() }, { visits.open(it) }, claims)
                     "home" -> HomeScreen(state, { navigate("explore", it) }, { selectedId = it.id }, favourite, agendaState, { navigate("agenda", "all") }, { selectedEventId = it }, { navigate("cantons", "all") }, { navigate("map", "all") }, discoveryState, videoState.value, { navigate(it, "all") }, supporterState, { input -> navigate("explore", "all"); query = input }, english, changeLanguage)
+                    "plans" -> PlansScreen(english) { navigate("contact", "all") }
                     "contact" -> PlatformContactScreen({ legalDocument = it })
                     "privacy", "terms" -> LegalScreen(tab, { navigate(it, "all") })
                     "mesa" -> sectionState.SaveableStateProvider("mesa") { MesaScreen(mesaState) { mesa.bind(true, true) } }
@@ -460,6 +461,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         item(key = "discovery") { DiscoveryHome(discovery, videos, openDiscovery, english) }
         item(key = "supporters") { HomeSupporters(supporters, state, detail, { openDiscovery("supporters") }, { openDiscovery("mesa") }) }
         if (blocks.visible("provinceGateway")) item(key = "cantons") { CantonsShortcut(openCantons, blocks, english) }
+        item(key = "plans") { OutlinedButton(onClick={openDiscovery("plans")},modifier=Modifier.fillMaxWidth().padding(horizontal=18.dp)){Text(if(english)"Promote your business · View plans" else "Promociona tu negocio · Ver planes")} }
         item(key = "all-sections") {
             TextButton(onClick = { openDiscovery("sections") }, modifier = Modifier.padding(horizontal = 18.dp).fillMaxWidth().testTag("all-sections-footer")) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(8.dp)); Text(if (english) "Discover all of VisitaLoja" else "Descubre todo VisitaLoja"); Spacer(Modifier.width(8.dp)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
         }

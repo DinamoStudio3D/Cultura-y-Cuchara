@@ -112,7 +112,7 @@ object NativePush {
         val user = FirebaseAuth.getInstance().currentUser?.takeIf { it.uid == uid } ?: error("Inicia sesión nuevamente.")
         val bearer = user.getIdToken(false).await().token ?: error("Inicia sesión nuevamente.")
         check(PushStore.current(context, uid, rev))
-        val response = withContext(Dispatchers.IO) { NativeApi.post(endpoint, bearer, JSONObject().put("action", "subscribe").put("token", token).put("consent", true)) }
+        val response = withContext(Dispatchers.IO) { NativeApi.post(endpoint, bearer, JSONObject().put("action", "subscribe").put("token", token).put("consent", true).put("platform", "android").put("label", (android.os.Build.MANUFACTURER+" "+android.os.Build.MODEL).take(80))) }
         val id = response.optString("deviceId")
         check(response.optBoolean("active") && PushPolicy.deviceId(id)) { "No pudimos confirmar la activación. Reintenta." }
         if (!allowed(context) || !PushStore.acknowledge(context, uid, rev, id)) {

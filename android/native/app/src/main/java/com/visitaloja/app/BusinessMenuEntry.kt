@@ -85,20 +85,20 @@ internal fun BusinessMenuEntry(place: Place, uiEnglish: Boolean = false) {
     if (menuOpen && catalogue.dishes.isNotEmpty()) BusinessMenuDialog(catalogue, english, { english = it }, { menuOpen = false }) { dish -> request = BusinessRequest(dish = dish.key, english = english) }
     request?.let { draft ->
         val stillAvailable = if (draft.reservation) catalogue.reservations else catalogue.orders && (draft.dish == null || catalogue.dishes.any { it.key == draft.dish && it.available })
-        if (stillAvailable) BusinessRequestDialog(catalogue, draft, now, model, { request = null })
+        if (stillAvailable) BusinessRequestDialog(catalogue, draft, now, model, uiEnglish, { request = null })
         else LaunchedEffect(draft) { request = null }
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun BusinessDialog(title: String, tag: String, close: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+private fun BusinessDialog(title: String, tag: String, close: () -> Unit, english: Boolean = false, content: @Composable ColumnScope.() -> Unit) {
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(color = Color(0xFFF0F7FF), modifier = Modifier.fillMaxSize().semantics { testTagsAsResourceId = true }.testTag(tag)) {
             Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
                 Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(title, modifier = Modifier.weight(1f), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    IconButton(onClick = close) { Icon(Icons.Default.Close, "Cerrar $title") }
+                    IconButton(onClick = close) { Icon(Icons.Default.Close, if(english)"Close $title" else "Cerrar $title") }
                 }
                 content()
             }
@@ -111,7 +111,7 @@ private fun BusinessMenuDialog(menu: BusinessCatalogue, english: Boolean, langua
     var query by remember(menu.id) { mutableStateOf("") }
     var category by remember(menu.id, english) { mutableStateOf("") }
     val dishes = BusinessMenuPolicy.filter(menu.dishes, query, category, english)
-    BusinessDialog(if (english) menu.menuTitleEn.ifBlank { menu.menuTitle } else menu.menuTitle, "business-menu-screen", close) {
+    BusinessDialog(if (english) menu.menuTitleEn.ifBlank { menu.menuTitle } else menu.menuTitle, "business-menu-screen", close, english) {
         LazyColumn(Modifier.weight(1f).fillMaxWidth(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             item {
                 Text(if (english) menu.titleEn.ifBlank { menu.title } else menu.title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
@@ -146,7 +146,7 @@ private fun BusinessMenuDialog(menu: BusinessCatalogue, english: Boolean, langua
 }
 
 @Composable
-private fun BusinessRequestDialog(menu: BusinessCatalogue, initial: BusinessRequest, now: Long, model: BusinessMenuViewModel, close: () -> Unit) {
+private fun BusinessRequestDialog(menu: BusinessCatalogue, initial: BusinessRequest, now: Long, model: BusinessMenuViewModel, uiEnglish: Boolean, close: () -> Unit) {
     var request by remember(menu.id, initial) { mutableStateOf(initial) }
     var preview by remember { mutableStateOf<String?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -156,11 +156,11 @@ private fun BusinessRequestDialog(menu: BusinessCatalogue, initial: BusinessRequ
     val scope = rememberCoroutineScope()
     LaunchedEffect(menu) { preview = null }
     fun edit(next: BusinessRequest) { if (!busy) { request = next;preview = null;error = null } }
-    val heading = if (request.reservation) "Solicitar reserva" else "Preparar pedido"
-    BusinessDialog(heading, "business-request-screen", close) {
+    val heading = if (request.reservation) (if(uiEnglish) "Request reservation" else "Solicitar reserva") else (if(uiEnglish) "Prepare order" else "Preparar pedido")
+    BusinessDialog(heading, "business-request-screen", close, uiEnglish) {
         Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Text(menu.title, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
-            Text("El negocio confirmará disponibilidad, precio final y condiciones por WhatsApp.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text((if(uiEnglish) "The business will confirm availability, final price and conditions on WhatsApp." else "El negocio confirmará disponibilidad, precio final y condiciones por WhatsApp."), color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (request.reservation) {
                 OutlinedButton(onClick = {
                     val today = LocalDate.now(BusinessMenuPolicy.zone)
@@ -185,16 +185,16 @@ private fun BusinessRequestDialog(menu: BusinessCatalogue, initial: BusinessRequ
                     Spacer(Modifier.width(8.dp));OutlinedButton(onClick = { edit(request.copy(quantity = request.quantity + 1)) }, enabled = !busy && request.quantity < 20) { Text("+") }
                 }
             }
-            OutlinedTextField(request.notes, { edit(request.copy(notes = it.take(1000))) }, modifier = Modifier.fillMaxWidth().testTag("business-request-notes"), label = { Text(if (request.reservation) "Indicaciones o necesidades (opcional)" else "¿Qué deseas pedir? Indicaciones") }, minLines = 3, maxLines = 6, enabled = !busy)
-            Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(request.english, { edit(request.copy(english = it)) }, enabled = !busy);Text("Preparar el mensaje en inglés") }
+            OutlinedTextField(request.notes, { edit(request.copy(notes = it.take(1000))) }, modifier = Modifier.fillMaxWidth().testTag("business-request-notes"), label = { Text(if (request.reservation) (if(uiEnglish) "Notes or needs (optional)" else "Indicaciones o necesidades (opcional)") else (if(uiEnglish) "What would you like to order? Notes" else "¿Qué deseas pedir? Indicaciones")) }, minLines = 3, maxLines = 6, enabled = !busy)
+            Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(request.english, { edit(request.copy(english = it)) }, enabled = !busy);Text((if(uiEnglish) "Prepare the message in English" else "Preparar el mensaje en inglés")) }
             error?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.testTag("business-request-error")) }
             if (preview == null) Button(onClick = {
                 error = BusinessMenuPolicy.error(menu, request, System.currentTimeMillis())
                 if (error == null) preview = BusinessMenuPolicy.message(menu, request)
-            }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("business-request-preview")) { Text("Revisar mensaje") }
+            }, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("business-request-preview")) { Text((if(uiEnglish) "Review message" else "Revisar mensaje")) }
             preview?.let { message ->
                 Surface(color = Color.White, shape = RoundedCornerShape(16.dp)) { Text(message, Modifier.padding(18.dp).testTag("business-message-preview"), lineHeight = 24.sp) }
-                Text("Se abrirá el chat con ${menu.phone}. El mensaje se envía cuando tú lo confirmes en WhatsApp.", fontSize = 12.sp)
+                Text((if(uiEnglish) "The chat with ${menu.phone} will open. You send the message when you confirm it in WhatsApp." else "Se abrirá el chat con ${menu.phone}. El mensaje se envía cuando tú lo confirmes en WhatsApp."), fontSize = 12.sp)
                 Button(onClick = {
                     if (!busy) scope.launch {
                         busy = true;error = null
@@ -202,7 +202,7 @@ private fun BusinessRequestDialog(menu: BusinessCatalogue, initial: BusinessRequ
                         try {
                             val valid = model.verify(menu, submitted.dish != null)
                             val current = model.current(System.currentTimeMillis())
-                            if (!valid || current != menu || request != submitted || BusinessMenuPolicy.message(menu, submitted) != message) { preview = null;error = "La información del negocio cambió. Revisa las opciones y prepara el mensaje de nuevo." }
+                            if (!valid || current != menu || request != submitted || BusinessMenuPolicy.message(menu, submitted) != message) { preview = null;error = (if(uiEnglish) "The business information changed. Review the options and prepare the message again." else "La información del negocio cambió. Revisa las opciones y prepara el mensaje de nuevo.") }
                             else {
                                 error = BusinessMenuPolicy.error(current, submitted, System.currentTimeMillis())
                                 if (error == null && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
@@ -212,12 +212,12 @@ private fun BusinessRequestDialog(menu: BusinessCatalogue, initial: BusinessRequ
                                 }
                             }
                         } catch (cancelled: CancellationException) { throw cancelled }
-                        catch (_: ActivityNotFoundException) { error = "No hay una aplicación disponible para abrir WhatsApp." }
-                        catch (_: Exception) { error = "Conéctate para verificar la información actual del negocio y vuelve a intentar." }
+                        catch (_: ActivityNotFoundException) { error = (if(uiEnglish) "No app is available to open WhatsApp." else "No hay una aplicación disponible para abrir WhatsApp.") }
+                        catch (_: Exception) { error = (if(uiEnglish) "Connect to check current business information and try again." else "Conéctate para verificar la información actual del negocio y vuelve a intentar.") }
                         finally { busy = false }
                     }
-                }, enabled = !busy && BusinessMenuPolicy.error(menu, request, now) == null, modifier = Modifier.fillMaxWidth().testTag("business-open-whatsapp")) { Text(if (busy) "Comprobando…" else "Abrir WhatsApp con este mensaje") }
-                TextButton(onClick = { preview = null }, enabled = !busy) { Text("Editar mensaje") }
+                }, enabled = !busy && BusinessMenuPolicy.error(menu, request, now) == null, modifier = Modifier.fillMaxWidth().testTag("business-open-whatsapp")) { Text(if (busy) (if(uiEnglish) "Checking…" else "Comprobando…") else (if(uiEnglish) "Open WhatsApp with this message" else "Abrir WhatsApp con este mensaje")) }
+                TextButton(onClick = { preview = null }, enabled = !busy) { Text((if(uiEnglish) "Edit message" else "Editar mensaje")) }
             }
         }
     }

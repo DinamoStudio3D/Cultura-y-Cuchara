@@ -83,6 +83,16 @@ fun PushScreen(state: PushState, model: PushViewModel, account: () -> Unit, dest
             } }
         }
         state.message?.let { message -> item { Text(message, color = MaterialTheme.colorScheme.primary) } }
+        if(state.active && state.uid!=null) item {
+            val deviceId=PushStore.preferences(context).getString("deviceId","").orEmpty()
+            if(PushPolicy.deviceId(deviceId)) {
+                Text("Identificador de este móvil para administración: "+deviceId.take(8))
+                TextButton(onClick={
+                    val clipboard=context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("VisitaLoja dispositivo",deviceId))
+                }){Text("Copiar identificador del móvil")}
+            }
+        }
         item {
             OutlinedButton(onClick = { request("test") }, enabled = !state.busy, modifier = Modifier.fillMaxWidth().testTag("push-local-test")) { Text("Ver una notificación de prueba") }
             Text("La prueba local solo comprueba que Android pueda mostrar el aviso. El envío desde el panel se prueba por separado después de activar la suscripción.", style = MaterialTheme.typography.bodySmall)

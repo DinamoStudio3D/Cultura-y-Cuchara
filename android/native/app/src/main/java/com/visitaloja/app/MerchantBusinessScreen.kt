@@ -24,6 +24,14 @@ private fun businessMoney(amount: Any?) = java.text.NumberFormat.getCurrencyInst
 private fun businessDate(value: Any?): String = timeMillis(value)?.let { DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm",Locale.forLanguageTag("es-EC")).withZone(ZoneId.of("America/Guayaquil")).format(Instant.ofEpochMilli(it)) } ?: "Sin fecha"
 @Composable
 fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusinessViewModel, scan: () -> Unit, rewards: () -> Unit, dismiss: () -> Unit) {
+    var tools by remember(state.uid,state.selected) { mutableStateOf(false) }
+    var exportText by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val export = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+        if(uri!=null) runCatching { context.contentResolver.openOutputStream(uri)?.use { it.write(exportText.orEmpty().toByteArray(Charsets.UTF_8)) } }
+        exportText=null
+    }
+    if(tools) MerchantToolsScreen(state.uid,state.selected) { tools=false }
     var search by remember(state.uid,state.selected,state.tab) { mutableStateOf("") }
     var visitFilter by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
     var visitPeriod by remember(state.uid,state.selected,state.tab) { mutableStateOf("all") }
@@ -69,6 +77,13 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                             Icon(Icons.Default.Redeem, null); Spacer(Modifier.width(8.dp)); Text("Validar y entregar un premio")
                         }
                     }
+                    item { OutlinedButton(onClick={tools=true},enabled=!state.busy,modifier=Modifier.fillMaxWidth()){Text("Editar ficha, fotos y cumpleaños")} }
+                    if(state.months>0) item { OutlinedButton(onClick={
+                        fun cell(v:String)= "\""+v.let{if(it.trimStart().let { value -> value.startsWith("=")||value.startsWith("+")||value.startsWith("-")||value.startsWith("@") })"'"+it else it}.replace("\"","\"\"")+"\""
+                        val columns=listOf("userName","userEmail","visitCount","totalSpend","status","rewardTitle")
+                        exportText="\uFEFF"+columns.joinToString(",",transform=::cell)+"\r\n"+filtered.joinToString("\r\n"){row->columns.joinToString(","){key->cell(if(key=="userEmail")MerchantBusinessPolicy.maskedEmail(row.text(key))else row[key]?.toString().orEmpty())}}
+                        export.launch("VisitaLoja-${state.selected}-${state.tab}.csv")
+                    },enabled=!state.busy&&filtered.isNotEmpty()){Text("Exportar filas cargadas (CSV)")} }
                     if(state.months<=0)item { Text("El plan de esta parada no incluye consulta de clientes, historial ni estadísticas. Puedes continuar sellando visitas.") }
                     else {
                         item { Text("Historial de visitas y premios: últimos ${state.months} meses. Clientes: progreso acumulado.",fontSize=12.sp) }

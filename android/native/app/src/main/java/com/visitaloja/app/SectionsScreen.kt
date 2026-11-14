@@ -53,6 +53,7 @@ internal object SectionsPolicy {
         AppSection("shop", "Tienda", "Recuerdos de Loja y tu pedido", groups[2], Icons.Default.ShoppingBag),
         AppSection("notices", "Avisos", "Novedades y notificaciones opcionales", groups[2], Icons.Default.NotificationsActive),
         AppSection("contact", "Contacto y redes", "Ayuda, alianzas, privacidad y términos de VisitaLoja", groups[2], Icons.Default.SupportAgent),
+        AppSection("plans", "Planes para negocios", "Suscripciones y beneficios para tu parada", groups[2], Icons.Default.WorkspacePremium),
         AppSection("account", "Mi cuenta", "Tu perfil y acceso a VisitaLoja", groups[2], Icons.Default.PersonOutline)
     )
     private val englishCopy = mapOf(
@@ -79,6 +80,7 @@ internal object SectionsPolicy {
         "shop" to ("Shop" to "Souvenirs of Loja and your order"),
         "notices" to ("Notices" to "News and optional notifications"),
         "contact" to ("Contact and social media" to "Help, partnerships, privacy and terms"),
+        "plans" to ("Business plans" to "Subscriptions and benefits for your business"),
         "account" to ("My account" to "Your profile and access to VisitaLoja")
     )
     fun localize(section: AppSection, english: Boolean): AppSection {
