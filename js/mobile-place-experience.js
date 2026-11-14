@@ -15,12 +15,14 @@
     let restoreGeneration = 0;
     let selectedId = null;
     let pendingRestore = null;
+    let pendingScroll = false;
+    let cardAnchor = null;
     let lastSection = location.hash.slice(1) || 'inicio';
     let noticeUntil = 0;
     const startedAt = Date.now();
     try {
         const saved = JSON.parse(sessionStorage.getItem(key) || 'null');
-        if (saved?.version === 1 && Date.now() - saved.savedAt < 30 * 60 * 1000) snapshot = saved;
+        if (saved?.version === 1 && Date.now() - saved.savedAt < 30 * 60 * 1000) snapshot = {...saved,nearOnly:false};
     } catch {}
 
     function persist() {
@@ -30,6 +32,8 @@
             query: document.getElementById('searchInput')?.value || '',
             cantonId: document.getElementById('placeCantonFilter')?.value || '',
             openOnly: document.getElementById('placeOpenFilter')?.checked === true,
+            nearOnly: document.getElementById('placesNearMeButton')?.getAttribute('aria-pressed') === 'true',
+            anchor: cardAnchor || (()=>{const item=Array.from(list?.querySelectorAll('.local-item:not(.hidden-item)')||[]).find(item=>item.getBoundingClientRect().bottom>100);return item?{id:item.dataset.locationId,offset:item.getBoundingClientRect().top}:null;})(),
             savedOnly: document.getElementById('placeSavedFilter')?.checked === true,
             category: document.querySelector('#categoryScroll .filter-btn[aria-pressed="true"]')?.dataset.placeCategory || 'all'
         };
@@ -52,7 +56,7 @@
     document.getElementById('smartSearchStatus')?.parentElement?.append(chips);
 
     function filtersChanged(state) {
-        if (restoring && snapshot && ['query', 'category', 'cantonId', 'openOnly', 'savedOnly'].some(key => state[key] !== snapshot[key])) {
+        if (restoring && snapshot && ['query', 'category', 'cantonId', 'openOnly', 'savedOnly', 'nearOnly'].some(key => state[key] !== snapshot[key])) {
             restoreGeneration++;
             restoring = false;
         }
@@ -64,7 +68,8 @@
             ['category', state.category !== 'all' ? category?.textContent.trim() || state.category : ''],
             ['cantonId', state.cantonId ? canton?.selectedOptions?.[0]?.textContent || state.cantonId : ''],
             ['openOnly', state.openOnly ? text('Abierto ahora', 'Open now') : ''],
-            ['savedOnly', state.savedOnly ? text('Mis favoritos', 'My favorites') : '']
+            ['savedOnly', state.savedOnly ? text('Mis favoritos', 'My favorites') : ''],
+            ['nearOnly', state.nearOnly ? text('Cerca de mí', 'Near me') : '']
         ].filter(([, label]) => label);
         for (const [filter, label] of values) {
             const button = document.createElement('button');
@@ -84,7 +89,11 @@
         command('restore', { state: snapshot });
         requestAnimationFrame(() => requestAnimationFrame(() => {
             if (generation !== restoreGeneration) return;
-            window.scrollTo({ top: Math.max(0, Number(snapshot.scrollY) || 0), behavior: 'instant' });
+            const anchor=snapshot.anchor;
+            const target=anchor&&Array.from(list?.querySelectorAll('.local-item')||[]).find(item=>item.dataset.locationId===anchor.id);
+            pendingScroll=!!anchor&&!target;
+            const top=target?window.scrollY+target.getBoundingClientRect().top-Number(anchor.offset||0):Number(snapshot.scrollY)||0;
+            window.scrollTo({ top: Math.max(0,top), behavior: 'instant' });
             restoring = false;
         }));
     }
@@ -97,7 +106,8 @@
     }
     document.addEventListener('click', event => {
         if (!mobile.matches || !list?.contains(event.target)) return;
-        if (event.target.closest('.local-item')) persist();
+        const item=event.target.closest('.local-item');
+        if(item){cardAnchor={id:item.dataset.locationId,offset:item.getBoundingClientRect().top};persist();}
     }, true);
     window.addEventListener('pagehide', () => {
         if (lastSection === 'establecimientos') persist();
@@ -181,9 +191,12 @@
         command('restore', { state: pendingRestore });
         pendingRestore = null;
     }
-    window.addEventListener('visitaloja:places-rendered', restorePendingFilters);
-    list?.addEventListener('input', () => { pendingRestore = null; });
-    list?.addEventListener('change', () => { pendingRestore = null; });
+    window.addEventListener('visitaloja:places-rendered',()=>{restorePendingFilters();if(pendingScroll&&location.hash==='#establecimientos')restoreList();});
+    const cancelPending=()=>{pendingScroll=false;cardAnchor=null;};
+    window.addEventListener('wheel',cancelPending,{passive:true});
+    window.addEventListener('touchstart',cancelPending,{passive:true});
+    list?.addEventListener('input', () => { pendingRestore = null;pendingScroll=false;cardAnchor=null; });
+    list?.addEventListener('change', () => { pendingRestore = null;pendingScroll=false;cardAnchor=null; });
     if (snapshot && mobile.matches) {
         pendingRestore = snapshot;
         restorePendingFilters();
@@ -196,3 +209,4 @@
         } catch {}
     } else command('refresh');
 })();
+

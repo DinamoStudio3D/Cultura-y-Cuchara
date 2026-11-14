@@ -466,8 +466,8 @@
 <link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
     <link rel="stylesheet" href="css/mobile-browse.css?v=4">
     <script defer src="js/mobile-browse.js?v=9"></script>
-    <link rel="stylesheet" href="css/mobile-place-experience.css?v=1">
-    <script defer src="js/mobile-place-experience.js?v=1"></script>
+    <link rel="stylesheet" href="css/mobile-place-experience.css?v=2">
+    <script defer src="js/mobile-place-experience.js?v=2"></script>
     <link rel="stylesheet" href="css/mobile-agenda.css?v=1">
     <script defer src="js/mobile-agenda.js?v=1"></script>
 </head>
@@ -612,6 +612,7 @@
                     <h3 class="font-black text-xl mt-4">Ingresa o crea tu cuenta</h3>
                     <p class="text-sm text-gray-600 mt-2">Usa tu cuenta de Google. Si ya te registraste, entrarás directamente con tus datos guardados.</p>
                     <button id="googleSignInButton" type="button" onclick="signInVisitorWithGoogle()" class="w-full mt-6 border-2 border-gray-200 hover:border-brandGold rounded-xl px-5 py-3.5 font-black flex items-center justify-center gap-3 transition"><span class="w-7 h-7 rounded-full bg-white shadow grid place-items-center text-sm font-black text-blue-600">G</span>Ingresar o registrarme con Google</button>
+                    <button type="button" onclick="openExperienceFavorites()" class="account-device-favorites"><span data-i18n="expSavedPlaces">Mis lugares guardados</span> →</button>
                 </div>
                 <form id="visitorProfileForm" class="hidden space-y-4" onsubmit="saveVisitorProfile(event)">
                     <div class="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl p-3"><img id="visitorAvatar" class="w-12 h-12 rounded-full object-cover bg-white" alt="Foto de perfil" decoding="async"><div class="min-w-0"><p id="visitorWelcome" class="font-black truncate">Completa tu perfil</p><p id="visitorGoogleEmail" class="text-xs text-gray-600 truncate"></p></div></div>
@@ -1269,10 +1270,10 @@
             </div>
             <div class="flex flex-col gap-3 mb-6 pb-4 border-b border-gray-100">
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full" id="categoryScroll"></div>
-                <div class="flex overflow-x-auto hide-scrollbar gap-2 w-full">
-                    <button type="button" onclick="runSmartSearch(currentLang==='en'?'open now':'abierto ahora')" class="flex-shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-clock mr-1"></i><span data-i18n="smartOpenNow">Abierto ahora</span></button>
+                <div class="place-quick-actions flex overflow-x-auto hide-scrollbar gap-2 w-full">
+                    <button type="button" id="placesOpenNowButton" aria-pressed="false" onclick="togglePlacesOpenNow()" class="flex-shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-clock mr-1"></i><span data-i18n="smartOpenNow">Abierto ahora</span></button>
                     <button type="button" onclick="runSmartSearch(currentLang==='en'?'Loja food':'comida lojana')" class="flex-shrink-0 bg-orange-50 text-orange-700 border border-orange-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🥘 <span data-i18n="smartLojaFood">Comida lojana</span></button>
-                    <button type="button" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i><span data-i18n="btnGps">Cerca de mí</span></button>
+                    <button type="button" id="placesNearMeButton" aria-pressed="false" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i><span data-i18n="btnGps">Cerca de mí</span></button>
                     <button type="button" onclick="runSmartSearch('pasaporte')" class="flex-shrink-0 bg-rose-50 text-rose-700 border border-rose-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-stamp mr-1"></i><span data-i18n="smartPassport">Para mi pasaporte</span></button>
                 </div>
                 <div class="flex justify-end">
@@ -8341,6 +8342,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         let placeDiscoveryCategory = 'all';
+        let placeNearOnly = false;
+        let placeNearRequest = 0;
+        function togglePlacesOpenNow(){const field=document.getElementById('placeOpenFilter');field.checked=!field.checked;searchItems();}
         for(const canton of window.ChabaquitoPlaceConfig.CANTONS){const option=new Option(canton.name,canton.id);document.getElementById('placeCantonFilter').append(option);}
         function openSavedPlaces(){window.VisitaLojaMobileBrowse?.open('establecimientos');clearAllPlaceFilters();document.getElementById('placeSavedFilter').checked=true;searchItems();document.getElementById('establecimientos').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
         document.addEventListener('visitaloja:mobile-place-filter', event => {
@@ -8354,10 +8358,12 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 document.getElementById('placeCantonFilter').value = String(state.cantonId || '');
                 document.getElementById('placeOpenFilter').checked = state.openOnly === true;
                 document.getElementById('placeSavedFilter').checked = state.savedOnly === true;
+                placeNearOnly=state.nearOnly===true&&!!userCoords;
                 filterItems(String(state.category || 'all'), null);
                 return;
             }
             if (action === 'remove') {
+                if(filter==='nearOnly'){placeNearOnly=false;searchItems();return;}
                 if (filter === 'category') {
                     filterItems('all', null);
                     return;
@@ -8372,6 +8378,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         });
 
         function clearAllPlaceFilters() {
+            placeNearOnly=false;placeNearRequest++;
             document.getElementById('placeSavedFilter').checked=false;
             document.getElementById('placeCantonFilter').value='';
             document.getElementById('placeOpenFilter').checked=false;
@@ -8391,25 +8398,40 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function runSmartSearch(query){const input=document.getElementById('searchInput');if(input){input.value=query;searchItems();input.focus();}}
         function clearSmartSearch(){const input=document.getElementById('searchInput');if(input)input.value='';searchItems();}
-        function searchPlacesNearMe(){if(!navigator.geolocation){showToast(currentLang==='en'?'Your browser does not support location.':'Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};runSmartSearch(currentLang==='en'?'near me':'cerca de mí');},()=>showToast(currentLang==='en'?'We could not get your location.':'No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
+        function searchPlacesNearMe(){
+            const button=document.getElementById('placesNearMeButton');
+            if(placeNearOnly){placeNearOnly=false;searchItems();return;}
+            if(button?.disabled)return;
+            if(!navigator.geolocation){showToast(currentLang==='en'?'Your browser does not support location.':'Tu navegador no permite ubicación.');return;}
+            const request=++placeNearRequest;
+            if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
+            const finish=()=>{if(button){button.disabled=false;button.removeAttribute('aria-busy');}};
+            navigator.geolocation.getCurrentPosition(position=>{
+                if(request!==placeNearRequest){finish();return;}
+                userCoords={lat:position.coords.latitude,lng:position.coords.longitude};placeNearOnly=true;finish();searchItems();
+            },error=>{if(request!==placeNearRequest){finish();return;}finish();showToast(currentLang==='en'?(error.code===1?'Location permission was denied. You can still search by name or canton.':'We could not get your location. Try again or choose a canton.'):(error.code===1?'No se permitió la ubicación. Puedes seguir buscando por nombre o cantón.':'No pudimos obtener tu ubicación. Reintenta o elige un cantón.'));},{timeout:7000,enableHighAccuracy:true});
+        }
+
         function searchItems() {
             const model=window.VisitaLojaDiscovery,input=document.getElementById('searchInput'),query=input?.value||'',cantonId=document.getElementById('placeCantonFilter')?.value||'',openOnly=document.getElementById('placeOpenFilter')?.checked===true,savedOnly=document.getElementById('placeSavedFilter')?.checked===true;
             if(!model)return;
-            const near=/\b(cerca|near|proximo)\b/.test(model.normalize(query)),placeById=new Map(locations.map(place=>[String(place.id),place]));let visible=0;
+            const near=placeNearOnly||/\b(cerca|near|proximo)\b/.test(model.normalize(query)),placeById=new Map(locations.map(place=>[String(place.id),place]));let visible=0;
             document.querySelectorAll('.local-item').forEach(card=>{
                 const place=placeById.get(card.dataset.locationId);
                 const match=!!place&&model.matches(place,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow);
                 card.classList.toggle('hidden-item',!match);card.style.opacity=match?'1':'0';card.style.order=match&&!near&&query.trim()?String(-model.score(place,query)):'';
-                if(match){visible++;if(near&&userCoords){const coords=publicPlaceCoordinates(place);if(coords){const distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,coords[0],coords[1]);if(Number.isFinite(distance))card.style.order=String(Math.round(distance*1000));}}}
+                if(match){visible++;if(near&&userCoords){card.style.order='2147483646';const coords=publicPlaceCoordinates(place);if(coords){const distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,coords[0],coords[1]);if(Number.isFinite(distance))card.style.order=String(Math.round(distance*1000));}}}
             });
             document.getElementById('noResults')?.classList.toggle('hidden',visible>0);
             document.getElementById('smartSearchClearButton')?.classList.toggle('hidden',!query);
-            updateClearFiltersButton(Boolean(query||cantonId||openOnly||savedOnly||placeDiscoveryCategory!=='all'));
+            updateClearFiltersButton(Boolean(query||cantonId||openOnly||savedOnly||placeNearOnly||placeDiscoveryCategory!=='all'));
             const savedCount=new Set(favoriteLocations.map(String)).size;document.getElementById('savedPlacesCount').textContent=String(savedCount);document.getElementById('savedPlacesRoute').hidden=savedCount===0;document.getElementById('savedPlacesHint').hidden=!savedOnly;
             const en=currentLang==='en',emptySaved=savedOnly&&savedCount===0;document.getElementById('placeEmptyTitle').textContent=emptySaved?(en?'No saved places yet':'Todavía no tienes lugares guardados'):(savedOnly?(en?'No favorites match these filters':'No hay favoritos que coincidan con estos filtros'):(en?'No results found for that search.':'No encontramos resultados para esa búsqueda.'));document.getElementById('placeEmptyHelp').textContent=emptySaved?(en?'Tap the leaf on a place card to save it and find it here.':'Toca la hoja en la tarjeta de un lugar para guardarlo y encontrarlo aquí.'):(en?'Try another canton, category or fewer search words.':'Prueba con otro cantón, una categoría diferente o menos palabras.');
             window.VisitaLojaSearchSuggestions?.render(locations,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow,visible,en);
             const status=document.getElementById('smartSearchStatus');if(status)status.textContent=currentLang==='en'?`${visible} places match your filters.`:`${visible===1?'1 parada coincide':visible+' paradas coinciden'} con tu búsqueda y filtros.`;
-            window.VisitaLojaMobilePlaces?.filtersChanged({query,cantonId,openOnly,savedOnly,category:placeDiscoveryCategory});
+            document.getElementById('placesOpenNowButton')?.setAttribute('aria-pressed',String(openOnly));
+            document.getElementById('placesNearMeButton')?.setAttribute('aria-pressed',String(placeNearOnly));
+            window.VisitaLojaMobilePlaces?.filtersChanged({query,cantonId,openOnly,savedOnly,nearOnly:placeNearOnly,category:placeDiscoveryCategory});
         }
 
         function filterItems(category, btnElement) {
@@ -9431,4 +9453,5 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMen
 <script src="/js/push-receiver.js?v=1" defer></script>
 </body>
 </html>
+
 

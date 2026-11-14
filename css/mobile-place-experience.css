@@ -60,3 +60,22 @@
  html.vl-mobile-browse body:has(#vl-chabaquito-install.vl-install-visible) #accountFloatingInvite,
  html.vl-mobile-browse body:has([role="dialog"][aria-modal="true"][aria-hidden="false"]) :is(#accountFloatingInvite, #vl-chabaquito-install) { display: none !important; }
 }
+
+
+@layer vl-layout {
+ @media(max-width:767px){
+  html.vl-mobile-browse #establecimientos .place-quick-actions{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important;overflow:visible!important}
+  html.vl-mobile-browse #establecimientos .place-quick-actions>button{min-height:44px!important;white-space:normal;padding:10px!important;font-size:12px!important;text-align:center;border-radius:12px!important}
+  html.vl-mobile-browse #establecimientos .place-quick-actions>button:nth-child(3){grid-column:2;grid-row:1}
+  html.vl-mobile-browse #establecimientos .place-quick-actions>button:nth-child(2){grid-column:1;grid-row:2}
+  html.vl-mobile-browse #establecimientos .discovery-open{display:none!important}
+ }
+}
+@layer vl-colors {
+ #accountModal .account-device-favorites{display:block;width:100%;min-height:44px;margin-top:14px;border:1px solid #bad5ed;border-radius:12px;background:#edf5ff!important;color:#154d80!important;font-weight:750;font-size:14px;padding:12px}
+ @media(max-width:767px){
+  html.vl-mobile-browse #establecimientos .place-quick-actions>button{background:#edf5ff!important;color:#164c80!important;border:1px solid #c5d9ee!important}
+  html.vl-mobile-browse #establecimientos .place-quick-actions>button[aria-pressed=true]{background:#075eb5!important;color:#fff!important;border-color:#075eb5!important;--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff}
+  #placesNearMeButton[aria-busy=true]{opacity:.65;cursor:progress}
+ }
+}
