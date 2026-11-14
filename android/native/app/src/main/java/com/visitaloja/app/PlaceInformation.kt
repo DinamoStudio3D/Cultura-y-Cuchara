@@ -25,7 +25,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Composable
-internal fun PlaceHours(info: PlaceInfo, fresh: Boolean) {
+internal fun PlaceHours(info: PlaceInfo, fresh: Boolean, english: Boolean = false) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val now by produceState(System.currentTimeMillis(), lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -37,28 +37,28 @@ internal fun PlaceHours(info: PlaceInfo, fresh: Boolean) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(Icons.Default.Schedule, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                Text("Horario de atención", fontWeight = FontWeight.Bold)
+                Text((if (english) "Opening hours" else "Horario de atención"), fontWeight = FontWeight.Bold)
             }
-            val published = PlaceInfoPolicy.publishedHours(info)
+            val published = PlacePresentationPolicy.hours(info, english)
             if (published.isNotBlank()) Text(published, fontSize = 14.sp)
-            val range = PlaceInfoPolicy.range(info)
+            val range = if (english && PlaceInfoPolicy.alwaysOpen(info)) "Open 24 hours" else PlaceInfoPolicy.range(info)
             if (range != null && range != published) Text(range, fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-            Text(when (open) { true -> "Dentro del horario general"; false -> "Fuera del horario general"; null -> if (!fresh) "Horario guardado · Actualiza al conectarte" else if (published.isBlank()) "Horario por confirmar" else "Consulta el horario publicado" }, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-            Text("Hora de Ecuador. Confirma días y atención con el negocio.", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(when (open) { true -> (if (english) "Within general opening hours" else "Dentro del horario general"); false -> (if (english) "Outside general opening hours" else "Fuera del horario general"); null -> if (!fresh) (if (english) "Saved hours · Connect to update" else "Horario guardado · Actualiza al conectarte") else if (published.isBlank()) (if (english) "Hours to be confirmed" else "Horario por confirmar") else (if (english) "Check the published hours" else "Consulta el horario publicado") }, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            Text((if (english) "Ecuador time. Confirm opening days and service with the business." else "Hora de Ecuador. Confirma días y atención con el negocio."), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun PlaceServices(info: PlaceInfo) {
+internal fun PlaceServices(info: PlaceInfo, english: Boolean = false) {
     val context = LocalContext.current
-    val services = info.amenities.mapNotNull { PlaceInfoPolicy.amenities[it] }
-    val payments = info.payments.mapNotNull { PlaceInfoPolicy.payments[it] }
+    val services = info.amenities.mapNotNull { PlacePresentationPolicy.amenity(it, english) }
+    val payments = info.payments.mapNotNull { PlacePresentationPolicy.payment(it, english) }
     if (services.isNotEmpty() || payments.isNotEmpty() || info.priceRange.isNotBlank()) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth().testTag("place-services")) {
-            Text("Servicios y formas de pago", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            if (info.priceRange.isNotBlank()) Text("Rango de precios: ${info.priceRange}", fontSize = 13.sp)
+            Text((if (english) "Services and payment methods" else "Servicios y formas de pago"), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            if (info.priceRange.isNotBlank()) Text((if (english) "Price range: ${info.priceRange}" else "Rango de precios: ${info.priceRange}"), fontSize = 13.sp)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 (services + payments).forEach { label ->
                     Surface(shape = RoundedCornerShape(10.dp), color = MaterialTheme.colorScheme.primaryContainer) {
@@ -70,12 +70,12 @@ internal fun PlaceServices(info: PlaceInfo) {
     }
     if (info.links.isNotEmpty()) {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth().testTag("place-socials")) {
-            Text("Encuentra al negocio", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text((if (english) "Find the business" else "Encuentra al negocio"), fontWeight = FontWeight.Bold, fontSize = 18.sp)
             info.links.forEach { (kind, url) ->
                 OutlinedButton(onClick = {
-                    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }.onFailure { Toast.makeText(context, "No hay una aplicación disponible para abrir el enlace.", Toast.LENGTH_SHORT).show() }
+                    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }.onFailure { Toast.makeText(context, (if (english) "No app is available to open this link." else "No hay una aplicación disponible para abrir el enlace."), Toast.LENGTH_SHORT).show() }
                 }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) {
-                    Icon(Icons.Default.OpenInNew, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(PlaceInfoPolicy.links[kind].orEmpty())
+                    Icon(Icons.Default.OpenInNew, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text(if (english && kind == "website") "Website" else PlaceInfoPolicy.links[kind].orEmpty())
                 }
             }
         }
@@ -83,13 +83,13 @@ internal fun PlaceServices(info: PlaceInfo) {
 }
 
 @Composable
-internal fun CopyPlaceAddress(place: Place) {
+internal fun CopyPlaceAddress(place: Place, english: Boolean = false) {
     val context = LocalContext.current
     TextButton(onClick = {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboard.setPrimaryClip(ClipData.newPlainText(place.title, place.address))
-        Toast.makeText(context, "Dirección copiada", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, (if (english) "Address copied" else "Dirección copiada"), Toast.LENGTH_SHORT).show()
     }, modifier = Modifier.testTag("place-copy-address"), contentPadding = PaddingValues(0.dp)) {
-        Icon(Icons.Default.ContentCopy, null, Modifier.size(16.dp)); Spacer(Modifier.width(7.dp)); Text("Copiar dirección")
+        Icon(Icons.Default.ContentCopy, null, Modifier.size(16.dp)); Spacer(Modifier.width(7.dp)); Text((if (english) "Copy address" else "Copiar dirección"))
     }
 }

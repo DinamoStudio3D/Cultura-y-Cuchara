@@ -37,7 +37,12 @@ object PlacePolicy {
     private val aliases = mapOf(
         "cafeteria" to setOf("cafe", "cafeteria", "coffee"), "cafeterias" to setOf("cafe", "cafeteria", "coffee"),
         "cafes" to setOf("cafe", "cafeteria"), "hoteles" to lodging, "hospedaje" to lodging,
-        "restaurantes" to food, "comida" to food, "gastronomia" to food
+        "restaurantes" to food, "comida" to food, "gastronomia" to food,
+        "coffee" to setOf("cafe", "cafeteria", "coffee"),
+        "lodging" to lodging, "hotels" to lodging, "accommodation" to lodging,
+        "restaurants" to food, "food" to food, "tourism" to setOf("turismo"),
+        "sightseeing" to setOf("turismo"), "bakeries" to setOf("panaderia"), "bakery" to setOf("panaderia"),
+        "crafts" to setOf("artesania")
     )
     fun normalize(value: String): String = Normalizer.normalize(value, Normalizer.Form.NFD)
         .replace(Regex("\\p{M}+"), "").lowercase(java.util.Locale.ROOT).replace(Regex("[^a-z0-9]+"), " ").trim()

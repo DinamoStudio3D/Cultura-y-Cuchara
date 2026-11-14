@@ -325,7 +325,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                         if (tab == "saved" && accountState.uid != null) {
                             Text(if (accountState.busy) "Guardando cambios…" else accountState.favouritesError ?: if (!accountState.favouritesReady) "Consultando tu cuenta…" else if (accountState.fromCache) "Conéctate para sincronizar tus favoritos." else accountState.message ?: "Favoritos de tu cuenta, compartidos con la web.", fontSize = 12.sp, color = Blue, modifier = Modifier.padding(horizontal = 22.dp, vertical = 8.dp))
                         }
-                        ExploreScreen(state, tab == "saved", query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, accountState.uid != null, { tab = "map" }) { model.refresh() }
+                        ExploreScreen(state, tab == "saved", query, category, { query = it }, { category = it }, { selectedId = it.id }, favourite, accountState.uid != null, { tab = "map" }, english) { model.refresh() }
                     }
                 }
             }
@@ -339,7 +339,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
-                PlaceDetail(selected, !state.offline && state.error == null, audioState, audioPlayer, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }, { selectedId = null; navigate("account", "all") }) { selectedId = null }
+                PlaceDetail(selected, !state.offline && state.error == null, audioState, audioPlayer, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }, { selectedId = null; navigate("account", "all") }, english) { selectedId = null }
             }
         }
     }
@@ -482,37 +482,38 @@ private fun HomePlaceTile(place: Place, saved: Boolean, open: () -> Unit, favour
 }
 
 @Composable
-private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String, category: String, onQuery: (String) -> Unit, onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, signedIn: Boolean, openMap: () -> Unit, retry: () -> Unit) {
+private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String, category: String, onQuery: (String) -> Unit, onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, signedIn: Boolean, openMap: () -> Unit, english: Boolean, retry: () -> Unit) {
     val places = remember(state.places, state.favourites, query, category, onlySaved) { state.places.filter { PlacePolicy.matches(it, query, if (onlySaved) "all" else category) && (!onlySaved || it.id in state.favourites) } }
+    val savedSearchEmpty = PlacePresentationPolicy.savedSearchEmpty(onlySaved, query, state.places.any { PlacePolicy.published(it) && it.id in state.favourites })
     LazyColumn(contentPadding = PaddingValues(horizontal = 22.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Column {
-                Eyebrow(if (onlySaved) "TUS LUGARES, A MANO" else "ENCUENTRA TU PRÓXIMA PARADA")
-                Text(if (onlySaved) "Tus favoritos" else "Explora Loja", fontSize = 29.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.padding(top = 5.dp, bottom = 17.dp))
-                OutlinedTextField(colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White.copy(alpha = .8f), focusedContainerColor = Color.White), value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth().testTag("explore-search"), placeholder = { Text("Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
-                if (onlySaved) Text(if (signedIn) "Usas los mismos favoritos que en VisitaLoja.com." else "Guardados en este teléfono. Ingresa en Mi cuenta para consultar tus favoritos de la web.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 12.dp))
+                Eyebrow(if (english) { if (onlySaved) "YOUR PLACES, AT HAND" else "FIND YOUR NEXT STOP" } else if (onlySaved) "TUS LUGARES, A MANO" else "ENCUENTRA TU PRÓXIMA PARADA")
+                Text(if (english) { if (onlySaved) "Your saved places" else "Explore Loja" } else if (onlySaved) "Tus favoritos" else "Explora Loja", fontSize = 29.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.padding(top = 5.dp, bottom = 17.dp))
+                OutlinedTextField(colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White.copy(alpha = .8f), focusedContainerColor = Color.White), value = query, onValueChange = onQuery, modifier = Modifier.fillMaxWidth().testTag("explore-search"), placeholder = { Text(if (english) "Search by name or category" else "Busca por nombre o categoría", fontSize = 13.sp) }, leadingIcon = { Icon(Icons.Default.Search, null, tint = Blue) }, trailingIcon = { if (query.isNotEmpty()) IconButton(onClick = { onQuery("") }) { Icon(Icons.Default.Close, if (english) "Clear search" else "Borrar búsqueda") } }, singleLine = true, shape = RoundedCornerShape(16.dp))
+                if (onlySaved) Text(if (english) { if (signedIn) "The same saved places as on VisitaLoja.com." else "Saved on this phone. Sign in to see your saved places from the web." } else if (signedIn) "Usas los mismos favoritos que en VisitaLoja.com." else "Guardados en este teléfono. Ingresa en Mi cuenta para consultar tus favoritos de la web.", fontSize = 12.sp, color = Muted, modifier = Modifier.padding(top = 12.dp))
             }
         }
         if (!onlySaved) item {
-            OutlinedButton(onClick = openMap, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Map, null); Spacer(Modifier.width(8.dp)); Text("Ver estos lugares en el mapa") }
+            OutlinedButton(onClick = openMap, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Map, null); Spacer(Modifier.width(8.dp)); Text(if (english) "See these places on the map" else "Ver estos lugares en el mapa") }
         }
         if (!onlySaved) item {
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                (listOf(Category("all", "Todo", Icons.Default.Explore)) + categories).forEach { choice -> FilterChip(selected = category == choice.id, onClick = { onCategory(choice.id) }, label = { Text(choice.name) }) }
+                (listOf(Category("all", "Todo", Icons.Default.Explore)) + categories).forEach { choice -> FilterChip(selected = category == choice.id, onClick = { onCategory(choice.id) }, label = { Text(PlacePresentationPolicy.filterCategory(choice.id, choice.name, english)) }) }
             }
         }
-        if (state.loading && state.places.isEmpty()) item { LoadingPlaces() }
-        else if (state.error != null) item { ErrorPlaces(state.error, retry) }
+        if (state.loading && state.places.isEmpty()) item { LoadingPlaces(english) }
+        else if (state.error != null) item { ErrorPlaces(state.error, retry, english) }
         else if (places.isEmpty()) item {
             Column(Modifier.fillMaxWidth().padding(vertical = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(if (onlySaved) Icons.Default.FavoriteBorder else Icons.Default.Search, null, Modifier.size(40.dp), tint = Blue)
-                Text(if (onlySaved) "Tu próxima visita empieza guardando un lugar" else "Probemos otra búsqueda", fontSize = 18.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 14.dp))
-                Text(if (onlySaved) "Toca el corazón de una parada para encontrarla aquí." else "No hay lugares publicados con esos filtros.", textAlign = TextAlign.Center, color = Muted, modifier = Modifier.padding(top = 9.dp))
-                if (!onlySaved) TextButton(onClick = { onQuery(""); onCategory("all") }) { Text("Ver todos los lugares") }
+                Text(if (savedSearchEmpty) { if (english) "No saved places match this search" else "No hay favoritos que coincidan con tu búsqueda" } else if (english) { if (onlySaved) "Save a place for your next visit" else "Let’s try another search" } else if (onlySaved) "Tu próxima visita empieza guardando un lugar" else "Probemos otra búsqueda", fontSize = 18.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 14.dp))
+                Text(if (savedSearchEmpty) { if (english) "Try another name or clear the search." else "Prueba otro nombre o borra la búsqueda." } else if (english) { if (onlySaved) "Tap a place’s heart to find it here." else "No published places match these filters." } else if (onlySaved) "Toca el corazón de una parada para encontrarla aquí." else "No hay lugares publicados con esos filtros.", textAlign = TextAlign.Center, color = Muted, modifier = Modifier.padding(top = 9.dp))
+                if (!onlySaved || savedSearchEmpty) TextButton(onClick = { onQuery(""); onCategory("all") }) { Text(if (english) { if (onlySaved) "Clear search" else "See all places" } else if (onlySaved) "Borrar búsqueda" else "Ver todos los lugares") }
             }
         } else {
-            item { Text(if (places.size == 1) "1 lugar para descubrir" else "${places.size} lugares para descubrir", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Muted) }
-            items(places, key = Place::id) { place -> PlaceCard(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }, Modifier.fillMaxWidth()) }
+            item { Text(if (english) { if (places.size == 1) "1 place to discover" else "${places.size} places to discover" } else if (places.size == 1) "1 lugar para descubrir" else "${places.size} lugares para descubrir", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Muted) }
+            items(places, key = Place::id) { place -> PlaceCard(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }, Modifier.fillMaxWidth(), english = english) }
         }
     }
 }
@@ -528,32 +529,32 @@ private fun PlaceImage(place: Place, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false) {
+private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false, english: Boolean = false) {
     OutlinedCard(modifier = modifier, shape = RoundedCornerShape(20.dp), colors = CardDefaults.outlinedCardColors(containerColor = Color.White)) {
         Box {
             Column(Modifier.testTag("place-card-${place.id}").clickable(onClick = open)) {
                 Box(Modifier.fillMaxWidth().height(if (compact) 140.dp else 183.dp)) {
                     PlaceImage(place, Modifier.fillMaxSize())
-                    Surface(Modifier.align(Alignment.BottomStart).padding(12.dp), color = Color.White.copy(alpha = .96f), shape = RoundedCornerShape(8.dp)) { Text(place.categoryLabel, fontSize = 10.sp, color = Blue, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)) }
+                    Surface(Modifier.align(Alignment.BottomStart).padding(12.dp), color = Color.White.copy(alpha = .96f), shape = RoundedCornerShape(8.dp)) { Text(PlacePresentationPolicy.category(place, english), fontSize = 10.sp, color = Blue, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)) }
                 }
                 Column(Modifier.padding(16.dp)) { Text(place.title, fontWeight = FontWeight.Bold, fontSize = if (compact) 16.sp else 18.sp, maxLines = 2, overflow = TextOverflow.Ellipsis); Text(place.address.ifBlank { "Loja, Ecuador" }, color = Muted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 5.dp)) }
             }
-            Surface(Modifier.align(Alignment.TopEnd).padding(8.dp), shape = CircleShape, color = Color.White.copy(alpha = .96f)) { IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) } }
+            Surface(Modifier.align(Alignment.TopEnd).padding(8.dp), shape = CircleShape, color = Color.White.copy(alpha = .96f)) { IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (english) { if (saved) "Remove ${place.title} from saved places" else "Save ${place.title}" } else if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) } }
         }
     }
 }
 
 @Composable
-private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, login: () -> Unit, dismiss: () -> Unit) {
+private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, login: () -> Unit, english: Boolean, dismiss: () -> Unit) {
     val context = LocalContext.current
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
-        Box(Modifier.fillMaxWidth().height(220.dp)) { PlaceImage(place, Modifier.fillMaxSize()); FilledIconButton(onClick = dismiss, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Ink)) { Icon(Icons.Default.Close, "Cerrar ficha") } }
+        Box(Modifier.fillMaxWidth().height(220.dp)) { PlaceImage(place, Modifier.fillMaxSize()); FilledIconButton(onClick = dismiss, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Ink)) { Icon(Icons.Default.Close, (if (english) "Close place details" else "Cerrar ficha")) } }
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text(place.categoryLabel, color = Blue, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+            Text(PlacePresentationPolicy.category(place, english), color = Blue, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             Text(place.title, fontSize = 28.sp, fontWeight = FontWeight.Bold, lineHeight = 33.sp)
             if (place.address.isNotBlank()) Text(place.address, color = Blue, fontSize = 13.sp)
-            if (place.address.isNotBlank()) CopyPlaceAddress(place)
-            PlaceHours(place.info, fresh)
+            if (place.address.isNotBlank()) CopyPlaceAddress(place, english)
+            PlaceHours(place.info, fresh, english)
             DigitalMenuEntry(place)
             BusinessMenuEntry(place)
             ReviewsEntry(place, login, visit)
@@ -561,28 +562,28 @@ private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState
             PlaceMediaEntry(place, fresh, audio, player)
             PlaceGallery(place)
             if (place.description.isNotBlank()) Text(place.description, color = Muted, fontSize = 14.sp, lineHeight = 23.sp)
-            PlaceServices(place.info)
-            Button(onClick = visit, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.QrCode, null); Spacer(Modifier.width(9.dp)); Text("Generar código de visita") }
-            Button(onClick = favourite, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, null); Spacer(Modifier.width(9.dp)); Text(if (saved) "Guardado en favoritos" else "Guardar en favoritos") }
+            PlaceServices(place.info, english)
+            Button(onClick = visit, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.QrCode, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Generate visit code" else "Generar código de visita")) }
+            Button(onClick = favourite, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, null); Spacer(Modifier.width(9.dp)); Text(if (english) { if (saved) "Saved" else "Save this place" } else if (saved) "Guardado en favoritos" else "Guardar en favoritos") }
             if (place.address.isNotBlank() || place.latitude != null && place.longitude != null) OutlinedButton(onClick = {
                 val destination = if (place.latitude != null && place.longitude != null) "${place.latitude},${place.longitude}" else place.address + ", Loja, Ecuador"
                 val uri = Uri.parse("geo:0,0?q=" + Uri.encode(destination))
-                try { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay una aplicación de mapas disponible.", Toast.LENGTH_LONG).show() }
-            }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.Directions, null); Spacer(Modifier.width(9.dp)); Text("Cómo llegar") }
+                try { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) } catch (_: ActivityNotFoundException) { Toast.makeText(context, (if (english) "No maps app is available." else "No hay una aplicación de mapas disponible."), Toast.LENGTH_LONG).show() }
+            }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.Directions, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Get directions" else "Cómo llegar")) }
             fun openContact(intent: Intent) {
-                try { context.startActivity(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay una aplicación compatible disponible.", Toast.LENGTH_LONG).show() }
+                try { context.startActivity(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, (if (english) "No compatible app is available." else "No hay una aplicación compatible disponible."), Toast.LENGTH_LONG).show() }
             }
             if (place.whatsapp != null) OutlinedButton(onClick = { openContact(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + place.whatsapp))) }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) {
-                Icon(Icons.Default.Chat, null); Spacer(Modifier.width(9.dp)); Text("Consultar por WhatsApp")
+                Icon(Icons.Default.Chat, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Ask on WhatsApp" else "Consultar por WhatsApp"))
             }
             if (place.phone != null) OutlinedButton(onClick = { openContact(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", place.phone, null))) }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) {
-                Icon(Icons.Default.Call, null); Spacer(Modifier.width(9.dp)); Text("Llamar al negocio")
+                Icon(Icons.Default.Call, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Call the business" else "Llamar al negocio"))
             }
             OutlinedButton(onClick = {
                 val share = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_SUBJECT, place.title); putExtra(Intent.EXTRA_TEXT, "${place.title} · VisitaLoja\n${PlacePolicy.publicUrl(place)}") }
-                openContact(Intent.createChooser(share, "Compartir esta parada"))
-            }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.Share, null); Spacer(Modifier.width(9.dp)); Text("Compartir esta parada") }
-            Text("Información publicada por VisitaLoja. Confirma los horarios y condiciones con el negocio antes de tu visita.", color = Muted, fontSize = 11.sp)
+                openContact(Intent.createChooser(share, (if (english) "Share this place" else "Compartir esta parada")))
+            }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.Share, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Share this place" else "Compartir esta parada")) }
+            Text((if (english) "Information published by VisitaLoja. Confirm opening hours and conditions with the business before visiting." else "Información publicada por VisitaLoja. Confirma los horarios y condiciones con el negocio antes de tu visita."), color = Muted, fontSize = 11.sp)
         }
     }
 }
@@ -594,6 +595,6 @@ private fun SectionHeading(title: String, action: String, click: () -> Unit) {
 @Composable
 private fun Eyebrow(value: String) { Text(value, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color(0xFF64829E)) }
 @Composable
-private fun LoadingPlaces() { Column(Modifier.fillMaxWidth().padding(28.dp), horizontalAlignment = Alignment.CenterHorizontally) { CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 3.dp); Text("Buscando lugares para ti…", color = Muted, modifier = Modifier.padding(top = 14.dp)) } }
+private fun LoadingPlaces(english: Boolean = false) { Column(Modifier.fillMaxWidth().padding(28.dp), horizontalAlignment = Alignment.CenterHorizontally) { CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 3.dp); Text(if (english) "Finding places for you…" else "Buscando lugares para ti…", color = Muted, modifier = Modifier.padding(top = 14.dp)) } }
 @Composable
-private fun ErrorPlaces(message: String, retry: () -> Unit) { Column(Modifier.fillMaxWidth().padding(vertical = 18.dp), horizontalAlignment = Alignment.CenterHorizontally) { Icon(Icons.Default.CloudOff, null, tint = Blue); Text(message, textAlign = TextAlign.Center, color = Muted, modifier = Modifier.padding(vertical = 14.dp)); Button(onClick = retry) { Text("Volver a intentar") } } }
+private fun ErrorPlaces(message: String, retry: () -> Unit, english: Boolean = false) { Column(Modifier.fillMaxWidth().padding(vertical = 18.dp), horizontalAlignment = Alignment.CenterHorizontally) { Icon(Icons.Default.CloudOff, null, tint = Blue); Text(if (english) "We couldn’t update the places. Check your connection and try again." else message, textAlign = TextAlign.Center, color = Muted, modifier = Modifier.padding(vertical = 14.dp)); Button(onClick = retry) { Text(if (english) "Try again" else "Volver a intentar") } } }

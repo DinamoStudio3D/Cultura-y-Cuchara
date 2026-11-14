@@ -121,3 +121,11 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Se reutiliza el respaldo español de los textos administrados de Inicio. Los contenidos de negocios, eventos y pantallas interiores que aún carecen de traducción conservan su idioma original; no se declara traducción global.
 - No cambia el idioma del sistema, los datos de cuenta ni los contenidos del panel. La preferencia pertenece al dispositivo y continúa al cerrar sesión.
 - Pendiente revisión física de idioma tras cerrar/reabrir y del diseño con texto grande.
+
+## Seguimiento: implementación 0.64
+
+- Explorar y Favoritos usan la preferencia ES/EN: encabezados, filtros, ayuda, recuentos, búsqueda, estados vacíos y acciones de tarjetas.
+- Las fichas traducen sus acciones principales, categorías, copiar dirección, indicaciones, compartir, horario, servicios y métodos de pago. Se presenta hoursEn cuando existe y se conserva el texto publicado como respaldo; no se inventan traducciones de nombres, direcciones, descripciones o condiciones de promociones.
+- La búsqueda reconoce coffee, lodging, hotels, accommodation, restaurants, food, tourism, sightseeing, bakery/bakeries y crafts conservando las reglas de publicación y filtros.
+- Una búsqueda sin coincidencias en Favoritos ofrece borrar la búsqueda y distingue ese caso de no tener lugares guardados.
+- Los visores independientes de menús, opiniones, multimedia y otros módulos conservan textos pendientes de traducción. Continúan pendientes pruebas físicas y FCM remoto.
