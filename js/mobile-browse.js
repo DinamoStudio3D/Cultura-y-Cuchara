@@ -14,6 +14,54 @@
     hub.className = 'vl-mobile-hub';
     hub.setAttribute('aria-labelledby', 'mobileExploreTitle');
     hub.innerHTML = "<div class=\"vl-mobile-hub-heading\"><div><p class=\"vl-mobile-eyebrow\">Loja, Ecuador</p><h2 id=\"mobileExploreTitle\">Encuentra tu próximo plan</h2></div><a href=\"#mapa\" class=\"vl-mobile-map-link\"><i class=\"fa-solid fa-map-location-dot\" aria-hidden=\"true\"></i> Ver mapa</a></div>\n<nav class=\"vl-mobile-intents\" aria-label=\"Elige qué descubrir\">\n<a href=\"#establecimientos\" data-mobile-category=\"food\"><i class=\"fa-solid fa-utensils\" aria-hidden=\"true\"></i><span>Comer</span></a>\n<a href=\"#establecimientos\" data-mobile-category=\"hotel\"><i class=\"fa-solid fa-bed\" aria-hidden=\"true\"></i><span>Hospedarse</span></a>\n<a href=\"#establecimientos\" data-mobile-category=\"turismo\"><i class=\"fa-solid fa-compass\" aria-hidden=\"true\"></i><span>Visitar</span></a>\n</nav>\n<div class=\"vl-mobile-stories\">\n<a href=\"#loja-en-imagenes\"><img src=\"assets/photos/jipiro-laguna.webp\" alt=\"Laguna del parque Jipiro\" loading=\"lazy\" decoding=\"async\"><span><strong>Loja en imágenes</strong><small>Rincones para descubrir</small></span><i class=\"fa-solid fa-arrow-up-right-from-square\" aria-hidden=\"true\"></i></a>\n<a href=\"#loja-en-video\"><img src=\"assets/photos/centro-loja-torre-reloj.webp\" alt=\"Centro histórico de Loja\" loading=\"lazy\" decoding=\"async\"><span><strong>Historias en video</strong><small>Conoce cada lugar</small></span><i class=\"fa-solid fa-circle-play\" aria-hidden=\"true\"></i></a>\n</div>\n<a class=\"vl-mobile-passport-link\" href=\"#pasaporte\"><i class=\"fa-solid fa-stamp\" aria-hidden=\"true\"></i><span><small>Cada visita cuenta</small><strong>Tu pasaporte de Loja</strong><span>Consulta tus sellos y recompensas</span></span><span aria-hidden=\"true\">→</span></a>\n<div class=\"vl-mobile-secondary-links\"><a href=\"#agenda\"><i class=\"fa-regular fa-calendar\" aria-hidden=\"true\"></i> Agenda de eventos</a><a href=\"#misiones\"><i class=\"fa-solid fa-compass\" aria-hidden=\"true\"></i> Misiones de Chabaquito</a></div>\n<details><summary>Más para descubrir <span aria-hidden=\"true\">＋</span></summary><div class=\"vl-mobile-more\"><a href=\"#emprendedores\">Emprendedores</a><a href=\"#postales\">Crear una postal</a><a href=\"#loja-tiempo\">Loja en el tiempo</a><a href=\"#podcast\">Podcast</a><a href=\"#especias\">Sabores y tradiciones</a><a href=\"#fiavl\">Festival FIAVL</a><a href=\"cantones.html\">Cantones de Loja</a><a href=\"tienda.html\">Tienda</a><button type=\"button\" data-mobile-route>Planificar una ruta</button><button type=\"button\" data-mobile-guide>Hablar con Chabaquito</button></div></details>";
+    const business = document.createElement('a');
+    business.href = 'planes.html';
+    business.className = 'vl-mobile-business';
+    business.innerHTML = '<span class="vl-mobile-business-icon" aria-hidden="true"><i class="fa-solid fa-store"></i></span><span><small>PARA NEGOCIOS</small><strong>Haz que más personas te descubran</strong><span>Conoce los planes de VisitaLoja</span></span><b aria-hidden="true">→</b>';
+    hub.querySelector('details').before(business);
+    const more = hub.querySelector('.vl-mobile-more');
+    const extraLinks = new Map();
+    function syncExtraLinks() {
+        const entries = [
+            ['promociones', 'Promociones vigentes'],
+            ['historias', 'Historias de Loja'],
+            ['tendencia', 'En tendencia'],
+            ['dia-turismo', null],
+            ['festival-live', null],
+            ['patrocinadores', 'Alianzas de VisitaLoja'],
+            ...Array.from(main.querySelectorAll('[data-custom-campaign-id]'), section => [section.id, null])
+        ];
+        const available = new Set();
+        for (const [id, label] of entries) {
+            const section = document.getElementById(id);
+            // Ignore the mobile navigation's own hiding attribute: inactive content
+            // is controlled by the original publisher through hidden or .hidden.
+            if (!section || section.hidden || section.classList.contains('hidden') || section.getAttribute('aria-hidden') === 'true') continue;
+            const title = label || section.querySelector('h2,h3')?.textContent?.trim();
+            if (!title) continue;
+            available.add(id);
+            let link = extraLinks.get(id);
+            if (!link) {
+                link = document.createElement('a');
+                link.href = '#' + id;
+                link.dataset.mobilePublishedLink = id;
+                more.append(link);
+                extraLinks.set(id, link);
+            }
+            if (link.textContent !== title) link.textContent = title;
+        }
+        for (const [id, link] of extraLinks) if (!available.has(id)) {
+            link.remove();
+            extraLinks.delete(id);
+        }
+    }
+    const menuMore = document.querySelector('#mobileMenu .vl29-mobile-section:last-of-type .vl29-mobile-items');
+    if (menuMore && !menuMore.querySelector('a[href="planes.html"]')) {
+        const link = document.createElement('a');
+        link.href = 'planes.html';
+        link.textContent = 'Planes para mi negocio';
+        menuMore.prepend(link);
+    }
     hub.querySelectorAll('[data-mobile-category]').forEach(link => {
         link.addEventListener('click', () => window.openCategoryList?.(link.dataset.mobileCategory));
     });
@@ -62,11 +110,54 @@
     document.addEventListener('focusin', syncTyping);
     document.addEventListener('focusout', () => requestAnimationFrame(syncTyping));
 
+    const mobileCopy = {
+        'Encuentra tu próximo plan':'Find your next experience', 'Ver mapa':'View map',
+        'Comer':'Eat', 'Hospedarse':'Stay', 'Visitar':'Visit',
+        'Loja en imágenes':'Loja in pictures', 'Rincones para descubrir':'Places to discover',
+        'Historias en video':'Video stories', 'Conoce cada lugar':'Discover each place',
+        'Cada visita cuenta':'Every visit counts', 'Tu pasaporte de Loja':'Your Loja passport',
+        'Consulta tus sellos y recompensas':'Check your stamps and rewards',
+        'Agenda de eventos':'Events agenda', 'Misiones de Chabaquito':'Chabaquito missions',
+        'Más para descubrir':'More to discover', 'Emprendedores':'Local ventures',
+        'Crear una postal':'Create a postcard', 'Loja en el tiempo':'Loja through time',
+        'Podcast':'Podcast', 'Sabores y tradiciones':'Flavours and traditions',
+        'Festival FIAVL':'FIAVL festival', 'Cantones de Loja':'Cantons of Loja', 'Tienda':'Shop',
+        'Planificar una ruta':'Plan a route', 'Hablar con Chabaquito':'Talk to Chabaquito',
+        'PARA NEGOCIOS':'FOR BUSINESSES', 'Haz que más personas te descubran':'Help more people discover you',
+        'Conoce los planes de VisitaLoja':'Discover VisitaLoja business plans',
+        'Planes para mi negocio':'Plans for my business', 'Inicio':'Home', 'Paradas':'Places',
+        'Mi cuenta':'My account', 'Mapa':'Map', 'Volver al inicio':'Back to home',
+        'Promociones vigentes':'Current offers', 'Historias de Loja':'Stories of Loja',
+        'En tendencia':'Trending', 'Alianzas de VisitaLoja':'VisitaLoja partners',
+        'Cantón y horario':'Canton and opening hours'
+    };
+    const sourceCopy = new WeakMap();
+    function translateMobile() {
+        const english = document.getElementById('langSelector')?.value === 'en';
+        const containers = [hub, bar, back, filters, menuMore?.querySelector('a[href="planes.html"]')].filter(Boolean);
+        for (const container of containers) {
+            const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                const original = sourceCopy.get(node) || node.textContent.trim();
+                if (!mobileCopy[original]) continue;
+                sourceCopy.set(node, original);
+                const next = english ? mobileCopy[original] : original;
+                if (node.textContent !== next) node.textContent = next;
+            }
+        }
+    }
+    window.addEventListener('languagechange', translateMobile);
+    document.getElementById('langSelectorMobile')?.addEventListener('change', () => requestAnimationFrame(translateMobile));
+    document.getElementById('langSelector')?.addEventListener('change', () => requestAnimationFrame(translateMobile));
+
     function rootFor(id) {
         const element = document.getElementById(id);
         return roots().find(root => root === element || root.contains(element));
     }
     function render() {
+        syncExtraLinks();
+        translateMobile();
         const active = media.matches;
         document.documentElement.classList.toggle('vl-mobile-browse', active);
         const selected = rootFor(current);
@@ -131,6 +222,9 @@
     });
     // Public sections can be inserted after Firestore settings arrive.
     new MutationObserver(render).observe(main, { childList: true });
+    const publishedObserver = new MutationObserver(records => { if (records.every(record => hub.contains(record.target))) return; syncExtraLinks(); translateMobile(); });
+    publishedObserver.observe(main, { subtree: true, attributes: true, attributeFilter: ['hidden', 'class', 'aria-hidden'], childList: true, characterData: true });
     fromHash();
 })();
+
 
