@@ -461,7 +461,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
         item(key = "supporters") { HomeSupporters(supporters, state, detail, { openDiscovery("supporters") }, { openDiscovery("mesa") }) }
         if (blocks.visible("provinceGateway")) item(key = "cantons") { CantonsShortcut(openCantons, blocks, english) }
         item(key = "all-sections") {
-            TextButton(onClick = { openDiscovery("sections") }, modifier = Modifier.padding(horizontal = 18.dp).fillMaxWidth()) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(8.dp)); Text(if (english) "Discover all of VisitaLoja" else "Descubre todo VisitaLoja"); Spacer(Modifier.width(8.dp)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
+            TextButton(onClick = { openDiscovery("sections") }, modifier = Modifier.padding(horizontal = 18.dp).fillMaxWidth().testTag("all-sections-footer")) { Icon(Icons.Default.Apps, null); Spacer(Modifier.width(8.dp)); Text(if (english) "Discover all of VisitaLoja" else "Descubre todo VisitaLoja"); Spacer(Modifier.width(8.dp)); Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
         }
     }
 }

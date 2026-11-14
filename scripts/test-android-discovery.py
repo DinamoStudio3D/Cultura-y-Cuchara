@@ -91,6 +91,27 @@ try:
     adb('shell', 'am', 'force-stop', PKG)
     adb('shell', 'am', 'start', '-n', PKG + '/com.visitaloja.app.MainActivity')
     time.sleep(4)
+    # Shared language: navigation, bilingual search, and process restart persistence.
+    tap(wait(tag='home-language'))
+    assert 'Home' in {n.get('text','') for n in tree().iter('node')}, 'Bottom navigation did not change to English'
+    tap(wait(tag='open-sections'));wait(tag='sections-screen')
+    tap(wait(tag='sections-search'));adb('shell','input','text','stamps');adb('shell','input','keyevent','KEYCODE_BACK')
+    wait(tag='section-passport')
+    assert 'Passport and loyalty' in {n.get('text','') for n in tree().iter('node')}, 'English directory search did not find passport'
+    capture('language-english-directory')
+    adb('shell','am','force-stop',PKG)
+    adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='home-language')
+    assert 'Home' in {n.get('text','') for n in tree().iter('node')}, 'Language lost after process restart'
+    tap(wait(tag='open-sections'));wait(tag='sections-language');tap(wait(tag='sections-language'))
+    assert 'Inicio' in {n.get('text','') for n in tree().iter('node')}, 'Spanish selection not shared with navigation'
+    tap(wait(desc='Volver a Inicio'));wait(tag='home-language')
+    adb('shell','am','force-stop',PKG)
+    adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity')
+    wait(tag='home-language')
+    assert 'Inicio' in {n.get('text','') for n in tree().iter('node')}, 'Spanish selection lost after restart'
+    capture('language-spanish-restarted')
+    (OUT/'language-summary.json').write_text(json.dumps({'english_navigation':True,'bilingual_directory_search':True,'english_process_restart':True,'spanish_selection_shared':True,'spanish_process_restart':True},indent=2))
     # The same public welcome recording must decode and enter playing state.
     wait(tag='welcome-music-toggle',seconds=50)
     wait(desc='Pausar música de bienvenida',seconds=60);capture('discovery-welcome-music-playing')
@@ -250,10 +271,12 @@ try:
     (OUT/'mesa-summary.json').write_text(json.dumps({'native_screen_verified':True,'tabs_verified':['board','agenda','documents','gallery','contact'],'external_contacts_opened':False},indent=2))
     tap(wait(desc='Volver a Inicio'));wait(tag='home-sections')
     if brand_cards:
-        for _ in range(7):
-            if find(tree(),tag='home-supporters') is not None:break
+        for _ in range(24):
+            current = tree()
+            if find(current,tag='home-supporters') is not None:break
+            if find(current,tag='all-sections-footer') is not None:break
             adb('shell','input','swipe','360','1180','360','650','350');time.sleep(1)
-        else:raise AssertionError('Published supporters strip missing from Home')
+        assert find(tree(),tag='home-supporters') is not None,'Published supporters strip missing from Home'
         # Bring the actual logos and controls into view, not just the section heading.
         for _ in range(4):
             if find(tree(),tag='open-supporters') is not None:break
