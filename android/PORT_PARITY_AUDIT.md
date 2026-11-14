@@ -153,3 +153,10 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Se completa la entrega de cumpleaños desde una visita confirmada: consulta de oferta y ventana anual, comprobación del consumo mínimo y confirmación explícita de presencia/fecha. El servidor conserva un único registro por usuario/parada/año y resuelve duplicados de forma transaccional. Esta nueva operación también necesita publicar el servicio preparado.
 
 - Los nuevos códigos nativos incorporan nombre, modo lojano/turista, ciudad y mes/día de cumpleaños desde el perfil confirmado, sin documento ni año de nacimiento. El servicio de cumpleaños usa el perfil actual y admite códigos antiguos sin mes/día.
+
+## 0.67 — informes del encargado
+
+- CSV por pestaña con fechas en hora de Loja, consumos, estado, comprobantes y anulación; correos protegidos y neutralización de fórmulas. Solo exporta filas cargadas que coinciden con los filtros.
+- Confirmación visible de guardado y mensaje si no puede escribir el archivo.
+- Filtro de visitas de este mes y resumen que cuenta únicamente visitas confirmadas.
+- Servicios de 0.66 publicados mediante PR76; revisión en dispositivo y con cuentas reales pendiente por solicitud del usuario.

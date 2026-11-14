@@ -26,9 +26,15 @@ private fun businessDate(value: Any?): String = timeMillis(value)?.let { DateTim
 fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusinessViewModel, scan: () -> Unit, rewards: () -> Unit, dismiss: () -> Unit) {
     var tools by remember(state.uid,state.selected) { mutableStateOf(false) }
     var exportText by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
+    var exportMessage by remember(state.uid,state.selected,state.tab) { mutableStateOf<String?>(null) }
     val context = androidx.compose.ui.platform.LocalContext.current
     val export = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("text/csv")) { uri ->
-        if(uri!=null) runCatching { context.contentResolver.openOutputStream(uri)?.use { it.write(exportText.orEmpty().toByteArray(Charsets.UTF_8)) } }
+        if(uri!=null && exportText!=null) {
+            val content = exportText.orEmpty()
+            exportMessage = runCatching {
+                checkNotNull(context.contentResolver.openOutputStream(uri)) { "No se pudo abrir el archivo" }.use { it.write(content.toByteArray(Charsets.UTF_8)) }
+            }.fold({ "Archivo CSV guardado." }, { "No se pudo guardar el archivo. Intenta elegir otra carpeta." })
+        }
         exportText=null
     }
     if(tools) MerchantToolsScreen(state.uid,state.selected) { tools=false }
@@ -79,11 +85,11 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                     }
                     item { OutlinedButton(onClick={tools=true},enabled=!state.busy,modifier=Modifier.fillMaxWidth()){Text("Editar ficha, fotos y cumpleaños")} }
                     if(state.months>0) item { OutlinedButton(onClick={
-                        fun cell(v:String)= "\""+v.let{if(it.trimStart().let { value -> value.startsWith("=")||value.startsWith("+")||value.startsWith("-")||value.startsWith("@") })"'"+it else it}.replace("\"","\"\"")+"\""
-                        val columns=listOf("userName","userEmail","visitCount","totalSpend","status","rewardTitle")
-                        exportText="\uFEFF"+columns.joinToString(",",transform=::cell)+"\r\n"+filtered.joinToString("\r\n"){row->columns.joinToString(","){key->cell(if(key=="userEmail")MerchantBusinessPolicy.maskedEmail(row.text(key))else row[key]?.toString().orEmpty())}}
+                        exportMessage=null
+                        exportText=MerchantExport.csv(state.tab,selectedName,filtered,now)
                         export.launch("VisitaLoja-${state.selected}-${state.tab}.csv")
                     },enabled=!state.busy&&filtered.isNotEmpty()){Text("Exportar filas cargadas (CSV)")} }
+                    exportMessage?.let { message -> item { Text(message, fontSize=12.sp) } }
                     if(state.months<=0)item { Text("El plan de esta parada no incluye consulta de clientes, historial ni estadísticas. Puedes continuar sellando visitas.") }
                     else {
                         item { Text("Historial de visitas y premios: últimos ${state.months} meses. Clientes: progreso acumulado.",fontSize=12.sp) }
@@ -107,7 +113,7 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 Text("Visitas por fecha de sellado · hora de Loja", fontSize = 12.sp)
                                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    listOf("all" to "Todo el historial", "today" to "Hoy", "week" to "Últimos 7 días").forEach { (key, label) ->
+                                    listOf("all" to "Todo el historial", "today" to "Hoy", "week" to "Últimos 7 días", "month" to "Este mes").forEach { (key, label) ->
                                         FilterChip(visitPeriod == key, { visitPeriod = key }, label = { Text(label) })
                                     }
                                 }
@@ -138,13 +144,13 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                         }
                         item { OutlinedTextField(search,{search=it.take(100)},label={Text("Buscar en los registros cargados")},singleLine=true,modifier=Modifier.fillMaxWidth()) }
                         item {
-                            val confirmed=state.rows.filter { it.text("status")!="reversed" }
+                            val confirmed=state.rows.filter { it.text("status")=="confirmed" }
                             Surface(shape=MaterialTheme.shapes.large,color=MaterialTheme.colorScheme.primaryContainer) {
                                 Column(Modifier.fillMaxWidth().padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
                                     Text("Resumen de registros cargados",fontWeight=FontWeight.Bold)
                                     when(state.tab){
                                         "clients"->Text("${state.rows.size} tarjetas de clientes · consumo acumulado: "+businessMoney(state.rows.sumOf { MerchantBusinessPolicy.amount(it["totalSpend"]) }))
-                                        "visits"->Text("${confirmed.size} visitas · ${state.rows.size-confirmed.size} anuladas\nConsumo confirmado: "+businessMoney(confirmed.sumOf { MerchantBusinessPolicy.amount(it["purchaseAmount"]) }))
+                                        "visits"->Text("${confirmed.size} visitas confirmadas · ${state.rows.count { it.text("status")=="reversed" }} anuladas\nConsumo confirmado: "+businessMoney(confirmed.sumOf { MerchantBusinessPolicy.amount(it["purchaseAmount"]) }))
                                         else->Text("${rewardCounts["Pendiente"] ?: 0} pendientes · ${rewardCounts["Entregada"] ?: 0} entregadas")
                                     }
                                     if(state.more)Text("Resumen parcial. Carga más registros para completar la consulta.",fontSize=12.sp)

@@ -40,7 +40,7 @@ object MerchantBusinessPolicy {
         if (period == "all") return true
         val moment = visitMoment(row) ?: return false
         val today = Instant.ofEpochMilli(now).atZone(zone).toLocalDate()
-        val start = (if (period == "week") today.minusDays(6) else today).atStartOfDay(zone).toInstant().toEpochMilli()
+        val start = (when (period) { "week" -> today.minusDays(6); "month" -> today.withDayOfMonth(1); else -> today }).atStartOfDay(zone).toInstant().toEpochMilli()
         return moment in start..now
     }
 
