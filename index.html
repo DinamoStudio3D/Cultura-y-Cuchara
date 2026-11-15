@@ -466,8 +466,8 @@
 <link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
     <link rel="stylesheet" href="css/mobile-browse.css?v=4">
     <script defer src="js/mobile-browse.js?v=9"></script>
-    <link rel="stylesheet" href="css/mobile-place-experience.css?v=2">
-    <script defer src="js/mobile-place-experience.js?v=2"></script>
+    <link rel="stylesheet" href="css/mobile-place-experience.css?v=3">
+    <script defer src="js/mobile-place-experience.js?v=3"></script>
     <link rel="stylesheet" href="css/mobile-agenda.css?v=1">
     <script defer src="js/mobile-agenda.js?v=1"></script>
 </head>
@@ -7856,7 +7856,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         window.handlePopupClick = function(index) {
             selectLocation(index);
-            document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (!window.matchMedia('(max-width: 767px)').matches) document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
         function togglePreviewDescription() {
