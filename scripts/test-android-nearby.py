@@ -67,7 +67,13 @@ def preferences():
         raw=adb('exec-out','run-as',PKG,'cat','shared_prefs/nearby-stops.xml')
     except subprocess.CalledProcessError:
         return {}
-    root=ET.fromstring(raw)
+    try:
+        root=ET.fromstring(raw)
+    except ET.ParseError:
+        # exec-out can return a missing-file message with exit status 0 before
+        # the first asynchronous preference save. Later assertions still require
+        # a real, parsed registration and disabled state.
+        return {}
     return {n.get('name'):n.get('value',n.text or '') for n in root}
 assert preferences().get('enabled','false')!='true','Must not enable while GPS is off'
 adb('shell','cmd','location','set-location-enabled','true')
