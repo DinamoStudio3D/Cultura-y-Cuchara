@@ -20,7 +20,7 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/video-qa" --ignore-scripts playwright@1.62.1
           "$RUNNER_TEMP/video-qa/node_modules/.bin/playwright" install --with-deps chromium
           sudo apt-get update -qq && sudo apt-get install -y ffmpeg
-          ffmpeg -y -i tests/fixtures/video-gallery-test.mp4 -vf scale=320:568 -an /tmp/portrait.mp4
+          ffmpeg -y -i tests/fixtures/video-gallery-test.mp4 -vf scale=320:568,setsar=1 -an /tmp/portrait.mp4
       - name: Verificar formatos, controles y cierre en móvil y escritorio
         env:
           NODE_PATH: ${{ runner.temp }}/video-qa/node_modules
