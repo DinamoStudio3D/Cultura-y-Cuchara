@@ -1,0 +1,37 @@
+name: Revisar formato de videos de negocios
+on:
+  pull_request:
+    branches: [main]
+    paths: ['js/place-video.js', 'css/place-video.css', 'scripts/test-place-video*', '.github/workflows/place-video-ui.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  video:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preparar navegador y video vertical de prueba
+        run: |
+          npm install --prefix "$RUNNER_TEMP/video-qa" --ignore-scripts playwright@1.62.1
+          "$RUNNER_TEMP/video-qa/node_modules/.bin/playwright" install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+          ffmpeg -y -i tests/fixtures/video-gallery-test.mp4 -vf scale=320:568 -an /tmp/portrait.mp4
+      - name: Verificar formatos, controles y cierre en móvil y escritorio
+        env:
+          NODE_PATH: ${{ runner.temp }}/video-qa/node_modules
+          VIDEO_PORTRAIT_FIXTURE: /tmp/portrait.mp4
+          VIDEO_QA_OUTPUT: video-qa-results
+        run: |
+          node --test scripts/test-place-video.mjs
+          node scripts/test-place-video-browser.cjs
+          node scripts/test-place-video-orientation.cjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: business-video-layout
+          path: video-qa-results/
