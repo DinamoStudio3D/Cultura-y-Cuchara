@@ -26,19 +26,26 @@ def tap(node):
     x1,y1,x2,y2=map(int,re.findall(r'\d+',node.get('bounds')))
     adb('shell','input','tap',str((x1+x2)//2),str((y1+y2)//2))
 def capture(name):
+    root=tree()
     (OUT/(name+'.png')).write_bytes(adb('exec-out','screencap','-p',binary=True))
-    ET.ElementTree(tree()).write(OUT/(name+'.xml'),encoding='utf-8')
+    ET.ElementTree(root).write(OUT/(name+'.xml'),encoding='utf-8')
 try:
-    for label,reference in [('expreso','loc_1788797820110'),('codeproim','HHSL0Cb1u3eFfxGzbfoC')]:
+    for label,reference,title in [('expreso','loc_1788797820110','Expreso al Sur'),('codeproim','HHSL0Cb1u3eFfxGzbfoC','Codeproim')]:
         adb('shell','am','force-stop',PKG)
         adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/?checkin='+reference)
-        wait(desc='Cerrar ficha');time.sleep(4)
-        expand=wait(text='Ampliar');capture('place-photo-'+label)
-        tap(expand);wait(desc='Cerrar fotografías');capture('place-photo-'+label+'-fullscreen')
+        wait(desc='Ampliar fotografía 1 de '+title);time.sleep(3)
+        capture('place-photo-'+label)
+        tap(wait(text='Ampliar'));wait(desc='Cerrar fotografías');capture('place-photo-'+label+'-fullscreen')
         tap(wait(desc='Cerrar fotografías'));wait(desc='Cerrar ficha')
     tap(wait(desc='Cerrar ficha'))
     adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/restaurantes-en-loja')
     time.sleep(5);capture('place-photo-list')
     (OUT/'place-photo-summary.json').write_text(json.dumps({'real_published_places_opened':2,'fullscreen_open_close':True,'list_captured':True,'photo_assets_modified':False},indent=2))
+except BaseException:
+    try:
+        capture('place-photo-failure')
+        (OUT/'place-photo-crash.txt').write_text(adb('logcat','-d','-b','crash'))
+    except Exception:pass
+    raise
 finally:
     adb('shell','am','force-stop',PKG)

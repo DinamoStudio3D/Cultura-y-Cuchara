@@ -602,13 +602,21 @@ try:
         def open_strip_card(tag):
             # A partially visible strip can sit directly under the floating music
             # control. Reveal its photo area first; never start a swipe on the FAB.
+            # Returning from a section preserves Home's position; start above the
+            # strip rather than scrolling past it when it is already offscreen.
+            for _ in range(10):
+                adb('shell','input','swipe','300','530','300','1200','250');time.sleep(.2)
             for _ in range(10):
                 root=tree()
                 visible=next((find(root,tag=t) for t in ['open-photos','open-time','open-videos','open-podcast'] if find(root,tag=t) is not None),None)
                 if visible is not None:
                     x1,y1,x2,y2=map(int,re.findall(r'\d+',visible.get('bounds')))
                     if y2-y1>=250 and y2<=1200:break
-                adb('shell','input','swipe','300','1180','300','650','350');time.sleep(0.5)
+                if visible is not None and y1 < 520 and y2 < 1200:
+                    adb('shell','input','swipe','300','580','300','950','350')
+                else:
+                    adb('shell','input','swipe','300','1180','300','650','350')
+                time.sleep(0.5)
             else:raise AssertionError('Discovery strip not fully revealed')
             for _ in range(6):
                 root=tree();node=find(root,tag=tag)
