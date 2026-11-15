@@ -160,3 +160,10 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Confirmación visible de guardado y mensaje si no puede escribir el archivo.
 - Filtro de visitas de este mes y resumen que cuenta únicamente visitas confirmadas.
 - Servicios de 0.66 publicados mediante PR76; revisión en dispositivo y con cuentas reales pendiente por solicitud del usuario.
+
+## 0.68 — cierre de cercanía
+
+- La vuelta a primer plano conserva registros saludables para no reiniciar el tiempo de permanencia. Se renuevan tras seis horas, al cambiar catálogo, en el primer arranque del proceso, reinicio/actualización, cambios de disponibilidad o revisión explícita.
+- El error de geofencing invalida la marca local de registro; desactivar limpia la marca. El catálogo continúa caducando y no se envían coordenadas.
+- Configuración con GPS, ahorro de batería, fecha de activación, último aviso y acceso al canal específico de notificaciones. Se conserva el radio solicitado de 60 m; Android puede demorar o perder la detección.
+- Prueba de emulador ampliada: activación voluntaria, GPS apagado, registro Play Services, vuelta a primer plano y desactivación. La entrega física en segundo plano requiere prueba en dispositivo real.

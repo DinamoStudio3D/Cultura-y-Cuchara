@@ -50,23 +50,43 @@ def scroll_to(tag):
     raise AssertionError('Missing '+tag)
 for permission in ['ACCESS_COARSE_LOCATION','ACCESS_FINE_LOCATION','ACCESS_BACKGROUND_LOCATION','POST_NOTIFICATIONS']:
     adb('shell','pm','grant',PKG,'android.permission.'+permission)
-adb('shell','cmd','location','set-location-enabled','true')
+adb('shell','cmd','location','set-location-enabled','false')
 adb('emu','geo','fix','-79.201425','-4.005324')
 adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(4)
 tap(wait('nav-account'));time.sleep(2);tap(wait('nearby-settings'));time.sleep(1)
 assert tagged('nearby-disable') is None,'Must be opt-in by default'
 (OUT/'nearby-permissions.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
 tap(scroll_to('nearby-enable'))
+time.sleep(1)
+assert tagged('nearby-disable') is None,'GPS off must block activation'
+def preferences():
+    try:
+        raw=adb('exec-out','run-as',PKG,'cat','shared_prefs/nearby-stops.xml')
+    except subprocess.CalledProcessError:
+        return {}
+    root=ET.fromstring(raw)
+    return {n.get('name'):n.get('value',n.text or '') for n in root}
+assert preferences().get('enabled','false')!='true','Must not enable while GPS is off'
+adb('shell','cmd','location','set-location-enabled','true')
+adb('shell','input','keyevent','KEYCODE_HOME')
+adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(2)
+tap(scroll_to('nearby-enable'))
 registered=False
 for _ in range(40):
-    status=tagged('nearby-status')
-    if status is not None and 'Activos' in status.get('text',''):registered=True;break
+    if preferences().get('status','').startswith('Activos ·'):registered=True;break
     time.sleep(1)
 (OUT/'nearby-activated.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
 ET.ElementTree(tree()).write(OUT/'nearby-activation.xml',encoding='utf-8')
 assert registered,'Geofencing registration not confirmed'
+registered_at=preferences().get('registeredAt','0')
+assert int(registered_at)>0,'Registration diagnostic timestamp missing'
+adb('shell','input','keyevent','KEYCODE_HOME');time.sleep(2)
+adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(15)
+assert preferences().get('registeredAt')==registered_at,'Resume must preserve a healthy dwell registration'
 tap(scroll_to('nearby-disable'))
-assert 'desactivados' in wait('nearby-status').get('text','').lower()
+assert 'desactivados' in preferences().get('status','').lower()
+assert preferences().get('enabled')=='false'
+assert preferences().get('registeredAt','0')=='0','Disabled registration must not appear healthy'
 (OUT/'nearby-disabled.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
-(OUT/'nearby-summary.json').write_text(json.dumps({'opt_in':True,'play_services_registration':True,'disabled':True,'physical_background_delivery':'pending'},indent=2))
+(OUT/'nearby-summary.json').write_text(json.dumps({'opt_in':True,'gps_off_blocks_activation':True,'play_services_registration':True,'resume_preserves_registration':True,'disabled':True,'physical_background_delivery':'pending'},indent=2))
 adb('shell','am','force-stop',PKG)

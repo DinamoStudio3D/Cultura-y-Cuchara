@@ -4,6 +4,15 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class NearbyPolicyTest {
+    @Test fun healthyRegistrationSurvivesResumeButRefreshesAfterExpiryErrorsOrExplicitReview() {
+        val now = 1800000000000L
+        assertTrue(NearbyPolicy.registrationFresh(now, now - 1000, now + NearbyPolicy.CATALOG_AGE, true, false))
+        assertFalse(NearbyPolicy.registrationFresh(now, now - 1000, now + NearbyPolicy.CATALOG_AGE, true, true))
+        assertFalse(NearbyPolicy.registrationFresh(now, now - 1000, now + NearbyPolicy.CATALOG_AGE, false, false))
+        assertFalse(NearbyPolicy.registrationFresh(now, now - NearbyPolicy.REFRESH_AFTER, now + NearbyPolicy.CATALOG_AGE, true, false))
+        assertFalse(NearbyPolicy.registrationFresh(now, now + 1, now + NearbyPolicy.CATALOG_AGE, true, false))
+        assertFalse(NearbyPolicy.registrationFresh(now, now - 1000, now + 1000, true, false))
+    }
     private val elapsed = 100000L
     private val wall = 1800000000000L
     private val fix = MapFix(-4.0, -79.2, 10f, elapsed)

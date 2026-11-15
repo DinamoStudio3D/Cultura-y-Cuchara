@@ -7,6 +7,9 @@ object NearbyPolicy {
     const val COOLDOWN = 30 * 60 * 1000L
     const val CATALOG_AGE = 7 * 24 * 60 * 60 * 1000L
     const val MAX_PLACES = 100 // Google Play services geofence limit per app/device user.
+    const val REFRESH_AFTER = 6 * 60 * 60 * 1000L
+    fun registrationFresh(now: Long, registeredAt: Long, expiresAt: Long, sameCatalog: Boolean, force: Boolean): Boolean =
+        !force && sameCatalog && now - registeredAt in 0 until REFRESH_AFTER && expiresAt - now > REFRESH_AFTER
     fun distance(fix: MapFix, place: Place): Double {
         if (!MapPolicy.located(place)) return Double.POSITIVE_INFINITY
         val lat = Math.toRadians(fix.latitude); val other = Math.toRadians(place.latitude!!)
