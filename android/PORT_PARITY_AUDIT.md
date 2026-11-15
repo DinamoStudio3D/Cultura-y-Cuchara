@@ -189,3 +189,8 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - La ficha abre con galería deslizable de altura adaptada a la proporción y al tamaño de pantalla, contador y ampliación. Foto principal primero, sin duplicarla y conservando créditos. Se elimina la galería repetida del cuerpo de la ficha.
 - Visor completo compartido con las galerías existentes; conserva navegación lateral y créditos. Comprobación visual de ficha, listado y visor con registros públicos, sin modificar imágenes ni datos de negocios.
 - El mismo ajuste completo se aplica a las tarjetas de paradas en cantones y misiones, y a las imágenes de promociones.
+
+### 0.72 — video vertical
+- MP4/WebM: tamaño del reproductor según dimensiones de Media3, con ajuste completo y sin recorte.
+- YouTube: Shorts verticales y selector vertical/horizontal sin recrear el reproductor.
+- Regresión enfocada: apertura pública del MP4 de Expreso al Sur, área vertical y regreso a la ficha.

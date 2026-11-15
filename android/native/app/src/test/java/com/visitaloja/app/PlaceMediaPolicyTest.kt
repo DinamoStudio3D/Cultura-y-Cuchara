@@ -7,6 +7,13 @@ import java.time.Instant
 
 class PlaceMediaPolicyTest {
     private fun document(plan: String = "premium", status: String = "active", benefit: Boolean = true, dates: String = ""): JSONObject = JSONObject("""{"name":"projects/p/databases/(default)/documents/locales/p1","fields":{"title":{"stringValue":"Café"},"youtubeUrl":{"stringValue":"https://youtu.be/M7lc1UVf-VE"},"audioUrl":{"stringValue":"audios/cafe.mp3"},"audioUrlEn":{"stringValue":"https://media.example/cafe-en.mp3"},"subscription":{"mapValue":{"fields":{"plan":{"stringValue":"$plan"},"status":{"stringValue":"$status"},"benefits":{"mapValue":{"fields":{"video":{"booleanValue":$benefit}}}}$dates}}}}}""")
+    @Test fun shortsKeepPortraitThroughPlaceCache() {
+        val doc = document()
+        doc.getJSONObject("fields").put("youtubeUrl", JSONObject().put("stringValue", "https://youtube.com/shorts/M7lc1UVf-VE"))
+        val place = PlaceJson.document(doc)!!
+        assertTrue(PlaceMediaPolicy.video(place, 0)!!.portrait)
+        assertTrue(PlaceMediaPolicy.video(PlaceJson.cached(PlaceJson.cachePlace(place))!!, 0)!!.portrait)
+    }
     @Test fun videoRequiresThePublishedPaidVideoBenefit() {
         val p = PlaceJson.document(document())!!
         assertEquals("M7lc1UVf-VE", PlaceMediaPolicy.video(p, 0)?.youtubeId)

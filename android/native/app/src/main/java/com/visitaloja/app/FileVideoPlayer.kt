@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -20,6 +21,7 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
+import androidx.media3.common.VideoSize
 import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -34,11 +36,17 @@ internal fun FileVideoDialogContent(video: LojaVideo, close: () -> Unit) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     var error by remember(video.source.url) { mutableStateOf(false) }
+    var ratio by remember(video.source.url) { mutableFloatStateOf(16f / 9f) }
     val player = remember(video.source.url) {
         ExoPlayer.Builder(context)
             .setMediaSourceFactory(DefaultMediaSourceFactory(DefaultDataSource.Factory(context, DefaultHttpDataSource.Factory().setUserAgent("VisitaLojaAndroid").setAllowCrossProtocolRedirects(false))))
             .setAudioAttributes(AudioAttributes.DEFAULT, true).setHandleAudioBecomingNoisy(true).build().apply {
-                addListener(object : Player.Listener { override fun onPlayerError(e: PlaybackException) { error = true } })
+                addListener(object : Player.Listener {
+                    override fun onPlayerError(e: PlaybackException) { error = true }
+                    override fun onVideoSizeChanged(size: VideoSize) {
+                        VideoPolicy.frameRatio(size.width, size.height, size.pixelWidthHeightRatio)?.let { ratio = it }
+                    }
+                })
                 setMediaItem(MediaItem.fromUri(video.source.url)); prepare()
             }
     }
@@ -50,10 +58,13 @@ internal fun FileVideoDialogContent(video: LojaVideo, close: () -> Unit) {
     Surface(color = Color(0xFF10243A), contentColor = Color.White, modifier = Modifier.fillMaxSize().systemBarsPadding()) {
         BoxWithConstraints {
             val compact = maxHeight < 440.dp
+            val portrait = ratio < 1f
+            val stageHeight = (maxWidth / ratio).coerceAtMost((maxHeight - 112.dp).coerceAtLeast(200.dp))
             Column(Modifier.fillMaxSize()) {
                 VideoDialogHeading(video, close)
-                AndroidView(factory = { PlayerView(it).apply { this.player = player; useController = true; resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT; setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING) } }, onReset = null, onRelease = { it.player = null }, modifier = if (compact) Modifier.fillMaxWidth().weight(1f) else Modifier.fillMaxWidth().aspectRatio(16f / 9).heightIn(min = 200.dp))
-                if (!compact) Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                AndroidView(factory = { PlayerView(it).apply { this.player = player; useController = true; resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT; setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING) } }, onReset = null, onRelease = { it.player = null }, modifier = if (compact) Modifier.fillMaxWidth().weight(1f) else Modifier.fillMaxWidth().height(stageHeight).testTag("file-video-stage"))
+                if (portrait && error) TextButton(onClick = { error = false; player.prepare() }) { Text("No se pudo cargar · Reintentar", color = Color(0xFFFFCEBE)) }
+                if (!compact && !portrait) Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(video.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     if (error) {
                         Text("No se pudo cargar el video. Comprueba tu conexión y vuelve a intentarlo.", color = Color(0xFFFFCEBE))

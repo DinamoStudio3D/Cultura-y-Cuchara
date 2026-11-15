@@ -7,6 +7,16 @@ class VideoPolicyTest {
     private val id = "M7lc1UVf-VE"
     private val video = mapOf("id" to "loja", "title" to "Loja en imágenes", "url" to "https://youtu.be/M7lc1UVf-VE", "credit" to "María Muñoz", "published" to true)
     private fun gallery(vararg rows: Map<String, Any?>, active: Boolean = true) = mapOf("active" to active, "items" to rows.toList())
+    @Test fun videoFrameUsesDisplayPixelsAndRejectsMissingDimensions() {
+        assertEquals(9f / 16f, VideoPolicy.frameRatio(1080, 1920)!!, .0001f)
+        assertEquals(16f / 9f, VideoPolicy.frameRatio(1920, 1080)!!, .0001f)
+        assertEquals(2f, VideoPolicy.frameRatio(100, 100, 2f)!!, .0001f)
+        assertNull(VideoPolicy.frameRatio(0, 1920))
+        assertNull(VideoPolicy.frameRatio(1920, 0))
+        assertNull(VideoPolicy.frameRatio(100, 100, Float.NaN))
+        assertTrue(VideoPolicy.source("https://www.youtube.com/shorts/$id")!!.portrait)
+        assertFalse(VideoPolicy.source("https://youtu.be/$id")!!.portrait)
+    }
     @Test fun supportedYouTubeFormatsResolveToOneCanonicalId() {
         listOf("https://youtu.be/$id?t=20", "https://www.youtube.com/watch?v=$id&feature=share", "https://m.youtube.com/watch?v=$id", "https://www.youtube.com/shorts/$id", "https://www.youtube.com/live/$id", "https://www.youtube-nocookie.com/embed/$id").forEach {
             assertEquals(it, id, VideoPolicy.source(it)?.youtubeId)

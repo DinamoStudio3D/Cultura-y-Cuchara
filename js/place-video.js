@@ -12,7 +12,7 @@
    }
    const youtubeHost=['youtu.be','youtube.com','www.youtube.com','m.youtube.com','youtube-nocookie.com','www.youtube-nocookie.com'].includes(host);
    if(youtubeHost&&!(id&&/^[a-zA-Z0-9_-]{11}$/.test(id)))return null;
-   if(id&&/^[a-zA-Z0-9_-]{11}$/.test(id))return{type:'youtube',url:'https://www.youtube.com/watch?v='+id,embed:'https://www.youtube-nocookie.com/embed/'+id+'?playsinline=1&rel=0'};
+   if(id&&/^[a-zA-Z0-9_-]{11}$/.test(id))return{type:'youtube',portrait:url.pathname.startsWith('/shorts/'),url:'https://www.youtube.com/watch?v='+id,embed:'https://www.youtube-nocookie.com/embed/'+id+'?playsinline=1&rel=0'};
    if(/\.(mp4|webm)$/i.test(url.pathname))return{type:'file',url:url.href};
   }catch(_){}
   return null;
@@ -31,7 +31,13 @@
   if((benefits||s.benefits||{}).video!==true)return null;
   return parse(place.youtubeUrl);
  }
- let dialog,media,title,opener,activeId=null,activeUrl=null;
+ let dialog,media,title,format,opener,activeId=null,activeUrl=null;
+ function layout(ratio){
+  if(!Number.isFinite(ratio)||ratio<=0)return;
+  dialog.style.setProperty('--vl-video-ratio',ratio);
+  dialog.classList.toggle('vl-video-portrait',ratio<1);
+  media.style.aspectRatio=String(ratio);
+ }
  function close(){if(dialog?.open)dialog.close();}
  function open(place,benefits,language){
   const source=eligible(place,benefits);if(!source)return false;
@@ -39,16 +45,20 @@
   if(!dialog){
    dialog=document.createElement('dialog');dialog.className='vl-business-video-dialog';dialog.setAttribute('aria-labelledby','vlBusinessVideoTitle');
    const header=document.createElement('div');header.className='vl-video-header';title=document.createElement('h2');title.id='vlBusinessVideoTitle';const button=document.createElement('button');button.type='button';button.className='vl-video-close';button.textContent='✕';button.setAttribute('aria-label',en?'Close video':'Cerrar vídeo');button.onclick=close;header.append(title,button);
-   media=document.createElement('div');media.className='vl-video-player';dialog.append(header,media);document.body.append(dialog);
+   media=document.createElement('div');media.className='vl-video-player';format=document.createElement('button');format.type='button';format.className='vl-video-format';dialog.append(header,format,media);document.body.append(dialog);
    dialog.addEventListener('close',()=>{if(dialog.open)return;media.replaceChildren();activeId=null;activeUrl=null;if(opener?.isConnected)opener.focus();});
    dialog.addEventListener('click',event=>{if(event.target===dialog)close();});
   }
   media.replaceChildren();opener=document.activeElement;activeId=String(place.id);activeUrl=source.url;
   title.textContent=(en?'Meet ':'Conoce ')+((en&&place.titleEn)||place.title||'');
   const player=document.createElement(source.type==='youtube'?'iframe':'video');
+  layout(source.portrait?9/16:16/9);
+  format.hidden=source.type!=='youtube';
+  function updateFormat(){format.textContent=dialog.classList.contains('vl-video-portrait')?(en?'Horizontal view':'Ver horizontal'):(en?'Vertical view':'Ver vertical');}
+  format.onclick=()=>{layout(dialog.classList.contains('vl-video-portrait')?16/9:9/16);updateFormat();};updateFormat();
   if(source.type==='youtube'){
    player.title=(en?'Business video: ':'Vídeo del negocio: ')+((en&&place.titleEn)||place.title||'');player.allow='encrypted-media; picture-in-picture; fullscreen';player.allowFullscreen=true;player.referrerPolicy='strict-origin-when-cross-origin';player.src=source.embed;
-  }else{player.controls=true;player.playsInline=true;player.preload='metadata';player.src=source.url;player.addEventListener('error',()=>{if(!dialog.open||media.firstElementChild!==player)return;media.replaceChildren();const text=document.createElement('p');text.textContent=en?'This video could not be loaded. Please try again later.':'No se pudo cargar el vídeo. Inténtalo de nuevo más tarde.';media.append(text);});}
+  }else{player.controls=true;player.playsInline=true;player.preload='metadata';player.src=source.url;player.addEventListener('loadedmetadata',()=>{if(media.firstElementChild===player)layout(player.videoWidth/player.videoHeight);});player.addEventListener('error',()=>{if(!dialog.open||media.firstElementChild!==player)return;media.replaceChildren();const text=document.createElement('p');text.textContent=en?'This video could not be loaded. Please try again later.':'No se pudo cargar el vídeo. Inténtalo de nuevo más tarde.';media.append(text);});}
   media.append(player);
   dialog.querySelector('.vl-video-close').setAttribute('aria-label',en?'Close video':'Cerrar vídeo');
   if(!dialog.open)dialog.showModal();return true;

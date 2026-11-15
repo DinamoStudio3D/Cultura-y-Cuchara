@@ -3,7 +3,7 @@ package com.visitaloja.app
 import java.net.URI
 import java.net.URLDecoder
 
-data class VideoSource(val url: String, val youtubeId: String? = null) {
+data class VideoSource(val url: String, val youtubeId: String? = null, val portrait: Boolean = false) {
     val thumbnail: String? get() = youtubeId?.let { "https://i.ytimg.com/vi/$it/hqdefault.jpg" }
 }
 data class LojaVideo(val id: String, val title: String, val description: String, val credit: String,
@@ -27,7 +27,7 @@ object VideoPolicy {
                 else -> null
             }
             when {
-                id != null && Regex("[A-Za-z0-9_-]{11}").matches(id) -> VideoSource("https://www.youtube.com/watch?v=$id", id)
+                id != null && Regex("[A-Za-z0-9_-]{11}").matches(id) -> VideoSource("https://www.youtube.com/watch?v=$id", id, path.startsWith("/shorts/"))
                 host !in youtubeHosts && host != "youtu.be" && !host.endsWith(".youtube.com") && !host.endsWith(".youtube-nocookie.com") && !host.endsWith(".youtu.be") && Regex(".*\\.(mp4|webm)$", RegexOption.IGNORE_CASE).matches(path) -> VideoSource(uri.toASCIIString())
                 else -> null
             }
@@ -50,6 +50,10 @@ object VideoPolicy {
     fun filter(gallery: VideoGallery, query: String): List<LojaVideo> {
         val words = PlacePolicy.normalize(query).split(' ').filter { it.isNotBlank() }
         return gallery.items.filter { video -> words.all { it in PlacePolicy.normalize("${video.title} ${video.description} ${video.credit}") } }
+    }
+    fun frameRatio(width: Int, height: Int, pixelRatio: Float = 1f): Float? {
+        if (width <= 0 || height <= 0 || !pixelRatio.isFinite() || pixelRatio <= 0f) return null
+        return (width.toFloat() * pixelRatio / height).takeIf { it.isFinite() && it > 0f }
     }
     fun appOrigin(packageName: String): String {
         require(Regex("[a-zA-Z][a-zA-Z0-9_]*(?:\\.[a-zA-Z0-9_]+)+").matches(packageName))

@@ -11,6 +11,9 @@ internal object PlaceMediaPolicy {
     private fun date(value: String, end: Boolean): Long? = runCatching { Instant.parse(value).toEpochMilli() }.getOrNull()
         ?: runCatching { LocalDate.parse(value).atStartOfDay(ZoneId.of("America/Guayaquil")).let { if (end) it.plusDays(1).minusNanos(1) else it }.toInstant().toEpochMilli() }.getOrNull()
     fun audio(value: String): String? = DiscoveryPolicy.media(value.trim().replace(" ", "%20"))
+    private fun videoUrl(value: String): String? = VideoPolicy.source(value)?.let {
+        if (it.portrait) "https://www.youtube.com/shorts/${it.youtubeId}" else it.url
+    }
     fun read(fields: JSONObject): PlaceMedia {
         val s = fields.optJSONObject("subscription")?.optJSONObject("mapValue")?.optJSONObject("fields") ?: JSONObject()
         fun raw(vararg keys: String) = keys.firstNotNullOfOrNull { key -> s.optJSONObject(key)?.let { it.optString("timestampValue").ifBlank { it.optString("stringValue") } }?.takeIf(String::isNotBlank) }.orEmpty()
@@ -18,7 +21,7 @@ internal object PlaceMediaPolicy {
         val start = date(startRaw, false);val end = date(endRaw, true)
         val benefit = s.optJSONObject("benefits")?.optJSONObject("mapValue")?.optJSONObject("fields")?.optJSONObject("video")?.opt("booleanValue") == true
         val paid = s.text("plan").isNotBlank() && s.text("plan") != "free" && s.text("status") !in setOf("paused", "pending", "expired", "suspended") && benefit
-        return PlaceMedia(VideoPolicy.source(fields.text("youtubeUrl"))?.url, paid, start, end,
+        return PlaceMedia(videoUrl(fields.text("youtubeUrl")), paid, start, end,
             (startRaw.isBlank() || start != null) && (endRaw.isBlank() || end != null) && (start == null || end == null || start <= end),
             audio(fields.text("audioUrl")), audio(fields.text("audioUrlEn")))
     }
@@ -32,7 +35,7 @@ internal object PlaceMediaPolicy {
     fun cached(raw: JSONObject?): PlaceMedia {
         if (raw == null) return PlaceMedia()
         fun number(key: String) = raw.optLong(key).takeIf { raw.has(key) && !raw.isNull(key) }
-        return PlaceMedia(VideoPolicy.source(raw.optString("video"))?.url, raw.optBoolean("paidVideo"), number("start"), number("end"), raw.optBoolean("validWindow", false),
+        return PlaceMedia(videoUrl(raw.optString("video")), raw.optBoolean("paidVideo"), number("start"), number("end"), raw.optBoolean("validWindow", false),
             if (raw.isNull("audioEs")) null else audio(raw.optString("audioEs")), if (raw.isNull("audioEn")) null else audio(raw.optString("audioEn")))
     }
     fun audioKey(place: Place, english: Boolean) = "place:${place.id}:${if (english) "en" else "es"}"

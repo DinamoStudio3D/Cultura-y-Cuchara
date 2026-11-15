@@ -19,7 +19,12 @@
 .vl-video-player p{padding:20px;margin:0;text-align:center}
 .vl-video-original{display:inline-flex;align-items:center;min-height:44px;margin-top:10px;font:700 13px system-ui;text-decoration:underline;text-underline-offset:3px}
 body:has(.vl-business-video-dialog[open]){overflow:hidden}
-@media(max-width:600px){.vl-business-video-dialog{padding:14px}.vl-video-player:has(video){aspect-ratio:auto;height:min(65dvh,640px)}}
+/* Fit the original frame into the available viewport; never crop the video or its controls. */
+.vl-business-video-dialog{width:min(900px,calc(100vw - 28px),calc((100dvh - 150px)*var(--vl-video-ratio,1.777778) + 38px))}
+.vl-business-video-dialog.vl-video-portrait{width:min(calc(100vw - 20px),calc((100dvh - 140px)*var(--vl-video-ratio,.5625) + 38px));padding:12px}
+.vl-video-format{display:block;min-height:36px;margin:0 0 8px auto;padding:6px 12px;border:1px solid #cbd5e1;border-radius:20px;background:#eff6ff;color:#17324d;cursor:pointer;font:700 13px system-ui}
+.vl-video-format[hidden]{display:none}
+@media(max-width:600px){.vl-business-video-dialog{padding:12px}.vl-video-header{gap:8px;margin-bottom:10px}.vl-video-header h2{font-size:18px}}
 .vl-video-highlight[hidden]{display:none!important}
 @layer vl-colors {
  #mapa #mapPreviewCard #previewBusinessVideoBtn,#mapa #mapPreviewCard #previewBusinessVideoBtn :is(i,svg,span){--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff;background:#075bb2!important;color:#fff!important}

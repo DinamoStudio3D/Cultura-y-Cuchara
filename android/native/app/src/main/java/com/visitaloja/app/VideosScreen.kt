@@ -138,6 +138,7 @@ private fun YouTubeDialogContent(video: LojaVideo, close: () -> Unit, onFullscre
     var error by remember(video.source.url, attempt) { mutableStateOf<String?>(null) }
     var seconds by rememberSaveable(video.source.url) { mutableIntStateOf(0) }
     var custom by remember { mutableStateOf<View?>(null) }
+    var portrait by rememberSaveable(video.source.url) { mutableStateOf(video.source.portrait) }
     val controller = remember(video.source.url, attempt) {
         YouTubePlayer(context, video.source.youtubeId!!, seconds,
             { r, p, s, e -> ready = r; playing = p; seconds = s; error = e },
@@ -162,17 +163,24 @@ private fun YouTubeDialogContent(video: LojaVideo, close: () -> Unit, onFullscre
             AndroidView(factory = { FrameLayout(it).apply { (full.parent as? ViewGroup)?.removeView(full); addView(full, FrameLayout.LayoutParams(-1, -1)) } }, modifier = Modifier.fillMaxSize())
         } else BoxWithConstraints(Modifier.fillMaxSize()) {
             val compact = maxHeight < 440.dp
-            val stageHeight = (maxWidth * (9f / 16f)).coerceAtLeast(200.dp)
+            val stageHeight = (maxWidth / (if (portrait) 9f / 16f else 16f / 9f)).coerceAtMost((maxHeight - 168.dp).coerceAtLeast(200.dp))
             val tooSmall = maxWidth < 200.dp || maxHeight < 260.dp
             LaunchedEffect(tooSmall, controller) { if (tooSmall) controller.pause() }
             Column(Modifier.fillMaxSize()) {
                 VideoDialogHeading(video, close)
+                TextButton(onClick = { portrait = !portrait }, modifier = Modifier.align(Alignment.End).testTag("youtube-format")) {
+                    Text(if (portrait) "Ver horizontal" else "Ver vertical", color = Color(0xFFCCE1F6))
+                }
                 if (tooSmall) {
                     Text("Amplía la ventana o gira el dispositivo para ver el video.", Modifier.padding(20.dp))
                 } else {
                     AndroidView(factory = { (controller.container.parent as? ViewGroup)?.removeView(controller.container); controller.container },
                         modifier = if (compact) Modifier.fillMaxWidth().weight(1f).heightIn(min = 200.dp) else Modifier.fillMaxWidth().height(stageHeight))
-                    if (!compact) Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (!compact && portrait) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        if (error != null) TextButton(onClick = { attempt++ }) { Text("Reintentar", color = Color.White) }
+                        TextButton(onClick = { controller.pause(); videoOpen(context, video.source.url) }) { Text("Abrir en YouTube", color = Color(0xFFCCE1F6)) }
+                    }
+                    if (!compact && !portrait) Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         if (!compact) {
                             Text(video.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             Text(error ?: if (playing) "Reproduciendo en la app" else if (ready) "Pulsa ▶ en el reproductor de YouTube." else "Preparando YouTube…", fontSize = 13.sp, color = if (error != null) Color(0xFFFFCEBE) else Color(0xFFCCE1F6), modifier = Modifier.testTag("youtube-status"))
