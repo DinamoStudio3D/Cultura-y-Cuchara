@@ -26,7 +26,12 @@
  const initialize=async()=>{
   if(standalone())return;
   if(typeof navigator.getInstalledRelatedApps==='function')try{const apps=await Promise.race([navigator.getInstalledRelatedApps(),new Promise(resolve=>setTimeout(()=>resolve([]),1000))]);if(Array.isArray(apps)&&apps.some(app=>app.platform==='webapp'||app.platform==='play')){knownInstalled=true;return}}catch(_){}
-  setTimeout(()=>{if(!standalone()&&!knownInstalled&&(force||!dismissed()))panel.classList.add('vl-install-visible')},3000);
+  const showWhenReady=()=>{
+   if(standalone()||knownInstalled||(!force&&dismissed()))return;
+   if(window.VisitaLojaMobilePlaces?.canShowNotice('install')===false){setTimeout(showWhenReady,5000);return;}
+   panel.classList.add('vl-install-visible');
+  };
+  setTimeout(showWhenReady,3000);
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});else initialize();
 })();

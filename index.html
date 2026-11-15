@@ -7,14 +7,35 @@
     // Legacy printed QR links must leave the homepage before branding or media load.
     (()=>{const params=new URLSearchParams(location.search);if(!params.has('qr')||params.has('checkin'))return;document.documentElement.style.visibility='hidden';const target=new URL('/qr.html',location.origin);target.searchParams.set('qr',params.get('qr')||'');location.replace(target.href);})();
     </script>
+    <script>
+        const fiavlProgramPath = '/programacion-fiavl-2026';
+        const fiavlProgramPage = location.pathname.replace(/\/$/, '') === fiavlProgramPath;
+        const fiavlPreviewRequested = new URLSearchParams(location.search).get('fiavl2026') === 'preview';
+        if (fiavlProgramPage) document.documentElement.classList.add('fiavl-program-page');
+        else if (fiavlPreviewRequested && location.hash === '#festival-agenda') location.replace(fiavlProgramPath);
+    </script>
+    <style>
+        body.vl-fiavl-visible :is(#webMascot,#webMascotRestore,#accountFloatingInvite),
+        .fiavl-program-page body > :is(header,nav,footer,#splash-screen,#webMascot,#webMascotRestore,#accountFloatingInvite,#welcomeMusicToggle,#vl-chabaquito-install,#dataSyncStatus),
+        .fiavl-program-page #main-content > :not(#fiavl,script,style),
+        .fiavl-program-page :is(#fiavlOverview,#festivalCampaignHeader,#festivalNowCard,#promoPopupModal) { display:none!important }
+        .fiavl-program-page body { overflow-y:auto!important }
+        .fiavl-program-page #fiavl { padding-block:clamp(20px,4vw,52px)!important; opacity:1!important; transform:none!important }
+        .fiavl-program-page #festival-live { margin-top:0!important }
+        #fiavlProgramHeader { margin-bottom:1.5rem }
+        #fiavlProgramHeader h1 { font-size:clamp(1.8rem,4vw,3rem); line-height:1.1; font-weight:900; margin:.6rem 0 }
+        #fiavlProgramActions { display:flex; flex-wrap:wrap; gap:.65rem; margin-top:1rem }
+        #fiavlProgramActions > :is(a,button) { padding:.6rem .85rem; border:1px solid #b9cfe6; border-radius:.65rem; color:#fff!important; font-weight:700 }
+        #fiavlShareUrl { width:100%; max-width:30rem; margin-top:.75rem; padding:.5rem; color:#142c45; background:#fff }
+    </style>
     <meta property="og:title" content="Visita Loja | Turismo, gastronomía y qué visitar en Loja, Ecuador">
     <meta property="og:description" content="VisitaLoja.com: descubre qué hacer en Loja, Ecuador. Explora lugares turísticos, restaurantes, cafeterías, hoteles, eventos y cantones en un mapa interactivo.">
-    <meta property="og:image" content="https://www.visitaloja.com/visitaloja-compartir-v2.jpg">
-    <meta property="og:image:secure_url" content="https://www.visitaloja.com/visitaloja-compartir-v2.jpg">
+    <meta property="og:image" content="https://www.visitaloja.com/visitaloja-compartir-v3.jpg">
+    <meta property="og:image:secure_url" content="https://www.visitaloja.com/visitaloja-compartir-v3.jpg">
     <meta property="og:image:type" content="image/jpeg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="1200">
-    <meta property="og:image:alt" content="Logo de VisitaLoja.com con marco de colores">
+    <meta property="og:image:width" content="1254">
+    <meta property="og:image:height" content="1254">
+    <meta property="og:image:alt" content="VisitaLoja.com con mapa y puntos de ubicación">
     <meta property="og:url" content="https://www.visitaloja.com/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="VisitaLoja.com">
@@ -22,8 +43,8 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Visita Loja | Turismo, gastronomía y qué visitar en Loja, Ecuador">
     <meta name="twitter:description" content="VisitaLoja.com: descubre qué hacer en Loja, Ecuador. Explora lugares turísticos, restaurantes, cafeterías, hoteles, eventos y cantones en un mapa interactivo.">
-    <meta name="twitter:image" content="https://www.visitaloja.com/visitaloja-compartir-v2.jpg">
-    <meta name="twitter:image:alt" content="Visita Loja: sabores, historias y destinos">
+    <meta name="twitter:image" content="https://www.visitaloja.com/visitaloja-compartir-v3.jpg">
+    <meta name="twitter:image:alt" content="VisitaLoja.com con mapa y puntos de ubicación">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <link rel="preconnect" href="https://firestore.googleapis.com">
     <link rel="preload" as="image" href="assets/brand/visitaloja-splash.webp" fetchpriority="high">
@@ -309,12 +330,13 @@
 
 
 
-<link rel="stylesheet" href="css/public-layout.css?v=201">
+<link rel="stylesheet" href="css/public-layout.css?v=205">
+<link rel="stylesheet" href="css/banco-portada.css?v=4">
 <link rel="stylesheet" href="css/business-cards.css?v=1">
 <link rel="stylesheet" href="css/public-colors.css?v=65">
 <link rel="stylesheet" href="css/welcome-v77.css?v=78">
-<link rel="stylesheet" href="css/discovery-cards.css?v=105">
-<link rel="stylesheet" href="css/place-experience-v101.css?v=104">
+<link rel="stylesheet" href="css/discovery-cards.css?v=106">
+<link rel="stylesheet" href="css/place-experience-v101.css?v=107">
 <link rel="stylesheet" href="css/discovery-sections-v104.css?v=104">
     <link rel="stylesheet" href="css/time-discovery-v79.css?v=79">
     <link rel="stylesheet" href="css/podcast-v80.css?v=80">
@@ -442,6 +464,12 @@
 <script src="/js/place-digital-menu.js?v=1"></script>
 <script src="/js/popup-schedule.js?v=2"></script>
 <link rel="stylesheet" href="/css/push-registration-invite.css?v=1">
+    <link rel="stylesheet" href="css/mobile-browse.css?v=4">
+    <script defer src="js/mobile-browse.js?v=9"></script>
+    <link rel="stylesheet" href="css/mobile-place-experience.css?v=3">
+    <script defer src="js/mobile-place-experience.js?v=3"></script>
+    <link rel="stylesheet" href="css/mobile-agenda.css?v=1">
+    <script defer src="js/mobile-agenda.js?v=1"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -584,6 +612,7 @@
                     <h3 class="font-black text-xl mt-4">Ingresa o crea tu cuenta</h3>
                     <p class="text-sm text-gray-600 mt-2">Usa tu cuenta de Google. Si ya te registraste, entrarás directamente con tus datos guardados.</p>
                     <button id="googleSignInButton" type="button" onclick="signInVisitorWithGoogle()" class="w-full mt-6 border-2 border-gray-200 hover:border-brandGold rounded-xl px-5 py-3.5 font-black flex items-center justify-center gap-3 transition"><span class="w-7 h-7 rounded-full bg-white shadow grid place-items-center text-sm font-black text-blue-600">G</span>Ingresar o registrarme con Google</button>
+                    <button type="button" onclick="openExperienceFavorites()" class="account-device-favorites"><span data-i18n="expSavedPlaces">Mis lugares guardados</span> →</button>
                 </div>
                 <form id="visitorProfileForm" class="hidden space-y-4" onsubmit="saveVisitorProfile(event)">
                     <div class="flex items-center gap-3 bg-orange-50 border border-orange-100 rounded-2xl p-3"><img id="visitorAvatar" class="w-12 h-12 rounded-full object-cover bg-white" alt="Foto de perfil" decoding="async"><div class="min-w-0"><p id="visitorWelcome" class="font-black truncate">Completa tu perfil</p><p id="visitorGoogleEmail" class="text-xs text-gray-600 truncate"></p></div></div>
@@ -1084,6 +1113,38 @@
     </section>
 
     <!-- Map Section -->
+    <section id="banco-de-loja-destacado" class="vl-bank-spotlight" data-vl-surface="dark" aria-labelledby="vl-sponsor-showcase-title">
+        <header class="vl-sponsor-showcase__heading">
+            <p>Patrocinadores de VisitaLoja</p>
+            <h2 id="vl-sponsor-showcase-title">Marcas que impulsan Loja</h2>
+        </header>
+        <ul class="vl-sponsor-showcase__slots" aria-label="Espacios de patrocinio">
+            <li><a href="/banco-de-loja.html"><img src="/banco-de-loja.png" alt="" width="256" height="213" loading="lazy"><strong>Banco de Loja</strong><span>Sector financiero <span aria-hidden="true">↗</span></span></a></li>
+            <li><div><span class="vl-sponsor-showcase__number" aria-hidden="true">02</span><strong>Espacio 2</strong><span>Marca por definir</span></div></li>
+            <li><div><span class="vl-sponsor-showcase__number" aria-hidden="true">03</span><strong>Espacio 3</strong><span>Marca por definir</span></div></li>
+            <li><div><span class="vl-sponsor-showcase__number" aria-hidden="true">04</span><strong>Espacio 4</strong><span>Marca por definir</span></div></li>
+        </ul>
+        <article class="vl-bank-spotlight__card" aria-labelledby="vl-bank-spotlight-title">
+            <picture class="vl-bank-spotlight__visual">
+                <source media="(max-width: 620px)" srcset="/assets/photos/responsive/atardecer-loja-640.webp">
+                <img class="vl-bank-spotlight__city" src="/assets/photos/responsive/atardecer-loja-1280.webp" alt="" loading="lazy" decoding="async">
+            </picture>
+            <div class="vl-bank-spotlight__body">
+                <div class="vl-bank-spotlight__copy">
+                    <p class="vl-bank-spotlight__eyebrow">Loja, Ecuador <span aria-hidden="true">·</span> Espacio de marca</p>
+                    <h3 id="vl-bank-spotlight-title">Banco de Loja</h3>
+                    <p class="vl-bank-spotlight__description">Encuentra una oficina cerca de ti o consulta los canales oficiales de atención.</p>
+                    <a class="vl-bank-spotlight__link" href="/banco-de-loja.html">Conocer Banco de Loja <span aria-hidden="true">↗</span></a>
+                </div>
+                <div class="vl-bank-spotlight__logo"><img src="/banco-de-loja.png" alt="" loading="lazy" decoding="async" width="256" height="213"></div>
+            </div>
+            <div class="vl-bank-spotlight__bar">
+                <a href="https://www.bancodeloja.fin.ec/"><i class="fa-solid fa-globe" aria-hidden="true"></i> Visitar sitio web <span aria-hidden="true">↗</span></a>
+                <span class="vl-bank-spotlight__demo">Loja crece cuando nos apoyamos</span>
+            </div>
+        </article>
+    </section>
+
     <section id="mapa" data-vl-surface="light" class="py-16 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto reveal">
         <div class="text-center mb-8">
             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-brandDark mb-2" data-i18n="mapTitle">Mapa Interactivo de Loja</h2>
@@ -1209,10 +1270,10 @@
             </div>
             <div class="flex flex-col gap-3 mb-6 pb-4 border-b border-gray-100">
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 w-full" id="categoryScroll"></div>
-                <div class="flex overflow-x-auto hide-scrollbar gap-2 w-full">
-                    <button type="button" onclick="runSmartSearch(currentLang==='en'?'open now':'abierto ahora')" class="flex-shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-clock mr-1"></i><span data-i18n="smartOpenNow">Abierto ahora</span></button>
+                <div class="place-quick-actions flex overflow-x-auto hide-scrollbar gap-2 w-full">
+                    <button type="button" id="placesOpenNowButton" aria-pressed="false" onclick="togglePlacesOpenNow()" class="flex-shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-clock mr-1"></i><span data-i18n="smartOpenNow">Abierto ahora</span></button>
                     <button type="button" onclick="runSmartSearch(currentLang==='en'?'Loja food':'comida lojana')" class="flex-shrink-0 bg-orange-50 text-orange-700 border border-orange-200 rounded-full px-3 py-1.5 text-[11px] font-bold">🥘 <span data-i18n="smartLojaFood">Comida lojana</span></button>
-                    <button type="button" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i><span data-i18n="btnGps">Cerca de mí</span></button>
+                    <button type="button" id="placesNearMeButton" aria-pressed="false" onclick="searchPlacesNearMe()" class="flex-shrink-0 bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-location-crosshairs mr-1"></i><span data-i18n="btnGps">Cerca de mí</span></button>
                     <button type="button" onclick="runSmartSearch('pasaporte')" class="flex-shrink-0 bg-rose-50 text-rose-700 border border-rose-200 rounded-full px-3 py-1.5 text-[11px] font-bold"><i class="fa-solid fa-stamp mr-1"></i><span data-i18n="smartPassport">Para mi pasaporte</span></button>
                 </div>
                 <div class="flex justify-end">
@@ -1481,7 +1542,18 @@
         <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="max-w-7xl mx-auto relative z-10">
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+            <div id="fiavlProgramHeader" hidden>
+                <a href="/">VisitaLoja.com</a>
+                <h1>Programación FIAVL 2026</h1>
+                <p>12 al 22 de noviembre · Loja, Ecuador</p>
+                <div id="fiavlProgramActions">
+                    <a href="/#mapa">Ver mapa interactivo</a>
+                    <button type="button" onclick="shareFiavlProgram()">Compartir programación</button>
+                </div>
+                <p id="fiavlShareStatus" role="status"></p>
+                <input id="fiavlShareUrl" type="url" readonly hidden aria-label="Enlace directo a la programación">
+            </div>
+            <div id="fiavlOverview" class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
                 <div class="w-full lg:w-1/2 text-center lg:text-left flex flex-col items-center lg:items-start">
                     
                     <!-- Imagen destacada grandecita con halo dorado y efecto flotante -->
@@ -1510,7 +1582,7 @@
                     </p>
 
                     <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                        <a href="#agenda" class="bg-brandGold text-white font-bold px-6 py-3 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-xs uppercase tracking-wider flex items-center gap-2">
+                        <a id="fiavlAgendaLink" href="#agenda" class="bg-brandGold text-white font-bold px-6 py-3 rounded-xl shadow-warm-glow hover:bg-brandGoldHover transition-all text-xs uppercase tracking-wider flex items-center gap-2">
                             <i class="fa-solid fa-calendar-check"></i> <span data-i18n="btnFiavlAgenda">Ver Agenda y Teatros</span>
                         </a>
                         <a href="#establecimientos" class="bg-white/10 text-white font-bold px-6 py-3 rounded-xl border border-white/20 hover:bg-white/20 transition-all text-xs uppercase tracking-wider flex items-center gap-2">
@@ -1589,9 +1661,9 @@
         <div id="festivalCampaignGlow" class="absolute inset-0 opacity-20 pointer-events-none" style="background:radial-gradient(circle at 15% 20%,#ec4899 0,transparent 30%),radial-gradient(circle at 85% 70%,#06b6d4 0,transparent 32%)"></div>
         <div class="absolute -right-12 -top-12 vl-decoration text-[13rem] text-white -rotate-12 pointer-events-none" aria-hidden="true"><i id="festivalCampaignIcon" class="fa-solid fa-masks-theater"></i></div>
         <div class="max-w-7xl mx-auto relative z-10">
-            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+            <div id="festivalCampaignHeader" class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
                 <div>
-                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Modo Festival · Demostración</span>
+                    <span id="festivalModeBadge" class="inline-flex items-center gap-2 bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-400/40 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"><span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span> Próximo Festival</span>
                     <h2 id="festivalModeTitle" class="text-3xl sm:text-4xl font-black mt-4">Loja se convierte en escenario</h2>
                     <p id="festivalModeSubtitle" class="text-sm text-gray-300 mt-2 max-w-2xl">Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.</p>
                 </div>
@@ -1613,8 +1685,14 @@
                 </div>
             </div>
 
+            <div id="fiavlParadeHighlight" hidden class="rounded-2xl border border-fuchsia-400/40 bg-white/10 p-4 mb-7">
+                <p id="fiavlParadeHighlightLabel" class="text-xs font-black uppercase tracking-wider text-fuchsia-300"></p>
+                <p id="fiavlParadeHighlightTime" class="mt-1 text-sm font-bold text-white"></p>
+                <button id="fiavlParadeHighlightLink" type="button" class="mt-2 text-sm font-bold text-cyan-300 underline"></button>
+            </div>
+
             <div id="festival-agenda">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4"><h3 class="text-xl font-black">Agenda diaria</h3><span class="text-xs text-gray-400"><i class="fa-solid fa-circle-info mr-1"></i>Contenido inicial de demostración</span></div>
+                <h3 class="text-xl font-black mb-4">Agenda diaria</h3>
                 <div id="festivalDayTabs" class="flex gap-2 overflow-x-auto pb-3 mb-3"></div>
                 <div id="festivalAgendaGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
                 <p id="festivalEmpty" class="hidden text-center text-gray-400 bg-white/5 rounded-2xl p-8">No hay actividades cargadas para este día.</p>
@@ -1657,7 +1735,22 @@
                 <p id="agendaSavedCount" class="text-xs font-bold text-gray-600 px-3"></p>
             </div>
 
+            <div id="fiavlPreviewAgendaFilters" hidden class="mb-7 rounded-2xl border border-fuchsia-200 bg-white p-4">
+                <p class="text-sm font-bold text-brandDark mb-3">FIAVL 2026 · Programación preliminar</p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <label class="flex-1 text-xs font-bold text-brandDark"><span data-i18n="agendaSearchLabel">Busca un evento</span>
+                        <input id="agendaSearch" type="search" oninput="resetFiavlAgendaPage()" class="block w-full mt-1 px-3 py-2 border border-gray-300 rounded-xl text-sm font-normal">
+                    </label>
+                    <label class="text-xs font-bold text-brandDark"><span data-i18n="agendaDateFilterLabel">Cuándo</span>
+                        <select id="agendaDateFilter" onchange="resetFiavlAgendaPage()" class="block w-full mt-1 px-3 py-2 border border-gray-300 rounded-xl text-sm font-normal">
+                            <option value="all">Todas las fechas</option><option value="today">Hoy</option><option value="week">Próximos 7 días</option><option value="undated">Sin fecha confirmada</option>
+                        </select>
+                    </label>
+                </div>
+                <p id="agendaResultCount" class="text-xs text-gray-600 mt-3" aria-live="polite"></p>
+            </div>
             <section id="eventsSpotlight" data-vl-surface="light" aria-label="Próximos eventos de Loja" hidden></section><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="agendaGridContainer"></div>
+            <button id="fiavlAgendaMore" hidden type="button" class="mt-5 rounded-xl border border-fuchsia-600 px-5 py-3 text-sm font-bold text-fuchsia-700" onclick="showMoreFiavlAgenda()">Ver más eventos</button>
         </div>
     </section>
 
@@ -1701,19 +1794,20 @@
     <!-- Patrocinadores y respaldo institucional -->
     <section id="patrocinadores" data-vl-surface="light" class="py-14 px-4 md:px-8 bg-[#f8fafc] text-[#172f4c] border-t border-brandGold/20 text-center">
         <div class="max-w-6xl mx-auto">
-            <div class="vl46-sponsors-kicker"><i class="fa-solid fa-handshake-angle"></i> ALIANZAS QUE GENERAN IMPACTO</div><div class="vl46-sponsors-layout"><div class="vl46-sponsors-intro"><span class="vl46-eyebrow">JUNTOS POR NUESTRA PROVINCIA</span><h2>Loja crece cuando <em>sumamos esfuerzos.</em></h2><p>Conoce a las empresas que acompañan este proyecto turístico y contribuyen a mostrar lo mejor de nuestra tierra.</p><div class="vl46-sponsors-trust"><i class="fa-solid fa-certificate"></i> Con el respaldo de la Mesa Turística de Loja</div></div><div class="vl46-sponsors-existing"><div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4 shadow-warm-glow">
+            <div class="vl46-sponsors-kicker"><i class="fa-solid fa-handshake-angle"></i> ALIANZAS QUE GENERAN IMPACTO</div><div class="vl46-sponsors-layout"><div class="vl46-sponsors-intro"><span class="vl46-eyebrow">JUNTOS POR NUESTRA PROVINCIA</span><h2>Loja crece cuando <em>sumamos esfuerzos.</em></h2><p>Conoce a las marcas y las propuestas de colaboración que acercan el turismo, la cultura y el comercio local.</p><div class="vl46-sponsors-trust"><i class="fa-solid fa-certificate"></i> Con el respaldo de la Mesa Turística de Loja</div></div><div class="vl46-sponsors-existing"><div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-brandGold/10 border border-brandGold/30 text-brandGold text-2xl mb-4 shadow-warm-glow">
                 <i class="fa-solid fa-handshake"></i>
             </div>
             <p class="text-[10px] sm:text-xs font-black uppercase tracking-[.28em] text-gray-400 mb-2">Patrocinadores de Visita Loja</p>
             <h3 id="institutionalSupportTitle" class="text-2xl sm:text-3xl font-black text-white mb-3">Empresas que <span class="text-brandGold">impulsan Loja</span></h3>
             <p id="institutionalSupportDescription" class="text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed">Aliados que apuestan por el turismo, la cultura y el desarrollo de nuestra provincia.</p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mt-8" aria-label="Patrocinadores de Visita Loja">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mt-8" aria-label="Marcas y propuestas de patrocinio de VisitaLoja">
                 <article class="min-h-36 bg-white rounded-2xl border border-white/10 shadow-xl flex flex-col items-center justify-center gap-3 px-5 py-6">
                     <div class="h-16 w-full flex items-center justify-center">
-                        <img src="banco-de-loja.png" alt="Banco de Loja" class="max-h-16 max-w-[85%] object-contain" loading="lazy" decoding="async">
+                        <img src="banco-de-loja.png" alt="" class="max-h-16 max-w-[85%] object-contain" loading="lazy" decoding="async">
                     </div>
-                    <span class="text-[11px] font-black uppercase tracking-wider text-gray-500">Banco de Loja</span>
+                    <span class="text-[11px] font-black uppercase tracking-wider text-gray-500">Sector financiero · Propuesta</span>
+                    <a href="/banco-de-loja.html" class="inline-flex min-h-11 items-center justify-center rounded-xl px-2 py-2 text-sm font-bold text-blue-800 underline underline-offset-4">Conocer Banco de Loja</a>
                 </article>
                 <article class="min-h-36 bg-white rounded-2xl border border-white/10 shadow-xl flex flex-col items-center justify-center gap-3 px-5 py-6">
                     <div class="h-16 w-full flex items-center justify-center">
@@ -2591,7 +2685,7 @@
 
     <!-- Toast Notification -->
     <div id="dataSyncStatus" role="status" aria-live="polite" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-[65] max-w-[calc(100%-2rem)] bg-brandDark/95 text-white border border-white/15 rounded-full px-4 py-2 text-xs font-bold shadow-xl backdrop-blur whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-down mr-2 text-cyan-300"></i><span>Actualizando paradas…</span></div>
-    <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
+    <div id="toastMessage" role="status" aria-live="polite" aria-atomic="true" class="pointer-events-none fixed bottom-24 right-4 bg-brandGold text-white font-bold px-4 py-3 rounded-xl shadow-warm-glow transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center text-sm">
         <i class="fa-solid fa-circle-check mr-2"></i> <span id="toastText">¡Copiado!</span>
     </div>
 
@@ -3061,7 +3155,7 @@
             "Mensaje de Chabaquito":"A message from Chabaquito","“Celebremos nuestra identidad recorriendo, saboreando y cuidando Loja. ¡Te espero en la ruta!”":"“Let’s celebrate our identity by exploring, tasting and caring for Loja. See you on the route!”",
             "Descubre qué sucede ahora y organiza tu experiencia durante el Festival Internacional de Artes Vivas.":"Discover what is happening now and plan your experience during the International Festival of Performing Arts.",
             "Preparando la agenda del Festival":"Preparing the Festival schedule","La próxima actividad aparecerá aquí.":"The next activity will appear here.","Agenda diaria":"Daily schedule",
-            "Contenido inicial de demostración":"Initial demo content","No hay actividades cargadas para este día.":"No activities have been added for this day.",
+            "No hay actividades cargadas para este día.":"No activities have been added for this day.",
             "Beneficios por tiempo limitado":"Limited-time benefits","Descubre beneficios disponibles ahora en nuestros negocios aliados.":"Discover benefits currently available at our partner businesses.",
             "Historias de Loja":"Stories of Loja","Relatos que conectan sabores, lugares y tradiciones.":"Stories connecting flavors, places and traditions.",
             "El Rincón Lojano":"The Loja Corner","Tradición familiar preparando el mejor repe lojano.":"A family tradition preparing the finest Loja-style repe.",
@@ -3149,6 +3243,7 @@
                 });
             });
             document.documentElement.lang = currentLang;
+            if (fiavlProgramPage) { document.title = 'Programación FIAVL 2026 | Visita Loja'; return; }
             document.title = currentLang === 'en' ? 'Visita Loja | Things to do and tourism in Loja, Ecuador' : 'Visita Loja | Turismo, gastronomía y qué visitar en Loja, Ecuador';
         }
 
@@ -3218,6 +3313,7 @@
 
         function updateVisitorAccountLabels(user, profile = null) {
             const shortName = profile?.fullName?.trim().split(/\s+/)[0] || user?.displayName?.trim().split(/\s+/)[0] || 'Mi cuenta';
+            showAccountFloatingInvite(safeReadJSON('cyc_settings', window.__initialSettings || {}).showAccountFloatingButton !== false);
             const desktop = document.getElementById('accountNavLabel');
             const mobile = document.getElementById('accountMobileLabel');
             if (desktop) desktop.textContent = user ? shortName : 'Ingresar';
@@ -3312,7 +3408,7 @@
             if (missionRewardIntent) {
                 missionRewardIntent = false;
                 showToast(currentLang === 'en' ? 'Your account is ready. Return to Chabaquito missions to claim your reward.' : 'Tu cuenta está lista. Regresa a las misiones para reclamar tu recompensa.');
-                document.getElementById('misiones')?.scrollIntoView({behavior:'smooth'});
+                window.VisitaLojaMobileBrowse?.open('misiones');document.getElementById('misiones')?.scrollIntoView({behavior:'smooth'});
             }
             if (passportRewardIntent) {
                 passportRewardIntent = false;
@@ -3339,7 +3435,7 @@
             const selectedIndex=nextIndex>=0?nextIndex:fallbackIndex,next=locations[selectedIndex];
             setText('experienceNextTitle',next?.title||'Ya conociste todas las paradas');
             setText('experienceNextMeta',next?(isLocOpenNow(next)?'Abierto ahora · Nueva parada para tu pasaporte':'Descubre esta parada en tu próximo recorrido'):'Muy pronto agregaremos nuevos destinos.');
-            const nextButton=document.getElementById('experienceNextButton');if(nextButton){nextButton.disabled=!next;nextButton.onclick=()=>{if(!next)return;closeModal('accountModal');selectLocation(selectedIndex);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});};}
+            const nextButton=document.getElementById('experienceNextButton');if(nextButton){nextButton.disabled=!next;nextButton.onclick=()=>{if(!next)return;closeModal('accountModal');selectLocation(selectedIndex);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});};}
             const preview=document.getElementById('experienceFavoritePreview');if(preview){const favorites=favoriteLocations.map(id=>locations.find(location=>location.id===id)).filter(Boolean).slice(0,3);preview.innerHTML=favorites.length?favorites.map(location=>`<button type="button" onclick="openExperienceLocation('${String(location.id).replace(/'/g,"\\'")}')" class="w-full text-left bg-white border border-gray-200 rounded-xl p-2.5 flex items-center gap-3"><span class="w-8 h-8 rounded-full bg-orange-50 text-brandGold grid place-items-center"><i class="fa-solid fa-location-dot"></i></span><span class="min-w-0"><b class="block text-xs truncate">${escapeHTML(location.title||'Parada Visita Loja')}</b><small class="text-[10px] text-gray-500 truncate block">${escapeHTML(location.tag||location.address||'Loja')}</small></span></button>`).join(''):'<p class="text-xs text-gray-500 bg-gray-50 rounded-xl p-3">Todavía no guardaste lugares. Toca la hoja en una parada para añadirla.</p>';}
             const agendaPreview=document.getElementById('experienceAgendaPreview');
             if(agendaPreview){agendaPreview.innerHTML=combinedAgenda.length?combinedAgenda.slice(0,3).map(item=>{const event=item.event,title=(currentLang==='en'&&event.titleEn)?event.titleEn:event.title;const place=event.location||event.place||'Loja';const encodedId=encodeURIComponent(item.id);return `<button type="button" onclick="openExperienceAgendaItem('${item.kind}','${encodedId}')" class="w-full text-left bg-white border border-violet-100 rounded-xl p-2.5 flex items-center gap-3"><span class="w-8 h-8 rounded-full ${item.kind==='festival'?'bg-fuchsia-50 text-fuchsia-600':'bg-violet-50 text-violet-600'} grid place-items-center"><i class="fa-solid ${item.kind==='festival'?'fa-masks-theater':'fa-calendar-day'}"></i></span><span class="min-w-0 flex-1"><b class="block text-xs truncate">${escapeHTML(title||'Evento Visita Loja')}</b><small class="text-[10px] text-gray-500 truncate block">${escapeHTML(event.date||'Fecha por confirmar')} · ${escapeHTML(place)}</small></span><span class="text-[9px] font-black uppercase ${item.kind==='festival'?'text-fuchsia-600':'text-violet-600'}">${item.kind==='festival'?'Festival':'Cultural'}</span></button>`;}).join(''):'<p class="text-xs text-gray-500 bg-gray-50 rounded-xl p-3">Guarda eventos de la agenda cultural o del festival y los verás aquí.</p>';}
@@ -3347,9 +3443,9 @@
         function openExperiencePassport(){closeModal('accountModal');openModal('pasaporteModal');}
         function openExperienceFavorites(){closeModal('accountModal');openSavedPlaces();}
         function openExperiencePlanner(){closeModal('accountModal');openSmartRoutePlanner();}
-        function openExperienceAgenda(){closeModal('accountModal');agendaViewMode='saved';renderAgendaUI();document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
-        function openExperienceAgendaItem(kind,encodedId){const id=decodeURIComponent(encodedId);closeModal('accountModal');if(kind==='festival'){const event=(festivalConfig?.events||[]).find(item=>String(item.id)===String(id));if(event?.date)selectFestivalDay(event.date);document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'});return;}agendaViewMode='saved';renderAgendaUI();document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
-        function openExperienceLocation(id){const index=locations.findIndex(location=>String(location.id)===String(id));if(index<0)return;closeModal('accountModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
+        function openExperienceAgenda(){closeModal('accountModal');agendaViewMode='saved';renderAgendaUI();window.VisitaLojaMobileBrowse?.open('agenda');document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
+        function openExperienceAgendaItem(kind,encodedId){const id=decodeURIComponent(encodedId);closeModal('accountModal');if(kind==='festival'){const event=(festivalConfig?.events||[]).find(item=>String(item.id)===String(id));if(event?.date)selectFestivalDay(event.date);window.VisitaLojaMobileBrowse?.open('festival-live');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'});return;}agendaViewMode='saved';renderAgendaUI();window.VisitaLojaMobileBrowse?.open('agenda');document.getElementById('agenda')?.scrollIntoView({behavior:'smooth'});}
+        function openExperienceLocation(id){const index=locations.findIndex(location=>String(location.id)===String(id));if(index<0)return;closeModal('accountModal');selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
 
         function editVisitorProfile() {
             const user = visitorAuth?.currentUser;
@@ -3821,6 +3917,9 @@
             ]
         };
         let festivalConfig = { ...defaultFestivalConfig };
+        let festivalSource = defaultFestivalConfig;
+        let fiavlPreviewEvents = [];
+        const fiavlPreviewIds = new Set();
         let selectedFestivalDay = defaultFestivalConfig.events[0].date;
         let festivalClockTimer = null;
         let festivalEventLayer = null;
@@ -3836,8 +3935,33 @@
             return new Intl.DateTimeFormat(currentLang === 'en' ? 'en-US' : 'es-EC', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'America/Guayaquil' }).format(new Date(`${dateValue}T12:00:00-05:00`));
         }
 
+        let nextFiavlMapRefresh = Infinity;
+
+        function fiavlActivityTimes(event) {
+            const start = festivalDateTime(event).getTime();
+            const duration = Number(event.durationMinutes);
+            const hasDuration = Number.isFinite(duration) && duration > 0;
+            const end = hasDuration ? start + duration * 60000
+                : Date.parse(`${event.date}T00:00:00-05:00`) + 86400000;
+            return { start, end, hasDuration };
+        }
+
+        function updateFiavlActivityStatuses(now) {
+            const en = currentLang === 'en';
+            for (const badge of document.querySelectorAll('#festivalAgendaGrid [data-fiavl-status]')) {
+                const { start, end, duration } = badge.dataset;
+                const label = now >= Number(end) ? (en ? 'Finished' : 'Finalizada')
+                    : now < Number(start) ? ''
+                    : duration === 'true' ? (en ? 'In progress' : 'En curso') : (en ? 'Already started' : 'Ya inició');
+                if (badge.textContent !== label) badge.textContent = label;
+                badge.hidden = !label;
+            }
+            if (now >= nextFiavlMapRefresh) renderFestivalEventMarkers();
+        }
+
         function updateFestivalClock() {
             const now = new Date();
+            if (fiavlPreviewEvents.length) updateFiavlActivityStatuses(now.getTime());
             const start = new Date(festivalConfig.startDate);
             const end = new Date(festivalConfig.endDate);
             const countdown = document.getElementById('festivalCountdown');
@@ -3874,12 +3998,21 @@
             const events = [...(festivalConfig.events || [])].sort((a,b) => festivalDateTime(a) - festivalDateTime(b));
             const now = new Date();
             const live = events.find(event => {
+                if (fiavlPreviewIds.has(event.id)) {
+                    const { start, end, hasDuration } = fiavlActivityTimes(event);
+                    return hasDuration && now >= start && now < end;
+                }
                 const start = festivalDateTime(event);
                 const finish = new Date(start.getTime() + Number(event.durationMinutes || 90) * 60000);
                 return now >= start && now <= finish;
             });
             const next = events.find(event => festivalDateTime(event) > now);
-            const chosen = live || next;
+            const started = !live && !next && events.findLast(event => {
+                if (!fiavlPreviewIds.has(event.id)) return false;
+                const { start, end, hasDuration } = fiavlActivityTimes(event);
+                return !hasDuration && now >= start && now < end;
+            });
+            const chosen = live || next || started;
             const label = document.getElementById('festivalNowLabel');
             const title = document.getElementById('festivalNowTitle');
             const meta = document.getElementById('festivalNowMeta');
@@ -3890,14 +4023,14 @@
                 if (meta) meta.textContent = 'Muy pronto compartiremos nuevas experiencias culturales.';
                 return;
             }
-            if (label) label.textContent = live ? 'En este momento' : 'Próxima actividad';
+            if (label) label.textContent = live ? 'En este momento' : started ? 'Ya inició' : 'Próxima actividad';
             if (title) title.textContent = chosen.title;
             if (meta) meta.textContent = `${formatFestivalDay(chosen.date)} · ${chosen.time} · ${chosen.place}`;
             if (action) {
                 action.href = chosen.mapUrl || '#festival-agenda';
                 action.target = chosen.mapUrl ? '_blank' : '';
                 action.rel = chosen.mapUrl ? 'noopener noreferrer' : '';
-                action.innerHTML = chosen.mapUrl ? '<i class="fa-solid fa-location-arrow mr-2"></i>Cómo llegar' : '<i class="fa-solid fa-calendar-days mr-2"></i>Ver agenda';
+                action.innerHTML = chosen.mapUrl ? `<i class="fa-solid fa-location-arrow mr-2"></i>${festivalMapLinkLabel(chosen)}` : '<i class="fa-solid fa-calendar-days mr-2"></i>Ver agenda';
             }
         }
 
@@ -3929,27 +4062,108 @@
             return { emoji: '🎭', color: '#9333ea' };
         }
 
+        function festivalLocation(event) {
+            if ([event.lat, event.lng].some(value => value == null || String(value).trim() === '')) return null;
+            const lat = Number(event.lat);
+            const lng = Number(event.lng);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return null;
+            return [lat, lng];
+        }
+
+        function festivalMapLinkLabel(event) {
+            const en = currentLang === 'en';
+            if (event.locationPrecision?.startsWith('referencia')) {
+                return en ? 'View map reference' : 'Ver referencia en el mapa';
+            }
+            return en ? 'Directions' : 'Cómo llegar';
+        }
+
+        function openFiavlVenue(eventId) {
+            const event = festivalConfig.events.find(item => item.id === eventId);
+            if (!event) return;
+            const search = document.getElementById('agendaSearch');
+            search.value = event.place;
+            document.getElementById('agendaDateFilter').value = 'all';
+            setAgendaView('all');
+            map.closePopup();
+            search.focus({ preventScroll: true });
+            window.VisitaLojaMobileBrowse?.open('agenda');document.getElementById('agenda').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        const fiavlParadeMapUrl = '/?fiavlRuta=desfile#mapa';
+        let fiavlParadeRouteFocused = false;
+
+        function renderFiavlParadeRoute(event) {
+            const route = event.route;
+            const line = L.polyline(route.points, { color: '#86198f', weight: 6, opacity: .9, className: 'fiavl-parade-route' })
+                .bindPopup(`<strong>${escapeHTML(event.title)}</strong><br>${escapeHTML(event.time)} · Trazado referencial<br><a href="${fiavlProgramPath}">Ver programación</a>`)
+                .addTo(festivalEventLayer);
+            for (const [point, label] of [[route.points[0], route.start], [route.points.at(-1), route.end]]) {
+                L.circleMarker(point, { radius: 8, color: '#fff', weight: 2, fillColor: '#86198f', fillOpacity: 1 })
+                    .bindPopup(escapeHTML(label)).addTo(festivalEventLayer);
+            }
+            if (!fiavlParadeRouteFocused && new URLSearchParams(location.search).get('fiavlRuta') === 'desfile') {
+                fiavlParadeRouteFocused = true;
+                map.fitBounds(line.getBounds(), { padding: [32, 48], maxZoom: 16, animate: false });
+            }
+        }
+
         function renderFestivalEventMarkers() {
             if (!festivalEventLayer) return;
             festivalEventLayer.clearLayers();
+            nextFiavlMapRefresh = Infinity;
             if (!festivalEventsVisible || festivalConfig.active === false) return;
             const now = new Date();
-            (festivalConfig.events || []).forEach(event => {
-                const lat = Number(event.lat);
-                const lng = Number(event.lng);
-                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-                const eventEnd = new Date(festivalDateTime(event).getTime() + Number(event.durationMinutes || 90) * 60000);
-                if (eventEnd < now) return;
-                const style = festivalMarkerStyle(event.category);
+            const venues = new Map();
+            const markers = [];
+            const showParadeRoute = new URLSearchParams(location.search).get('fiavlRuta') === 'desfile';
+            for (const event of festivalConfig.events) {
+                const imported = fiavlPreviewIds.has(event.id);
+                const eventEnd = imported ? fiavlActivityTimes(event).end
+                    : festivalDateTime(event).getTime() + Number(event.durationMinutes || 90) * 60000;
+                const upcoming = Number.isFinite(eventEnd) && eventEnd > now.getTime();
+                if (imported && event.route?.points?.length > 1) {
+                    if (upcoming || showParadeRoute) renderFiavlParadeRoute(event);
+                    if (upcoming && !showParadeRoute) nextFiavlMapRefresh = Math.min(nextFiavlMapRefresh, eventEnd);
+                    continue;
+                }
+                const coordinates = festivalLocation(event);
+                if (!coordinates || !upcoming) continue;
+                if (imported) {
+                    nextFiavlMapRefresh = Math.min(nextFiavlMapRefresh, eventEnd);
+                    const key = coordinates.join('|');
+                    if (!venues.has(key)) {
+                        const venue = { event, coordinates, count: 0, places: new Map() };
+                        venues.set(key, venue);
+                        markers.push(venue);
+                    }
+                    const venue = venues.get(key);
+                    venue.count++;
+                    if (!venue.places.has(event.place)) venue.places.set(event.place, event.id);
+                } else {
+                    markers.push({ event, coordinates, count: 0 });
+                }
+            }
+
+            markers.forEach(({ event, coordinates: [lat, lng], count, places }) => {
+                const style = count ? { color: '#86198f' } : festivalMarkerStyle(event.category);
                 const icon = L.divIcon({
                     className: 'festival-leaflet-icon',
-                    html: `<div class="festival-map-pin" style="background:${style.color};--pin-color:${style.color}"><span>${style.emoji}</span></div>`,
+                    html: `<div class="festival-map-pin" style="background:${style.color};--pin-color:${style.color}"><span>${count ? '<i class="fa-solid fa-masks-theater" aria-hidden="true" style="color:#fff!important"></i>' : style.emoji}</span></div>`,
                     iconSize: [28, 28], iconAnchor: [14, 27], popupAnchor: [0, -27]
                 });
                 const safeId = escapeHTML(event.id || '');
                 const mapLink = event.mapUrl || `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-                const popup = `<div style="min-width:220px"><p style="font-size:11px;font-weight:900;text-transform:uppercase;color:${style.color};margin:0 0 5px">${escapeHTML(event.category || 'Artes Vivas')}</p><h3 style="font-size:16px;font-weight:900;margin:0 0 8px">${escapeHTML(event.title || 'Evento FIAVL')}</h3><p style="font-size:12px;margin:4px 0">🗓️ ${escapeHTML(formatFestivalDay(event.date))} · ${escapeHTML(event.time || '')}</p><p style="font-size:12px;margin:4px 0">📍 ${escapeHTML(event.place || 'Ubicación por confirmar')}</p><p style="font-size:11px;font-weight:700;color:${event.free ? '#15803d' : '#a16207'};margin:7px 0">${event.free ? '✓ Entrada libre' : 'Consultar acceso'}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button type="button" onclick="saveFestivalEvent('${safeId}')" style="border:1px solid #d946ef;border-radius:8px;padding:8px;font-size:11px;font-weight:800;background:white">☆ Mi agenda</button><a href="${escapeHTML(mapLink)}" target="_blank" rel="noopener noreferrer" style="border-radius:8px;padding:8px;font-size:11px;font-weight:800;text-align:center;background:${style.color};color:white;text-decoration:none">Cómo llegar</a></div></div>`;
-                L.marker([lat, lng], { icon, zIndexOffset: 700 }).bindPopup(popup).addTo(festivalEventLayer);
+                const popup = count
+                    ? `<div class="fiavl-venue-popup"><p style="color:#86198f;font-weight:800">Programación preliminar · FIAVL 2026</p><h3 style="font-size:16px;font-weight:900">${places.size === 1 ? escapeHTML(event.place) : 'Escenarios en este punto'}</h3><p>${count} ${count === 1 ? 'actividad' : 'actividades'} en este punto</p>${event.locationPrecision?.startsWith('referencia') ? `<p>Referencia${escapeHTML(event.locationPrecision.slice('referencia'.length))}</p>` : ''}${[...places].map(([place, id]) => `<button type="button" data-fiavl-venue="${escapeHTML(id)}" style="display:block;text-align:left;padding:8px 0;font-weight:800;color:#86198f;text-decoration:underline">${places.size === 1 ? 'Ver actividades en la agenda' : escapeHTML(place)}</button>`).join('')}<a href="${escapeHTML(mapLink)}" target="_blank" rel="noopener noreferrer">${festivalMapLinkLabel(event)}</a></div>`
+                    : `<div style="min-width:220px"><p style="font-size:11px;font-weight:900;text-transform:uppercase;color:${style.color};margin:0 0 5px">${escapeHTML(event.category || 'Artes Vivas')}</p><h3 style="font-size:16px;font-weight:900;margin:0 0 8px">${escapeHTML(event.title || 'Evento FIAVL')}</h3><p style="font-size:12px;margin:4px 0">🗓️ ${escapeHTML(formatFestivalDay(event.date))} · ${escapeHTML(event.time || '')}</p><p style="font-size:12px;margin:4px 0">📍 ${escapeHTML(event.place || 'Ubicación por confirmar')}</p><p style="font-size:11px;font-weight:700;color:${event.free ? '#15803d' : '#a16207'};margin:7px 0">${event.free ? '✓ Entrada libre' : 'Consultar acceso'}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px"><button type="button" onclick="saveFestivalEvent('${safeId}')" style="border:1px solid #d946ef;border-radius:8px;padding:8px;font-size:11px;font-weight:800;background:white">☆ Mi agenda</button><a href="${escapeHTML(mapLink)}" target="_blank" rel="noopener noreferrer" style="border-radius:8px;padding:8px;font-size:11px;font-weight:800;text-align:center;background:${style.color};color:white;text-decoration:none">Cómo llegar</a></div></div>`;
+                const marker = L.marker([lat, lng], { icon, zIndexOffset: count ? 690 : 700, title: count ? event.place : event.title })
+                    .bindPopup(popup, { maxWidth: 260 }).addTo(festivalEventLayer);
+                if (count) marker.on('popupopen', ({ popup }) => {
+                    popup.getElement().querySelectorAll('[data-fiavl-venue]').forEach(button => {
+                        button.onclick = () => openFiavlVenue(button.dataset.fiavlVenue);
+                    });
+                });
             });
         }
 
@@ -3977,24 +4191,150 @@
             const festivalGlow=document.getElementById('festivalCampaignGlow');if(festivalGlow)festivalGlow.style.background=`radial-gradient(circle at 15% 20%,${festivalPrimary} 0,transparent 30%),radial-gradient(circle at 85% 70%,${festivalSecondary} 0,transparent 32%)`;
             const festivalIcons=new Set(['fa-masks-theater','fa-music','fa-landmark','fa-star','fa-palette']),festivalIcon=document.getElementById('festivalCampaignIcon');if(festivalIcon)festivalIcon.className=`fa-solid ${festivalIcons.has(festivalConfig.icon)?festivalConfig.icon:defaultFestivalConfig.icon}`;
             document.querySelectorAll('#festivalCountdown strong').forEach((element,index)=>element.style.color=index%2?festivalSecondary:festivalPrimary);
-            const events = festivalConfig.events || [];
-            const days = [...new Set(events.map(event => event.date))].sort();
-            if (!days.includes(selectedFestivalDay)) selectedFestivalDay = days[0] || '';
-            document.getElementById('festivalDayTabs').innerHTML = days.map(day => `<button type="button" onclick="selectFestivalDay('${day}')" class="flex-shrink-0 px-4 py-2 rounded-full text-xs font-black border transition ${day === selectedFestivalDay ? 'bg-fuchsia-500 border-fuchsia-400 text-white' : 'bg-white/5 border-white/15 text-gray-300 hover:border-fuchsia-400'}">${formatFestivalDay(day)}</button>`).join('');
-            const visible = events.filter(event => event.date === selectedFestivalDay).sort((a,b) => String(a.time).localeCompare(String(b.time)));
+            const events = fiavlProgramPage && !fiavlPreviewEvents.length ? [] : festivalConfig.events || [];
+            const eventsByDay = new Map();
+            for (const event of events) {
+                if (!eventsByDay.has(event.date)) eventsByDay.set(event.date, []);
+                eventsByDay.get(event.date).push(event);
+            }
+            const days = [...eventsByDay.keys()].sort();
+            if (!eventsByDay.has(selectedFestivalDay)) selectedFestivalDay = days[0] || '';
+            const tabs = document.getElementById('festivalDayTabs');
+            const previousScroll = tabs.scrollLeft;
+            const focusedDay = tabs.contains(document.activeElement) ? document.activeElement.dataset.festivalDay : '';
+            tabs.innerHTML = days.map(day => {
+                const selected = day === selectedFestivalDay;
+                const count = eventsByDay.get(day).length;
+                const date = escapeHTML(day);
+                const countLabel = currentLang === 'en'
+                    ? (count === 1 ? '1 activity' : `${count} activities`)
+                    : (count === 1 ? '1 actividad' : `${count} actividades`);
+                return `<button type="button" data-festival-day="${date}" aria-pressed="${selected}" class="flex-shrink-0 px-4 py-2 rounded-full text-xs font-black border transition ${selected ? 'bg-fuchsia-500 border-fuchsia-400 text-white' : 'bg-white/5 border-white/15 text-gray-300 hover:border-fuchsia-400'}">${formatFestivalDay(day)}${fiavlPreviewEvents.length ? `<span class="block mt-1">${countLabel}</span>` : ''}</button>`;
+            }).join('');
+            tabs.scrollLeft = previousScroll;
+            tabs.querySelectorAll('button').forEach(button => {
+                const day = button.dataset.festivalDay;
+                button.onclick = () => selectFestivalDay(day);
+                if (day === focusedDay) button.focus({ preventScroll: true });
+            });
+            const selectedTab = tabs.querySelector('[aria-pressed="true"]');
+            if (selectedTab) {
+                const tabRect = selectedTab.getBoundingClientRect();
+                const viewport = tabs.getBoundingClientRect();
+                if (tabRect.left < viewport.left) tabs.scrollLeft += tabRect.left - viewport.left;
+                else if (tabRect.right > viewport.right) tabs.scrollLeft += tabRect.right - viewport.right;
+            }
+            const visible = [...(eventsByDay.get(selectedFestivalDay) || [])].sort((a,b) => String(a.time).localeCompare(String(b.time)));
             const saved = safeReadJSON('cyc_saved_festival_events', []);
-            document.getElementById('festivalAgendaGrid').innerHTML = visible.map(event => `<article class="bg-white/5 border border-white/15 rounded-2xl p-5 hover:border-fuchsia-400/60 transition"><div class="flex items-start justify-between gap-3"><span class="text-xs font-black text-cyan-300 uppercase tracking-wider">${event.category || 'Arte'}</span><span class="text-xs ${event.free ? 'text-green-300' : 'text-yellow-300'}">${event.free ? 'Entrada libre' : 'Consultar acceso'}</span></div><h4 class="font-black text-lg mt-3">${event.title}</h4><p class="text-sm text-gray-300 mt-2"><i class="fa-regular fa-clock text-fuchsia-300 mr-2"></i>${event.time} &nbsp;·&nbsp; <i class="fa-solid fa-location-dot text-fuchsia-300 mr-1"></i>${event.place}</p><div class="grid grid-cols-2 gap-2 mt-4"><button type="button" onclick="saveFestivalEvent('${event.id}')" class="rounded-xl py-2.5 text-xs font-bold border ${saved.includes(event.id) ? 'bg-yellow-300 text-black border-yellow-300' : 'border-white/20 hover:bg-white/10'}"><i class="fa-${saved.includes(event.id) ? 'solid' : 'regular'} fa-star mr-1"></i>${saved.includes(event.id) ? 'Guardado' : 'Mi agenda'}</button>${event.mapUrl ? `<a href="${event.mapUrl}" target="_blank" rel="noopener noreferrer" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600 hover:bg-fuchsia-500"><i class="fa-solid fa-route mr-1"></i>Cómo llegar</a>` : '<span class="rounded-xl py-2.5 text-xs text-center text-gray-500 border border-white/10">Ubicación pendiente</span>'}</div></article>`).join('');
-            document.getElementById('festivalEmpty').classList.toggle('hidden', visible.length > 0);
+            document.getElementById('festivalAgendaGrid').innerHTML = visible.map(event => {
+                const description = currentLang === 'en' && event.descEn ? event.descEn : event.description || event.desc;
+                const { start, end, hasDuration } = fiavlActivityTimes(event);
+                const status = fiavlPreviewIds.has(event.id)
+                    ? `<span hidden data-fiavl-status data-start="${start}" data-end="${end}" data-duration="${hasDuration}" class="text-xs font-bold text-yellow-300"></span>` : '';
+                return `<article data-festival-event-id="${escapeHTML(event.id)}" tabindex="-1" class="bg-white/5 border border-white/15 rounded-2xl p-5 hover:border-fuchsia-400/60 transition"><div class="flex items-start justify-between gap-3"><span class="text-xs font-black text-cyan-300 uppercase tracking-wider">${event.category || 'Arte'}</span><span class="text-xs ${event.free ? 'text-green-300' : 'text-yellow-300'}">${event.free ? 'Entrada libre' : 'Consultar acceso'}</span></div><h4 class="font-black text-lg mt-3">${event.title}</h4>${status}<p class="text-sm text-gray-300 mt-2"><i class="fa-regular fa-clock text-fuchsia-300 mr-2"></i>${event.time} &nbsp;·&nbsp; <i class="fa-solid fa-location-dot text-fuchsia-300 mr-1"></i>${escapeHTML(event.place)}</p>${description ? `<p class="text-sm text-gray-300 mt-2 leading-relaxed">${escapeHTML(description)}</p>` : ''}<div class="grid grid-cols-2 gap-2 mt-4"><button type="button" onclick="saveFestivalEvent('${event.id}')" class="rounded-xl py-2.5 text-xs font-bold border ${saved.includes(event.id) ? 'bg-yellow-300 text-black border-yellow-300' : 'border-white/20 hover:bg-white/10'}"><i class="fa-${saved.includes(event.id) ? 'solid' : 'regular'} fa-star mr-1"></i>${saved.includes(event.id) ? 'Guardado' : 'Mi agenda'}</button>${event.mapUrl ? `<a href="${event.mapUrl}" target="_blank" rel="noopener noreferrer" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600 hover:bg-fuchsia-500"><i class="fa-solid fa-route mr-1"></i>${festivalMapLinkLabel(event)}</a>` : event.route ? `<a href="${fiavlParadeMapUrl}" class="rounded-xl py-2.5 text-xs font-bold text-center bg-fuchsia-600">${currentLang === 'en' ? 'View route on map' : 'Ver recorrido en el mapa'}</a>` : `<span class="rounded-xl py-2.5 text-xs text-center text-gray-500 border border-white/10">${event.locationPrecision === 'recorrido' ? (currentLang === 'en' ? 'Parade route' : 'Recorrido del desfile') : 'Ubicación pendiente'}</span>`}</div></article>`;
+            }).join('');
+            const parade = events.find(event => fiavlPreviewIds.has(event.id) && event.id === 'fiavl2026-21d664ab2cee');
+            const highlight = document.getElementById('fiavlParadeHighlight');
+            highlight.hidden = !parade;
+            if (parade) {
+                const en = currentLang === 'en';
+                document.getElementById('fiavlParadeHighlightLabel').textContent = en ? 'Opening parade' : 'Desfile inaugural';
+                document.getElementById('fiavlParadeHighlightTime').textContent = `${formatFestivalDay(parade.date)} · ${parade.time}`;
+                const link = document.getElementById('fiavlParadeHighlightLink');
+                link.textContent = en ? 'View parade route' : 'Ver recorrido del desfile';
+                link.onclick = () => {
+                    selectFestivalDay(parade.date);
+                    const card = document.querySelector(`[data-festival-event-id="${CSS.escape(parade.id)}"]`);
+                    card?.focus({ preventScroll: true });
+                    card?.scrollIntoView({ block: 'center' });
+                };
+            }
+            const empty = document.getElementById('festivalEmpty');
+            if (fiavlProgramPage && fiavlPreviewEvents.length) empty.textContent = 'No hay actividades cargadas para este día.';
+            empty.classList.toggle('hidden', visible.length > 0);
             renderFestivalEventMarkers();
             updateFestivalClock();
         }
 
+        function normalizeAgendaText(value) {
+            return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        }
+
+        function festivalEventKey(event) {
+            const time = String(event.time || '').match(/^(\d{1,2}):(\d{2})(?::00)?$/);
+            const parts = [event.date, time ? time[1].padStart(2, '0') + ':' + time[2] : event.time,
+                event.title, event.location || event.place];
+            return JSON.stringify(parts.map(value => normalizeAgendaText(value).replace(/\s+/g, ' ')));
+        }
+
         function applyFestivalConfiguration(data) {
             if (!data || typeof data !== 'object') return;
-            festivalConfig = { ...defaultFestivalConfig, ...data, events: Array.isArray(data.events) ? data.events : defaultFestivalConfig.events };
+            festivalSource = data;
+            const existing = Array.isArray(data.events) ? data.events : defaultFestivalConfig.events;
+            festivalConfig = { ...defaultFestivalConfig, ...data, events: existing };
+            if (fiavlPreviewEvents.length) {
+                const originals = existing === defaultFestivalConfig.events ? [] : existing;
+                const keys = new Set(originals.map(festivalEventKey));
+                const ids = new Set(originals.map(event => String(event.id)));
+                const imported = fiavlPreviewEvents.filter(event => {
+                    const key = festivalEventKey(event);
+                    if (ids.has(event.id) || keys.has(key)) return false;
+                    ids.add(event.id);
+                    keys.add(key);
+                    return true;
+                });
+                fiavlPreviewIds.clear();
+                imported.forEach(event => fiavlPreviewIds.add(event.id));
+                festivalConfig = { ...festivalConfig, active: true, demo: false, events: [...originals, ...imported] };
+                document.getElementById('fiavlAgendaLink').href = fiavlProgramPath;
+                document.getElementById('fiavlPreviewAgendaFilters').hidden = false;
+                renderAgendaUI();
+            }
             renderFestivalAgenda();
         }
 
+        async function shareFiavlProgram() {
+            const url = new URL(fiavlProgramPath, location.origin).href;
+            const status = document.getElementById('fiavlShareStatus');
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'Programación FIAVL 2026', url });
+                    return;
+                } catch (error) {
+                    if (error.name === 'AbortError') return;
+                }
+            }
+            try {
+                await navigator.clipboard.writeText(url);
+                status.textContent = 'Enlace copiado.';
+            } catch {
+                const field = document.getElementById('fiavlShareUrl');
+                field.value = url;
+                field.hidden = false;
+                field.select();
+                status.textContent = 'Copia este enlace para compartir la programación.';
+            }
+        }
+
+        if (fiavlProgramPage) {
+            document.getElementById('fiavlProgramHeader').hidden = false;
+            document.getElementById('festivalEmpty').textContent = 'Cargando programación…';
+        }
+        // Read-only festival schedule. Published events keep their existing source.
+        fetch('/data/fiavl-2026-import-preview.json', { cache: 'no-store' })
+            .then(response => {
+                if (!response.ok) throw Error('FIAVL schedule HTTP ' + response.status);
+                return response.json();
+            })
+            .then(payload => {
+                if (!Array.isArray(payload.events) || payload.events.length !== 394) throw Error('FIAVL schedule data incomplete');
+                fiavlPreviewEvents = payload.events;
+                applyFestivalConfiguration(festivalSource);
+            })
+            .catch(error => {
+                console.warn('FIAVL schedule data not loaded', error);
+                if (fiavlProgramPage) document.getElementById('festivalEmpty').textContent = 'No se pudo cargar la programación. Vuelve a intentarlo.';
+            });
         if (db) {
             db.collection('siteContent').doc('tourismDay').onSnapshot(
                 snapshot => window.applyTourismDayConfiguration?.(snapshot.exists ? snapshot.data() : null),
@@ -4409,7 +4749,7 @@
                 indicator.classList.remove('hidden');
             }
 
-            document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+            window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
         }
         try {
             map = L.map('lojaMap', { 
@@ -4598,7 +4938,7 @@
                 const loc = locations[currentIndex];
                 const title = (currentLang === 'en' && loc.titleEn) ? loc.titleEn : loc.title;
                 document.title = `${title} | Visita Loja`;
-                document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 if (markersMap[loc.id]) markersMap[loc.id].openPopup();
                 showToast(currentLang === 'en' ? `Showing ${title}` : `Descubre ${title}`);
             }, 350);
@@ -4637,7 +4977,7 @@
         function maybeTriggerPopup(settings) {
             if(!window.VisitaLojaPopupController){
                 window.VisitaLojaPopupController=window.VisitaLojaPopupSchedule.create({
-                    show(settings){if(document.hidden||!window.VisitaLojaPromoDialog||!document.getElementById('accountModal').classList.contains('hidden'))return false;
+                    show(settings){if(window.VisitaLojaMobilePlaces?.canShowNotice('promotion') === false)return false;if(document.hidden||!window.VisitaLojaPromoDialog||!document.getElementById('accountModal').classList.contains('hidden'))return false;
                 const titleEl = document.getElementById('popupTitleText');
                 const descEl = document.getElementById('popupDescText');
                 const imgEl = document.getElementById('popupImgEl');
@@ -5044,7 +5384,7 @@
             btnEl.onclick = () => focusEventOnMap(Number(next.lat) || -3.9931, Number(next.lng) || -79.2042, title || '', next.date || '', next.location || '', next.type || '');
         }
 
-function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===id);if(index<0)return;selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth',block:'start'});}
+function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===id);if(index<0)return;selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth',block:'start'});}
         function promotionValidityLabel(promo,language='es'){
             const value=promo.endAt||promo.endDate,en=language==='en';
             if(!value)return en?'Ask about validity':'Consulta la vigencia';
@@ -5064,7 +5404,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function closeStoryModal(){stopStoryNarration();document.getElementById('storyModal').classList.add('hidden');document.body.classList.remove('overflow-hidden');}
         function toggleStoryNarration(){if(!currentStory)return;if(activeStoryAudio||window.speechSynthesis?.speaking){stopStoryNarration();return;}const en=currentLang==='en',audioUrl=en?(currentStory.audioUrlEn||currentStory.audioUrl):(currentStory.audioUrl||currentStory.audioUrlEn),label=document.getElementById('storyAudioLabel');if(audioUrl){activeStoryAudio=new Audio(audioUrl);activeStoryAudio.onended=stopStoryNarration;activeStoryAudio.onerror=()=>speakStoryText(en);activeStoryAudio.play().then(()=>{label.textContent=en?'Stop audio':'Detener audio';completeChabaquitoMission('podcast');}).catch(()=>speakStoryText(en));}else speakStoryText(en);}
         function speakStoryText(en){window.VisitaLojaAudioFocus?.cancelSpeech();window.speechSynthesis?.cancel();const text=en?(currentStory.bodyEn||currentStory.body):(currentStory.body||currentStory.bodyEn),utterance=new SpeechSynthesisUtterance(text||'');utterance.lang=en?'en-US':'es-EC';utterance.onend=stopStoryNarration;window.VisitaLojaAudioFocus?.trackSpeech(utterance);window.speechSynthesis?.speak(utterance);completeChabaquitoMission('podcast');document.getElementById('storyAudioLabel').textContent=en?'Stop narration':'Detener narración';}
-        function openStoryPlace(id){closeStoryModal();const index=locations.findIndex(loc=>loc.id===id);if(index>=0){selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}}
+        function openStoryPlace(id){closeStoryModal();const index=locations.findIndex(loc=>loc.id===id);if(index>=0){selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}}
         async function shareCurrentStory(){if(!currentStory)return;const title=(currentLang==='en'&&currentStory.titleEn)||currentStory.title,url=`${location.origin}${location.pathname}#historias`,data={title,text:title,url};try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(`${title} ${url}`);showToast(currentLang==='en'?'Link copied':'Enlace copiado');}}catch(_){}}
 
         function renderEverything() {
@@ -5193,7 +5533,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(category==='aliado')return{color:'#7c3aed',glow:'rgba(124,58,237,.30)'};
             return{color:'#f59e0b',glow:'rgba(245,158,11,.30)'};
         }
-        function openCategoryList(category){const button=[...document.querySelectorAll('.filter-btn')].find(item=>item.dataset.placeCategory===category)||null;filterItems(category,button);document.getElementById('establecimientos')?.scrollIntoView({behavior:'smooth',block:'start'});}
+        function openCategoryList(category){window.VisitaLojaMobileBrowse?.open('establecimientos');const button=[...document.querySelectorAll('.filter-btn')].find(item=>item.dataset.placeCategory===category)||null;filterItems(category,button);document.getElementById('establecimientos')?.scrollIntoView({behavior:'smooth',block:'start'});}
 
         function filterMapGroup(group){activeMapGroup=group;document.querySelectorAll('.map-legend-option').forEach(button=>{const active=button.dataset.mapGroup===group;button.classList.toggle('bg-brandDark',active);button.classList.toggle('text-white',active);button.classList.toggle('text-gray-700',!active);button.setAttribute('aria-pressed',String(active));});if(markersLayer){markersLayer.clearLayers();locations.forEach(location=>{if(mapGroupMatches(location,group)&&markersMap[location.id])markersLayer.addLayer(markersMap[location.id]);});if(userMarkerInstance)userMarkerInstance.addTo(markersLayer);}document.querySelectorAll('.local-item').forEach(card=>{const location=locations.find(item=>String(item.id)===String(card.dataset.locationId));card.classList.toggle('hidden-item',!location||!mapGroupMatches(location,group));});const labels=currentLang==='en'?{all:'All points',food:'Food & dining',stay:'Accommodation',tourism:'Attractions',partners:'Partner brands'}:{all:'Todos los puntos',food:'Gastronomía',stay:'Hospedaje',tourism:'Atractivos',partners:'Marcas aliadas'},toggle=document.getElementById('mapLegendToggle');if(toggle)toggle.innerHTML=`<i class="fa-solid fa-layer-group text-brandGold"></i> ${labels[group]||labels.all}`;const legend=document.getElementById('mapLegendPanel');if(legend&&!legend.classList.contains('vl113-map-toolbar'))legend.classList.add('hidden');toggle?.setAttribute('aria-expanded','false');showToast(`Mapa: ${labels[group]||labels.all}`);}
 
@@ -5316,7 +5656,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 cards.push(`
                     <div class="local-item ${loc.category} ${hasFeaturedVideo?'vl-has-video':''} glass-card rounded-2xl overflow-hidden ${hasPaidBadge?'shadow-[0_16px_38px_rgba(20,184,166,.18)] border-2 border-teal-400/60':'shadow-warm-glow border border-gray-200'} flex flex-col justify-between relative group cursor-pointer" onclick="simulateMapClick(${realIndex})" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();simulateMapClick(${realIndex});}" role="group" tabindex="0" aria-label="Ver detalles de ${locTitle}. Pulsa Enter para abrir" data-location-id="${escapeHTML(loc.id)}" data-lat="${loc.lat}" data-lng="${loc.lng}">
                         <div class="vl17-media h-52 overflow-hidden relative ${loc.category==='aliado'?'vl17-partner-media':''}">
-                            <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.category==='aliado'&&hasCustomLogo?loc.customLogoUrl:loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="${loc.category==='aliado'&&hasCustomLogo?`Logo de ${locTitle}`:''}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                            <img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(loc.category==='aliado'&&hasCustomLogo?loc.customLogoUrl:loc.gallery?.[0]?.img||''))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="${loc.category==='aliado'&&hasCustomLogo?`Logo de ${locTitle}`:''}" class="w-full h-full object-contain" loading="lazy" decoding="async">
                             <div class="absolute top-3 left-3 flex gap-1.5 z-10">
                                 <span class="${loc.category==='aliado'?'bg-violet-700 text-white':'bg-brandDark text-brandGold'} text-[10px] font-bold px-2.5 py-1 rounded-full shadow">${loc.category==='aliado'?'<i class="fa-solid fa-handshake mr-1"></i>Marca aliada':locTag}</span>${hasPaidBadge&&loc.category!=='aliado'?'<span class="bg-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow"><i class="fa-solid fa-circle-check mr-1"></i>Destacado Visita Loja</span>':''}
                                 ${loc.category==='aliado'?'':openBadge}
@@ -5359,6 +5699,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             if(activeMapGroup!=='all')filterMapGroup(activeMapGroup);
             else if(userMarkerInstance) userMarkerInstance.addTo(markersLayer);
 
+            window.dispatchEvent(new Event('visitaloja:places-rendered'));
             renderAdminLocationsList();
             updatePassportUI();
             window.VisitaLojaHomepage?.apply();
@@ -5771,6 +6112,20 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         let agendaViewMode = 'all';
+        const fiavlAgendaPageSize = 24;
+        let fiavlAgendaLimit = fiavlAgendaPageSize;
+
+        function resetFiavlAgendaPage() {
+            window.VisitaLojaMobileAgenda?.reset();
+            fiavlAgendaLimit = fiavlAgendaPageSize;
+            renderAgendaUI();
+        }
+
+        function showMoreFiavlAgenda() {
+            if (window.VisitaLojaMobileAgenda?.more()) { renderAgendaUI(); return; }
+            fiavlAgendaLimit += fiavlAgendaPageSize;
+            renderAgendaUI();
+        }
 
         function agendaEventKey(ev, index) {
             return String(ev.id || [ev.title || 'evento', ev.date || '', index].join('|'));
@@ -5783,7 +6138,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function setAgendaView(mode) {
             agendaViewMode = mode === 'saved' ? 'saved' : 'all';
-            renderAgendaUI();
+            resetFiavlAgendaPage();
         }
 
         function toggleAgendaEventSaved(eventId) {
@@ -5849,6 +6204,8 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             showToast(currentLang==='en'?'Event ready to add to your calendar':'Evento listo para añadir a tu calendario');
         }
 
+        document.addEventListener('visitaloja:mobile-agenda-refresh', () => renderAgendaUI());
+
         function renderAgendaUI() {
             const agendaContainer = document.getElementById('agendaGridContainer');
             if (!agendaContainer) return;
@@ -5863,29 +6220,46 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const upcomingGeneralItems = allGeneralItems.filter(item => !item.event.date || item.event.date >= todayStr);
             const festivalItems = (festivalConfig?.events || [])
                 .map(event => ({ kind: 'festival', event, eventId: String(event.id || '') }))
-                .filter(item => item.eventId && savedFestival.includes(item.eventId));
+                .filter(item => item.eventId);
             const savedItems = [
                 ...allGeneralItems.filter(item => savedGeneral.includes(item.eventId)),
-                ...festivalItems
+                ...festivalItems.filter(item => savedFestival.includes(item.eventId))
             ];
             const agendaGroupOrder = { today: 0, week: 1, later: 2, undated: 3, past: 4 };
             const weekLimit = new Date(todayStr + 'T12:00:00-05:00');
             weekLimit.setDate(weekLimit.getDate() + 7);
             const weekLimitStr = weekLimit.toISOString().split('T')[0];
             const itemGroup = item => !item.event.date ? 'undated' : item.event.date < todayStr ? 'past' : item.event.date === todayStr ? 'today' : item.event.date <= weekLimitStr ? 'week' : 'later';
-            const baseItems=agendaViewMode === 'saved' ? savedItems : upcomingGeneralItems;
-            const search=document.getElementById('agendaSearch'),dateFilter=document.getElementById('agendaDateFilter'),query=String(search?.value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+            const generalKeys = new Set(fiavlPreviewEvents.length ? upcomingGeneralItems.map(item => festivalEventKey(item.event)) : []);
+            const upcomingFestivalItems = fiavlPreviewEvents.length ? festivalItems.filter(({ event }) =>
+                event.date >= todayStr && !generalKeys.has(festivalEventKey(event))) : [];
+            const baseItems = agendaViewMode === 'saved' ? savedItems : [...upcomingGeneralItems, ...upcomingFestivalItems];
+            const search=document.getElementById('agendaSearch'),dateFilter=document.getElementById('agendaDateFilter'),query=normalizeAgendaText(search?.value);
             if(search)search.placeholder=currentLang==='en'?'Name, activity or place':'Nombre, actividad o lugar';
             const dateLabels=currentLang==='en'?['All dates','Today','Next 7 days','Date to be confirmed']:['Todas las fechas','Hoy','Próximos 7 días','Sin fecha confirmada'];
-            [...(dateFilter?.options||[])].forEach((option,index)=>option.textContent=dateLabels[index]);
-            const visibleItems = baseItems.filter(({event})=>{
-                const group=itemGroup({event}),matchesDate=!dateFilter||dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value);
-                const text=[event.title,event.titleEn,event.desc,event.descEn,event.description,event.location,event.place,event.type].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+            [...dateFilter.options].slice(0, dateLabels.length).forEach((option, index) => option.textContent = dateLabels[index]);
+            if (fiavlPreviewEvents.length && dateFilter.options.length === dateLabels.length) {
+                const days = [...new Set(fiavlPreviewEvents.map(event => event.date))].sort();
+                days.forEach(day => dateFilter.add(new Option(formatFestivalDay(day), day)));
+            }
+            [...dateFilter.options].slice(dateLabels.length).forEach(option => option.textContent = formatFestivalDay(option.value));
+            let visibleItems = baseItems.filter(({event})=>{
+                const group=itemGroup({event}),matchesDate=!dateFilter||dateFilter.value==='all'||(dateFilter.value==='week'?['today','week'].includes(group):group===dateFilter.value || event.date===dateFilter.value);
+                const text=[event.title,event.titleEn,event.desc,event.descEn,event.description,event.location,event.place,event.type,event.category].join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
                 return matchesDate&&(!query||text.includes(query));
             })
-                .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')));
+                .sort((a, b) => (agendaGroupOrder[itemGroup(a)] - agendaGroupOrder[itemGroup(b)]) || String(a.event.date || '9999-12-31').localeCompare(String(b.event.date || '9999-12-31')) || (fiavlPreviewEvents.length ? String(a.event.time || '').localeCompare(String(b.event.time || '')) : 0));
+
+            const mobileAgenda = window.VisitaLojaMobileAgenda;
+            const mobileAgendaActive = mobileAgenda?.active() === true;
+            visibleItems = mobileAgenda?.select(visibleItems, {saved: agendaViewMode === 'saved', now: Date.now()}) || visibleItems;
+            mobileAgenda?.onRender(agendaViewMode === 'saved');
+            const pageLimit = mobileAgenda?.pageLimit(fiavlAgendaLimit) || fiavlAgendaLimit;
 
             if(document.getElementById('agendaResultCount'))document.getElementById('agendaResultCount').textContent=currentLang==='en'?`${visibleItems.length} of ${baseItems.length} events`:`${visibleItems.length} de ${baseItems.length} eventos`;
+            const more = document.getElementById('fiavlAgendaMore');
+            more.hidden = (!mobileAgendaActive && !fiavlPreviewEvents.length) || visibleItems.length <= pageLimit;
+            more.textContent = currentLang === 'en' ? 'Show more events' : 'Ver más eventos';
             const totalSaved = savedItems.length;
             const allButton = document.getElementById('agendaAllButton');
             const savedButton = document.getElementById('agendaSavedButton');
@@ -5899,8 +6273,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 : (totalSaved === 1 ? '1 evento guardado' : totalSaved + ' eventos guardados');
 
             if (!visibleItems.length && baseItems.length) {
-                agendaContainer.innerHTML=`<p class="vl-agenda-filter-empty">${currentLang==='en'?'No events match these filters. Try another date or search.':'No hay eventos con estos filtros. Prueba otra fecha o búsqueda.'}</p>`;
+                agendaContainer.innerHTML=mobileAgenda?.empty() || `<p class="vl-agenda-filter-empty">${currentLang==='en'?'No events match these filters. Try another date or search.':'No hay eventos con estos filtros. Prueba otra fecha o búsqueda.'}</p>`;
                 renderAdminEventsList();return;
+            }
+            if (!visibleItems.length && mobileAgenda?.empty()) {
+                agendaContainer.innerHTML = mobileAgenda.empty();
+                renderAdminEventsList();
+                return;
             }
             if (!visibleItems.length) {
                 agendaContainer.innerHTML = agendaViewMode === 'saved'
@@ -5916,11 +6295,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 ? { today: 'Today', week: 'This week', later: 'Coming up', undated: 'Date to be confirmed', past: 'Finished events' }
                 : { today: 'Hoy', week: 'Esta semana', later: 'Más adelante', undated: 'Fecha por confirmar', past: 'Eventos finalizados' };
             let previousGroup = '';
-            visibleItems.forEach(({ kind, event: ev, eventId }) => {
+            const cards = [];
+            const page = (mobileAgendaActive || fiavlPreviewEvents.length) ? visibleItems.slice(0, pageLimit) : visibleItems;
+            page.forEach(({ kind, event: ev, eventId }) => {
                 const group = itemGroup({ event: ev });
                 if (agendaViewMode === 'saved' && group !== previousGroup) {
                     previousGroup = group;
-                    agendaContainer.innerHTML += `<div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3 pt-3"><span class="h-px flex-1 bg-gray-200"></span><h3 class="text-xs font-black uppercase tracking-widest ${group === 'past' ? 'text-gray-400' : 'text-brandGold'}">${groupLabels[group]}</h3><span class="h-px flex-1 bg-gray-200"></span></div>`;
+                    cards.push(`<div class="sm:col-span-2 lg:col-span-3 flex items-center gap-3 pt-3"><span class="h-px flex-1 bg-gray-200"></span><h3 class="text-xs font-black uppercase tracking-widest ${group === 'past' ? 'text-gray-400' : 'text-brandGold'}">${groupLabels[group]}</h3><span class="h-px flex-1 bg-gray-200"></span></div>`);
                 }
                 const eventDate = /^\d{4}-\d{2}-\d{2}$/.test(ev.date || '') ? new Date(ev.date + 'T12:00:00-05:00') : null;
                 const displayDate = eventDate && Number.isFinite(eventDate.getTime())
@@ -5933,14 +6314,14 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 const place = ev.location || ev.place || 'Ubicación por confirmar';
                 const image = ev.img || ev.image || ev.imageUrl || '';
                 const isSaved = isFestival ? savedFestival.includes(eventId) : savedGeneral.includes(eventId);
-                const safeId = encodeURIComponent(eventId);
+                const safeId = encodeURIComponent(eventId).replace(/'/g, '%27');
                 const badge = isFestival ? 'FIAVL' : (ev.type || 'Evento');
                 const toggleAction = isFestival
                     ? `saveFestivalEvent(decodeURIComponent('${safeId}'))`
                     : `toggleAgendaEventSaved(decodeURIComponent('${safeId}'))`;
                 const mapUrl = ev.mapUrl || ((ev.lat != null && ev.lng != null && Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng))) ? `https://www.google.com/maps/search/?api=1&query=${ev.lat},${ev.lng}` : '');
 
-                agendaContainer.innerHTML += `
+                cards.push(`
                     <article class="vl-agenda-card glass-card rounded-2xl overflow-hidden shadow-warm-glow border ${isFestival ? 'border-fuchsia-200' : 'border-gray-200'} flex flex-col justify-between ${isPast ? 'vl-agenda-past' : ''}">
                         <div class="vl-agenda-media">
                             ${image ? `<img src="${escapeHTML(window.VisitaLojaPodcastMedia.safeMediaUrl(String(image))||'assets/photos/photo-unavailable.svg')}" onerror="this.onerror=null;this.src='assets/photos/photo-unavailable.svg'" alt="" loading="lazy" decoding="async">` : `<div class="vl-agenda-calendar-art" aria-hidden="true"><i class="fa-regular fa-calendar-days"></i><strong>${escapeHTML(displayDate)}</strong></div>`}
@@ -5954,11 +6335,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                         <div class="vl-agenda-card-actions">
                             <p class="text-xs text-gray-500 mb-3"><i class="fa-solid fa-location-dot text-brandGold mr-1"></i> ${escapeHTML(place)}</p>
                             ${isFestival
-                                ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : '<span></span>'}</div>`
+                                ? `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="selectFestivalDay('${String(ev.date || '').replace(/'/g, "\\'")}');window.VisitaLojaMobileBrowse?.open('festival-live');document.getElementById('festival-live')?.scrollIntoView({behavior:'smooth'})" class="border border-fuchsia-500 text-fuchsia-700 px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-solid fa-masks-theater mr-1"></i> ${currentLang === 'en' ? 'View program' : 'Ver programación'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-map-pin mr-1"></i> ${festivalMapLinkLabel(ev)}</a>` : ev.route ? `<a href="${fiavlParadeMapUrl}" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs">${currentLang === 'en' ? 'View route on map' : 'Ver recorrido en el mapa'}</a>` : `<span class="border border-gray-200 text-gray-600 px-3 py-2.5 rounded-xl text-center text-xs">${ev.locationPrecision === 'recorrido' ? (currentLang === 'en' ? 'Parade route' : 'Recorrido del desfile') : 'Ubicación pendiente'}</span>`}</div>`
                                 : `<div class="grid grid-cols-2 gap-2"><button type="button" onclick="downloadAgendaEventCalendar(decodeURIComponent('${safeId}'))" class="border border-brandGold text-brandGold px-3 py-2.5 rounded-xl font-bold text-xs"><i class="fa-regular fa-calendar-plus mr-1"></i> ${currentLang === 'en' ? 'Calendar' : 'Calendario'}</button>${mapUrl ? `<a href="${escapeHTML(mapUrl)}" target="_blank" rel="noopener noreferrer" class="bg-brandDark text-brandGold px-3 py-2.5 rounded-xl font-bold text-center text-xs"><i class="fa-solid fa-route mr-1"></i> ${currentLang === 'en' ? 'Directions' : 'Cómo llegar'}</a>` : `<span class="border border-gray-200 text-gray-400 px-3 py-2.5 rounded-xl text-center text-xs">${currentLang === 'en' ? 'Location pending' : 'Ubicación pendiente'}</span>`}</div>`}
                         </div></div>
-                    </article>`;
+                    </article>`);
             });
+            agendaContainer.innerHTML = cards.join('');
+            mobileAgenda?.enhance(page);
             renderAdminEventsList();
         }
 
@@ -7473,7 +7856,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         window.handlePopupClick = function(index) {
             selectLocation(index);
-            document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (!window.matchMedia('(max-width: 767px)').matches) document.getElementById('mapPreviewCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
         function togglePreviewDescription() {
@@ -7517,6 +7900,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             stopAudioGuide();
             const loc = locations[index];
             if(!loc) return;
+            if (shouldCenterMap) window.VisitaLojaMobileBrowse?.open('mapa');
             currentLocationIndex = index;
             currentLocationId = loc.id || null;
             document.getElementById('previewFavBtn')?.removeAttribute('disabled');
@@ -7620,11 +8004,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             }
 
             if(shouldCenterMap&&map){const coordinates=publicPlaceCoordinates(loc);if(coordinates)map.setView(coordinates,16,{animate:true,duration:0.5});else map.closePopup?.();}
+            window.VisitaLojaMobilePlaces?.selection(loc.id, trackSelection);
         }
 
         function simulateMapClick(index) {
             const loc = locations[index];
             if (!loc) return;
+            window.VisitaLojaMobileBrowse?.open('mapa');
             const section = document.getElementById('mapa');
             section?.classList.add('vl192-selected-stop');
             selectLocation(index, false);
@@ -7867,7 +8253,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
 
         function renderPassportNextStops(visitedHotels=[],visitedFood=[]){const container=document.getElementById('passportNextStops');if(!container)return;const gastronomicCategories=new Set(['hueca','cafe','urbana','heladeria','panaderia','bar']);let candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&(passportMode==='turista'?(visitedHotels.length<1?item.location.category==='hotel':gastronomicCategories.has(item.location.category)):gastronomicCategories.has(item.location.category)));if(!candidates.length&&passportMode==='turista')candidates=locations.map((location,index)=>({location,index})).filter(item=>!visitedLocations.includes(item.location.id)&&gastronomicCategories.has(item.location.category));if(userCoords)candidates.sort((a,b)=>calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(a.location.lat),Number(a.location.lng))-calcularDistanciaKm(userCoords.lat,userCoords.lng,Number(b.location.lat),Number(b.location.lng)));const next=candidates.slice(0,2);container.innerHTML=next.length?next.map(({location,index})=>`<button type="button" onclick="openPassportNextStop(${index})" class="w-full bg-white border border-brandGold/30 rounded-xl p-3 text-left flex items-center gap-3 hover:border-brandGold"><span class="w-9 h-9 rounded-full bg-brandGold/15 text-brandGold grid place-items-center"><i class="fa-solid ${escapeHTML(location.iconClass||'fa-location-dot')}"></i></span><span class="min-w-0 flex-grow"><b class="block text-xs truncate">${escapeHTML(location.title||'Parada Visita Loja')}</b><span class="text-[10px] text-gray-500">${location.category==='hotel'?'Parada de hospedaje':'Parada gastronómica'} · Ver ubicación</span></span><i class="fa-solid fa-chevron-right text-brandGold"></i></button>`).join(''):'<p class="text-xs text-gray-500 bg-gray-100 rounded-xl p-3">Ya visitaste todas las paradas disponibles para este modo.</p>';}
 
-        function openPassportNextStop(index){closeModal('pasaporteModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});showToast('📍 Visita esta parada y escanea su QR para obtener el sello.');}
+        function openPassportNextStop(index){closeModal('pasaporteModal');selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});showToast('📍 Visita esta parada y escanea su QR para obtener el sello.');}
 
         function resetPassportProgess() {
             localStorage.removeItem('cyc_visited_locations'); 
@@ -7904,11 +8290,13 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             festivalClockTimer = setInterval(updateFestivalClock, 1000);
             initPassport();
             initTimeSliderEvents();
-            initChabaquitoMissions();
-            initWebMascot();
+            if (!fiavlProgramPage) {
+                initChabaquitoMissions();
+                initWebMascot();
+            }
             // Keep the main welcome, adventure actions and contact clear of fixed invitations.
             if ('IntersectionObserver' in window) {
-                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible'], ['#pasaporte', 'vl-passport-visible'], ['#misiones', 'vl-adventure-visible'], ['#agenda', 'vl-agenda-visible']]) {
+                for (const [selector, state] of [['body > footer', 'vl-footer-visible'], ['#inicio', 'vl-welcome-visible'], ['#pasaporte', 'vl-passport-visible'], ['#misiones', 'vl-adventure-visible'], ['#agenda', 'vl-agenda-visible'], ['#fiavl', 'vl-fiavl-visible']]) {
                     const surface = document.querySelector(selector);
                     if (surface) new IntersectionObserver(([entry]) => document.body.classList.toggle(state, entry.isIntersecting)).observe(surface);
                 }
@@ -7954,9 +8342,43 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         }
 
         let placeDiscoveryCategory = 'all';
+        let placeNearOnly = false;
+        let placeNearRequest = 0;
+        function togglePlacesOpenNow(){const field=document.getElementById('placeOpenFilter');field.checked=!field.checked;searchItems();}
         for(const canton of window.ChabaquitoPlaceConfig.CANTONS){const option=new Option(canton.name,canton.id);document.getElementById('placeCantonFilter').append(option);}
-        function openSavedPlaces(){clearAllPlaceFilters();document.getElementById('placeSavedFilter').checked=true;searchItems();document.getElementById('establecimientos').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
+        function openSavedPlaces(){window.VisitaLojaMobileBrowse?.open('establecimientos');clearAllPlaceFilters();document.getElementById('placeSavedFilter').checked=true;searchItems();document.getElementById('establecimientos').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
+        document.addEventListener('visitaloja:mobile-place-filter', event => {
+            const {action, filter, state} = event.detail || {};
+            if (action === 'clear') {
+                clearAllPlaceFilters();
+                return;
+            }
+            if (action === 'restore' && state) {
+                document.getElementById('searchInput').value = String(state.query || '').slice(0, 300);
+                document.getElementById('placeCantonFilter').value = String(state.cantonId || '');
+                document.getElementById('placeOpenFilter').checked = state.openOnly === true;
+                document.getElementById('placeSavedFilter').checked = state.savedOnly === true;
+                placeNearOnly=state.nearOnly===true&&!!userCoords;
+                filterItems(String(state.category || 'all'), null);
+                return;
+            }
+            if (action === 'remove') {
+                if(filter==='nearOnly'){placeNearOnly=false;searchItems();return;}
+                if (filter === 'category') {
+                    filterItems('all', null);
+                    return;
+                }
+                const fields = {query: 'searchInput', cantonId: 'placeCantonFilter', openOnly: 'placeOpenFilter', savedOnly: 'placeSavedFilter'};
+                const element = document.getElementById(fields[filter]);
+                if (!element) return;
+                if (element.type === 'checkbox') element.checked = false;
+                else element.value = '';
+            }
+            if (action === 'refresh' || action === 'remove') searchItems();
+        });
+
         function clearAllPlaceFilters() {
+            placeNearOnly=false;placeNearRequest++;
             document.getElementById('placeSavedFilter').checked=false;
             document.getElementById('placeCantonFilter').value='';
             document.getElementById('placeOpenFilter').checked=false;
@@ -7969,30 +8391,47 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
         function searchFromWelcome(event) {
             event.preventDefault();
             const query = document.getElementById('welcomeSearch').value.trim();
+            window.VisitaLojaMobileBrowse?.open('establecimientos');
             runSmartSearch(query);
             document.getElementById('establecimientos').scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
         }
 
         function runSmartSearch(query){const input=document.getElementById('searchInput');if(input){input.value=query;searchItems();input.focus();}}
         function clearSmartSearch(){const input=document.getElementById('searchInput');if(input)input.value='';searchItems();}
-        function searchPlacesNearMe(){if(!navigator.geolocation){showToast(currentLang==='en'?'Your browser does not support location.':'Tu navegador no permite ubicación.');return;}navigator.geolocation.getCurrentPosition(position=>{userCoords={lat:position.coords.latitude,lng:position.coords.longitude};runSmartSearch(currentLang==='en'?'near me':'cerca de mí');},()=>showToast(currentLang==='en'?'We could not get your location.':'No pudimos obtener tu ubicación.'),{timeout:7000,enableHighAccuracy:true});}
+        function searchPlacesNearMe(){
+            const button=document.getElementById('placesNearMeButton');
+            if(placeNearOnly){placeNearOnly=false;searchItems();return;}
+            if(button?.disabled)return;
+            if(!navigator.geolocation){showToast(currentLang==='en'?'Your browser does not support location.':'Tu navegador no permite ubicación.');return;}
+            const request=++placeNearRequest;
+            if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
+            const finish=()=>{if(button){button.disabled=false;button.removeAttribute('aria-busy');}};
+            navigator.geolocation.getCurrentPosition(position=>{
+                if(request!==placeNearRequest){finish();return;}
+                userCoords={lat:position.coords.latitude,lng:position.coords.longitude};placeNearOnly=true;finish();searchItems();
+            },error=>{if(request!==placeNearRequest){finish();return;}finish();showToast(currentLang==='en'?(error.code===1?'Location permission was denied. You can still search by name or canton.':'We could not get your location. Try again or choose a canton.'):(error.code===1?'No se permitió la ubicación. Puedes seguir buscando por nombre o cantón.':'No pudimos obtener tu ubicación. Reintenta o elige un cantón.'));},{timeout:7000,enableHighAccuracy:true});
+        }
+
         function searchItems() {
             const model=window.VisitaLojaDiscovery,input=document.getElementById('searchInput'),query=input?.value||'',cantonId=document.getElementById('placeCantonFilter')?.value||'',openOnly=document.getElementById('placeOpenFilter')?.checked===true,savedOnly=document.getElementById('placeSavedFilter')?.checked===true;
             if(!model)return;
-            const near=/\b(cerca|near|proximo)\b/.test(model.normalize(query)),placeById=new Map(locations.map(place=>[String(place.id),place]));let visible=0;
+            const near=placeNearOnly||/\b(cerca|near|proximo)\b/.test(model.normalize(query)),placeById=new Map(locations.map(place=>[String(place.id),place]));let visible=0;
             document.querySelectorAll('.local-item').forEach(card=>{
                 const place=placeById.get(card.dataset.locationId);
                 const match=!!place&&model.matches(place,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow);
                 card.classList.toggle('hidden-item',!match);card.style.opacity=match?'1':'0';card.style.order=match&&!near&&query.trim()?String(-model.score(place,query)):'';
-                if(match){visible++;if(near&&userCoords){const coords=publicPlaceCoordinates(place);if(coords){const distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,coords[0],coords[1]);if(Number.isFinite(distance))card.style.order=String(Math.round(distance*1000));}}}
+                if(match){visible++;if(near&&userCoords){card.style.order='2147483646';const coords=publicPlaceCoordinates(place);if(coords){const distance=calcularDistanciaKm(userCoords.lat,userCoords.lng,coords[0],coords[1]);if(Number.isFinite(distance))card.style.order=String(Math.round(distance*1000));}}}
             });
             document.getElementById('noResults')?.classList.toggle('hidden',visible>0);
             document.getElementById('smartSearchClearButton')?.classList.toggle('hidden',!query);
-            updateClearFiltersButton(Boolean(query||cantonId||openOnly||savedOnly||placeDiscoveryCategory!=='all'));
+            updateClearFiltersButton(Boolean(query||cantonId||openOnly||savedOnly||placeNearOnly||placeDiscoveryCategory!=='all'));
             const savedCount=new Set(favoriteLocations.map(String)).size;document.getElementById('savedPlacesCount').textContent=String(savedCount);document.getElementById('savedPlacesRoute').hidden=savedCount===0;document.getElementById('savedPlacesHint').hidden=!savedOnly;
             const en=currentLang==='en',emptySaved=savedOnly&&savedCount===0;document.getElementById('placeEmptyTitle').textContent=emptySaved?(en?'No saved places yet':'Todavía no tienes lugares guardados'):(savedOnly?(en?'No favorites match these filters':'No hay favoritos que coincidan con estos filtros'):(en?'No results found for that search.':'No encontramos resultados para esa búsqueda.'));document.getElementById('placeEmptyHelp').textContent=emptySaved?(en?'Tap the leaf on a place card to save it and find it here.':'Toca la hoja en la tarjeta de un lugar para guardarlo y encontrarlo aquí.'):(en?'Try another canton, category or fewer search words.':'Prueba con otro cantón, una categoría diferente o menos palabras.');
             window.VisitaLojaSearchSuggestions?.render(locations,{query,category:placeDiscoveryCategory,cantonId,openOnly,savedOnly,savedIds:favoriteLocations},isLocOpenNow,visible,en);
             const status=document.getElementById('smartSearchStatus');if(status)status.textContent=currentLang==='en'?`${visible} places match your filters.`:`${visible===1?'1 parada coincide':visible+' paradas coinciden'} con tu búsqueda y filtros.`;
+            document.getElementById('placesOpenNowButton')?.setAttribute('aria-pressed',String(openOnly));
+            document.getElementById('placesNearMeButton')?.setAttribute('aria-pressed',String(placeNearOnly));
+            window.VisitaLojaMobilePlaces?.filtersChanged({query,cantonId,openOnly,savedOnly,nearOnly:placeNearOnly,category:placeDiscoveryCategory});
         }
 
         function filterItems(category, btnElement) {
@@ -8005,16 +8444,24 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             searchItems();
         }
 
+        const inviteBlockingOverlays = '[role="dialog"][aria-modal="true"], dialog, #accountModal, #mobileMenu';
         function syncFloatingAccountInviteVisibility() {
             const invite=document.getElementById('accountFloatingInvite');
             if(!invite)return;
-            const dialogOpen=Array.from(document.querySelectorAll('[role="dialog"]')).some(dialog=>!dialog.classList.contains('hidden'));
-            const mobileMenu=document.getElementById('mobileMenu');
-            const submenuOpen=mobileMenu&&!mobileMenu.classList.contains('hidden');
-            invite.classList.toggle('interface-layer-hidden',dialogOpen||submenuOpen);
+            const blocked = Array.from(document.querySelectorAll(inviteBlockingOverlays)).some(overlay =>
+                !overlay.hidden && overlay.getAttribute('aria-hidden') !== 'true' &&
+                (overlay.tagName !== 'DIALOG' || overlay.open) &&
+                overlay.getClientRects().length > 0 && getComputedStyle(overlay).visibility !== 'hidden'
+            );
+            invite.classList.toggle('interface-layer-hidden', blocked);
+            document.documentElement.classList.toggle('vl-mobile-overlay-open', blocked);
         }
-        const floatingInviteVisibilityObserver=new MutationObserver(syncFloatingAccountInviteVisibility);
-        document.querySelectorAll('[role="dialog"], #mobileMenu').forEach(element=>floatingInviteVisibilityObserver.observe(element,{attributes:true,attributeFilter:['class','aria-hidden']}));
+        const floatingInviteVisibilityObserver = new MutationObserver(syncFloatingAccountInviteVisibility);
+        document.querySelectorAll(inviteBlockingOverlays).forEach(element => {
+            floatingInviteVisibilityObserver.observe(element, {
+                attributes: true, attributeFilter: ['class', 'aria-hidden', 'hidden', 'open', 'style']
+            });
+        });
         syncFloatingAccountInviteVisibility();
 
         function showAccountFloatingInvite(enabled = true) {
@@ -8025,14 +8472,9 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             invite.style.display=shouldShow?'block':'none';
         }
 
-        function dismissAccountFloatingInvite() {
-            document.getElementById('accountFloatingInvite')?.classList.add('hidden');
-        }
-
         function openAccountFromFloatingInvite() {
-            dismissAccountFloatingInvite();
             if (visitorAuth?.currentUser && currentVisitorProfile?.profileComplete) {
-                document.getElementById('pasaporte')?.scrollIntoView({ behavior: 'smooth' });
+                window.VisitaLojaMobileBrowse?.open('pasaporte');document.getElementById('pasaporte')?.scrollIntoView({ behavior: 'smooth' });
                 setTimeout(() => openModal('pasaporteModal'), 450);
                 return;
             }
@@ -8276,7 +8718,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
                 return `<article class="${position===0?'bg-gradient-to-br from-sky-50 to-cyan-50 border-2 border-sky-500':'bg-white border border-sky-200'} rounded-2xl p-4 shadow-sm">${position===0?'<p class="text-[10px] uppercase tracking-widest text-sky-700 font-black mb-2"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Tu mejor opción ahora</p>':''}<div class="flex items-start gap-3"><span class="w-11 h-11 flex-shrink-0 rounded-full bg-sky-100 text-sky-600 grid place-items-center"><i class="fa-solid ${icon}"></i></span><div class="min-w-0 flex-grow"><div class="flex items-center justify-between gap-2"><h4 class="font-black truncate">${title}</h4><span class="text-[10px] bg-emerald-100 text-emerald-700 rounded-full px-2 py-1 font-black">ABIERTO</span></div><p class="text-xs text-gray-600 mt-1">${description}</p><p class="text-[11px] text-gray-500 mt-1 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${address}${distanceLabel}</p>${passportLabel}</div></div><div class="grid grid-cols-2 gap-2 mt-3"><button type="button" onclick="selectNowRecommendation(${index})" class="bg-sky-600 text-white rounded-xl py-2.5 text-xs font-black">Ver detalle</button><button type="button" onclick="openNowDirections(${index})" class="border border-sky-500 text-sky-700 rounded-xl py-2.5 text-xs font-black">Cómo llegar</button></div></article>`;
             }).join('');
         }
-        function selectNowRecommendation(index){closeModal('whatToDoNowModal');selectLocation(index);document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
+        function selectNowRecommendation(index){closeModal('whatToDoNowModal');selectLocation(index);window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({behavior:'smooth'});}
         function openNowDirections(index){const location=locations[index];if(!location)return;window.open(publicPlaceDirectionsUrl(location,userCoords),'_blank','noopener,noreferrer');}
 
         function generateSmartRoute(event) {
@@ -8402,7 +8844,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const locationIndex = locations.findIndex(location => location.id === stop.id);
             if (locationIndex >= 0) selectLocation(locationIndex);
             closeModal('smartRouteModal');
-            document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth' });
+            window.VisitaLojaMobileBrowse?.open('mapa');document.getElementById('mapa')?.scrollIntoView({ behavior: 'smooth' });
         }
 
         function addSmartRouteToFavorites() {
@@ -9011,3 +9453,5 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')vl29CloseMen
 <script src="/js/push-receiver.js?v=1" defer></script>
 </body>
 </html>
+
+
