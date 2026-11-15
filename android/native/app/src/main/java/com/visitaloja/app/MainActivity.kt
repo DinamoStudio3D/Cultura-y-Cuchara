@@ -15,8 +15,10 @@ import androidx.activity.SystemBarStyle
 class MainActivity : ComponentActivity() {
     private var noticeRequest by mutableIntStateOf(0)
     private var linkRequest by mutableStateOf<NativeLinkRequest?>(null)
+    private var receivedNoticeIdentity: String? = null
     private fun receive(intent: Intent) {
         if (intent.action == NativePush.openAction) {
+            receivedNoticeIdentity = intent.dataString
             val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
             val destination = PushPolicy.destination(intent.getStringExtra("noticeOwner"), uid,
                 intent.getStringExtra("noticeId"), PushStore.notices(this, uid))
@@ -33,6 +35,7 @@ class MainActivity : ComponentActivity() {
     }
     override fun onNewIntent(intent: Intent) { super.onNewIntent(intent); setIntent(intent); receive(intent) }
     override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("receivedNoticeIdentity", receivedNoticeIdentity)
         linkRequest?.let { outState.putString("linkRequestId", it.id); outState.putString("linkRequestText", it.text) }
         super.onSaveInstanceState(outState)
     }
@@ -42,7 +45,11 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT))
         val restoredId = savedInstanceState?.getString("linkRequestId")
         val restoredText = savedInstanceState?.getString("linkRequestText")
-        if (restoredId != null && restoredText != null) linkRequest = NativeLinkRequest(restoredId, restoredText) else receive(intent)
+        receivedNoticeIdentity = savedInstanceState?.getString("receivedNoticeIdentity")
+        val newNotice = intent.action == NativePush.openAction && (intent.dataString == null || intent.dataString != receivedNoticeIdentity)
+        if (newNotice) receive(intent)
+        else if (restoredId != null && restoredText != null) linkRequest = NativeLinkRequest(restoredId, restoredText)
+        else receive(intent)
         setContent { VisitaLojaApp(noticeRequest = noticeRequest, linkRequest = linkRequest) }
     }
 }

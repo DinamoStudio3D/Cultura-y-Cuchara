@@ -144,7 +144,7 @@ object NativePush {
         if (!allowed(context)) return
         val owner = FirebaseAuth.getInstance().currentUser?.uid
         val intent = Intent(context, MainActivity::class.java).setAction(openAction)
-            .setData(android.net.Uri.Builder().scheme("visitaloja-notice").authority("open").appendPath(owner.orEmpty()).appendPath(notice.id).build())
+            .setData(android.net.Uri.Builder().scheme("visitaloja-notice").authority("open").appendPath(owner.orEmpty()).appendPath(notice.id).appendPath(notice.receivedAt.toString()).build())
             .putExtra("noticeOwner", owner).putExtra("noticeId", notice.id)
             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val pending = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
