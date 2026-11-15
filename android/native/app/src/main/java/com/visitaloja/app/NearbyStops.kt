@@ -96,7 +96,7 @@ fun NearbySettings(enabled: Boolean, status: String, setEnabled: (Boolean) -> Un
     AlertDialog(onDismissRequest = dismiss, icon = { Icon(Icons.Default.NearMe, null) }, title = { Text("Paradas cercanas") },
         text = {
             Column(Modifier.heightIn(max = 440.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("Recibe «Estás cerca de una parada» a unos 60 m, también mientras usas otra aplicación o con la pantalla apagada.")
+                Text("Recibe avisos a unos 60 m de cafeterías, restaurantes, bares y otras paradas de comida y bebida, también mientras usas otra aplicación o con la pantalla apagada. Las marcas aliadas no generan estos avisos.")
                 Text("Al activar esta opción, Android y Google Play Services usan tu ubicación también en segundo plano para detectar cercanía. VisitaLoja no guarda ni envía tus coordenadas a tu cuenta.", fontSize = 12.sp)
                 Text("1. Ubicación precisa: " + if (fine) "permitida" else "pendiente")
                 if (!fine) TextButton(onClick = { request.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) }) { Text("Permitir ubicación precisa") }

@@ -167,3 +167,8 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - El error de geofencing invalida la marca local de registro; desactivar limpia la marca. El catálogo continúa caducando y no se envían coordenadas.
 - Configuración con GPS, ahorro de batería, fecha de activación, último aviso y acceso al canal específico de notificaciones. Se conserva el radio solicitado de 60 m; Android puede demorar o perder la detección.
 - Prueba de emulador ampliada: activación voluntaria, GPS apagado, registro Play Services, vuelta a primer plano y desactivación. La entrega física en segundo plano requiere prueba en dispositivo real.
+
+## 0.69 — alcance de cercanía confirmado por el propietario
+
+- Avisos exclusivamente para categorías gastronómicas: cafeterías, restaurantes, bares, huecas, comida urbana, panaderías, heladerías, asaderos y cevicherías. Marcas aliadas excluidas, incluso con una categoría gastronómica adicional.
+- El filtro se aplica al registro y nuevamente a cada aviso, para rechazar zonas o catálogos anteriores que incluyan marcas aliadas. Otros puntos permanecen en el mapa.

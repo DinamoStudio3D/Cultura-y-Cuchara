@@ -16,9 +16,21 @@ class NearbyPolicyTest {
     private val elapsed = 100000L
     private val wall = 1800000000000L
     private val fix = MapFix(-4.0, -79.2, 10f, elapsed)
-    private fun place(meters: Double = 0.0) = Place("a", "Codeproim", listOf("aliado"), "", "", null,
+    private fun place(meters: Double = 0.0) = Place("a", "Cafetería", listOf("cafe"), "", "", null,
         latitude = fix.latitude + Math.toDegrees(meters / 6371008.8), longitude = fix.longitude)
     private fun can(p: Place = place(), f: MapFix = fix, catalog: Long = wall, last: Long? = null) = NearbyPolicy.canNotify(p, f, elapsed, wall, catalog, last)
+    @Test fun onlyFoodAndDrinkStopsRegisterAndNotifyEvenWithAnOldCachedCatalog() {
+        listOf("cafe", "restaurante", "bar", "hueca", "urbana", "panaderia", "heladeria", "asadero", "cevicheria").forEach { category ->
+            val p = place().copy(categories = listOf(category))
+            assertEquals(listOf(p), NearbyPolicy.eligible(listOf(p)))
+            assertTrue(can(p))
+        }
+        listOf(listOf("aliado"), listOf("hotel"), listOf("turismo"), listOf("artesania"), listOf("entretenimiento"), emptyList(), listOf("aliado", "cafe")).forEach { categories ->
+            val p = place().copy(categories = categories)
+            assertTrue(NearbyPolicy.eligible(listOf(p)).isEmpty())
+            assertFalse(can(p))
+        }
+    }
     @Test fun actualSixtyMeterBoundaryUsesDistanceNotRoundedLabel() {
         assertTrue(can(place(59.9)))
         assertFalse(can(place(60.1)))

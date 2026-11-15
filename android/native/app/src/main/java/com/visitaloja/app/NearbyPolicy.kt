@@ -16,9 +16,10 @@ object NearbyPolicy {
         val a = sin((other - lat) / 2).pow(2) + cos(lat) * cos(other) * sin(Math.toRadians(place.longitude!! - fix.longitude) / 2).pow(2)
         return 6371008.8 * 2 * asin(sqrt(a.coerceIn(0.0, 1.0)))
     }
-    fun eligible(places: List<Place>): List<Place> = places.filter(MapPolicy::located).distinctBy { it.id }.sortedBy { it.id }.take(MAX_PLACES)
+    fun foodStop(place: Place): Boolean = MapPolicy.located(place) && "aliado" !in place.categories && PlacePolicy.matches(place, category = "food")
+    fun eligible(places: List<Place>): List<Place> = places.filter(::foodStop).distinctBy { it.id }.sortedBy { it.id }.take(MAX_PLACES)
     fun canNotify(place: Place, fix: MapFix, elapsed: Long, wall: Long, catalogAt: Long, lastAlert: Long?): Boolean =
-        MapPolicy.located(place) && PlacePolicy.safeCoordinate(fix.latitude, true) != null && PlacePolicy.safeCoordinate(fix.longitude, false) != null &&
+        foodStop(place) && PlacePolicy.safeCoordinate(fix.latitude, true) != null && PlacePolicy.safeCoordinate(fix.longitude, false) != null &&
         elapsed - fix.elapsedMillis in 0..120000 && fix.accuracy.isFinite() && fix.accuracy > 0 && fix.accuracy <= 60 &&
         distance(fix, place) <= RADIUS && wall - catalogAt in 0..CATALOG_AGE &&
         (lastAlert == null || wall - lastAlert >= COOLDOWN)
