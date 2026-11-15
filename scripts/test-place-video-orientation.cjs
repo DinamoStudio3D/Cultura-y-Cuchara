@@ -13,6 +13,7 @@ const root=path.resolve(__dirname,'..'),out=process.env.VIDEO_QA_OUTPUT||'/tmp/v
    await page.evaluate(name=>openVideo('https://media.test/'+name+'.mp4'),name);
    await page.waitForFunction(()=>document.querySelector('video')?.videoWidth>0);
    await page.waitForFunction(r=>Math.abs(Number(document.querySelector('dialog').style.getPropertyValue('--vl-video-ratio'))-r)<.001,ratio);
+   await page.screenshot({path:path.join(out,`${width}-${height}-${name}.png`)});
    const frame=await page.locator('.vl-video-player').boundingBox(),dialog=await page.locator('dialog').boundingBox();
    assert(Math.abs(frame.width/frame.height-ratio)<.015,JSON.stringify({frame,ratio}));
    assert(dialog.width<=width&&dialog.height<=height&&dialog.y>=0,JSON.stringify(dialog));
