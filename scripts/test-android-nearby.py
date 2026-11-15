@@ -84,6 +84,17 @@ registered=False
 for _ in range(40):
     if preferences().get('status','').startswith('Activos ·'):registered=True;break
     time.sleep(1)
+if not registered:
+    # Retry through the public UI after a transient directory/network failure.
+    # Still require the real Play Services success status and registration time.
+    review=next((n for n in tree().iter('node') if n.get('text')=='Revisar activación'),None)
+    if review is not None:
+        tap(review)
+        for _ in range(60):
+            if preferences().get('status','').startswith('Activos ·'):registered=True;break
+            time.sleep(1)
+    saved=preferences()
+    (OUT/'nearby-registration-state.json').write_text(json.dumps({k:saved.get(k) for k in ['status','catalogAt','registeredAt']},ensure_ascii=False,indent=2))
 (OUT/'nearby-activated.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
 ET.ElementTree(tree()).write(OUT/'nearby-activation.xml',encoding='utf-8')
 assert registered,'Geofencing registration not confirmed'

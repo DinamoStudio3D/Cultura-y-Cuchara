@@ -163,7 +163,7 @@ private fun YouTubeDialogContent(video: LojaVideo, close: () -> Unit, onFullscre
             AndroidView(factory = { FrameLayout(it).apply { (full.parent as? ViewGroup)?.removeView(full); addView(full, FrameLayout.LayoutParams(-1, -1)) } }, modifier = Modifier.fillMaxSize())
         } else BoxWithConstraints(Modifier.fillMaxSize()) {
             val compact = maxHeight < 440.dp
-            val stageHeight = (maxWidth / (if (portrait) 9f / 16f else 16f / 9f)).coerceAtMost((maxHeight - 168.dp).coerceAtLeast(200.dp))
+            val stageHeight = (maxWidth / (if (portrait) 9f / 16f else 16f / 9f)).coerceAtLeast(200.dp).coerceAtMost((maxHeight - 168.dp).coerceAtLeast(200.dp))
             val tooSmall = maxWidth < 200.dp || maxHeight < 260.dp
             LaunchedEffect(tooSmall, controller) { if (tooSmall) controller.pause() }
             Column(Modifier.fillMaxSize()) {

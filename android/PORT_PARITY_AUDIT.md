@@ -194,3 +194,17 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - MP4/WebM: tamaño del reproductor según dimensiones de Media3, con ajuste completo y sin recorte.
 - YouTube: Shorts verticales y selector vertical/horizontal sin recrear el reproductor.
 - Regresión enfocada: apertura pública del MP4 de Expreso al Sur, área vertical y regreso a la ficha.
+
+## Cierre Android — 0.73
+
+- Corregida altura mínima de YouTube (200 dp) en teléfonos de 320 dp de ancho, manteniendo el formato vertical y los controles oficiales.
+- La revisión de video busca el botón con desplazamientos pequeños y por identificador accesible, sin saltarlo durante los cambios de altura de la ficha.
+- Cercanía permite un único reintento explícito de actualización desde la interfaz ante fallos temporales de red; las pruebas siguen exigiendo registro real en Play Services.
+
+### Pendientes para producción
+- Registrar el paquete definitivo Android en Firebase y configurar sus recursos públicos y huellas de firma para Auth/FCM. Solo consta registrada la variante de pruebas.
+- Configurar la firma definitiva y preparar Android App Bundle para Google Play; mantener la firma de pruebas estable para las actualizaciones de las APK entregadas.
+- Validar en teléfono físico: cercanía con pantalla apagada, entrega FCM con app cerrada, permisos y comportamiento tras reinicio.
+- Validar con cuentas de prueba cliente/encargado: visita QR, límite diario, sello, canje e historial, además de sincronización web/app. No realizar consumos ni canjes reales como prueba.
+- Verificar formulario de privacidad y declaraciones de ubicación en segundo plano antes de publicación.
+- iOS requiere proyecto/compilación y validación propias; una APK Android no es una entrega iOS.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only visual check of real published place photos and fullscreen navigation."""
+"""Read-only check of the published Expreso video, portrait frame and close."""
 import re, subprocess, time, xml.etree.ElementTree as ET, json
 from pathlib import Path
 OUT=Path('android/native/map-ui-results');OUT.mkdir(parents=True,exist_ok=True)
@@ -33,14 +33,17 @@ try:
     adb('shell','am','force-stop',PKG)
     adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity','-a','android.intent.action.VIEW','-d','https://www.visitaloja.com/?checkin=loc_1788797820110')
     wait(desc='Cerrar ficha')
-    for _ in range(12):
+    for _ in range(25):
         root=tree()
-        button=next((n for n in root.iter('node') if n.get('text')=='Conoce este lugar por video'),None)
+        button=next((n for n in root.iter('node') if n.get('resource-id','').split(':id/')[-1]=='place-video' or n.get('text') in ['Conoce este lugar por video','Discover this place on video']),None)
         if button is not None:
             bounds=list(map(int,re.findall(r'\d+',button.get('bounds'))))
-            if bounds[3]-bounds[1]>=50 and bounds[3]<1500:
+            if bounds[3]-bounds[1]>=50 and bounds[1]>=96 and bounds[3]<1500:
                 tap(button);break
-        adb('shell','input','swipe','370','1350','370','600','350');time.sleep(.5)
+        if button is not None and bounds[1]<96 and bounds[3]>bounds[1]:
+            adb('shell','input','swipe','370','700','370','1050','350')
+        else:adb('shell','input','swipe','370','1200','370','880','350')
+        time.sleep(.5)
     else:raise AssertionError('Missing place video entry')
     wait(desc='Cerrar video')
     for _ in range(35):
