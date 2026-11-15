@@ -6,14 +6,11 @@
     const mobile = matchMedia('(max-width: 767px)');
     const key = 'vl-mobile-place-browse-v1';
     const list = document.getElementById('establecimientos');
-    const card = document.getElementById('mapPreviewCard');
-    const gps = document.getElementById('previewGps');
     const english = () => document.getElementById('langSelector')?.value === 'en';
     const text = (es, en) => english() ? en : es;
     let snapshot = null;
     let restoring = false;
     let restoreGeneration = 0;
-    let selectedId = null;
     let pendingRestore = null;
     let pendingScroll = false;
     let cardAnchor = null;
@@ -116,46 +113,9 @@
         if (event.persisted && location.hash === '#establecimientos') restoreList();
     });
 
-    let sheet;
-    let gpsHome;
-    if (card) {
-        sheet = document.createElement('div');
-        sheet.className = 'vl-mobile-map-summary';
-        sheet.innerHTML = '<div><strong></strong><small></small></div><button type="button" data-sheet-close aria-label="Cerrar ficha">×</button><div class="vl-mobile-map-summary-actions"><a href="#establecimientos">Volver a Paradas</a><button type="button" data-sheet-expand aria-expanded="false">Ver detalles</button></div>';
-        card.prepend(sheet);
-        const expand = sheet.querySelector('[data-sheet-expand]');
-        expand.addEventListener('click', () => {
-            const expanded = card.dataset.mobileExpanded !== 'true';
-            card.dataset.mobileExpanded = String(expanded);
-            expand.setAttribute('aria-expanded', String(expanded));
-            expand.textContent = expanded ? text('Reducir ficha', 'Collapse details') : text('Ver detalles', 'View details');
-        });
-        sheet.querySelector('[data-sheet-close]').addEventListener('click', () => {
-            card.dataset.mobileDismissed = 'true';
-            document.querySelector('#mapa .leaflet-container')?.focus({ preventScroll: true });
-        });
-        if (gps) {
-            gpsHome = document.createComment('Original directions action');
-            gps.before(gpsHome);
-        }
-    }
-    function arrangeDirections() {
-        if (!gps || !sheet) return;
-        if (mobile.matches) sheet.querySelector('.vl-mobile-map-summary-actions').append(gps);
-        else gpsHome.after(gps);
-    }
-    function selection(id, userInitiated = true) {
-        if (!card || !sheet) return;
-        sheet.querySelector('strong').textContent = document.getElementById('previewTitle')?.textContent || '';
-        sheet.querySelector('small').textContent = document.getElementById('previewOpenStatus')?.textContent || '';
-        if (id === selectedId && !userInitiated) return;
-        selectedId = id;
-        card.dataset.mobileDismissed = 'false';
-        card.dataset.mobileExpanded = 'false';
-        const expand = sheet.querySelector('[data-sheet-expand]');
-        expand.setAttribute('aria-expanded', 'false');
-        expand.textContent = text('Ver detalles', 'View details');
-    }
+    // Compatibility with the existing desktop preview selection hook.
+    // Mobile browsing no longer adds a map preview sheet.
+    function selection() {}
     function modalVisible() {
         return [...document.querySelectorAll('[role="dialog"][aria-modal="true"], dialog[open]')]
             .some(element => !element.hidden && element.getAttribute('aria-hidden') !== 'true' && element.getClientRects().length > 0);
@@ -177,12 +137,8 @@
         if (event.target.closest('#vl-install-close, #vl-install-later, #promoPopupModal button')) pauseNotices();
     });
     window.VisitaLojaMobilePlaces = { filtersChanged, beforeSectionChange, afterSectionChange, selection, canShowNotice };
-    arrangeDirections();
-    if (card?.dataset.empty === 'false') selection(null, false);
-    mobile.addEventListener('change', arrangeDirections);
     window.addEventListener('languagechange', () => {
         command('refresh');
-        selection(selectedId, false);
     });
     function restorePendingFilters() {
         if (!pendingRestore || !mobile.matches) return;
