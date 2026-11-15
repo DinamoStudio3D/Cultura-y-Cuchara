@@ -16,7 +16,14 @@ class MainActivity : ComponentActivity() {
     private var noticeRequest by mutableIntStateOf(0)
     private var linkRequest by mutableStateOf<NativeLinkRequest?>(null)
     private fun receive(intent: Intent) {
-        if (intent.action == NativePush.openAction) noticeRequest++
+        if (intent.action == NativePush.openAction) {
+            val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+            val destination = PushPolicy.destination(intent.getStringExtra("noticeOwner"), uid,
+                intent.getStringExtra("noticeId"), PushStore.notices(this, uid))
+            if (destination != null && NativeLinkPolicy.parse("https://www.visitaloja.com$destination") != null) linkRequest = NativeLinkRequest(UUID.randomUUID().toString(), "https://www.visitaloja.com$destination")
+            else { linkRequest = null; noticeRequest++ }
+            return
+        }
         val text = when {
             intent.action == Intent.ACTION_VIEW -> intent.dataString
             intent.action == Intent.ACTION_SEND && intent.type == "text/plain" -> intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()

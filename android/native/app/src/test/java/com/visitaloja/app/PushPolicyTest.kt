@@ -5,6 +5,16 @@ import org.junit.Test
 
 class PushPolicyTest {
     private val data = mapOf("title" to "Loja te espera", "body" to "Nuevos eventos", "url" to "/#agenda")
+    @Test fun notificationTapsResolveTheMatchingNoticeForTheCurrentAccountOnly() {
+        val history = listOf(ReceivedNotice("one", "Agenda", "Eventos", "/#agenda", 1), ReceivedNotice("two", "Lugar", "Menú", "/parada/local", 2))
+        assertEquals("/#agenda", PushPolicy.destination("alice", "alice", "one", history))
+        assertEquals("/parada/local", PushPolicy.destination("alice", "alice", "two", history))
+        assertNull(PushPolicy.destination("alice", "bob", "one", history))
+        assertNull(PushPolicy.destination("alice", null, "one", history))
+        assertNull(PushPolicy.destination(null, "alice", "one", history))
+        assertNull(PushPolicy.destination("alice", "alice", "deleted", history))
+        assertNull(PushPolicy.destination("alice", "alice", "one", listOf(history[0].copy(url = "https://evil.test"))))
+    }
     @Test fun canonicalPublicDestinationsOnly() {
         assertEquals("/#agenda", PushPolicy.link("/#agenda"))
         assertEquals("/parada/sport-burger", PushPolicy.link("/parada/sport-burger"))

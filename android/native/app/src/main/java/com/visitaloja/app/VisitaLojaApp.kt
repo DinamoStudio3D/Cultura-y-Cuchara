@@ -192,12 +192,13 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
     var linkRequiredVersion by remember { mutableStateOf(0L) }
     var linkMessage by rememberSaveable { mutableStateOf<String?>(null) }
     val queueLink: (String) -> Unit = { text ->
+        nearbySettings = false
         pendingLink = text; linkRequiredVersion = 0L
         val target = NativeLinkPolicy.shared(text)
         if (target != null) { directMenuId = null; legalDocument = null; selectedId = null; selectedEventId = null; visits.close(); audioPlayer.pause() }
         if (target?.place != null) linkRequiredVersion = model.refreshForLink()
     }
-    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { directMenuId = null; legalDocument = null; pendingLink = null; selectedId = null; selectedEventId = null; visits.close(); fromSections = false; tab = "notices" } }
+    LaunchedEffect(noticeRequest) { if (noticeRequest > 0) { nearbySettings = false; directMenuId = null; legalDocument = null; pendingLink = null; selectedId = null; selectedEventId = null; visits.close(); fromSections = false; tab = "notices" } }
     LaunchedEffect(linkMessage) { linkMessage?.let { snack.showSnackbar(it); linkMessage = null } }
     LaunchedEffect(linkRequest?.id) {
         if (linkRequest != null && linkRequest.id != handledLink) {
@@ -298,12 +299,11 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "postcards" -> PostcardScreen(postcardState, discoveryState.photos) { postcards.bind(true, true) }
                     "shop" -> ShopScreen(shopState, shop)
                     "notices" -> PushScreen(if (pushState.uid == accountState.uid) pushState else PushState(uid = accountState.uid), push, { navigate("account", "all") }) { link ->
-                        val route = PushPolicy.route(link)
-                        val path = runCatching { java.net.URI(link).path }.getOrNull()
-                        val place = if (path?.startsWith("/parada/") == true) state.places.find { java.net.URI(PlacePolicy.publicUrl(it)).path.trimEnd('/') == path.trimEnd('/') } else null
-                        if (place != null) selectedId = place.id
-                        else if (route != null) navigate(route, "all")
-                        else PushPolicy.link(link)?.let { safe -> try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.visitaloja.com$safe"))) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay un navegador disponible.", Toast.LENGTH_LONG).show() } }
+                        PushPolicy.link(link)?.let { safe ->
+                            val url = "https://www.visitaloja.com$safe"
+                            if (NativeLinkPolicy.parse(url) != null) queueLink(url)
+                            else try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay un navegador disponible.", Toast.LENGTH_LONG).show() }
+                        }
                     }
                     "guide" -> GuideScreen(state, model::refresh, { selectedId = it.id }, { navigate("missions", "all") }, { navigate("itinerary", "all") })
                     "itinerary" -> ItineraryScreen(state, accountState.uid, accountState.uid == null || (accountState.favouritesReady && accountState.favouritesError == null), { selectedId = it.id }, { navigate("explore", "all") }, model::refresh)

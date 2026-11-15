@@ -172,3 +172,11 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 
 - Avisos exclusivamente para categorías gastronómicas: cafeterías, restaurantes, bares, huecas, comida urbana, panaderías, heladerías, asaderos y cevicherías. Marcas aliadas excluidas, incluso con una categoría gastronómica adicional.
 - El filtro se aplica al registro y nuevamente a cada aviso, para rechazar zonas o catálogos anteriores que incluyan marcas aliadas. Otros puntos permanecen en el mapa.
+
+## 0.70 — apertura de avisos y revisión de cierre
+
+- Cada aviso general tiene su PendingIntent propio y abre el destino nativo validado del aviso guardado para la cuenta actual. Al faltar historial/cambiar la cuenta, abre Avisos; nunca acepta un destino arbitrario del Intent.
+- El historial usa la misma resolución nativa de enlaces que los enlaces externos, incluyendo filtros y actualización de la parada.
+- Dar de baja novedades cancela solo su canal, conservando los avisos independientes de cercanía.
+- Prueba ampliada de notificación local, toque y apertura sin cuenta; activadas las revisiones de mapa, festival, directorio y logos en emulador. No se envían campañas ni se registran cuentas, visitas o canjes reales.
+- Revisión de código de sincronización: actualizaciones transaccionales de campos propios para favoritos/agenda; avatar y perfil mantienen los campos del otro flujo. La prueba cruzada con la cuenta real continúa pendiente.

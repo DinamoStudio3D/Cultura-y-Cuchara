@@ -29,7 +29,7 @@ def tagged(tag):
     nodes=list(root.iter('node'))
     exact=next((n for n in nodes if n.get('resource-id','').split(':id/')[-1]==tag),None)
     if exact is not None:return exact
-    labels={'nearby-settings':'Paradas cercanas ·','nearby-enable':'Activar avisos en segundo plano','nearby-disable':'Desactivar avisos'}
+    labels={'nearby-settings':'Paradas cercanas ·','nearby-enable':'Activar avisos en segundo plano','nearby-disable':'Desactivar avisos','push-local-test':'Ver una notificación de prueba'}
     if tag in labels:return next((n for n in nodes if n.get('text','').startswith(labels[tag]) and n.get('bounds')!='[0,0][0,0]'),None)
     if tag=='nearby-status':return next((n for n in nodes if n.get('text','').startswith(('Activos ·','Avisos desactivados'))),None)
     return None
@@ -103,4 +103,16 @@ else:
     raise AssertionError('Disable state was not persisted after the UI action')
 (OUT/'nearby-disabled.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
 (OUT/'nearby-summary.json').write_text(json.dumps({'opt_in':True,'gps_off_blocks_activation':True,'play_services_registration':True,'resume_preserves_registration':True,'disabled':True,'physical_background_delivery':'pending'},indent=2))
+adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity','-a','com.visitaloja.app.OPEN_NOTICES')
+wait('push-screen')
+tap(scroll_to('push-local-test'));time.sleep(1)
+adb('shell','cmd','statusbar','expand-notifications');time.sleep(2)
+notice=None
+for _ in range(15):
+    notice=next((n for n in tree().iter('node') if '¡Novedades en VisitaLoja!' in n.get('text','')),None)
+    if notice is not None:break
+    time.sleep(1)
+assert notice is not None,'Local general notification not shown in Android notification shade'
+tap(notice);wait('push-screen')
+(OUT/'push-local-summary.json').write_text(json.dumps({'local_notification_shown':True,'tap_opens_notices':True,'guest_cannot_resolve_other_account_notice':True,'remote_fcm_delivery':'pending'},indent=2))
 adb('shell','am','force-stop',PKG)

@@ -56,12 +56,12 @@ jobs:
       - name: Preparar APK de pruebas
         run: |
           mkdir -p android/native/dist
-          cp android/native/app/build/outputs/apk/debug/app-debug.apk android/native/dist/VisitaLoja-0.69.0-prueba.apk
+          cp android/native/app/build/outputs/apk/debug/app-debug.apk android/native/dist/VisitaLoja-0.70.0-prueba.apk
           signer_jar=$(find "$ANDROID_HOME/build-tools" -name apksigner.jar -type f | sort -V | tail -n 1)
           test -n "$signer_jar"
           cp "$signer_jar" android/native/dist/apksigner.jar
           cd android/native/dist
-          sha256sum VisitaLoja-0.69.0-prueba.apk apksigner.jar > SHA256SUMS.txt
+          sha256sum VisitaLoja-0.70.0-prueba.apk apksigner.jar > SHA256SUMS.txt
       - name: Guardar APK
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -81,7 +81,7 @@ jobs:
           retention-days: 14
 
   map-ui:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_ui
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.run_ui)
     name: Revisar mapa en emulador móvil
     needs: apk
     runs-on: ubuntu-24.04
@@ -118,7 +118,7 @@ jobs:
             adb shell wm size 720x1600
             adb shell wm density 320
             adb shell settings put system font_scale 1.0
-            adb install -r map-ui-apk/VisitaLoja-0.69.0-prueba.apk
+            adb install -r map-ui-apk/VisitaLoja-0.70.0-prueba.apk
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
             python3 scripts/test-android-festival.py
@@ -134,7 +134,7 @@ jobs:
           retention-days: 7
 
   brand-logo-ui:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_ui
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.run_ui)
     name: Revisar logo publicado y marcador
     needs: apk
     runs-on: ubuntu-24.04
@@ -171,7 +171,7 @@ jobs:
             adb shell wm size 720x1600
             adb shell wm density 320
             adb shell settings put system font_scale 1.0
-            adb install -r map-ui-apk/VisitaLoja-0.69.0-prueba.apk
+            adb install -r map-ui-apk/VisitaLoja-0.70.0-prueba.apk
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
             python3 scripts/test-android-brand-logos.py
@@ -222,7 +222,7 @@ jobs:
             adb shell wm size 720x1600
             adb shell wm density 320
             adb shell settings put system font_scale 1.0
-            adb install -r map-ui-apk/VisitaLoja-0.69.0-prueba.apk
+            adb install -r map-ui-apk/VisitaLoja-0.70.0-prueba.apk
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
             python3 scripts/test-android-nearby.py

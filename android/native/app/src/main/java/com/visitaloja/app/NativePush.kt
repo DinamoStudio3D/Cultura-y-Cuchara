@@ -85,7 +85,8 @@ object NativePush {
     fun stop(context: Context, clearHistory: Boolean = false) {
         PushStore.stop(context, clearHistory)
         WorkManager.getInstance(context).cancelUniqueWork(syncWork)
-        NotificationManagerCompat.from(context).cancelAll()
+        val manager = context.getSystemService(NotificationManager::class.java)
+        manager.activeNotifications.filter { it.notification.channelId == channel }.forEach { manager.cancel(it.tag, it.id) }
         FirebaseMessaging.getInstance().isAutoInitEnabled = false
         scope.launch { mutex.withLock {
             if (PushStore.owner(context) == null) runCatching {
@@ -141,7 +142,11 @@ object NativePush {
     fun show(context: Context, notice: ReceivedNotice) {
         createChannel(context)
         if (!allowed(context)) return
-        val intent = Intent(context, MainActivity::class.java).setAction(openAction).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val owner = FirebaseAuth.getInstance().currentUser?.uid
+        val intent = Intent(context, MainActivity::class.java).setAction(openAction)
+            .setData(android.net.Uri.Builder().scheme("visitaloja-notice").authority("open").appendPath(owner.orEmpty()).appendPath(notice.id).build())
+            .putExtra("noticeOwner", owner).putExtra("noticeId", notice.id)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         val pending = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val logo = ContextCompat.getDrawable(context, R.mipmap.ic_launcher)?.toBitmap(192, 192)
         val notification = NotificationCompat.Builder(context, channel).setSmallIcon(R.drawable.ic_notification)

@@ -24,6 +24,10 @@ object PushPolicy {
     }
     fun deviceId(value: String?): Boolean = value != null && Regex("[a-f0-9]{64}").matches(value)
     fun history(old: List<ReceivedNotice>, next: ReceivedNotice): List<ReceivedNotice> = (listOf(next) + old.filter { it.id != next.id }).take(20)
+    fun destination(owner: String?, currentUid: String?, id: String?, history: List<ReceivedNotice>): String? {
+        if (owner.isNullOrBlank() || owner != currentUid || id.isNullOrBlank()) return null
+        return history.singleOrNull { it.id == id }?.url?.let(::link)
+    }
     fun route(url: String): String? {
         val safe = link(url) ?: return null
         val uri = URI(safe)
