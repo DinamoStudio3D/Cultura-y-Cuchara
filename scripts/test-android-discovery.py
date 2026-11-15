@@ -71,7 +71,9 @@ def tap(node):
 def reveal_form(tag):
     for _ in range(7):
         node=find(tree(),tag=tag)
-        if node is not None:return node
+        if node is not None:
+            x1,y1,x2,y2=map(int,re.findall(r'\d+',node.get('bounds')))
+            if y2-y1>=64 and y1>=96 and y2<=1500:return node
         adb('shell','input','swipe','360','1180','360','750','300');time.sleep(0.5)
     raise AssertionError('Form control not reachable: '+tag)
 
@@ -162,7 +164,7 @@ try:
             adb('shell','input','swipe','360','1180','360','820','300');time.sleep(1)
         assert node is not None,'Configured order action was not reached in Expreso al Sur'
         if node is not None:
-            tap(node);wait(tag='business-request-screen')
+            tap(reveal_form('business-order'));wait(tag='business-request-screen')
             tap(wait(tag='business-request-notes'));adb('shell','input','text','Dos%scafes%spara%sretirar')
             adb('shell','input','keyevent','KEYCODE_BACK');tap(reveal_form('business-request-preview'))
             wait(tag='business-message-preview');reveal_form('business-open-whatsapp');capture('discovery-business-order-preview')
@@ -175,7 +177,7 @@ try:
             adb('shell','input','swipe','360','1180','360','870','300');time.sleep(1)
         assert reserve is not None,'Configured reservation action was not reached in Expreso al Sur'
         if reserve is not None:
-            tap(reserve);wait(tag='business-request-screen')
+            tap(reveal_form('business-reserve'));wait(tag='business-request-screen')
             tap(reveal_form('business-request-preview'));wait(tag='business-request-error')
             adb('shell','input','swipe','360','500','360','1180','300');time.sleep(0.5)
             tap(wait(tag='business-reservation-date'));wait(tag='button1');capture('discovery-business-date-picker');tap(wait(tag='button1'))
