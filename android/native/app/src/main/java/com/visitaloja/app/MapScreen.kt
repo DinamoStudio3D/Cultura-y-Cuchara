@@ -196,15 +196,22 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
         }
         if (!compact || (!showLocation && selected == null)) Surface(onClick = {
             following = false
-            if (mapError) { mapError = false; controller.reload() } else controller.focus(points)
-        }, modifier = Modifier.align(Alignment.TopStart).padding(start = 14.dp, top = 78.dp).widthIn(max = 220.dp), shape = RoundedCornerShape(18.dp), color = Color.White.copy(alpha = .96f), shadowElevation = 2.dp) {
+            when {
+                mapError -> { mapError = false; controller.reload() }
+                state.loading -> Unit
+                state.error != null || state.offline -> retry()
+                points.isEmpty() -> { onQuery(""); onCategory("all"); savedOnly = false; selection = null; controller.focus(state.places.filter(MapPolicy::located)) }
+                else -> controller.focus(points)
+            }
+        }, modifier = Modifier.align(Alignment.TopStart).padding(start = 14.dp, top = 78.dp).widthIn(max = 220.dp).testTag("map-data-status"), shape = RoundedCornerShape(18.dp), color = Color.White.copy(alpha = .96f), shadowElevation = 2.dp) {
             Row(Modifier.padding(horizontal = 10.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(if (mapError) Icons.Default.Refresh else Icons.Default.CenterFocusStrong, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
+                Icon(if (mapError || state.error != null || state.offline) Icons.Default.Refresh else Icons.Default.CenterFocusStrong, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
                 Text(when {
                     mapError -> "Reintentar cartografía"
                     state.loading && state.places.isEmpty() -> "Cargando paradas…"
+                    state.error != null -> "Reintentar paradas"
+                    state.offline -> "Sin conexión · Actualizar"
                     points.isEmpty() -> "Sin coincidencias · Ver todas"
-                    state.offline -> "${points.size} paradas guardadas"
                     else -> "${points.size} paradas · Ver todas"
                 }, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
             }

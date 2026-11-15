@@ -180,3 +180,5 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Dar de baja novedades cancela solo su canal, conservando los avisos independientes de cercanía.
 - Prueba ampliada de notificación local, toque y apertura sin cuenta; activadas las revisiones de mapa, festival, directorio y logos en emulador. No se envían campañas ni se registran cuentas, visitas o canjes reales.
 - Revisión de código de sincronización: actualizaciones transaccionales de campos propios para favoritos/agenda; avatar y perfil mantienen los campos del otro flujo. La prueba cruzada con la cuenta real continúa pendiente.
+
+- Revisión de mapa 0.70: el error de consulta se diferencia de una búsqueda sin resultados, con reintento desde el indicador; «Ver todas» limpia los filtros al no haber coincidencias.

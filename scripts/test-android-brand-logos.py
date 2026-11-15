@@ -37,9 +37,14 @@ try:
     adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(4)
     tap(wait('nav-map'));wait('map-canvas');tap(wait('map-query-input'))
     adb('shell','input','text','Codeproim');adb('shell','input','keyevent','KEYCODE_BACK');wait('map-query-input')
-    deadline=time.monotonic()+35
+    deadline=time.monotonic()+90
+    retries=0
     while time.monotonic()<deadline:
         if 'pinCount' in (OUT/'logo-tag-logcat.txt').read_text():break
+        root=tree()
+        retry=next((n for n in root.iter('node') if n.get('text') in ['Reintentar paradas','Sin conexión · Actualizar']),None)
+        if retry is not None and retries<2:
+            tap(retry);retries+=1;time.sleep(2)
         time.sleep(1)
     (OUT/'codeproim-focused.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
     logs=adb('logcat','-d');(OUT/'logo-logcat.txt').write_text(logs)
@@ -51,6 +56,7 @@ try:
             try:traces.append(json.loads(line[line.index('{'):]))
             except json.JSONDecodeError:pass
     (OUT/'logo-render-summary.json').write_text(json.dumps(traces,indent=2))
+    ET.ElementTree(tree()).write(OUT/'logo-final-ui.xml',encoding='utf-8')
     assert traces,'No marker renderer diagnostics'
     records=[r for r in traces if 'pinCount' in r]
     assert records,traces
