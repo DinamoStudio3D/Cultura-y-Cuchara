@@ -188,3 +188,4 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Las imágenes de tarjetas, portada y vista previa del mapa usan ajuste completo, sin recorte. Categoría y favorito fuera de la fotografía en las tarjetas.
 - La ficha abre con galería deslizable de altura adaptada a la proporción y al tamaño de pantalla, contador y ampliación. Foto principal primero, sin duplicarla y conservando créditos. Se elimina la galería repetida del cuerpo de la ficha.
 - Visor completo compartido con las galerías existentes; conserva navegación lateral y créditos. Comprobación visual de ficha, listado y visor con registros públicos, sin modificar imágenes ni datos de negocios.
+- El mismo ajuste completo se aplica a las tarjetas de paradas en cantones y misiones, y a las imágenes de promociones.

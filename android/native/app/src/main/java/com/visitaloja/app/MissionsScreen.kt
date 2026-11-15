@@ -237,7 +237,7 @@ private fun MissionDetail(mission: LojaMission,now: Long,places: PlacesState,ope
         if(eligible.isEmpty() && !places.loading) item { Text("Todavía no hay paradas publicadas que coincidan con este reto.",fontSize=14.sp,color=MaterialTheme.colorScheme.onSurfaceVariant) }
         items(eligible,key={it.id}) { place -> Surface(onClick={open(place)},shape=RoundedCornerShape(18.dp),color=Color.White,modifier=Modifier.testTag("mission-place-${place.id}")) {
             Row(Modifier.fillMaxWidth().padding(12.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-                AsyncImage(place.imageUrl ?: R.drawable.visitaloja_logo,null,Modifier.size(65.dp).clip(RoundedCornerShape(12.dp)),contentScale=ContentScale.Crop,error=painterResource(R.drawable.visitaloja_logo))
+                AsyncImage(place.imageUrl ?: R.drawable.visitaloja_logo,null,Modifier.size(65.dp).clip(RoundedCornerShape(12.dp)),contentScale=ContentScale.Fit,error=painterResource(R.drawable.visitaloja_logo))
                 Column(Modifier.weight(1f)) { Text(place.title,fontWeight=FontWeight.Bold);Text("${place.categoryLabel} · ${place.cantonId}",fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant) };Icon(Icons.AutoMirrored.Filled.ArrowForward,null,tint=AdventureBlue)
             }
         } }

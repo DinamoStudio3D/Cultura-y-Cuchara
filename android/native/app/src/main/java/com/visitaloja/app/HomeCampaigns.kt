@@ -63,7 +63,7 @@ internal fun HomeCampaigns(state: PlacesState, open: (Place) -> Unit, all: () ->
             LazyRow(contentPadding = PaddingValues(horizontal = 18.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(promotions.take(8), key = { it.id }) { place ->
                     Card(onClick = { if (PromotionPolicy.visible(place, System.currentTimeMillis(), fresh)) open(place) }, modifier = Modifier.width(268.dp), shape = RoundedCornerShape(20.dp)) {
-                        (place.promotion.image ?: place.imageUrl)?.let { AsyncImage(it, null, Modifier.fillMaxWidth().height(132.dp), contentScale = ContentScale.Crop) }
+                        (place.promotion.image ?: place.imageUrl)?.let { AsyncImage(it, null, Modifier.fillMaxWidth().height(132.dp), contentScale = ContentScale.Fit) }
                         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Text(place.title, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                             Text(place.promotion.title.ifBlank { "Beneficio disponible" }, fontWeight = FontWeight.Bold, maxLines = 2)

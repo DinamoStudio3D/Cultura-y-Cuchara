@@ -80,7 +80,7 @@ internal fun PromotionsScreen(state: PlacesState, refresh: () -> Unit, open: (Pl
                 items(result, key = { it.id }) { place ->
                     Card(onClick = { if (PromotionPolicy.visible(place, System.currentTimeMillis(), fresh)) open(place) }, modifier = Modifier.fillMaxWidth().testTag("promotion-${place.id}"), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
                         val image = place.promotion.image ?: place.imageUrl
-                        if (image != null) AsyncImage(image, null, Modifier.fillMaxWidth().height(180.dp), contentScale = ContentScale.Crop)
+                        if (image != null) AsyncImage(image, null, Modifier.fillMaxWidth().height(180.dp), contentScale = ContentScale.Fit)
                         Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
                             Text(place.title, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                             Text(place.promotion.title.ifBlank { "Promoción vigente" }, fontSize = 21.sp, fontWeight = FontWeight.Bold)
