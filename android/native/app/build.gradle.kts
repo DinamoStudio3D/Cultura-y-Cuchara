@@ -5,11 +5,11 @@ plugins {
 }
 android {
     namespace = "com.visitaloja.app"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.visitaloja.app"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 80
         versionName = "0.73.0"
     }

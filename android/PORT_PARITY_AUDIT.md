@@ -197,6 +197,8 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 
 ## Cierre Android — 0.73
 
+- compileSdk y targetSdk actualizados a API 36 para preparar la publicación en Google Play; prueba enfocada del video en emulador Android 16 y recorridos restantes en Android 15. Referencia: https://support.google.com/googleplay/android-developer/answer/11926878
+
 - Corregida altura mínima de YouTube (200 dp) en teléfonos de 320 dp de ancho, manteniendo el formato vertical y los controles oficiales.
 - La revisión de video busca el botón con desplazamientos pequeños y por identificador accesible, sin saltarlo durante los cambios de altura de la ficha.
 - Cercanía permite un único reintento explícito de actualización desde la interfaz ante fallos temporales de red; las pruebas siguen exigiendo registro real en Play Services.

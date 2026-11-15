@@ -50,7 +50,7 @@ jobs:
       - name: Comprobar autorización de premios y avisos sin envíos reales
         run: node scripts/test-merchant-program.cjs && node scripts/test-push-campaigns.cjs
       - name: Comprobar SDK disponible
-        run: test -d "$ANDROID_HOME/platforms/android-35"
+        run: test -d "$ANDROID_HOME/platforms/android-36"
       - name: Compilar, probar y revisar Android
         run: ./android/native/gradlew --no-daemon -p android/native :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
       - name: Preparar APK de pruebas
@@ -259,10 +259,10 @@ jobs:
           path: map-ui-apk
       - name: Habilitar virtualización del emulador
         run: sudo chmod 666 /dev/kvm
-      - name: Probar mapa y ubicación simulada en Android 15
+      - name: Probar mapa y ubicación simulada en Android 16
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
         with:
-          api-level: 35
+          api-level: 36
           target: google_apis
           arch: x86_64
           profile: pixel_2
