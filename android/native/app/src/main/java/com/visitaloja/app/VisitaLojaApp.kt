@@ -339,7 +339,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
             ModalBottomSheet(onDismissRequest = { selectedEventId = null }, containerColor = Color(0xFFF0F7FF)) { EventDetail(selectedEvent) }
         }
         if (selected != null) {
-            ModalBottomSheet(onDismissRequest = { selectedId = null }, containerColor = Color.White) {
+            ModalBottomSheet(onDismissRequest = { selectedId = null }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = Color.White) {
                 PlaceDetail(selected, !state.offline && state.error == null, audioState, audioPlayer, selected.id in state.favourites, { favourite(selected.id) }, { if (accountState.uid == null) { selectedId = null; navigate("account", "all") } else { selectedId = null; visits.open(selected) } }, { selectedId = null; navigate("account", "all") }, english) { selectedId = null }
             }
         }
@@ -473,10 +473,12 @@ private fun HomePlaceTile(place: Place, saved: Boolean, open: () -> Unit, favour
     Column(Modifier.width(218.dp)) {
         Box(Modifier.fillMaxWidth().height(145.dp).clip(RoundedCornerShape(15.dp))) {
             Box(Modifier.fillMaxSize().clickable(onClick = open).testTag("place-card-${place.id}")) { PlaceImage(place, Modifier.fillMaxSize()) }
-            Surface(Modifier.align(Alignment.TopEnd).padding(7.dp), shape = CircleShape, color = Color.White.copy(alpha = .96f)) { IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) } }
         }
         Column(Modifier.fillMaxWidth().clickable(onClick = open).padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(place.categoryLabel, fontSize = 10.sp, color = Blue, fontWeight = FontWeight.SemiBold)
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(place.categoryLabel, modifier = Modifier.weight(1f), fontSize = 10.sp, color = Blue, fontWeight = FontWeight.SemiBold)
+                IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) }
+            }
             Text(place.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Text(place.address.ifBlank { "Loja, Ecuador" }, color = Muted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
@@ -526,22 +528,23 @@ private fun PlaceImage(place: Place, modifier: Modifier = Modifier) {
     when {
         local != null -> Image(painterResource(local), place.title, modifier.background(Pale), contentScale = ContentScale.Fit)
         place.imageUrl == null -> Image(painterResource(R.drawable.visitaloja_logo), place.title, modifier.background(Pale).padding(28.dp), contentScale = ContentScale.Fit)
-        else -> AsyncImage(model = place.imageUrl, contentDescription = place.title, modifier = modifier.background(Pale), contentScale = ContentScale.Crop, error = painterResource(R.drawable.visitaloja_logo), placeholder = painterResource(R.drawable.visitaloja_logo))
+        else -> AsyncImage(model = place.imageUrl, contentDescription = place.title, modifier = modifier.background(Pale), contentScale = ContentScale.Fit, error = painterResource(R.drawable.visitaloja_logo), placeholder = painterResource(R.drawable.visitaloja_logo))
     }
 }
 
 @Composable
 private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false, english: Boolean = false) {
     OutlinedCard(modifier = modifier, shape = RoundedCornerShape(20.dp), colors = CardDefaults.outlinedCardColors(containerColor = Color.White)) {
-        Box {
-            Column(Modifier.testTag("place-card-${place.id}").clickable(onClick = open)) {
-                Box(Modifier.fillMaxWidth().height(if (compact) 140.dp else 183.dp)) {
-                    PlaceImage(place, Modifier.fillMaxSize())
-                    Surface(Modifier.align(Alignment.BottomStart).padding(12.dp), color = Color.White.copy(alpha = .96f), shape = RoundedCornerShape(8.dp)) { Text(PlacePresentationPolicy.category(place, english), fontSize = 10.sp, color = Blue, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)) }
+        Column(Modifier.testTag("place-card-${place.id}").clickable(onClick = open)) {
+            PlaceImage(place, Modifier.fillMaxWidth().height(if (compact) 160.dp else 210.dp))
+            Column(Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(PlacePresentationPolicy.category(place, english), modifier = Modifier.weight(1f), fontSize = 10.sp, color = Blue, fontWeight = FontWeight.Bold)
+                    IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (english) { if (saved) "Remove ${place.title} from saved places" else "Save ${place.title}" } else if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) }
                 }
-                Column(Modifier.padding(16.dp)) { Text(place.title, fontWeight = FontWeight.Bold, fontSize = if (compact) 16.sp else 18.sp, maxLines = 2, overflow = TextOverflow.Ellipsis); Text(place.address.ifBlank { "Loja, Ecuador" }, color = Muted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 5.dp)) }
+                Text(place.title, fontWeight = FontWeight.Bold, fontSize = if (compact) 16.sp else 18.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(place.address.ifBlank { "Loja, Ecuador" }, color = Muted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 5.dp))
             }
-            Surface(Modifier.align(Alignment.TopEnd).padding(8.dp), shape = CircleShape, color = Color.White.copy(alpha = .96f)) { IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (english) { if (saved) "Remove ${place.title} from saved places" else "Save ${place.title}" } else if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) } }
         }
     }
 }
@@ -550,9 +553,8 @@ private fun PlaceCard(place: Place, saved: Boolean, open: () -> Unit, favourite:
 private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState, player: DiscoveryAudioViewModel, saved: Boolean, favourite: () -> Unit, visit: () -> Unit, login: () -> Unit, english: Boolean, dismiss: () -> Unit) {
     val context = LocalContext.current
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
-        Box(Modifier.fillMaxWidth().height(220.dp)) { PlaceImage(place, Modifier.fillMaxSize()); FilledIconButton(onClick = dismiss, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Ink)) { Icon(Icons.Default.Close, (if (english) "Close place details" else "Cerrar ficha")) } }
+        PlacePhotoHeader(place, english, dismiss)
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text(PlacePresentationPolicy.category(place, english), color = Blue, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             Text(place.title, fontSize = 28.sp, fontWeight = FontWeight.Bold, lineHeight = 33.sp)
             if (place.address.isNotBlank()) Text(place.address, color = Blue, fontSize = 13.sp)
             if (place.address.isNotBlank()) CopyPlaceAddress(place, english)
@@ -562,7 +564,6 @@ private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState
             ReviewsEntry(place, login, visit, english)
             PlacePromotionEntry(place, fresh)
             PlaceMediaEntry(place, fresh, audio, player, english)
-            PlaceGallery(place)
             if (place.description.isNotBlank()) Text(place.description, color = Muted, fontSize = 14.sp, lineHeight = 23.sp)
             PlaceServices(place.info, english)
             Button(onClick = visit, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.QrCode, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Generate visit code" else "Generar código de visita")) }

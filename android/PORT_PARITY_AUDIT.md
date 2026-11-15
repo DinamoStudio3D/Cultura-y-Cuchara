@@ -182,3 +182,9 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Revisión de código de sincronización: actualizaciones transaccionales de campos propios para favoritos/agenda; avatar y perfil mantienen los campos del otro flujo. La prueba cruzada con la cuenta real continúa pendiente.
 
 - Revisión de mapa 0.70: el error de consulta se diferencia de una búsqueda sin resultados, con reintento desde el indicador; «Ver todas» limpia los filtros al no haber coincidencias.
+
+## 0.71 — fotografías completas en las paradas
+
+- Las imágenes de tarjetas, portada y vista previa del mapa usan ajuste completo, sin recorte. Categoría y favorito fuera de la fotografía en las tarjetas.
+- La ficha abre con galería deslizable de altura adaptada a la proporción y al tamaño de pantalla, contador y ampliación. Foto principal primero, sin duplicarla y conservando créditos. Se elimina la galería repetida del cuerpo de la ficha.
+- Visor completo compartido con las galerías existentes; conserva navegación lateral y créditos. Comprobación visual de ficha, listado y visor con registros públicos, sin modificar imágenes ni datos de negocios.
