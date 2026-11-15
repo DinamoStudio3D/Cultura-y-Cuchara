@@ -242,8 +242,18 @@ class NativeMapController(private val context: Context, private val initialCamer
             val current=map?:return@launch;val target=style?:return@launch
             if(!alive||places.singleOrNull()?.id!=place.id)return@launch
             val key=MapPolicy.markerKey(place)
-            val source=target.getSourceAs<GeoJsonSource>(PLACES)?.querySourceFeatures(null).orEmpty()
-            val pins=current.queryRenderedFeatures(RectF(0f,0f,view.width.toFloat(),view.height.toFloat()),PINS)
+            var source=target.getSourceAs<GeoJsonSource>(PLACES)?.querySourceFeatures(null).orEmpty()
+            var pins=current.queryRenderedFeatures(RectF(0f,0f,view.width.toFloat(),view.height.toFloat()),PINS)
+            // A source update and its rendered frame are asynchronous. Read the
+            // completed frame without moving the camera or changing map data.
+            for (attempt in 0 until 24) {
+                if (source.isNotEmpty() && pins.isNotEmpty() && target.getImage(key)!=null && logoImages.containsKey(key) &&
+                    current.projection.visibleRegion.latLngBounds.contains(LatLng(place.latitude!!,place.longitude!!))) break
+                delay(250)
+                if(!alive||map!==current||style!==target||places.singleOrNull()?.id!=place.id)return@launch
+                source=target.getSourceAs<GeoJsonSource>(PLACES)?.querySourceFeatures(null).orEmpty()
+                pins=current.queryRenderedFeatures(RectF(0f,0f,view.width.toFloat(),view.height.toFloat()),PINS)
+            }
             android.util.Log.i("VisitaLojaLogos",JSONObject().put("place",place.id).put("sourceCount",source.size).put("sourceKeys",org.json.JSONArray(source.map { runCatching { JSONObject(it.toJson()).optJSONObject("properties")?.optString("pin") }.getOrNull() })).put("expectedKey",key).put("pinCount",pins.size).put("imagePresent",target.getImage(key)!=null).put("logoLoaded",logoImages.containsKey(key)).put("inView",current.projection.visibleRegion.latLngBounds.contains(LatLng(place.latitude!!,place.longitude!!))).toString())
         }
     }

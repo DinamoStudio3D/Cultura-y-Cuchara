@@ -40,7 +40,15 @@ try:
     deadline=time.monotonic()+90
     retries=0
     while time.monotonic()<deadline:
-        if 'pinCount' in (OUT/'logo-tag-logcat.txt').read_text():break
+        records=[]
+        for line in (OUT/'logo-tag-logcat.txt').read_text().splitlines():
+            if 'VisitaLojaLogos' in line and '{' in line:
+                try:record=json.loads(line[line.index('{'):])
+                except json.JSONDecodeError:continue
+                if 'pinCount' in record:records.append(record)
+        if records:
+            current=records[-1]
+            if current.get('logoLoaded') and current.get('imagePresent') and current.get('pinCount',0)>0 and current.get('inView'):break
         root=tree()
         retry=next((n for n in root.iter('node') if n.get('text') in ['Reintentar paradas','Sin conexión · Actualizar']),None)
         if retry is not None and retries<2:
