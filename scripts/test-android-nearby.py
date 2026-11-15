@@ -14,6 +14,9 @@ def tree():
         try:
             adb('shell','uiautomator','dump','/sdcard/nearby-qa.xml')
             root=ET.fromstring(adb('exec-out','cat','/sdcard/nearby-qa.xml'))
+            if any(n.get('resource-id')=='android:id/alertTitle' and n.get('text')=="Pixel Launcher isn't responding" for n in root.iter('node')):
+                tap(next(n for n in root.iter('node') if n.get('resource-id')=='android:id/aerr_wait'))
+                adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');continue
             words={n.get('text','') for n in root.iter('node')}
             if {'VisitaLoja','Consultar disponibilidad','Cerrar'}.issubset(words):
                 tap(next(n for n in root.iter('node') if n.get('text')=='Cerrar'));continue
@@ -84,9 +87,14 @@ adb('shell','input','keyevent','KEYCODE_HOME');time.sleep(2)
 adb('shell','am','start','-n',PKG+'/com.visitaloja.app.MainActivity');time.sleep(15)
 assert preferences().get('registeredAt')==registered_at,'Resume must preserve a healthy dwell registration'
 tap(scroll_to('nearby-disable'))
-assert 'desactivados' in preferences().get('status','').lower()
-assert preferences().get('enabled')=='false'
-assert preferences().get('registeredAt','0')=='0','Disabled registration must not appear healthy'
+for _ in range(30):
+    saved=preferences()
+    if saved.get('enabled')=='false' and saved.get('registeredAt','0')=='0' and 'desactivados' in saved.get('status','').lower():break
+    time.sleep(.5)
+else:
+    (OUT/'nearby-disable-failure.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
+    (OUT/'nearby-disable-state.json').write_text(json.dumps({k:saved.get(k) for k in ['enabled','status','registeredAt']},indent=2))
+    raise AssertionError('Disable state was not persisted after the UI action')
 (OUT/'nearby-disabled.png').write_bytes(adb('exec-out','screencap','-p',binary=True))
 (OUT/'nearby-summary.json').write_text(json.dumps({'opt_in':True,'gps_off_blocks_activation':True,'play_services_registration':True,'resume_preserves_registration':True,'disabled':True,'physical_background_delivery':'pending'},indent=2))
 adb('shell','am','force-stop',PKG)
