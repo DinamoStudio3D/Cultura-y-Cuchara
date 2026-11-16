@@ -230,3 +230,14 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Mis premios permite buscar por código y ordena las entregas por su fecha real, manteniendo pendientes por vencimiento.
 - Pruebas para QR vencido/visita confirmada, cambio de día, referencia de otra parada, búsqueda por código y orden de entregas.
 - La recuperación retira la escucha anterior y descarta sus respuestas tardías; mientras se verifica con el servidor, el QR anterior se marca sin verificar.
+
+## 0.77 — inicio de administración general nativa
+
+- Acceso desde Mi cuenta con verificación del administrador usando las mismas reclamaciones/perfil de las reglas actuales. Ser propietario o encargado no otorga administración general.
+- Directorio paginado de paradas, búsqueda sobre filas cargadas y edición de nombre, descripción, dirección y publicación. No se cambian suscripciones ni se reactivan suspensiones al publicar.
+- Agenda general: crear eventos en borrador, editar y publicar/ocultar con fecha/hora en Ecuador, textos ES/EN, afiche/banner por enlace HTTPS y coordenadas. Conserva los campos adicionales de eventos existentes.
+- Transacciones comparan el contenido leído con el actual para impedir sobrescrituras desde otro dispositivo. Cada operación añade auditoría administrativa en la misma transacción.
+- No se modifica main ni se escriben registros de negocios o eventos reales durante el desarrollo.
+- Pendientes de migración: creación completa de paradas, editores de los otros contenidos, usuarios/permisos, administración avanzada de programas y temporadas de fidelidad, campañas push y el resto de traducciones. Este bloque no representa el panel web completo.
+- Los afiches en este editor se introducen por URL; la subida directa de medios para administración general continúa pendiente.
+- Pruebas físicas aplazadas por el usuario. La compilación y comprobaciones automáticas se ejecutan en GitHub Actions.
