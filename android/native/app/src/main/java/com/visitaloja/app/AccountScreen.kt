@@ -113,6 +113,7 @@ fun AccountScreen(state: AccountState, guestFavourites: Set<String>, model: Acco
                         Icons.Default.Storefront, "merchant-open-business", business)
                 }
             }
+            NativeAdminEntry(state.uid)
             Text("Tus favoritos, contigo", fontSize = 21.sp, fontWeight = FontWeight.Bold)
             Text(if (!state.favouritesReady) "Consultando tus favoritos…" else "${state.favourites.size} lugares guardados en tu cuenta. Los cambios se comparten con la web.", fontSize = 14.sp)
             if (state.fromCache) Text("Sin confirmación del servidor. Conéctate para consultar y cambiar tus favoritos.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
