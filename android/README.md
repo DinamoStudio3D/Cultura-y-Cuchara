@@ -285,3 +285,22 @@ Inicio incorpora una franja nativa de logos completos, debajo de la portada, con
 El carrusel nativo avanza por tarjetas y permite arrastrar/pausar; pausa durante el arrastre y hover configurado, fuera del primer plano y con exploración táctil o animaciones de Android desactivadas. La duración del panel se distribuye por tarjetas, con al menos 2,5 segundos de lectura. La lista completa adapta columnas a móvil, tablet y texto grande. Al pulsar un negocio abre su ficha nativa; la Mesa abre su página web oficial por acción explícita. Con clickable desactivado no se abren fichas ni enlaces.
 
 Listener público solo en Inicio/listado, con retirada y control de callbacks viejos. Refresca el directorio al entrar/reanudar y cada minuto visible; revisa las fechas cada segundo, sin anuncios de pago desde caché o errores. La proyección de participación no se persiste en la caché de paradas y no contiene facturación/contactos administrativos. Configuración del panel no disponible: no se supone vigente una selección antigua. No cambia panel, datos, reglas, servidor o main. QA verifica franja/listado y ficha si hay un negocio publicado, sin abrir el navegador de la institución ni contactar a nadie.
+
+## Preparar una entrega de producción
+
+El paquete definitivo es `com.visitaloja.app`; `.preview` sigue reservado para pruebas.
+Registrar el paquete definitivo en Firebase del proyecto `cultura-y-cuchara`, agregar las huellas de la firma apropiada y descargar su `google-services.json`. Con la configuración pública ya disponible:
+
+```sh
+python3 android/prepare-release.py /ruta/privada/google-services.json
+```
+
+El conversor valida proyecto, paquete, identificador de app y cliente OAuth web antes de escribir los recursos de producción. El archivo fuente y el resultado local quedan fuera de git. No imprime las claves.
+
+La firma definitiva se aporta mediante `VISITALOJA_RELEASE_STORE_FILE`, `VISITALOJA_RELEASE_STORE_PASSWORD`, `VISITALOJA_RELEASE_KEY_ALIAS` y `VISITALOJA_RELEASE_KEY_PASSWORD`. Mantener el almacén y contraseñas fuera del repositorio. No generar una clave nueva para sustituir una identidad ya distribuida. Con Google Play App Signing, registrar en Firebase y en los enlaces del dominio la huella de la firma de distribución, diferenciándola de la clave de subida.
+
+```sh
+./android/native/gradlew -p android/native :app:bundleRelease
+```
+
+`preReleaseBuild` rechaza una configuración incompleta en vez de producir una app sin Auth/FCM o sin firma. La variante de pruebas mantiene su configuración y firma independientes. El AAB esperado se genera en `android/native/app/build/outputs/bundle/release/`; todavía requiere las pruebas reales de acceso, notificaciones y ciclo de recompensas antes de publicarse.

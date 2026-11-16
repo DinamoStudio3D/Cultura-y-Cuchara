@@ -48,9 +48,16 @@ jobs:
           gradle-version: '8.11.1'
           cache-read-only: false
       - name: Comprobar autorización de premios y avisos sin envíos reales
-        run: node scripts/test-merchant-program.cjs && node scripts/test-push-campaigns.cjs
+        run: node scripts/test-merchant-program.cjs && node scripts/test-push-campaigns.cjs && python3 scripts/test-android-release.py
       - name: Comprobar SDK disponible
         run: test -d "$ANDROID_HOME/platforms/android-36"
+      - name: Rechazar una entrega sin configuración de producción
+        run: |
+          if ./android/native/gradlew --no-daemon -p android/native :app:validateProductionConfiguration > "$RUNNER_TEMP/release-validation.log" 2>&1; then
+            echo "La validación permitió una producción incompleta"
+            exit 1
+          fi
+          python3 -c 'import os,pathlib; assert "Falta Firebase de producción" in pathlib.Path(os.environ["RUNNER_TEMP"], "release-validation.log").read_text()'
       - name: Compilar, probar y revisar Android
         run: ./android/native/gradlew --no-daemon -p android/native :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
       - name: Preparar APK de pruebas

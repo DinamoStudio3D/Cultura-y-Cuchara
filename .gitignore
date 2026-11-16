@@ -3,3 +3,10 @@ tests/firestore-rules/node_modules/
 firestore-debug.log
 firebase-debug.log
 ui-debug.log
+
+# Local Android production configuration and signing credentials.
+android/native/app/src/release/res/values/firebase.xml
+**/google-services.json
+*.jks
+*.keystore
+*.p12

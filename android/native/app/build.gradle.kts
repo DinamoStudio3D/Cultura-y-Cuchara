@@ -1,3 +1,7 @@
+import javax.xml.parsers.DocumentBuilderFactory
+import java.security.KeyStore
+import java.security.MessageDigest
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -13,9 +17,20 @@ android {
         versionCode = 80
         versionName = "0.73.0"
     }
+    val releaseSigning = listOf("VISITALOJA_RELEASE_STORE_FILE", "VISITALOJA_RELEASE_STORE_PASSWORD", "VISITALOJA_RELEASE_KEY_ALIAS", "VISITALOJA_RELEASE_KEY_PASSWORD")
+        .associateWith { System.getenv(it)?.takeIf(String::isNotBlank) }
+    if (releaseSigning.values.all { it != null }) signingConfigs.create("production") {
+        storeFile = file(releaseSigning.getValue("VISITALOJA_RELEASE_STORE_FILE")!!)
+        storePassword = releaseSigning.getValue("VISITALOJA_RELEASE_STORE_PASSWORD")
+        keyAlias = releaseSigning.getValue("VISITALOJA_RELEASE_KEY_ALIAS")
+        keyPassword = releaseSigning.getValue("VISITALOJA_RELEASE_KEY_PASSWORD")
+    }
     buildTypes {
         debug { applicationIdSuffix = ".preview"; versionNameSuffix = "-preview"; resValue("string", "app_name", "VisitaLoja Prueba") }
-        release { isMinifyEnabled = false }
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.findByName("production")
+        }
     }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
@@ -69,3 +84,34 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
 }
+
+// A release must never silently reuse Firebase or the signing key of the preview app.
+val validateProductionConfiguration by tasks.registering {
+    doLast {
+        val config = file("src/release/res/values/firebase.xml")
+        check(config.isFile) { "Falta Firebase de producción. Ejecuta android/prepare-release.py con el google-services.json de com.visitaloja.app." }
+        val factory = DocumentBuilderFactory.newInstance().apply {
+            setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+        }
+        val rows = factory.newDocumentBuilder().parse(config).getElementsByTagName("string")
+        val values = (0 until rows.length).associate { index ->
+            val row = rows.item(index)
+            row.attributes.getNamedItem("name").nodeValue to row.textContent.trim()
+        }
+        check(values["project_id"] == "cultura-y-cuchara" && values["visitaloja_firebase_package"] == "com.visitaloja.app") { "Firebase no corresponde al paquete definitivo de VisitaLoja." }
+        listOf("google_app_id", "google_api_key", "gcm_defaultSenderId", "default_web_client_id").forEach {
+            check(!values[it].isNullOrBlank()) { "Falta el recurso de producción: $it" }
+        }
+        listOf("VISITALOJA_RELEASE_STORE_FILE", "VISITALOJA_RELEASE_STORE_PASSWORD", "VISITALOJA_RELEASE_KEY_ALIAS", "VISITALOJA_RELEASE_KEY_PASSWORD").forEach {
+            check(!System.getenv(it).isNullOrBlank()) { "Falta la variable de firma de producción: $it" }
+        }
+        val store = file(System.getenv("VISITALOJA_RELEASE_STORE_FILE"))
+        check(store.isFile) { "No se encontró el almacén de firma definitivo." }
+        val keys = KeyStore.getInstance(store, System.getenv("VISITALOJA_RELEASE_STORE_PASSWORD").toCharArray())
+        val certificate = keys.getCertificate(System.getenv("VISITALOJA_RELEASE_KEY_ALIAS"))
+        check(certificate != null) { "No se encontró el alias de la firma definitiva." }
+        val fingerprint = MessageDigest.getInstance("SHA-256").digest(certificate.encoded).joinToString("") { "%02x".format(it) }
+        check(fingerprint != "2c68e9a131584ba2f38f2155603cabd906b1bb740426e4e976eb7210fd03e171") { "La firma de pruebas no se puede usar como firma definitiva." }
+    }
+}
+tasks.named("preReleaseBuild") { dependsOn(validateProductionConfiguration) }
