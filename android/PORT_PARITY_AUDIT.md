@@ -216,3 +216,9 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - «Comprobar esta visita» aparece junto al resultado pendiente; errores temporales de red conservan la referencia para reintentar. Los errores de autorización retiran el resultado anterior. La consulta vuelve a verificar permisos y solo lee el estado del servidor.
 - Teclado numérico para escribir el código de visita. Se mantienen los límites diarios, la confirmación explícita y las restricciones de anulación.
 - Pruebas de regresión para cambio de día y referencias de otro negocio/código. No se crean visitas ni se entregan premios reales durante esta revisión.
+
+## 0.75 — historial del encargado
+- Las entregas recientes se incluyen y ordenan por fecha de entrega aunque el premio se haya creado antes del período de historial. Las pendientes conservan su fecha de creación.
+- Fechas de inicio/fin de suscripción sin hora interpretadas en Loja, incluyendo el último día completo. Recuperación de campos de fecha anteriores cuando los actuales están vacíos.
+- Búsqueda en registros cargados por código de canje, comprobante y nombre sin tildes. Código visible en la tarjeta del premio y exportación CSV; títulos recuperados del beneficio guardado cuando falta el título principal.
+- Se mantienen el alcance por parada, la protección del correo, el aviso de carga parcial y la autorización del servidor. Sin cambios de planes, reglas ni datos reales.

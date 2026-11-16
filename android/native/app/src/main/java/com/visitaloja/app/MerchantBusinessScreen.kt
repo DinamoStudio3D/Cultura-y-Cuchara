@@ -59,9 +59,9 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
         (state.tab != "clients" || !clientReturning || row.count("visitCount") > 1) &&
         (state.tab != "visits" || MerchantBusinessPolicy.visitMatches(row, visitFilter, visitPeriod, now)) &&
         (state.tab != "rewards" || rewardFilter == null || MerchantBusinessPolicy.rewardStatus(row,now) == rewardFilter) &&
-            (search.isBlank() || listOf(row.text("userName"),MerchantBusinessPolicy.maskedEmail(row.text("userEmail")),row.text("rewardTitle")).any { it.contains(search.trim(),true) })
+            MerchantBusinessPolicy.matchesSearch(row, search)
     }
-        .sortedWith(if(state.tab=="clients")when(clientSort) { "spend" -> compareByDescending { MerchantBusinessPolicy.amount(it["totalSpend"]) }; "name" -> compareBy { PlacePolicy.normalize(it.text("userName")) }; else -> compareByDescending { it.count("visitCount") } } else compareByDescending { (if (state.tab == "visits") MerchantBusinessPolicy.visitMoment(it) else timeMillis(it["createdAt"])) ?: 0 })
+        .sortedWith(if(state.tab=="clients")when(clientSort) { "spend" -> compareByDescending { MerchantBusinessPolicy.amount(it["totalSpend"]) }; "name" -> compareBy { PlacePolicy.normalize(it.text("userName")) }; else -> compareByDescending { it.count("visitCount") } } else compareByDescending { (if (state.tab == "visits") MerchantBusinessPolicy.visitMoment(it) else MerchantBusinessPolicy.rewardMoment(it)) ?: 0 })
     Dialog(onDismissRequest=dismiss,properties=DialogProperties(usePlatformDefaultWidth=false)) {
         Surface(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),color=MaterialTheme.colorScheme.background) {
             LazyColumn(Modifier.fillMaxSize().padding(horizontal=20.dp),verticalArrangement=Arrangement.spacedBy(12.dp),contentPadding=PaddingValues(vertical=16.dp)) {
@@ -131,6 +131,7 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                         if (state.tab == "rewards") item {
                             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 Text("Estado del premio", fontWeight = FontWeight.SemiBold)
+                                Text("Premios por fecha de creación o de entrega, según su estado.", fontSize = 12.sp)
                                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     listOf(null to "Todos", "Pendiente" to "Pendientes", "Entregada" to "Entregados",
                                         "Vencida" to "Vencidos", "Anulada" to "Anulados").forEach { (key, title) ->
@@ -142,7 +143,7 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                                 if (state.more) Text("Los filtros y totales abarcan solo los registros cargados.", fontSize = 12.sp)
                             }
                         }
-                        item { OutlinedTextField(search,{search=it.take(100)},label={Text("Buscar en los registros cargados")},singleLine=true,modifier=Modifier.fillMaxWidth()) }
+                        item { OutlinedTextField(search,{search=it.take(100)},label={Text(when (state.tab) { "rewards" -> "Buscar cliente, premio o código"; "visits" -> "Buscar cliente o comprobante"; else -> "Buscar en los clientes cargados" })},singleLine=true,modifier=Modifier.fillMaxWidth()) }
                         item {
                             val confirmed=state.rows.filter { it.text("status")=="confirmed" }
                             Surface(shape=MaterialTheme.shapes.large,color=MaterialTheme.colorScheme.primaryContainer) {
@@ -183,7 +184,7 @@ fun MerchantBusinessScreen(state: MerchantBusinessState, model: MerchantBusiness
                                             Text((if(reversed)"Consumo retirado: " else "Consumo registrado: ")+businessMoney(row["purchaseAmount"]))
                                             row.text("receiptRef").takeIf { it.isNotBlank() }?.let { Text("Comprobante: $it",fontSize=12.sp) }
                                         }
-                                        else->{Text(row.text("rewardTitle").ifBlank { "Beneficio de fidelidad" },fontWeight=FontWeight.SemiBold);Text(MerchantBusinessPolicy.rewardStatus(row,now),color=MaterialTheme.colorScheme.primary);Text("Creado: "+businessDate(row["createdAt"]),fontSize=12.sp);Text(if(row.text("status")=="delivered")"Entregado: "+businessDate(row["deliveredAt"]) else "Vence: "+businessDate(row["expiresAt"]),fontSize=12.sp)}
+                                        else->{Text(MerchantBusinessPolicy.rewardTitle(row),fontWeight=FontWeight.SemiBold);row.text("claimCode").takeIf(String::isNotBlank)?.let { Text("Código: $it", fontSize=13.sp) };Text(MerchantBusinessPolicy.rewardStatus(row,now),color=MaterialTheme.colorScheme.primary);Text("Creado: "+businessDate(row["createdAt"]),fontSize=12.sp);Text(if(row.text("status")=="delivered")"Entregado: "+businessDate(row["deliveredAt"]) else "Vence: "+businessDate(row["expiresAt"]),fontSize=12.sp)}
                                     }
                                 }
                             }

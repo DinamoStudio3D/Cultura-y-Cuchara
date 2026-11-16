@@ -12,10 +12,16 @@ object MerchantBusinessPolicy {
     fun months(place: Map<String, Any?>, settings: Map<String, Any?>, now: Long): Int {
         val sub = place.map("subscription")
         if (sub.text("status").ifBlank { "active" }.lowercase(Locale.ROOT) !in setOf("active", "trial")) return 0
-        fun stamp(value: Any?): Long? = timeMillis(value) ?: (value as? String)?.let { runCatching { java.time.LocalDate.parse(it).atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli() }.getOrNull() }
-        val start = (sub["startAt"] ?: sub["startDate"]).takeUnless { it is String && it.isBlank() };val end = (sub["endAt"] ?: sub["endDate"]).takeUnless { it is String && it.isBlank() }
-        if (start != null && (stamp(start)?.let { it > now } != false)) return 0
-        if (end != null && (stamp(end)?.let { it < now } != false)) return 0
+        fun stamp(value: Any?, end: Boolean): Long? = timeMillis(value) ?: (value as? String)?.let {
+            runCatching {
+                val day = java.time.LocalDate.parse(it).atStartOfDay(zone)
+                (if (end) day.plusDays(1).minusNanos(1) else day).toInstant().toEpochMilli()
+            }.getOrNull()
+        }
+        fun configured(primary: String, legacy: String) = listOf(sub[primary], sub[legacy]).firstOrNull { it != null && !(it is String && it.isBlank()) }
+        val start = configured("startAt", "startDate"); val end = configured("endAt", "endDate")
+        if (start != null && (stamp(start, false)?.let { it > now } != false)) return 0
+        if (end != null && (stamp(end, true)?.let { it < now } != false)) return 0
         val raw = sub.text("plan").ifBlank { sub.text("planId") }.ifBlank { sub.text("id") }
         val id = normalized(raw)
         if (id in setOf("", "free")) return 0
@@ -31,7 +37,15 @@ object MerchantBusinessPolicy {
     }
     fun cutoff(now: Long, months: Int): Long = Instant.ofEpochMilli(now).atZone(zone).minusMonths(months.toLong()).toInstant().toEpochMilli()
     fun inPeriod(row: Map<String, Any?>, tab: String, cutoff: Long): Boolean = tab == "clients" ||
-        listOf(if (tab == "visits") "confirmedAt" else "createdAt", if (tab == "visits") "reversedAt" else "deliveredAt").firstNotNullOfOrNull { timeMillis(row[it]) }?.let { it >= cutoff } == true
+        (if (tab == "rewards") rewardMoment(row) else timeMillis(row["confirmedAt"]) ?: timeMillis(row["reversedAt"]))?.let { it >= cutoff } == true
+    fun rewardMoment(row: Map<String, Any?>): Long? =
+        (if (row.text("status") == "delivered") timeMillis(row["deliveredAt"]) else null) ?: timeMillis(row["createdAt"])
+    fun rewardTitle(row: Map<String, Any?>): String = row.text("rewardTitle").ifBlank { row.map("rewardSnapshot").text("title") }.ifBlank { "Beneficio de fidelidad" }
+    fun matchesSearch(row: Map<String, Any?>, query: String): Boolean {
+        val key = PlacePolicy.normalize(query.trim())
+        return key.isBlank() || listOf(row.text("userName"), maskedEmail(row.text("userEmail")), row.text("rewardTitle").ifBlank { row.map("rewardSnapshot").text("title") }, row.text("claimCode"), row.text("receiptRef"))
+            .any { key in PlacePolicy.normalize(it) }
+    }
     fun visitMoment(row: Map<String, Any?>): Long? =
         timeMillis(row["confirmedAt"]) ?: timeMillis(row["createdAt"])
 

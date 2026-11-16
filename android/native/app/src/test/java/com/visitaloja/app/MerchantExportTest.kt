@@ -16,6 +16,13 @@ class MerchantExportTest {
         assertTrue(csv.contains("\"A,\"\"B\"\"\""))
         assertTrue(csv.contains("\"Anulada\""))
     }
+    @Test fun rewardExportIncludesTheVisibleCodeAndSavedRewardTitle() {
+        val csv = MerchantExport.csv("rewards", "Local", listOf(mapOf("claimCode" to "FID-ABC123", "status" to "delivered", "rewardSnapshot" to mapOf("title" to "Café gratis"), "deliveredAt" to now)), now)
+        assertTrue(csv.contains("Código de canje"))
+        assertTrue(csv.contains("FID-ABC123"))
+        assertTrue(csv.contains("Café gratis"))
+        assertTrue(csv.contains("Entregada"))
+    }
     @Test fun monthlyFilterStartsAtLocalMidnightAndExcludesFuture() {
         fun row(moment: String) = mapOf("confirmedAt" to Instant.parse(moment).toEpochMilli())
         assertTrue(MerchantBusinessPolicy.visitMatches(row("2026-11-01T05:00:00Z"), null, "month", now))

@@ -10,6 +10,28 @@ class MerchantBusinessPolicyTest {
         assertEquals(0,MerchantBusinessPolicy.months(place(""),emptyMap(),now))
         listOf("status" to "expired","startAt" to now+1,"endAt" to now-1,"endDate" to "invalid").forEach { assertEquals(0,MerchantBusinessPolicy.months(place("premium",it),emptyMap(),now)) }
     }
+    @Test fun dateOnlySubscriptionIncludesTheWholeLojaDayAndUsesLegacyFallback() {
+        fun at(value: String) = Instant.parse(value).toEpochMilli()
+        val subscription = place("premium", "startAt" to "", "startDate" to "2026-11-15", "endAt" to "", "endDate" to "2026-11-15")
+        assertEquals(0, MerchantBusinessPolicy.months(subscription, emptyMap(), at("2026-11-15T04:59:59Z")))
+        assertEquals(12, MerchantBusinessPolicy.months(subscription, emptyMap(), at("2026-11-15T05:00:00Z")))
+        assertEquals(12, MerchantBusinessPolicy.months(subscription, emptyMap(), at("2026-11-16T04:59:59.999Z")))
+        assertEquals(0, MerchantBusinessPolicy.months(subscription, emptyMap(), at("2026-11-16T05:00:00Z")))
+    }
+    @Test fun recentlyDeliveredRewardsRemainVisibleEvenWhenCreatedBeforeTheHistoryPeriod() {
+        val delivered = mapOf("status" to "delivered", "createdAt" to now - 10000, "deliveredAt" to now)
+        assertTrue(MerchantBusinessPolicy.inPeriod(delivered, "rewards", now - 1000))
+        assertEquals(now, MerchantBusinessPolicy.rewardMoment(delivered))
+        assertFalse(MerchantBusinessPolicy.inPeriod(delivered + ("status" to "pending"), "rewards", now - 1000))
+        assertEquals(now - 10000, MerchantBusinessPolicy.rewardMoment(delivered - "deliveredAt"))
+    }
+    @Test fun businessSearchFindsCodesReceiptsAndSnapshotTitlesWithoutExposingTheFullEmail() {
+        val row = mapOf("userName" to "José", "userEmail" to "cliente@example.com", "claimCode" to "FID-ABC123", "receiptRef" to "FACT-007", "rewardSnapshot" to mapOf("title" to "Café gratis"))
+        for (query in listOf("jose", "fid-abc123", "fact-007", "cafe gratis", "cl***@example.com")) assertTrue(query, MerchantBusinessPolicy.matchesSearch(row, query))
+        assertFalse(MerchantBusinessPolicy.matchesSearch(row, "cliente@example.com"))
+        assertFalse(MerchantBusinessPolicy.matchesSearch(row, "otro codigo"))
+        assertEquals("Café gratis", MerchantBusinessPolicy.rewardTitle(row))
+    }
     @Test fun mirrorsWebAliasesAndLegacyOfferUpgrade(){
         assertEquals(1,MerchantBusinessPolicy.months(place("emprendo"),emptyMap(),now))
         assertEquals(3,MerchantBusinessPolicy.months(place("activo"),emptyMap(),now))
