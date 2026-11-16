@@ -1,6 +1,8 @@
 package com.visitaloja.app
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -76,7 +78,7 @@ fun MerchantScanScreen(state: MerchantScanState, model: MerchantScanViewModel, d
                             finally { scanning = false }
                         }
                     }, enabled = !busy && state.selected.isNotBlank(), modifier = Modifier.fillMaxWidth().testTag("merchant-scan")) { Icon(Icons.Default.QrCodeScanner, null); Spacer(Modifier.width(8.dp)); Text(if (scanning) "Escaneando…" else "Escanear QR del visitante") }
-                    OutlinedTextField(code, { code = it.take(64); model.clearVisit() }, label = { Text("Código de visita · 6 números") }, singleLine = true, enabled = !busy && state.selected.isNotBlank(), modifier = Modifier.fillMaxWidth().testTag("merchant-visit-code"))
+                    OutlinedTextField(code, { code = it.take(64); model.clearVisit() }, label = { Text("Código de visita · 6 números") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, enabled = !busy && state.selected.isNotBlank(), modifier = Modifier.fillMaxWidth().testTag("merchant-visit-code"))
                     OutlinedButton(onClick = { model.lookup(code) }, enabled = !busy && state.selected.isNotBlank() && MerchantScanPolicy.code(code) != null, modifier = Modifier.fillMaxWidth()) { Text("Consultar código") }
                 }
                 state.message?.let { Text(it, color = MaterialTheme.colorScheme.primary, modifier = Modifier.testTag("merchant-result")) }
@@ -91,7 +93,10 @@ fun MerchantScanScreen(state: MerchantScanState, model: MerchantScanViewModel, d
                             if (canReverse) OutlinedButton(onClick = { reversalReason = ""; reversing = true }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("Deshacer último sello") }
                         }
                         visit.status == "reversed" -> Text("Este sello fue anulado.")
-                        visit.status == "review" -> Text("Resultado pendiente de comprobar. Pulsa Consultar código para recuperar el estado real; no generes otro sello.")
+                        visit.status == "review" -> {
+                            Text("Resultado pendiente de comprobar. Consulta esta misma visita antes de intentar otro sello.")
+                            OutlinedButton(onClick = model::recheckVisit, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("merchant-recheck-visit")) { Text("Comprobar esta visita") }
+                        }
                         !MerchantScanPolicy.confirmable(visit.status, visit.expires, state.selected == visit.placeId, now) -> Text("Código vencido o no disponible. Pide al visitante generar otro.")
                         else -> {
                             Text("Código válido · confirma que el visitante esté presente.", fontWeight = FontWeight.SemiBold)

@@ -44,6 +44,13 @@ object MerchantScanPolicy {
         require(placeId(place) && code.matches(Regex("[0-9]{6}")))
         return "${day(now)}_${place}_$code"
     }
+    // A read after an uncertain confirmation must retain the original request,
+    // including a request created before midnight in Ecuador.
+    fun recoveryRequestId(place: String, code: String, knownId: String?): String? {
+        if (!placeId(place) || !code.matches(Regex("[0-9]{6}"))) return null
+        val pattern = Regex("[0-9]{4}-[0-9]{2}-[0-9]{2}_${Regex.escape(place)}_$code")
+        return knownId?.takeIf { pattern.matches(it) }
+    }
     fun confirmable(status: String, expires: Long, assigned: Boolean, now: Long) = assigned && status == "pending" && expires > now
     fun consumption(tourist: Boolean, kind: String, amount: String, reason: String, receipt: String): JSONObject {
         require(kind in setOf("purchase", "courtesy", "tourism")) { "Selecciona el tipo de registro." }

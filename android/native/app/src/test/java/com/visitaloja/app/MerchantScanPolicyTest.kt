@@ -16,6 +16,20 @@ class MerchantScanPolicyTest {
         assertEquals("2026-11-01_loc_123_012345", MerchantScanPolicy.requestId("loc_123", "012345", time))
         assertFalse(MerchantScanPolicy.placeId("../another"))
     }
+    @Test fun recoveryKeepsTheOriginalRequestAfterEcuadorMidnight() {
+        val previous = "2026-11-15_loc_123_012345"
+        val nextDay = Instant.parse("2026-11-16T05:01:00Z").toEpochMilli()
+        assertEquals("2026-11-16_loc_123_012345", MerchantScanPolicy.requestId("loc_123", "012345", nextDay))
+        assertEquals(previous, MerchantScanPolicy.recoveryRequestId("loc_123", "012345", previous))
+    }
+    @Test fun recoveryCannotReuseAnotherStopCodeOrInvalidReference() {
+        val previous = "2026-11-15_loc_123_012345"
+        assertNull(MerchantScanPolicy.recoveryRequestId("loc_456", "012345", previous))
+        assertNull(MerchantScanPolicy.recoveryRequestId("loc_123", "654321", previous))
+        assertNull(MerchantScanPolicy.recoveryRequestId("loc_123", "012345", "../" + previous))
+        assertNull(MerchantScanPolicy.recoveryRequestId("loc_123", "012345", null))
+        assertNull(MerchantScanPolicy.recoveryRequestId("loc_123", "bad", previous))
+    }
     @Test fun expiredProcessedAndUnassignedRequestsCannotConfirm() {
         assertTrue(MerchantScanPolicy.confirmable("pending", 101, true, 100))
         assertFalse(MerchantScanPolicy.confirmable("pending", 100, true, 100))

@@ -210,3 +210,9 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Validar con cuentas de prueba cliente/encargado: visita QR, límite diario, sello, canje e historial, además de sincronización web/app. No realizar consumos ni canjes reales como prueba.
 - Verificar formulario de privacidad y declaraciones de ubicación en segundo plano antes de publicación.
 - iOS requiere proyecto/compilación y validación propias; una APK Android no es una entrega iOS.
+
+## 0.74 — recuperar una confirmación de visita
+- El encargado vuelve a consultar la referencia original después de un resultado incierto, incluso si pasa la medianoche en Ecuador. No la reemplaza con otra solicitud del día siguiente que tenga los mismos seis números.
+- «Comprobar esta visita» aparece junto al resultado pendiente; errores temporales de red conservan la referencia para reintentar. Los errores de autorización retiran el resultado anterior. La consulta vuelve a verificar permisos y solo lee el estado del servidor.
+- Teclado numérico para escribir el código de visita. Se mantienen los límites diarios, la confirmación explícita y las restricciones de anulación.
+- Pruebas de regresión para cambio de día y referencias de otro negocio/código. No se crean visitas ni se entregan premios reales durante esta revisión.

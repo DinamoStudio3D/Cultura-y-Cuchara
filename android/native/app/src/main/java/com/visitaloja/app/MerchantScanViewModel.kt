@@ -59,6 +59,13 @@ class MerchantScanViewModel : ViewModel() {
     fun select(id: String) { if (!mutable.value.busy && available.any { it.id == id }) mutable.update { it.copy(selected = id, visit = null, message = null) } }
     fun message(text: String) { mutable.update { it.copy(message = text) } }
     fun clearVisit() { if (!mutable.value.busy) mutable.update { it.copy(visit = null, message = null) } }
+    fun recheckVisit() {
+        val snapshot = mutable.value
+        val visit = snapshot.visit ?: return
+        if (visit.placeId != snapshot.selected) return
+        val code = visit.id.substringAfterLast('_')
+        if (MerchantScanPolicy.recoveryRequestId(visit.placeId, code, visit.id) != null) lookup(code)
+    }
     fun lookup(raw: String) {
         val code = MerchantScanPolicy.code(raw) ?: run { clearVisit(); message("Este QR no es un código de visita de VisitaLoja. También puedes escribir sus seis números."); return }
         val snapshot = mutable.value
@@ -66,6 +73,8 @@ class MerchantScanViewModel : ViewModel() {
         if (snapshot.busy || !snapshot.ready) return
         val place = available.find { it.id == snapshot.selected } ?: return
         val epoch = generation
+        val previous = snapshot.visit?.takeIf { it.placeId == place.id }
+        val recoveryId = MerchantScanPolicy.recoveryRequestId(place.id, code, previous?.id)
         mutable.update { it.copy(busy = true, visit = null, message = null) }
         viewModelScope.launch {
             try {
@@ -73,9 +82,10 @@ class MerchantScanViewModel : ViewModel() {
                 check(access.exists() && access.getBoolean("active") != false && (access.get("placeIds") as? List<*>)?.contains(place.id) == true) { "Tu cuenta ya no tiene acceso a esta parada." }
                 // Existing rules can deny a get on a missing document; the scoped query
                 // still safely returns no matches or finds a code spanning midnight.
-                val direct = try { db.collection("visitCodes").document(MerchantScanPolicy.requestId(place.id, code, System.currentTimeMillis())).get(Source.SERVER).await() }
-                    catch (e: FirebaseFirestoreException) { if (e.code != FirebaseFirestoreException.Code.PERMISSION_DENIED) throw e else null }
-                val doc: DocumentSnapshot? = if (direct?.exists() == true) direct else db.collection("visitCodes").whereEqualTo("code", code).whereEqualTo("placeId", place.id).limit(25).get(Source.SERVER).await().documents
+                val direct = try { db.collection("visitCodes").document(recoveryId ?: MerchantScanPolicy.requestId(place.id, code, System.currentTimeMillis())).get(Source.SERVER).await() }
+                    catch (e: FirebaseFirestoreException) { if (recoveryId != null || e.code != FirebaseFirestoreException.Code.PERMISSION_DENIED) throw e else null }
+                // Never replace a known request with another day's matching six-digit code.
+                val doc: DocumentSnapshot? = if (recoveryId != null || direct?.exists() == true) direct else db.collection("visitCodes").whereEqualTo("code", code).whereEqualTo("placeId", place.id).limit(25).get(Source.SERVER).await().documents
                     .filter { it.getString("status") == "pending" && (it.getTimestamp("expiresAt")?.toDate()?.time ?: 0) > System.currentTimeMillis() }.maxByOrNull { it.getTimestamp("createdAt")?.toDate()?.time ?: 0 }
                 check(doc != null && doc.getString("code") == code && doc.getString("placeId") == place.id) { "No encontramos un código para la parada seleccionada." }
                 if (!current(uid, epoch)) return@launch
@@ -83,7 +93,11 @@ class MerchantScanViewModel : ViewModel() {
                 val resolved = visit.copy(undoUntil = undoDeadline(visit, uid))
                 if (current(uid, epoch)) mutable.update { it.copy(visit = resolved, message = null) }
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (e: Exception) { if (current(uid, epoch)) mutable.update { it.copy(message = if (e is IllegalStateException) e.message else "No pudimos consultar el código. Verifica la conexión y tus permisos; no se registró ningún sello desde esta consulta.") } }
+            catch (e: Exception) { if (current(uid, epoch)) {
+                val interrupted = e is FirebaseFirestoreException && e.code in setOf(FirebaseFirestoreException.Code.UNAVAILABLE, FirebaseFirestoreException.Code.DEADLINE_EXCEEDED)
+                val retained = previous?.takeIf { recoveryId != null && interrupted }?.copy(status = "review", undoUntil = 0)
+                mutable.update { it.copy(visit = retained, message = if (e is IllegalStateException) e.message else "No pudimos consultar el código. Verifica la conexión y tus permisos; esta consulta no registra sellos.") }
+            } }
             finally { if (current(uid, epoch)) mutable.update { it.copy(busy = false) } }
         }
     }
