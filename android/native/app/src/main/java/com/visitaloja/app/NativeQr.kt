@@ -45,11 +45,13 @@ fun VisitDialog(state: VisitState, generate: () -> Unit, retry: () -> Unit, dism
             Column(Modifier.verticalScroll(rememberScrollState()).padding(22.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Text(state.place?.title.orEmpty(), fontSize = 23.sp, fontWeight = FontWeight.Bold)
                 when {
+                    state.cached && state.code.isNotEmpty() -> Text("No pudimos comprobar el estado de esta visita. Conéctate y pulsa «Actualizar / recuperar mi código».", color = MaterialTheme.colorScheme.error)
                     state.status == "confirmed" && !state.cached -> {
                         Text("¡Visita confirmada!", color = MaterialTheme.colorScheme.primary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                         Text("El negocio validó tu visita. Tus tarjetas y los sellos de pasaporte que correspondan se actualizan en tu cuenta.")
                         Button(onClick = wallet, modifier = Modifier.fillMaxWidth()) { Text("Ver mi progreso y recompensas") }
                     }
+                    state.status == "reversed" && !state.cached -> Text("El encargado anuló este sello. Pulsa «Actualizar / recuperar mi código» para comprobar si puedes generar otro.")
                     state.status == "rejected" && !state.cached -> Text("El encargado rechazó esta solicitud. Consulta con el negocio antes de generar otra.")
                     state.status == "pending" && state.expires > now && !state.cached && !state.blocked -> {
                         Text("Muestra este código al encargado para validar tu visita.")
@@ -66,7 +68,6 @@ fun VisitDialog(state: VisitState, generate: () -> Unit, retry: () -> Unit, dism
                     }
                 }
                 if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-                if (state.cached && state.code.isNotEmpty()) Text("Conéctate para confirmar la vigencia del código.", color = MaterialTheme.colorScheme.error)
                 state.message?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 TextButton(onClick = retry, enabled = !state.busy) { Text("Actualizar / recuperar mi código") }
                 TextButton(onClick = dismiss) { Text("Cerrar") }

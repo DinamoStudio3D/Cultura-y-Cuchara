@@ -13,6 +13,18 @@ class WalletRewardPolicyTest {
         assertEquals("expired", WalletRewardPolicy.status(reward("d", false, "expiresAt" to null), now))
         assertEquals("pending", WalletRewardPolicy.status(reward("e", true, "expiresAt" to null), now))
     }
+    @Test fun customerCanFindTheirRewardByItsCode() {
+        val loyalty = reward("a", false, "claimCode" to "FID-ABC123")
+        val passport = reward("b", true, "claimCode" to "PAS-012345ABCDEF")
+        assertEquals(listOf(loyalty), WalletRewardPolicy.filter(listOf(loyalty, passport), "fid-abc123", "all", "all", now))
+        assertEquals(listOf(passport), WalletRewardPolicy.filter(listOf(loyalty, passport), "pas-012345abcdef", "passport", "all", now))
+    }
+    @Test fun deliveredRewardsUseTheirDeliveryDateWithoutChangingPendingExpiryPriority() {
+        val old = reward("old", false, "status" to "delivered", "createdAt" to 10L, "deliveredAt" to 900L)
+        val recent = reward("recent", false, "status" to "delivered", "createdAt" to 500L, "deliveredAt" to 600L)
+        assertEquals(listOf("old", "recent"), WalletRewardPolicy.filter(listOf(recent, old), "", "all", "all", now).map { it.row["id"] })
+        assertEquals(800L, WalletRewardPolicy.activityMoment(WalletReward(mapOf("status" to "delivered", "processedAt" to 800L), true)))
+    }
     @Test fun filtersTypesAndAllSearchWordsAndSortsUrgentPendingFirst() {
         val late = reward("late", false, "rewardTitle" to "Café especial", "placeName" to "Expreso al Sur", "expiresAt" to 4000L)
         val soon = reward("soon", false, "rewardTitle" to "Café gratis", "placeName" to "Expreso al Sur")

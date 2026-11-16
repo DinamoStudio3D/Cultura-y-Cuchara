@@ -67,7 +67,7 @@ fun WalletScreen(account: AccountState, state: WalletState, directory: PlacesSta
             item {
                 Text("Mis premios", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 Text("Fidelidad y pasaporte en un solo lugar. Los premios pendientes aparecen primero, por fecha de vencimiento.", style = MaterialTheme.typography.bodySmall)
-                OutlinedTextField(rewardQuery, { rewardQuery = it.take(120) }, label = { Text("Buscar premio o negocio") }, modifier = Modifier.fillMaxWidth(), singleLine = true,
+                OutlinedTextField(rewardQuery, { rewardQuery = it.take(120) }, label = { Text("Buscar premio, negocio o código") }, modifier = Modifier.fillMaxWidth(), singleLine = true,
                     trailingIcon = { if (rewardQuery.isNotBlank()) IconButton(onClick = { rewardQuery = "" }) { Icon(Icons.Default.Close, "Borrar búsqueda") } })
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf("all" to "Todos", "loyalty" to "Fidelidad", "passport" to "Pasaporte").forEach { (key, label) ->

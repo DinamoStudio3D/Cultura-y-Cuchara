@@ -32,29 +32,36 @@ class VisitViewModel(application: Application) : AndroidViewModel(application) {
     val state = mutable.asStateFlow()
     private var listener: ListenerRegistration? = null
     private var generation = 0
-    fun bind(uid: String?) { generation++; listener?.remove(); listener = null; mutable.value = VisitState(uid = uid) }
+    private var watchVersion = 0
+    private fun stopWatching() { watchVersion++; listener?.remove(); listener = null }
+    fun bind(uid: String?) { generation++; stopWatching(); mutable.value = VisitState(uid = uid) }
     private fun current(uid: String, epoch: Int) = generation == epoch && auth.currentUser?.uid == uid
     fun open(place: Place) {
         val uid = auth.currentUser?.uid ?: return
-        generation++; listener?.remove(); listener = null
+        generation++; stopWatching()
         mutable.value = VisitState(uid = uid, place = place)
         run { user, epoch -> refresh(user, place, epoch) }
     }
     private fun key(uid: String, place: String) = "$uid:$place"
-    private fun candidate(uid: String, place: Place): VisitCandidate? = try {
+    private fun storedCandidate(uid: String, place: Place): VisitCandidate? = try {
         val value = JSONObject(preferences.getString(key(uid, place.id), "") ?: "")
-        VisitCandidate(value.getString("id"), value.getString("code"), value.getLong("expires")).takeIf { it.code.matches(Regex("[0-9]{6}")) && it.expires > System.currentTimeMillis() }
+        VisitCandidate(value.getString("id"), value.getString("code"), value.getLong("expires")).takeIf { VisitPolicy.validCandidate(place.id, it) }
     } catch (_: Exception) { null }
     private suspend fun refresh(uid: String, place: Place, epoch: Int): Boolean = coroutineScope {
+        if (!current(uid, epoch)) return@coroutineScope false
+        stopWatching()
+        mutable.update { it.copy(cached = true) }
         val counters = async { db.collection("loyaltyCounters").whereEqualTo("userId", uid).get(Source.SERVER).await() }
         val codes = async { db.collection("visitCodes").whereEqualTo("userId", uid).get(Source.SERVER).await() }
         val counter = counters.await().documents.firstOrNull { it.getString("placeId") == place.id }?.data
-        val stored = candidate(uid, place)
+        val stored = storedCandidate(uid, place)
         val documents = codes.await().documents.filter { it.getString("placeId") == place.id }
         if (!current(uid, epoch)) return@coroutineScope false
         val day = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(AgendaPolicy.zone).toLocalDate().toString()
         val blocked = VisitPolicy.blocked(counter, day)
-        val previous = documents.find { it.id == stored?.id && it.getString("status") == "confirmed" }
+        // Expiring a QR does not undo a visit. Recover today's server-confirmed
+        // result even after its original QR expires, without blocking a new day.
+        val previous = documents.find { it.id == stored?.id && VisitPolicy.confirmedToday(it.getString("status").orEmpty(), it.getTimestamp("confirmedAt")?.toDate()?.time, System.currentTimeMillis()) }
         val pending = if (blocked) null else documents.filter { it.getString("status") == "pending" && (it.getTimestamp("expiresAt")?.toDate()?.time ?: 0) > System.currentTimeMillis() }.maxByOrNull { it.getTimestamp("expiresAt")?.toDate()?.time ?: 0 }
         mutable.update { it.copy(ready = true, blocked = blocked, message = null) }
         val active = previous ?: pending
@@ -68,7 +75,7 @@ class VisitViewModel(application: Application) : AndroidViewModel(application) {
             if (!refresh(uid, place, epoch)) return@run
             val user = auth.currentUser ?: return@run
             val day = Instant.ofEpochMilli(System.currentTimeMillis()).atZone(AgendaPolicy.zone).toLocalDate().toString()
-            val next = candidate(uid, place) ?: VisitPolicy.candidate(place.id, day, System.currentTimeMillis())
+            val next = storedCandidate(uid, place)?.takeIf { VisitPolicy.reusableCandidate(place.id, it, System.currentTimeMillis()) } ?: VisitPolicy.candidate(place.id, day, System.currentTimeMillis())
             check(preferences.edit().putString(key(uid, place.id), JSONObject().put("id", next.id).put("code", next.code).put("expires", next.expires).toString()).commit()) { "No pudimos guardar la referencia del código en este teléfono." }
             val profile = db.collection("userProfiles").document(uid).get(Source.SERVER).await().data.orEmpty()
             val token = user.getIdToken(false).await().token ?: error("Inicia sesión nuevamente.")
@@ -88,9 +95,10 @@ class VisitViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     private fun watch(uid: String, id: String, epoch: Int) {
-        listener?.remove()
+        stopWatching()
+        val watchEpoch = watchVersion
         listener = db.collection("visitCodes").document(id).addSnapshotListener(MetadataChanges.INCLUDE) { doc, error ->
-            if (!current(uid, epoch)) return@addSnapshotListener
+            if (!current(uid, epoch) || watchVersion != watchEpoch) return@addSnapshotListener
             if (error != null || doc?.getString("userId") != uid) { mutable.update { it.copy(cached = true, message = "No pudimos confirmar el estado del código. Reintenta para recuperarlo.") }; return@addSnapshotListener }
             val status = doc.getString("status").orEmpty()
             val valid = status != "confirmed" || doc.getTimestamp("confirmedAt") != null
@@ -112,5 +120,5 @@ class VisitViewModel(application: Application) : AndroidViewModel(application) {
             finally { if (current(uid, epoch)) mutable.update { it.copy(busy = false) } }
         }
     }
-    override fun onCleared() { generation++; listener?.remove(); super.onCleared() }
+    override fun onCleared() { generation++; stopWatching(); super.onCleared() }
 }

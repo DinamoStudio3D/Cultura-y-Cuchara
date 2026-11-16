@@ -9,6 +9,15 @@ data class VisitCandidate(val id: String, val code: String, val expires: Long)
 object VisitPolicy {
     private val random = SecureRandom()
     fun blocked(counter: Map<String, Any?>?, day: String) = counter?.text("lastVisitDay") == day && (counter?.count("dailyVisitCount") ?: 0) >= 1
+    fun validCandidate(placeId: String, candidate: VisitCandidate): Boolean =
+        placeId.matches(Regex("[A-Za-z0-9_-]{1,180}")) && candidate.code.matches(Regex("[0-9]{6}")) && candidate.expires > 0 &&
+            candidate.id.matches(Regex("[0-9]{4}-[0-9]{2}-[0-9]{2}_${Regex.escape(placeId)}_${candidate.code}"))
+    fun reusableCandidate(placeId: String, candidate: VisitCandidate, now: Long): Boolean {
+        val day = Instant.ofEpochMilli(now).atZone(AgendaPolicy.zone).toLocalDate().toString()
+        return validCandidate(placeId, candidate) && candidate.expires > now && candidate.id == "${day}_${placeId}_${candidate.code}"
+    }
+    fun confirmedToday(status: String, confirmedAt: Long?, now: Long): Boolean = status == "confirmed" && confirmedAt != null &&
+        Instant.ofEpochMilli(confirmedAt).atZone(AgendaPolicy.zone).toLocalDate() == Instant.ofEpochMilli(now).atZone(AgendaPolicy.zone).toLocalDate()
     fun candidate(placeId: String, day: String, now: Long): VisitCandidate {
         require(placeId.matches(Regex("[A-Za-z0-9_-]{1,180}"))) { "Esta parada necesita revisión antes de generar códigos." }
         val code = (100000 + random.nextInt(900000)).toString()

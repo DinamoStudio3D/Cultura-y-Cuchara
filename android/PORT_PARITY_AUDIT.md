@@ -222,3 +222,11 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Fechas de inicio/fin de suscripción sin hora interpretadas en Loja, incluyendo el último día completo. Recuperación de campos de fecha anteriores cuando los actuales están vacíos.
 - Búsqueda en registros cargados por código de canje, comprobante y nombre sin tildes. Código visible en la tarjeta del premio y exportación CSV; títulos recuperados del beneficio guardado cuando falta el título principal.
 - Se mantienen el alcance por parada, la protección del correo, el aviso de carga parcial y la autorización del servidor. Sin cambios de planes, reglas ni datos reales.
+
+## 0.76 — recuperación del cliente
+- Se conserva la referencia local del código aun vencido para recuperar del servidor una confirmación del día actual en Loja. La vigencia del QR y la confirmación de la visita se evalúan por separado.
+- Una referencia del día anterior no se reutiliza para crear una solicitud nueva; códigos pendientes vigentes continúan recuperándose mediante la consulta al servidor. No cambian límites diarios ni se crean sellos desde el cliente.
+- Mensajes específicos para estado sin verificar por conexión y sello anulado; se utiliza el acceso existente de recuperación antes de mostrar otro QR.
+- Mis premios permite buscar por código y ordena las entregas por su fecha real, manteniendo pendientes por vencimiento.
+- Pruebas para QR vencido/visita confirmada, cambio de día, referencia de otra parada, búsqueda por código y orden de entregas.
+- La recuperación retira la escucha anterior y descarta sus respuestas tardías; mientras se verifica con el servidor, el QR anterior se marca sin verificar.

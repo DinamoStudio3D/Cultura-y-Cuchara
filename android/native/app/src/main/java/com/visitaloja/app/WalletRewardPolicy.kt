@@ -15,14 +15,17 @@ internal object WalletRewardPolicy {
     fun label(status: String): String = when(status) {
         "delivered" -> "Entregada"; "expired" -> "Vencida"; "pending" -> "Pendiente de canje"; else -> "No disponible"
     }
+    fun activityMoment(reward: WalletReward): Long =
+        (if (reward.row.text("status") == "delivered") timeMillis(reward.row["deliveredAt"]) ?: timeMillis(reward.row["processedAt"]) else null)
+            ?: timeMillis(reward.row["createdAt"]) ?: timeMillis(reward.row["completedAt"]) ?: 0
     fun filter(rewards: List<WalletReward>, query: String, type: String, statusFilter: String, now: Long): List<WalletReward> {
         val words = PlacePolicy.normalize(query).trim().split(Regex("\\s+")).filter(String::isNotBlank)
         return rewards.filter { reward ->
             (type == "all" || (type == "passport") == reward.passport) &&
                 (statusFilter == "all" || status(reward, now) == statusFilter) &&
-                words.all { it in PlacePolicy.normalize("${reward.title} ${reward.row.text("placeName")} ${reward.row.text("campaignId")}") }
+                words.all { it in PlacePolicy.normalize("${reward.title} ${reward.row.text("placeName")} ${reward.row.text("campaignId")} ${reward.row.text("claimCode")}") }
         }.sortedWith(compareBy<WalletReward> { if (status(it, now) == "pending") 0 else 1 }
             .thenBy { if (status(it, now) == "pending") timeMillis(it.row["expiresAt"]) ?: Long.MAX_VALUE else Long.MAX_VALUE }
-            .thenByDescending { timeMillis(it.row["createdAt"]) ?: timeMillis(it.row["completedAt"]) ?: 0 })
+            .thenByDescending(::activityMoment))
     }
 }
