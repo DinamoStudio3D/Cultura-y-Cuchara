@@ -20,13 +20,16 @@ const client = actor(customer), merchant = actor(owner), outsider = actor('journ
 const workerSource = fs.readFileSync('workers/chabaquito/worker-preview.js', 'utf8');
 assert.equal(workerSource.split('const PROJECT_ID = "cultura-y-cuchara";').length, 2);
 let commits = 0;
+const deadline = setTimeout(() => { console.error('Native journey exceeded the local emulator deadline'); process.exit(1); }, 120000);
+deadline.unref();
 const context = {crypto: webcrypto, console, TextEncoder, TextDecoder, URL, Intl, Date, Uint8Array, Map, Set, atob, btoa,
     fetch: async (url, options = {}) => {
         const parsed = new URL(url);
         assert.equal(parsed.origin, 'https://firestore.googleapis.com', 'Unexpected Worker network destination');
         assert(parsed.pathname.startsWith(documents), 'Unexpected project/path');
         if (parsed.pathname.endsWith(':commit')) commits++;
-        return fetch(origin + parsed.pathname + parsed.search, {...options, headers: {...options.headers, Authorization: 'Bearer owner'}});
+        console.log('Local Worker request:', options.method || 'GET', parsed.pathname);
+        return fetch(origin + parsed.pathname + parsed.search, {...options, signal: AbortSignal.timeout(25000), headers: {...options.headers, Authorization: 'Bearer owner'}});
     }};
 vm.createContext(context);
 vm.runInContext(workerSource.replace('const PROJECT_ID = "cultura-y-cuchara";', `const PROJECT_ID = "${project}";`).replace('export default {', 'const workerHandler = {'), context);
@@ -115,4 +118,5 @@ try {
     console.log('PASS wrong business, repeated confirmation, daily limit and delivered-reward reversal rejected without writes');
 } finally {
     await env.cleanup();
+    clearTimeout(deadline);
 }
