@@ -114,4 +114,4 @@ val validateProductionConfiguration by tasks.registering {
         check(fingerprint != "2c68e9a131584ba2f38f2155603cabd906b1bb740426e4e976eb7210fd03e171") { "La firma de pruebas no se puede usar como firma definitiva." }
     }
 }
-tasks.named("preReleaseBuild") { dependsOn(validateProductionConfiguration) }
+tasks.configureEach { if (name == "preReleaseBuild") dependsOn(validateProductionConfiguration) }

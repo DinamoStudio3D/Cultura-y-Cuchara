@@ -57,7 +57,7 @@ jobs:
             echo "La validación permitió una producción incompleta"
             exit 1
           fi
-          python3 -c 'import os,pathlib; assert "Falta Firebase de producción" in pathlib.Path(os.environ["RUNNER_TEMP"], "release-validation.log").read_text()'
+          python3 -c 'import os,pathlib; log = pathlib.Path(os.environ["RUNNER_TEMP"], "release-validation.log").read_text(); assert "Falta Firebase de producción" in log, log'
       - name: Compilar, probar y revisar Android
         run: ./android/native/gradlew --no-daemon -p android/native :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
       - name: Preparar APK de pruebas
