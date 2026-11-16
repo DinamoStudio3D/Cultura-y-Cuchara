@@ -156,6 +156,7 @@ internal fun NativeAdminEntry(uid: String?) {
     val observed by model.state.collectAsStateWithLifecycle()
     val state = observed.takeIf { it.uid == uid } ?: NativeAdminState(uid = uid)
     var open by remember(uid) { mutableStateOf(false) }
+    var query by remember(uid) { mutableStateOf("") }
     var selected by remember(uid) { mutableStateOf<AdminPlaceRow?>(null) }
     // Check only when requested; ordinary visitors do not download administrative data.
     DisposableEffect(uid) { onDispose { model.bind(null) } }
@@ -174,10 +175,11 @@ internal fun NativeAdminEntry(uid: String?) {
                     state.message?.let { Text(it) }
                     if (state.checked && !state.allowed) Text("Esta cuenta no tiene acceso administrativo confirmado.")
                     OutlinedButton(onClick = { selected = null; model.bind(uid) }, enabled = !state.busy) { Text("Actualizar permisos y paradas") }
+                    if (state.allowed) OutlinedTextField(query, { query = it }, label = { Text("Buscar entre las paradas cargadas") }, modifier = Modifier.fillMaxWidth())
                     if (state.allowed) Text("${state.rows.size} paradas cargadas" + if (state.complete) "" else " · quedan más por cargar")
                 }
                 if (state.allowed) {
-                    items(state.rows, key = { it.id }) { row ->
+                    items(state.rows.filter { PlacePolicy.normalize(it.title + " " + it.address).contains(PlacePolicy.normalize(query)) }, key = { it.id }) { row ->
                         OutlinedCard(onClick = { selected = row }, modifier = Modifier.fillMaxWidth(), enabled = !state.busy) {
                             Column(Modifier.padding(16.dp)) {
                                 Text(row.title, style = MaterialTheme.typography.titleMedium)
