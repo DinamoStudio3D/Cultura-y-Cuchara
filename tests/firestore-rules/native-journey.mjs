@@ -27,13 +27,27 @@ const context = {crypto: webcrypto, console, TextEncoder, TextDecoder, URL, Intl
         const parsed = new URL(url);
         assert.equal(parsed.origin, 'https://firestore.googleapis.com', 'Unexpected Worker network destination');
         assert(parsed.pathname.startsWith(documents), 'Unexpected project/path');
+        // Firestore emulator issue #3293 hangs on transactional GET query params.
+        // Use documented batchGet with the SAME transaction and document, only
+        // inside this test transport; retain real Worker business/commit logic.
+        // https://github.com/firebase/firebase-tools/issues/3293
+        if ((!options.method || options.method === 'GET') && parsed.searchParams.has('transaction')) {
+            const name = parsed.pathname.slice('/v1/'.length);
+            const response = await fetch(origin + documents + ':batchGet', {method: 'POST', signal: AbortSignal.timeout(25000), headers: {Authorization: 'Bearer owner', 'Content-Type': 'application/json'}, body: JSON.stringify({documents: [name], transaction: parsed.searchParams.get('transaction')})});
+            if (!response.ok) return response;
+            const payload = await response.json();
+            const row = (Array.isArray(payload) ? payload : [payload])[0];
+            assert(row?.found?.name === name || row?.missing === name, 'batchGet must return the requested document');
+            return new Response(JSON.stringify(row.found || {}), {status: row.found ? 200 : 404, headers: {'Content-Type': 'application/json'}});
+        }
         if (parsed.pathname.endsWith(':commit')) commits++;
         console.log('Local Worker request:', options.method || 'GET', parsed.pathname);
         return fetch(origin + parsed.pathname + parsed.search, {...options, signal: AbortSignal.timeout(25000), headers: {...options.headers, Authorization: 'Bearer owner'}});
     }};
 vm.createContext(context);
 vm.runInContext(workerSource.replace('const PROJECT_ID = "cultura-y-cuchara";', `const PROJECT_ID = "${project}";`).replace('export default {', 'const workerHandler = {'), context);
-// Retain real transaction/read/commit/consumption/reward logic. Only OAuth and
+// Retain real begin/commit/consumption/reward logic, adapting transactional reads
+// to the equivalent emulator-supported batchGet above. Only OAuth and
 // the unrelated Missions refresh are replaced in this local contract test.
 vm.runInContext("getGoogleAccessToken=async()=> 'owner';syncUserMissionProgress=async()=>({});", context);
 const stampDay = context.ecuadorDay();
