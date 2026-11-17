@@ -34,3 +34,10 @@ Que un contenido pueda consultarse públicamente en Android no significa que su 
 ## Cierre posterior
 
 Pruebas de usuario y revisión en dispositivos al final, como pidió el usuario. Después: configuración de producción, firma de distribución, App Links y publicación Android. No declarar iOS terminado por entregar una APK.
+
+## Avance 0.84: editor nativo de cantones
+Añade edición de textos de guía, portada por enlace o subida directa, crédito, campos SEO de la web, hasta 16 destacados y hasta 8 rutas con 2–12 paradas. Permite buscar, añadir, quitar y ordenar paradas/rutas y previsualizar sin publicar. El guardado es transaccional con auditoría, versión y protección contra cambios concurrentes; valida las paradas públicas del cantón al guardar.
+
+El catálogo se carga completo desde servidor (máximo 5000 registros, falla explícitamente si se supera); el buscador muestra hasta 50 coincidencias. No se descartan referencias antiguas silenciosamente.
+
+No incluye todavía borradores persistentes locales de cantones ni las acciones incrustadas de crear/editar fichas: esas fichas se gestionan en el editor de paradas existente. El editor no calcula tiempos ni crea navegación GPS. Las pruebas en teléfono siguen aplazadas. Los otros grupos de editores de la tabla continúan pendientes.
