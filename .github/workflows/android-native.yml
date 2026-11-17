@@ -48,7 +48,7 @@ jobs:
           gradle-version: '8.11.1'
           cache-read-only: false
       - name: Comprobar autorización de premios y avisos sin envíos reales
-        run: node scripts/test-merchant-program.cjs && node scripts/test-push-campaigns.cjs && python3 scripts/test-android-release.py
+        run: node --test scripts/test-admin-place-image.cjs && node scripts/test-merchant-program.cjs && node scripts/test-push-campaigns.cjs && python3 scripts/test-android-release.py
       - name: Comprobar SDK disponible
         run: test -d "$ANDROID_HOME/platforms/android-36"
       - name: Rechazar una entrega sin configuración de producción
