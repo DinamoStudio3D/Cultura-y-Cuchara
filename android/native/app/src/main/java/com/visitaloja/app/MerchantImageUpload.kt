@@ -16,7 +16,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 internal object MerchantImageUpload {
-    suspend fun upload(context:Context,uri:Uri,place:String,purpose:String,uid:String):String {
+    suspend fun upload(context:Context,uri:Uri,place:String,purpose:String,uid:String, admin:Boolean = false):String {
         require(purpose in setOf("logo","hero","gallery")&&MerchantScanPolicy.placeId(place))
         val user=FirebaseAuth.getInstance().currentUser?.takeIf{it.uid==uid}?:error("Inicia sesión nuevamente.")
         val token=user.getIdToken(false).await().token?:error("Inicia sesión nuevamente.")
@@ -32,7 +32,8 @@ internal object MerchantImageUpload {
             if(!matrix.isIdentity){val rotated=Bitmap.createBitmap(bitmap,0,0,bitmap.width,bitmap.height,matrix,true);if(rotated!==bitmap)bitmap.recycle();bitmap=rotated}
             val file=ByteArrayOutputStream().also{bitmap.compress(if(purpose=="logo")Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG,85,it)}.toByteArray();bitmap.recycle()
             require(FirebaseAuth.getInstance().currentUser?.uid==uid){"La sesión cambió."}
-            val auth=NativeApi.post("https://www.visitaloja.com/api/sign-merchant-image",token,JSONObject().put("placeId",place).put("purpose",purpose))
+            val endpoint=if(admin) "sign-admin-place-image" else "sign-merchant-image"
+            val auth=NativeApi.post("https://www.visitaloja.com/api/$endpoint",token,JSONObject().put("placeId",place).put("purpose",purpose))
             val cloud=auth.getString("cloudName");val params=auth.getJSONObject("params");val folder=params.getString("folder")
             require(cloud.matches(Regex("[A-Za-z0-9_-]+"))&&folder=="visitaloja/places/$place/$purpose"&&auth.getString("signature").matches(Regex("[a-f0-9]{40}")))
             val boundary="vl-"+java.util.UUID.randomUUID().toString()
