@@ -51,6 +51,17 @@ class AdminPlaceEditorPolicyTest {
         assertEquals(true, ((result["businessProfile"] as Map<*, *>)["amenities"] as Map<*, *>)["special"])
         assertFalse(result.containsKey("subscription"))
     }
+    @Test fun editedPhotoCaptionIsAvailableToWebAndNativeReaders() {
+        val raw = raw() + ("gallery" to listOf(mapOf("img" to "https://example.com/one.jpg",
+            "title" to "Anterior", "license" to "Conservar")))
+        val draft = AdminPlaceEditorPolicy.read(raw, false)
+        val edited = draft.photos.single().copy(caption = "Nuevo texto", credit = "Autor")
+        val result = fields(raw, draft.copy(photos = listOf(edited)))
+        val photo = (result["gallery"] as List<*>).single() as Map<*, *>
+        assertEquals("Nuevo texto", photo["title"])
+        assertEquals("Nuevo texto", photo["caption"])
+        assertEquals("Conservar", photo["license"])
+    }
     @Test fun archivedVisibilityIsPreservedUntilExplicitReactivation() {
         val raw = raw() + ("status" to "archived")
         val draft = AdminPlaceEditorPolicy.read(raw, false)
