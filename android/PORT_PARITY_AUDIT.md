@@ -261,3 +261,14 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Las fechas y campos adicionales de temporadas sin cambios se conservan. Los cambios de cupos en una temporada usada preservan su configuración original.
 - No se cambió main ni se escribieron programas o visitas reales durante el desarrollo. Pruebas físicas aplazadas.
 - Continúan pendientes otros editores del panel, gestión avanzada de asignaciones/credenciales y traducciones restantes. Esto no declara paridad de toda la administración web.
+
+## 0.80 — creación y edición de fichas de paradas
+
+- El panel general permite crear una parada con identificador estable y publicación inicial en borrador, y reemplaza el editor básico por secciones: información, ubicación, contacto/servicios, multimedia y publicación.
+- Categoría, cantón, coordenadas, comprobación externa en Maps, textos ES/EN, especialidad, horarios, contacto, redes, pagos y servicios. Conserva campos adicionales del perfil y las categorías secundarias antiguas.
+- Galería por enlaces: vista previa sin recorte, créditos, descripción, orden y retirada del vínculo. Logo/portada, video YouTube o MP4/WebM y narraciones por enlace. No incluye subida directa de archivos desde administración general; esa integración sigue pendiente.
+- La cantidad de fotos respeta el plan configurado y permite conservar o reducir galerías antiguas por encima de su límite actual, igual que la web. No se cambian planes, facturación, menús ni asignaciones al editar la ficha.
+- PIN privado obligatorio para las categorías de pasaporte pertinentes. Se guarda fuera de locales, no se muestra el PIN existente y se retira/migra cualquier PIN público antiguo al guardar. Cambio de categoría, ficha y auditoría se confirman en una transacción con lectura fresca y detección de cambios concurrentes.
+- La recuperación de una creación incierta consulta el mismo identificador y comprueba su autor y referencia, evitando una creación automática duplicada. El listado muestra prioritariamente la parada recién guardada.
+- La creación usa confirmación por encargado y deja descubrimientos autónomos sin activar. Sus QR/asignaciones, los menús comerciales, planes y otros editores continúan con su alcance previo.
+- No se modifica main ni se crean negocios o PIN reales durante el desarrollo. Las pruebas físicas siguen aplazadas.
