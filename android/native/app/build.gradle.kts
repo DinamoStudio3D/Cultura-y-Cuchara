@@ -14,8 +14,8 @@ android {
         applicationId = "com.visitaloja.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 90
-        versionName = "0.83.0"
+        versionCode = 91
+        versionName = "0.84.0"
     }
     val releaseSigning = listOf("VISITALOJA_RELEASE_STORE_FILE", "VISITALOJA_RELEASE_STORE_PASSWORD", "VISITALOJA_RELEASE_KEY_ALIAS", "VISITALOJA_RELEASE_KEY_PASSWORD")
         .associateWith { System.getenv(it)?.takeIf(String::isNotBlank) }
