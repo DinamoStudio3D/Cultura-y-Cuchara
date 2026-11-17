@@ -116,7 +116,9 @@ internal object AdminPlaceEditorPolicy {
             else {
                 require(item.url.length <= 2000 && image(item.url.trim()) != null && item.caption.length <= 300 && item.credit.length <= 200) { "Revisa el enlace, texto y crédito de la fotografía." }
                 val oldMap = (item.original as? Map<*, *>)?.entries?.associate { it.key.toString() to it.value }.orEmpty()
-                oldMap + mapOf("img" to item.url.trim(), "caption" to item.caption.trim(), "credit" to item.credit.trim())
+                val title = if (old == null || old.caption != item.caption || !oldMap.containsKey("title"))
+                    mapOf("title" to item.caption.trim().ifBlank { oldMap.text("title").ifBlank { text["title"].orEmpty() } }) else emptyMap()
+                oldMap + mapOf("img" to item.url.trim(), "caption" to item.caption.trim(), "credit" to item.credit.trim()) + title
             }
         }
         val profile = raw.map("businessProfile") + profileKeys.associateWith { text[it].orEmpty() } +
