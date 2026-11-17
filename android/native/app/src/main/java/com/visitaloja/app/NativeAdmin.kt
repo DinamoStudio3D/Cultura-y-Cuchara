@@ -181,6 +181,7 @@ internal fun NativeAdminEntry(uid: String?) {
                     if (state.checked && !state.allowed) Text("Esta cuenta no tiene acceso administrativo confirmado.")
                     OutlinedButton(onClick = { editingId = null; model.bind(uid) }, enabled = !state.busy) { Text("Actualizar permisos y paradas") }
                     if (state.allowed) AdminAccessEntry(uid)
+                    if (state.allowed) AdminAssignmentEntry(uid)
                     if (state.allowed) AdminPushEntry(uid)
                     if (state.allowed) AdminEventsEntry(uid)
                     if (state.allowed) Button(onClick = { creating = true; editingId = "loc_" + java.util.UUID.randomUUID().toString() }, enabled = !state.busy) { Text("Crear parada") }
