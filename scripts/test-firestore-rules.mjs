@@ -74,6 +74,25 @@ try {
   await assertFails(getDoc(doc(profileAdmin, 'userProfiles', 'access-other')));
   console.log('PASS native administrative grants: self-promotion denied, owner scope, atomic audit and revoked profile');
 
+  // Native place creation keeps the public document, private PIN and audit atomic.
+  const placeBatch = writeBatch(accessAdmin);
+  placeBatch.set(doc(accessAdmin, 'locales', 'native-admin-created'), {title: 'Synthetic place', category: 'cafe', publicationStatus: 'draft', lat: -3.99, lng: -79.2});
+  placeBatch.set(doc(accessAdmin, 'passportPins', 'native-admin-created'), {pin: '6789', updatedAt: serverTimestamp()});
+  placeBatch.set(doc(accessAdmin, 'adminAudit', 'native-place-audit'), {...auditFields, action: 'place.created', module: 'places', details: {placeId: 'native-admin-created'}});
+  await assertSucceeds(placeBatch.commit());
+  const publicPlace = await assertSucceeds(getDoc(doc(accessVisitor, 'locales', 'native-admin-created')));
+  assert.equal(Object.hasOwn(publicPlace.data(), 'pin'), false);
+  await assertFails(getDoc(doc(accessVisitor, 'passportPins', 'native-admin-created')));
+  await assertFails(setDoc(doc(accessOwner, 'locales', 'native-owner-created'), {title: 'Unauthorized'}));
+  const rejectedPlace = writeBatch(accessAdmin);
+  rejectedPlace.set(doc(accessAdmin, 'locales', 'native-admin-rollback'), {title: 'Rollback'});
+  rejectedPlace.set(doc(accessAdmin, 'passportPins', 'native-admin-rollback'), {pin: '9876'});
+  rejectedPlace.set(doc(accessAdmin, 'adminAudit', 'native-place-rollback'), {...auditFields, actorUid: 'wrong-actor'});
+  await assertFails(rejectedPlace.commit());
+  assert.equal((await getDoc(doc(accessAdmin, 'locales', 'native-admin-rollback'))).exists(), false);
+  assert.equal((await getDoc(doc(accessAdmin, 'passportPins', 'native-admin-rollback'))).exists(), false);
+  console.log('PASS native place creation: private PIN, admin scope and atomic rollback');
+
   // Exercise the same atomic REST create used by Android, only against the local emulator.
   const emulator = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8089';
   assert.match(emulator, /^(127\.0\.0\.1|localhost):[0-9]+$/);
