@@ -283,3 +283,9 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Las paradas se cargan por páginas y se recuperan aparte las asignadas, para que una búsqueda o página parcial no retire asignaciones ocultas. Las configuraciones antiguas mayores de 20 operativas se conservan o reducen, no se amplían.
 - El encargado recibe un mensaje de permiso en la configuración de premios en lugar de un botón de propietario que no responde.
 - Sin cambios en main ni concesión de permisos reales durante el desarrollo. Pendientes: creación de credenciales, otros editores, subida administrativa de imágenes y traducciones restantes.
+
+## Siguiente avance: selección directa de fotos en administración
+- El editor permite elegir logo, portada y nuevas fotos desde el teléfono, con procesamiento y orientación EXIF del cargador existente. Se conservan los enlaces manuales.
+- La carga agrega al borrador: requiere guardar para modificar la ficha. Conserva el formulario ante errores y respeta el límite de galería. Una carga descartada puede quedar sin referencia en Cloudinary; no se eliminan recursos automáticamente.
+- Nuevo endpoint `api/sign-admin-place-image.js`: reutiliza la verificación de administrador general y fija la carpeta por parada y propósito. No concede esta capacidad administrativa a propietarios o encargados. Admite IDs nuevos de borradores.
+- **Activación pendiente:** el endpoint nuevo necesita desplegarse en el dominio canónico antes de usar la carga desde una APK. No se ha enviado a main ni se declara disponible en producción.
