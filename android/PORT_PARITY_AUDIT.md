@@ -241,3 +241,13 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Pendientes de migración: creación completa de paradas, editores de los otros contenidos, usuarios/permisos, administración avanzada de programas y temporadas de fidelidad, campañas push y el resto de traducciones. Este bloque no representa el panel web completo.
 - Los afiches en este editor se introducen por URL; la subida directa de medios para administración general continúa pendiente.
 - Pruebas físicas aplazadas por el usuario. La compilación y comprobaciones automáticas se ejecutan en GitHub Actions.
+
+## 0.78 — usuarios, permisos del panel y campañas push
+
+- Directorios nativos paginados de usuarios registrados, permisos del panel y auditoría. La búsqueda indica que solo abarca los registros cargados; los perfiles no muestran documento ni fecha de nacimiento.
+- Permite otorgar un permiso del panel a un perfil existente, revisar/cambiar admin u owner y activar/desactivar ese registro. No crea credenciales, no cambia contraseñas ni asigna negocios. El propio acceso y la cuenta principal quedan protegidos en esta interfaz.
+- Revalida autorización y lee desde el servidor. Guardado transaccional del permiso y su auditoría, con detección de cambios concurrentes. Advierte que desactivar adminUsers no retira reclamaciones especiales del servidor.
+- Campañas push nativas mediante el servicio existente: historial, vista previa, preparación idempotente, prueba a un dispositivo propio, confirmación de recepción y escritura exacta de ENVIAR más el público preparado.
+- Cada confirmación despacha hasta 25 pendientes con la misma protección del servidor ante bajas, duplicados y resultados inciertos. No se equipara la aceptación de Firebase con recepción física.
+- No se enviaron avisos ni se alteraron perfiles, permisos o cuentas reales durante el desarrollo. El servicio existente ya está publicado; no se cambia main.
+- Continúan pendientes: creación de credenciales administrativas desde Android, asignación avanzada de negocios, fidelidad avanzada, otros editores y traducciones restantes. Los permisos del panel no equivalen a los accesos de encargados.
