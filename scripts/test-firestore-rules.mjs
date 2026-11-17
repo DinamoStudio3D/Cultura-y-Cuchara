@@ -93,6 +93,46 @@ try {
   assert.equal((await getDoc(doc(accessAdmin, 'passportPins', 'native-admin-rollback'))).exists(), false);
   console.log('PASS native place creation: private PIN, admin scope and atomic rollback');
 
+  // Owner and staff assignments use both permission stores without giving staff legacy owner fallback.
+  const assignedOwner = env.authenticatedContext('assigned-owner', {email: 'owner-business@example.com'}).firestore();
+  const assignedStaff = env.authenticatedContext('assigned-staff', {email: 'staff-business@example.com'}).firestore();
+  await env.withSecurityRulesDisabled(async ctx => {
+    const db = ctx.firestore();
+    await setDoc(doc(db, 'locales', 'assigned-place'), {title: 'Assigned synthetic place', category: 'cafe'});
+    await setDoc(doc(db, 'loyaltyCounters', 'assigned-counter'), {userId: 'synthetic-client', placeId: 'assigned-place', visitCount: 1});
+    await setDoc(doc(db, 'loyaltyCounters', 'other-counter'), {userId: 'synthetic-other', placeId: 'unrelated-place', visitCount: 1});
+  });
+  const assignment = writeBatch(accessAdmin);
+  for (const [target, email, role] of [['assigned-owner','owner-business@example.com','owner'], ['assigned-staff','staff-business@example.com','staff']]) {
+    assignment.set(doc(accessAdmin, 'missionRewardMerchants', target), {email, active: true, placeIds: ['assigned-place'], campaignIds: ['existing-campaign']});
+    assignment.set(doc(accessAdmin, 'businessAccess', target + '_assigned-place'), {uid: target, email, placeId: 'assigned-place', role, active: true, assignmentScope: role});
+  }
+  assignment.set(doc(accessAdmin, 'adminAudit', 'native-assignment-audit'), {...auditFields, action: 'business.assignments_saved', module: 'business'});
+  await assertSucceeds(assignment.commit());
+  await assertSucceeds(getDoc(doc(assignedOwner, 'loyaltyCounters', 'assigned-counter')));
+  await assertSucceeds(getDoc(doc(assignedStaff, 'loyaltyCounters', 'assigned-counter')));
+  await assertFails(getDoc(doc(assignedStaff, 'loyaltyCounters', 'other-counter')));
+  await assertSucceeds(updateDoc(doc(assignedOwner, 'locales', 'assigned-place'), {desc: 'Owner update', merchantUpdatedBy: 'assigned-owner', merchantUpdatedAt: serverTimestamp()}));
+  await assertFails(updateDoc(doc(assignedStaff, 'locales', 'assigned-place'), {desc: 'Staff cannot edit', merchantUpdatedBy: 'assigned-staff', merchantUpdatedAt: serverTimestamp()}));
+  await assertFails(updateDoc(doc(assignedStaff, 'businessAccess', 'assigned-staff_assigned-place'), {role: 'owner'}));
+  await assertFails(updateDoc(doc(assignedStaff, 'missionRewardMerchants', 'assigned-staff'), {placeIds: ['unrelated-place']}));
+  const revoke = writeBatch(accessAdmin);
+  revoke.update(doc(accessAdmin, 'missionRewardMerchants', 'assigned-owner'), {active: false, placeIds: []});
+  revoke.update(doc(accessAdmin, 'businessAccess', 'assigned-owner_assigned-place'), {active: false, assignmentScope: 'none'});
+  revoke.set(doc(accessAdmin, 'adminAudit', 'native-assignment-revoke'), {...auditFields, action: 'business.assignments_saved', module: 'business'});
+  await assertSucceeds(revoke.commit());
+  await assertFails(getDoc(doc(assignedOwner, 'loyaltyCounters', 'assigned-counter')));
+  await assertFails(updateDoc(doc(assignedOwner, 'locales', 'assigned-place'), {desc: 'Revoked owner', merchantUpdatedBy: 'assigned-owner', merchantUpdatedAt: serverTimestamp()}));
+  assert.deepEqual((await getDoc(doc(accessAdmin, 'missionRewardMerchants', 'assigned-owner'))).data().campaignIds, ['existing-campaign']);
+  const badAssignment = writeBatch(accessAdmin);
+  badAssignment.set(doc(accessAdmin, 'missionRewardMerchants', 'rollback-owner'), {active: true, placeIds: ['assigned-place']});
+  badAssignment.set(doc(accessAdmin, 'businessAccess', 'rollback-owner_assigned-place'), {uid: 'rollback-owner', placeId: 'assigned-place', active: true, role: 'owner'});
+  badAssignment.set(doc(accessAdmin, 'adminAudit', 'native-assignment-rollback'), {...auditFields, actorUid: 'wrong-actor'});
+  await assertFails(badAssignment.commit());
+  assert.equal((await getDoc(doc(accessAdmin, 'missionRewardMerchants', 'rollback-owner'))).exists(), false);
+  assert.equal((await getDoc(doc(accessAdmin, 'businessAccess', 'rollback-owner_assigned-place'))).exists(), false);
+  console.log('PASS native business assignments: scoped reads, staff editing denied, atomic revocation and rollback');
+
   // Exercise the same atomic REST create used by Android, only against the local emulator.
   const emulator = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8089';
   assert.match(emulator, /^(127\.0\.0\.1|localhost):[0-9]+$/);
