@@ -288,4 +288,4 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - El editor permite elegir logo, portada y nuevas fotos desde el teléfono, con procesamiento y orientación EXIF del cargador existente. Se conservan los enlaces manuales.
 - La carga agrega al borrador: requiere guardar para modificar la ficha. Conserva el formulario ante errores y respeta el límite de galería. Una carga descartada puede quedar sin referencia en Cloudinary; no se eliminan recursos automáticamente.
 - Nuevo endpoint `api/sign-admin-place-image.js`: reutiliza la verificación de administrador general y fija la carpeta por parada y propósito. No concede esta capacidad administrativa a propietarios o encargados. Admite IDs nuevos de borradores.
-- **Activación pendiente:** el endpoint nuevo necesita desplegarse en el dominio canónico antes de usar la carga desde una APK. No se ha enviado a main ni se declara disponible en producción.
+- **Android 0.82:** endpoint aprobado y fusionado en main mediante PR #79. Comprobar despliegue canónico antes de entregar la APK. La publicación de las fotos sigue requiriendo guardar la ficha.
