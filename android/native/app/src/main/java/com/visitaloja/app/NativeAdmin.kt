@@ -190,6 +190,7 @@ internal fun NativeAdminEntry(uid: String?) {
                                 if (row.fields["active"] == false || row.fields["status"] in setOf("inactive", "archived", "deleted", "hidden", "draft"))
                                     Text("Tiene restricciones adicionales de visibilidad. Revisa su estado en el panel central.")
                                 Text("Editar nombre, descripción, dirección y publicación")
+                                AdminLoyaltyEntry(uid, row.id)
                             }
                         }
                     }
