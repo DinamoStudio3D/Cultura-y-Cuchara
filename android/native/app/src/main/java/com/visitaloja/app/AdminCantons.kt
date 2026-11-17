@@ -156,7 +156,7 @@ internal class AdminCantonViewModel(app: Application) : AndroidViewModel(app) {
                 }.await()
                 if (same(uid, version)) bind(uid, old.id, "Guía guardada y publicada en VisitaLoja.")
             } catch (e: CancellationException) { throw e }
-            catch (e: Exception) { if (same(uid, version)) mutable.value = old.copy(ready = false,
+            catch (e: Exception) { if (same(uid, version)) mutable.value = old.copy(
                 message = if (e is IllegalStateException || e is IllegalArgumentException) e.message else "No se pudo confirmar el guardado. Conserva tus textos y actualiza antes de repetir.") }
         }
     }
