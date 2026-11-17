@@ -2,6 +2,8 @@ package com.visitaloja.app
 
 import android.app.Application
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -150,9 +152,9 @@ internal fun AdminAccountCreationEntry(uid: String, refresh: () -> Unit) {
                 state.pending?.let { Text("Cuenta creada: " + it.email) }
                 if (!state.complete && state.pending == null) {
                     OutlinedTextField(name, { name = it.take(120) }, label = { Text("Nombre del responsable o negocio") }, enabled = !state.busy)
-                    OutlinedTextField(email, { email = it.take(254) }, label = { Text("Correo del titular") }, enabled = !state.busy)
-                    OutlinedTextField(password, { password = it }, label = { Text("Contraseña inicial") }, visualTransformation = PasswordVisualTransformation(), enabled = !state.busy)
-                    OutlinedTextField(confirmation, { confirmation = it }, label = { Text("Repetir contraseña") }, visualTransformation = PasswordVisualTransformation(), enabled = !state.busy)
+                    OutlinedTextField(email, { email = it.take(254) }, label = { Text("Correo del titular") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email), enabled = !state.busy)
+                    OutlinedTextField(password, { password = it }, label = { Text("Contraseña inicial (8 a 128 caracteres)") }, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), enabled = !state.busy)
+                    OutlinedTextField(confirmation, { confirmation = it }, label = { Text("Repetir contraseña") }, visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), enabled = !state.busy)
                     Text("Entrega la contraseña al titular por un medio privado. No se guardará en el directorio.")
                     Button(onClick = { review = true }, enabled = !state.busy && name.trim().length >= 2 && email.isNotBlank() && password.length in 8..128 && password == confirmation) { Text("Revisar creación") }
                 }
@@ -170,3 +172,4 @@ internal fun AdminAccountCreationEntry(uid: String, refresh: () -> Unit) {
             password = ""; confirmation = ""
         }) { Text("Crear cuenta") } }, dismissButton = { TextButton(onClick = { review = false }) { Text("Volver") } })
 }
+
