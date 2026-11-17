@@ -184,6 +184,7 @@ internal fun NativeAdminEntry(uid: String?) {
                     if (state.allowed) AdminAssignmentEntry(uid)
                     if (state.allowed) AdminPushEntry(uid)
                     if (state.allowed) AdminEventsEntry(uid)
+                    if (state.allowed) AdminCantonsEntry(uid)
                     if (state.allowed) Button(onClick = { creating = true; editingId = "loc_" + java.util.UUID.randomUUID().toString() }, enabled = !state.busy) { Text("Crear parada") }
                     if (state.allowed) OutlinedTextField(query, { query = it }, label = { Text("Buscar entre las paradas cargadas") }, modifier = Modifier.fillMaxWidth())
                     if (state.allowed) Text("${state.rows.size} paradas cargadas" + if (state.complete) "" else " · quedan más por cargar")
