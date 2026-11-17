@@ -1,5 +1,7 @@
 package com.visitaloja.app
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -71,6 +73,35 @@ internal class AdminPlaceEditorViewModel : ViewModel() {
     fun edit(draft: AdminPlaceDraft) {
         val old = mutable.value
         if (old.ready && !old.busy) mutable.value = old.copy(draft = draft, message = null)
+    }
+    fun upload(context: Context, uri: Uri, purpose: String) {
+        val old = mutable.value
+        val uid = old.uid ?: return
+        if (!old.ready || old.busy || purpose !in setOf("logo", "hero", "gallery")) return
+        if (purpose == "gallery" && old.draft.photos.size >= minOf(100, maxOf(old.galleryLimit,
+                AdminPlaceEditorPolicy.read(old.base.orEmpty(), false).photos.size))) {
+            mutable.value = old.copy(message = "La galería alcanzó el límite. Retira una foto antes de añadir otra.")
+            return
+        }
+        val version = epoch
+        mutable.value = old.copy(busy = true, message = "Subiendo imagen…")
+        viewModelScope.launch {
+            try {
+                authorize(uid)
+                if (!same(uid, version)) return@launch
+                val url = MerchantImageUpload.upload(context.applicationContext, uri, old.place, purpose, uid, admin = true)
+                if (!same(uid, version)) return@launch
+                val draft = if (purpose == "gallery") old.draft.copy(photos = old.draft.photos +
+                    AdminPlacePhoto(java.util.UUID.randomUUID().toString(), url))
+                    else old.draft.copy(text = old.draft.text + ((if (purpose == "logo") "customLogoUrl" else "heroImage") to url))
+                mutable.value = old.copy(draft = draft, message = "Imagen subida. Revisa y guarda la parada para aplicar el cambio.")
+            } catch (e: CancellationException) { throw e }
+            catch (e: Exception) {
+                if (same(uid, version)) mutable.value = old.copy(message =
+                    if (e is IllegalArgumentException || e is IllegalStateException) e.message
+                    else "No se pudo subir la imagen. El formulario se conserva; puedes volver a elegirla.")
+            }
+        }
     }
     fun save() {
         val old = mutable.value
