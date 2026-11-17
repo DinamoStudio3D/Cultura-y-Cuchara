@@ -149,7 +149,8 @@ internal fun MerchantToolsScreen(uid: String?, place: String, close: ()->Unit) {
                     OutlinedButton(onClick={runCatching{context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW,android.net.Uri.parse("https://www.visitaloja.com/merchant-dashboard.html?place="+android.net.Uri.encode(place))))}}){Text("Abrir configuraciones avanzadas en el portal web")}
 
                     Row(Modifier.horizontalScroll(rememberScrollState())) { FilterChip(section=="profile",{section="profile"},{Text("Ficha y fotos")});Spacer(Modifier.width(8.dp));FilterChip(section=="birthday",{section="birthday"},{Text("Cumpleaños")});Spacer(Modifier.width(8.dp));FilterChip(section=="reward",{section="reward"},{Text("Premio")}) }
-                    if(section=="reward"){
+                    if(section=="reward" && !state.canProfile) Text("La configuración del premio requiere acceso de propietario.")
+                    else if(section=="reward"){
                         Text("Configura el premio habitual o de una temporada existente. Las metas, sellos y publicación del programa se administran desde el panel central.")
                         OutlinedButton(onClick={model.program("load",season)},enabled=!state.busy){Text("Consultar configuración actual")}
                         state.program?.let{program->
