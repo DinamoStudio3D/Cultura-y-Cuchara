@@ -39,6 +39,7 @@ internal fun AdminAssignmentEntry(uid: String) {
                 item {
                     Text("Accesos de negocios", style = MaterialTheme.typography.headlineSmall)
                     TextButton(onClick = { open = false; model.bind(null) }, enabled = !state.busy) { Text("Cerrar accesos") }
+                    AdminAccountCreationEntry(uid) { model.bind(uid, "merchants") }
                     Text("Selecciona una cuenta existente y verifica su correo antes de autorizar sus paradas.")
                     Text("Estos accesos no convierten a la persona en administrador general ni cambian su contraseña. Tampoco retiran permisos administrativos que ya tuviera.")
                     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
