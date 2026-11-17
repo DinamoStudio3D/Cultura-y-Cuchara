@@ -19,6 +19,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/sign-admin-place-image",
+      "destination": "/api/sign-event-image?action=place-image"
+    },
+    {
       "source": "/programacion-fiavl-2026",
       "destination": "/"
     },
