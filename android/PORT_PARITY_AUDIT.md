@@ -289,3 +289,10 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - La carga agrega al borrador: requiere guardar para modificar la ficha. Conserva el formulario ante errores y respeta el límite de galería. Una carga descartada puede quedar sin referencia en Cloudinary; no se eliminan recursos automáticamente.
 - Nuevo endpoint `api/sign-admin-place-image.js`: reutiliza la verificación de administrador general y fija la carpeta por parada y propósito. No concede esta capacidad administrativa a propietarios o encargados. Admite IDs nuevos de borradores.
 - **Android 0.82:** endpoint aprobado y fusionado en main mediante PR #79. Comprobar despliegue canónico antes de entregar la APK. La publicación de las fotos sigue requiriendo guardar la ficha.
+
+## Android 0.83: creación de cuentas de responsables
+- Administración > Asignar negocios a responsables > Crear cuenta. Nombre, correo, contraseña inicial y confirmación; revisión previa del correo.
+- Firebase Auth usa una instancia secundaria temporal del mismo proyecto: conserva la sesión principal. No se guardan contraseñas en Firestore ni se envían correos.
+- La nueva identidad se registra en el directorio de negocios desactivada y sin paradas; asignaciones y activación se hacen después en la herramienta existente. No se conceden roles generales ni se modifica una cuenta preexistente. El titular completa su perfil al ingresar.
+- Registro y auditoría en una transacción; si la identidad se creó pero falla su registro, se conserva UID/correo en memoria y se permite completar sin crear otra identidad. Ante cierre del proceso durante una creación, revisar el resultado y usar el ingreso del titular; no hay una transacción distribuida entre Auth y Firestore.
+- Pendientes de implementación: otros editores administrativos, planes/suscripciones, gestión avanzada de menús y cobertura completa de inglés. La comparación completa de menús web/app todavía debe cerrarse; no afirmar paridad total. Pruebas de usuario aplazadas.
