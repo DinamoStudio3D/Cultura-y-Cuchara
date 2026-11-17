@@ -176,6 +176,7 @@ internal fun NativeAdminEntry(uid: String?) {
                     if (state.checked && !state.allowed) Text("Esta cuenta no tiene acceso administrativo confirmado.")
                     OutlinedButton(onClick = { selected = null; model.bind(uid) }, enabled = !state.busy) { Text("Actualizar permisos y paradas") }
                     if (state.allowed) AdminAccessEntry(uid)
+                    if (state.allowed) AdminPushEntry(uid)
                     if (state.allowed) AdminEventsEntry(uid)
                     if (state.allowed) OutlinedTextField(query, { query = it }, label = { Text("Buscar entre las paradas cargadas") }, modifier = Modifier.fillMaxWidth())
                     if (state.allowed) Text("${state.rows.size} paradas cargadas" + if (state.complete) "" else " · quedan más por cargar")
