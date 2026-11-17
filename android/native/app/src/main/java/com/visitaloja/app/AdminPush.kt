@@ -109,7 +109,7 @@ internal class AdminPushViewModel : ViewModel() {
             (0 until history.length()).map { AdminPushCampaign.read(history.getJSONObject(it)) },
             devices = devices, deviceId = old.deviceId.takeIf { id -> devices.any { it.id == id } } ?: "",
             audience = overview.optInt("devices"), overLimit = overview.optBoolean("overLimit"),
-            selected = selected?.let(AdminPushCampaign::read), received = false, notice = "Historial actualizado. No se ha realizado un envío.")
+            selected = selected?.let { AdminPushCampaign.read(it) }, received = false, notice = "Historial actualizado. No se ha realizado un envío.")
     }
     fun choose(campaign: AdminPushCampaign) = operation { uid, version ->
         val detail = AdminPushCampaign.read(request(uid, version, "detail", JSONObject().put("campaignId", campaign.id)))
