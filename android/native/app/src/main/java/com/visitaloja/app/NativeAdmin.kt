@@ -168,14 +168,15 @@ internal fun NativeAdminEntry(uid: String?) {
         Surface(Modifier.fillMaxSize().systemBarsPadding()) {
             LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 item {
-                    Text("Administración de paradas", style = MaterialTheme.typography.headlineSmall)
+                    Text("Administración general", style = MaterialTheme.typography.headlineSmall)
                     Text("Acceso exclusivo de administración general. Los cambios guardados se reflejan en VisitaLoja.")
                     TextButton(onClick = { open = false; selected = null; model.bind(null) }, enabled = !state.busy) { Text("Cerrar") }
                     if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
                     state.message?.let { Text(it) }
                     if (state.checked && !state.allowed) Text("Esta cuenta no tiene acceso administrativo confirmado.")
                     OutlinedButton(onClick = { selected = null; model.bind(uid) }, enabled = !state.busy) { Text("Actualizar permisos y paradas") }
-                    if (state.allowed && uid != null) AdminEventsEntry(uid)
+                    if (state.allowed) AdminAccessEntry(uid)
+                    if (state.allowed) AdminEventsEntry(uid)
                     if (state.allowed) OutlinedTextField(query, { query = it }, label = { Text("Buscar entre las paradas cargadas") }, modifier = Modifier.fillMaxWidth())
                     if (state.allowed) Text("${state.rows.size} paradas cargadas" + if (state.complete) "" else " · quedan más por cargar")
                 }
