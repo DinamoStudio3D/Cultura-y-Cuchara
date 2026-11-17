@@ -251,3 +251,13 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - Cada confirmación despacha hasta 25 pendientes con la misma protección del servidor ante bajas, duplicados y resultados inciertos. No se equipara la aceptación de Firebase con recepción física.
 - No se enviaron avisos ni se alteraron perfiles, permisos o cuentas reales durante el desarrollo. El servicio existente ya está publicado; no se cambia main.
 - Continúan pendientes: creación de credenciales administrativas desde Android, asignación avanzada de negocios, fidelidad avanzada, otros editores y traducciones restantes. Los permisos del panel no equivalen a los accesos de encargados.
+
+## 0.79 — configuración avanzada de fidelidad
+
+- Cada parada del panel general permite crear/activar/desactivar su programa habitual, configurar meta, límite diario, beneficio, condiciones, tipo, vigencia y cupos.
+- Editor nativo de hasta 24 temporadas: fechas en Ecuador, tarjetas separadas, nombres y condiciones. La edición de temporadas exige confirmar la capacidad del servicio, como la web. Si no se puede comprobar, se conserva el contenido y solo se edita la tarjeta habitual.
+- Temporadas con sellos o premios emitidos conservan sus condiciones y no se pueden retirar. Solo admiten cambios de cupos, nunca por debajo de los premios emitidos. Se rechazan solapamientos entre temporadas activas.
+- El guardado usa una transacción con comprobación del documento completo y auditoría atómica. No modifica contadores, sellos, premios, indicadores de uso ni condiciones guardadas de tarjetas ya iniciadas.
+- Las fechas y campos adicionales de temporadas sin cambios se conservan. Los cambios de cupos en una temporada usada preservan su configuración original.
+- No se cambió main ni se escribieron programas o visitas reales durante el desarrollo. Pruebas físicas aplazadas.
+- Continúan pendientes otros editores del panel, gestión avanzada de asignaciones/credenciales y traducciones restantes. Esto no declara paridad de toda la administración web.
