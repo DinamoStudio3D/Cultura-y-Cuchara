@@ -272,3 +272,14 @@ No se asigna un porcentaje: contar pantallas existentes no mide la paridad de su
 - La recuperación de una creación incierta consulta el mismo identificador y comprueba su autor y referencia, evitando una creación automática duplicada. El listado muestra prioritariamente la parada recién guardada.
 - La creación usa confirmación por encargado y deja descubrimientos autónomos sin activar. Sus QR/asignaciones, los menús comerciales, planes y otros editores continúan con su alcance previo.
 - No se modifica main ni se crean negocios o PIN reales durante el desarrollo. Las pruebas físicas siguen aplazadas.
+
+## 0.81 — asignación de negocios a cuentas existentes
+
+- Directorios paginados de cuentas de negocio, usuarios registrados y solicitudes, con selección por identidad y correo existente. No crea credenciales ni cambia contraseñas.
+- Asignación de paradas con rol propietario o encargado. Conserva los accesos anteriores de solo ficha sin convertirlos automáticamente en permisos operativos. La selección nueva usa encargado por defecto.
+- Guardado coordinado en missionRewardMerchants y businessAccess: retirar o pausar deshabilita también el permiso de edición correspondiente y conserva un registro explícito para impedir el respaldo de propietario antiguo. No se escriben roles administrativos globales.
+- Conserva campaignIds, passportGrants y otros campos anteriores. Pausar la cuenta mantiene esas configuraciones pero detiene su uso mientras siga pausada. La aprobación de solicitudes de campañas se mantiene por separado.
+- Verificación fresca de administración, preconsulta de accesos completos, comprobación transaccional de los documentos conocidos y auditoría atómica. Rechaza formatos especiales, resultados parciales grandes y cambios concurrentes en vez de sobrescribirlos.
+- Las paradas se cargan por páginas y se recuperan aparte las asignadas, para que una búsqueda o página parcial no retire asignaciones ocultas. Las configuraciones antiguas mayores de 20 operativas se conservan o reducen, no se amplían.
+- El encargado recibe un mensaje de permiso en la configuración de premios en lugar de un botón de propietario que no responde.
+- Sin cambios en main ni concesión de permisos reales durante el desarrollo. Pendientes: creación de credenciales, otros editores, subida administrativa de imágenes y traducciones restantes.
