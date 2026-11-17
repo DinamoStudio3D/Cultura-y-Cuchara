@@ -1,5 +1,5 @@
 "use strict";
-const { createHandler: createAdminHandler } = require("./sign-event-image");
+const { createHandler: createAdminHandler } = require("../api/sign-event-image");
 function createHandler(options = {}) {
   return async (req, res) => {
     const { placeId, purpose } = req.body || {};

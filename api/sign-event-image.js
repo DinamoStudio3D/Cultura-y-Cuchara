@@ -108,5 +108,9 @@ function createHandler({
     }
   };
 }
-module.exports = createHandler();
+const eventHandler = createHandler();
+module.exports = function handler(req, res) {
+  if (req.query?.action === "place-image") return require("../functions/admin-place-image")(req, res);
+  return eventHandler(req, res);
+};
 module.exports.createHandler = createHandler;
