@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
-const {createHandler} = require('../api/sign-admin-place-image');
+const {createHandler} = require('../functions/admin-place-image');
 const env = {CLOUDINARY_CLOUD_NAME:'demo',CLOUDINARY_API_KEY:'123',CLOUDINARY_API_SECRET:'secret',CLOUDINARY_UPLOAD_PRESET:'signed'};
 async function call({body={placeId:'new-draft',purpose:'gallery'},method='POST',token='valid',user={localId:'admin',customAttributes:'{"admin":true}'},profile=null}={}) {
  let status=200,result,reads=0;
