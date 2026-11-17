@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
-import { doc, setDoc, getDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 
 const env = await initializeTestEnvironment({
   projectId: 'demo-visitaloja',
@@ -38,6 +38,42 @@ try {
   await assertSucceeds(setDoc(doc(admin, 'qrSubscriptionPlans', 'sample-plan'), { title: 'Demo' }));
   await assertSucceeds(getDoc(doc(admin, 'qrSubscriptionPlans', 'sample-plan')));
   await assertSucceeds(setDoc(doc(admin, 'qrCodes', 'sample-menu'), { active: true }));
+  // Native administrative permissions: use only synthetic accounts in the emulator.
+  const accessAdmin = env.authenticatedContext('access-admin', {admin: true, email: 'admin@example.com'}).firestore();
+  const accessVisitor = env.authenticatedContext('access-visitor', {email: 'visitor@example.com'}).firestore();
+  const accessOwner = env.authenticatedContext('access-owner', {email: 'owner@example.com'}).firestore();
+  await env.withSecurityRulesDisabled(async ctx => {
+    await setDoc(doc(ctx.firestore(), 'adminUsers', 'access-owner'), {role: 'owner', active: true});
+    await setDoc(doc(ctx.firestore(), 'userProfiles', 'access-target'), {email: 'target@example.com', fullName: 'Synthetic target'});
+  });
+  const grantFields = {email: 'target@example.com', displayName: 'Synthetic target', role: 'admin', active: true,
+    createdAt: serverTimestamp(), updatedAt: serverTimestamp(), updatedBy: 'access-admin'};
+  await assertFails(setDoc(doc(accessVisitor, 'adminUsers', 'access-visitor'), {...grantFields, updatedBy: 'access-visitor'}));
+  await assertFails(setDoc(doc(accessOwner, 'adminUsers', 'access-target'), {...grantFields, updatedBy: 'access-owner'}));
+  await assertFails(getDoc(doc(accessOwner, 'userProfiles', 'access-target')));
+  await assertSucceeds(getDoc(doc(accessAdmin, 'userProfiles', 'access-target')));
+  const nativeGrant = writeBatch(accessAdmin);
+  nativeGrant.set(doc(accessAdmin, 'adminUsers', 'access-target'), grantFields);
+  const auditFields = {action: 'admin.access_saved', module: 'access', summary: 'Synthetic Android grant',
+    details: {targetUid: 'access-target', role: 'admin', active: true}, actorUid: 'access-admin',
+    actorEmail: 'admin@example.com', createdAt: serverTimestamp()};
+  nativeGrant.set(doc(accessAdmin, 'adminAudit', 'native-access-audit'), auditFields);
+  await assertSucceeds(nativeGrant.commit());
+  assert.equal((await getDoc(doc(accessAdmin, 'adminUsers', 'access-target'))).data().role, 'admin');
+  await assertFails(updateDoc(doc(accessAdmin, 'adminAudit', 'native-access-audit'), {summary: 'Changed'}));
+  // A failed audit must roll back the permission in the same atomic write.
+  const rejectedGrant = writeBatch(accessAdmin);
+  rejectedGrant.set(doc(accessAdmin, 'adminUsers', 'access-rejected'), grantFields);
+  rejectedGrant.set(doc(accessAdmin, 'adminAudit', 'native-access-rejected'), {...auditFields, actorUid: 'other-actor'});
+  await assertFails(rejectedGrant.commit());
+  assert.equal((await getDoc(doc(accessAdmin, 'adminUsers', 'access-rejected'))).exists(), false);
+  const profileAdmin = env.authenticatedContext('access-target', {email: 'target@example.com'}).firestore();
+  await assertSucceeds(getDoc(doc(profileAdmin, 'userProfiles', 'access-other')));
+  await assertSucceeds(updateDoc(doc(accessAdmin, 'adminUsers', 'access-target'), {active: false,
+    updatedAt: serverTimestamp(), updatedBy: 'access-admin'}));
+  await assertFails(getDoc(doc(profileAdmin, 'userProfiles', 'access-other')));
+  console.log('PASS native administrative grants: self-promotion denied, owner scope, atomic audit and revoked profile');
+
   // Exercise the same atomic REST create used by Android, only against the local emulator.
   const emulator = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8089';
   assert.match(emulator, /^(127\.0\.0\.1|localhost):[0-9]+$/);
