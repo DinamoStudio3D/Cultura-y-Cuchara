@@ -65,7 +65,7 @@ internal class NativeAdminViewModel : ViewModel() {
         val profile = db.collection("adminUsers").document(uid).get(Source.SERVER).await()
         return AdminPlacePolicy.allowed(user.email, claims, profile.data.orEmpty())
     }
-    fun bind(uid: String?) {
+    fun bind(uid: String?, preferred: String? = null) {
         val version = ++epoch
         cursor = null
         mutable.value = NativeAdminState(uid = uid, busy = uid != null)
@@ -74,7 +74,11 @@ internal class NativeAdminViewModel : ViewModel() {
             try {
                 val allowed = authorize(uid)
                 if (!same(uid, version)) return@launch
-                mutable.value = mutable.value.copy(allowed = allowed, checked = true, busy = false)
+                val saved = if (allowed && preferred != null && MerchantScanPolicy.placeId(preferred))
+                    db.collection("locales").document(preferred).get(Source.SERVER).await() else null
+                if (!same(uid, version)) return@launch
+                mutable.value = mutable.value.copy(allowed = allowed, checked = true, busy = false,
+                    rows = if (saved?.exists() == true) listOf(AdminPlaceRow(saved.id, saved.data.orEmpty())) else emptyList())
                 if (allowed) load()
             } catch (e: CancellationException) { throw e }
             catch (_: Exception) {
@@ -157,39 +161,41 @@ internal fun NativeAdminEntry(uid: String?) {
     val state = observed.takeIf { it.uid == uid } ?: NativeAdminState(uid = uid)
     var open by remember(uid) { mutableStateOf(false) }
     var query by remember(uid) { mutableStateOf("") }
-    var selected by remember(uid) { mutableStateOf<AdminPlaceRow?>(null) }
+    var editingId by remember(uid) { mutableStateOf<String?>(null) }
+    var creating by remember(uid) { mutableStateOf(false) }
     // Check only when requested; ordinary visitors do not download administrative data.
     DisposableEffect(uid) { onDispose { model.bind(null) } }
     if (uid != null) OutlinedButton(onClick = { open = true; model.bind(uid) }, modifier = Modifier.fillMaxWidth()) {
         Text("Administración · comprobar acceso")
     }
-    if (open && uid != null) Dialog(onDismissRequest = { if (!state.busy) { open = false; selected = null; model.bind(null) } },
+    if (open && uid != null) Dialog(onDismissRequest = { if (!state.busy) { open = false; editingId = null; model.bind(null) } },
         properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize().systemBarsPadding()) {
             LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 item {
                     Text("Administración general", style = MaterialTheme.typography.headlineSmall)
                     Text("Acceso exclusivo de administración general. Los cambios guardados se reflejan en VisitaLoja.")
-                    TextButton(onClick = { open = false; selected = null; model.bind(null) }, enabled = !state.busy) { Text("Cerrar") }
+                    TextButton(onClick = { open = false; editingId = null; model.bind(null) }, enabled = !state.busy) { Text("Cerrar") }
                     if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
                     state.message?.let { Text(it) }
                     if (state.checked && !state.allowed) Text("Esta cuenta no tiene acceso administrativo confirmado.")
-                    OutlinedButton(onClick = { selected = null; model.bind(uid) }, enabled = !state.busy) { Text("Actualizar permisos y paradas") }
+                    OutlinedButton(onClick = { editingId = null; model.bind(uid) }, enabled = !state.busy) { Text("Actualizar permisos y paradas") }
                     if (state.allowed) AdminAccessEntry(uid)
                     if (state.allowed) AdminPushEntry(uid)
                     if (state.allowed) AdminEventsEntry(uid)
+                    if (state.allowed) Button(onClick = { creating = true; editingId = "loc_" + java.util.UUID.randomUUID().toString() }, enabled = !state.busy) { Text("Crear parada") }
                     if (state.allowed) OutlinedTextField(query, { query = it }, label = { Text("Buscar entre las paradas cargadas") }, modifier = Modifier.fillMaxWidth())
                     if (state.allowed) Text("${state.rows.size} paradas cargadas" + if (state.complete) "" else " · quedan más por cargar")
                 }
                 if (state.allowed) {
-                    items(state.rows.filter { PlacePolicy.normalize(it.title + " " + it.address).contains(PlacePolicy.normalize(query)) }, key = { it.id }) { row ->
-                        OutlinedCard(onClick = { selected = row }, modifier = Modifier.fillMaxWidth(), enabled = !state.busy) {
+                    items(state.rows.filter { PlacePolicy.normalize(it.title + " " + it.address + " " + AdminPlaceEditorPolicy.categories[AdminPlaceEditorPolicy.primary(it.fields)].orEmpty() + " " + it.fields.text("cantonId")).contains(PlacePolicy.normalize(query)) }, key = { it.id }) { row ->
+                        OutlinedCard(onClick = { creating = false; editingId = row.id }, modifier = Modifier.fillMaxWidth(), enabled = !state.busy) {
                             Column(Modifier.padding(16.dp)) {
                                 Text(row.title, style = MaterialTheme.typography.titleMedium)
                                 Text(row.publication)
                                 if (row.fields["active"] == false || row.fields["status"] in setOf("inactive", "archived", "deleted", "hidden", "draft"))
-                                    Text("Tiene restricciones adicionales de visibilidad. Revisa su estado en el panel central.")
-                                Text("Editar nombre, descripción, dirección y publicación")
+                                    Text("Revisa sus opciones de Publicación en el editor de la parada.")
+                                Text("Editar ficha, ubicación, contacto, fotografías y publicación")
                                 AdminLoyaltyEntry(uid, row.id)
                             }
                         }
@@ -199,34 +205,9 @@ internal fun NativeAdminEntry(uid: String?) {
             }
         }
     }
-    if (open && state.allowed) selected?.let { row ->
-        key(uid, row.id) {
-            var title by remember { mutableStateOf(row.title) }
-            var description by remember { mutableStateOf(row.description) }
-            var address by remember { mutableStateOf(row.address) }
-            var publication by remember { mutableStateOf(row.publication) }
-            var confirm by remember { mutableStateOf(false) }
-            val initialRevision = remember { state.revision }
-            LaunchedEffect(state.revision) { if (state.revision != initialRevision) selected = null }
-            AlertDialog(onDismissRequest = { if (!state.busy) selected = null }, title = { Text("Editar parada") },
-                text = {
-                    Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        OutlinedTextField(title, { title = it.take(160) }, label = { Text("Nombre") }, enabled = !state.busy)
-                        OutlinedTextField(description, { description = it.take(1200) }, label = { Text("Descripción") }, enabled = !state.busy)
-                        OutlinedTextField(address, { address = it.take(400) }, label = { Text("Dirección") }, enabled = !state.busy)
-                        listOf("draft" to "Borrador", "published" to "Publicado", "hidden" to "Oculto").forEach { (value, label) ->
-                            FilterChip(selected = publication == value, onClick = { publication = value }, enabled = !state.busy, label = { Text(label) })
-                        }
-                        state.message?.let { Text(it) }
-                    }
-                },
-                confirmButton = { TextButton(onClick = { confirm = true }, enabled = !state.busy && title.trim().length >= 2) { Text("Revisar cambios") } },
-                dismissButton = { TextButton(onClick = { selected = null }, enabled = !state.busy) { Text("Cancelar") } })
-            if (confirm) AlertDialog(onDismissRequest = { confirm = false },
-                title = { Text("Guardar en VisitaLoja") },
-                text = { Text("Se actualizará «$title» con estado «$publication». Esto modifica también su ficha en la web.") },
-                confirmButton = { TextButton(onClick = { confirm = false; model.save(row, title, description, address, publication) }, enabled = !state.busy) { Text("Guardar cambios") } },
-                dismissButton = { TextButton(onClick = { confirm = false }) { Text("Volver") } })
-        }
+    if (open && state.allowed && uid != null) editingId?.let { id ->
+        AdminPlaceEditorScreen(uid, id, creating,
+            close = { editingId = null },
+            saved = { editingId = null; query = ""; model.bind(uid, id) })
     }
 }
