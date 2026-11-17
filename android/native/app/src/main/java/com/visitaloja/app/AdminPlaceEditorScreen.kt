@@ -1,5 +1,7 @@
 package com.visitaloja.app
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.horizontalScroll
@@ -31,6 +33,10 @@ internal fun AdminPlaceEditorScreen(uid: String, id: String, creating: Boolean, 
     var photo by remember(uid, id) { mutableStateOf<AdminPlacePhoto?>(null) }
     var discard by remember(uid, id) { mutableStateOf(false) }
     val context = LocalContext.current
+    var uploadPurpose by remember(uid, id) { mutableStateOf("gallery") }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) model.upload(context, uri, uploadPurpose)
+    }
     DisposableEffect(uid, id) { model.bind(uid, id, creating); onDispose { model.bind(null, "", false) } }
     LaunchedEffect(state.saved) { if (state.saved) saved() }
     val draft = state.draft
@@ -105,6 +111,15 @@ internal fun AdminPlaceEditorScreen(uid: String, id: String, creating: Boolean, 
                                                 Modifier.fillMaxWidth().height(140.dp), contentScale = ContentScale.Fit)
                                         }
                                     }
+                                    listOf("logo" to "Elegir logo del teléfono", "hero" to "Elegir portada del teléfono",
+                                        "gallery" to "Añadir foto del teléfono").forEach { (purpose, label) ->
+                                        OutlinedButton(onClick = { uploadPurpose = purpose; picker.launch("image/*") },
+                                            enabled = !state.busy && (purpose != "gallery" || draft.photos.size < minOf(100,
+                                                maxOf(state.galleryLimit, AdminPlaceEditorPolicy.read(state.base.orEmpty(), false).photos.size)))) {
+                                            Text(label)
+                                        }
+                                    }
+                                    Text("Las imágenes se suben al seleccionarlas; solo se muestran en la ficha después de guardar. Si sales sin guardar, la ficha conserva sus imágenes anteriores.")
                                     Text("Galería: " + draft.photos.size + " · límite del plan: " + state.galleryLimit)
                                     Text("Añade enlaces de fotografías. Puedes cambiar el orden y los créditos. El logo y la portada independiente no cuentan como fotos de galería.")
                                     OutlinedButton(onClick = { photo = AdminPlacePhoto(java.util.UUID.randomUUID().toString(), "") },
