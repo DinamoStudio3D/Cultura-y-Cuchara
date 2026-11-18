@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -71,7 +74,7 @@ internal object AdminCantonPolicy {
 }
 internal data class AdminCantonState(val uid: String? = null, val id: String = "", val busy: Boolean = false, val ready: Boolean = false,
     val base: Map<String, Any?>? = null, val draft: CantonEditDraft = CantonEditDraft(), val initial: CantonEditDraft = CantonEditDraft(),
-    val places: List<CantonEditPlace> = emptyList(), val message: String? = null)
+    val places: List<CantonEditPlace> = emptyList(), val message: String? = null, val localDrafts: List<LocalAdminDraft> = emptyList())
 internal class AdminCantonViewModel(app: Application) : AndroidViewModel(app) {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
@@ -112,6 +115,45 @@ internal class AdminCantonViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
     fun edit(draft: CantonEditDraft) { val old = mutable.value; if (old.ready && !old.busy) mutable.value = old.copy(draft = draft, message = null) }
+    fun local(action: String, id: String? = null) {
+        val old = mutable.value; val uid = old.uid ?: return
+        if (!old.ready || old.busy || auth.currentUser?.uid != uid) return
+        val version = generation; mutable.value = old.copy(busy = true, message = null)
+        viewModelScope.launch {
+            try {
+                val context: Application = getApplication()
+                var recovered: LocalAdminDraft? = null
+                val rows = withContext(Dispatchers.IO) {
+                    when (action) {
+                        "save" -> {
+                            val data = old.draft.text + mapOf("featuredIds" to old.draft.featured, "routes" to old.draft.routes.map { route ->
+                                mapOf("title" to route.title, "duration" to route.duration, "notes" to route.notes, "placeIds" to route.placeIds)
+                            })
+                            AdminLocalDrafts.save(context, uid, "cantons", old.id, CantonPolicy.catalogue.first { it.id == old.id }.name, old.base, JSONObject(data))
+                        }
+                        "restore" -> {
+                            require(id == old.id) { "Este borrador pertenece a otro cantón. Ábrelo desde su editor." }
+                            recovered = AdminLocalDrafts.load(context, uid, "cantons", requireNotNull(id))
+                        }
+                        "delete" -> AdminLocalDrafts.remove(context, uid, "cantons", requireNotNull(id))
+                        "list" -> Unit
+                        else -> error("Acción no compatible.")
+                    }
+                    AdminLocalDrafts.list(context, uid, "cantons").filter { it.id == old.id }
+                }
+                if (!same(uid, version)) return@launch
+                val saved = recovered
+                if (saved != null) {
+                    @Suppress("UNCHECKED_CAST")
+                    val data = AdminLocalDrafts.value(saved.data) as? Map<String, Any?> ?: error("Borrador incompatible.")
+                    val draft = AdminCantonPolicy.read(data)
+                    mutable.value = old.copy(draft = draft, localDrafts = rows, message = if (saved.fingerprint != AdminLocalDrafts.fingerprint(old.base))
+                        "Borrador recuperado. La guía publicada cambió: revisa todo antes de publicar." else "Borrador recuperado sin publicar.")
+                } else mutable.value = old.copy(localDrafts = rows, message = when (action) { "save" -> "Borrador guardado en este teléfono para tu cuenta. No se publicó."; "delete" -> "Borrador local eliminado."; else -> null })
+            } catch (e: CancellationException) { throw e }
+            catch (e: Exception) { if (same(uid, version)) mutable.value = old.copy(message = e.message ?: "No se pudo gestionar el borrador.") }
+        }
+    }
     fun upload(uri: Uri) {
         val old = mutable.value; val uid = old.uid ?: return; if (!old.ready || old.busy) return
         val version = generation; mutable.value = old.copy(busy = true, message = "Subiendo portada…")
