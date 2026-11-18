@@ -97,7 +97,7 @@ internal object EditorialPolicy {
             require(text["status"] in setOf("draft", "published", "hidden")) { "Revisa el estado de la historia." }
             result["status"] = text.getValue("status")
             // Explicit publication must also clear legacy visibility flags; hiding/drafts preserve them.
-            if (text["status"] == "published" && (draft.original == null || text["status"] != before["status"])) {
+            if (text["status"] == "published" && (draft.original == null || text["status"] != before["status"] || text["_publishIntent"] == "true")) {
                 result["active"] = true; result["hidden"] = false; result["publicationStatus"] = "published"
             }
             if (draft.original == null || text["relatedPlaceIds"] != before["relatedPlaceIds"]) {
