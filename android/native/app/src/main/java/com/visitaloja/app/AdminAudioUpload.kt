@@ -16,7 +16,9 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 internal object AdminAudioUpload {
-    suspend fun upload(context: Context, uri: Uri, uid: String): String {
+    suspend fun upload(context: Context, uri: Uri, uid: String, purpose: String = "story"): String {
+        require(purpose in setOf("story", "time"))
+        val expectedFolder = if (purpose == "time") "visitaloja/time/audio" else "visitaloja/stories/audio"
         val user = FirebaseAuth.getInstance().currentUser?.takeIf { it.uid == uid } ?: error("La sesión cambió.")
         val token = user.getIdToken(false).await().token ?: error("Inicia sesión nuevamente.")
         return withContext(Dispatchers.IO) {
@@ -46,9 +48,9 @@ internal object AdminAudioUpload {
             val ext = supplied.takeIf { it in setOf("mp3", "m4a", "wav", "ogg", "aac", "flac", "opus", "webm") }
                 ?: when (audioMime) { "audio/mpeg" -> "mp3"; "audio/vorbis", "audio/opus" -> "ogg"; "audio/raw" -> "wav"; "audio/flac" -> "flac"; else -> "m4a" }
             check(FirebaseAuth.getInstance().currentUser?.uid == uid) { "La sesión cambió." }
-            val auth = NativeApi.post("https://www.visitaloja.com/api/sign-time-audio?purpose=story", token, JSONObject())
+            val auth = NativeApi.post("https://www.visitaloja.com/api/sign-time-audio?purpose=$purpose", token, JSONObject())
             val cloud = auth.getString("cloudName"); val params = auth.getJSONObject("params"); val folder = params.getString("folder")
-            require(cloud.matches(Regex("[A-Za-z0-9_-]+")) && folder == "visitaloja/stories/audio" && auth.getString("signature").matches(Regex("[a-f0-9]{40}")))
+            require(cloud.matches(Regex("[A-Za-z0-9_-]+")) && folder == expectedFolder && auth.getString("signature").matches(Regex("[a-f0-9]{40}")))
             val boundary = "vl-audio-" + java.util.UUID.randomUUID()
             val connection = URL("https://api.cloudinary.com/v1_1/$cloud/video/upload").openConnection() as HttpURLConnection
             try {
