@@ -87,11 +87,11 @@ internal fun AdminEditorialEntry(uid: String, kind: String) {
                     state.message?.let { Text(it) }
                     if (kind == "stories") {
                         Row { listOf("draft" to "Borrador", "published" to "Publicada", "hidden" to "Oculta").forEach { (key, label) ->
-                            FilterChip(draft.text["status"] == key, { model.edit(draft.copy(text = draft.text + ("status" to key))) }, label = { Text(label) }, enabled = !state.busy)
+                            FilterChip(draft.text["status"] == key, { model.edit(draft.copy(text = draft.text + ("status" to key) + ("_publishIntent" to (key == "published").toString()))) }, label = { Text(label) }, enabled = !state.busy)
                         } }
                         Text("Las historias nuevas comienzan en borrador. Una fecha futura retrasa su aparición aunque esté publicada.")
                         if (draft.original?.get("active") == false || draft.original?.get("hidden") == true || draft.original?.text("publicationStatus")?.let { it.isNotBlank() && it != "published" } == true)
-                            Text("Tiene un bloqueo de visibilidad anterior. Para publicarla explícitamente, cambia a Borrador y luego a Publicada antes de guardar.")
+                            Text("Tiene un bloqueo de visibilidad anterior. Para levantar ese bloqueo, pulsa Publicada y confirma el guardado.")
                     }
                 }
                 items(EditorialPolicy.fields(kind).keys.toList(), key = { it }) { key ->
