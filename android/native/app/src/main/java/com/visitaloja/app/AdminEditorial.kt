@@ -1,11 +1,16 @@
 package com.visitaloja.app
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -114,8 +119,8 @@ internal object EditorialPolicy {
 }
 internal data class EditorialState(val uid: String? = null, val kind: String = "stories", val busy: Boolean = false, val ready: Boolean = false,
     val base: Map<String, Any?>? = null, val rows: List<Map<String, Any?>> = emptyList(), val draft: EditorialDraft? = null,
-    val places: List<Pair<String, String>> = emptyList(), val message: String? = null)
-internal class AdminEditorialViewModel : ViewModel() {
+    val places: List<Pair<String, String>> = emptyList(), val message: String? = null, val localDrafts: List<LocalAdminDraft> = emptyList())
+internal class AdminEditorialViewModel(app: Application) : AndroidViewModel(app) {
     private val auth = FirebaseAuth.getInstance(); private val db = FirebaseFirestore.getInstance()
     private val mutable = MutableStateFlow(EditorialState()); val state = mutable.asStateFlow(); private var epoch = 0
     private fun same(uid: String, version: Int) = epoch == version && mutable.value.uid == uid && auth.currentUser?.uid == uid
@@ -160,6 +165,64 @@ internal class AdminEditorialViewModel : ViewModel() {
     }
     fun edit(draft: EditorialDraft) { val old = mutable.value; if (old.ready && !old.busy && draft.id == old.draft?.id) mutable.value = old.copy(draft = draft, message = null) }
     fun dismiss() { if (!mutable.value.busy) mutable.value = mutable.value.copy(draft = null) }
+    fun local(action: String, id: String? = null) {
+        val old = mutable.value; val uid = old.uid ?: return
+        if (!old.ready || old.busy || auth.currentUser?.uid != uid) return
+        val version = epoch; mutable.value = old.copy(busy = true, message = null)
+        viewModelScope.launch {
+            try {
+                val context: Application = getApplication()
+                var recovered: LocalAdminDraft? = null
+                val rows = withContext(Dispatchers.IO) {
+                    when (action) {
+                        "save" -> {
+                            val draft = old.draft ?: error("Abre un contenido antes de guardar un borrador.")
+                            val text = draft.text - "_publishIntent"
+                            AdminLocalDrafts.save(context, uid, old.kind, draft.id, text[if (old.kind == "stories") "title" else "name"].orEmpty().ifBlank { "Sin título" }, old.base, JSONObject(text))
+                        }
+                        "restore" -> recovered = AdminLocalDrafts.load(context, uid, old.kind, requireNotNull(id))
+                        "delete" -> AdminLocalDrafts.remove(context, uid, old.kind, requireNotNull(id))
+                        "list" -> Unit
+                        else -> error("Acción no compatible.")
+                    }
+                    AdminLocalDrafts.list(context, uid, old.kind)
+                }
+                if (!same(uid, version)) return@launch
+                val saved = recovered
+                if (saved != null) {
+                    val text = AdminLocalDrafts.strings(saved.data) - "_publishIntent"
+                    require(text.keys.all { it in EditorialPolicy.fields(old.kind) || it in setOf("status", "relatedPlaceIds") }) { "Borrador incompatible." }
+                    val original = old.rows.firstOrNull { it.text("id") == saved.id }
+                    val draft = EditorialPolicy.draft(old.kind, saved.id, original)
+                    mutable.value = old.copy(draft = draft.copy(text = draft.text + text), localDrafts = rows,
+                        message = if (saved.fingerprint != AdminLocalDrafts.fingerprint(old.base)) "Borrador recuperado. El catálogo publicado cambió: revisa todo antes de guardar." else "Borrador recuperado sin publicar. Revisa y confirma el guardado cuando esté listo.")
+                } else mutable.value = old.copy(localDrafts = rows, message = when (action) { "save" -> "Borrador guardado en este teléfono para tu cuenta. No se publicó."; "delete" -> "Borrador local eliminado."; else -> null })
+            } catch (e: CancellationException) { throw e }
+            catch (e: Exception) { if (same(uid, version)) mutable.value = old.copy(message = e.message ?: "No se pudo gestionar el borrador local.") }
+        }
+    }
+    fun upload(uri: Uri, field: String) {
+        val old = mutable.value; val uid = old.uid ?: return; val draft = old.draft ?: return
+        val allowed = if (old.kind == "stories") setOf("cover", "gallery", "audioUrl", "audioUrlEn") else setOf("img")
+        if (!old.ready || old.busy || field !in allowed) return
+        if (field == "gallery" && draft.text[field].orEmpty().lines().filter(String::isNotBlank).size >= 20) {
+            mutable.value = old.copy(message = "La galería ya tiene 20 imágenes. Retira una antes de añadir otra."); return
+        }
+        val version = epoch; mutable.value = old.copy(busy = true, message = "Subiendo archivo…")
+        viewModelScope.launch {
+            try {
+                authorize(uid)
+                if (!same(uid, version)) return@launch
+                val context: Application = getApplication()
+                val url = if (field.startsWith("audio")) AdminAudioUpload.upload(context, uri, uid)
+                    else MerchantImageUpload.upload(context, uri, old.kind, if (old.kind == "stories") "story" else "entrepreneur", uid, admin = true)
+                if (!same(uid, version)) return@launch
+                val value = if (field == "gallery") listOf(draft.text[field].orEmpty().trim(), url).filter(String::isNotBlank).joinToString("\n") else url
+                mutable.value = old.copy(draft = draft.copy(text = draft.text + (field to value)), message = "Archivo subido al formulario. Guarda un borrador local o confirma el guardado para conservar el enlace.")
+            } catch (e: CancellationException) { throw e }
+            catch (e: Exception) { if (same(uid, version)) mutable.value = old.copy(message = if (e is IllegalStateException || e is IllegalArgumentException) e.message else "No se pudo subir. Se conserva el formulario. La autorización de este módulo debe estar publicada en la web.") }
+        }
+    }
     fun saveRow() {
         val old = mutable.value; val draft = old.draft ?: return
         try {
