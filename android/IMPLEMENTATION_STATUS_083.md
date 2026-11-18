@@ -53,3 +53,12 @@ Borradores explícitos en archivos privados sin copia de respaldo, separados por
 Imágenes elegidas desde el teléfono para portada, galería y emprendimiento. Audios ES/EN de historias: máximo 20 MiB, valida pista de audio sin video antes de subir. Los archivos se alojan al elegirlos, sus enlaces se conservan en el formulario/borrador y solo se publican al guardar en el servidor. Los videos continúan por enlace. Descartar un formulario no elimina automáticamente los recursos subidos.
 
 **Activación publicada:** PR #81 aprobado y fusionado en main (0a9cc6648b2632272fc2e24721ec6a19afed9572). Despliegue de producción READY y comprobación de autenticación en las rutas canónicas de imágenes de historias/emprendimientos y audio de historias. Conserva los destinos anteriores y la autorización general. No se hicieron subidas reales ni pruebas en teléfono. Los demás editores/planes/menús/idioma siguen pendientes.
+
+## Avance 0.87: Loja en el Tiempo y podcast
+Editor de puntos históricos (`loja_tiempo`): crear, editar y eliminar con confirmación; fotografías antes/ahora, etiquetas, descripciones y narraciones ES/EN, coordenadas y enlace para comprobar ubicación. Subida de imágenes y audios del teléfono reutiliza los destinos históricos ya publicados. Lista por páginas de 50 con búsqueda explícita entre los puntos cargados.
+
+Editor de podcast destacado (`siteContent/podcast`): título, etiqueta, duración indicada, descripción administrativa, portada, audio por enlace/ruta publicada y control visible. Igual que la web, este editor no sube archivos del podcast; no es un gestor de múltiples episodios. Los campos adicionales y bloqueos previos se conservan.
+
+Ambos módulos incluyen borradores privados por cuenta y recuperación contra la versión actual del servidor, vista previa de imágenes y audio usando el reproductor compartido (se detiene al salir), y guardados con auditoría atómica/comprobación de cambios concurrentes. No se cambió main ni se escribieron registros reales de contenido.
+
+Pendiente de compatibilidad web ya existente: el visor histórico web conserva su lista al recibir una colección vacía; revisar su caché/fallback al cerrar pruebas de eliminación del último punto. No se declara resuelta esa conducta por implementar el editor nativo. Continúan pendientes otros editores (portada/identidad/aliados/postales/misiones/pasaporte), planes/menús, tableros globales e inglés integral. Pruebas en teléfono al final.
