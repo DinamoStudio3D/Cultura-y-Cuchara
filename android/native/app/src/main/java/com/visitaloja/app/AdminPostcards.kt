@@ -56,12 +56,12 @@ internal object AdminPostcardPolicy {
         draft.brands.forEach { row -> require(row.name.trim().length in 1..40 && row.color.matches(Regex("#[0-9a-fA-F]{6}"))) { "Revisa nombre y color hexadecimal de los marcos de marca." } }
         require(draft.frames.size <= maxOf(40, initial.frames.size) && draft.frames.size <= 200) { "Se admiten hasta 40 marcos personalizados nuevos; conserva o reduce los anteriores." }
         require(draft.frames.map { it.text("id") }.distinct().size == draft.frames.size)
-        draft.frames.forEach { row ->
-            val before = initial.frames.firstOrNull { it.text("id") == row.text("id") }
-            if (row != before) {
-                require(row.text("id").matches(Regex("[A-Za-z0-9_-]{1,100}")) && (before != null || row.text("id") !in reserved))
-                require(row.text("name").trim().length in 1..60 && row.text("icon").length <= 4 && DiscoveryPolicy.media(row.text("img")) != null) { "Revisa nombre, ícono y enlace del marco." }
-            }
+        draft.frames.forEach { row -> validateFrame(row, initial.frames.firstOrNull { it.text("id") == row.text("id") }) }
+    }
+    fun validateFrame(row: Map<String, Any?>, before: Map<String, Any?>?) {
+        if (row != before) {
+            require(row.text("id").matches(Regex("[A-Za-z0-9_-]{1,100}")) && (before != null || row.text("id") !in reserved))
+            require(row.text("name").trim().length in 1..60 && row.text("icon").length <= 4 && DiscoveryPolicy.media(row.text("img")) != null) { "Revisa nombre, ícono y enlace del marco." }
         }
     }
     fun settings(draft: AdminPostcardDraft, base: Map<String, Any?>): Map<String, Any?> {
@@ -126,7 +126,9 @@ internal class AdminPostcardViewModel(app: Application) : AndroidViewModel(app) 
                 val row = frame.original.orEmpty() + frame.text.mapValues { it.value.trim() } + ("id" to frame.id)
                 val rows = if (frame.original == null) old.draft.frames + row else old.draft.frames.map { if (it.text("id") == frame.id) row else it }
                 val draft = old.draft.copy(frames = rows)
-                AdminPostcardPolicy.validate(draft, old.initial); verifyImage(row.text("img"))
+                require(rows.size <= maxOf(40, old.initial.frames.size) && rows.size <= 200) { "Revisa el límite de marcos personalizados." }
+                require(rows.map { it.text("id") }.distinct().size == rows.size)
+                AdminPostcardPolicy.validateFrame(row, frame.original); verifyImage(row.text("img"))
                 if (same(uid, version)) mutable.value = old.copy(draft = draft, frameDraft = null, preview = null, message = "Marco añadido al formulario. Publica la configuración o guarda un borrador para conservarlo.")
             } catch (e: CancellationException) { throw e }
             catch (e: Exception) { if (same(uid, version)) mutable.value = old.copy(message = e.message ?: "No se pudo comprobar el marco.") }
