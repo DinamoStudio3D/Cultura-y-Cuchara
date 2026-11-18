@@ -1,5 +1,8 @@
 package com.visitaloja.app
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,6 +32,9 @@ internal fun AdminEditorialEntry(uid: String, kind: String) {
     var placeQuery by remember(uid) { mutableStateOf("") }
     var action by remember(uid) { mutableStateOf<Pair<String, Int>?>(null) }
     var settings by remember(uid) { mutableStateOf<Map<String, Any?>?>(null) }
+    var drafts by remember(uid) { mutableStateOf(false) }
+    var uploadField by rememberSaveable(uid, kind) { mutableStateOf("cover") }
+    val mediaPicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri -> if (uri != null) model.upload(uri, uploadField) }
     var refresh by remember(uid) { mutableStateOf(false) }
     DisposableEffect(uid) { onDispose { model.bind(null, kind) } }
     fun closeDraft() {
@@ -43,11 +49,12 @@ internal fun AdminEditorialEntry(uid: String, kind: String) {
                 item {
                     Text(title, style = MaterialTheme.typography.headlineSmall)
                     TextButton(onClick = { open = false; model.bind(null, kind) }, enabled = !state.busy && state.draft == null) { Text("Cerrar") }
-                    Text("Los cambios guardados se reflejan en la web y la app. Las imágenes y audios se añaden por enlace en este editor.")
+                    Text("Los cambios guardados se reflejan en la web y la app. Puedes elegir imágenes y audios del teléfono o conservar sus enlaces. Subir un archivo solo lo añade al formulario; guarda después para publicarlo.")
                     if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
                     state.message?.let { Text(it) }
                     OutlinedButton(onClick = { model.bind(uid, kind) }, enabled = !state.busy) { Text("Actualizar catálogo") }
                     Button(onClick = { model.select(null) }, enabled = state.ready && !state.busy && state.rows.size < 300) { Text(if (kind == "stories") "Crear historia" else "Crear emprendimiento") }
+                    OutlinedButton(onClick = { model.local("list"); drafts = true }, enabled = state.ready && !state.busy) { Text("Recuperar borradores de este teléfono") }
                     if (kind == "stories") OutlinedButton(onClick = {
                         val raw = state.base?.get("settings") as? Map<*, *>
                         settings = mapOf("active" to (raw?.get("active") != false), "title" to (raw?.get("title") as? String ?: "Historias de Loja"),
@@ -76,6 +83,8 @@ internal fun AdminEditorialEntry(uid: String, kind: String) {
             }
         }
     }
+    if (drafts) AdminDraftPicker(state.localDrafts, state.busy, state.message, { drafts = false },
+        { id -> drafts = false; model.local("restore", id) }, { id -> model.local("delete", id) })
     val draft = state.draft
     if (open && draft != null) Dialog(onDismissRequest = ::closeDraft, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize().systemBarsPadding()) {
@@ -98,6 +107,11 @@ internal fun AdminEditorialEntry(uid: String, kind: String) {
                     val info = EditorialPolicy.fields(kind).getValue(key)
                     OutlinedTextField(draft.text[key].orEmpty(), { model.edit(draft.copy(text = draft.text + (key to it.take(info.second)))) },
                         label = { Text(info.first) }, enabled = !state.busy, modifier = Modifier.fillMaxWidth())
+                    if (key in (if (kind == "stories") setOf("cover", "gallery", "audioUrl", "audioUrlEn") else setOf("img"))) {
+                        OutlinedButton(onClick = { uploadField = key; mediaPicker.launch(if (key.startsWith("audio")) "audio/*" else "image/*") }, enabled = !state.busy) {
+                            Text(if (key.startsWith("audio")) "Elegir audio del teléfono · hasta 20 MB" else if (key == "gallery") "Añadir foto del teléfono" else "Elegir imagen del teléfono")
+                        }
+                    }
                     if (key == "publishAt") Text("Formato: AAAA-MM-DDTHH:MM. Ejemplo: 2026-11-20T18:30. Vacío: sin programación.")
                     if (key in setOf("cover", "img")) DiscoveryPolicy.media(draft.text[key].orEmpty())?.let { AsyncImage(it, "Imagen del contenido", Modifier.fillMaxWidth().height(180.dp), contentScale = ContentScale.Fit) }
                 }
@@ -113,6 +127,7 @@ internal fun AdminEditorialEntry(uid: String, kind: String) {
                     OutlinedButton(onClick = { placeQuery = ""; related = true }, enabled = !state.busy && ids.size < 50) { Text("Relacionar una parada") }
                 }
                 item {
+                    OutlinedButton(onClick = { model.local("save") }, enabled = !state.busy) { Text("Guardar borrador en este teléfono") }
                     OutlinedButton(onClick = { preview = true }, enabled = !state.busy) { Text("Previsualizar texto e imagen") }
                     Button(onClick = { review = true }, enabled = !state.busy) { Text("Revisar guardado") }
                     OutlinedButton(onClick = { refresh = true }, enabled = !state.busy) { Text("Descartar formulario y actualizar") }
