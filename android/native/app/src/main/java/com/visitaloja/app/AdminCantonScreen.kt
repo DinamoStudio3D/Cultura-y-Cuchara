@@ -26,6 +26,7 @@ internal fun AdminCantonsEntry(uid: String) {
     var discard by remember(uid) { mutableStateOf(false) }
     var reload by remember(uid) { mutableStateOf(false) }
     var review by remember(uid) { mutableStateOf(false) }
+    var drafts by remember(uid) { mutableStateOf(false) }
     var preview by remember(uid) { mutableStateOf(false) }
     var picker by remember(uid) { mutableStateOf<Int?>(null) }
     var query by remember(uid, picker) { mutableStateOf("") }
@@ -55,6 +56,7 @@ internal fun AdminCantonsEntry(uid: String) {
                 } else {
                     item {
                         Text(CantonPolicy.catalogue.firstOrNull { it.id == selected }?.name.orEmpty(), style = MaterialTheme.typography.titleLarge)
+                        OutlinedButton(onClick = { model.local("list"); drafts = true }, enabled = state.ready && !state.busy) { Text("Recuperar borrador de este cantón") }
                         Text("Guardar publica la guía en la web y la app. La duración de las rutas es orientativa, no un cálculo de navegación.")
                         OutlinedButton(onClick = { if (state.draft != state.initial) reload = true else model.bind(uid, selected) }, enabled = !state.busy) { Text("Actualizar desde la web") }
                     }
@@ -100,6 +102,7 @@ internal fun AdminCantonsEntry(uid: String) {
                         }
                         item {
                             OutlinedButton(onClick = { model.edit(state.draft.copy(routes = state.draft.routes + CantonEditRoute())) }, enabled = state.ready && !state.busy && state.draft.routes.size < 8) { Text("Añadir ruta · máximo 8") }
+                            OutlinedButton(onClick = { model.local("save") }, enabled = state.ready && !state.busy) { Text("Guardar borrador en este teléfono") }
                             OutlinedButton(onClick = { preview = true }, enabled = !state.busy) { Text("Previsualizar guía") }
                             Button(onClick = { review = true }, enabled = state.ready && !state.busy && state.draft != state.initial) { Text("Revisar y publicar cambios") }
                             Text("Las fichas de las paradas se editan desde Paradas. Este editor cambia la guía y sus recomendaciones.")
@@ -109,6 +112,8 @@ internal fun AdminCantonsEntry(uid: String) {
             }
         }
     }
+    if (drafts) AdminDraftPicker(state.localDrafts, state.busy, state.message, { drafts = false },
+        { id -> drafts = false; model.local("restore", id) }, { id -> model.local("delete", id) })
     val destination = picker
     if (open && destination != null) Dialog(onDismissRequest = { picker = null }) {
         Surface {
