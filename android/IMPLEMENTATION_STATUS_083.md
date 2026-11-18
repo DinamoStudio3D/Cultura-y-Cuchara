@@ -41,3 +41,8 @@ Añade edición de textos de guía, portada por enlace o subida directa, crédit
 El catálogo se carga completo desde servidor (máximo 5000 registros, falla explícitamente si se supera); el buscador muestra hasta 50 coincidencias. No se descartan referencias antiguas silenciosamente.
 
 No incluye todavía borradores persistentes locales de cantones ni las acciones incrustadas de crear/editar fichas: esas fichas se gestionan en el editor de paradas existente. El editor no calcula tiempos ni crea navegación GPS. Las pruebas en teléfono siguen aplazadas. Los otros grupos de editores de la tabla continúan pendientes.
+
+## Avance 0.85: historias y emprendedores
+Administración nativa de ambos catálogos: crear, editar, ordenar y eliminar con confirmación. Historias incluye estados, programación en hora de Ecuador, textos ES/EN, portada/galería/audio/video por enlace, coordenadas y selección de paradas relacionadas. Configuración de presentación de Historias y vista previa de texto/imágenes. Mantiene campos no editados y exige recargar ante modificaciones concurrentes; catálogo y auditoría se guardan en la misma transacción.
+
+Pendientes de estos módulos: subir sus archivos directamente, borradores persistentes, reproducción multimedia dentro de la previsualización. Un documento pausado globalmente conserva esa pausa; no se cambia al guardar una fila. No se borran archivos al eliminar filas. Los demás editores y planes/menús/idioma siguen pendientes. Las pruebas en teléfono se aplazan.
