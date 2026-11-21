@@ -25,9 +25,9 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
     val model: AdminPlatformViewModel = viewModel(key = "admin-platform-" + kind)
     val observed by model.state.collectAsStateWithLifecycle()
     val state = observed.takeIf { it.uid == uid } ?: AdminPlatformState(kind = kind)
-    val title = if (kind == "home") "Portada e identidad" else "Ellos hacen posible VisitaLoja"
+    val title = when (kind) { "home" -> "Portada e identidad"; "passport" -> "Configuración de pasaporte"; else -> "Ellos hacen posible VisitaLoja" }
     var open by remember(uid) { mutableStateOf(false) }
-    var group by remember(uid) { mutableStateOf(if (kind == "home") "general" else "supporters") }
+    var group by remember(uid) { mutableStateOf(when (kind) { "home" -> "general"; "passport" -> "passport"; else -> "supporters" }) }
     var chooseGroup by remember(uid) { mutableStateOf(false) }
     var query by remember(uid) { mutableStateOf("") }
     var discard by remember(uid) { mutableStateOf(false) }
@@ -64,6 +64,10 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                         Text("Para organizar la biblioteca y los encuadres de portada, abre Fotografías y créditos en Administración. Aquí se conservan sus datos.")
                         OutlinedButton(onClick = { query = ""; chooseGroup = true }, enabled = state.ready && !state.busy) { Text("Elegir bloque · " + current?.title.orEmpty()) }
                         current?.let { Text(it.title, style = MaterialTheme.typography.titleLarge); Text(if (it.native) "Incluye contenido utilizado por la app y la web." else "Bloque de presentación de la web.") }
+                    } else if (kind == "passport") {
+                        Text("Edita el nombre, mensaje y periodo de premios de la campaña actual. Desactivar premios conserva el funcionamiento de los sellos.")
+                        Text("Campaña actual: " + state.base?.text("campaignId").orEmpty().ifBlank { "Sin campaña configurada" })
+                        Text("Aquí se conservan el ID, los premios Turista/Lojano, alternativas y negocios de entrega. Su editor completo y los permisos de canje siguen pendientes. Cambiar fechas o activar premios afecta a la campaña actual.")
                     } else {
                         Text("Solo aparecen negocios con plan de pago vigente. Los planes se gestionan en Suscripciones; este editor organiza la franja de apoyo.")
                         Text("En modo Automático se incluyen los elegibles excepto los excluidos. En modo Seleccionar se muestran los elegidos. Mesa Turística se controla por separado.")
@@ -99,7 +103,7 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                         }
                     }
                     item {
-                        OutlinedButton(onClick = { preview = true }, enabled = !state.busy) { Text(if (kind == "home") "Previsualizar texto e imagen del bloque" else "Ver selección de la franja") }
+                        OutlinedButton(onClick = { preview = true }, enabled = !state.busy) { Text(if (kind == "supporters") "Ver selección de la franja" else "Previsualizar textos") }
                         OutlinedButton(onClick = { model.local("save") }, enabled = !state.busy) { Text("Guardar borrador local") }
                         Button(onClick = { review = true }, enabled = !state.busy && state.draft != state.initial) { Text("Revisar y publicar cambios") }
                     }
@@ -124,7 +128,7 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                 item { Text(config.title, style = MaterialTheme.typography.titleMedium); Text(config.subtitle); Text("Negocios e instituciones que aparecerían según la última consulta: " + entries.size) }
                 items(entries, key = { it.id }) { entry -> OutlinedCard(Modifier.fillMaxWidth()) { Column(Modifier.padding(12.dp)) { entry.logo?.let { AsyncImage(it, entry.name, Modifier.fillMaxWidth().height(75.dp), contentScale = ContentScale.Fit) }; Text(entry.name) } } }
             } else {
-                item { Row { Checkbox(english, { english = it }); Text("Ver textos EN") }; Text("Esta vista revisa contenido del bloque; el diseño final corresponde a cada pantalla.") }
+                item { if (kind == "home") Row { Checkbox(english, { english = it }); Text("Ver textos EN") }; Text("Esta vista revisa textos; el diseño final corresponde a cada pantalla.") }
                 val values = current?.fields?.filter { field -> field.type == "image" || field.type == "text" && (if (english) field.key.endsWith("En") else !field.key.endsWith("En")) }.orEmpty()
                 items(values, key = { it.key }) { field ->
                     if (field.type == "image") DiscoveryPolicy.media(state.draft[field.key].orEmpty())?.let { AsyncImage(it, field.label, Modifier.fillMaxWidth().height(200.dp), contentScale = ContentScale.Fit) }
