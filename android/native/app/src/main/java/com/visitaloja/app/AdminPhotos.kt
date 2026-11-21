@@ -148,6 +148,7 @@ internal class AdminPhotosViewModel(app: Application) : AndroidViewModel(app) {
         }
         old.copy(draft = old.draft.copy(photos = rows))
     }
+    fun newAuthor() = change { old -> old.copy(editing = old.editing?.plus(mapOf("authorId" to "", "credit" to "", "creditUrl" to ""))) }
     fun chooseAuthor(index: Int) = change { old ->
         val author = old.draft.authors[index]; old.copy(editing = old.editing?.plus(mapOf("authorId" to author.text("id"), "credit" to author.text("name"), "creditUrl" to author.text("url"))))
     }
