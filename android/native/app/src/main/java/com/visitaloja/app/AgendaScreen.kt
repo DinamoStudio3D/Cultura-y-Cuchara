@@ -30,32 +30,32 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-private fun eventDate(event: LojaEvent) = Instant.ofEpochMilli(event.start).atZone(AgendaPolicy.zone)
-    .format(DateTimeFormatter.ofPattern("EEE d MMM · HH:mm", Locale.forLanguageTag("es-EC")))
+private fun eventDate(event: LojaEvent, english: Boolean = false) = Instant.ofEpochMilli(event.start).atZone(AgendaPolicy.zone)
+    .format(DateTimeFormatter.ofPattern("EEE d MMM · HH:mm", Locale.forLanguageTag(if (english) "en-US" else "es-EC")))
 
 @Composable
-fun HomeAgenda(state: AgendaState, open: () -> Unit, detail: (String) -> Unit) {
+fun HomeAgenda(state: AgendaState, open: () -> Unit, detail: (String) -> Unit, english: Boolean = false) {
     val next = AgendaPolicy.upcoming(state.events, state.now).firstOrNull()
     Column(Modifier.padding(horizontal=18.dp).testTag("home-agenda"),verticalArrangement=Arrangement.spacedBy(10.dp)) {
         Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
-            Text("Qué pasa en Loja",fontSize=20.sp,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
-            TextButton(onClick=open){Text("Ver agenda",fontSize=12.sp)}
+            Text(if (english) "What’s on in Loja" else "Qué pasa en Loja",fontSize=20.sp,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
+            TextButton(onClick=open){Text(if (english) "See agenda" else "Ver agenda",fontSize=12.sp)}
         }
         OutlinedCard(onClick={if(next==null)open() else detail(next.id)},modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(16.dp),colors=CardDefaults.outlinedCardColors(containerColor=Color.White)) {
             if(next==null) Row(Modifier.padding(16.dp),horizontalArrangement=Arrangement.spacedBy(12.dp),verticalAlignment=Alignment.CenterVertically) {
                 Icon(Icons.Default.Event,null,tint=MaterialTheme.colorScheme.primary)
-                Column(Modifier.weight(1f)) { Text("Agenda de Loja",fontWeight=FontWeight.Bold);Text(if(state.loading)"Consultando la programación…" else if(state.error)"Reintenta para consultar los eventos publicados." else "Aquí aparecerá el próximo evento publicado.",fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant) }
+                Column(Modifier.weight(1f)) { Text(if (english) "Loja events" else "Agenda de Loja",fontWeight=FontWeight.Bold);Text(if (english) { if (state.loading) "Checking the schedule…" else if (state.error) "Try again to see published events." else "The next published event will appear here." } else if(state.loading)"Consultando la programación…" else if(state.error)"Reintenta para consultar los eventos publicados." else "Aquí aparecerá el próximo evento publicado.",fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant) }
             } else Row(Modifier.padding(12.dp),horizontalArrangement=Arrangement.spacedBy(13.dp),verticalAlignment=Alignment.CenterVertically) {
-                if(next.image!=null)AsyncImage(next.image,"Afiche de ${next.title}",Modifier.width(94.dp).height(132.dp),contentScale=ContentScale.Fit,placeholder=painterResource(R.drawable.visitaloja_logo),error=painterResource(R.drawable.visitaloja_logo))
+                if(next.image!=null)AsyncImage(next.image,if (english) "Poster for ${next.title}" else "Afiche de ${next.title}",Modifier.width(94.dp).height(132.dp),contentScale=ContentScale.Fit,placeholder=painterResource(R.drawable.visitaloja_logo),error=painterResource(R.drawable.visitaloja_logo))
                 Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(7.dp)) {
-                    Text(eventDate(next),fontSize=11.sp,color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold)
+                    Text(eventDate(next, english),fontSize=11.sp,color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold)
                     Text(next.title,fontSize=17.sp,fontWeight=FontWeight.Bold,maxLines=3,overflow=TextOverflow.Ellipsis)
                     Text(next.location.ifBlank{next.category},fontSize=12.sp,color=MaterialTheme.colorScheme.onSurfaceVariant,maxLines=2,overflow=TextOverflow.Ellipsis)
-                    Text("Ver detalles →",fontSize=12.sp,color=MaterialTheme.colorScheme.primary)
+                    Text(if (english) "View details →" else "Ver detalles →",fontSize=12.sp,color=MaterialTheme.colorScheme.primary)
                 }
             }
         }
-        if(state.cached&&next!=null)Text("Programación guardada; actualiza para confirmar cambios.",fontSize=11.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
+        if(state.cached&&next!=null)Text(if (english) "Saved schedule; refresh to confirm changes." else "Programación guardada; actualiza para confirmar cambios.",fontSize=11.sp,color=MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
