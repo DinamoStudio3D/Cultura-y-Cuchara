@@ -1,5 +1,12 @@
 package com.visitaloja.app
 
+import android.app.DatePickerDialog
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import java.time.LocalDate
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -63,7 +70,12 @@ fun HomeAgenda(state: AgendaState, open: () -> Unit, detail: (String) -> Unit, e
 fun AgendaScreen(state: AgendaState, detail: (String) -> Unit, retry: () -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var period by rememberSaveable { mutableStateOf("all") }
-    val events = AgendaPolicy.filter(state.events, state.now, period, query)
+    var dateSelection by rememberSaveable { mutableStateOf<String?>(null) }
+    val selectedDate = dateSelection?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+    val today = Instant.ofEpochMilli(state.now).atZone(AgendaPolicy.zone).toLocalDate()
+    val context = LocalContext.current
+    val events = AgendaPolicy.filter(state.events, state.now, period, query, selectedDate)
+    val days = events.groupBy { Instant.ofEpochMilli(it.start).atZone(AgendaPolicy.zone).toLocalDate() }
     LazyColumn(contentPadding = PaddingValues(22.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Text("PLANES PARA VIVIR LOJA", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
@@ -73,9 +85,23 @@ fun AgendaScreen(state: AgendaState, detail: (String) -> Unit, retry: () -> Unit
         item { OutlinedTextField(value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth(), singleLine = true,
             label = { Text("Busca un evento o lugar") }, leadingIcon = { Icon(Icons.Default.Search, null) },
             trailingIcon = { if (query.isNotBlank()) IconButton(onClick = { query = "" }) { Icon(Icons.Default.Close, "Borrar búsqueda") } }, shape = RoundedCornerShape(16.dp)) }
-        item { Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("all" to "Próximos", "today" to "Hoy", "week" to "7 días").forEach { (id, label) -> FilterChip(selected = period == id, onClick = { period = id }, label = { Text(label) }) }
+        item { Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("all" to "Próximos", "today" to "Hoy", "tomorrow" to "Mañana", "week" to "7 días").forEach { (id, label) ->
+                FilterChip(selected = selectedDate == null && period == id, onClick = { period = id; dateSelection = null }, modifier = Modifier.testTag("agenda-period-$id"), label = { Text(label) })
+            }
         } }
+        item {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                OutlinedButton(onClick = {
+                    val initial = selectedDate ?: today
+                    DatePickerDialog(context, { _, year, month, day -> dateSelection = LocalDate.of(year, month + 1, day).toString() }, initial.year, initial.monthValue - 1, initial.dayOfMonth).show()
+                }, modifier = Modifier.weight(1f).testTag("agenda-choose-date")) {
+                    Icon(Icons.Default.CalendarMonth, null); Spacer(Modifier.width(8.dp))
+                    Text(selectedDate?.format(DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("es-EC"))) ?: "Elegir fecha")
+                }
+                if (selectedDate != null) IconButton(onClick = { dateSelection = null; period = "all" }) { Icon(Icons.Default.Close, "Quitar fecha seleccionada") }
+            }
+        }
         if (state.cached || state.error) item { Text("No hay confirmación reciente del servidor. Actualiza y confirma con el organizador antes de asistir.", fontSize = 12.sp, color = MaterialTheme.colorScheme.error) }
         if (state.loading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
         if (state.error) item { OutlinedButton(onClick = retry) { Text("Reintentar consulta") } }
@@ -83,11 +109,18 @@ fun AgendaScreen(state: AgendaState, detail: (String) -> Unit, retry: () -> Unit
             Column(Modifier.padding(vertical = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Icon(Icons.Default.EventAvailable, null, Modifier.size(36.dp), tint = MaterialTheme.colorScheme.primary)
                 Text("Un nuevo plan está por llegar", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                Text(if (query.isNotBlank() || period != "all") "No hay eventos con estos filtros. Prueba otra búsqueda o consulta los próximos." else "Todavía no hay próximos eventos publicados. Vuelve a consultar la programación más adelante.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                TextButton(onClick = { query = ""; period = "all"; retry() }) { Text("Ver todos y actualizar") }
+                Text(if (query.isNotBlank() || period != "all" || selectedDate != null) "No hay eventos con estos filtros. Prueba otra búsqueda o consulta los próximos." else "Todavía no hay próximos eventos publicados. Vuelve a consultar la programación más adelante.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                TextButton(onClick = { query = ""; period = "all"; dateSelection = null; retry() }) { Text("Ver todos y actualizar") }
             }
         }
-        items(events, key = LojaEvent::id) { event -> EventCard(event, { detail(event.id) }, Modifier.fillMaxWidth()) }
+        if (events.isNotEmpty()) item { Text("${events.size} ${if (events.size == 1) "evento" else "eventos"}", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        days.forEach { (date, dayEvents) ->
+            item(key = "day-$date") {
+                val label = when (date) { today -> "Hoy"; today.plusDays(1) -> "Mañana"; else -> date.format(DateTimeFormatter.ofPattern("EEEE", Locale.forLanguageTag("es-EC"))) }
+                Text("$label · ${date.format(DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("es-EC")))}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 8.dp).testTag("agenda-day-$date"))
+            }
+            items(dayEvents, key = { "event-${it.id}" }) { event -> EventCard(event, { detail(event.id) }, Modifier.fillMaxWidth()) }
+        }
         item { Text("Fechas y horas de Loja, Ecuador.", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     }
 }
@@ -107,10 +140,27 @@ private fun EventCard(event: LojaEvent, open: () -> Unit, modifier: Modifier) {
 
 @Composable
 fun EventDetail(event: LojaEvent) {
+    var posterOpen by rememberSaveable(event.id) { mutableStateOf(false) }
+    if (posterOpen && event.image != null) Dialog(onDismissRequest = { posterOpen = false }, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
+        Surface(color = Color(0xFF10243A), modifier = Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxSize().systemBarsPadding().padding(12.dp)) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(event.title, color = Color.White, modifier = Modifier.weight(1f), maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    IconButton(onClick = { posterOpen = false }) { Icon(Icons.Default.Close, "Cerrar afiche", tint = Color.White) }
+                }
+                AsyncImage(model = event.image, contentDescription = "Afiche completo de ${event.title}", modifier = Modifier.weight(1f).fillMaxWidth().testTag("event-poster-fullscreen"), contentScale = ContentScale.Fit, error = painterResource(R.drawable.visitaloja_logo), placeholder = painterResource(R.drawable.visitaloja_logo))
+            }
+        }
+    }
     val context = LocalContext.current
     fun open(intent: Intent) { try { context.startActivity(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, "No hay una aplicación compatible disponible.", Toast.LENGTH_LONG).show() } }
     LazyColumn(contentPadding = PaddingValues(22.dp), verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.navigationBarsPadding()) {
-        if (event.image != null) item { AsyncImage(model = event.image, contentDescription = "Afiche de ${event.title}", modifier = Modifier.fillMaxWidth().height(360.dp), contentScale = ContentScale.Fit, error = painterResource(R.drawable.visitaloja_logo), placeholder = painterResource(R.drawable.visitaloja_logo)) }
+        if (event.image != null) item {
+            Column {
+                AsyncImage(model = event.image, contentDescription = "Ampliar afiche de ${event.title}", modifier = Modifier.fillMaxWidth().height(360.dp).clickable { posterOpen = true }.testTag("event-poster-expand"), contentScale = ContentScale.Fit, error = painterResource(R.drawable.visitaloja_logo), placeholder = painterResource(R.drawable.visitaloja_logo))
+                TextButton(onClick = { posterOpen = true }) { Icon(Icons.Default.ZoomIn, null); Spacer(Modifier.width(6.dp)); Text("Ver afiche completo") }
+            }
+        }
         item { Text(event.category, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold); Text(event.title, fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 6.dp)) }
         item { Text(eventDate(event), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary); Text("Hora de Loja, Ecuador", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         if (event.location.isNotBlank()) item { Text(event.location) }
