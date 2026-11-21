@@ -67,7 +67,7 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                     } else if (kind == "passport") {
                         Text("Edita el nombre, mensaje y periodo de premios de la campaña actual. Desactivar premios conserva el funcionamiento de los sellos.")
                         Text("Campaña actual: " + state.base?.text("campaignId").orEmpty().ifBlank { "Sin campaña configurada" })
-                        Text("Aquí se conservan el ID, los premios Turista/Lojano, alternativas y negocios de entrega. Su editor completo y los permisos de canje siguen pendientes. Cambiar fechas o activar premios afecta a la campaña actual.")
+                        Text("Aquí se conservan el ID, los premios Turista/Lojano, alternativas y negocios de entrega. Para editarlos, abre Administrar premios del pasaporte. Cambiar fechas o activar premios afecta a la campaña actual.")
                     } else {
                         Text("Solo aparecen negocios con plan de pago vigente. Los planes se gestionan en Suscripciones; este editor organiza la franja de apoyo.")
                         Text("En modo Automático se incluyen los elegibles excepto los excluidos. En modo Seleccionar se muestran los elegidos. Mesa Turística se controla por separado.")
