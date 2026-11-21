@@ -11,6 +11,7 @@ on:
       - 'scripts/test-android-discovery.py'
       - 'scripts/test-android-brand-logos.py'
       - 'scripts/test-android-nearby.py'
+      - 'scripts/test-android-place-video.py'
       - '.github/workflows/android-native.yml'
       - 'mascota-vive-loja.png'
       - 'assets/brand/visitaloja-splash.webp'

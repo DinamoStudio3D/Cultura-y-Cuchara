@@ -22,6 +22,21 @@ def wait(desc=None,text=None):
         if item is not None:return item
         time.sleep(1)
     raise AssertionError('Video control not found: '+str(desc or text))
+def video_button(root):
+    """The label can be a 40px TextView inside the actual 96px tap target."""
+    parents={child:parent for parent in root.iter() for child in parent}
+    for node in root.iter('node'):
+        if not (node.get('resource-id','').split(':id/')[-1]=='place-video' or
+                node.get('text') in ['Conoce este lugar por video','Discover this place on video'] or
+                node.get('content-desc') in ['Conoce este lugar por video','Discover this place on video']):
+            continue
+        target=node
+        while target is not None:
+            if target.get('clickable')=='true' and target.get('enabled','true')=='true':
+                return target
+            target=parents.get(target)
+    return None
+
 def tap(node):
     x1,y1,x2,y2=map(int,re.findall(r'\d+',node.get('bounds')))
     adb('shell','input','tap',str((x1+x2)//2),str((y1+y2)//2))
@@ -35,7 +50,7 @@ try:
     wait(desc='Cerrar ficha')
     for _ in range(25):
         root=tree()
-        button=next((n for n in root.iter('node') if n.get('resource-id','').split(':id/')[-1]=='place-video' or n.get('text') in ['Conoce este lugar por video','Discover this place on video']),None)
+        button=video_button(root)
         if button is not None:
             bounds=list(map(int,re.findall(r'\d+',button.get('bounds'))))
             if bounds[3]-bounds[1]>=50 and bounds[1]>=96 and bounds[3]<1500:

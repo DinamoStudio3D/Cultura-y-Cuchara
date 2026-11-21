@@ -217,6 +217,14 @@ try:
         wait(tag='videos-screen');capture('discovery-link-share-warm')
         adb('shell','am','start','-a','android.intent.action.VIEW','-d','https://visitaloja.com/','-n',PKG+'/com.visitaloja.app.MainActivity')
         wait(tag='home-sections');time.sleep(1)
+        # Test the regular Home layout after explicitly declining the optional
+        # first-run prompt; this does not grant permission or subscribe a user.
+        first_run=find(tree(),tag='first-run-push')
+        if first_run is not None:
+            decline=find(tree(),text='Ahora no')
+            assert decline is not None,'First-run notice must offer a decline action'
+            tap(decline);time.sleep(1)
+            assert find(tree(),tag='first-run-push') is None,'Declining did not dismiss first-run notice'
         wait(tag='home-hero-next')
         for category in ['food','cafe','hotel','turismo']:
             assert find(tree(),tag='home-category-'+category) is not None,'Category is not visible on the first Home screen: '+category
