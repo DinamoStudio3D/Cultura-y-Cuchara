@@ -168,7 +168,7 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
 }
 @Composable
 internal fun PlatformFieldControl(field: PlatformField, value: String, enabled: Boolean, change: (String) -> Unit) {
-    val labels = mapOf("all" to "Automático", "selected" to "Seleccionar negocios", "small" to "Pequeños", "medium" to "Medianos", "large" to "Grandes", "left" to "Izquierda", "right" to "Derecha", "immersive" to "Inmersiva", "standard" to "Estándar", "compact" to "Compacta", "cinematic" to "Fondo completo", "classic" to "Clásica", "clean" to "Lateral", "extra" to "Muy redondeadas", "elevated" to "Elevadas", "bordered" to "Contorno", "soft" to "Suaves", "contain" to "Foto completa", "cover" to "Llenar y recortar")
+    val labels = mapOf("active" to "Activo", "trial" to "Periodo de prueba", "pending" to "Pendiente de pago", "expired" to "Vencido", "paused" to "Suspendido", "transfer" to "Transferencia", "cash" to "Efectivo", "card" to "Tarjeta", "deposit" to "Depósito", "other" to "Otro", "all" to "Automático", "selected" to "Seleccionar negocios", "small" to "Pequeños", "medium" to "Medianos", "large" to "Grandes", "left" to "Izquierda", "right" to "Derecha", "immersive" to "Inmersiva", "standard" to "Estándar", "compact" to "Compacta", "cinematic" to "Fondo completo", "classic" to "Clásica", "clean" to "Lateral", "extra" to "Muy redondeadas", "elevated" to "Elevadas", "bordered" to "Contorno", "soft" to "Suaves", "contain" to "Foto completa", "cover" to "Llenar y recortar")
     when (field.type) {
         "readonly" -> { Text(field.label, style = MaterialTheme.typography.labelLarge); Text(value) }
         "bool" -> Row { Checkbox(value == "true", { change(it.toString()) }, enabled = enabled); Text(field.label) }
