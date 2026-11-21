@@ -999,7 +999,7 @@
     {
       "id": "footerContact",
       "name": "Contacto y redes sociales",
-      "native": false,
+      "native": true,
       "fields": [
         {
           "key": "footerContactTitle",
@@ -1381,7 +1381,7 @@
     {
       "id": "footerIdentity",
       "name": "Texto del pie de página",
-      "native": false,
+      "native": true,
       "fields": [
         {
           "key": "title",
