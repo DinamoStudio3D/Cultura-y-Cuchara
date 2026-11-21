@@ -151,3 +151,8 @@ Quedan pendientes registrar/corregir pagos del historial, recordatorios comercia
 ## 0.100.0 — Exploración visible para visitantes
 
 Explorar y Favoritos abren con una lista compacta (imagen completa, nombre, dirección y corazón), con selector para volver a fotos grandes. Filtros combinables con búsqueda y categoría: contenido completo, video habilitado según las mismas reglas de la ficha, o enlace a menú QR registrado. El menú se valida al abrir; el filtro no certifica disponibilidad del documento QR. Video se oculta en datos offline y actualiza su vigencia en primer plano cada 15 segundos. Limpiar filtros recupera los resultados; no altera favoritos ni las categorías del mapa. No cambia la web ni main. Validación pendiente de CI al preparar esta versión; pruebas físicas se mantienen para el final.
+
+
+## 0.101.0 — Fichas con contacto al inicio y miniaturas
+
+Cómo llegar, WhatsApp y teléfono aparecen junto al nombre, dirección y horario, antes de las secciones extensas. Guardar y Compartir comparten una fila, sin repetir controles al final. Reseñas pasa después de la información del lugar. La cabecera añade miniaturas seleccionables cuando hay varias fotografías, con imagen completa y borde de selección sincronizado con la foto principal. Conserva visor ampliado y deslizamiento. No cambia publicaciones ni datos ni web/main. Verificación de compilación y lint en CI; pruebas físicas pendientes para el final.
