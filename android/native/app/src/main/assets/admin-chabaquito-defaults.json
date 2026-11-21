@@ -28,5 +28,22 @@
     "title": "Explorador de Loja",
     "text": "Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.",
     "signature": "Visita Loja"
+  },
+  "benefit": {
+    "active": false,
+    "campaignId": "misiones-2026",
+    "sponsorName": "",
+    "title": "Beneficio de Explorador",
+    "titleEn": "Explorer reward",
+    "description": "Presenta tu código para reclamar el beneficio disponible.",
+    "descriptionEn": "Show your code to claim the available reward.",
+    "startAt": "",
+    "endAt": "",
+    "stock": 100,
+    "imageUrl": "",
+    "code": "EXPLORADOR",
+    "validity": "",
+    "buttonText": "Registrar y generar mi código",
+    "url": ""
   }
 }
