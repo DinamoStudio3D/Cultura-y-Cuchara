@@ -161,3 +161,8 @@ Cómo llegar, WhatsApp y teléfono aparecen junto al nombre, dirección y horari
 ## 0.102.0 — Categorías claras en Inicio
 
 Los cuatro accesos de categorías de Inicio pasan a tarjetas en dos columnas con títulos orientados a la visita y conteos calculados con la misma política de publicación/categoría que Explorar. Distingue carga, fallo sin datos y conteos de caché sin conexión. Conserva accesos y etiquetas de automatización existentes. Agenda de Inicio, fechas y tarjetas de paradas respetan ES/EN; no traduce nombres ni contenido del negocio. La agenda completa conserva su idioma existente. No añade secciones duplicadas ni cambia datos o main. Compilación y revisión CI al preparar la APK; pruebas físicas al final.
+
+
+## 0.103.0 — Agenda por fecha y afiche ampliado
+
+Agenda añade Mañana y selector de fecha exacta, combinados con búsqueda. La fecha exacta sustituye el periodo; tocar un periodo quita la fecha. Resultados agrupados por día en zona America/Guayaquil, con conteo y limpieza completa en estado vacío. Conserva orden cronológico, filtros de publicación y retirada una hora después del inicio; no recupera eventos vencidos al elegir fechas pasadas. Ficha permite abrir/cerrar afiche en pantalla completa conservando proporción, sin recorte. Sin cambios de datos ni web/main. CI comprueba compilación, pruebas unitarias y lint; pruebas físicas pendientes para el final.
