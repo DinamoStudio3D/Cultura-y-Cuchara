@@ -176,3 +176,8 @@ El botón de lista del mapa abre un panel con los mismos puntos filtrados por b�
 ## 0.105.0 — Editar y retomar Mi recorrido
 
 Cada parada permite seguir desde ahí sin alterar orden, favoritos ni emitir visitas/sellos. El recorrido activo muestra posición y barra, con etiqueta en la parada actual; es posición elegida, no visitas verificadas. Los planes generados permiten quitar paradas con confirmación, conservando orden y favoritos. Quitar la parada actual pausa el plan; quitar la última elimina el plan local y vuelve a favoritos. Eliminar plan completo ahora pide confirmación. Mantiene separación por cuenta y controles existentes de frescura del plan. CI verifica política de eliminación, compilación y lint; pruebas físicas al final. No modifica datos de visitas, favoritos remotos ni main.
+
+
+## 0.106.0 — Idioma de agenda y eventos
+
+La selección ES/EN llega a la agenda completa y ficha de evento: filtros, selector de fecha con contexto localizado, encabezados, fechas, contador, vacíos/errores, textos accesibles, afiche ampliado, navegación, calendario y compartir. Compartir usa la política común y siempre informa hora de Loja, independientemente del idioma/zona del teléfono. Nombres, descripciones, categorías y ubicaciones publicados no se traducen automáticamente; tampoco los afiches. Los compositores externos de calendario/mapas siguen el idioma de sus aplicaciones. Conserva español por defecto en otros llamadores del módulo de acciones. No declara cobertura integral de idioma en otras secciones ni cambia FIAVL/admin/main. CI compila, prueba y revisa lint; pruebas físicas al final.
