@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,6 +39,12 @@ object ItineraryPolicy {
         return order.toMutableList().apply { this[index] = order[target]; this[target] = id }
     }
 
+    /** Removing the active stop pauses the route; it never marks another stop as visited. */
+    fun remove(order: List<String>, id: String, active: String?): Pair<List<String>, String?> {
+        if (id !in order) return order to active
+        val remaining = order.filterNot { it == id }
+        return remaining to active?.takeIf { it in remaining }
+    }
 }
 
 private fun itineraryDirections(place: Place): String {
@@ -57,6 +64,8 @@ fun ItineraryScreen(state: PlacesState, uid: String?, ready: Boolean, openPlace:
     val preferences = remember(uid) { context.getSharedPreferences("visitaloja_itinerary_${uid ?: "guest"}", Context.MODE_PRIVATE) }
     var order by remember(uid) { mutableStateOf(runCatching { JSONArray(preferences.getString("order", "[]")).let { array -> (0 until array.length()).map { array.getString(it) } } }.getOrDefault(emptyList())) }
     var planning by rememberSaveable(uid) { mutableStateOf(false) }
+    var removeStopId by rememberSaveable(uid) { mutableStateOf<String?>(null) }
+    var deletePlanOpen by rememberSaveable(uid) { mutableStateOf(false) }
     var planned by remember(uid) { mutableStateOf(runCatching { JSONArray(preferences.getString("plannedOrder", "[]")).let { array -> (0 until array.length()).map { array.getString(it) } } }.getOrDefault(emptyList())) }
     var usePlan by remember(uid) { mutableStateOf(preferences.getBoolean("usePlan", false)) }
     var plannedTransport by remember(uid) { mutableStateOf(preferences.getString("plannedTransport", "walk").orEmpty()) }
@@ -89,6 +98,32 @@ fun ItineraryScreen(state: PlacesState, uid: String?, ready: Boolean, openPlace:
         if (!canAct()) return
         try { context.startActivity(intent) } catch (_: ActivityNotFoundException) { message = "No hay una aplicación disponible para abrir esta opción." }
     }
+    fun clearPlan() {
+        planned = emptyList(); plannedCurrent = null; usePlan = false; plannedTransport = "walk"
+        preferences.edit().remove("plannedOrder").remove("plannedCurrent").remove("plannedTransport").putBoolean("usePlan", false).apply()
+    }
+    if (!planning && usePlan && deletePlanOpen) AlertDialog(onDismissRequest = { deletePlanOpen = false },
+        title = { Text("¿Eliminar este plan?") },
+        text = { Text("Se quitarán las paradas y el avance de este plan guardado en el móvil. Tus favoritos se conservan.") },
+        confirmButton = { TextButton(onClick = { clearPlan(); deletePlanOpen = false; message = "Plan eliminado de este móvil. Tus favoritos siguen guardados." }) { Text("Eliminar plan") } },
+        dismissButton = { TextButton(onClick = { deletePlanOpen = false }) { Text("Conservar plan") } })
+    val pendingStop = stops.find { it.id == removeStopId }
+    if (!planning && usePlan && pendingStop != null) AlertDialog(onDismissRequest = { removeStopId = null },
+        title = { Text("¿Quitar ${pendingStop.title} del plan?") },
+        text = { Text(when {
+            stops.size == 1 -> "Es la última parada. Se eliminará este plan del móvil y volverás a tus favoritos. Tus favoritos se conservan."
+            pendingStop.id == plannedCurrent -> "Es la parada actual. El recorrido quedará pausado para que elijas por dónde continuar. Tus favoritos se conservan."
+            else -> "Las demás paradas conservarán su orden. Tus favoritos se conservan."
+        }) },
+        confirmButton = { TextButton(onClick = {
+            if (canAct()) {
+                val (remaining, nextActive) = ItineraryPolicy.remove(ids, pendingStop.id, plannedCurrent)
+                if (remaining.isEmpty()) { clearPlan(); message = "Plan eliminado al quitar la última parada. Tus favoritos se conservan." }
+                else { save(remaining, nextActive); message = if (plannedCurrent == null && nextActive == null) "Parada quitada. Elige dónde continuar el recorrido." else "Parada quitada del plan." }
+            }
+            removeStopId = null
+        }) { Text("Quitar del plan") } },
+        dismissButton = { TextButton(onClick = { removeStopId = null }) { Text("Conservar parada") } })
     if(planning) {
         key(uid) { RoutePlannerScreen(state,refresh,{planning=false},openPlace,{next,mode->
             val clean=RoutePlannerPolicy.reconcile(next,state.places)
@@ -113,7 +148,7 @@ fun ItineraryScreen(state: PlacesState, uid: String?, ready: Boolean, openPlace:
                 FilterChip(selected=!usePlan,onClick={usePlan=false;preferences.edit().putBoolean("usePlan",false).apply()},label={Text("Mis favoritos")},modifier=Modifier.testTag("itinerary-favourites-mode"))
                 if(planned.isNotEmpty())FilterChip(selected=usePlan,onClick={usePlan=true;preferences.edit().putBoolean("usePlan",true).apply()},label={Text("Mi plan")},modifier=Modifier.testTag("itinerary-plan-mode"))
             }
-            if(usePlan)TextButton(onClick={planned=emptyList();plannedCurrent=null;usePlan=false;preferences.edit().remove("plannedOrder").remove("plannedCurrent").remove("plannedTransport").putBoolean("usePlan",false).apply();message="Plan eliminado de este móvil. Tus favoritos siguen guardados."}){Text("Eliminar este plan")}
+            if(usePlan)TextButton(onClick={deletePlanOpen = true}){Text("Eliminar este plan")}
         }
         message?.let { text -> item { Text(text, color = MaterialTheme.colorScheme.primary) } }
         if (!routeReady) item {
@@ -136,7 +171,8 @@ fun ItineraryScreen(state: PlacesState, uid: String?, ready: Boolean, openPlace:
                     if (active == null) Button(onClick = { if(canAct()) { save(ids, ids.first()); message = null } }, modifier = Modifier.testTag("itinerary-start")) { Text("Iniciar recorrido") }
                     else {
                         val index = ids.indexOf(active.id)
-                        Text("Parada ${index + 1} de ${ids.size}", color = MaterialTheme.colorScheme.primary)
+                        Text("Posición en tu recorrido · ${index + 1} de ${ids.size}", color = MaterialTheme.colorScheme.primary)
+                        LinearProgressIndicator(progress = { (index + 1).toFloat() / ids.size }, modifier = Modifier.fillMaxWidth().testTag("itinerary-position"))
                         Text(active.title, style = MaterialTheme.typography.titleLarge)
                         Button(onClick = { launch(Intent(Intent.ACTION_VIEW, Uri.parse(itineraryDirections(active) + if(usePlan) "&travelmode=${if(plannedTransport=="drive")"driving" else "walking"}" else ""))) }) { Text("Cómo llegar") }
                         OutlinedButton(onClick = {
@@ -158,10 +194,18 @@ fun ItineraryScreen(state: PlacesState, uid: String?, ready: Boolean, openPlace:
                 Card(Modifier.fillMaxWidth().testTag("itinerary-stop-${place.id}")) { Column(Modifier.padding(16.dp)) {
                     Text("${index + 1}. ${place.title}", fontWeight = FontWeight.Bold)
                     Text(place.address, style = MaterialTheme.typography.bodySmall)
+                    val isActive = place.id == if (usePlan) plannedCurrent else current
+                    if (isActive) Text("Parada actual", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+                    else TextButton(onClick = {
+                        if (canAct()) { save(ids, place.id); message = "Recorrido preparado desde ${place.title}. No se registraron visitas ni sellos." }
+                    }, modifier = Modifier.testTag("itinerary-start-from-${place.id}")) { Text("Seguir desde aquí") }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         IconButton(onClick = { save(ItineraryPolicy.move(ids, place.id, -1), if(usePlan)plannedCurrent else current) }, enabled = index > 0) { Icon(Icons.Default.ArrowUpward, "Subir ${place.title}") }
                         IconButton(onClick = { save(ItineraryPolicy.move(ids, place.id, 1), if(usePlan)plannedCurrent else current) }, enabled = index < stops.lastIndex) { Icon(Icons.Default.ArrowDownward, "Bajar ${place.title}") }
                         TextButton(onClick = { openPlace(place) }) { Text("Ver parada") }
+                    }
+                    if (usePlan) TextButton(onClick = { if (canAct()) removeStopId = place.id }, modifier = Modifier.testTag("itinerary-remove-${place.id}")) {
+                        Icon(Icons.Default.DeleteOutline, null); Spacer(Modifier.width(6.dp)); Text("Quitar del plan")
                     }
                 } }
             }
