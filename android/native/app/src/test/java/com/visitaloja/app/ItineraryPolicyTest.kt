@@ -25,4 +25,13 @@ class ItineraryPolicyTest {
         assertEquals(order, ItineraryPolicy.move(order, "missing", 1))
         assertEquals(order, ItineraryPolicy.move(order, "a", 2))
     }
+    @Test fun removingStopsPreservesOrderAndPausesOnlyWhenActiveStopIsRemoved() {
+        val order = listOf("a", "b", "c")
+        assertEquals(listOf("a", "c") to "c", ItineraryPolicy.remove(order, "b", "c"))
+        assertEquals(listOf("a", "c") to null, ItineraryPolicy.remove(order, "b", "b"))
+        assertEquals(listOf("b", "c") to null, ItineraryPolicy.remove(order, "a", null))
+        assertEquals(order to "b", ItineraryPolicy.remove(order, "missing", "b"))
+        assertEquals(emptyList<String>() to null, ItineraryPolicy.remove(listOf("a"), "a", "a"))
+        assertEquals(listOf("a", "b", "c"), order)
+    }
 }
