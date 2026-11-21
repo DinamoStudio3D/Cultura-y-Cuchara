@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Sitio principal",
+    "path": "/",
+    "audience": "Público",
+    "description": "Inicio de Visita Loja para visitantes, turistas y lojanos."
+  },
+  {
+    "title": "Panel de administración",
+    "path": "/admin.html",
+    "audience": "Solo administradores",
+    "description": "Gestión general de contenidos, paradas, Pasaporte, configuración y reportes."
+  },
+  {
+    "title": "Portal del propietario",
+    "path": "/merchant-dashboard.html",
+    "audience": "Propietario / administrador de parada",
+    "description": "Acceso principal del responsable de cada negocio. Inicia sesión con la cuenta autorizada para gestionar sus paradas, consultar clientes y estadísticas. No concede acceso a otros negocios."
+  },
+  {
+    "title": "Gestión de fidelidad",
+    "path": "/gestion-fidelidad.html",
+    "audience": "Solo administradores",
+    "description": "Configura reglas, beneficios y revisa la actividad del programa de fidelidad."
+  },
+  {
+    "title": "Validar recompensas",
+    "path": "/merchant-rewards.html",
+    "audience": "Negocio autorizado",
+    "description": "El negocio valida el código que presenta un visitante para entregar una recompensa."
+  },
+  {
+    "title": "Confirmar visitas",
+    "path": "/confirmar-visitas.html",
+    "audience": "Negocio autorizado",
+    "description": "El personal del negocio confirma visitas seguras para el programa de fidelidad."
+  },
+  {
+    "title": "Mi fidelidad y beneficios",
+    "path": "/fidelidad.html",
+    "audience": "Visitante registrado",
+    "description": "El visitante consulta sus visitas, avances y beneficios disponibles."
+  },
+  {
+    "title": "Planes para negocios",
+    "path": "/planes.html",
+    "audience": "Público / negocios",
+    "description": "Información pública sobre planes y participación de establecimientos."
+  },
+  {
+    "title": "Postular un negocio",
+    "path": "/sumar-negocio.html",
+    "audience": "Público / negocios",
+    "description": "Formulario para solicitar que un establecimiento sea parte de la plataforma."
+  },
+  {
+    "title": "Estado de solicitud",
+    "path": "/estado-solicitud.html",
+    "audience": "Solicitante",
+    "description": "Consulta pública del avance de una postulación mediante su código de seguimiento."
+  }
+]
