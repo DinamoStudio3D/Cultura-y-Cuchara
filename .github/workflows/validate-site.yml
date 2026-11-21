@@ -66,4 +66,4 @@ jobs:
         run: npm install --no-save --ignore-scripts firebase@11 @firebase/rules-unit-testing@4
 
       - name: Compilar y probar permisos con el emulador oficial
-        run: npx --yes firebase-tools@14 emulators:exec --only firestore --project demo-visitaloja 'node scripts/test-firestore-rules.mjs'
+        run: npx --yes firebase-tools@14 emulators:exec --only firestore --project demo-visitaloja 'node scripts/test-firestore-rules.mjs && node tests/firestore-rules/native-journey.mjs'

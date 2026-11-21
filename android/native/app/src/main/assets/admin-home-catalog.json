@@ -1,0 +1,1420 @@
+{
+  "version": 1,
+  "blocks": [
+    {
+      "id": "provinceGateway",
+      "name": "Acceso destacado · Cantones",
+      "native": true,
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Antetítulo",
+          "es": "MÁS ALLÁ DE LA CAPITAL",
+          "en": "BEYOND THE CAPITAL"
+        },
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "16 cantones. Nuevas historias.",
+          "en": "16 cantons. New stories."
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Explora los destinos de la provincia y elige tu próxima escapada.",
+          "en": "Explore the province and choose your next getaway."
+        },
+        {
+          "key": "button",
+          "label": "Botón",
+          "es": "Descubrir los cantones",
+          "en": "Explore the cantons"
+        }
+      ],
+      "links": [],
+      "image": true,
+      "imageUrl": "assets/photos/loja-centro.webp",
+      "imageAlt": "Vista de Loja",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "shopGateway",
+      "name": "Acceso destacado · Tienda",
+      "native": true,
+      "fields": [
+        {
+          "key": "kicker",
+          "label": "Antetítulo",
+          "es": "UN PEDACITO DE LOJA CONTIGO",
+          "en": "TAKE A PIECE OF LOJA WITH YOU"
+        },
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "La tienda de Visita Loja.",
+          "en": "The Visita Loja shop."
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Conoce nuestro catálogo de recuerdos y productos en un solo lugar.",
+          "en": "Browse our souvenirs and products in one place."
+        },
+        {
+          "key": "button",
+          "label": "Botón",
+          "es": "Explorar la tienda",
+          "en": "Explore the shop"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "mobileWelcome",
+      "name": "Portada móvil",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Loja te espera.",
+          "en": "Loja awaits."
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Sabores, cultura y nuevas historias por descubrir.",
+          "en": "Flavours, culture and new stories to discover."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "entrepreneurs",
+      "name": "Hecho en Loja",
+      "native": false,
+      "fields": [
+        {
+          "key": "eyebrow",
+          "label": "Antetítulo",
+          "es": "Nuevos Talentos",
+          "en": "New talent"
+        },
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Hecho en Loja, con mucho talento.",
+          "en": "Made in Loja, with plenty of talent."
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Conoce los emprendimientos que están creando nuevos sabores, productos y experiencias en nuestra provincia.",
+          "en": "Meet the ventures creating new flavours, products and experiences in our province."
+        },
+        {
+          "key": "imageLabel",
+          "label": "Etiqueta de la foto",
+          "es": "APOYA LO LOCAL",
+          "en": "SUPPORT LOCAL"
+        },
+        {
+          "key": "button",
+          "label": "Botón",
+          "es": "Descubrir emprendimientos",
+          "en": "Discover local ventures"
+        }
+      ],
+      "links": [
+        {
+          "key": "buttonUrl",
+          "label": "Destino del botón",
+          "url": "#emprendedoresGridContainer"
+        }
+      ],
+      "image": true,
+      "imageUrl": "assets/photos/hecho-en-loja-talento.webp",
+      "imageAlt": "Calle peatonal 10 de Agosto, en el centro de Loja",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "cooking",
+      "name": "Secretos de Cocina con ILE",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Secretos de Cocina con ILE",
+          "en": "Cooking secrets with ILE"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "El alma de la gastronomía lojana reside en sus adobos, hierbas aromáticas y el toque inconfundible de Industria Lojana de Especerías, avalado por la Mesa Turística.",
+          "en": "The soul of Loja cuisine lies in its seasonings, aromatic herbs and the distinctive touch of Industria Lojana de Especerías, supported by the Tourism Board."
+        },
+        {
+          "key": "imageLabel",
+          "label": "Etiqueta de la foto",
+          "es": "REPE LOJANO",
+          "en": "LOJA REPE"
+        }
+      ],
+      "links": [],
+      "image": true,
+      "imageUrl": "assets/photos/repe-lojano.webp",
+      "imageAlt": "Repe lojano con quesillo y cilantro",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryIntro",
+      "name": "Categorías: presentación",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Explora Loja por categoría",
+          "en": "Explore Loja by category"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Elige una categoría para ver su lista de lugares y experiencias.",
+          "en": "Choose a category to see places and experiences."
+        },
+        {
+          "key": "gridTitle",
+          "label": "Título de categorías",
+          "es": "Explora a tu manera",
+          "en": "Explore your way"
+        },
+        {
+          "key": "gridDescription",
+          "label": "Ayuda de categorías",
+          "es": "Selecciona una categoría para comenzar",
+          "en": "Select a category to start"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "placesIntro",
+      "name": "Paradas: presentación",
+      "native": true,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Paradas de Visita Loja",
+          "en": "Visita Loja Stops"
+        },
+        {
+          "key": "eyebrow",
+          "label": "Antetítulo",
+          "es": "Sabores, hospedaje y experiencias",
+          "en": "Flavors, lodging and experiences"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "mapIntro",
+      "name": "Mapa: presentación",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Mapa Interactivo de Loja",
+          "en": "Interactive Map of Loja"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Desliza libremente por el mapa o pulsa los pines para explorar los sitios.",
+          "en": "Drag freely with one finger on the map or tap the pins to explore spots."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "agendaIntro",
+      "name": "Agenda: presentación",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Agenda Cultural y Eventos",
+          "en": "Cultural Agenda & Events"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Ferias, festivales y presentaciones artísticas respaldadas por la Mesa Turística. Haz clic en un evento para ubicarlo en el mapa.",
+          "en": "Fairs, festivals and artistic presentations backed by the Tourism Board. Click an event to locate it on the map."
+        },
+        {
+          "key": "categoryAgendaTitle",
+          "label": "Tarjeta de agenda entre categorías",
+          "es": "Agenda cultural",
+          "en": "Cultural agenda"
+        },
+        {
+          "key": "categoryAgendaHelp",
+          "label": "Descripción de esa tarjeta",
+          "es": "Eventos y actividades",
+          "en": "Events and activities"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "postcardsIntro",
+      "name": "Postales: presentación",
+      "native": true,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Crea tu Postal  Visita Loja",
+          "en": "Create your  Visita Loja  Postcard"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Sube tu foto, escoge tu marco favorito (FIAVL 2026, Ruta del Café o Tradición Lojana), personaliza tu recuerdo y descárgalo con formato listo para tus Historias de Instagram y WhatsApp.",
+          "en": "Upload your photo, pick a signature frame (FIAVL 2026, Coffee Route or Loja Heritage), customize your memory, and export it ready for your Instagram & WhatsApp Stories."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "timeIntro",
+      "name": "Loja en el Tiempo: presentación",
+      "native": true,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Loja en el  Tiempo",
+          "en": "Loja Through  Time"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Desliza el cursor o tu dedo sobre las imágenes para viajar entre el ayer y el hoy de nuestros rincones más queridos.",
+          "en": "Slide your cursor or finger across the images to travel between yesterday and today in our most iconic spots."
+        },
+        {
+          "key": "badge",
+          "label": "Etiqueta de patrimonio",
+          "es": "Patrimonio Vivo",
+          "en": "Living heritage"
+        },
+        {
+          "key": "comparisonHelp",
+          "label": "Ayuda del comparador",
+          "es": "Mueve el control para comparar el ayer y el hoy",
+          "en": "Move the control to compare yesterday and today"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "podcastIntro",
+      "name": "Podcast: presentación",
+      "native": true,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "El Podcast de Loja",
+          "en": "The Loja Podcast"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Conoce a fondo las historias de sacrificio, recetas secretas y la herencia cultural que hay detrás de cada hueca, hotel y cafetería de nuestra provincia.",
+          "en": "Get to know the stories of sacrifice, secret recipes and cultural heritage behind each eatery, hotel and coffee shop in our province."
+        },
+        {
+          "key": "eyebrow",
+          "label": "Etiqueta de presentación",
+          "es": "HISTORIAS PARA ESCUCHAR",
+          "en": "STORIES TO LISTEN TO"
+        },
+        {
+          "key": "headline",
+          "label": "Titular de presentación",
+          "es": "La voz de nuestra tierra.",
+          "en": "The voice of our homeland."
+        },
+        {
+          "key": "intro",
+          "label": "Introducción de presentación",
+          "es": "Un espacio para descubrir las personas, sabores y tradiciones que hacen especial a Loja.",
+          "en": "Discover the people, flavors and traditions that make Loja special."
+        },
+        {
+          "key": "subtitle",
+          "label": "Etiqueta sobre el reproductor",
+          "es": "Episodios Completos",
+          "en": "Full episodes"
+        },
+        {
+          "key": "audioError",
+          "label": "Mensaje si falla el audio",
+          "es": "No se pudo reproducir el audio. Comprueba tu conexión e inténtalo de nuevo.",
+          "en": "The audio could not be played. Check your connection and try again."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "ileCard1",
+      "name": "ILE: El Adobo Lojano",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "El Adobo Lojano",
+          "en": "Loja Marinade"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Mezcla magistral de comino, achiote y ajo que impregna la cecina antes de ser asada al carbón de leña.",
+          "en": "Masterful blend of cumin, achiote and garlic that infuses cecina before being grilled over firewood coals."
+        },
+        {
+          "key": "tag",
+          "label": "Etiqueta",
+          "es": "Ideal para: Cecina y Secos",
+          "en": "Ideal for: Cecina & Stews"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "ileCard2",
+      "name": "ILE: Aromas de Altura",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "Aromas de Altura",
+          "en": "Highland Aromas"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "El café de Catamayo y Olmedo marida a la perfección con notas sutiles de canela y clavo de olor en repostería.",
+          "en": "Coffee from Catamayo and Olmedo pairs perfectly with subtle notes of cinnamon and cloves in pastry."
+        },
+        {
+          "key": "tag",
+          "label": "Etiqueta",
+          "es": "Ideal para: Cafés y Pasteles",
+          "en": "Ideal for: Coffees & Pastries"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "ileCard3",
+      "name": "ILE: El Toque del Repe",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "El Toque del Repe",
+          "en": "The Repe Touch"
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "El cilantro fresco y un toque de pimienta blanca realzan la cremosidad del banano verde y el quesillo tradicional.",
+          "en": "Fresh cilantro and a touch of white pepper enhance the creaminess of green plantain and traditional quesillo."
+        },
+        {
+          "key": "tag",
+          "label": "Etiqueta",
+          "es": "Ideal para: Repe y Sopas",
+          "en": "Ideal for: Repe & Soups"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "festivalIntro",
+      "name": "Presentación del festival FIAVL",
+      "native": false,
+      "fields": [
+        {
+          "key": "fiavlBadge",
+          "label": "Distintivo",
+          "es": "Loja, Capital Cultural del Ecuador",
+          "en": "Loja, Cultural Capital of Ecuador"
+        },
+        {
+          "key": "fiavlTitle",
+          "label": "Título",
+          "es": "FIAVL 2026",
+          "en": "FIAVL 2026"
+        },
+        {
+          "key": "fiavlSubTitle",
+          "label": "Subtítulo",
+          "es": "Festival Internacional de Artes Vivas de Loja",
+          "en": "Loja International Festival of Performing Arts"
+        },
+        {
+          "key": "fiavlDesc",
+          "label": "Descripción",
+          "es": "Loja se transforma en el escenario cultural más grande del país. Obras de teatro, danza contemporánea, circo, artes plásticas e intervenciones escénicas de compañías nacionales e internacionales se toman teatros, plazas y calles emblemáticas de nuestra ciudad.",
+          "en": "Loja becomes the country's largest cultural stage. Theater, contemporary dance, circus, visual arts, and performance art from national and international companies take over theaters, squares, and historic streets."
+        },
+        {
+          "key": "btnFiavlAgenda",
+          "label": "Botón de agenda",
+          "es": "Ver Agenda y Teatros",
+          "en": "View Agenda & Theaters"
+        },
+        {
+          "key": "btnFiavlHotels",
+          "label": "Botón de hoteles y cafés",
+          "es": "Hoteles y Cafés Cercanos",
+          "en": "Nearby Hotels & Cafes"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "festivalCard1",
+      "name": "FIAVL · Tarjeta 1",
+      "native": false,
+      "fields": [
+        {
+          "key": "fiavlCard1Title",
+          "label": "Título",
+          "es": "Teatro en Salas",
+          "en": "Theater Performances"
+        },
+        {
+          "key": "fiavlCard1Tag",
+          "label": "Etiqueta",
+          "es": "Salas Oficiales",
+          "en": "Official Venues"
+        },
+        {
+          "key": "fiavlCard1Desc",
+          "label": "Descripción",
+          "es": "Obras estelares en el Teatro Benjamín Carrión Mora, Teatro Bolívar y Centro Cultural Alfredo Mora Reyes.",
+          "en": "Mainstage plays at Benjamín Carrión Mora Theater, Bolívar Theater, and Alfredo Mora Reyes Cultural Center."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "festivalCard2",
+      "name": "FIAVL · Tarjeta 2",
+      "native": false,
+      "fields": [
+        {
+          "key": "fiavlCard2Title",
+          "label": "Título",
+          "es": "Arte en la Calle",
+          "en": "Street Art & Acts"
+        },
+        {
+          "key": "fiavlCard2Tag",
+          "label": "Etiqueta",
+          "es": "Espacios Abiertos",
+          "en": "Open Spaces"
+        },
+        {
+          "key": "fiavlCard2Desc",
+          "label": "Descripción",
+          "es": "Intervenciones vivas, circo, comparsas y arte visual en la Calle Bolívar, Plaza de San Sebastián y Plaza Central.",
+          "en": "Live performances, circus, parades, and street art along Bolívar Street, San Sebastián Square, and Central Square."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "festivalCard3",
+      "name": "FIAVL · Tarjeta 3",
+      "native": false,
+      "fields": [
+        {
+          "key": "fiavlCard3Title",
+          "label": "Título",
+          "es": "Ruta Escénica & Café",
+          "en": "Scenic Route & Coffee"
+        },
+        {
+          "key": "fiavlCard3Tag",
+          "label": "Etiqueta",
+          "es": "Gastronomía Nocturna",
+          "en": "Night Dining"
+        },
+        {
+          "key": "fiavlCard3Desc",
+          "label": "Descripción",
+          "es": "Cafeterías de especialidad y huecas tradicionales listas para acoger turistas tras cada función estelar.",
+          "en": "Specialty coffee shops and local eateries ready to welcome visitors after every premier show."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "festivalCard4",
+      "name": "FIAVL · Tarjeta 4",
+      "native": false,
+      "fields": [
+        {
+          "key": "fiavlCard4Title",
+          "label": "Título",
+          "es": "Sello FIAVL Especial",
+          "en": "Special FIAVL Stamp"
+        },
+        {
+          "key": "fiavlCard4Tag",
+          "label": "Etiqueta",
+          "es": "En tu Pasaporte",
+          "en": "In your Passport"
+        },
+        {
+          "key": "fiavlCard4Desc",
+          "label": "Descripción",
+          "es": "Visita los puntos artísticos autorizados y obtén validaciones exclusivas en tu pasaporte interactivo.",
+          "en": "Visit authorized festival spots and receive exclusive stamps on your smart passport."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "passportIntro",
+      "name": "Presentación del pasaporte",
+      "native": false,
+      "fields": [
+        {
+          "key": "passportKicker",
+          "label": "Antetítulo",
+          "es": "UN RECUERDO QUE SE CONSTRUYE VISITANDO",
+          "en": "A MEMORY BUILT ONE VISIT AT A TIME"
+        },
+        {
+          "key": "passportHeadline",
+          "label": "Título",
+          "es": "Tu pasaporte.  Tu historia en Loja.",
+          "en": "Your passport.  Your story in Loja."
+        },
+        {
+          "key": "passDesc",
+          "label": "Descripción",
+          "es": "Visita negocios y atractivos, escanea su QR y colecciona sellos.",
+          "en": "Visit participating businesses, scan their QR and collect stamps."
+        },
+        {
+          "key": "passBtnOpen",
+          "label": "Botón para abrir",
+          "es": "Abrir mi Pasaporte",
+          "en": "Open my Passport"
+        },
+        {
+          "key": "passportFindPlaces",
+          "label": "Enlace a paradas",
+          "es": "Encontrar paradas",
+          "en": "Find places"
+        },
+        {
+          "key": "passportArtNote",
+          "label": "Nota junto al pasaporte",
+          "es": "Tus visitas merecen un recuerdo.",
+          "en": "Your visits deserve a keepsake."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "passportStep1",
+      "name": "Pasaporte · Paso 1",
+      "native": false,
+      "fields": [
+        {
+          "key": "passportStepExplore",
+          "label": "Título",
+          "es": "Elige tu próxima parada",
+          "en": "Choose your next stop"
+        },
+        {
+          "key": "passportStepExploreHelp",
+          "label": "Explicación",
+          "es": "Encuentra un establecimiento participante y disfruta tu visita.",
+          "en": "Find a participating place and enjoy your visit."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "passportStep2",
+      "name": "Pasaporte · Paso 2",
+      "native": false,
+      "fields": [
+        {
+          "key": "passportStepVisit",
+          "label": "Título",
+          "es": "Escanea y confirma",
+          "en": "Scan and confirm"
+        },
+        {
+          "key": "passportStepVisitHelp",
+          "label": "Explicación",
+          "es": "Escanea el QR, genera tu código temporal y pide al personal autorizado que confirme tu visita.",
+          "en": "Scan the QR, generate your temporary code and ask authorized staff to confirm your visit."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "passportStep3",
+      "name": "Pasaporte · Paso 3",
+      "native": false,
+      "fields": [
+        {
+          "key": "passportStepCollect",
+          "label": "Título",
+          "es": "Colecciona tus sellos",
+          "en": "Collect your stamps"
+        },
+        {
+          "key": "passportStepCollectHelp",
+          "label": "Explicación",
+          "es": "Consulta el progreso de tu recorrido en el pasaporte.",
+          "en": "Check your journey progress in your passport."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "adventureIntro",
+      "name": "Presentación de las misiones",
+      "native": false,
+      "fields": [
+        {
+          "key": "eyebrow",
+          "label": "Antetítulo",
+          "es": "CONOCE LOJA. SUPERA EL RETO.",
+          "en": "DISCOVER LOJA. TAKE THE CHALLENGE."
+        },
+        {
+          "key": "title",
+          "label": "Título",
+          "es": "La aventura empieza con Chabaquito.",
+          "en": "Adventure begins with Chabaquito."
+        },
+        {
+          "key": "description",
+          "label": "Descripción",
+          "es": "Completa misiones reales, descubre lugares y gana XP e insignias.",
+          "en": "Complete real missions, discover places and earn XP and badges."
+        },
+        {
+          "key": "button",
+          "label": "Botón para elegir misión",
+          "es": "Elegir una misión",
+          "en": "Choose a mission"
+        },
+        {
+          "key": "characterNote",
+          "label": "Nota de Chabaquito",
+          "es": "Tu compañero de aventuras",
+          "en": "Your adventure companion"
+        },
+        {
+          "key": "journeyLabel",
+          "label": "Antetítulo del progreso",
+          "es": "TU CAMINO",
+          "en": "YOUR JOURNEY"
+        },
+        {
+          "key": "journeyTitle",
+          "label": "Título del progreso",
+          "es": "Cada visita cuenta.",
+          "en": "Every visit counts."
+        },
+        {
+          "key": "missionsLabel",
+          "label": "Antetítulo de misiones",
+          "es": "EXPLORA A TU RITMO",
+          "en": "EXPLORE AT YOUR OWN PACE"
+        },
+        {
+          "key": "missionsTitle",
+          "label": "Título de la lista",
+          "es": "Misiones para vivir Loja",
+          "en": "Missions to experience Loja"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "welcomePassport",
+      "name": "Acceso rápido · Tu pasaporte",
+      "native": true,
+      "fields": [
+        {
+          "key": "welcomePassport",
+          "label": "Título",
+          "es": "Tu pasaporte",
+          "en": "Your passport"
+        },
+        {
+          "key": "welcomePassportHelp",
+          "label": "Descripción breve",
+          "es": "Colecciona experiencias",
+          "en": "Collect experiences"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "welcomeMissions",
+      "name": "Acceso rápido · Con Chabaquito",
+      "native": true,
+      "fields": [
+        {
+          "key": "welcomeMissions",
+          "label": "Título",
+          "es": "Con Chabaquito",
+          "en": "With Chabaquito"
+        },
+        {
+          "key": "welcomeMissionsHelp",
+          "label": "Descripción breve",
+          "es": "Descubre y cumple misiones",
+          "en": "Discover and complete missions"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "welcomePhoto",
+      "name": "Mensaje sobre la fotografía de portada",
+      "native": false,
+      "fields": [
+        {
+          "key": "welcomePhotoKicker",
+          "label": "Antetítulo",
+          "es": "TU PRÓXIMA HISTORIA EMPIEZA AQUÍ",
+          "en": "YOUR NEXT STORY STARTS HERE"
+        },
+        {
+          "key": "welcomePhotoTitle",
+          "label": "Título",
+          "es": "Loja, a tu ritmo.",
+          "en": "Loja, at your own pace."
+        },
+        {
+          "key": "welcomeNow",
+          "label": "Botón de recomendaciones",
+          "es": "¿Qué hacer ahora?",
+          "en": "What can I do now?"
+        },
+        {
+          "key": "location",
+          "label": "Ubicación sobre la foto",
+          "es": "LOJA · ECUADOR",
+          "en": "LOJA · ECUADOR"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": false,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "welcomeActions",
+      "name": "Presentación y botones de bienvenida",
+      "native": true,
+      "fields": [
+        {
+          "key": "heroBadge",
+          "label": "Antetítulo de bienvenida",
+          "es": "LOJA SE CONOCE, SE SABOREA Y SE HOSPEDA",
+          "en": "Loja is experienced, tasted and hosted"
+        },
+        {
+          "key": "welcomeMap",
+          "label": "Enlace al mapa",
+          "es": "Explorar el mapa",
+          "en": "Explore the map"
+        },
+        {
+          "key": "welcomeRoute",
+          "label": "Botón para planificar recorrido",
+          "es": "Planificar mi recorrido",
+          "en": "Plan my route"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "footerContact",
+      "name": "Contacto y redes sociales",
+      "native": true,
+      "fields": [
+        {
+          "key": "footerContactTitle",
+          "label": "Título",
+          "es": "Hablemos de Loja",
+          "en": "Let's talk about Loja"
+        },
+        {
+          "key": "footerContactHelp",
+          "label": "Descripción",
+          "es": "Consultas, alianzas y asistencia sobre la plataforma.",
+          "en": "Questions, partnerships and platform support."
+        }
+      ],
+      "links": [
+        {
+          "key": "whatsappUrl",
+          "label": "WhatsApp",
+          "url": "https://wa.me/593999999999?text=Hola%2C%20vengo%20desde%20la%20web%20Visita%20Loja%20y%20deseo%20m%C3%A1s%20informaci%C3%B3n."
+        },
+        {
+          "key": "youtubeUrl",
+          "label": "YouTube",
+          "url": "https://www.youtube.com/@VisitaLoja"
+        },
+        {
+          "key": "tiktokUrl",
+          "label": "TikTok",
+          "url": "https://www.tiktok.com/@visitaloja.com"
+        },
+        {
+          "key": "instagramUrl",
+          "label": "Instagram",
+          "url": "https://www.instagram.com/visitaloja.oficial/"
+        },
+        {
+          "key": "facebookUrl",
+          "label": "Facebook",
+          "url": "https://www.facebook.com/visitalojaoficial/"
+        }
+      ],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": true
+    },
+    {
+      "id": "welcomeSearch",
+      "name": "Buscador de portada",
+      "native": true,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Pregunta del buscador",
+          "es": "¿Qué quieres descubrir?",
+          "en": "What would you like to discover?"
+        },
+        {
+          "key": "button",
+          "label": "Botón de búsqueda",
+          "es": "Buscar",
+          "en": "Search"
+        },
+        {
+          "key": "placeholder",
+          "label": "Ejemplo de búsqueda",
+          "es": "Café, hotel, comida lojana…",
+          "en": "Coffee, hotels, local food…"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "placesCardText",
+      "name": "Textos de las tarjetas de lugares",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Antetítulo de las tarjetas",
+          "es": "DESCUBRE LOJA",
+          "en": "DISCOVER LOJA"
+        },
+        {
+          "key": "button",
+          "label": "Invitación a abrir detalles",
+          "es": "Ver detalles del lugar",
+          "en": "View place details"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_hotel",
+      "name": "Tarjeta de categoría: Hoteles y hospedaje",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Hoteles y hospedaje",
+          "en": "Hotels & Lodging"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🏨",
+          "en": "🏨"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_hueca",
+      "name": "Tarjeta de categoría: Huecas tradicionales",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Huecas tradicionales",
+          "en": "Traditional Eateries"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🥘",
+          "en": "🥘"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_urbana",
+      "name": "Tarjeta de categoría: Restaurantes",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Restaurantes",
+          "en": "Restaurants"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🍽️",
+          "en": "🍽️"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_cafe",
+      "name": "Tarjeta de categoría: Cafeterías",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Cafeterías",
+          "en": "Coffee Shops"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "☕",
+          "en": "☕"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_heladeria",
+      "name": "Tarjeta de categoría: Heladerías",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Heladerías",
+          "en": "Ice Cream Shops"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🍦",
+          "en": "🍦"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_panaderia",
+      "name": "Tarjeta de categoría: Panaderías y reposterías",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Panaderías y reposterías",
+          "en": "Bakeries & Pastry Shops"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🥐",
+          "en": "🥐"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_bar",
+      "name": "Tarjeta de categoría: Bares y vida nocturna",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Bares y vida nocturna",
+          "en": "Bars & Nightlife"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🍹",
+          "en": "🍹"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_entretenimiento",
+      "name": "Tarjeta de categoría: Entretenimiento",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Entretenimiento",
+          "en": "Entertainment"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🎳",
+          "en": "🎳"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_turismo",
+      "name": "Tarjeta de categoría: Atractivos turísticos",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Atractivos turísticos",
+          "en": "Tourist Attractions"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "📍",
+          "en": "📍"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_artesania",
+      "name": "Tarjeta de categoría: Artesanías y comercios locales",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Artesanías y comercios locales",
+          "en": "Crafts & Local Shops"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🧵",
+          "en": "🧵"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "categoryCard_aliado",
+      "name": "Tarjeta de categoría: Marcas aliadas",
+      "native": false,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Nombre en la tarjeta",
+          "es": "Marcas aliadas",
+          "en": "Partner Brands"
+        },
+        {
+          "key": "icon",
+          "label": "Icono (emoji o texto breve)",
+          "es": "🤝",
+          "en": "🤝"
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    },
+    {
+      "id": "footerIdentity",
+      "name": "Texto del pie de página",
+      "native": true,
+      "fields": [
+        {
+          "key": "title",
+          "label": "Texto final",
+          "es": "Loja se conoce, se saborea y se hospeda. Con el respaldo de la Mesa Turística de Loja. © 2026.",
+          "en": "Loja is experienced, tasted and hosted. Endorsed by Loja Municipality & Tourism Board. © 2026."
+        }
+      ],
+      "links": [],
+      "image": false,
+      "imageUrl": "",
+      "imageAlt": "",
+      "noVisibility": true,
+      "optionalHttpsLinks": false
+    }
+  ],
+  "supporters": {
+    "active": true,
+    "includeMesa": true,
+    "title": "Ellos hacen posible VisitaLoja",
+    "titleEn": "They make VisitaLoja possible",
+    "subtitle": "Conoce los negocios que apoyan este proyecto y nos ayudan a mostrar lo mejor de Loja.",
+    "subtitleEn": "Meet the businesses that support this project and help us showcase the best of Loja.",
+    "mode": "all",
+    "selectedIds": [],
+    "excludedIds": [],
+    "orderIds": [],
+    "size": "medium",
+    "duration": 35,
+    "direction": "left",
+    "motion": true,
+    "pauseOnHover": true,
+    "showNames": false,
+    "clickable": true
+  }
+}

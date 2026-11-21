@@ -1,0 +1,55 @@
+package com.visitaloja.app
+
+import android.os.Bundle
+import android.content.Intent
+import androidx.compose.runtime.mutableStateOf
+import java.util.UUID
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.SystemBarStyle
+
+class MainActivity : ComponentActivity() {
+    private var noticeRequest by mutableIntStateOf(0)
+    private var linkRequest by mutableStateOf<NativeLinkRequest?>(null)
+    private var receivedNoticeIdentity: String? = null
+    private fun receive(intent: Intent) {
+        if (intent.action == NativePush.openAction) {
+            receivedNoticeIdentity = intent.dataString
+            val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+            val destination = PushPolicy.destination(intent.getStringExtra("noticeOwner"), uid,
+                intent.getStringExtra("noticeId"), PushStore.notices(this, uid))
+            if (destination != null && NativeLinkPolicy.parse("https://www.visitaloja.com$destination") != null) linkRequest = NativeLinkRequest(UUID.randomUUID().toString(), "https://www.visitaloja.com$destination")
+            else { linkRequest = null; noticeRequest++ }
+            return
+        }
+        val text = when {
+            intent.action == Intent.ACTION_VIEW -> intent.dataString
+            intent.action == Intent.ACTION_SEND && intent.type == "text/plain" -> intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()
+            else -> null
+        }
+        if (text != null) linkRequest = NativeLinkRequest(UUID.randomUUID().toString(), text.take(4097))
+    }
+    override fun onNewIntent(intent: Intent) { super.onNewIntent(intent); setIntent(intent); receive(intent) }
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("receivedNoticeIdentity", receivedNoticeIdentity)
+        linkRequest?.let { outState.putString("linkRequestId", it.id); outState.putString("linkRequestText", it.text) }
+        super.onSaveInstanceState(outState)
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT))
+        val restoredId = savedInstanceState?.getString("linkRequestId")
+        val restoredText = savedInstanceState?.getString("linkRequestText")
+        receivedNoticeIdentity = savedInstanceState?.getString("receivedNoticeIdentity")
+        val newNotice = intent.action == NativePush.openAction && (intent.dataString == null || intent.dataString != receivedNoticeIdentity)
+        if (newNotice) receive(intent)
+        else if (restoredId != null && restoredText != null) linkRequest = NativeLinkRequest(restoredId, restoredText)
+        else receive(intent)
+        setContent { VisitaLojaApp(noticeRequest = noticeRequest, linkRequest = linkRequest) }
+    }
+}

@@ -1,0 +1,49 @@
+{
+  "active": true,
+  "animated": true,
+  "imageUrl": "mascota-vive-loja.png",
+  "messages": {
+    "inicio": "¡Hola! Soy tu guía de Visita Loja. ¿Empezamos la ruta?",
+    "mapa": "Toca los puntos del mapa y descubre nuevos sabores y destinos.",
+    "establecimientos": "Aquí encontrarás huecas, cafeterías y hoteles para tu recorrido.",
+    "fiavl": "¡Loja se llena de color, teatro y alegría con el Festival de Artes Vivas!",
+    "postales": "Crea una postal de tu visita y compártela con tus amigos.",
+    "pasaporte": "Completa tu pasaporte y guarda cada parada de tu aventura.",
+    "misiones": "¡Acepta mis cinco misiones y conviértete en Explorador de Loja!",
+    "podcast": "Escucha nuestra canción de muestra en El Podcast de Loja."
+  },
+  "missions": {
+    "active": true,
+    "title": "Retos digitales de Chabaquito",
+    "titleEn": "Chabaquito's digital challenges",
+    "description": "Explora las funciones de la web y obtén tu certificado digital.",
+    "descriptionEn": "Explore the website features and earn your digital certificate.",
+    "rewardTitle": "¡Insignia Explorador de Loja desbloqueada!",
+    "rewardTitleEn": "Loja Explorer badge unlocked!",
+    "rewardDescription": "Completaste las cinco misiones de Chabaquito.",
+    "rewardDescriptionEn": "You completed all five Chabaquito missions."
+  },
+  "certificate": {
+    "active": true,
+    "title": "Explorador de Loja",
+    "text": "Por completar las Misiones de Chabaquito y descubrir los sabores, historias y destinos de nuestra ciudad.",
+    "signature": "Visita Loja"
+  },
+  "benefit": {
+    "active": false,
+    "campaignId": "misiones-2026",
+    "sponsorName": "",
+    "title": "Beneficio de Explorador",
+    "titleEn": "Explorer reward",
+    "description": "Presenta tu código para reclamar el beneficio disponible.",
+    "descriptionEn": "Show your code to claim the available reward.",
+    "startAt": "",
+    "endAt": "",
+    "stock": 100,
+    "imageUrl": "",
+    "code": "EXPLORADOR",
+    "validity": "",
+    "buttonText": "Registrar y generar mi código",
+    "url": ""
+  }
+}
