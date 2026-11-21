@@ -61,7 +61,7 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                     OutlinedButton(onClick = { model.local("list"); drafts = true }, enabled = state.ready && !state.busy) { Text("Recuperar borrador de este teléfono") }
                     if (kind == "home") {
                         Text("Edita el contenido compartido con la web. La app aplica los campos que tiene integrados; estilos, redes y algunos bloques pertenecen a la web. El logo público es independiente del icono instalado.")
-                        Text("La biblioteca y los encuadres del gestor de fotografías de portada se completarán en otro editor. Aquí se conservan sus datos.")
+                        Text("Para organizar la biblioteca y los encuadres de portada, abre Fotografías y créditos en Administración. Aquí se conservan sus datos.")
                         OutlinedButton(onClick = { query = ""; chooseGroup = true }, enabled = state.ready && !state.busy) { Text("Elegir bloque · " + current?.title.orEmpty()) }
                         current?.let { Text(it.title, style = MaterialTheme.typography.titleLarge); Text(if (it.native) "Incluye contenido utilizado por la app y la web." else "Bloque de presentación de la web.") }
                     } else {
