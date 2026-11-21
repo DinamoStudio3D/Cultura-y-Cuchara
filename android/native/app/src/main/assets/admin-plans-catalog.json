@@ -1,0 +1,426 @@
+{
+  "defaults": {
+    "badge": "Convierte tu negocio en una Parada Oficial",
+    "title": "Que los turistas no solo te encuentren. Que elijan visitarte.",
+    "subtitle": "Visita Loja conecta cafeterías, huecas, restaurantes y hoteles con personas que buscan sabores, experiencias y lugares auténticos. Tu negocio puede convertirse en una parada dentro de sus recorridos.",
+    "promo": "Precios de lanzamiento. Puedes cambiar o cancelar tu plan sin perder la ficha de tu parada.",
+    "plansTitle": "Elige cuánto quieres impulsar tu parada",
+    "plansIntro": "Empieza gratis y pasa a un plan con más visibilidad cuando tu negocio lo necesite.",
+    "plans": [
+      {
+        "id": "free",
+        "active": true,
+        "name": "Plan Gratis",
+        "monthly": 0,
+        "annual": 0,
+        "description": "Lo esencial para aparecer en la guía turística de Visita Loja.",
+        "benefits": [
+          "Ficha en la guía y ubicación en el mapa",
+          "Hasta 3 fotografías en la galería (logo aparte)",
+          "Tarjeta de fidelidad incluida, sin costo adicional",
+          "Horarios y datos de contacto",
+          "QR para el Pasaporte de Paradas",
+          "Sin estadísticas"
+        ],
+        "cta": "Quiero aparecer gratis",
+        "recommended": false,
+        "features": {
+          "logoPin": false,
+          "badge": false,
+          "priority": false,
+          "promo": false,
+          "stats": false,
+          "video": false,
+          "menu": false,
+          "maxGalleryImages": 3,
+          "maxFeaturedProducts": 0,
+          "analyticsPeriodMonths": 0,
+          "menuImageQr": false,
+          "loyalty": true
+        },
+        "offerVersion": 1
+      },
+      {
+        "id": "impulse",
+        "active": true,
+        "name": "Plan Emprendo",
+        "monthly": 10,
+        "annual": 100,
+        "description": "Una ficha más completa para que el visitante conozca mejor tu propuesta.",
+        "benefits": [
+          "Ficha en la guía y ubicación en el mapa",
+          "Hasta 10 fotografías en la galería (logo aparte)",
+          "Tarjeta de fidelidad incluida, sin costo adicional",
+          "Horarios y datos de contacto",
+          "QR con carta completa en imagen",
+          "Logo del negocio en el mapa",
+          "Un vídeo proporcionado por el cliente, sujeto a lineamientos y revisión",
+          "Estadísticas: historial de 1 mes, con consulta mensual"
+        ],
+        "cta": "Quiero impulsar mi parada",
+        "recommended": false,
+        "features": {
+          "logoPin": true,
+          "badge": true,
+          "priority": false,
+          "promo": false,
+          "stats": true,
+          "video": true,
+          "menu": false,
+          "maxGalleryImages": 10,
+          "maxFeaturedProducts": 0,
+          "analyticsPeriodMonths": 1,
+          "menuImageQr": true,
+          "loyalty": true
+        },
+        "offerVersion": 1
+      },
+      {
+        "id": "featured",
+        "active": true,
+        "name": "Plan Activo",
+        "monthly": 30,
+        "annual": 300,
+        "description": "Más exposición para convertir búsquedas y recorridos en visitas reales.",
+        "benefits": [
+          "Ficha en la guía y ubicación en el mapa",
+          "Hasta 15 fotografías en la galería (logo aparte)",
+          "Tarjeta de fidelidad incluida, sin costo adicional",
+          "Horarios y datos de contacto",
+          "QR con carta completa en imagen",
+          "Logo del negocio en el mapa",
+          "Hasta 10 productos destacados con foto, descripción y precio",
+          "Producción audiovisual por VisitaLoja, con alcance acordado previamente",
+          "Prioridad en recomendaciones y rutas",
+          "Una promoción destacada y pieza gráfica mensual",
+          "Estadísticas: historial de 3 meses, con consulta mensual"
+        ],
+        "cta": "Quiero destacar mi parada",
+        "recommended": true,
+        "features": {
+          "logoPin": true,
+          "badge": true,
+          "priority": true,
+          "promo": true,
+          "stats": true,
+          "video": true,
+          "menu": true,
+          "maxGalleryImages": 15,
+          "maxFeaturedProducts": 10,
+          "analyticsPeriodMonths": 3,
+          "menuImageQr": true,
+          "loyalty": true
+        },
+        "offerVersion": 1
+      },
+      {
+        "id": "premium",
+        "active": true,
+        "name": "Plan Premium",
+        "monthly": 60,
+        "annual": 600,
+        "description": "Contenido, campañas y presencia protagonista para marcas que quieren crecer.",
+        "benefits": [
+          "Ficha en la guía y ubicación en el mapa",
+          "Hasta 20 fotografías en la galería (logo aparte)",
+          "Tarjeta de fidelidad incluida, sin costo adicional",
+          "Horarios y datos de contacto",
+          "QR con carta completa en imagen",
+          "Logo del negocio en el mapa",
+          "Hasta 20 productos destacados con foto, descripción y precio",
+          "Una jornada mensual de grabación y fotografía, coordinada con el cliente",
+          "Piezas finales y alcance acordados antes de la jornada",
+          "Presencia especial en portada y campañas estacionales",
+          "Estadísticas: historial de 12 meses, con consulta mensual"
+        ],
+        "cta": "Quiero una experiencia Premium",
+        "recommended": false,
+        "features": {
+          "logoPin": true,
+          "badge": true,
+          "priority": true,
+          "promo": true,
+          "stats": true,
+          "video": true,
+          "menu": true,
+          "maxGalleryImages": 20,
+          "maxFeaturedProducts": 20,
+          "analyticsPeriodMonths": 12,
+          "menuImageQr": true,
+          "loyalty": true
+        },
+        "offerVersion": 1
+      }
+    ],
+    "faqs": [
+      {
+        "question": "¿Puedo aparecer gratis?",
+        "answer": "Sí. La ficha básica permite que negocios elegibles formen parte de la guía, el mapa y el Pasaporte de Paradas."
+      },
+      {
+        "question": "¿Pierdo mi QR si cambio de plan?",
+        "answer": "No. Tu QR editable y el enlace de tu parada pueden conservarse, aunque actualices tu información o cambies de plan."
+      },
+      {
+        "question": "¿El pago garantiza ventas?",
+        "answer": "Ninguna plataforma responsable puede garantizar ventas. Sí podemos darte mayor visibilidad, contenido, herramientas de contacto y datos para tomar mejores decisiones."
+      },
+      {
+        "question": "¿Puedo cancelar o cambiar de plan?",
+        "answer": "Sí. Puedes cambiar de plan sin perder la ficha ni el historial de la parada."
+      }
+    ]
+  },
+  "features": {
+    "free": {
+      "logoPin": false,
+      "badge": false,
+      "priority": false,
+      "promo": false,
+      "stats": false,
+      "video": false,
+      "menu": false
+    },
+    "impulse": {
+      "logoPin": true,
+      "badge": true,
+      "priority": false,
+      "promo": false,
+      "stats": true,
+      "video": true,
+      "menu": false
+    },
+    "featured": {
+      "logoPin": true,
+      "badge": true,
+      "priority": true,
+      "promo": true,
+      "stats": true,
+      "video": true,
+      "menu": true
+    },
+    "premium": {
+      "logoPin": true,
+      "badge": true,
+      "priority": true,
+      "promo": true,
+      "stats": true,
+      "video": true,
+      "menu": true
+    }
+  },
+  "specs": {
+    "free": {
+      "name": "Plan Gratis",
+      "monthly": 0,
+      "photos": 3,
+      "products": 0,
+      "months": 0
+    },
+    "impulse": {
+      "name": "Plan Emprendo",
+      "monthly": 10,
+      "photos": 10,
+      "products": 0,
+      "months": 1
+    },
+    "featured": {
+      "name": "Plan Activo",
+      "monthly": 30,
+      "photos": 15,
+      "products": 10,
+      "months": 3
+    },
+    "premium": {
+      "name": "Plan Premium",
+      "monthly": 60,
+      "photos": 20,
+      "products": 20,
+      "months": 12
+    }
+  },
+  "templates": {
+    "free": {
+      "none-one": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR para el Pasaporte de Paradas",
+        "Sin estadísticas"
+      ],
+      "none-many": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR para el Pasaporte de Paradas",
+        "Sin estadísticas"
+      ],
+      "products-one": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR para el Pasaporte de Paradas",
+        "Sin estadísticas"
+      ],
+      "products-many": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR para el Pasaporte de Paradas",
+        "Sin estadísticas"
+      ]
+    },
+    "impulse": {
+      "none-one": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Un vídeo proporcionado por el cliente, sujeto a lineamientos y revisión",
+        "Estadísticas: historial de 1 mes, con consulta mensual"
+      ],
+      "none-many": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Un vídeo proporcionado por el cliente, sujeto a lineamientos y revisión",
+        "Estadísticas: historial de {months} meses, con consulta mensual"
+      ],
+      "products-one": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Hasta {products} productos destacados con foto, descripción y precio",
+        "Un vídeo proporcionado por el cliente, sujeto a lineamientos y revisión",
+        "Estadísticas: historial de 1 mes, con consulta mensual"
+      ],
+      "products-many": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Hasta {products} productos destacados con foto, descripción y precio",
+        "Un vídeo proporcionado por el cliente, sujeto a lineamientos y revisión",
+        "Estadísticas: historial de {months} meses, con consulta mensual"
+      ]
+    },
+    "featured": {
+      "none-one": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Producción audiovisual por VisitaLoja, con alcance acordado previamente",
+        "Prioridad en recomendaciones y rutas",
+        "Una promoción destacada y pieza gráfica mensual",
+        "Estadísticas: historial de 1 mes, con consulta mensual"
+      ],
+      "none-many": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Producción audiovisual por VisitaLoja, con alcance acordado previamente",
+        "Prioridad en recomendaciones y rutas",
+        "Una promoción destacada y pieza gráfica mensual",
+        "Estadísticas: historial de {months} meses, con consulta mensual"
+      ],
+      "products-one": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Hasta {products} productos destacados con foto, descripción y precio",
+        "Producción audiovisual por VisitaLoja, con alcance acordado previamente",
+        "Prioridad en recomendaciones y rutas",
+        "Una promoción destacada y pieza gráfica mensual",
+        "Estadísticas: historial de 1 mes, con consulta mensual"
+      ],
+      "products-many": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Hasta {products} productos destacados con foto, descripción y precio",
+        "Producción audiovisual por VisitaLoja, con alcance acordado previamente",
+        "Prioridad en recomendaciones y rutas",
+        "Una promoción destacada y pieza gráfica mensual",
+        "Estadísticas: historial de {months} meses, con consulta mensual"
+      ]
+    },
+    "premium": {
+      "none-one": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Una jornada mensual de grabación y fotografía, coordinada con el cliente",
+        "Piezas finales y alcance acordados antes de la jornada",
+        "Presencia especial en portada y campañas estacionales",
+        "Estadísticas: historial de 1 mes, con consulta mensual"
+      ],
+      "none-many": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Una jornada mensual de grabación y fotografía, coordinada con el cliente",
+        "Piezas finales y alcance acordados antes de la jornada",
+        "Presencia especial en portada y campañas estacionales",
+        "Estadísticas: historial de {months} meses, con consulta mensual"
+      ],
+      "products-one": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Hasta {products} productos destacados con foto, descripción y precio",
+        "Una jornada mensual de grabación y fotografía, coordinada con el cliente",
+        "Piezas finales y alcance acordados antes de la jornada",
+        "Presencia especial en portada y campañas estacionales",
+        "Estadísticas: historial de 1 mes, con consulta mensual"
+      ],
+      "products-many": [
+        "Ficha en la guía y ubicación en el mapa",
+        "Hasta {photos} fotografías en la galería (logo aparte)",
+        "Tarjeta de fidelidad incluida, sin costo adicional",
+        "Horarios y datos de contacto",
+        "QR con carta completa en imagen",
+        "Logo del negocio en el mapa",
+        "Hasta {products} productos destacados con foto, descripción y precio",
+        "Una jornada mensual de grabación y fotografía, coordinada con el cliente",
+        "Piezas finales y alcance acordados antes de la jornada",
+        "Presencia especial en portada y campañas estacionales",
+        "Estadísticas: historial de {months} meses, con consulta mensual"
+      ]
+    }
+  }
+}
