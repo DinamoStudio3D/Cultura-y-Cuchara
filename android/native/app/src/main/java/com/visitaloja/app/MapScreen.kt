@@ -11,6 +11,9 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -68,6 +71,8 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
     val selected = points.find { it.id == selection }
     val livePoints by rememberUpdatedState(points)
     var filtersOpen by rememberSaveable { mutableStateOf(false) }
+    var resultsOpen by rememberSaveable { mutableStateOf(false) }
+    val keyboard = LocalSoftwareKeyboardController.current
     var locationDetailsOpen by remember { mutableStateOf(false) }
     val viewport: MapViewportViewModel = viewModel()
     val controller = rememberNativeMapController(viewport.camera)
@@ -189,7 +194,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                     IconButton(onClick = { filtersOpen = true }, modifier = Modifier.size(42.dp)) {
                         BadgedBox(badge = { if (category != "all" || savedOnly) Badge() }) { Icon(Icons.Default.Tune, "Filtrar mapa", tint = MaterialTheme.colorScheme.primary) }
                     }
-                    IconButton(onClick = list, modifier = Modifier.size(42.dp)) { Icon(Icons.Default.ViewList, "Ver lista", tint = MaterialTheme.colorScheme.primary) }
+                    IconButton(onClick = { keyboard?.hide(); resultsOpen = true }, modifier = Modifier.size(42.dp).testTag("map-open-results")) { Icon(Icons.Default.ViewList, "Ver lista de paradas del mapa", tint = MaterialTheme.colorScheme.primary) }
                 } },
                 colors = TextFieldDefaults.colors(focusedContainerColor = Color.White, unfocusedContainerColor = Color.White,
                     focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent), shape = RoundedCornerShape(20.dp))
@@ -319,6 +324,60 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 Text(event.title, fontWeight = FontWeight.Bold)
                 Text("${event.day.format(format)} · ${event.time} · ${event.place}", fontSize = 13.sp)
                 HorizontalDivider(Modifier.padding(top = 8.dp))
+            }
+        }
+    }
+    if (resultsOpen) ModalBottomSheet(onDismissRequest = { resultsOpen = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        androidx.compose.foundation.lazy.LazyColumn(
+            Modifier.fillMaxWidth().fillMaxHeight(.8f).navigationBarsPadding().testTag("map-results-list"),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            item {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text("Paradas del mapa", fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                    IconButton(onClick = { resultsOpen = false }) { Icon(Icons.Default.Close, "Cerrar lista del mapa") }
+                }
+                Text("${points.size} ${if (points.size == 1) "parada con ubicación" else "paradas con ubicación"} · filtros actuales", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (query.isNotBlank()) Text("Búsqueda: $query", fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
+                if (savedOnly) Text("Solo tus favoritos", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+                Text("Toca un lugar para localizar su marcador.", fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
+            }
+            if (state.loading) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+            if (state.offline || state.error != null) item {
+                Text("Datos guardados; actualiza para confirmar las paradas.", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                TextButton(onClick = retry) { Text("Actualizar paradas") }
+            }
+            if (points.isEmpty() && !state.loading) item {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("No hay paradas con ubicación para estos filtros.", fontWeight = FontWeight.SemiBold)
+                    TextButton(onClick = { following = false; onQuery(""); onCategory("all"); savedOnly = false }) { Text("Quitar filtros") }
+                }
+            }
+            items(points, key = Place::id) { place ->
+                OutlinedCard(shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth()) {
+                    Row(Modifier.fillMaxWidth().clickable {
+                        following = false; nearbyIds = emptyList()
+                        if (selection == place.id) controller.focusPlace(place)
+                        selection = place.id; resultsOpen = false
+                    }.padding(10.dp).testTag("map-result-${place.id}"), verticalAlignment = Alignment.CenterVertically) {
+                        AsyncImage(model = BrandImagePolicy.model(place.imageUrl), contentDescription = null,
+                            contentScale = ContentScale.Fit, modifier = Modifier.size(68.dp).clip(RoundedCornerShape(10.dp)),
+                            placeholder = painterResource(R.drawable.visitaloja_logo), error = painterResource(R.drawable.visitaloja_logo))
+                        Column(Modifier.weight(1f).padding(start = 10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(place.title, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                            Text(place.categoryLabel, fontSize = 11.sp, color = MaterialTheme.colorScheme.primary)
+                            if (place.address.isNotBlank()) Text(place.address, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        }
+                        IconButton(onClick = { favourite(place.id) }) {
+                            val saved = place.id in state.favourites
+                            Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
+            }
+            item {
+                TextButton(onClick = { resultsOpen = false; list() }, modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Default.Explore, null); Spacer(Modifier.width(8.dp)); Text("Ir a Explorar")
+                }
             }
         }
     }
