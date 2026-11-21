@@ -1,55 +1,58 @@
 package com.visitaloja.app
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 @Composable
-internal fun PlansScreen(english:Boolean,contact:()->Unit){
-    var plans by remember{mutableStateOf<List<Map<String,Any?>>>(emptyList())}
-    var loading by remember{mutableStateOf(true)}
-    var failed by remember{mutableStateOf(false)}
-    var retry by remember{mutableIntStateOf(0)}
-    LaunchedEffect(retry){loading=true;failed=false;try{
-        val raw=FirebaseFirestore.getInstance().collection("settings").document("subscriptions").get(Source.SERVER).await()
-        plans=(raw.get("plans") as? List<*>).orEmpty().filterIsInstance<Map<String,Any?>>().filter{it["active"]!=false}
-    }catch(e:kotlinx.coroutines.CancellationException){throw e}catch(_:Exception){plans=emptyList();failed=true}finally{loading=false}}
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
-        Text(if(english)"Plans for your business" else "Planes para tu negocio",style=MaterialTheme.typography.headlineMedium)
-        Text(if(english)"Choose how to promote your business in VisitaLoja." else "Elige cómo dar a conocer tu negocio en VisitaLoja.")
-        if(loading)LinearProgressIndicator(Modifier.fillMaxWidth())
-        if(failed||!loading&&plans.isEmpty())Text(if(english)"Contact us to confirm current plans and conditions." else "Contáctanos para confirmar los planes y condiciones vigentes.")
-        plans.forEach{raw->
-            val id=raw["id"] as? String ?: ""
-            val canonical=when(id){"gratis"->"free";"impulso","emprendo"->"impulse";"destacado","pro","activo"->"featured";else->id}
-            val legacy=((raw["offerVersion"] as? Number)?.toInt()?:0)<1
-            val defaults=when(canonical){"free"->Triple("Plan Gratis",0,3);"impulse"->Triple("Plan Emprendo",10,10);"featured"->Triple("Plan Activo",30,15);"premium"->Triple("Plan Premium",60,20);else->null}
-            val name=defaults?.first?:raw["name"]?.toString().orEmpty()
-            val monthly=if(legacy&&defaults!=null)defaults.second.toDouble() else (raw["monthly"] as? Number)?.toDouble()?.takeIf{it.isFinite()&&it>=0}
-            val features=raw["features"] as? Map<*,*> ?: emptyMap<Any,Any>()
-            val photos=if(legacy&&defaults!=null)defaults.third else (features["maxGalleryImages"] as? Number)?.toInt()
-            Card(Modifier.fillMaxWidth()){Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
-                Text(name,style=MaterialTheme.typography.titleLarge)
-                monthly?.let{Text(java.text.NumberFormat.getCurrencyInstance(java.util.Locale.US).format(it)+if(english)" / month" else " / mes")}
-                photos?.let{Text(if(english)"Up to $it gallery photos" else "Hasta $it fotos en galería")}
-                val benefits=if(defaults!=null){
-                    val paid=canonical!="free"
-                    val products=if(legacy)when(canonical){"featured"->10;"premium"->20;else->0}else (features["maxFeaturedProducts"] as? Number)?.toInt()?:0
-                    val months=if(legacy)when(canonical){"impulse"->1;"featured"->3;"premium"->12;else->0}else (features["analyticsPeriodMonths"] as? Number)?.toInt()?:0
-                    buildList<String>{add("Ficha en la guía y mapa");add("Tarjeta de fidelidad incluida");add("Horarios y contacto");if(paid){add("QR con carta completa en imagen");add("Logo en el mapa");if(products>0)add("Hasta $products productos destacados");add("Estadísticas: historial de $months meses");when(canonical){"impulse"->add("Video aportado por el cliente, sujeto a revisión");"featured"->add("Producción audiovisual con alcance acordado");"premium"->add("Una jornada mensual de grabación y fotografía coordinada")}}else add("Sin estadísticas")}
-                }else(raw["benefits"] as? List<*>)?.filterIsInstance<String>().orEmpty()
-                benefits.forEach{Text("• "+it.take(700))}
-                Button(onClick=contact){Text(if(english)"Ask about this plan" else "Consultar este plan")}
-            }}
+internal fun PlansScreen(english: Boolean, contact: () -> Unit) {
+    val context = LocalContext.current
+    var plans by remember { mutableStateOf<List<Map<String, Any?>>>(emptyList()) }; var content by remember { mutableStateOf<Map<String, Any?>>(emptyMap()) }
+    var faqs by remember { mutableStateOf<List<Map<String, Any?>>>(emptyList()) }; var phone by remember { mutableStateOf("") }
+    var loading by remember { mutableStateOf(true) }; var failed by remember { mutableStateOf(false) }; var retry by remember { mutableIntStateOf(0) }
+    LaunchedEffect(retry) { loading = true; failed = false; try {
+        val catalog = withContext(Dispatchers.IO) { context.assets.open("admin-plans-catalog.json").bufferedReader().use { JSONObject(it.readText()) } }
+        val db = FirebaseFirestore.getInstance(); val raw = db.collection("settings").document("subscriptions").get(Source.SERVER).await(); val main = db.collection("settings").document("main").get(Source.SERVER).await()
+        content = AdminPlatformPolicy.map(AdminLocalDrafts.value(catalog.getJSONObject("defaults"))) + raw.data.orEmpty()
+        plans = AdminPlanPolicy.rows(raw.data.orEmpty(), catalog).filter { it["active"] != false }.map { it + ("benefits" to AdminPlanPolicy.benefits(it, catalog)) }
+        faqs = (content["faqs"] as? List<*>)?.mapNotNull { (it as? Map<*, *>)?.entries?.associate { e -> e.key.toString() to e.value } }?.filter { it.text("question").isNotBlank() && it.text("answer").isNotBlank() }?.take(100).orEmpty()
+        phone = main.data.orEmpty().text("subscriptionWhatsapp").filter(Char::isDigit).takeIf { it.length in 10..15 && !it.startsWith("0") }.orEmpty()
+    } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (_: Exception) { plans = emptyList(); content = emptyMap(); faqs = emptyList(); phone = ""; failed = true } finally { loading = false } }
+    fun contactPlan(name: String) {
+        if (phone.isBlank()) contact() else runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$phone?text=" + Uri.encode("Hola, deseo información sobre el plan $name de VisitaLoja.")))) }.onFailure { contact() }
+    }
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Text(if (english) "Plans for your business" else content.text("title").take(200).ifBlank { "Planes para tu negocio" }, style = MaterialTheme.typography.headlineMedium)
+        Text(if (english) "Choose how to promote your business in VisitaLoja." else content.text("subtitle").take(700).ifBlank { "Elige cómo dar a conocer tu negocio en VisitaLoja." })
+        if (!english && content.text("promo").isNotBlank()) Text(content.text("promo").take(400))
+        if (loading) LinearProgressIndicator(Modifier.fillMaxWidth())
+        if (failed || !loading && plans.isEmpty()) Text(if (english) "Contact us to confirm current plans and conditions." else "Contáctanos para confirmar los planes y condiciones vigentes.")
+        plans.forEach { row ->
+            val name = row.text("name"); Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(name, style = MaterialTheme.typography.titleLarge)
+                if (row["recommended"] == true) Text(if (english) "Recommended" else "Más recomendado")
+                listOf("monthly" to if (english) " / month" else " / mes", "annual" to if (english) " / year" else " / año").forEach { (key, label) ->
+                    (row[key] as? Number)?.toDouble()?.takeIf { it.isFinite() && it >= 0 }?.let { Text(java.text.NumberFormat.getCurrencyInstance(java.util.Locale.US).format(it) + label) }
+                }
+                Text(row.text("description").take(240)); (row["benefits"] as? List<*>)?.filterIsInstance<String>()?.take(100)?.forEach { Text("• " + it.take(700)) }
+                Button(onClick = { contactPlan(name) }) { Text(if (english) "Ask about this plan" else row.text("cta").take(60).ifBlank { "Consultar este plan" }) }
+            } }
         }
-        TextButton(onClick={retry++},enabled=!loading){Text(if(english)"Refresh plans" else "Actualizar planes")}
-        OutlinedButton(onClick=contact,modifier=Modifier.fillMaxWidth()){Text(if(english)"Contact VisitaLoja" else "Contactar a VisitaLoja")}
+        if (faqs.isNotEmpty()) { Text(if (english) "Frequently asked questions" else "Preguntas frecuentes", style = MaterialTheme.typography.titleLarge); faqs.forEach { row -> Text(row.text("question").take(180), style = MaterialTheme.typography.titleMedium); Text(row.text("answer").take(500)) } }
+        TextButton(onClick = { retry++ }, enabled = !loading) { Text(if (english) "Refresh plans" else "Actualizar planes") }
+        OutlinedButton(onClick = contact, modifier = Modifier.fillMaxWidth()) { Text(if (english) "Contact VisitaLoja" else "Contactar a VisitaLoja") }
     }
 }
