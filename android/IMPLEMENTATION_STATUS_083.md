@@ -166,3 +166,8 @@ Los cuatro accesos de categorías de Inicio pasan a tarjetas en dos columnas con
 ## 0.103.0 — Agenda por fecha y afiche ampliado
 
 Agenda añade Mañana y selector de fecha exacta, combinados con búsqueda. La fecha exacta sustituye el periodo; tocar un periodo quita la fecha. Resultados agrupados por día en zona America/Guayaquil, con conteo y limpieza completa en estado vacío. Conserva orden cronológico, filtros de publicación y retirada una hora después del inicio; no recupera eventos vencidos al elegir fechas pasadas. Ficha permite abrir/cerrar afiche en pantalla completa conservando proporción, sin recorte. Sin cambios de datos ni web/main. CI comprueba compilación, pruebas unitarias y lint; pruebas físicas pendientes para el final.
+
+
+## 0.104.0 — Resultados dentro del mapa
+
+El botón de lista del mapa abre un panel con los mismos puntos filtrados por búsqueda, categoría, publicación, ubicación válida y favoritos. Seleccionar una fila cierra el panel y selecciona/enfoca el marcador con su vista previa existente. Incluye fotos completas, dirección, guardado/quitar favoritos y estado sin resultados con limpieza de filtros; datos offline avisan y permiten actualizar. Se conserva acceso explícito a Explorar al final. La lista corresponde a todos los puntos filtrados, no solamente al encuadre visible ni a una distancia GPS. No solicita nuevos permisos ni modifica marcas/FIAVL/datos/web/main. CI verifica compilación, pruebas unitarias y lint; pruebas físicas para el final.
