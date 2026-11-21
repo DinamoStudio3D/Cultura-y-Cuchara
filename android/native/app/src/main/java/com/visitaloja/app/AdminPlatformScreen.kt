@@ -25,9 +25,9 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
     val model: AdminPlatformViewModel = viewModel(key = "admin-platform-" + kind)
     val observed by model.state.collectAsStateWithLifecycle()
     val state = observed.takeIf { it.uid == uid } ?: AdminPlatformState(kind = kind)
-    val title = when (kind) { "home" -> "Portada e identidad"; "passport" -> "Configuración de pasaporte"; "maintenance" -> "Mantenimiento de la web"; else -> "Ellos hacen posible VisitaLoja" }
+    val title = when (kind) { "home" -> "Portada e identidad"; "passport" -> "Configuración de pasaporte"; "maintenance" -> "Mantenimiento de la web"; "chabaquito" -> "Chabaquito"; else -> "Ellos hacen posible VisitaLoja" }
     var open by remember(uid) { mutableStateOf(false) }
-    var group by remember(uid) { mutableStateOf(when (kind) { "home" -> "general"; "passport" -> "passport"; "maintenance" -> "maintenance"; else -> "supporters" }) }
+    var group by remember(uid) { mutableStateOf(when (kind) { "home" -> "general"; "passport" -> "passport"; "maintenance" -> "maintenance"; "chabaquito" -> "character"; else -> "supporters" }) }
     var chooseGroup by remember(uid) { mutableStateOf(false) }
     var query by remember(uid) { mutableStateOf("") }
     var discard by remember(uid) { mutableStateOf(false) }
@@ -59,11 +59,12 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                     state.message?.let { Text(it) }
                     OutlinedButton(onClick = { if (state.draft != state.initial) reload = true else model.bind(uid, kind) }, enabled = !state.busy) { Text("Actualizar configuración y permisos") }
                     OutlinedButton(onClick = { model.local("list"); drafts = true }, enabled = state.ready && !state.busy) { Text("Recuperar borrador de este teléfono") }
-                    if (kind == "home") {
-                        Text("Edita el contenido compartido con la web. La app aplica los campos que tiene integrados; estilos, redes y algunos bloques pertenecen a la web. El logo público es independiente del icono instalado.")
-                        Text("Para organizar la biblioteca y los encuadres de portada, abre Fotografías y créditos en Administración. Aquí se conservan sus datos.")
+                    if (kind == "home" || kind == "chabaquito") {
+                        if (kind == "home") Text("Edita el contenido compartido con la web. La app aplica los campos que tiene integrados; estilos, redes y algunos bloques pertenecen a la web. El logo público es independiente del icono instalado.")
+                        if (kind == "home") Text("Para organizar la biblioteca y los encuadres de portada, abre Fotografías y créditos en Administración. Aquí se conservan sus datos.")
                         OutlinedButton(onClick = { query = ""; chooseGroup = true }, enabled = state.ready && !state.busy) { Text("Elegir bloque · " + current?.title.orEmpty()) }
-                        OutlinedButton(onClick = { group = "footerContact" }, enabled = state.ready && !state.busy) { Text("Ir a contacto y redes sociales") }
+                        if (kind == "home") OutlinedButton(onClick = { group = "footerContact" }, enabled = state.ready && !state.busy) { Text("Ir a contacto y redes sociales") }
+                        if (kind == "chabaquito") Text("La guía nativa usa imagen, visibilidad y saludo de inicio en español. Animación, otros mensajes, retos clásicos y certificado pertenecen a la web. No cambia las misiones V2 ni sus insignias. La campaña comercial y sus existencias se conservan; se gestionan por separado.")
                         current?.let { Text(it.title, style = MaterialTheme.typography.titleLarge); Text(if (it.native) "Incluye contenido utilizado por la app y la web." else "Bloque de presentación de la web.") }
                     } else if (kind == "maintenance") {
                         Text("Este control cubre la web pública con un aviso temporal. El panel administrativo sigue accesible. La app nativa continúa funcionando: este ajuste corresponde a la web.")
@@ -170,6 +171,6 @@ private fun PlatformFieldControl(field: PlatformField, value: String, enabled: B
             Slider((value.toFloatOrNull()?.takeIf { it.isFinite() } ?: field.fallback.toFloatOrNull() ?: field.min.toFloat()).coerceIn(field.min.toFloat(), field.upper.toFloat()),
                 { change(if (field.upper <= 1.0) it.toString() else it.roundToInt().toString()) }, valueRange = field.min.toFloat()..field.upper.toFloat(), enabled = enabled)
         }
-        else -> OutlinedTextField(value, { change(it.take(field.max)) }, label = { Text(field.label) }, enabled = enabled, modifier = Modifier.fillMaxWidth())
+        else -> OutlinedTextField(value, { change(it.take(field.max)) }, label = { Text(mapOf("inicio" to "Saludo inicial", "mapa" to "Mensaje del mapa", "establecimientos" to "Mensaje de paradas", "fiavl" to "Mensaje del festival", "postales" to "Mensaje de postales", "pasaporte" to "Mensaje del pasaporte", "misiones" to "Mensaje de misiones", "podcast" to "Mensaje de podcast", "title" to "Título ES", "titleEn" to "Título EN", "description" to "Descripción ES", "descriptionEn" to "Descripción EN", "rewardTitle" to "Título del logro ES", "rewardTitleEn" to "Título del logro EN", "rewardDescription" to "Mensaje del logro ES", "rewardDescriptionEn" to "Mensaje del logro EN", "text" to "Reconocimiento", "signature" to "Firma institucional")[field.label] ?: field.label) }, enabled = enabled, modifier = Modifier.fillMaxWidth())
     }
 }
