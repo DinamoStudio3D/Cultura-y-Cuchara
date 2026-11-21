@@ -1,5 +1,6 @@
 package com.visitaloja.app
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -93,6 +94,23 @@ fun PlacePhotoHeader(place: Place, english: Boolean, close: () -> Unit) {
                     modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 TextButton(onClick = { selected = index }, modifier = Modifier.testTag("place-photo-expand")) {
                     Icon(Icons.Default.ZoomIn, null, Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text(if (english) "Enlarge" else "Ampliar")
+                }
+            }
+            if (photos.size > 1) {
+                val scope = rememberCoroutineScope()
+                LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.testTag("place-photo-thumbnails")) {
+                    itemsIndexed(photos, key = { _, photo -> photo.url }) { thumbnailIndex, thumbnail ->
+                        val active = thumbnailIndex == index
+                        AsyncImage(model = BrandImagePolicy.model(thumbnail.url),
+                            contentDescription = if (english) "Show photo ${thumbnailIndex + 1} of ${photos.size}" else "Mostrar fotografía ${thumbnailIndex + 1} de ${photos.size}",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.size(76.dp, 62.dp).clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .border(if (active) 2.dp else 1.dp, if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(10.dp))
+                                .clickable { scope.launch { pager.animateScrollToPage(thumbnailIndex) } }
+                                .testTag("place-photo-thumbnail-$thumbnailIndex"),
+                            placeholder = painterResource(R.drawable.visitaloja_logo), error = painterResource(R.drawable.visitaloja_logo))
+                    }
                 }
             }
             val photo = photos[index]
