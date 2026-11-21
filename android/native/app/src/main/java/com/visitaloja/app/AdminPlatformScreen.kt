@@ -25,9 +25,9 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
     val model: AdminPlatformViewModel = viewModel(key = "admin-platform-" + kind)
     val observed by model.state.collectAsStateWithLifecycle()
     val state = observed.takeIf { it.uid == uid } ?: AdminPlatformState(kind = kind)
-    val title = when (kind) { "home" -> "Portada e identidad"; "passport" -> "Configuración de pasaporte"; "maintenance" -> "Mantenimiento de la web"; "chabaquito" -> "Chabaquito"; else -> "Ellos hacen posible VisitaLoja" }
+    val title = when (kind) { "home" -> "Portada e identidad"; "passport" -> "Configuración de pasaporte"; "maintenance" -> "Mantenimiento de la web"; "chabaquito" -> "Chabaquito"; "benefit" -> "Recompensa comercial Chabaquito"; else -> "Ellos hacen posible VisitaLoja" }
     var open by remember(uid) { mutableStateOf(false) }
-    var group by remember(uid) { mutableStateOf(when (kind) { "home" -> "general"; "passport" -> "passport"; "maintenance" -> "maintenance"; "chabaquito" -> "character"; else -> "supporters" }) }
+    var group by remember(uid) { mutableStateOf(when (kind) { "home" -> "general"; "passport" -> "passport"; "maintenance" -> "maintenance"; "chabaquito" -> "character"; "benefit" -> "benefit"; else -> "supporters" }) }
     var chooseGroup by remember(uid) { mutableStateOf(false) }
     var query by remember(uid) { mutableStateOf("") }
     var discard by remember(uid) { mutableStateOf(false) }
@@ -66,6 +66,12 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                         if (kind == "home") OutlinedButton(onClick = { group = "footerContact" }, enabled = state.ready && !state.busy) { Text("Ir a contacto y redes sociales") }
                         if (kind == "chabaquito") Text("La guía nativa usa imagen, visibilidad y saludo de inicio en español. Animación, otros mensajes, retos clásicos y certificado pertenecen a la web. No cambia las misiones V2 ni sus insignias. La campaña comercial y sus existencias se conservan; se gestionan por separado.")
                         current?.let { Text(it.title, style = MaterialTheme.typography.titleLarge); Text(if (it.native) "Incluye contenido utilizado por la app y la web." else "Bloque de presentación de la web.") }
+                    } else if (kind == "benefit") {
+                        Text("Recompensa comercial de los cinco retos clásicos de la web; no modifica insignias digitales V2 ni premios del pasaporte. El ID identifica la campaña actual y no se cambia desde este editor.")
+                        val issued = maxOf(state.countedClaims.toLong(), runCatching { AdminMissionBenefitPolicy.counter(state.campaign?.get("issuedCount")) }.getOrDefault(0))
+                        val stock = state.draft["n|benefit|stock"]?.toLongOrNull() ?: 0
+                        Text("Cupo total preparado: $stock · Emitidos confirmados en la última consulta: $issued · Restantes estimados: " + (stock - issued).coerceAtLeast(0))
+                        Text("Los códigos emitidos consumen cupo aunque se anulen. Guardar conserva el contador más reciente del servidor; no reinicia códigos ni canjes. Revisa las fechas y el cupo antes de activar.")
                     } else if (kind == "maintenance") {
                         Text("Este control cubre la web pública con un aviso temporal. El panel administrativo sigue accesible. La app nativa continúa funcionando: este ajuste corresponde a la web.")
                         Text("La fecha de regreso es un texto informativo; no programa la desactivación. Sin enlace, el aviso no muestra botón de contacto. Revisa la vista previa antes de publicar.")
@@ -155,7 +161,7 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
         } }
     }
     if (review) AlertDialog(onDismissRequest = { review = false }, title = { Text("Publicar configuración") }, text = {
-        Text(if (kind == "maintenance") "Se guardará el aviso. " + (if (state.draft["r|active"] == "true") "La web pública quedará cubierta por el mensaje hasta que lo desactives. El panel administrativo y la app nativa seguirán accesibles." else "La web pública volverá a estar disponible sin el aviso.") else title + "\nSe guardarán los cambios preparados en todos los bloques de este formulario, con efecto en las vistas que comparten esta configuración. Revisa antes de confirmar.")
+        Text(if (kind == "benefit") "Se guardarán juntos el premio visible y las existencias de la campaña actual. Se conservarán los códigos emitidos, canjes y permisos de negocios. Cambiar el cupo no reinicia el contador. Revisa el estado y las fechas antes de confirmar." else if (kind == "maintenance") "Se guardará el aviso. " + (if (state.draft["r|active"] == "true") "La web pública quedará cubierta por el mensaje hasta que lo desactives. El panel administrativo y la app nativa seguirán accesibles." else "La web pública volverá a estar disponible sin el aviso.") else title + "\nSe guardarán los cambios preparados en todos los bloques de este formulario, con efecto en las vistas que comparten esta configuración. Revisa antes de confirmar.")
     }, confirmButton = { TextButton(onClick = { review = false; model.save() }) { Text("Guardar y publicar") } }, dismissButton = { TextButton(onClick = { review = false }) { Text("Volver") } })
     if (discard || reload) AlertDialog(onDismissRequest = { discard = false; reload = false }, title = { Text("Descartar cambios del formulario") }, text = { Text("Los borradores ya guardados y la configuración publicada se conservan.") },
         confirmButton = { TextButton(onClick = { if (reload) model.bind(uid, kind) else { open = false; model.bind(null, kind) }; discard = false; reload = false }) { Text("Descartar") } }, dismissButton = { TextButton(onClick = { discard = false; reload = false }) { Text("Conservar formulario") } })
@@ -164,6 +170,7 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
 private fun PlatformFieldControl(field: PlatformField, value: String, enabled: Boolean, change: (String) -> Unit) {
     val labels = mapOf("all" to "Automático", "selected" to "Seleccionar negocios", "small" to "Pequeños", "medium" to "Medianos", "large" to "Grandes", "left" to "Izquierda", "right" to "Derecha", "immersive" to "Inmersiva", "standard" to "Estándar", "compact" to "Compacta", "cinematic" to "Fondo completo", "classic" to "Clásica", "clean" to "Lateral", "extra" to "Muy redondeadas", "elevated" to "Elevadas", "bordered" to "Contorno", "soft" to "Suaves", "contain" to "Foto completa", "cover" to "Llenar y recortar")
     when (field.type) {
+        "readonly" -> { Text(field.label, style = MaterialTheme.typography.labelLarge); Text(value) }
         "bool" -> Row { Checkbox(value == "true", { change(it.toString()) }, enabled = enabled); Text(field.label) }
         "choice" -> { Text(field.label); Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) { field.options.forEach { option -> FilterChip(value == option, { change(option) }, label = { Text(labels[option] ?: option) }, enabled = enabled) } } }
         "number" -> {
