@@ -156,3 +156,8 @@ Explorar y Favoritos abren con una lista compacta (imagen completa, nombre, dire
 ## 0.101.0 — Fichas con contacto al inicio y miniaturas
 
 Cómo llegar, WhatsApp y teléfono aparecen junto al nombre, dirección y horario, antes de las secciones extensas. Guardar y Compartir comparten una fila, sin repetir controles al final. Reseñas pasa después de la información del lugar. La cabecera añade miniaturas seleccionables cuando hay varias fotografías, con imagen completa y borde de selección sincronizado con la foto principal. Conserva visor ampliado y deslizamiento. No cambia publicaciones ni datos ni web/main. Verificación de compilación y lint en CI; pruebas físicas pendientes para el final.
+
+
+## 0.102.0 — Categorías claras en Inicio
+
+Los cuatro accesos de categorías de Inicio pasan a tarjetas en dos columnas con títulos orientados a la visita y conteos calculados con la misma política de publicación/categoría que Explorar. Distingue carga, fallo sin datos y conteos de caché sin conexión. Conserva accesos y etiquetas de automatización existentes. Agenda de Inicio, fechas y tarjetas de paradas respetan ES/EN; no traduce nombres ni contenido del negocio. La agenda completa conserva su idioma existente. No añade secciones duplicadas ni cambia datos o main. Compilación y revisión CI al preparar la APK; pruebas físicas al final.
