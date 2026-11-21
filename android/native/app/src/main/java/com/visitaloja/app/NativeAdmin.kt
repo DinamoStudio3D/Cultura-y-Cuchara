@@ -196,6 +196,8 @@ internal fun NativeAdminEntry(uid: String?) {
                     if (state.allowed) AdminMissionsEntry(uid)
                     if (state.allowed) AdminPlatformEntry(uid, "passport")
                     if (state.allowed) AdminPassportRewardsEntry(uid)
+                    if (state.allowed) AdminSystemLinksEntry(uid)
+                    if (state.allowed) AdminPlatformEntry(uid, "maintenance")
                     if (state.allowed) Button(onClick = { creating = true; editingId = "loc_" + java.util.UUID.randomUUID().toString() }, enabled = !state.busy) { Text("Crear parada") }
                     if (state.allowed) OutlinedTextField(query, { query = it }, label = { Text("Buscar entre las paradas cargadas") }, modifier = Modifier.fillMaxWidth())
                     if (state.allowed) Text("${state.rows.size} paradas cargadas" + if (state.complete) "" else " · quedan más por cargar")
