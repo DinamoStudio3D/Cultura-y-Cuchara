@@ -171,3 +171,8 @@ Agenda añade Mañana y selector de fecha exacta, combinados con búsqueda. La f
 ## 0.104.0 — Resultados dentro del mapa
 
 El botón de lista del mapa abre un panel con los mismos puntos filtrados por búsqueda, categoría, publicación, ubicación válida y favoritos. Seleccionar una fila cierra el panel y selecciona/enfoca el marcador con su vista previa existente. Incluye fotos completas, dirección, guardado/quitar favoritos y estado sin resultados con limpieza de filtros; datos offline avisan y permiten actualizar. Se conserva acceso explícito a Explorar al final. La lista corresponde a todos los puntos filtrados, no solamente al encuadre visible ni a una distancia GPS. No solicita nuevos permisos ni modifica marcas/FIAVL/datos/web/main. CI verifica compilación, pruebas unitarias y lint; pruebas físicas para el final.
+
+
+## 0.105.0 — Editar y retomar Mi recorrido
+
+Cada parada permite seguir desde ahí sin alterar orden, favoritos ni emitir visitas/sellos. El recorrido activo muestra posición y barra, con etiqueta en la parada actual; es posición elegida, no visitas verificadas. Los planes generados permiten quitar paradas con confirmación, conservando orden y favoritos. Quitar la parada actual pausa el plan; quitar la última elimina el plan local y vuelve a favoritos. Eliminar plan completo ahora pide confirmación. Mantiene separación por cuenta y controles existentes de frescura del plan. CI verifica política de eliminación, compilación y lint; pruebas físicas al final. No modifica datos de visitas, favoritos remotos ni main.
