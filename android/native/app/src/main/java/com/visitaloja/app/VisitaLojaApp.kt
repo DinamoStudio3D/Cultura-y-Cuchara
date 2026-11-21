@@ -623,33 +623,52 @@ private fun PlaceDetail(place: Place, fresh: Boolean, audio: DiscoveryAudioState
             if (place.address.isNotBlank()) Text(place.address, color = Blue, fontSize = 13.sp)
             if (place.address.isNotBlank()) CopyPlaceAddress(place, english)
             PlaceHours(place.info, fresh, english)
+            fun openContact(intent: Intent) {
+                try { context.startActivity(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, (if (english) "No compatible app is available." else "No hay una aplicación compatible disponible."), Toast.LENGTH_LONG).show() }
+            }
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.testTag("place-quick-actions")) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (place.address.isNotBlank() || place.latitude != null && place.longitude != null) FilledTonalButton(onClick = {
+                        val destination = if (place.latitude != null && place.longitude != null) "${place.latitude},${place.longitude}" else place.address + ", Loja, Ecuador"
+                        openContact(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + Uri.encode(destination))))
+                    }, modifier = Modifier.weight(1f).testTag("place-directions"), shape = RoundedCornerShape(13.dp)) {
+                        Icon(Icons.Default.Directions, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(if (english) "Directions" else "Cómo llegar")
+                    }
+                    if (place.whatsapp != null) FilledTonalButton(onClick = {
+                        openContact(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + place.whatsapp)))
+                    }, modifier = Modifier.weight(1f).testTag("place-whatsapp"), shape = RoundedCornerShape(13.dp)) {
+                        Icon(Icons.Default.Chat, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("WhatsApp")
+                    }
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    OutlinedButton(onClick = favourite, modifier = Modifier.weight(1f).testTag("place-save"), shape = RoundedCornerShape(13.dp)) {
+                        Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp))
+                        Text(if (english) { if (saved) "Saved" else "Save" } else if (saved) "Guardado" else "Guardar")
+                    }
+                    OutlinedButton(onClick = {
+                        val share = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"; putExtra(Intent.EXTRA_SUBJECT, place.title)
+                            putExtra(Intent.EXTRA_TEXT, "${place.title} · VisitaLoja\n${PlacePolicy.publicUrl(place)}")
+                        }
+                        openContact(Intent.createChooser(share, if (english) "Share this place" else "Compartir esta parada"))
+                    }, modifier = Modifier.weight(1f).testTag("place-share"), shape = RoundedCornerShape(13.dp)) {
+                        Icon(Icons.Default.Share, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(if (english) "Share" else "Compartir")
+                    }
+                }
+                if (place.phone != null) TextButton(onClick = {
+                    openContact(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", place.phone, null)))
+                }, modifier = Modifier.fillMaxWidth().testTag("place-call")) {
+                    Icon(Icons.Default.Call, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(if (english) "Call the business" else "Llamar al negocio")
+                }
+            }
             DigitalMenuEntry(place, english)
             BusinessMenuEntry(place, english)
-            ReviewsEntry(place, login, visit, english)
             PlacePromotionEntry(place, fresh)
             PlaceMediaEntry(place, fresh, audio, player, english)
             if (place.description.isNotBlank()) Text(place.description, color = Muted, fontSize = 14.sp, lineHeight = 23.sp)
             PlaceServices(place.info, english)
+            ReviewsEntry(place, login, visit, english)
             Button(onClick = visit, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.QrCode, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Generate visit code" else "Generar código de visita")) }
-            Button(onClick = favourite, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, null); Spacer(Modifier.width(9.dp)); Text(if (english) { if (saved) "Saved" else "Save this place" } else if (saved) "Guardado en favoritos" else "Guardar en favoritos") }
-            if (place.address.isNotBlank() || place.latitude != null && place.longitude != null) OutlinedButton(onClick = {
-                val destination = if (place.latitude != null && place.longitude != null) "${place.latitude},${place.longitude}" else place.address + ", Loja, Ecuador"
-                val uri = Uri.parse("geo:0,0?q=" + Uri.encode(destination))
-                try { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) } catch (_: ActivityNotFoundException) { Toast.makeText(context, (if (english) "No maps app is available." else "No hay una aplicación de mapas disponible."), Toast.LENGTH_LONG).show() }
-            }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.Directions, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Get directions" else "Cómo llegar")) }
-            fun openContact(intent: Intent) {
-                try { context.startActivity(intent) } catch (_: ActivityNotFoundException) { Toast.makeText(context, (if (english) "No compatible app is available." else "No hay una aplicación compatible disponible."), Toast.LENGTH_LONG).show() }
-            }
-            if (place.whatsapp != null) OutlinedButton(onClick = { openContact(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/" + place.whatsapp))) }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) {
-                Icon(Icons.Default.Chat, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Ask on WhatsApp" else "Consultar por WhatsApp"))
-            }
-            if (place.phone != null) OutlinedButton(onClick = { openContact(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", place.phone, null))) }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) {
-                Icon(Icons.Default.Call, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Call the business" else "Llamar al negocio"))
-            }
-            OutlinedButton(onClick = {
-                val share = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_SUBJECT, place.title); putExtra(Intent.EXTRA_TEXT, "${place.title} · VisitaLoja\n${PlacePolicy.publicUrl(place)}") }
-                openContact(Intent.createChooser(share, (if (english) "Share this place" else "Compartir esta parada")))
-            }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(13.dp)) { Icon(Icons.Default.Share, null); Spacer(Modifier.width(9.dp)); Text((if (english) "Share this place" else "Compartir esta parada")) }
             Text((if (english) "Information published by VisitaLoja. Confirm opening hours and conditions with the business before visiting." else "Información publicada por VisitaLoja. Confirma los horarios y condiciones con el negocio antes de tu visita."), color = Muted, fontSize = 11.sp)
         }
     }
