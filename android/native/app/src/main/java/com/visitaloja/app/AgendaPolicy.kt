@@ -26,12 +26,12 @@ object AgendaPolicy {
             start, image, PlacePolicy.safeCoordinate((raw["lat"] as? Number)?.toDouble(), true), PlacePolicy.safeCoordinate((raw["lng"] as? Number)?.toDouble(), false))
     }
     fun upcoming(events: List<LojaEvent>, now: Long): List<LojaEvent> = events.filter { it.start + 3600000L > now }.distinctBy { it.id }.sortedBy { it.start }
-    fun filter(events: List<LojaEvent>, now: Long, period: String, query: String): List<LojaEvent> {
+    fun filter(events: List<LojaEvent>, now: Long, period: String, query: String, selectedDate: LocalDate? = null): List<LojaEvent> {
         val today = Instant.ofEpochMilli(now).atZone(zone).toLocalDate()
         val tokens = PlacePolicy.normalize(query).split(' ').filter(String::isNotEmpty)
         return upcoming(events, now).filter { event ->
             val date = Instant.ofEpochMilli(event.start).atZone(zone).toLocalDate()
-            val periodMatches = when (period) { "today" -> date == today; "week" -> date >= today && date < today.plusDays(7); else -> true }
+            val periodMatches = if (selectedDate != null) date == selectedDate else when (period) { "today" -> date == today; "tomorrow" -> date == today.plusDays(1); "week" -> date >= today && date < today.plusDays(7); else -> true }
             val haystack = PlacePolicy.normalize("${event.title} ${event.category} ${event.location} ${event.description}")
             periodMatches && tokens.all { it in haystack }
         }
