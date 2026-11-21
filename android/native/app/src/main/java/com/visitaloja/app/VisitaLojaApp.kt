@@ -315,7 +315,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
                     "festival" -> {
                         FestivalScreen(festivalState, festival::refresh, accountState, account::toggleFestival, { navigate("account", "all") }, { focusParade = true; navigate("map", "all") }) { navigate("map", "all") }
                     }
-                    "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh)
+                    "agenda" -> AgendaScreen(agendaState, { selectedEventId = it }, agenda::refresh, english)
                     "cantons", "canton" -> {
                         val canton = CantonPolicy.catalogue.find { it.id == selectedCantonId }
                         val retryCantons: () -> Unit = { cantons.bind(false); cantons.bind(true); model.refresh() }
@@ -336,7 +336,7 @@ internal fun VisitaLojaApp(model: PlacesViewModel = viewModel(), account: Accoun
             VisitDialog(visitState, visits::generate, visits::retry, visits::close) { visits.close(); selectedId = null; navigate("passport", "all") }
         }
         if (selectedEvent != null) {
-            ModalBottomSheet(onDismissRequest = { selectedEventId = null }, containerColor = Color(0xFFF0F7FF)) { EventDetail(selectedEvent) }
+            ModalBottomSheet(onDismissRequest = { selectedEventId = null }, containerColor = Color(0xFFF0F7FF)) { EventDetail(selectedEvent, english) }
         }
         if (selected != null) {
             ModalBottomSheet(onDismissRequest = { selectedId = null }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = Color.White) {
