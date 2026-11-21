@@ -403,18 +403,35 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
             }
         }
         item(key = "categories") {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                categories.sortedBy { listOf("food", "cafe", "hotel", "turismo").indexOf(it.id) }.forEach { category ->
-                    val label = if (english) when (category.id) { "food" -> "Food"; "cafe" -> "Coffee"; "hotel" -> "Stay"; else -> "Tourism" } else category.name
-                    Column(Modifier.weight(1f).clip(RoundedCornerShape(14.dp)).clickable { explore(category.id) }.testTag("home-category-${category.id}").padding(vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(7.dp)) {
-                        Icon(category.icon, null, tint = Blue, modifier = Modifier.size(27.dp))
-                        Text(label, fontSize = 11.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Medium, maxLines = 2)
+            Column(Modifier.fillMaxWidth().padding(horizontal = 18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(if (english) "What would you like to do?" else "¿Qué te gustaría hacer?", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                categories.sortedBy { listOf("food", "cafe", "hotel", "turismo").indexOf(it.id) }.chunked(2).forEach { row ->
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        row.forEach { category ->
+                            val count = state.places.count { PlacePolicy.matches(it, category = category.id) }
+                            val title = if (english) when (category.id) { "food" -> "Where to eat"; "cafe" -> "Coffee time"; "hotel" -> "Where to stay"; else -> "What to visit" }
+                                else when (category.id) { "food" -> "Dónde comer"; "cafe" -> "Tomar un café"; "hotel" -> "Dónde alojarte"; else -> "Qué visitar" }
+                            OutlinedCard(onClick = { explore(category.id) }, modifier = Modifier.weight(1f).testTag("home-category-${category.id}"), shape = RoundedCornerShape(16.dp), colors = CardDefaults.outlinedCardColors(containerColor = Color.White)) {
+                                Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Icon(category.icon, null, tint = Blue, modifier = Modifier.size(28.dp))
+                                    Text(title, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    val countText = when {
+                                        state.loading && state.places.isEmpty() -> if (english) "Finding places…" else "Buscando paradas…"
+                                        state.error != null && state.places.isEmpty() -> if (english) "Explore category" else "Explorar categoría"
+                                        state.offline -> if (english) "$count saved locally" else "$count en datos guardados"
+                                        english -> if (count == 1) "1 published place" else "$count published places"
+                                        else -> if (count == 1) "1 parada publicada" else "$count paradas publicadas"
+                                    }
+                                    Text(countText, fontSize = 11.sp, color = Muted)
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
         item(key = "festival") { FestivalShortcut({ openDiscovery("festival") }, Modifier.padding(horizontal = 18.dp)) }
-        item(key = "agenda") { HomeAgenda(agenda, openAgenda, event) }
+        item(key = "agenda") { HomeAgenda(agenda, openAgenda, event, english) }
         item(key = "campaigns") { HomeCampaigns(state, detail, { openDiscovery("promotions") }) }
         item(key = "places") {
             Column {
@@ -424,7 +441,7 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
                     state.error != null && state.places.isEmpty() -> Text(state.error, color = Muted, modifier = Modifier.padding(horizontal = 18.dp))
                     state.places.isEmpty() -> Text(if (english) "No places have been published yet." else "Todavía no hay lugares publicados.", color = Muted, modifier = Modifier.padding(horizontal = 18.dp))
                     else -> LazyRow(contentPadding = PaddingValues(horizontal = 18.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        items(state.places.take(6), key = Place::id) { place -> HomePlaceTile(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }) }
+                        items(state.places.take(6), key = Place::id) { place -> HomePlaceTile(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }, english) }
                     }
                 }
             }
@@ -469,15 +486,15 @@ private fun HomeScreen(state: PlacesState, explore: (String) -> Unit, detail: (P
 }
 
 @Composable
-private fun HomePlaceTile(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit) {
+private fun HomePlaceTile(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit, english: Boolean) {
     Column(Modifier.width(218.dp)) {
         Box(Modifier.fillMaxWidth().height(145.dp).clip(RoundedCornerShape(15.dp))) {
             Box(Modifier.fillMaxSize().clickable(onClick = open).testTag("place-card-${place.id}")) { PlaceImage(place, Modifier.fillMaxSize()) }
         }
         Column(Modifier.fillMaxWidth().clickable(onClick = open).padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text(place.categoryLabel, modifier = Modifier.weight(1f), fontSize = 10.sp, color = Blue, fontWeight = FontWeight.SemiBold)
-                IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) }
+                Text(PlacePresentationPolicy.category(place, english), modifier = Modifier.weight(1f), fontSize = 10.sp, color = Blue, fontWeight = FontWeight.SemiBold)
+                IconButton(onClick = favourite) { Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (english) { if (saved) "Remove ${place.title} from saved places" else "Save ${place.title}" } else if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue) }
             }
             Text(place.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Text(place.address.ifBlank { "Loja, Ecuador" }, color = Muted, fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
