@@ -13,7 +13,7 @@ internal data class LocalAdminDraft(val id: String, val title: String, val saved
 internal object AdminLocalDrafts {
     private fun hash(value: String) = MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
     private fun dir(context: Context, uid: String, scope: String): File {
-        require(uid.isNotBlank() && scope in setOf("stories", "entrepreneurs", "cantons", "history", "podcast", "postcards", "home", "supporters", "photos", "missions", "passport", "passport-rewards"))
+        require(uid.isNotBlank() && scope in setOf("stories", "entrepreneurs", "cantons", "history", "podcast", "postcards", "home", "supporters", "photos", "missions", "passport", "passport-rewards", "maintenance"))
         return File(context.noBackupFilesDir, "admin-drafts/" + hash(uid + "\u0000" + scope)).also { check(it.isDirectory || it.mkdirs()) }
     }
     private fun file(context: Context, uid: String, scope: String, id: String) = File(dir(context, uid, scope), hash(id) + ".json")
