@@ -22,7 +22,7 @@ internal object AdminRewardAccessPolicy {
         require(raw == null || raw is List<*> && raw.all { it is String } && raw.size <= 1000) { "La lista de permisos es incompatible." }
         val campaigns = ((raw as? List<*>)?.filterIsInstance<String>().orEmpty() + AdminRewardAccessPolicy.campaign(campaign)).distinct()
         require(campaigns.size <= 1000) { "La cuenta ya tiene demasiados permisos." }
-        val result = mutableMapOf<String, Any?>("businessName" to business.trim(), "campaignIds" to campaigns, "active" to (existing?.get("active") != false))
+        val result = mutableMapOf<String, Any?>("businessName" to business.trim(), "campaignIds" to campaigns, "active" to (if (existing == null) true else existing["active"] == true))
         if (existing == null) result.putAll(mapOf("uid" to uid, "email" to request.text("email"), "displayName" to request.text("displayName")))
         return result
     }
@@ -82,7 +82,7 @@ internal class AdminRewardAccessViewModel : ViewModel() {
                     tx.set(auditRef, audit(uid, "reward-access.approved", target, campaign))
                     Unit
                 }.await()
-                if (same(uid, version)) bind(uid, "Solicitud aprobada para $campaign. Se conservaron otros permisos y cualquier suspensión previa de la cuenta.")
+                if (same(uid, version)) bind(uid, "Solicitud aprobada para $campaign. Se conservaron otros permisos y cualquier inactividad previa de la cuenta.")
             } catch (e: CancellationException) { throw e }
             catch (e: Exception) { if (same(uid, version)) mutable.value = old.copy(message = if (e is IllegalStateException || e is IllegalArgumentException) e.message else "No se pudo confirmar la aprobación. Actualiza antes de repetir.") }
         }
