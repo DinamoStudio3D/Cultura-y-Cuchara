@@ -487,8 +487,19 @@ private fun HomePlaceTile(place: Place, saved: Boolean, open: () -> Unit, favour
 
 @Composable
 private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String, category: String, onQuery: (String) -> Unit, onCategory: (String) -> Unit, detail: (Place) -> Unit, favourite: (String) -> Unit, signedIn: Boolean, openMap: () -> Unit, english: Boolean, retry: () -> Unit) {
-    val places = remember(state.places, state.favourites, query, category, onlySaved) { state.places.filter { PlacePolicy.matches(it, query, if (onlySaved) "all" else category) && (!onlySaved || it.id in state.favourites) } }
-    val savedSearchEmpty = PlacePresentationPolicy.savedSearchEmpty(onlySaved, query, state.places.any { PlacePolicy.published(it) && it.id in state.favourites })
+    var compact by rememberSaveable(onlySaved) { mutableStateOf(true) }
+    var contentFilter by rememberSaveable(onlySaved) { mutableStateOf("all") }
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val now by produceState(System.currentTimeMillis(), lifecycle) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (isActive) { value = System.currentTimeMillis(); kotlinx.coroutines.delay(15_000) }
+        }
+    }
+    val fresh = !state.offline && state.error == null && state.fetchedAt > 0
+    val places = remember(state.places, state.favourites, query, category, onlySaved, contentFilter, now, fresh) {
+        state.places.filter { PlacePolicy.matches(it, query, if (onlySaved) "all" else category) && (!onlySaved || it.id in state.favourites) && ExploreContentPolicy.matches(it, contentFilter, now, fresh) }
+    }
+    val savedSearchEmpty = onlySaved && (query.isNotBlank() || contentFilter != "all") && state.places.any { PlacePolicy.published(it) && it.id in state.favourites }
     LazyColumn(contentPadding = PaddingValues(horizontal = 22.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Column {
@@ -499,11 +510,31 @@ private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String,
             }
         }
         if (!onlySaved) item {
-            OutlinedButton(onClick = openMap, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Map, null); Spacer(Modifier.width(8.dp)); Text(if (english) "See these places on the map" else "Ver estos lugares en el mapa") }
+            OutlinedButton(onClick = openMap, modifier = Modifier.fillMaxWidth()) { Icon(Icons.Default.Map, null); Spacer(Modifier.width(8.dp)); Text(if (english) "Open the map" else "Abrir el mapa") }
         }
         if (!onlySaved) item {
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 (listOf(Category("all", "Todo", Icons.Default.Explore)) + categories).forEach { choice -> FilterChip(selected = category == choice.id, onClick = { onCategory(choice.id) }, label = { Text(PlacePresentationPolicy.filterCategory(choice.id, choice.name, english)) }) }
+            }
+        }
+        item {
+            Column {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(if (english) "Choose your view" else "Elige cómo explorar", fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                    IconToggleButton(checked = compact, onCheckedChange = { compact = true }, modifier = Modifier.testTag("explore-view-list")) {
+                        Icon(Icons.Default.ViewList, if (english) "Compact list" else "Lista compacta", tint = if (compact) Blue else Muted)
+                    }
+                    IconToggleButton(checked = !compact, onCheckedChange = { compact = false }, modifier = Modifier.testTag("explore-view-photos")) {
+                        Icon(Icons.Default.PhotoLibrary, if (english) "Large photos" else "Fotos grandes", tint = if (!compact) Blue else Muted)
+                    }
+                }
+                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("all", "video", "menu").forEach { filter ->
+                        FilterChip(selected = contentFilter == filter, onClick = { contentFilter = filter }, modifier = Modifier.testTag("explore-content-$filter"), label = {
+                            Text(when (filter) { "video" -> if (english) "With video" else "Con video"; "menu" -> if (english) "QR menu linked" else "Con enlace a menú QR"; else -> if (english) "All content" else "Todo el contenido" })
+                        })
+                    }
+                }
             }
         }
         if (state.loading && state.places.isEmpty()) item { LoadingPlaces(english) }
@@ -511,15 +542,48 @@ private fun ExploreScreen(state: PlacesState, onlySaved: Boolean, query: String,
         else if (places.isEmpty()) item {
             Column(Modifier.fillMaxWidth().padding(vertical = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(if (onlySaved) Icons.Default.FavoriteBorder else Icons.Default.Search, null, Modifier.size(40.dp), tint = Blue)
-                Text(if (savedSearchEmpty) { if (english) "No saved places match this search" else "No hay favoritos que coincidan con tu búsqueda" } else if (english) { if (onlySaved) "Save a place for your next visit" else "Let’s try another search" } else if (onlySaved) "Tu próxima visita empieza guardando un lugar" else "Probemos otra búsqueda", fontSize = 18.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 14.dp))
-                Text(if (savedSearchEmpty) { if (english) "Try another name or clear the search." else "Prueba otro nombre o borra la búsqueda." } else if (english) { if (onlySaved) "Tap a place’s heart to find it here." else "No published places match these filters." } else if (onlySaved) "Toca el corazón de una parada para encontrarla aquí." else "No hay lugares publicados con esos filtros.", textAlign = TextAlign.Center, color = Muted, modifier = Modifier.padding(top = 9.dp))
-                if (!onlySaved || savedSearchEmpty) TextButton(onClick = { onQuery(""); onCategory("all") }) { Text(if (english) { if (onlySaved) "Clear search" else "See all places" } else if (onlySaved) "Borrar búsqueda" else "Ver todos los lugares") }
+                Text(if (savedSearchEmpty) { if (english) "No saved places match these filters" else "No hay favoritos que coincidan con estos filtros" } else if (english) { if (onlySaved) "Save a place for your next visit" else "Let’s try another search" } else if (onlySaved) "Tu próxima visita empieza guardando un lugar" else "Probemos otra búsqueda", fontSize = 18.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 14.dp))
+                Text(if (savedSearchEmpty) { if (english) "Try another name or clear the filters." else "Prueba otro nombre o limpia los filtros." } else if (english) { if (onlySaved) "Tap a place’s heart to find it here." else "No published places match these filters." } else if (onlySaved) "Toca el corazón de una parada para encontrarla aquí." else "No hay lugares publicados con esos filtros.", textAlign = TextAlign.Center, color = Muted, modifier = Modifier.padding(top = 9.dp))
+                if (!onlySaved || savedSearchEmpty) TextButton(onClick = { onQuery(""); onCategory("all"); contentFilter = "all" }) { Text(if (english) { if (onlySaved) "Clear filters" else "See all places" } else if (onlySaved) "Limpiar filtros" else "Ver todos los lugares") }
             }
         } else {
             item { Text(if (english) { if (places.size == 1) "1 place to discover" else "${places.size} places to discover" } else if (places.size == 1) "1 lugar para descubrir" else "${places.size} lugares para descubrir", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Muted) }
-            items(places, key = Place::id) { place -> PlaceCard(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }, Modifier.fillMaxWidth(), english = english) }
+            items(places, key = Place::id) { place ->
+                if (compact) ExplorePlaceRow(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }, english, now, fresh)
+                else Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    PlaceCard(place, place.id in state.favourites, { detail(place) }, { favourite(place.id) }, Modifier.fillMaxWidth(), english = english)
+                    ExplorePlaceContent(place, english, now, fresh, Modifier.padding(horizontal = 8.dp))
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun ExplorePlaceRow(place: Place, saved: Boolean, open: () -> Unit, favourite: () -> Unit, english: Boolean, now: Long, fresh: Boolean) {
+    OutlinedCard(shape = RoundedCornerShape(18.dp), colors = CardDefaults.outlinedCardColors(containerColor = Color.White), modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth().testTag("place-card-${place.id}").clickable(onClick = open).padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+            PlaceImage(place, Modifier.size(100.dp).clip(RoundedCornerShape(12.dp)))
+            Column(Modifier.weight(1f).padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Text(PlacePresentationPolicy.category(place, english), fontSize = 10.sp, color = Blue, fontWeight = FontWeight.Bold)
+                Text(place.title, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(place.address.ifBlank { "Loja, Ecuador" }, fontSize = 12.sp, color = Muted, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                ExplorePlaceContent(place, english, now, fresh)
+            }
+            IconButton(onClick = favourite, modifier = Modifier.size(48.dp)) {
+                Icon(if (saved) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (english) { if (saved) "Remove ${place.title} from saved places" else "Save ${place.title}" } else if (saved) "Quitar ${place.title} de favoritos" else "Guardar ${place.title} en favoritos", tint = Blue)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExplorePlaceContent(place: Place, english: Boolean, now: Long, fresh: Boolean, modifier: Modifier = Modifier) {
+    val labels = buildList {
+        if (ExploreContentPolicy.video(place, now, fresh)) add(if (english) "Video" else "Video")
+        if (ExploreContentPolicy.menu(place)) add(if (english) "QR menu link" else "Enlace a menú QR")
+    }
+    if (labels.isNotEmpty()) Text(labels.joinToString(" · "), modifier = modifier, fontSize = 11.sp, color = Blue, fontWeight = FontWeight.SemiBold)
 }
 
 @Composable
