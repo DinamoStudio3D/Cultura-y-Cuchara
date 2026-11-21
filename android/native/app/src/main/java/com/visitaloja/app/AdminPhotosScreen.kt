@@ -139,7 +139,7 @@ internal fun AdminPhotosEntry(uid: String) {
     }
     if (authors) Dialog(onDismissRequest = { authors = false }) {
         Surface { LazyColumn(Modifier.fillMaxHeight(.85f).padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            item { Text("Autores guardados", style = MaterialTheme.typography.titleLarge); TextButton(onClick = { authors = false }) { Text("Volver") }; Text("Para actualizar un autor, elígelo, cambia sus datos y pulsa Guardar o actualizar autor.") }
+            item { Text("Autores guardados", style = MaterialTheme.typography.titleLarge); TextButton(onClick = { authors = false }) { Text("Volver") }; Text("Para actualizar un autor, elígelo, cambia sus datos y pulsa Guardar o actualizar autor."); OutlinedButton(onClick = { model.newAuthor(); authors = false }, enabled = !state.busy) { Text("Nuevo autor / datos manuales") } }
             items(state.draft.authors.indices.toList(), key = { it }) { index -> val row = state.draft.authors[index]
                 OutlinedButton(onClick = { model.chooseAuthor(index); authors = false }, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) { Text(row.text("name")) }
             }
