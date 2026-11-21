@@ -162,8 +162,8 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
     LaunchedEffect(points, selection, ready) {
         if (selection != null && selected == null) { selection = null; nearbyIds = emptyList() }
     }
-    LaunchedEffect(controller, selected?.id) {
-        if (selected != null) { following = false; delay(200); controller.focusPlace(selected) }
+    LaunchedEffect(controller, ready, selected?.id) {
+        if (ready && selected != null) { following = false; delay(200); controller.focusPlace(selected) }
     }
     // Favorite/server updates must not pull the camera away while exploring or following.
     LaunchedEffect(controller, ready, query, category, savedOnly, state.loading) {
@@ -356,7 +356,7 @@ fun MapScreen(state: PlacesState, query: String, category: String, onQuery: (Str
                 OutlinedCard(shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth()) {
                     Row(Modifier.fillMaxWidth().clickable {
                         following = false; nearbyIds = emptyList()
-                        if (selection == place.id) controller.focusPlace(place)
+                        if (ready && selection == place.id) controller.focusPlace(place)
                         selection = place.id; resultsOpen = false
                     }.padding(10.dp).testTag("map-result-${place.id}"), verticalAlignment = Alignment.CenterVertically) {
                         AsyncImage(model = BrandImagePolicy.model(place.imageUrl), contentDescription = null,
