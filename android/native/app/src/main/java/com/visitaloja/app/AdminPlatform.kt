@@ -22,6 +22,12 @@ internal data class PlatformField(val key: String, val label: String, val fallba
 internal data class PlatformGroup(val id: String, val title: String, val native: Boolean, val fields: List<PlatformField>)
 internal object AdminPlatformPolicy {
     fun groups(catalog: JSONObject, kind: String): List<PlatformGroup> {
+        if (kind == "passport") return listOf(PlatformGroup("passport", "Configuración de pasaporte", true, listOf(
+            PlatformField("r|active", "Activar premios del pasaporte", "true", "bool"),
+            PlatformField("r|campaignName", "Nombre de campaña", "Pasaporte de Sabores de Loja", max = 100),
+            PlatformField("r|introText", "Mensaje antes de completar", "Visita las paradas participantes, consigue seis sellos y desbloquea una recompensa especial.", max = 300),
+            PlatformField("r|startAt", "Premios desde · AAAA-MM-DDTHH:MM · hora de Loja", type = "schedule", max = 40),
+            PlatformField("r|endAt", "Premios hasta · AAAA-MM-DDTHH:MM · hora de Loja", type = "schedule", max = 40))))
         if (kind == "supporters") {
             val defaults = catalog.getJSONObject("supporters")
             fun f(key: String, label: String, type: String = "text", max: Int = 120, options: List<String> = emptyList(), min: Double = 0.0, upper: Double = 100.0) =
@@ -70,6 +76,7 @@ internal object AdminPlatformPolicy {
         return groups.flatMap { it.fields }.associate { field ->
             val parts = field.key.split('|'); val raw = when (parts[0]) { "r", "s" -> base[parts[1]]; "c" -> homepage[parts[1]]; else -> map(blocks[parts[1]])[parts[2]] }
             val value = if (raw == null) field.fallback else when (field.type) {
+                "schedule" -> AdminMissionPolicy.dateInput(raw, field.key == "r|endAt")
                 "bool" -> { require(raw is Boolean); raw.toString() }
                 "number" -> { require(raw is Number || raw is String); raw.toString() }
                 "ids" -> { require(raw is List<*> && raw.size <= 1000 && raw.all { it is String && it.length in 1..180 && !it.contains('\n') }); raw.filterIsInstance<String>().joinToString("\n") }
@@ -82,6 +89,7 @@ internal object AdminPlatformPolicy {
         require(value.length <= field.max) { "Revisa " + field.label }
         val text = value.trim()
         return when (field.type) {
+            "schedule" -> AdminMissionPolicy.date(text).orEmpty()
             "bool" -> { require(text in setOf("true", "false")); text == "true" }
             "number" -> text.toDoubleOrNull()?.takeIf { it.isFinite() && it in field.min..field.upper } ?: error("Revisa el rango de " + field.label)
             "choice" -> text.takeIf { it in field.options } ?: error("Revisa " + field.label)
@@ -98,6 +106,17 @@ internal object AdminPlatformPolicy {
         val fields = groups.flatMap { it.fields }; require(draft.keys == initial.keys)
         val changed = fields.filter { draft[it.key] != initial[it.key] }; require(changed.isNotEmpty()) { "No hay cambios para guardar." }
         val result = mutableMapOf<String, Any?>()
+        if (kind == "passport") {
+            require(base.text("campaignId").isNotBlank()) { "Configura primero una campaña de pasaporte en el editor completo de la web." }
+            require(draft["r|campaignName"].orEmpty().isNotBlank() && draft["r|introText"].orEmpty().isNotBlank()) { "Completa el nombre y mensaje de campaña." }
+            val start = AdminMissionPolicy.date(draft["r|startAt"].orEmpty()); val end = AdminMissionPolicy.date(draft["r|endAt"].orEmpty())
+            require(start == null || end == null || java.time.Instant.parse(end).isAfter(java.time.Instant.parse(start))) { "El fin de premios debe ser posterior al inicio." }
+            // An incomplete reward setup cannot be activated from this limited editor.
+            if (draft["r|active"] == "true" && initial["r|active"] != "true") {
+                require(base["campaignId"] is String && base.text("campaignId").isNotBlank() && base["tourist"] is Map<*, *> && base["local"] is Map<*, *>) { "Configura primero la campaña y sus premios en el editor completo de la web." }
+            }
+            return changed.associate { it.key.substringAfter('|') to parse(it, draft[it.key].orEmpty()) }
+        }
         if (kind == "supporters") {
             require(draft["s|title"].orEmpty().isNotBlank()) { "Escribe el título ES del carrusel." }
             changed.forEach { result[it.key.substringAfter('|')] = parse(it, draft[it.key].orEmpty()) }
@@ -145,7 +164,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
     private val auth = FirebaseAuth.getInstance(); private val db = FirebaseFirestore.getInstance()
     private val mutable = MutableStateFlow(AdminPlatformState()); val state = mutable.asStateFlow(); private var epoch = 0
     private fun same(uid: String, version: Int) = epoch == version && auth.currentUser?.uid == uid && mutable.value.uid == uid
-    private fun ref(kind: String): DocumentReference { require(kind in setOf("home", "supporters")); return if (kind == "home") db.collection("settings").document("main") else db.collection("siteContent").document("registeredBrands") }
+    private fun ref(kind: String): DocumentReference { require(kind in setOf("home", "supporters", "passport")); return if (kind == "home") db.collection("settings").document("main") else db.collection("siteContent").document(if (kind == "passport") "passport" else "registeredBrands") }
     private suspend fun authorize(uid: String) {
         val user = auth.currentUser?.takeIf { it.uid == uid } ?: error("La sesión cambió.")
         val claims = user.getIdToken(true).await().claims
@@ -218,7 +237,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
                     check(same(uid, version)) { "La sesión cambió." }; val current = tx.get(target)
                     check(current.data == old.base) { "La configuración cambió desde otro dispositivo. Guarda un borrador, actualiza y recupera para revisar." }
                     tx.set(target, patch + mapOf("updatedAt" to FieldValue.serverTimestamp(), "updatedBy" to (auth.currentUser?.email ?: "")), SetOptions.merge())
-                    tx.set(audit, mapOf("action" to "platform.updated", "module" to old.kind, "summary" to "Guardó portada o carrusel de apoyo", "details" to mapOf("changedFields" to old.draft.keys.count { old.draft[it] != old.initial[it] }),
+                    tx.set(audit, mapOf("action" to "platform.updated", "module" to old.kind, "summary" to "Guardó configuración de plataforma", "details" to mapOf("changedFields" to old.draft.keys.count { old.draft[it] != old.initial[it] }),
                         "actorUid" to uid, "actorEmail" to (auth.currentUser?.email ?: ""), "createdAt" to FieldValue.serverTimestamp()))
                     Unit
                 }.await()
@@ -235,7 +254,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
                 val context: Application = getApplication(); var restored: LocalAdminDraft? = null
                 val rows = withContext(Dispatchers.IO) {
                     when (action) {
-                        "save" -> AdminLocalDrafts.save(context, uid, old.kind, "configuration", if (old.kind == "home") "Portada" else "Carrusel de apoyo", old.base, JSONObject(old.draft))
+                        "save" -> AdminLocalDrafts.save(context, uid, old.kind, "configuration", when (old.kind) { "home" -> "Portada"; "passport" -> "Pasaporte"; else -> "Carrusel de apoyo" }, old.base, JSONObject(old.draft))
                         "restore" -> restored = AdminLocalDrafts.load(context, uid, old.kind, "configuration")
                         "delete" -> AdminLocalDrafts.remove(context, uid, old.kind, "configuration")
                         "list" -> Unit
