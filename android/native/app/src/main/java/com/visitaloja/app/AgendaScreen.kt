@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -74,6 +75,7 @@ fun AgendaScreen(state: AgendaState, detail: (String) -> Unit, retry: () -> Unit
     val selectedDate = dateSelection?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
     val today = Instant.ofEpochMilli(state.now).atZone(AgendaPolicy.zone).toLocalDate()
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
     val events = AgendaPolicy.filter(state.events, state.now, period, query, selectedDate)
     val days = events.groupBy { Instant.ofEpochMilli(it.start).atZone(AgendaPolicy.zone).toLocalDate() }
     LazyColumn(contentPadding = PaddingValues(22.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -95,7 +97,7 @@ fun AgendaScreen(state: AgendaState, detail: (String) -> Unit, retry: () -> Unit
                 OutlinedButton(onClick = {
                     val initial = selectedDate ?: today
                     val localized = android.view.ContextThemeWrapper(context, context.theme)
-                    localized.applyOverrideConfiguration(android.content.res.Configuration(context.resources.configuration).apply {
+                    localized.applyOverrideConfiguration(android.content.res.Configuration(configuration).apply {
                         setLocale(Locale.forLanguageTag(if (english) "en-US" else "es-EC"))
                     })
                     DatePickerDialog(localized, { _, year, month, day -> dateSelection = LocalDate.of(year, month + 1, day).toString() }, initial.year, initial.monthValue - 1, initial.dayOfMonth).show()
