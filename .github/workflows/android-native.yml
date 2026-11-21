@@ -48,7 +48,7 @@ jobs:
           gradle-version: '8.11.1'
           cache-read-only: false
       - name: Comprobar autorización de premios y avisos sin envíos reales
-        run: node scripts/export-android-missions.cjs --check && node scripts/export-android-home-catalog.cjs --check && node --test scripts/test-admin-place-image.cjs && node scripts/test-merchant-program.cjs && node scripts/test-push-campaigns.cjs && python3 scripts/test-android-release.py
+        run: node scripts/export-android-system-links.cjs --check && node scripts/export-android-missions.cjs --check && node scripts/export-android-home-catalog.cjs --check && node --test scripts/test-admin-place-image.cjs && node scripts/test-merchant-program.cjs && node scripts/test-push-campaigns.cjs && python3 scripts/test-android-release.py
       - name: Comprobar SDK disponible
         run: test -d "$ANDROID_HOME/platforms/android-36"
       - name: Rechazar una entrega sin configuración de producción
@@ -63,12 +63,12 @@ jobs:
       - name: Preparar APK de pruebas
         run: |
           mkdir -p android/native/dist
-          cp android/native/app/build/outputs/apk/debug/app-debug.apk android/native/dist/VisitaLoja-0.92.0-prueba.apk
+          cp android/native/app/build/outputs/apk/debug/app-debug.apk android/native/dist/VisitaLoja-0.93.0-prueba.apk
           signer_jar=$(find "$ANDROID_HOME/build-tools" -name apksigner.jar -type f | sort -V | tail -n 1)
           test -n "$signer_jar"
           cp "$signer_jar" android/native/dist/apksigner.jar
           cd android/native/dist
-          sha256sum VisitaLoja-0.92.0-prueba.apk apksigner.jar > SHA256SUMS.txt
+          sha256sum VisitaLoja-0.93.0-prueba.apk apksigner.jar > SHA256SUMS.txt
       - name: Guardar APK
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -125,7 +125,7 @@ jobs:
             adb shell wm size 720x1600
             adb shell wm density 320
             adb shell settings put system font_scale 1.0
-            adb install -r map-ui-apk/VisitaLoja-0.92.0-prueba.apk
+            adb install -r map-ui-apk/VisitaLoja-0.93.0-prueba.apk
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
             python3 scripts/test-android-festival.py
@@ -178,7 +178,7 @@ jobs:
             adb shell wm size 720x1600
             adb shell wm density 320
             adb shell settings put system font_scale 1.0
-            adb install -r discovery-extended-apk/VisitaLoja-0.92.0-prueba.apk
+            adb install -r discovery-extended-apk/VisitaLoja-0.93.0-prueba.apk
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
             python3 scripts/test-android-discovery.py --phase extended
@@ -229,7 +229,7 @@ jobs:
             adb shell wm size 720x1600
             adb shell wm density 320
             adb shell settings put system font_scale 1.0
-            adb install -r map-ui-apk/VisitaLoja-0.92.0-prueba.apk
+            adb install -r map-ui-apk/VisitaLoja-0.93.0-prueba.apk
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
             python3 scripts/test-android-brand-logos.py
@@ -281,7 +281,7 @@ jobs:
             adb shell wm size 720x1600
             adb shell wm density 320
             adb shell settings put system font_scale 1.0
-            adb install -r map-ui-apk/VisitaLoja-0.92.0-prueba.apk
+            adb install -r map-ui-apk/VisitaLoja-0.93.0-prueba.apk
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
             python3 scripts/test-android-place-video.py
@@ -332,7 +332,7 @@ jobs:
             adb shell wm size 720x1600
             adb shell wm density 320
             adb shell settings put system font_scale 1.0
-            adb install -r map-ui-apk/VisitaLoja-0.92.0-prueba.apk
+            adb install -r map-ui-apk/VisitaLoja-0.93.0-prueba.apk
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_COARSE_LOCATION
             adb shell pm grant com.visitaloja.app.preview android.permission.ACCESS_FINE_LOCATION
             python3 scripts/test-android-nearby.py
