@@ -31,4 +31,17 @@ class AgendaPolicyTest {
         assertNull(event.image); assertNull(event.latitude); assertEquals(0.0, event.longitude!!, 0.0)
         assertEquals(listOf(event), AgendaPolicy.upcoming(listOf(event, event), event.start))
     }
+    @Test fun tomorrowAndExactDateUseLojaDayAndPreserveSearchAndExpiry() {
+        val now = Instant.parse("2026-10-27T04:30:00Z").toEpochMilli() // October 26, 23:30 in Loja.
+        val tomorrow = AgendaPolicy.parse(base + mapOf("id" to "tomorrow", "date" to "2026-10-27", "time" to "00:15"), 0)!!
+        val later = AgendaPolicy.parse(base + mapOf("id" to "later", "date" to "2026-10-29"), 1)!!
+        val expired = AgendaPolicy.parse(base, 2)!!
+        val all = listOf(later, tomorrow, expired)
+        assertEquals(listOf(tomorrow), AgendaPolicy.filter(all, now, "tomorrow", ""))
+        val date = java.time.LocalDate.of(2026, 10, 29)
+        assertEquals(listOf(later), AgendaPolicy.filter(all, now, "today", "musica teatro", date))
+        assertTrue(AgendaPolicy.filter(all, now, "all", "desconocido", date).isEmpty())
+        assertTrue(AgendaPolicy.filter(all, now, "all", "", java.time.LocalDate.of(2026, 10, 26)).isEmpty())
+        assertTrue(AgendaPolicy.filter(all, tomorrow.start + 3600000, "all", "", java.time.LocalDate.of(2026, 10, 27)).isEmpty())
+    }
 }
