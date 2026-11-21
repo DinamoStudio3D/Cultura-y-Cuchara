@@ -25,9 +25,9 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
     val model: AdminPlatformViewModel = viewModel(key = "admin-platform-" + kind)
     val observed by model.state.collectAsStateWithLifecycle()
     val state = observed.takeIf { it.uid == uid } ?: AdminPlatformState(kind = kind)
-    val title = when (kind) { "home" -> "Portada e identidad"; "passport" -> "Configuración de pasaporte"; else -> "Ellos hacen posible VisitaLoja" }
+    val title = when (kind) { "home" -> "Portada e identidad"; "passport" -> "Configuración de pasaporte"; "maintenance" -> "Mantenimiento de la web"; else -> "Ellos hacen posible VisitaLoja" }
     var open by remember(uid) { mutableStateOf(false) }
-    var group by remember(uid) { mutableStateOf(when (kind) { "home" -> "general"; "passport" -> "passport"; else -> "supporters" }) }
+    var group by remember(uid) { mutableStateOf(when (kind) { "home" -> "general"; "passport" -> "passport"; "maintenance" -> "maintenance"; else -> "supporters" }) }
     var chooseGroup by remember(uid) { mutableStateOf(false) }
     var query by remember(uid) { mutableStateOf("") }
     var discard by remember(uid) { mutableStateOf(false) }
@@ -63,7 +63,11 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                         Text("Edita el contenido compartido con la web. La app aplica los campos que tiene integrados; estilos, redes y algunos bloques pertenecen a la web. El logo público es independiente del icono instalado.")
                         Text("Para organizar la biblioteca y los encuadres de portada, abre Fotografías y créditos en Administración. Aquí se conservan sus datos.")
                         OutlinedButton(onClick = { query = ""; chooseGroup = true }, enabled = state.ready && !state.busy) { Text("Elegir bloque · " + current?.title.orEmpty()) }
+                        OutlinedButton(onClick = { group = "footerContact" }, enabled = state.ready && !state.busy) { Text("Ir a contacto y redes sociales") }
                         current?.let { Text(it.title, style = MaterialTheme.typography.titleLarge); Text(if (it.native) "Incluye contenido utilizado por la app y la web." else "Bloque de presentación de la web.") }
+                    } else if (kind == "maintenance") {
+                        Text("Este control cubre la web pública con un aviso temporal. El panel administrativo sigue accesible. La app nativa continúa funcionando: este ajuste corresponde a la web.")
+                        Text("La fecha de regreso es un texto informativo; no programa la desactivación. Sin enlace, el aviso no muestra botón de contacto. Revisa la vista previa antes de publicar.")
                     } else if (kind == "passport") {
                         Text("Edita el nombre, mensaje y periodo de premios de la campaña actual. Desactivar premios conserva el funcionamiento de los sellos.")
                         Text("Campaña actual: " + state.base?.text("campaignId").orEmpty().ifBlank { "Sin campaña configurada" })
@@ -127,6 +131,18 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
                 val entries = SupportersPolicy.entries(state.places, config, now, fresh = state.ready)
                 item { Text(config.title, style = MaterialTheme.typography.titleMedium); Text(config.subtitle); Text("Negocios e instituciones que aparecerían según la última consulta: " + entries.size) }
                 items(entries, key = { it.id }) { entry -> OutlinedCard(Modifier.fillMaxWidth()) { Column(Modifier.padding(12.dp)) { entry.logo?.let { AsyncImage(it, entry.name, Modifier.fillMaxWidth().height(75.dp), contentScale = ContentScale.Fit) }; Text(entry.name) } } }
+            } else if (kind == "maintenance") {
+                item {
+                    Text(if (state.draft["r|active"] == "true") "Aviso preparado: activo" else "Aviso preparado: desactivado")
+                    OutlinedCard(Modifier.fillMaxWidth()) { Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(state.draft["r|badge"].orEmpty(), style = MaterialTheme.typography.labelLarge)
+                        Text(state.draft["r|title"].orEmpty(), style = MaterialTheme.typography.headlineSmall)
+                        Text(state.draft["r|text"].orEmpty())
+                        state.draft["r|returnText"].orEmpty().takeIf { it.isNotBlank() }?.let { Text(it) }
+                        state.draft["r|buttonUrl"].orEmpty().takeIf { it.isNotBlank() }?.let { Text(state.draft["r|buttonText"].orEmpty()); Text(it, style = MaterialTheme.typography.bodySmall) }
+                    } }
+                    Text("Muestra del contenido del aviso web, sin activarlo. El diseño y logo finales pertenecen a la web.")
+                }
             } else {
                 item { if (kind == "home") Row { Checkbox(english, { english = it }); Text("Ver textos EN") }; Text("Esta vista revisa textos; el diseño final corresponde a cada pantalla.") }
                 val values = current?.fields?.filter { field -> field.type == "image" || field.type == "text" && (if (english) field.key.endsWith("En") else !field.key.endsWith("En")) }.orEmpty()
@@ -138,7 +154,7 @@ internal fun AdminPlatformEntry(uid: String, kind: String) {
         } }
     }
     if (review) AlertDialog(onDismissRequest = { review = false }, title = { Text("Publicar configuración") }, text = {
-        Text(title + "\nSe guardarán los cambios preparados en todos los bloques de este formulario, con efecto en las vistas que comparten esta configuración. Revisa antes de confirmar.")
+        Text(if (kind == "maintenance") "Se guardará el aviso. " + (if (state.draft["r|active"] == "true") "La web pública quedará cubierta por el mensaje hasta que lo desactives. El panel administrativo y la app nativa seguirán accesibles." else "La web pública volverá a estar disponible sin el aviso.") else title + "\nSe guardarán los cambios preparados en todos los bloques de este formulario, con efecto en las vistas que comparten esta configuración. Revisa antes de confirmar.")
     }, confirmButton = { TextButton(onClick = { review = false; model.save() }) { Text("Guardar y publicar") } }, dismissButton = { TextButton(onClick = { review = false }) { Text("Volver") } })
     if (discard || reload) AlertDialog(onDismissRequest = { discard = false; reload = false }, title = { Text("Descartar cambios del formulario") }, text = { Text("Los borradores ya guardados y la configuración publicada se conservan.") },
         confirmButton = { TextButton(onClick = { if (reload) model.bind(uid, kind) else { open = false; model.bind(null, kind) }; discard = false; reload = false }) { Text("Descartar") } }, dismissButton = { TextButton(onClick = { discard = false; reload = false }) { Text("Conservar formulario") } })
