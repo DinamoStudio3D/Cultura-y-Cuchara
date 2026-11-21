@@ -22,6 +22,18 @@ internal data class PlatformField(val key: String, val label: String, val fallba
 internal data class PlatformGroup(val id: String, val title: String, val native: Boolean, val fields: List<PlatformField>)
 internal object AdminPlatformPolicy {
     fun groups(catalog: JSONObject, kind: String): List<PlatformGroup> {
+        if (kind == "chabaquito") {
+            val defaults = catalog.getJSONObject("chabaquito")
+            fun field(key: String, label: String, type: String = "text", max: Int = 220): PlatformField {
+                val parts = key.split('|'); val value = if (parts[0] == "r") defaults.opt(parts[1]) else defaults.getJSONObject(parts[1]).opt(parts[2])
+                return PlatformField(key, label, value?.toString().orEmpty(), type, max)
+            }
+            fun nested(group: String, title: String, lengths: Map<String, Int>, native: Boolean = false) = PlatformGroup(group, title, native, lengths.map { (key, max) -> field("n|$group|$key", if (key == "active") "Mostrar sección o certificado" else key, if (key == "active") "bool" else "text", max) })
+            return listOf(PlatformGroup("character", "Imagen y visibilidad", true, listOf(field("r|active", "Mostrar personaje", "bool"), field("r|animated", "Animación del personaje en la web", "bool"), field("r|imageUrl", "Imagen de Chabaquito", "image", 2000))),
+                nested("messages", "Mensajes de Chabaquito", linkedMapOf("inicio" to 220, "mapa" to 220, "establecimientos" to 220, "fiavl" to 220, "postales" to 220, "pasaporte" to 220, "misiones" to 220, "podcast" to 220), true),
+                nested("missions", "Presentación de los cinco retos clásicos · web", linkedMapOf("active" to 5, "title" to 120, "titleEn" to 120, "description" to 300, "descriptionEn" to 300, "rewardTitle" to 120, "rewardTitleEn" to 120, "rewardDescription" to 240, "rewardDescriptionEn" to 240)),
+                nested("certificate", "Certificado clásico · web", linkedMapOf("active" to 5, "title" to 100, "text" to 300, "signature" to 120)))
+        }
         if (kind == "maintenance") return listOf(PlatformGroup("maintenance", "Aviso de mantenimiento de la web", false, listOf(
             PlatformField("r|active", "Cubrir la web pública con el aviso", "false", "bool"),
             PlatformField("r|badge", "Etiqueta superior", "ESTAMOS PREPARANDO ALGO ESPECIAL", max = 70),
@@ -82,7 +94,7 @@ internal object AdminPlatformPolicy {
         val homepage = if (groups.first().id == "general") map(base["homepageContent"]) else emptyMap()
         val blocks = map(homepage["blocks"])
         return groups.flatMap { it.fields }.associate { field ->
-            val parts = field.key.split('|'); val raw = when (parts[0]) { "r", "s" -> base[parts[1]]; "c" -> homepage[parts[1]]; else -> map(blocks[parts[1]])[parts[2]] }
+            val parts = field.key.split('|'); val raw = when (parts[0]) { "r", "s" -> base[parts[1]]; "n" -> map(base[parts[1]])[parts[2]]; "c" -> homepage[parts[1]]; else -> map(blocks[parts[1]])[parts[2]] }
             val value = if (raw == null) field.fallback else when (field.type) {
                 "schedule" -> AdminMissionPolicy.dateInput(raw, field.key == "r|endAt")
                 "bool" -> { require(raw is Boolean); raw.toString() }
@@ -114,6 +126,15 @@ internal object AdminPlatformPolicy {
         val fields = groups.flatMap { it.fields }; require(draft.keys == initial.keys)
         val changed = fields.filter { draft[it.key] != initial[it.key] }; require(changed.isNotEmpty()) { "No hay cambios para guardar." }
         val result = mutableMapOf<String, Any?>()
+        if (kind == "chabaquito") {
+            changed.filter { it.key.startsWith("r|") }.forEach { result[it.key.substringAfter('|')] = parse(it, draft[it.key].orEmpty()) }
+            changed.filter { it.key.startsWith("n|") }.groupBy { it.key.split('|')[1] }.forEach { (group, edits) ->
+                require(group in setOf("messages", "missions", "certificate"))
+                result[group] = map(base[group]) + edits.associate { field -> field.key.substringAfterLast('|') to parse(field, draft[field.key].orEmpty()) }
+            }
+            require(draft["r|imageUrl"].orEmpty().isNotBlank()) { "Conserva una imagen válida de Chabaquito." }
+            return result
+        }
         if (kind == "maintenance") {
             if (draft["r|active"] == "true") {
                 require(draft["r|title"].orEmpty().isNotBlank() && draft["r|text"].orEmpty().isNotBlank()) { "Completa título y mensaje antes de activar el aviso." }
@@ -179,7 +200,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
     private val auth = FirebaseAuth.getInstance(); private val db = FirebaseFirestore.getInstance()
     private val mutable = MutableStateFlow(AdminPlatformState()); val state = mutable.asStateFlow(); private var epoch = 0
     private fun same(uid: String, version: Int) = epoch == version && auth.currentUser?.uid == uid && mutable.value.uid == uid
-    private fun ref(kind: String): DocumentReference { require(kind in setOf("home", "supporters", "passport", "maintenance")); return if (kind == "home") db.collection("settings").document("main") else db.collection("siteContent").document(when (kind) { "passport" -> "passport"; "maintenance" -> "maintenance"; else -> "registeredBrands" }) }
+    private fun ref(kind: String): DocumentReference { require(kind in setOf("home", "supporters", "passport", "maintenance", "chabaquito")); return if (kind == "home") db.collection("settings").document("main") else db.collection("siteContent").document(when (kind) { "passport" -> "passport"; "maintenance" -> "maintenance"; "chabaquito" -> "chabaquito"; else -> "registeredBrands" }) }
     private suspend fun authorize(uid: String) {
         val user = auth.currentUser?.takeIf { it.uid == uid } ?: error("La sesión cambió.")
         val claims = user.getIdToken(true).await().claims
@@ -192,6 +213,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
             try {
                 authorize(uid)
                 val catalog = withContext(Dispatchers.IO) { getApplication<Application>().assets.open("admin-home-catalog.json").bufferedReader().use { JSONObject(it.readText()) } }
+                if (kind == "chabaquito") withContext(Dispatchers.IO) { getApplication<Application>().assets.open("admin-chabaquito-defaults.json").bufferedReader().use { catalog.put("chabaquito", JSONObject(it.readText())) } }
                 val groups = AdminPlatformPolicy.groups(catalog, kind)
                 val doc = ref(kind).get(Source.SERVER).await(); val draft = AdminPlatformPolicy.read(doc.data.orEmpty(), groups)
                 val places = mutableListOf<Place>()
@@ -269,7 +291,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
                 val context: Application = getApplication(); var restored: LocalAdminDraft? = null
                 val rows = withContext(Dispatchers.IO) {
                     when (action) {
-                        "save" -> AdminLocalDrafts.save(context, uid, old.kind, "configuration", when (old.kind) { "home" -> "Portada"; "passport" -> "Pasaporte"; "maintenance" -> "Mantenimiento web"; else -> "Carrusel de apoyo" }, old.base, JSONObject(old.draft))
+                        "save" -> AdminLocalDrafts.save(context, uid, old.kind, "configuration", when (old.kind) { "home" -> "Portada"; "passport" -> "Pasaporte"; "maintenance" -> "Mantenimiento web"; "chabaquito" -> "Chabaquito"; else -> "Carrusel de apoyo" }, old.base, JSONObject(old.draft))
                         "restore" -> restored = AdminLocalDrafts.load(context, uid, old.kind, "configuration")
                         "delete" -> AdminLocalDrafts.remove(context, uid, old.kind, "configuration")
                         "list" -> Unit
@@ -289,12 +311,12 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
     }
     fun upload(uri: Uri, key: String) {
         val old = mutable.value; val uid = old.uid ?: return
-        if (!old.ready || old.busy || old.kind != "home" || old.groups.flatMap { it.fields }.none { it.key == key && it.type == "image" }) return
+        if (!old.ready || old.busy || old.kind !in setOf("home", "chabaquito") || old.groups.flatMap { it.fields }.none { it.key == key && it.type == "image" }) return
         val version = epoch; mutable.value = old.copy(busy = true, message = "Subiendo imagen…")
         viewModelScope.launch {
             try {
                 authorize(uid); if (!same(uid, version)) return@launch
-                val url = MerchantImageUpload.upload(getApplication(), uri, "home", "homepage", uid, admin = true, preserveAlpha = key == "r|logoUrl")
+                val url = MerchantImageUpload.upload(getApplication(), uri, "home", "homepage", uid, admin = true, preserveAlpha = key == "r|logoUrl" || old.kind == "chabaquito")
                 if (same(uid, version)) mutable.value = old.copy(draft = old.draft + (key to url), message = "Imagen subida al formulario. Guarda un borrador o confirma el guardado para conservar el enlace.")
             } catch (e: CancellationException) { throw e }
             catch (e: Exception) { if (same(uid, version)) mutable.value = old.copy(message = if (e is IllegalStateException || e is IllegalArgumentException) e.message else "No se pudo subir la imagen. Se conserva el formulario.") }
