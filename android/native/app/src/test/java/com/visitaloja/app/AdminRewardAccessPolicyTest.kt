@@ -14,6 +14,7 @@ class AdminRewardAccessPolicyTest {
         val existing = mapOf<String, Any?>("uid" to "account-01", "email" to "stored@example.test", "active" to false, "campaignIds" to listOf("old-campaign"), "passportGrants" to listOf("passport-01:turista"), "placeIds" to listOf("place-01"), "createdAt" to "old")
         val patch = AdminRewardAccessPolicy.approve("account-01", request, existing, "Café", "campaign-01")
         assertEquals(listOf("old-campaign", "campaign-01"), patch["campaignIds"]); assertEquals(false, patch["active"])
+        assertEquals(false, AdminRewardAccessPolicy.approve("account-01", request, existing - "active", "Café", "campaign-01")["active"])
         assertFalse(patch.containsKey("email")); assertFalse(patch.containsKey("passportGrants")); assertFalse(patch.containsKey("createdAt")); assertFalse(patch.containsKey("placeIds"))
     }
     @Test fun accountMismatchesAndResolvedRequestsCannotBeApproved() {
