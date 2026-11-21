@@ -22,6 +22,20 @@ internal data class PlatformField(val key: String, val label: String, val fallba
 internal data class PlatformGroup(val id: String, val title: String, val native: Boolean, val fields: List<PlatformField>)
 internal object AdminPlatformPolicy {
     fun groups(catalog: JSONObject, kind: String): List<PlatformGroup> {
+        if (kind == "benefit") {
+            val defaults = catalog.getJSONObject("chabaquito").getJSONObject("benefit")
+            val specs = listOf(
+                Triple("campaignId", "Campaña actual · ID permanente", "readonly"), Triple("active", "Activar recompensa comercial", "bool"),
+                Triple("sponsorName", "Negocio patrocinador", "text"), Triple("title", "Premio ES", "text"), Triple("titleEn", "Premio EN", "text"),
+                Triple("description", "Instrucciones ES", "text"), Triple("descriptionEn", "Instrucciones EN", "text"),
+                Triple("stock", "Cupo TOTAL · incluye códigos emitidos", "integer"), Triple("startAt", "Inicio · AAAA-MM-DDTHH:MM · hora de Loja", "schedule"),
+                Triple("endAt", "Fin · AAAA-MM-DDTHH:MM · hora de Loja", "schedule"), Triple("imageUrl", "Imagen del premio", "image"),
+                Triple("buttonText", "Texto del botón", "text"), Triple("url", "Enlace del patrocinador · HTTPS opcional", "https"))
+            return listOf(PlatformGroup("benefit", "Recompensa comercial de Chabaquito", false, specs.map { (key, label, type) ->
+                val max = when (key) { "campaignId" -> 60; "active", "stock" -> 5; "title", "titleEn" -> 160; "description", "descriptionEn" -> 300; "sponsorName" -> 120; "startAt", "endAt" -> 40; "imageUrl", "url" -> 2000; else -> 100 }
+                PlatformField("n|benefit|$key", label, defaults.opt(key)?.toString().orEmpty(), type, max)
+            }))
+        }
         if (kind == "chabaquito") {
             val defaults = catalog.getJSONObject("chabaquito")
             fun field(key: String, label: String, type: String = "text", max: Int = 220): PlatformField {
@@ -96,8 +110,9 @@ internal object AdminPlatformPolicy {
         return groups.flatMap { it.fields }.associate { field ->
             val parts = field.key.split('|'); val raw = when (parts[0]) { "r", "s" -> base[parts[1]]; "n" -> map(base[parts[1]])[parts[2]]; "c" -> homepage[parts[1]]; else -> map(blocks[parts[1]])[parts[2]] }
             val value = if (raw == null) field.fallback else when (field.type) {
-                "schedule" -> AdminMissionPolicy.dateInput(raw, field.key == "r|endAt")
+                "schedule" -> AdminMissionPolicy.dateInput(raw, field.key.endsWith("|endAt"))
                 "bool" -> { require(raw is Boolean); raw.toString() }
+                "integer" -> { if (raw is Number) { val number = raw.toDouble(); require(number.isFinite() && number % 1.0 == 0.0 && number in 1.0..10000.0); number.toLong().toString() } else { require(raw is String); raw } }
                 "number" -> { require(raw is Number || raw is String); raw.toString() }
                 "ids" -> { require(raw is List<*> && raw.size <= 1000 && raw.all { it is String && it.length in 1..180 && !it.contains('\n') }); raw.filterIsInstance<String>().joinToString("\n") }
                 else -> { require(raw is String) { "Campo incompatible: " + field.label }; raw }
@@ -111,6 +126,7 @@ internal object AdminPlatformPolicy {
         return when (field.type) {
             "schedule" -> AdminMissionPolicy.date(text).orEmpty()
             "bool" -> { require(text in setOf("true", "false")); text == "true" }
+            "integer" -> (text.toLongOrNull()?.takeIf { it in 1..10000 } ?: error("El cupo total debe ser un entero de 1 a 10000."))
             "number" -> text.toDoubleOrNull()?.takeIf { it.isFinite() && it in field.min..field.upper } ?: error("Revisa el rango de " + field.label)
             "choice" -> text.takeIf { it in field.options } ?: error("Revisa " + field.label)
             "ids" -> { val ids = value.lines().filter(String::isNotBlank); require(ids.size <= 1000 && ids.distinct().size == ids.size && ids.all { it.length <= 180 && '/' !in it }); ids }
@@ -126,6 +142,12 @@ internal object AdminPlatformPolicy {
         val fields = groups.flatMap { it.fields }; require(draft.keys == initial.keys)
         val changed = fields.filter { draft[it.key] != initial[it.key] }; require(changed.isNotEmpty()) { "No hay cambios para guardar." }
         val result = mutableMapOf<String, Any?>()
+        if (kind == "benefit") {
+            AdminMissionBenefitPolicy.validate(draft, initial)
+            val benefit = map(base["benefit"]).toMutableMap()
+            fields.forEach { field -> benefit[field.key.substringAfterLast('|')] = parse(field, draft[field.key].orEmpty()) }
+            return mapOf("benefit" to benefit)
+        }
         if (kind == "chabaquito") {
             changed.filter { it.key.startsWith("r|") }.forEach { result[it.key.substringAfter('|')] = parse(it, draft[it.key].orEmpty()) }
             changed.filter { it.key.startsWith("n|") }.groupBy { it.key.split('|')[1] }.forEach { (group, edits) ->
@@ -195,12 +217,12 @@ internal object AdminPlatformPolicy {
 }
 internal data class AdminPlatformState(val uid: String? = null, val kind: String = "home", val busy: Boolean = false, val ready: Boolean = false,
     val base: Map<String, Any?>? = null, val initial: Map<String, String> = emptyMap(), val draft: Map<String, String> = emptyMap(),
-    val groups: List<PlatformGroup> = emptyList(), val places: List<Place> = emptyList(), val localDrafts: List<LocalAdminDraft> = emptyList(), val message: String? = null)
+    val groups: List<PlatformGroup> = emptyList(), val places: List<Place> = emptyList(), val localDrafts: List<LocalAdminDraft> = emptyList(), val campaign: Map<String, Any?>? = null, val countedClaims: Int = 0, val message: String? = null)
 internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) {
     private val auth = FirebaseAuth.getInstance(); private val db = FirebaseFirestore.getInstance()
     private val mutable = MutableStateFlow(AdminPlatformState()); val state = mutable.asStateFlow(); private var epoch = 0
     private fun same(uid: String, version: Int) = epoch == version && auth.currentUser?.uid == uid && mutable.value.uid == uid
-    private fun ref(kind: String): DocumentReference { require(kind in setOf("home", "supporters", "passport", "maintenance", "chabaquito")); return if (kind == "home") db.collection("settings").document("main") else db.collection("siteContent").document(when (kind) { "passport" -> "passport"; "maintenance" -> "maintenance"; "chabaquito" -> "chabaquito"; else -> "registeredBrands" }) }
+    private fun ref(kind: String): DocumentReference { require(kind in setOf("home", "supporters", "passport", "maintenance", "chabaquito", "benefit")); return if (kind == "home") db.collection("settings").document("main") else db.collection("siteContent").document(when (kind) { "passport" -> "passport"; "maintenance" -> "maintenance"; "chabaquito", "benefit" -> "chabaquito"; else -> "registeredBrands" }) }
     private suspend fun authorize(uid: String) {
         val user = auth.currentUser?.takeIf { it.uid == uid } ?: error("La sesión cambió.")
         val claims = user.getIdToken(true).await().claims
@@ -213,10 +235,23 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
             try {
                 authorize(uid)
                 val catalog = withContext(Dispatchers.IO) { getApplication<Application>().assets.open("admin-home-catalog.json").bufferedReader().use { JSONObject(it.readText()) } }
-                if (kind == "chabaquito") withContext(Dispatchers.IO) { getApplication<Application>().assets.open("admin-chabaquito-defaults.json").bufferedReader().use { catalog.put("chabaquito", JSONObject(it.readText())) } }
+                if (kind in setOf("chabaquito", "benefit")) withContext(Dispatchers.IO) { getApplication<Application>().assets.open("admin-chabaquito-defaults.json").bufferedReader().use { catalog.put("chabaquito", JSONObject(it.readText())) } }
                 val groups = AdminPlatformPolicy.groups(catalog, kind)
                 val doc = ref(kind).get(Source.SERVER).await(); val draft = AdminPlatformPolicy.read(doc.data.orEmpty(), groups)
                 val places = mutableListOf<Place>()
+                var campaign: Map<String, Any?>? = null; var countedClaims = 0
+                if (kind == "benefit") {
+                    val campaignId = AdminMissionBenefitPolicy.id(draft["n|benefit|campaignId"].orEmpty())
+                    campaign = db.collection("missionRewardCampaigns").document(campaignId).get(Source.SERVER).await().data
+                    var cursor: DocumentSnapshot? = null; var more: Boolean
+                    do {
+                        var query: Query = db.collection("missionRewardClaims").whereEqualTo("campaignId", campaignId).orderBy(FieldPath.documentId()).limit(100)
+                        cursor?.let { query = query.startAfter(it) }; val page = query.get(Source.SERVER).await(); if (!same(uid, version)) return@launch
+                        countedClaims += page.size(); check(countedClaims <= 10000) { "Más de 10000 códigos. Usa la web para esta campaña." }
+                        cursor = page.documents.lastOrNull(); more = page.size() == 100
+                    } while (more)
+                    AdminMissionBenefitPolicy.counter(campaign?.get("issuedCount"))
+                }
                 if (kind == "supporters") {
                     var cursor: DocumentSnapshot? = null; var more: Boolean
                     do {
@@ -226,12 +261,12 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
                         cursor = page.documents.lastOrNull(); more = page.size() == 100
                     } while (more)
                 }
-                if (same(uid, version)) mutable.value = AdminPlatformState(uid, kind, ready = true, base = doc.data, initial = draft, draft = draft, groups = groups, places = places, message = notice)
+                if (same(uid, version)) mutable.value = AdminPlatformState(uid, kind, ready = true, base = doc.data, initial = draft, draft = draft, groups = groups, places = places, campaign = campaign, countedClaims = countedClaims, message = notice)
             } catch (e: CancellationException) { throw e }
             catch (e: Exception) { if (same(uid, version)) mutable.value = mutable.value.copy(busy = false, message = e.message ?: "No se pudo cargar la configuración.") }
         }
     }
-    fun edit(key: String, value: String) { val old = mutable.value; if (old.ready && !old.busy && key in old.draft) mutable.value = old.copy(draft = old.draft + (key to value), message = null) }
+    fun edit(key: String, value: String) { val old = mutable.value; if (old.ready && !old.busy && key in old.draft && old.groups.flatMap { it.fields }.none { it.key == key && it.type == "readonly" }) mutable.value = old.copy(draft = old.draft + (key to value), message = null) }
     fun choose(id: String, enabled: Boolean) {
         val old = mutable.value; if (old.kind != "supporters" || old.places.none { it.id == id && SupportersPolicy.eligible(it, System.currentTimeMillis()) }) return
         val key = if (old.draft["s|mode"] == "selected") "s|selectedIds" else "s|excludedIds"
@@ -273,6 +308,13 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
                 db.runTransaction { tx ->
                     check(same(uid, version)) { "La sesión cambió." }; val current = tx.get(target)
                     check(current.data == old.base) { "La configuración cambió desde otro dispositivo. Guarda un borrador, actualiza y recupera para revisar." }
+                    if (old.kind == "benefit") {
+                        val benefit = AdminPlatformPolicy.map(patch["benefit"]); val campaignId = benefit.text("campaignId")
+                        val campaignRef = db.collection("missionRewardCampaigns").document(campaignId); val campaign = tx.get(campaignRef)
+                        check(AdminMissionBenefitPolicy.version(campaign.data) == AdminMissionBenefitPolicy.version(old.campaign)) { "La campaña comercial cambió en otra sesión. Guarda un borrador y actualiza." }
+                        val payload = AdminMissionBenefitPolicy.campaign(benefit, campaign.data.orEmpty(), old.countedClaims)
+                        tx.set(campaignRef, payload + ("updatedAt" to FieldValue.serverTimestamp()), SetOptions.merge())
+                    }
                     tx.set(target, patch + mapOf("updatedAt" to FieldValue.serverTimestamp(), "updatedBy" to (auth.currentUser?.email ?: "")), SetOptions.merge())
                     tx.set(audit, mapOf("action" to "platform.updated", "module" to old.kind, "summary" to "Guardó configuración de plataforma", "details" to mapOf("changedFields" to old.draft.keys.count { old.draft[it] != old.initial[it] }),
                         "actorUid" to uid, "actorEmail" to (auth.currentUser?.email ?: ""), "createdAt" to FieldValue.serverTimestamp()))
@@ -291,7 +333,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
                 val context: Application = getApplication(); var restored: LocalAdminDraft? = null
                 val rows = withContext(Dispatchers.IO) {
                     when (action) {
-                        "save" -> AdminLocalDrafts.save(context, uid, old.kind, "configuration", when (old.kind) { "home" -> "Portada"; "passport" -> "Pasaporte"; "maintenance" -> "Mantenimiento web"; "chabaquito" -> "Chabaquito"; else -> "Carrusel de apoyo" }, old.base, JSONObject(old.draft))
+                        "save" -> AdminLocalDrafts.save(context, uid, old.kind, "configuration", when (old.kind) { "home" -> "Portada"; "passport" -> "Pasaporte"; "maintenance" -> "Mantenimiento web"; "chabaquito" -> "Chabaquito"; "benefit" -> "Recompensa Chabaquito"; else -> "Carrusel de apoyo" }, old.base, JSONObject(old.draft))
                         "restore" -> restored = AdminLocalDrafts.load(context, uid, old.kind, "configuration")
                         "delete" -> AdminLocalDrafts.remove(context, uid, old.kind, "configuration")
                         "list" -> Unit
@@ -302,7 +344,9 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
                 val saved = restored
                 if (saved == null) mutable.value = old.copy(localDrafts = rows, message = when (action) { "save" -> "Borrador guardado en este teléfono para tu cuenta, sin publicar."; "delete" -> "Borrador local eliminado."; else -> null })
                 else {
-                    val text = AdminLocalDrafts.strings(saved.data); require(text.keys == old.initial.keys) { "El esquema cambió. Revisa el borrador en una versión compatible." }
+                    val text = AdminLocalDrafts.strings(saved.data)
+                    require(old.kind != "benefit" || text["n|benefit|campaignId"] == old.initial["n|benefit|campaignId"]) { "Este borrador pertenece a otra campaña." }
+                    require(text.keys == old.initial.keys) { "El esquema cambió. Revisa el borrador en una versión compatible." }
                     mutable.value = old.copy(draft = text, localDrafts = rows, message = if (saved.fingerprint != AdminLocalDrafts.fingerprint(old.base)) "Borrador recuperado. La configuración publicada cambió: revisa antes de guardar." else "Borrador recuperado sin publicar.")
                 }
             } catch (e: CancellationException) { throw e }
@@ -311,7 +355,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
     }
     fun upload(uri: Uri, key: String) {
         val old = mutable.value; val uid = old.uid ?: return
-        if (!old.ready || old.busy || old.kind !in setOf("home", "chabaquito") || old.groups.flatMap { it.fields }.none { it.key == key && it.type == "image" }) return
+        if (!old.ready || old.busy || old.kind !in setOf("home", "chabaquito", "benefit") || old.groups.flatMap { it.fields }.none { it.key == key && it.type == "image" }) return
         val version = epoch; mutable.value = old.copy(busy = true, message = "Subiendo imagen…")
         viewModelScope.launch {
             try {
