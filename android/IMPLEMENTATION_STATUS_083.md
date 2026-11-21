@@ -146,3 +146,8 @@ Editor por parada para plan, estado administrativo, inicio/fin en hora de Loja, 
 Guardado transaccional del mapa subscription completo, con comparación de parada/catálogo y auditoría; preserva metadatos e historial, retira los alias legacy startDate/endDate solo cuando se cambia o limpia la fecha correspondiente para que no reaparezcan por fallback. Borradores privados por cuenta y parada, recuperación desde servidor, aviso de cambios y protección al salir del formulario. No escribe en otras paradas ni modifica main durante desarrollo.
 
 Quedan pendientes registrar/corregir pagos del historial, recordatorios comerciales preparados, aplicación masiva de servicios y otros grupos del inventario. Las pruebas de pantalla/dispositivo siguen para el final. La numeración de la versión no representa un porcentaje de migración.
+
+
+## 0.100.0 — Exploración visible para visitantes
+
+Explorar y Favoritos abren con una lista compacta (imagen completa, nombre, dirección y corazón), con selector para volver a fotos grandes. Filtros combinables con búsqueda y categoría: contenido completo, video habilitado según las mismas reglas de la ficha, o enlace a menú QR registrado. El menú se valida al abrir; el filtro no certifica disponibilidad del documento QR. Video se oculta en datos offline y actualiza su vigencia en primer plano cada 15 segundos. Limpiar filtros recupera los resultados; no altera favoritos ni las categorías del mapa. No cambia la web ni main. Validación pendiente de CI al preparar esta versión; pruebas físicas se mantienen para el final.
