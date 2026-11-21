@@ -18,4 +18,22 @@ class EventActionPolicyTest {
         assertTrue(text.contains("Hora de Loja, Ecuador"))
         assertFalse(text.contains("\n\n"))
     }
+    @Test fun englishShareKeepsLojaDayAndOriginalNamesRegardlessOfDeviceDefaults() {
+        val previousZone = java.util.TimeZone.getDefault()
+        val previousLocale = java.util.Locale.getDefault()
+        try {
+            java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Pacific/Kiritimati"))
+            java.util.Locale.setDefault(java.util.Locale.FRANCE)
+            val start = Instant.parse("2026-11-13T01:00:00Z").toEpochMilli()
+            val text = EventActionPolicy.share("Noche de música", start, "Teatro Bolívar", "https://www.visitaloja.com/#agenda", true)
+            assertTrue(text.startsWith("Noche de música\n"))
+            assertTrue(text.contains("Thu 12 Nov 2026 · 20:00"))
+            assertTrue(text.contains("Loja, Ecuador time"))
+            assertTrue(text.contains("Teatro Bolívar"))
+            assertTrue(EventActionPolicy.share("Noche de música", start, "", "https://www.visitaloja.com/").contains("Hora de Loja, Ecuador"))
+        } finally {
+            java.util.TimeZone.setDefault(previousZone)
+            java.util.Locale.setDefault(previousLocale)
+        }
+    }
 }
