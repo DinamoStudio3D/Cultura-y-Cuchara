@@ -6,7 +6,7 @@ internal object AdminMissionBenefitPolicy {
     fun id(value: String): String = value.takeIf { it.matches(Regex("[A-Za-z0-9_-]{3,60}")) } ?: error("Identificador de campaña incompatible. Revísalo en la web.")
     fun counter(value: Any?): Long {
         if (value == null) return 0
-        return (value as? Number)?.toDouble()?.takeIf { it.isFinite() && it >= 0 && it % 1.0 == 0.0 && it < Long.MAX_VALUE.toDouble() }?.toLong() ?: error("El contador de códigos es incompatible. Revísalo antes de editar.")
+        return requireNotNull((value as? Number)?.toDouble()?.takeIf { it.isFinite() && it >= 0 && it % 1.0 == 0.0 && it < Long.MAX_VALUE.toDouble() }?.toLong()) { "El contador de códigos es incompatible. Revísalo antes de editar." }
     }
     fun version(raw: Map<String, Any?>?) = raw?.filterKeys { it !in setOf("issuedCount", "updatedAt") }
     fun validate(draft: Map<String, String>, initial: Map<String, String>) {
