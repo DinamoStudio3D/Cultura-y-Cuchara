@@ -22,6 +22,14 @@ internal data class PlatformField(val key: String, val label: String, val fallba
 internal data class PlatformGroup(val id: String, val title: String, val native: Boolean, val fields: List<PlatformField>)
 internal object AdminPlatformPolicy {
     fun groups(catalog: JSONObject, kind: String): List<PlatformGroup> {
+        if (kind == "maintenance") return listOf(PlatformGroup("maintenance", "Aviso de mantenimiento de la web", false, listOf(
+            PlatformField("r|active", "Cubrir la web pública con el aviso", "false", "bool"),
+            PlatformField("r|badge", "Etiqueta superior", "ESTAMOS PREPARANDO ALGO ESPECIAL", max = 70),
+            PlatformField("r|title", "Título principal", "Estamos trabajando en algo bonito", max = 120),
+            PlatformField("r|text", "Mensaje para visitantes", "Muy pronto descubrirás una nueva experiencia para conocer, saborear y vivir Loja. Gracias por acompañarnos.", max = 400),
+            PlatformField("r|buttonText", "Texto del botón", "Contáctanos", max = 50),
+            PlatformField("r|buttonUrl", "Enlace del botón · HTTPS opcional", type = "https", max = 2000),
+            PlatformField("r|returnText", "Texto o fecha de regreso · opcional", max = 100))))
         if (kind == "passport") return listOf(PlatformGroup("passport", "Configuración de pasaporte", true, listOf(
             PlatformField("r|active", "Activar premios del pasaporte", "true", "bool"),
             PlatformField("r|campaignName", "Nombre de campaña", "Pasaporte de Sabores de Loja", max = 100),
@@ -106,6 +114,13 @@ internal object AdminPlatformPolicy {
         val fields = groups.flatMap { it.fields }; require(draft.keys == initial.keys)
         val changed = fields.filter { draft[it.key] != initial[it.key] }; require(changed.isNotEmpty()) { "No hay cambios para guardar." }
         val result = mutableMapOf<String, Any?>()
+        if (kind == "maintenance") {
+            if (draft["r|active"] == "true") {
+                require(draft["r|title"].orEmpty().isNotBlank() && draft["r|text"].orEmpty().isNotBlank()) { "Completa título y mensaje antes de activar el aviso." }
+                parse(fields.first { it.key == "r|buttonUrl" }, draft["r|buttonUrl"].orEmpty())
+            }
+            return fields.filter { it in changed || base[it.key.substringAfter('|')] == null }.associate { it.key.substringAfter('|') to parse(it, draft[it.key].orEmpty()) }
+        }
         if (kind == "passport") {
             require(base.text("campaignId").isNotBlank()) { "Configura primero una campaña de pasaporte en el editor completo de la web." }
             require(draft["r|campaignName"].orEmpty().isNotBlank() && draft["r|introText"].orEmpty().isNotBlank()) { "Completa el nombre y mensaje de campaña." }
@@ -164,7 +179,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
     private val auth = FirebaseAuth.getInstance(); private val db = FirebaseFirestore.getInstance()
     private val mutable = MutableStateFlow(AdminPlatformState()); val state = mutable.asStateFlow(); private var epoch = 0
     private fun same(uid: String, version: Int) = epoch == version && auth.currentUser?.uid == uid && mutable.value.uid == uid
-    private fun ref(kind: String): DocumentReference { require(kind in setOf("home", "supporters", "passport")); return if (kind == "home") db.collection("settings").document("main") else db.collection("siteContent").document(if (kind == "passport") "passport" else "registeredBrands") }
+    private fun ref(kind: String): DocumentReference { require(kind in setOf("home", "supporters", "passport", "maintenance")); return if (kind == "home") db.collection("settings").document("main") else db.collection("siteContent").document(when (kind) { "passport" -> "passport"; "maintenance" -> "maintenance"; else -> "registeredBrands" }) }
     private suspend fun authorize(uid: String) {
         val user = auth.currentUser?.takeIf { it.uid == uid } ?: error("La sesión cambió.")
         val claims = user.getIdToken(true).await().claims
@@ -254,7 +269,7 @@ internal class AdminPlatformViewModel(app: Application) : AndroidViewModel(app) 
                 val context: Application = getApplication(); var restored: LocalAdminDraft? = null
                 val rows = withContext(Dispatchers.IO) {
                     when (action) {
-                        "save" -> AdminLocalDrafts.save(context, uid, old.kind, "configuration", when (old.kind) { "home" -> "Portada"; "passport" -> "Pasaporte"; else -> "Carrusel de apoyo" }, old.base, JSONObject(old.draft))
+                        "save" -> AdminLocalDrafts.save(context, uid, old.kind, "configuration", when (old.kind) { "home" -> "Portada"; "passport" -> "Pasaporte"; "maintenance" -> "Mantenimiento web"; else -> "Carrusel de apoyo" }, old.base, JSONObject(old.draft))
                         "restore" -> restored = AdminLocalDrafts.load(context, uid, old.kind, "configuration")
                         "delete" -> AdminLocalDrafts.remove(context, uid, old.kind, "configuration")
                         "list" -> Unit
