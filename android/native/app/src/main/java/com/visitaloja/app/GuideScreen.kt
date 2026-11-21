@@ -28,6 +28,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 internal fun GuideScreen(state:PlacesState,refresh:()->Unit,open:(Place)->Unit,missions:()->Unit,route:()->Unit) {
+    val character = guideCharacter("guide-character-screen")
     var interest by rememberSaveable{mutableStateOf<String?>(null)}
     var selectedId by rememberSaveable{mutableStateOf<String?>(null)}
     // Public IDs only, kept during this screen; no account history, location or analytics writes.
@@ -55,7 +56,7 @@ internal fun GuideScreen(state:PlacesState,refresh:()->Unit,open:(Place)->Unit,m
         item {
             Surface(color=Color(0xFF0C3768),contentColor=Color.White,shape=RoundedCornerShape(24.dp)) {
                 Row(Modifier.fillMaxWidth().padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-                    Image(painterResource(R.drawable.chabaquito),"Chabaquito, tu compañero de aventuras",Modifier.width(88.dp).height(120.dp),contentScale=ContentScale.Fit)
+                    ChabaquitoArt(character, Modifier.width(88.dp).height(120.dp), "Chabaquito, tu compañero de aventuras")
                     Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(7.dp)) {
                         Text("HABLA CON CHABAQUITO",style=MaterialTheme.typography.labelSmall,color=Color(0xFFABDBFF))
                         Text("¡Hagamos un plan!",style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Bold)
@@ -66,7 +67,7 @@ internal fun GuideScreen(state:PlacesState,refresh:()->Unit,open:(Place)->Unit,m
         }
         item {
             Text("¿Qué te apetece descubrir?",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Bold)
-            Text("Elige una idea y te mostraré una parada del directorio publicado de VisitaLoja.",style=MaterialTheme.typography.bodyMedium)
+            Text(character.greeting ?: "Elige una idea y te mostraré una parada del directorio publicado de VisitaLoja.",style=MaterialTheme.typography.bodyMedium)
         }
         if(!fresh)item {
             if(state.loading)LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -122,13 +123,14 @@ internal fun GuideScreen(state:PlacesState,refresh:()->Unit,open:(Place)->Unit,m
 
 @Composable
 internal fun GuideShortcut(english:Boolean,open:()->Unit) {
+    val character = guideCharacter("guide-character-shortcut")
     Surface(onClick=open,modifier=Modifier.padding(horizontal=18.dp).fillMaxWidth().testTag("open-guide"),shape=RoundedCornerShape(22.dp),color=Color(0xFF0C3768),contentColor=Color.White) {
         Row(Modifier.padding(18.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)) {
-            Image(painterResource(R.drawable.chabaquito),null,Modifier.width(66.dp).height(88.dp),contentScale=ContentScale.Fit)
+            ChabaquitoArt(character, Modifier.width(66.dp).height(88.dp), null)
             Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)) {
                 Text(if(english)"Your adventure companion" else "Tu compañero de aventuras",style=MaterialTheme.typography.labelMedium,color=Color(0xFFABDBFF))
                 Text(if(english)"Talk to Chabaquito" else "Habla con Chabaquito",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Bold)
-                Text(if(english)"Coffee, food, a walk… choose your next stop." else "Un café, algo rico, un paseo… elige tu próxima parada.",style=MaterialTheme.typography.bodyMedium)
+                Text(if(english)"Coffee, food, a walk… choose your next stop." else character.greeting ?: "Un café, algo rico, un paseo… elige tu próxima parada.",style=MaterialTheme.typography.bodyMedium)
             }
             Icon(Icons.AutoMirrored.Filled.ArrowForward,null)
         }
