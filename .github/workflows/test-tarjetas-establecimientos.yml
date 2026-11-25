@@ -1,0 +1,25 @@
+name: Regresion de tarjetas publicas
+
+on:
+  push:
+    branches:
+      - test/regresion-tarjetas-establecimientos
+  pull_request:
+    paths:
+      - 'css/discovery-cards.css'
+      - 'index.html'
+      - 'tests/test_tarjetas_establecimientos.py'
+      - '.github/workflows/test-tarjetas-establecimientos.yml'
+  workflow_dispatch:
+
+jobs:
+  tarjetas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Comprobar tarjetas
+        run: python3 -m unittest discover -s tests -p 'test_tarjetas_establecimientos.py' -v
