@@ -50,7 +50,7 @@
 /* A bounded home selection from the existing published catalogue and agenda. */
 (() => {
  'use strict';
- let events=[],featureIndex=0;
+ let events=[];
  const mobile=matchMedia('(max-width:767px)');
  const en=()=>document.getElementById('langSelector')?.value==='en';
  const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text)el.textContent=text;if(cls)el.className=cls;return el;};
@@ -68,15 +68,21 @@
    for(const item of hub.querySelectorAll(':scope > .vl-mobile-stories,:scope > .vl-mobile-passport-link,:scope > .vl-mobile-secondary-links'))more.insertBefore(item,more.querySelector('.vl-mobile-more'));
   }
   if(more)more.querySelector('summary').firstChild.textContent=en()?'More of VisitaLoja ':'Más de VisitaLoja ';
+  let shortcuts=hub.querySelector('.vl-home-shortcuts');
+  if(!shortcuts){shortcuts=node('nav',null,'vl-home-shortcuts');shortcuts.setAttribute('aria-label','Más experiencias');hub.querySelector('.vl-mobile-business')?.before(shortcuts);}
+  for(const [href,es,english,icon] of [['#loja-en-imagenes','Fotos','Photos','fa-camera'],['#loja-en-video','Videos','Videos','fa-circle-play'],['#pasaporte','Pasaporte','Passport','fa-stamp'],['#misiones','Misiones','Missions','fa-compass']]){
+   const link=hub.querySelector('a[href="'+href+'"]');if(!link)continue;
+   link.replaceChildren();const symbol=node('i',null,'fa-solid '+icon);symbol.setAttribute('aria-hidden','true');link.append(symbol,node('span',en()?english:es));shortcuts.append(link);
+  }
   const hubTitle=document.getElementById('mobileExploreTitle');if(hubTitle)hubTitle.textContent=en()?'What shall we do today?':'¿Qué hacemos hoy?';
   const all=[...document.querySelectorAll('#localesGrid .local-item:not(.aliado)')];
   const picked=[],categories=new Set();
   for(const card of all){const category=card.querySelector('.vl17-media .absolute span')?.textContent.trim()||'';if(!categories.has(category)){picked.push(card);categories.add(category);}if(picked.length===3)break;}
   for(const card of all)if(picked.length<3&&!picked.includes(card))picked.push(card);
   if(picked.length){
-   const section=group('homePlacesSelection',en()?'A place to discover':'Un lugar para descubrir','#establecimientos',en()?'All stops':'Ver paradas');
+   const section=group('homePlacesSelection',en()?'Discover Loja':'Descubre Loja','#establecimientos',en()?'All stops':'Ver paradas');
    const list=node('div',null,'vl-home-places');
-   const shown=mobile.matches&&all.length?[all[featureIndex%all.length]]:picked;
+   const shown=picked;
    for(const source of shown){
     const target=source.querySelector('.discovery-card-links a');const photo=source.querySelector('.vl17-media img');if(!target||!photo)continue;
     const url=new URL(target.href,location.href);if(url.origin!==location.origin)continue;
@@ -84,17 +90,15 @@
     const card=node('a',null,'vl-home-place');card.href=url.href;
     const image=node('img');image.src=photo.currentSrc||photo.src;image.alt=title;image.loading='lazy';image.decoding='async';image.addEventListener('error',()=>{image.src='assets/photos/photo-unavailable.svg';},{once:true});
     const copy=node('div');copy.append(node('small',source.querySelector('.vl17-media .absolute span')?.textContent.trim()),node('h3',title));
-    if(mobile.matches){const description=(source.querySelector('.local-desc')?.textContent||'').trim();if(description)copy.append(node('p',description.replace(/\.{3}$/, '') ));}
-    copy.append(node('span',en()?'Discover this place':'Conocer el lugar'));
+    if(!mobile.matches)copy.append(node('span',en()?'Discover this place':'Conocer el lugar'));
     card.append(image,copy);list.append(card);
    }
    section.append(list);
-   if(mobile.matches&&all.length>1){const next=node('button',en()?'Show another place':'Descubrir otro lugar','vl-home-next');next.type='button';next.addEventListener('click',()=>{featureIndex++;render();document.querySelector('.vl-home-next')?.focus({preventScroll:true});});section.append(next);}
    hub.querySelector('.vl-mobile-intents')?.after(section);
   }
   const upcoming=window.VisitaLojaEventsSpotlight?.upcoming(events,Date.now())||events.filter(e=>{const stamp=Date.parse(e.date+'T'+(/^\d{2}:\d{2}$/.test(e.time||'')?e.time:'18:00')+':00-05:00');return Number.isFinite(stamp)&&stamp+3600000>Date.now();});
   const unique=new Map();for(const event of upcoming){const key=[event.date,event.time,event.title,event.location||event.place].join('|');if(!unique.has(key))unique.set(key,event);}
-  const selected=[...unique.values()].sort((a,b)=>(a.date+(a.time||'18:00')).localeCompare(b.date+(b.time||'18:00'))).slice(0,2);
+  const selected=[...unique.values()].sort((a,b)=>(a.date+(a.time||'18:00')).localeCompare(b.date+(b.time||'18:00'))).slice(0,mobile.matches?1:2);
   const agendaLink=hub.querySelector('.vl-mobile-secondary-links a[href="#agenda"]');
   if(agendaLink)agendaLink.hidden=selected.length>0;
   if(selected.length){
