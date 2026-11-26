@@ -1,6 +1,18 @@
 /* Small enhancements only; nothing stays hidden if this script is unavailable. */
 (() => {
  'use strict';
+ function placePhotoControls(){
+  const controls=document.querySelector('#inicio .vl-photo-carousel-ui');
+  const frame=document.getElementById('mobilePhotoFrame');
+  const shell=document.querySelector('#inicio .vl-welcome-shell');
+  const host=matchMedia('(max-width:760px)').matches&&frame?frame:shell;
+  if(controls&&host&&controls.parentElement!==host)host.append(controls);
+ }
+ placePhotoControls();
+ const photoMedia=matchMedia('(max-width:760px)');
+ photoMedia.addEventListener('change',placePhotoControls);
+ const hero=document.getElementById('inicio');
+ if(hero)new MutationObserver(placePhotoControls).observe(hero,{childList:true,subtree:true});
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const root=document.documentElement;
  if(reduced.matches||root.classList.contains('low-data-mode')||!('IntersectionObserver' in window))return;

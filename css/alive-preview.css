@@ -60,3 +60,23 @@
  @keyframes vl-alive-enter {from{transform:translateY(10px)}to{transform:translateY(0)}}
 }
 @media(prefers-reduced-motion:reduce){html.vl-alive-preview .vl-alive-enter {animation:none!important}html.vl-alive-preview body #inicio .vl-visible-photo-carousel img {transition:none!important}}
+
+@layer vl-layout {
+ @media(max-width:767px){
+  html.vl-alive-preview body #inicio.vl-welcome>.vl-welcome-shell{min-height:0!important;padding:0!important}
+  html.vl-alive-preview body #inicio .vl-welcome-copy{padding:16px 16px 28px!important;max-width:none!important;width:100%!important}
+  html.vl-alive-preview body #inicio #mobilePhotoFrame{min-height:310px!important;height:clamp(290px,52svh,370px)!important;padding:68px 22px 54px!important;border-radius:0 0 24px 24px!important}
+  html.vl-alive-preview body #inicio #mobilePhotoFrame #heroTitle{font-size:clamp(32px,8vw,46px)!important;line-height:1.08!important;max-width:14ch!important;margin:0!important}
+  html.vl-alive-preview body #inicio :is(.vl-editorial-quicklinks,.vl-welcome-actions,.vl-mobile-updates){display:none!important}
+  html.vl-alive-preview body #inicio #eventsBillboard.vb-is-empty{display:none!important}
+  html.vl-alive-preview body #inicio #mobilePhotoFrame .vl-photo-carousel-ui{top:12px!important;bottom:auto!important;right:12px!important}
+  html.vl-alive-preview body #inicio .vl-welcome-search{margin-top:0!important}
+  html.vl-alive-preview body #mobileExploreHub{margin-top:0!important}
+ }
+}
+@layer vl-colors {
+ @media(max-width:767px){
+  html.vl-alive-preview body #inicio.vl-welcome{background:#f5f8fc!important}
+  html.vl-alive-preview body #inicio .vl-welcome-copy{background:#f5f8fc!important}
+ }
+}
