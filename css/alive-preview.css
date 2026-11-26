@@ -116,3 +116,56 @@
  html.vl-alive-preview .vl-home-place{background:#fff!important}
  html.vl-alive-preview .vl-home-events>a{background:#eaf4ff!important}
 }
+/* Mobile home: one photographic opening, one featured experience. */
+@layer vl-layout {
+ @media(max-width:767px){
+  html.vl-alive-preview body #inicio.vl-welcome>.vl-welcome-shell{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important;padding:0 0 20px!important}
+  html.vl-alive-preview body #inicio #mobilePhotoFrame{grid-area:1/1!important;order:initial!important;height:350px!important;margin:0!important;border:0!important;border-radius:0 0 30px 30px!important;box-shadow:none!important}
+  html.vl-alive-preview body #inicio .vl-welcome-eyebrow{grid-area:1/1!important;align-self:start!important;z-index:5!important;margin:24px!important;border:0!important;padding:0!important;font-size:12px!important;background:transparent!important}
+  html.vl-alive-preview body #inicio #heroTitle{grid-area:1/1!important;align-self:start!important;z-index:5!important;margin:62px 24px 0!important;font-size:58px!important;max-width:9ch!important;pointer-events:none!important;letter-spacing:-.05em!important}
+  html.vl-alive-preview body #inicio #heroTitle .vl-editorial-accent{display:block!important}
+  html.vl-alive-preview body #inicio #heroSubtitle{display:none!important}
+  html.vl-alive-preview body #inicio .vl-welcome-search{grid-column:1!important;grid-row:2!important;z-index:6!important;width:calc(100% - 36px)!important;margin:16px 18px 0!important;padding:12px!important;border-radius:18px!important}
+  html.vl-alive-preview body #inicio .vl-welcome-search input{font-size:16px!important;min-width:0!important}
+  html.vl-alive-preview body #inicio .vl-welcome-search label{font-size:14px!important}
+  html.vl-alive-preview body #inicio #mobilePhotoFrame .vl-mobile-photo-kicker{display:none!important}
+  html.vl-alive-preview body #inicio #vl-chabaquito-install{grid-column:1!important;margin:14px 18px 0!important}
+  html.vl-alive-preview body #mobileExploreHub{padding:12px 18px 26px!important;border-top:0!important}
+  html.vl-alive-preview body #mobileExploreHub .vl-mobile-eyebrow{display:none!important}
+  html.vl-alive-preview body #mobileExploreTitle{font-size:23px!important;max-width:none!important}
+  html.vl-alive-preview body .vl-mobile-map-link{display:none!important}
+  html.vl-alive-preview body .vl-mobile-intents{margin:16px 0 28px!important;gap:8px!important}
+  html.vl-alive-preview body .vl-mobile-intents>a{min-height:64px!important;flex-direction:row!important;justify-content:center!important;gap:6px!important;padding:12px 5px!important;border-radius:15px!important;box-shadow:none!important;font-size:14px!important}
+  html.vl-alive-preview body .vl-mobile-intents>a>:is(i,svg){width:24px!important;height:24px!important;padding:3px!important;border-radius:0!important}
+  html.vl-alive-preview .vl-home-feed{margin:0 0 26px!important}
+  html.vl-alive-preview .vl-home-feed>header{align-items:baseline!important;gap:8px!important}
+  html.vl-alive-preview .vl-home-feed h2{font-size:22px!important;letter-spacing:-.03em!important}
+  html.vl-alive-preview .vl-home-feed>header>a{font-size:14px!important}
+  html.vl-alive-preview .vl-home-places{display:block!important;overflow:visible!important;padding:0!important}
+  html.vl-alive-preview .vl-home-place{border-radius:24px!important;box-shadow:0 12px 28px #164b7510!important}
+  html.vl-alive-preview .vl-home-place>img{height:235px!important;padding:12px!important;box-sizing:border-box!important}
+  html.vl-alive-preview .vl-home-place>div{padding:20px!important;gap:10px!important}
+  html.vl-alive-preview .vl-home-place h3{font-size:26px!important;letter-spacing:-.035em!important}
+  html.vl-alive-preview .vl-home-place p{font-size:16px!important;line-height:1.5!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:0!important}
+  html.vl-alive-preview .vl-home-place span{display:block!important;padding:12px 16px!important;border-radius:12px!important;text-align:center!important;font-size:16px!important;margin-top:4px!important}
+  html.vl-alive-preview .vl-home-next{display:block;width:100%;min-height:44px;margin-top:10px;border-radius:12px;border:1px solid #c4d9eb;font-size:14px;font-weight:700}
+  html.vl-alive-preview .vl-home-next:focus-visible{outline:3px solid #0863ba;outline-offset:3px}
+  html.vl-alive-preview body .vl-home-more{padding:0!important;margin-top:20px!important;border:1px solid #d5e2ee!important;border-radius:18px!important;overflow:hidden}
+  html.vl-alive-preview body .vl-home-more>summary{padding:18px!important;font-size:16px!important;min-height:48px!important}
+  html.vl-alive-preview body .vl-home-more>.vl-mobile-stories,html.vl-alive-preview body .vl-home-more>.vl-mobile-passport-link,html.vl-alive-preview body .vl-home-more>.vl-mobile-secondary-links,html.vl-alive-preview body .vl-home-more>.vl-mobile-more{margin:12px!important}
+ }
+}
+@layer vl-colors {
+ @media(max-width:767px){
+  html.vl-alive-preview body #inicio.vl-welcome,html.vl-alive-preview body #mobileExploreHub{background:#f5f9fd!important}
+  html.vl-alive-preview body #inicio .vl-visible-photo-carousel::after{background:linear-gradient(180deg,#052b53d9 0%,#052b5355 52%,#052b5366 100%)!important}
+  html.vl-alive-preview body #inicio #heroTitle,html.vl-alive-preview body #inicio #heroTitle .vl-editorial-accent,html.vl-alive-preview body #inicio .vl-welcome-eyebrow{color:#fff!important;--vl-text:#fff;--vl-muted:#fff;text-shadow:0 2px 14px #00183055!important}
+  html.vl-alive-preview body .vl-mobile-intents>a,html.vl-alive-preview body .vl-mobile-intents>a:last-child{background:#e5f1fc!important;color:#14568c!important;border-color:#c9deee!important;--vl-text:#14568c;--vl-accent:#14568c}
+  html.vl-alive-preview body .vl-mobile-intents>a:first-child{background:#0867bb!important;color:#fff!important;border-color:#0867bb!important;--vl-text:#fff;--vl-accent:#fff}
+  html.vl-alive-preview body .vl-mobile-intents>a>:is(i,svg){color:inherit!important;background:transparent!important}
+  html.vl-alive-preview .vl-home-place>img{background:linear-gradient(135deg,#eaf3fa,#fff)!important}
+  html.vl-alive-preview .vl-home-place p{color:#526779!important}
+  html.vl-alive-preview .vl-home-place span{background:#0867bb!important;color:#fff!important;--vl-text:#fff;--vl-accent:#fff}
+  html.vl-alive-preview .vl-home-next,html.vl-alive-preview body .vl-home-more{background:#fff!important;color:#174b73!important}
+ }
+}
