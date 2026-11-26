@@ -115,3 +115,17 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
  setInterval(()=>{if(!document.hidden)render();},60000);
 })();
+/* Keep footer navigation and photographer attribution accessible without a long mobile tail. */
+(() => {
+ const footer=document.querySelector('body > footer.vl-site-footer');if(!footer)return;
+ const media=matchMedia('(max-width:767px)');
+ const groups=[];
+ for(const [selector,es,en] of [['.vl-footer-navigation','Enlaces de VisitaLoja','VisitaLoja links'],['.vl-photographer-credits','Fotografía y créditos','Photography and credits']]){
+  const content=footer.querySelector(selector);if(!content)continue;
+  const details=document.createElement('details');details.className='vl-footer-disclosure';
+  const summary=document.createElement('summary');details.append(summary);content.before(details);details.append(content);groups.push({details,summary,es,en});
+ }
+ function copy(){const english=document.getElementById('langSelector')?.value==='en';for(const group of groups)group.summary.textContent=english?group.en:group.es;}
+ function layout(){for(const group of groups)group.details.open=!media.matches;copy();}
+ media.addEventListener('change',layout);window.addEventListener('languagechange',copy);layout();
+})();
