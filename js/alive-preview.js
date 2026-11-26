@@ -4,7 +4,7 @@
  function previewCopy(){
   const en=document.getElementById('langSelector')?.value==='en';
   const title=document.getElementById('heroTitle'),sub=document.getElementById('heroSubtitle'),badge=document.getElementById('heroBadge');
-  const heading=en?'Step outside.<em class="vl-editorial-accent">Discover Loja.</em>':'Hoy se sale<em class="vl-editorial-accent">a descubrir Loja.</em>';
+  const heading=en?'Step outside. <em class="vl-editorial-accent">Discover Loja.</em>':'Hoy se sale <em class="vl-editorial-accent">a descubrir Loja.</em>';
   const description=en?'Local flavours, unexpected corners and a new favourite place. Where shall we start?':'Sabores de aquí, rincones por conocer y tu próximo lugar favorito. ¿Por dónde empezamos?';
   const eyebrow=en?'LOJA, ECUADOR · AT YOUR OWN PACE':'LOJA, ECUADOR · A TU RITMO';
   if(title&&title.innerHTML!==heading)title.innerHTML=heading;
