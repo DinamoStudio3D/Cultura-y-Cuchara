@@ -470,8 +470,8 @@
     <script defer src="js/mobile-place-experience.js?v=3"></script>
     <link rel="stylesheet" href="css/mobile-agenda.css?v=1">
     <script defer src="js/mobile-agenda.js?v=1"></script>
-<link rel="stylesheet" href="css/alive-preview.css?v=2">
-<script defer src="js/alive-preview.js?v=2"></script>
+<link rel="stylesheet" href="css/alive-preview.css?v=3">
+<script defer src="js/alive-preview.js?v=3"></script>
 </head>
 <body class="bg-brandCream text-brandDark font-sans antialiased overflow-hidden" id="body-content">
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
@@ -6236,6 +6236,7 @@ function openPromotionPlace(id){const index=locations.findIndex(item=>item.id===
             const generalKeys = new Set(fiavlPreviewEvents.length ? upcomingGeneralItems.map(item => festivalEventKey(item.event)) : []);
             const upcomingFestivalItems = fiavlPreviewEvents.length ? festivalItems.filter(({ event }) =>
                 event.date >= todayStr && !generalKeys.has(festivalEventKey(event))) : [];
+            window.dispatchEvent(new CustomEvent('visitaloja:home-events', { detail: [...upcomingGeneralItems, ...upcomingFestivalItems].map(item => item.event) }));
             const baseItems = agendaViewMode === 'saved' ? savedItems : [...upcomingGeneralItems, ...upcomingFestivalItems];
             const search=document.getElementById('agendaSearch'),dateFilter=document.getElementById('agendaDateFilter'),query=normalizeAgendaText(search?.value);
             if(search)search.placeholder=currentLang==='en'?'Name, activity or place':'Nombre, actividad o lugar';

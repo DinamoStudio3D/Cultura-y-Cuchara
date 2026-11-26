@@ -44,3 +44,54 @@
  const main=document.getElementById('main-content');
  if(main)new MutationObserver(observe).observe(main,{childList:true,subtree:true});
 })();
+
+/* A bounded home selection from the existing published catalogue and agenda. */
+(() => {
+ 'use strict';
+ let events=[];
+ const en=()=>document.getElementById('langSelector')?.value==='en';
+ const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text)el.textContent=text;if(cls)el.className=cls;return el;};
+ function group(id,title,href,label){
+  const section=node('section',null,'vl-home-feed');section.id=id;
+  const header=node('header');const heading=node('h2',title);heading.id=id+'Title';section.setAttribute('aria-labelledby',heading.id);
+  const link=node('a',label);link.href=href;header.append(heading,link);section.append(header);return section;
+ }
+ function render(){
+  const hub=document.getElementById('mobileExploreHub');if(!hub)return;
+  document.getElementById('homePlacesSelection')?.remove();document.getElementById('homeAgendaSelection')?.remove();
+  const all=[...document.querySelectorAll('#localesGrid .local-item:not(.aliado)')];
+  const picked=[],categories=new Set();
+  for(const card of all){const category=card.querySelector('.vl17-media .absolute span')?.textContent.trim()||'';if(!categories.has(category)){picked.push(card);categories.add(category);}if(picked.length===3)break;}
+  for(const card of all)if(picked.length<3&&!picked.includes(card))picked.push(card);
+  if(picked.length){
+   const section=group('homePlacesSelection',en()?'Your next stop':'Tu próxima parada','#establecimientos',en()?'All stops →':'Ver paradas →');
+   const list=node('div',null,'vl-home-places');
+   for(const source of picked){
+    const target=source.querySelector('.discovery-card-links a');const photo=source.querySelector('.vl17-media img');if(!target||!photo)continue;
+    const url=new URL(target.href,location.href);if(url.origin!==location.origin)continue;
+    const title=source.querySelector('.local-title')?.textContent.trim()||'';
+    const card=node('a',null,'vl-home-place');card.href=url.href;
+    const image=node('img');image.src=photo.currentSrc||photo.src;image.alt=title;image.loading='lazy';image.decoding='async';image.addEventListener('error',()=>{image.src='assets/photos/photo-unavailable.svg';},{once:true});
+    const copy=node('div');copy.append(node('small',source.querySelector('.vl17-media .absolute span')?.textContent.trim()),node('h3',title),node('span',en()?'Discover this place ↗':'Conoce este lugar ↗'));
+    card.append(image,copy);list.append(card);
+   }
+   section.append(list);hub.querySelector('.vl-mobile-stories')?.before(section);
+  }
+  const upcoming=window.VisitaLojaEventsSpotlight?.upcoming(events,Date.now())||events.filter(e=>{const stamp=Date.parse(e.date+'T'+(/^\d{2}:\d{2}$/.test(e.time||'')?e.time:'18:00')+':00-05:00');return Number.isFinite(stamp)&&stamp+3600000>Date.now();});
+  const unique=new Map();for(const event of upcoming){const key=[event.date,event.time,event.title,event.location||event.place].join('|');if(!unique.has(key))unique.set(key,event);}
+  const selected=[...unique.values()].sort((a,b)=>(a.date+(a.time||'18:00')).localeCompare(b.date+(b.time||'18:00'))).slice(0,2);
+  const agendaLink=hub.querySelector('.vl-mobile-secondary-links a[href="#agenda"]');
+  if(agendaLink)agendaLink.hidden=selected.length>0;
+  if(selected.length){
+   const section=group('homeAgendaSelection',en()?'Coming up in Loja':'Lo próximo en Loja','#agenda',en()?'View agenda →':'Ver agenda →');
+   const list=node('div',null,'vl-home-events');
+   for(const event of selected){const link=node('a');link.href='#agenda';const date=new Date(event.date+'T12:00:00-05:00');link.append(node('small',date.toLocaleDateString(en()?'en':'es-EC',{day:'numeric',month:'short'})+(event.time?' · '+event.time:'')),node('h3',en()&&event.titleEn?event.titleEn:event.title),node('span',event.location||event.place||'Loja'));list.append(link);}
+   section.append(list);hub.querySelector('.vl-mobile-stories')?.before(section);
+  }
+ }
+ window.addEventListener('visitaloja:home-events',event=>{events=event.detail||[];render();});
+ window.addEventListener('visitaloja:places-rendered',render);
+ window.addEventListener('languagechange',()=>requestAnimationFrame(render));
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
+ setInterval(()=>{if(!document.hidden)render();},60000);
+})();
