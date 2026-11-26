@@ -80,3 +80,11 @@
   html.vl-alive-preview body #inicio .vl-welcome-copy{background:#f5f8fc!important}
  }
 }
+
+@layer vl-colors {
+ html.vl-alive-preview body #inicio .vl-photo-carousel-ui :is(.vl-photo-counter,button,button span){color:#fff!important;--vl-text:#fff;--vl-muted:#fff;--vl-accent:#fff}
+}
+#vl-photo-pause>span{display:flex;gap:4px;width:14px;height:14px;align-items:center;justify-content:center}
+#vl-photo-pause>span::before,#vl-photo-pause>span::after{content:"";display:block;width:3px;height:12px;background:currentColor;border-radius:1px}
+#vl-photo-pause>span.is-paused::before{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:9px solid currentColor;background:transparent;border-radius:0}
+#vl-photo-pause>span.is-paused::after{display:none}
