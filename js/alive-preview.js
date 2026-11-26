@@ -72,7 +72,7 @@
   if(!shortcuts){shortcuts=node('nav',null,'vl-home-shortcuts');shortcuts.setAttribute('aria-label','Más experiencias');hub.querySelector('.vl-mobile-business')?.before(shortcuts);}
   for(const [href,es,english,icon] of [['#loja-en-imagenes','Fotos','Photos','fa-camera'],['#loja-en-video','Videos','Videos','fa-circle-play'],['#pasaporte','Pasaporte','Passport','fa-stamp'],['#misiones','Misiones','Missions','fa-compass']]){
    const link=hub.querySelector('a[href="'+href+'"]');if(!link)continue;
-   link.replaceChildren();const symbol=node('i',null,'fa-solid '+icon);symbol.setAttribute('aria-hidden','true');link.append(symbol,node('span',en()?english:es));shortcuts.append(link);
+   link.className='';link.replaceChildren();const symbol=node('i',null,'fa-solid '+icon);symbol.setAttribute('aria-hidden','true');link.append(symbol,node('span',en()?english:es));shortcuts.append(link);
   }
   const hubTitle=document.getElementById('mobileExploreTitle');if(hubTitle)hubTitle.textContent=en()?'What shall we do today?':'¿Qué hacemos hoy?';
   const all=[...document.querySelectorAll('#localesGrid .local-item:not(.aliado)')];
