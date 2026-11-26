@@ -67,13 +67,14 @@
    more.classList.add('vl-home-more');
    for(const item of hub.querySelectorAll(':scope > .vl-mobile-stories,:scope > .vl-mobile-passport-link,:scope > .vl-mobile-secondary-links'))more.insertBefore(item,more.querySelector('.vl-mobile-more'));
   }
-  if(more)more.querySelector('summary').firstChild.textContent=en()?'More of VisitaLoja ':'Más de VisitaLoja ';
+  if(more)more.querySelector('summary').firstChild.textContent=en()?'More experiences ':'Más experiencias ';
   let shortcuts=hub.querySelector('.vl-home-shortcuts');
-  if(!shortcuts){shortcuts=node('nav',null,'vl-home-shortcuts');shortcuts.setAttribute('aria-label','Más experiencias');hub.querySelector('.vl-mobile-business')?.before(shortcuts);}
+  if(!shortcuts){shortcuts=node('nav',null,'vl-home-shortcuts');shortcuts.setAttribute('aria-label','Más experiencias');more?.querySelector('summary')?.after(shortcuts);}
   for(const [href,es,english,icon] of [['#loja-en-imagenes','Fotos','Photos','fa-camera'],['#loja-en-video','Videos','Videos','fa-circle-play'],['#pasaporte','Pasaporte','Passport','fa-stamp'],['#misiones','Misiones','Missions','fa-compass']]){
    const link=hub.querySelector('a[href="'+href+'"]');if(!link)continue;
    link.className='';link.replaceChildren();const symbol=node('i',null,'fa-solid '+icon);symbol.setAttribute('aria-hidden','true');link.append(symbol,node('span',en()?english:es));shortcuts.append(link);
   }
+  const business=hub.querySelector('.vl-mobile-business strong');if(business)business.textContent=en()?'List your business':'Publica tu negocio';
   const hubTitle=document.getElementById('mobileExploreTitle');if(hubTitle)hubTitle.textContent=en()?'What shall we do today?':'¿Qué hacemos hoy?';
   const all=[...document.querySelectorAll('#localesGrid .local-item:not(.aliado)')];
   const picked=[],categories=new Set();
@@ -105,7 +106,7 @@
    const section=group('homeAgendaSelection',en()?'Coming up in Loja':'Lo próximo en Loja','#agenda',en()?'View agenda':'Ver agenda');
    const list=node('div',null,'vl-home-events');
    for(const event of selected){const link=node('a');link.href='#agenda';const date=new Date(event.date+'T12:00:00-05:00');link.append(node('small',date.toLocaleDateString(en()?'en':'es-EC',{day:'numeric',month:'short'})+(event.time?' · '+event.time:'')),node('h3',en()&&event.titleEn?event.titleEn:event.title),node('span',event.location||event.place||'Loja'));list.append(link);}
-   section.append(list);(document.getElementById('homePlacesSelection')||hub.querySelector('.vl-mobile-intents'))?.after(section);
+   section.append(list);more?.append(section);
   }
  }
  window.addEventListener('visitaloja:home-events',event=>{events=event.detail||[];render();});
@@ -115,17 +116,20 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render);else render();
  setInterval(()=>{if(!document.hidden)render();},60000);
 })();
-/* Keep footer navigation and photographer attribution accessible without a long mobile tail. */
+/* Group supporting content so home has three visual blocks. */
 (() => {
- const footer=document.querySelector('body > footer.vl-site-footer');if(!footer)return;
  const media=matchMedia('(max-width:767px)');
- const groups=[];
- for(const [selector,es,en] of [['.vl-footer-navigation','Enlaces de VisitaLoja','VisitaLoja links'],['.vl-photographer-credits','Fotografía y créditos','Photography and credits']]){
-  const content=footer.querySelector(selector);if(!content)continue;
-  const details=document.createElement('details');details.className='vl-footer-disclosure';
-  const summary=document.createElement('summary');details.append(summary);content.before(details);details.append(content);groups.push({details,summary,es,en});
+ const footer=document.querySelector('body > footer.vl-site-footer');
+ if(footer){
+  const original=footer.firstElementChild;const brand=original?.firstElementChild;
+  if(brand)footer.prepend(brand);
+  const details=document.createElement('details');details.className='vl-footer-disclosure vl-footer-all';
+  const summary=document.createElement('summary');details.append(summary);
+  for(const child of [...footer.children])if(child!==brand&&child.tagName!=='STYLE')details.append(child);
+  footer.append(details);
+  const copy=()=>summary.textContent=document.getElementById('langSelector')?.value==='en'?'Information, contact and credits':'Información, contacto y créditos';
+  const layout=()=>{details.open=!media.matches;copy();};media.addEventListener('change',layout);window.addEventListener('languagechange',copy);layout();
  }
- function copy(){const english=document.getElementById('langSelector')?.value==='en';for(const group of groups)group.summary.textContent=english?group.en:group.es;}
- function layout(){for(const group of groups)group.details.open=!media.matches;copy();}
- media.addEventListener('change',layout);window.addEventListener('languagechange',copy);layout();
+ const main=document.getElementById('main-content'),brands=document.getElementById('registeredBrands'),sponsors=document.getElementById('banco-de-loja-destacado');
+ if(main&&brands&&sponsors){const group=document.createElement('section');group.id='homeBrandsOverview';group.setAttribute('aria-label','Marcas y negocios de VisitaLoja');brands.before(group);group.append(brands,sponsors);}
 })();

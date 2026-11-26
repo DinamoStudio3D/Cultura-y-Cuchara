@@ -234,3 +234,25 @@
  }
 }
 @layer vl-colors {@media(max-width:767px){html.vl-alive-preview .vl-footer-disclosure>summary{color:#fff!important;background:#163f67!important}}}
+@layer vl-layout {
+ @media(max-width:767px){
+  html.vl-alive-preview body #mobileExploreHub{padding-top:0!important}
+  html.vl-alive-preview body #mobileExploreHub>.vl-mobile-hub-heading{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important}
+  html.vl-alive-preview body #mobileExploreHub>.vl-mobile-intents{margin-top:0!important;margin-bottom:20px!important}
+  html.vl-alive-preview body #inicio #vl-chabaquito-install{display:none!important}
+  html.vl-alive-preview body .vl-home-more{margin:0!important}
+  html.vl-alive-preview .vl-home-more .vl-home-shortcuts{margin:12px!important}
+  html.vl-alive-preview .vl-home-more .vl-home-feed{margin:14px 12px!important}
+  html.vl-alive-preview body .vl-mobile-business{min-height:44px!important;padding:6px 0!important;border:0!important;box-shadow:none!important;margin:0!important}
+  html.vl-alive-preview body .vl-mobile-business-icon,html.vl-alive-preview body .vl-mobile-business>b{display:none!important}
+  html.vl-alive-preview body #homeBrandsOverview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:12px;padding:16px 18px!important}
+  html.vl-alive-preview body #homeBrandsOverview>section{min-width:0!important;padding:0!important;border:0!important;margin:0!important}
+  html.vl-alive-preview body #homeBrandsOverview h2{font-size:16px!important;line-height:1.3!important;letter-spacing:-.02em!important;margin:0 0 10px!important}
+  html.vl-alive-preview body #registeredBrands p,html.vl-alive-preview body #registeredBrands>a{display:none!important}
+  html.vl-alive-preview body #homeBrandsOverview .vl-sponsor-showcase__slots a{flex-direction:column!important;gap:4px!important;padding:8px!important;min-height:114px!important}
+  html.vl-alive-preview body #homeBrandsOverview .vl-sponsor-showcase__slots strong{font-size:14px!important}
+  html.vl-alive-preview body>footer.vl-site-footer{padding-bottom:24px!important}
+  html.vl-alive-preview body>footer.vl-site-footer>.vl-footer-all{margin:12px 0 0!important}
+ }
+}
+@layer vl-colors {@media(max-width:767px){html.vl-alive-preview body #mobileExploreHub,html.vl-alive-preview body #homeBrandsOverview{background:#f5f9fd!important}html.vl-alive-preview body .vl-mobile-business{background:transparent!important}}}
